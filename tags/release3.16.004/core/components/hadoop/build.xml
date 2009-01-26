@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hadoop" default="default">
+
+  <!--
+  /** (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    hadoop component
+    For testing on the HPLB server farm, set
+     test.hplb.enabled=true
+    Make sure they are running a compatible version and we are up to date with
+    their settings!
+
+    To get the hadoop jars from a local ivy cache to the place in SVN where they
+    are available to other developers, use the copy-hadoop target
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <!--this lets us pick up hadoop version markers from hadoop,
+    overriding anything in components/libraries.properties-->
+
+  <property name="hadoop.dir" location="" />
+  <property file="${hadoop.dir}/build.properties" />
+  <property file="${hadoop.dir}/ivy/libraries.properties" />
+
+  <!--system test switch-->
+<!--  <property name="system.tests" value="false"/>-->
+
+  <echo
+      message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+
+
+  <target name="ready-to-test" depends="common.ready-to-test">
+    <echo level="verbose">
+      test.ec2.enabled=${test.ec2.enabled}
+      test.jetty.home=${test.jetty.home}
+      test.demo.webapp=${test.demo.webapp}
+      test.testwar.war=${test.testwar.war}
+      test.awsid=${test.awsid}
+      test.awskey=${test.awskey}
+      system.tests=${system.tests}
+    </echo>
+    <fail >
+      <condition >
+        <not>
+          <available classname="org.apache.jasper.servlet.JspServlet" ignoresystemclasses="true"
+              classpathref="tests.run.classpath"/>
+        </not>
+      </condition>
+      Unable to locate org.apache.jasper.servlet.JspServlet, which is needed
+      for JSP support in the test classpath
+      ${toString:tests.run.classpath}
+    </fail>
+  </target>
+
+  <target name="copy-hadoop" depends="ivy-retrieve,ivy-report"
+      description="copy the hadoop JAR where it needs to go to be kept under SCM">
+    <fail>
+      <condition><equals arg1="${hadoop.version}" arg2="latest.integration"/> </condition>
+      You need a proper hadoop.version number and not ${hadoop.version}
+    </fail>
+    <property name="hadoop.target.dir"
+      location="${core.dir}/antbuild/repository/org.apache.hadoop/hadoop-core/${hadoop.version}" />
+    <mkdir dir="${hadoop.target.dir}" />
+    <property name="hadoop.artifact.name"
+      value="hadoop-core-${hadoop.version}.jar" />
+    <property name="hadoop.artifact"
+      location="build/ivy/lib/redist/${hadoop.artifact.name}" />
+    <fail>
+      <condition><not><available file="${hadoop.artifact}" /></not></condition>
+      Missing File: "${hadoop.artifact}"
+      This could be due to the hadoop version expected "${hadoop.version}" not
+      matching what is being built locally
+    </fail>
+    <copy todir="${hadoop.target.dir}" file="${hadoop.artifact}"/>
+    <echo>Copied ${hadoop.artifact}</echo>
+  </target>
+
+</project>

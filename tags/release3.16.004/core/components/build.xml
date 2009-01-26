@@ -1,0 +1,710 @@
+<?xml version="1.0"?>
+<project name="components" default="default" basedir=".">
+
+<!--
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+
+<description>
+     Build file for components.
+     Each component supported must have the following targets in
+     its build.xml
+      maybe-dist        distribute if prereqs are met
+      maybe-test        test if prereqs are met
+      maybe-install     conditional install
+      clean             clean up the output dirs
+      m2-install        install into the local maven2 repository
+
+    The easiest way to do this is import root.dir/common.xml
+    as a common build file; it provides template operations for this process.
+
+</description>
+
+   <!-- override point -->
+  <property file="build.properties" />
+
+  <property name="root.dir" location=".."  />
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
+
+  <!-- ========================================================== -->
+  <!-- initialisation -->
+  <!-- ========================================================== -->
+  <target name="init" depends="init-common-simpledefinitions" >
+
+    <property name="version" value="COMPONENTS"/>
+    <loadproperties srcFile="version.properties"/>
+    <fail unless="component.version">No property component.version found in file version.properties</fail>
+    <property name="Version" value="${component.version}" />
+    <!-- add new components here, in alphabetical order. this is
+      not where dependency logic is imposed -->
+    <property name="ant.project" location="ant" />
+    <property name="anubis.project" location="anubis" />
+    <property name="anubisdeployer.project" location="anubisdeployer" />
+    <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
+    <property name="cargo.project" location="cargo"/>
+    <property name="cdl.project" location="${extras.dir}/cdl"/>
+    <property name="database.project" location="database" />
+    <property name="deployapi.project" location="deployapi" />
+    <property name="dns.project" location="dns" />
+    <property name="emailer.project" location="emailer" />
+    <property name="fun.project" location="fun"/>
+    <property name="jetty.project" location="jetty" />
+    <property name="junit.project" location="junit" />
+    <property name="net.project" location="net" />
+    <property name="releasetest.project" location="releasetest" />
+    <property name="scripting.project" location="scripting" />
+    <property name="sfinstaller.project" location="sfinstaller" />
+    <property name="loggingservices.project" location="loggingservices" />
+    <property name="slp.project" location="slp" />
+    <property name="ssh.project" location="ssh" />
+    <property name="tomcat.project" location="tomcat" />
+    <property name="xml.project" location="xml" />
+    <property name="vmware.project" location="vmware" />
+    <property name="www.project" location="www" />
+
+    <!--where the files for release will go-->
+    <property name="bin" value="bin"/>
+    <property name="lib" value="lib"/>
+    <property name="docs" value="docs"/>
+    <property name="src" value="src"/>
+    <property name="jdocs" value="jdocs"/>
+    <property name="build" value="build"/>
+    <property name="comp.dist.dir" value="dist"/>         <!-- where the files to zip go -->
+    <property name="comp.dist.bin.dir" value="${comp.dist.dir}/${bin}"/>
+    <property name="comp.dist.lib.dir" value="${comp.dist.dir}/${lib}"/>
+    <property name="comp.dist.src.dir" value="${comp.dist.dir}/${src}"/>
+    <property name="comp.dist.docs.dir" value="${comp.dist.dir}/${docs}"/>
+    <property name="comp.dist.jdocs.dir" value="${comp.dist.docs.dir}/${jdocs}"/>
+
+    <!--forrest skin directory-->
+    <property name="skin.dir" location="forrest_skin"/>
+
+    <!-- excludes and includes for source-->
+    <property name="src-includes" value="**/*"/>
+    <property name="src-excludes" value="**/*.dfPackage"/>
+
+
+    <property name="componentsFiles" value="org/smartfrog/services/**/*"/>
+
+    <!-- this is where dependency logic is imposed
+         the path must be ordered such that dependent projects
+         come in the path after the things they depend on
+         If there is no dependency, stick it in in alphabetic order.
+         
+         IMPORTANT
+         =========
+         If you add something here, it will be built by Gump in the
+         nightly build. 
+         The Gump descriptor (in Gump's SVN repository) needs 
+         patching with
+         
+         -the dirs that classes get built into
+         -any new artifacts that get created.
+         
+         Without this Gump will fail. Whoever adds a new item to this
+         list gets the blame and the opportunity to fix it.
+
+         Steve will be the one telling you off. Get him to patch the 
+         gump file before that happens.
+         
+         If you add new dependency JARs, gump also needs to be patched,
+         because under gump, gump owns your classpath.
+    -->
+
+    <path id="component.path">
+      <pathelement location="${ant.project}"/>
+      <pathelement location="${anubis.project}"/>
+      <pathelement location="${anubisdeployer.project}"/>
+      <pathelement location="${dns.project}"/>
+      <pathelement location="${emailer.project}"/>
+      <!--pathelement location="${fun.project}"/-->
+      <pathelement location="${loggingservices.project}"/>
+      <pathelement location="${net.project}"/>
+      <pathelement location="${scripting.project}"/>
+      <pathelement location="${sfinstaller.project}"/>
+      <pathelement location="${slp.project}"/>
+      <pathelement location="${ssh.project}"/>
+      <pathelement location="${vmware.project}" />
+    </path>
+    
+    <property name="component.path.asproperty"
+        refid="component.path"/>
+    <echo level="verbose">component.path := ${component.path.asproperty}</echo>
+
+    <path id="web.path">
+      <pathelement location="${www.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${tomcat.project}"/>
+    </path>
+
+
+    <path id="junit.path">
+      <pathelement location="${junit.project}"/>
+    </path>
+
+    <path id="xml.path">
+      <pathelement location="${xml.project}"/>
+    </path>
+
+    <path id="cddlm.path">
+      <pathelement location="${cdl.project}"/>
+      <pathelement location="${deployapi.project}"/>
+    </path>
+
+    <path id="database.path">
+      <pathelement location="${database.project}"/>
+    </path>
+
+    <presetdef name="delegate">
+      <subant buildpathref="component.path"
+          antfile="build.xml"
+          inheritall="false" inheritrefs="false"/>
+    </presetdef>
+
+    <presetdef name="delegateBuild">
+      <subant buildpathref="component.path"
+          antfile="buildRelease.xml"
+          inheritall="false" inheritrefs="false"/>
+    </presetdef>
+
+
+  </target>
+
+
+  <target name="macros" depends="init">
+    <macrodef name="copybuild">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="builddir" default="${build}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${build.dir}">
+          <fileset dir="@{project}/@{builddir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="copybins">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="bindir" default="dist/${bin}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${comp.dist.bin.dir}">
+          <fileset dir="@{project}/@{bindir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="copylibs">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="libdir" default="dist/${lib}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <copy todir="${comp.dist.lib.dir}">
+          <fileset dir="@{project}/@{libdir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+
+    <macrodef name="copycomponents">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="srcdir" default="dist/${src}"/>
+      <attribute name="includes" default="**/*"/>
+      <sequential>
+        <copy todir="${comp.dist.src.dir}">
+          <fileset dir="@{project}/@{srcdir}">
+            <include name="@{includes}"/>
+            <exclude name="**/*.dfPackage"/>
+          </fileset>
+        </copy>
+      </sequential>
+    </macrodef>
+
+
+    <macrodef name="copydocs">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="docdir" default="dist/${docs}"/>
+      <attribute name="includes" default="**/*.pdf, **/*.sxw"/>
+
+      <sequential>
+        <copy todir="${comp.dist.docs.dir}">
+		<fileset dir="@{project}/@{docdir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="copyjdocs">
+      <attribute name="project" description="component to copy"/>
+      <attribute name="name"/>
+      <attribute name="jdocdir" default="dist/${docs}/${jdocs}"/>
+      <attribute name="includes" default="**/*"/>
+
+      <sequential>
+        <mkdir dir="${comp.dist.jdocs.dir}/@{name}"/>
+        <copy todir="${comp.dist.jdocs.dir}/@{name}">
+          <fileset dir="@{project}/@{jdocdir}" includes="@{includes}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+
+
+    <macrodef name="updateversion">
+      <attribute name="project" description="component to update"/>
+      <attribute name="compname" description="component to update"/>
+      <sequential>
+        <replace
+            file="${skin.dir}/SFComponents.xml"
+            propertyFile="@{project}/version.properties">
+          <replacefilter
+              token="@{compname}-ver"
+              property="sf.build.version"/>
+          <replacefilter
+              token="@{compname}-minver"
+              property="sf.min.version"/>
+          <!--replacefilter
+          token="@{compname}-maxver"
+          property="@{compname}.maxversion"/-->
+        </replace>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="m2-release">
+      <attribute name="project" description="project to release"/>
+      <sequential>
+       <!-- <updateversion project="@{project}" compname="@{project}" />-->
+        <copydocs project="@{project}"/>
+        <copycomponents project="@{project}"/>
+        <copylibs project="@{project}"/>
+        <copybins project="@{project}"/>
+      </sequential>
+    </macrodef>
+  </target>
+
+
+  <target name="clean" depends="init, clean-dist"
+      description="clean all projects">
+    <delegate target="clean"/>
+    <delegate target="clean" buildpathref="web.path"/>
+    <delegate target="clean" buildpathref="xml.path"/>
+<!--    <delegate target="clean" buildpathref="cddlm.path"/>-->
+    <delete dir="src"/>
+    <!-- Forrest releated -->
+    <delete dir="build"/>
+    <!-- Forrest releated -->
+    <delete file="forrest.properties"/>
+    <delete file="status.xml"/>
+  </target>
+
+  <target name="test" depends="init"
+    description=" all projects">
+    <delegate target="maybe-test"/>
+  </target>
+
+
+  <target name="main-dist" depends="init">
+    <delegate target="maybe-dist"/>
+  </target>
+  
+  <target name="dist" depends="main-dist,web-dist"
+    description="build distributions of all projects"/>
+
+  <target name="install" depends="init"
+    description="install all projects">
+    <delegate target="maybe-install"/>
+  </target>
+
+  <target name="m2-install" depends="init"
+    description="install all projects">
+    <delegate target="m2-install"/>
+  </target>
+
+  <target name="diagnostics" depends="init"
+    description="diagnostics">
+    <delegate target="diagnostics"/>
+  </target>
+
+  <target name="diag2" depends="init"
+    description="diagnostics">
+    <delegate target="diag2"/>
+  </target>
+
+  <target name="main-buildrelease" depends="init">
+    <delegateBuild target="maybe-buildrelease"/>
+  </target>
+
+  <target name="buildrelease" depends ="main-buildrelease,web-buildrelease" 
+          description="buildRelease for all components" >
+  </target>
+
+  <target name="web" depends="init,m2-install"
+      description="web components">
+    <delegate target="m2-install" buildpathref="web.path"/>
+  </target>
+  
+  <target name="web-dist" depends="main-dist"
+    description="web components distribution">
+    <delegate target="m2-install" buildpathref="web.path"/>
+  </target>
+  
+  <target name="web-buildrelease" depends="main-buildrelease"
+    description="web components release">
+    <!--slo turned this off as it is not providing any benefit-->
+    <!--<delegate target="maybe-buildrelease" buildpathref="web.path" />-->
+  </target>
+
+  <target name="xml" depends="init"
+          description="xml support">
+    <delegate target="m2-install" buildpathref="xml.path"/>
+  </target>
+
+  <target name="junit" depends="init"
+      description="junit testing">
+    <delegate target="m2-install" buildpathref="junit.path"/>
+  </target>
+
+  <target name="xml-dist" depends="init"
+    description="xml distribution">
+    <delegate target="maybe-dist" buildpathref="xml.path"/>
+  </target>
+
+  <target name="xml-buildrelease" depends="init"
+    description="xml release">
+    <delegate target="maybe-buildrelease" buildpathref="xml.path"/>
+  </target>
+  
+  <target name="cddlm" depends="web,m2-install,xml,junit"
+      description="CDDLM implementation components">
+    <delegate target="m2-install" buildpathref="cddlm.path"/>
+  </target>
+  
+  <target name="cddlm-dist" depends="web-dist,xml-dist"
+    description="CDDLM distribution">
+    <delegate target="maybe-dist" buildpathref="cddlm.path"/>
+  </target>
+  
+  <target name="cddlm-buildrelease" depends="web-buildrelease,xml-buildrelease"
+    description="CDDLM release">
+    <delegate target="maybe-buildrelease" buildpathref="cddlm.path"/>
+  </target>
+  
+  
+
+  <!-- =================================================================== -->
+  <!-- clean jdocs                                                               -->
+  <!-- =================================================================== -->
+  <target name="clean-dist" description="Cleans the dist and build directories">
+    <delete dir="${comp.dist.dir}"/>
+    <delete dir="${build.dir}"/>
+  </target>
+
+   <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="initjdocs" depends="init-javadoc"/>
+
+  <!--override common.xml version-->
+  <target name="javadoc" depends="jdocs" />
+
+  <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="init, initjdocs" description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="---------Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]--------"/>
+    <sf-javadoc
+        packagenames="org.smartfrog.*"
+        destdir="${comp.dist.jdocs.dir}"
+        >
+      <sourcepath>
+        <pathelement path="${ant.project}/$(src)"/>
+        <pathelement path="${anubis.project}/$(src)"/>
+        <pathelement path="${anubisdeployer.project}/$(src)"/>
+        <pathelement path="${emailer.project}/${src}"/>
+        <!--pathelement path="${fun.project}/${src}"/-->
+        <pathelement path="${net.project}/${src}"/>
+        <pathelement path="${scripting.project}/${src}"/>
+        <pathelement path="${sfinstaller.project}/${src}"/>
+        <pathelement path="${loggingservices.project}/${src}"/>
+        <pathelement path="${slp.project}/${src}"/>
+        <pathelement path="${ssh.project}/${src}"/>
+        <pathelement path="${dns.project}/${src}"/>
+        <pathelement path="${jetty.project}/${src}"/>
+        <pathelement path="${vmware.project}/${src}"/>
+        <pathelement path="${www.project}/${src}"/>
+        <!--pathelement path="${xml.project}/${src}"/-->
+      </sourcepath>
+      <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
+    </sf-javadoc>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="initdist" depends="init,macros">
+      <mkdir dir="${comp.dist.dir}"/>
+      <mkdir dir="${comp.dist.bin.dir}"/>
+      <mkdir dir="${comp.dist.lib.dir}"/>
+      <mkdir dir="${comp.dist.docs.dir}"/>
+      <mkdir dir="${comp.dist.jdocs.dir}"/>
+      <mkdir dir="${comp.dist.src.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copybuild" depends="macros">
+
+    <copybuild project="${ant.project}" />
+    <copybuild project="${anubis.project}" />
+    <copybuild project="${anubisdeployer.project}" />
+    <copybuild project="${emailer.project}" />
+    <!--copybuild project="${fun.project}"/-->
+    <copybuild project="${net.project}" />
+    <copybuild project="${scripting.project}" />
+    <copybuild project="${sfinstaller.project}" />
+    <copybuild project="${loggingservices.project}" />
+    <copybuild project="${slp.project}"  />
+    <copybuild project="${ssh.project}" />
+    <copybuild project="${dns.project}" />
+    <copybuild project="${jetty.project}" />
+    <copybuild project="${vmware.project}"/>
+    <copybuild project="${www.project}" />
+    <!--copybuild project="${xml.project}" /-->
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copybins" depends="init-common,initdist,dist">
+
+    <copybins project="${ant.project}" />
+    <copybins project="${anubis.project}" />
+    <copybins project="${anubisdeployer.project}" />
+    <copybins project="${emailer.project}" />
+    <!--copybins project="${fun.project}"/-->
+    <copybins project="${net.project}" />
+    <copybins project="${scripting.project}" />
+    <copybins project="${sfinstaller.project}" />
+    <copybins project="${loggingservices.project}"/>
+    <copybins project="${slp.project}"  />
+    <copybins project="${ssh.project}" />
+    <copybins project="${dns.project}" />
+    <copybins project="${jetty.project}" />
+    <copybins project="${vmware.project}" />
+    <copybins project="${www.project}" />
+    <!--copybins project="${xml.project}" /-->
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copylibs" depends="init-common,initdist,dist">
+    <copylibs project="${ant.project}" />
+    <copylibs project="${anubis.project}" />
+    <copylibs project="${anubisdeployer.project}" />
+    <copylibs project="${emailer.project}" />
+    <!--copylibs project="${fun.project}"/-->
+    <copylibs project="${net.project}" />
+    <copylibs project="${scripting.project}" />
+    <copylibs project="${sfinstaller.project}" />
+    <copylibs project="${loggingservices.project}" />
+    <copylibs project="${slp.project}"  />
+    <copylibs project="${ssh.project}" />
+    <copylibs project="${dns.project}" />
+    <copylibs project="${jetty.project}" />
+    <copylibs project="${vmware.project}" />
+    <copylibs project="${www.project}" />
+    <!--copylibs project="${xml.project}" /-->
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copycomponents" depends="init-common,initdist">
+
+    <copycomponents project="${ant.project}" />
+    <copycomponents project="${anubis.project}" />
+    <copycomponents project="${anubisdeployer.project}" />
+    <copycomponents project="${emailer.project}" />
+    <!--copycomponents project="${fun.project}"/-->
+    <copycomponents project="${net.project}"  />
+    <copycomponents project="${scripting.project}" />
+    <copycomponents project="${sfinstaller.project}" />
+    <copycomponents project="${loggingservices.project}" />
+    <copycomponents project="${net.project}"  />
+    <copycomponents project="${slp.project}"  />
+    <copycomponents project="${ssh.project}" />
+    <copycomponents project="${dns.project}" />
+    <copycomponents project="${jetty.project}" />
+    <copycomponents project="${vmware.project}" />
+    <copycomponents project="${www.project}" />
+    <!--copycomponents project="${xml.project}" /-->
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copydocs" depends="init-common,initdist,dist">
+    <copydocs project="${ant.project}" />
+    <copydocs project="${anubis.project}" />
+    <copydocs project="${anubisdeployer.project}" />
+    <copydocs project="${emailer.project}" />
+    <!--copydocs project="${fun.project}"/-->
+    <copydocs project="${net.project}" />
+    <copydocs project="${scripting.project}" />
+    <copydocs project="${sfinstaller.project}" />
+    <copydocs project="${loggingservices.project}" />
+    <copydocs project="${slp.project}" />
+    <copydocs project="${ssh.project}" />
+    <copydocs project="${dns.project}" />
+    <copydocs project="${jetty.project}" />
+    <copydocs project="${vmware.project}" />
+    <copydocs project="${www.project}" />
+    <!--copydocs project="${xml.project}" /-->
+  </target>
+
+  
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copyjdocs" depends="init-common,initdist,dist">
+	  <copyjdocs project="${ant.project}"  name="ant"/>
+    <copyjdocs project="${anubis.project}" name="anubis"/>
+    <copyjdocs project="${anubisdeployer.project}" name="anubisdeployer"/>
+    <copyjdocs project="${emailer.project}" name="emailer"/>
+    <!--copyjdocs project="${fun.project}"/-->
+    <copyjdocs project="${net.project}" name="net"/>
+    <copyjdocs project="${scripting.project}" name="scripting"/>
+    <copyjdocs project="${sfinstaller.project}" name="sfinstaller"/>
+    <copyjdocs project="${loggingservices.project}" name="loggingservices"/>
+    <copyjdocs project="${slp.project}" name="slp"/>
+    <copyjdocs project="${ssh.project}" name="ssh"/>
+    <copyjdocs project="${dns.project}" name="dns"/>
+    <copyjdocs project="${jetty.project}" name="jetty"/>
+    <copyjdocs project="${vmware.project}" name="vmware"/>
+    <copyjdocs project="${www.project}" name="www"/>
+    <!--copyjdocs project="${xml.project}" name="xml"/-->
+  </target>
+  <!-- =================================================================== -->
+  <!-- src.zip                                                             -->
+  <!-- =================================================================== -->
+  <target name="srczip" depends="initdist"  description="Creates src.zip with Components sources">
+
+    <!-- whatever a .dfPackage is, we do not want it  -->
+    <defaultexcludes echo="false" add="**/*.dfPackage"/>
+    <zip destfile="${comp.dist.dir}/src.zip" >
+      <zipfileset dir="${ant.project}/dist/${src}" />
+      <zipfileset dir="${anubis.project}/dist/${src}" />
+      <zipfileset dir="${anubisdeployer.project}/dist/${src}" />
+      <zipfileset dir="${emailer.project}/dist/${src}" />
+      <!--zipfileset dir="${fun.project}/dist/${src}"/-->
+      <zipfileset dir="${net.project}/dist/${src}" />
+      <zipfileset dir="${scripting.project}/dist/${src}" />
+      <zipfileset dir="${sfinstaller.project}/dist/${src}" />
+      <zipfileset dir="${loggingservices.project}/dist/${src}" />
+      <zipfileset dir="${slp.project}/dist/${src}" />
+      <zipfileset dir="${ssh.project}/dist/${src}" />
+       <zipfileset dir="${dns.project}/dist/${src}" />
+      <zipfileset dir="${jetty.project}/dist/${src}" />
+      <zipfileset dir="${vmware.project}/dist/${src}"/>
+      <zipfileset dir="${www.project}/dist/${src}" />
+      <!--zipfileset dir="${xml.project}/dist/${src}" /-->
+    </zip>
+  </target>
+
+
+
+  <!-- =================================================================== -->
+  <!-- update version                                                      -->
+  <!-- =================================================================== -->
+  <target name="updateversion" depends="init-common, init,macros">
+    <updateversion project="${ant.project}" compname="ant" />
+    <updateversion project="${anubis.project}" compname="anubis" />
+    <updateversion project="${anubisdeployer.project}" compname="anubisdeployer"/>
+    <updateversion project="${emailer.project}" compname="emailer"/>
+<!--    <updateversion project="${fun.project}" compname="fun"/>-->
+    <updateversion project="${net.project}" compname="net"/>
+    <updateversion project="${scripting.project}" compname="scripting"/>
+    <updateversion project="${sfinstaller.project}" compname="sfinstaller"/>
+    <updateversion project="${loggingservices.project}" compname="loggingservices"/>
+    <updateversion project="${slp.project}" compname="slp"/>
+    <updateversion project="${ssh.project}" compname="ssh"/>
+    <updateversion project="${dns.project}" compname="dns"/>
+    <updateversion project="${jetty.project}" compname="jetty"/>
+    <updateversion project="${vmware.project}" compname="vmware"/>
+    <updateversion project="${www.project}" compname="www"/>
+    <!--updateversion project="${xml.project}" compname="xml"/-->
+  </target>
+
+  <!--make a release of the web stuff-->
+  <!--This is subtly different as each project is intra-dependent and uses
+      the m2 tasks to manage libraries. They also autogenerate project.xml
+      files that should be included in the maven artifact release -->
+  <target name="release-www" depends="init,macros,web,initdist,initjdocs">
+
+    <m2-release project="${jetty.project}"/>
+    <m2-release project="${tomcat.project}"/>
+    <m2-release project="${www.project}"/>
+    <m2-release project="${cargo.project}"/>
+
+    <zip destfile="${comp.dist.dir}/web-src.zip">
+      <zipfileset dir="${cargo.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+      <zipfileset dir="${jetty.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+      <zipfileset dir="${tomcat.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+      <zipfileset dir="${www.project}/dist/${src}"
+          includes="${src-includes}" excludes="${src-excludes}"/>
+    </zip>
+
+    <sf-javadoc
+        packagenames="org.smartfrog.services.*"
+        destdir="${comp.dist.jdocs.dir}"
+        >
+      <sourcepath>
+        <pathelement path="${cargo.project}/${src}"/>
+        <pathelement path="${jetty.project}/${src}"/>
+        <pathelement path="${tomcat.project}/${src}"/>
+        <pathelement path="${www.project}/${src}"/>
+      </sourcepath>
+      <group title="SmartFrog Web Components" packages="org.smartfrog.services.www.*"/>
+    </sf-javadoc>
+
+  </target>
+
+
+
+  <target name="default" depends="dist"
+    description="default target creates a distribution" />
+
+
+</project>

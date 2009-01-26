@@ -1,0 +1,87 @@
+<project name="ivy" 
+    xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <description>
+    These targets extend compile-and-jar with extra states and transitions,
+    to do pom-based builds.
+  </description>
+
+  
+  <import file="core.xml"/>
+
+  <!--define the published state-->
+  <target name="published" depends="ivy-publish"/>
+
+  <target name="ivy-probe-antlib" >
+    <condition property="ivy.found">
+      <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+    </condition>
+  </target>
+
+  <target name="ivy-init-dir" depends="init-core">
+    <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
+  </target>
+  
+  <target name="ivy-init-antlib" depends="ivy-init-dir,load-version-info,artifact-names,ivy-probe-antlib" unless="ivy.found">
+
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        loaderRef="ivyLoader">
+      <classpath>
+        <pathelement location="${ivy.dir}/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
+    <fail >
+      <condition >
+        <not>
+          <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+        </not>
+      </condition>
+      You need the ivy tasks from http://ant.apache.org/
+    </fail>
+  </target>
+
+
+  <target name="ivy-init" depends="ivy-init-antlib" >
+    <!--copy ivy artifacts -->
+    <property name="ivy.lib.dir" location="${build.dir}/ivy/lib" />
+    <property name="ivysettings.xml" location="${ivy.dir}/ivysettings.xml"/>
+    <ivy:configure file="${ivysettings.xml}" override="false"/>
+
+    <property name="ivy.artifact.retrieve.pattern"
+        value="[conf]/[artifact]-[revision].[ext]"/>
+    <property name="ivy.publish.pattern"
+        value="[artifact]-[revision].[ext]"/>
+  </target>
+
+  <target name="ivy-resolve" depends="ivy-init">
+    <ivy:resolve />
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve">
+    <ivy:retrieve pattern="${ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" sync="true" />
+  </target>
+
+  <target name="ivy-report" depends="ivy-resolve">
+    <ivy:report todir="${build.dir}/ivy/report"/>
+  </target>
+
+  <target name="ready-to-publish" depends="state.ready-to-publish,ivy-report"/>
+
+  <target name="ivy-publish" depends="ready-to-publish-all,ready-to-publish,ivy-resolve">
+    <ivy:publish resolver="local" pubrevision="${artifact.version}"
+        overwrite="true"
+        artifactspattern="${dist.lib.dir}/${ivy.publish.pattern}" />
+  </target>
+
+  <target name="ready-to-publish-all" depends="ready-to-publish,documents-processed"/>
+
+  <target name="ivy-publish-all" depends="ivy-publish">
+  </target>
+
+  <target name="ivy-install" depends="ivy-publish"
+      description="Component built and installed locally"/>
+
+  <target name="ivy-published" depends="ivy-publish" />
+
+
+</project>

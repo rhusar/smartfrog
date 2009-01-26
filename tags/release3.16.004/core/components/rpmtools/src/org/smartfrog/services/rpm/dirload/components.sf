@@ -1,0 +1,111 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+  this set of components can monitor and autoload a directory containing
+  subdirectories of applications.
+
+  child directories must match the regexp
+
+  1. an application.sf is looked for in every directory; it contains the .sf file
+  2. The name of the application is taken from the directory name
+  3. pollTime sets a poll rate for clock driven deployment
+
+
+  When this component is terminated, components that it deployed are left
+  deployed to the designated parent.
+
+  If a component is terminated, it is not restarted. Currently
+
+  */
+
+#include "/org/smartfrog/services/filesystem/components.sf"
+
+
+DirLoader extends FileUsingComponent {
+  sfClass "org.smartfrog.services.rpm.dirload.DirLoaderImpl";
+
+  /*
+   * Time to poll in milliseconds
+   */
+
+  pollTime 0;
+
+  /**
+    Regular expression to use when looking for things to deploy
+    */
+  pattern "\\w+";
+
+  /**
+   * name of the application file to look for
+   */
+  application "application.sf";
+
+  /**
+   * Flag to set to fork every component in their own process
+   */
+
+  fork false;
+
+  /**
+   * Parent component
+   */
+  parent LAZY THIS;
+
+  /**
+   * list of hosts. empty list for local host.
+   * When deploying, we will run through the list of hosts until one is found that 
+   */
+  hosts [];
+
+  /**
+   * skip a failed deployment
+   */
+  FAILURE_SKIP 0;
+
+  /**
+   * on failure: rollback everything and then terminate
+   */
+  FAILURE_ROLLBACK 1;
+
+  /**
+   * On failure, halt following deployments but leave what was deployed live
+   */
+  FAILURE_HALT 2;
+
+  /**
+   * Failure ctions
+   */
+  onFailure FAILURE_SKIP;
+
+  /**
+   * this value goes up with every successful deployment
+   */
+  deployedCount 0;
+  /**
+   * this value goes up with every unsuccessful deployment
+   */
+  failedCount 0;
+
+  /**
+   * this value goes up with every attempted deployment
+   */
+  attemptedCount 0;
+}

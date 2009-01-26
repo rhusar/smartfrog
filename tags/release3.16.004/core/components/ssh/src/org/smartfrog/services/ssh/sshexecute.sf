@@ -1,0 +1,117 @@
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/ssh/sshcomponent.sf"
+/**
+ * The SSHSession component executes commands on a remote host over SSH.
+ */
+
+
+/**
+ * the base component uses passwords for authentication.
+ */
+ SSHExec extends SSHComponent {
+    sfClass "org.smartfrog.services.ssh.SSHExecImpl";
+    sshSchema extends SSHComponentSchema  {
+        commands extends OptionalVector;
+        logFile extends OptionalFilenameType;
+        //min-max values for the response
+        exitCodeMin extends Integer;
+        exitCodeMax extends Integer;
+    }
+    authentication SSHComponent:authenticate_password;
+    exitCodeMax 0;
+    exitCodeMin 0;
+    //the component terminates at the end of deployment, by default
+    sfShouldTerminate true;
+ }
+
+
+ SSHExecWithPrivateKey extends SSHExec {
+    authentication SSHComponent:authenticate_key;
+ }
+  
+ /**
+  * Here are some compounts to let you declare a password provider in the same compound
+  * as the execution. This is useful, but not mandatory
+  */
+
+ BaseSshSessionAuthPass extends SshCompound {
+
+    port SSHExec:port;
+    timeout SSHExec:timeout;
+    commands [];
+    exitCodeMax 0;
+    exitCodeMin 0;
+
+    SSHCmdExec extends SSHExec {
+
+        host PARENT:ATTRIB host;
+
+        username PARENT:ATTRIB username;
+        
+        // reference to password provider
+        passwordProvider LAZY PARENT:passwordProvider;
+
+           // timeout for command execution
+        timeout PARENT:ATTRIB timeout;
+
+        port PARENT:ATTRIB port;
+        // terminate if any command fails
+        exitCodeMax PARENT:ATTRIB exitCodeMax;
+        exitCodeMin PARENT:ATTRIB exitCodeMin;
+
+        //the commands
+        commands PARENT:ATTRIB commands ;
+   }
+
+    passwordProvider extends FilePassword {
+    }
+}
+
+/**
+ * this compound uses a file password provider
+  */
+SSHSessionPasswordFile extends BaseSshSessionAuthPass {
+    passwordFile TBD;
+    passwordProvider:passwordFile LAZY PARENT:passwordFile;
+}
+
+/**
+ * this compound uses an inline password provider
+  */
+SSHSessionInlinePassword extends BaseSshSessionAuthPass {
+    password TBD;
+
+    passwordProvider extends InlinePassword {
+        password LAZY PARENT:ATTRIB password;
+    }
+}
+
+
+/**
+ * To switch to public key operation, we need a public key and a keyfile
+ */
+
+SSHSessionPublicKey extends BaseSshSessionAuthPass {
+    keyFile TBD;
+    SSHCmdExec:authentication SSHComponent:authenticate_key;
+    SSHCmdExec:keyFile LAZY keyFile;
+}

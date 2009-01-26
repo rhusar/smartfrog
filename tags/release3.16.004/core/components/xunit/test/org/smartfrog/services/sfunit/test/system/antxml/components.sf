@@ -1,0 +1,129 @@
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/sfunit/components.sf"
+#include "/org/smartfrog/services/xunit/all.sf"
+#include "/org/smartfrog/services/xunit/listeners/antxml/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/ant/components.sf"
+
+
+test.data.dir (PROPERTY test.data.dir ++ "/sfdata");
+
+test.reports.dir (PROPERTY test.data.dir ++ "/reports");
+
+//these are components we run underneath
+SimpleTestCompound extends ExpectTerminate {
+    action extends Sequence {
+    }
+}
+
+
+FailingTestCompound extends TestCompound {
+    action extends FailAbnormal;
+}
+
+
+
+antxml extends AntXmlTestListener {
+  outputDirectory test.data.dir; 
+}
+
+
+antreport extends AntWorkflowRun {
+  md extends mkdir {
+    dir test.reports.dir;
+  }
+
+  reports extends junitreport {
+      todir test.reports.dir;
+      myFileSet extends fileset {
+        dir PROPERTY test.data.dir;
+        includes "*.xml";
+      }
+  }
+
+}
+
+AssertFileExists extends FileMustExist {
+    sfShouldTerminate true;
+}
+
+
+testRunnerAntXml extends TestRunner {
+  description "lots of tests";
+
+  sfShouldTerminate true;
+
+  listener extends antxml {
+    outputDirectory test.data.dir;
+  }
+
+  tests1 extends SFUnitTestSuite {
+    name "tests1";
+    description "run some basic tests";
+    one extends SimpleTestCompound;
+    //two extends FailingTestCompound;
+    sfShouldTerminate true;
+
+  }
+}
+testSFUnitAntXml extends testRunnerAntXml {
+}
+
+testSFUnitAntXmlNested extends ExpectTerminate {
+  action extends testRunnerAntXml {
+    sfShouldTerminate true;
+  }
+}
+
+
+testAntXmlThroughJunit extends ExpectDeploy {
+  action extends Compound {
+  }
+
+  tests extends Sequence {
+
+    testrun testRunnerAntXml;
+
+    assertDataGenerated extends AssertFileExists {
+      dir test.data.dir;
+      filename "tests1.xml"
+    }
+
+    reports antreport;
+
+    assertReportIndexGenerated extends AssertFileExists {
+      dir test.reports.dir;
+      filename "index.html"
+    }
+  }
+
+}
+
+
+
+
+
+
+
+
+
+

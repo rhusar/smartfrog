@@ -1,0 +1,368 @@
+<html>
+<head>
+  <title>SmartFrog 3.17.004</title>
+</head>
+<body>
+<h1>SmartFrog 3.17.004</h1>
+
+<p>
+  This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
+  deployment framework developed by HP Laboratories. SmartFrog enables
+  applications to be deployed across multiple machines, configuring different
+  aspects of the system so that they are all consistently configured, and managing
+  the life-cycle of the application as a whole. The project's home page is
+  <a href="http://smartfrog.org/">http://smartfrog.org/</a>
+</p>
+
+<p>
+  The release artifacts are available at
+  <a
+          href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308">
+    http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308</a>
+</p>
+
+<p>
+  This release is 3.17.004; built from revision 7234
+  of the SVN repository. This release has an extended language
+  with the ability to tag attributes, and includes the following items:
+</p>
+<ul>
+
+  <li> Core smartfrog daemon, including services to manage files, start and stop
+    Java and native programs.
+  </li>
+  <li> Example components and applications.
+  </li>
+  <li> Ant support: ant tasks to deploy and terminate applications from a build.
+  </li>
+  <li> Ant components: the ability to execute ant tasks in a deployment.
+  </li>
+  <li> Anubis: a partition aware tuple-space that can be used to implement fault
+    tolerant systems.
+  </li>
+  <li> Database: components to issue database commands, and deploy HSLDB and MySQL
+   databases.
+  </li>
+  <li> Hadoop: a version of Apache Hadoop with SmartFrog management, and
+  support components to interact with Hadoop: filesystem operations and 
+  Job submission. This is still experimental and must be considered unstable.
+  </li>
+  <li> JMX: the ability to configure and manage JMX components, and to manage
+    SmartFrog components over JMX.
+  </li>
+  <li> Logging: integration with Apache commons-logging and Log4J, and the 
+  SLF4J framework.
+  </li>
+  <li> Networking: email, FTP, SSH, DNS support.
+  </li>
+  <li> Quartz: scheduled operations using Quartz libraries.
+  </li>
+  <li> RpmTools: components for working with or deploying with RPMs</li>
+  <li> Scripting: support for BSF-hosted scripting languages
+  </li>
+  <li> Testing: Distributed JUnit and component testing with SFUnit.
+  </li>
+   <li>
+    Velocity: generation/transformation of text files during deployment
+  </li>
+  <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+    is provided for all application servers that support, and a tomcat-specific
+    component can communicate with Apache Tomcat.</li>
+  <li>Jetty: The Jetty component can
+    configure and deploy individual servlets, eliminating much of the need for WAR
+    files themselves.
+  </li>
+  <li> XML: XML support with XOM.
+  </li>
+  <li> XMPP: Presence and messaging over Jabber.
+  </li>
+</ul>
+
+<h3>Packaging</h3>
+
+<p>
+  This release is available as:
+</p>
+<ol>
+  <li>
+    RPM files inside a .tar.gz file.
+  </li>
+  <li>
+    A JAR installer.
+  </li>
+  <li>
+    A .tar.gz file containing everything needed to create a private set of RPM files
+    containing JAR files signed by a private Certification Authority.
+  </li>
+  <li>
+    The original smartfrog distribution as .zip and .tar.gz (deprecated)
+  </li>
+</ol>
+
+<p>
+  The RPM installation is for RPM-based Linux systems. It comprises the following RPMs:
+</p>
+
+<table>
+  <tr>
+    <td><code>smartfrog</code></td>
+    <td>The core SmartFrog distribution.</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-daemon</code></td>
+    <td>The shell scripts to add the smartfrog distribution to the
+      path, and to run the daemon on start-up.
+    </td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-javadoc</code></td>
+    <td>javadocs for the project</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-ant</code></td>
+    <td>Ant task and build file execution</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-anubis</code></td>
+    <td>Distributed partition-aware tuple space</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-csvfiles</code></td>
+    <td>CSV file support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-database</code></td>
+    <td>Database access</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-jetty</code></td>
+    <td>Jetty support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-jmx</code></td>
+    <td>JMX integration though MX4J</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-junit</code></td>
+    <td>Junit 3.8.2 test execution</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-hadoop</code></td>
+    <td>Hadoop support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-logging</code></td>
+    <td>Logging through Log4J and commons-logging</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-networking</code></td>
+    <td>SSH, SCP, FTP and email</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-quartz</code></td>
+    <td>Scheduled operations</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-rpmtools</code></td>
+    <td>RPM support tools</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-scripting</code></td>
+    <td>Scripted components</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-velocity</code></td>
+    <td>Velocity template processing</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-www</code></td>
+    <td>Web support: Deployment and liveness pages</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xml</code></td>
+    <td>XML Support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xmpp</code></td>
+    <td>XMPP/Jabber communications</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xunit</code></td>
+    <td>Distributed testing and reporting</td>
+  </tr>
+</table>
+<p>
+  All the JAR files are also published to a repository that is compatible with
+  Apache Maven and Ivy. Add
+  <a
+          href="http://smartfrog.sourceforge.net/repository">http://smartfrog.sourceforge.net/repository</a>
+  to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+</p>
+
+<p>
+  There are also SmartFrog components to retrieve artifacts from such a repository
+  (the Library components under /org/smartfrog/services/os/java/library.sf ),
+  which can be used for dynamic download of SmartFrog and other artifacts.
+</p>
+
+<h3>Security warning</h3>
+
+<p>
+  Unless SmartFrog is configured with security, a running daemon
+  will listen on its configured port for incoming deployment requests, and deploy
+  the applications with the rights of the user running the daemon. When the
+  smartfrog-daemon RPM is installed, that means that a process running as root
+  will be listening on an open port for incoming deployment requests.
+  Do not deploy SmartFrog this way on any untrusted
+  network, not without turning security on.
+</p>
+<p>
+  There is a special distribution .tar.gz file that can be used to generate
+  a private set of secure RPM files.
+</p>
+
+<h3>Building SmartFrog</h3>
+
+<p>
+  SmartFrog requires Java 1.5+ and Ant 1.7+ to build. 
+</p>
+
+<p>
+
+  The distribution does not include a source tree adequate to build the entire
+  system. Please follow the instructions at
+  <a href="http://sourceforge.net/svn/?group_id=87384">http://sourceforge.net/svn/?group_id=87384
+  </a>
+  and check out smartfrog/trunk/core from our repository.
+</p>
+
+<p>
+
+  This release was built with revision 7234 of the repository, which
+  is available under the SVN branch
+  <a href="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.17.004">https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.17.004</a>
+</p>
+
+<p>
+  We strongly encourage anyone interested in building or extending smartfrog to
+  get involved in the smartfrog developer mailing list, which can be found from
+  the sourceforge project page
+  <a href="http://sourceforge.net/projects/smartfrog/">
+    http://sourceforge.net/projects/smartfrog/</a>
+</p>
+
+
+<h3>Reporting Bugs</h3>
+
+<p>
+  Please file all bug reports at <a
+        href="http://jira.smartfrog.org/">http://jira.smartfrog.org/</a>
+</p>
+
+<p>
+  The SmartFrog Team
+</p>
+
+
+<h3>Changes since last release</h3>
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-443'>SFOS-443</a>] -         sfStopDaemon doesnt pick up SFHOME in RPM uninstall
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-991'>SFOS-991</a>] -         ClassCastException in AntProject in Hudson Tests
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-992'>SFOS-992</a>] -         sourceforge have taken shell.sf.net away
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1004'>SFOS-1004</a>] -         Hadoop services leak if the component is terminated while the service is starting up
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1008'>SFOS-1008</a>] -         TaskTracker isn't starting/stopping right
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1012'>SFOS-1012</a>] -         JobTracker is getting its URIs for the fileystem wrong
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1015'>SFOS-1015</a>] -         Some of the cluster tests aren't shutting down the hdfs
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1026'>SFOS-1026</a>] -         Trackers need a cluster around before they come up reliably
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1036'>SFOS-1036</a>] -         jetty build warns of deprecated methods in Jetty 6.1.14
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1037'>SFOS-1037</a>] -         build failing as dependencies in hadoop component are wrong
+</li>
+</ul>
+        
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1002'>SFOS-1002</a>] -         look at workflow classes and clean code up a bit
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1007'>SFOS-1007</a>] -         Add ability of namenode and datanodes to delete test dirs when closing the service
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1009'>SFOS-1009</a>] -         clean up some name accessors
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1011'>SFOS-1011</a>] -         Have hadoop IsServiceLive condition get the string description of a service and add it as an attribute
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1014'>SFOS-1014</a>] -         move from Throwable.getMessage() to Throwable.toString() in hadoop code
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1016'>SFOS-1016</a>] -         Catch System.exit() calls in third party libraries through a new SecurityManager
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1017'>SFOS-1017</a>] -         Move to Log4J 1.12.15
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1018'>SFOS-1018</a>] -         Split smartfrog-www RPM into smartfrog-www and smartfrog-jetty
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1023'>SFOS-1023</a>] -         produce better test termination message when a child terminates normally (and it was not meant to)
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1029'>SFOS-1029</a>] -         Add configuration options to Jetty's SelectChannelConnector
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1034'>SFOS-1034</a>] -         Move to Ivy 2.0.0rc2
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1045'>SFOS-1045</a>] -         have the TextFile component attempt to create the parent directory if it does not exist
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1046'>SFOS-1046</a>] -         assert component should go case insensitive in the EN_US locale always
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1047'>SFOS-1047</a>] -         add rpmtools RPM
+</li>
+</ul>
+    
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-149'>SFOS-149</a>] -         Add a component to deploy every .sf file in a well known directory
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-624'>SFOS-624</a>] -         Allow RPM-installed SmartFrog to create new RPMs containing signed/customised artifacts
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-654'>SFOS-654</a>] -         Create a chmod component.
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1003'>SFOS-1003</a>] -         Add a TimeoutInterval class to manage timeouts more cleanly
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1019'>SFOS-1019</a>] -         Add smartfrog-hadoop RPM that contains all the artifacts needed to bring up Hadoop under SmartFrog
+</li>
+</ul>
+        
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-85'>SFOS-85</a>] -         Updated language documentation
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-505'>SFOS-505</a>] -         Move up to jsch 0.1.38
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-547'>SFOS-547</a>] -         move up to log4j 1.12.15
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-827'>SFOS-827</a>] -         Upgrade IVY to 2.0 Beta 2
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1032'>SFOS-1032</a>] -         Update Ant library version to Ant 1.7.1
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1033'>SFOS-1033</a>] -         Move to Jetty 6.1.14
+</li>
+</ul>
+    
+<h4>        Sub-task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-474'>SFOS-474</a>] -         add SLF4J support to logging services
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-789'>SFOS-789</a>] -         write component to start hadoop task tracker in-VM
+</li>
+</ul>
+</body>
+</html>
+

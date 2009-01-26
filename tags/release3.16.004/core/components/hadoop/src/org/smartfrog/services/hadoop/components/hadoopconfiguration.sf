@@ -1,0 +1,1372 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "/org/smartfrog/components.sf"
+
+/**
+ * This is a hadoop configuration
+ * Its values come from the hadoop source, and the file hadoop-default.xml, which is inside
+ * hadoop-core.jar
+ */
+HadoopConfiguration extends Prim {
+
+  //Smartfrog custom properties
+  smartfrog.dump.conf false;
+
+  /* =============================================================== */
+  //HDFS properties
+
+
+  /**
+  Specifies the maximum amount of bandwidth that each datanode
+  can utilize for the balancing purpose in term of
+  the number of bytes per second.
+  */
+  dfs.balance.bandwidthPerSec  (1024 * 1024);
+
+  /**The default block size for new files.*/
+  dfs.block.size  (65536 * 1024);
+
+
+  /**Determines block reporting interval in milliseconds.*/
+  dfs.blockreport.intervalMsec  (60 * 60 * 1000);
+
+  /**
+  The number of retries for writing blocks to the data nodes,
+  before we signal failure to the application.
+  */
+  dfs.client.block.write.retries  3;
+  /**
+  Determines where on the local filesystem an DFS client
+  should store its blocks before it sends them to the datanode.
+  */
+  dfs.client.buffer.dir  (hadoop.tmp.dir ++ "/dfs/tmp");
+
+
+  /**Determines where on the local filesystem an DFS data node
+  should store its blocks.  If this is a comma-delimited
+  list of directories, then data will be stored in all named
+  directories, typically on different devices.
+  Directories that do not exist are ignored.
+  */
+  dfs.data.dir  (hadoop.tmp.dir ++ "/dfs/data");
+
+
+  /**
+    The address where the datanode server will listen to.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.address  "0.0.0.0:50010";
+
+  /**
+  The name of the Network Interface from which a data node should
+  report its IP address.
+  */
+  dfs.datanode.dns.interface  "default";
+
+  /**The host name or IP address of the name server (DNS)
+  which a DataNode should use to determine the host name used by the
+  NameNode for communication and display purposes.
+  */
+  dfs.datanode.dns.nameserver  "default";
+
+  /**Reserved space in bytes per volume. Always leave this much space free for non dfs use.
+  */
+  dfs.datanode.du.reserved  0;
+
+  /**When calculating remaining space, only use this percentage of the real available space
+  */
+  dfs.datanode.du.pct  0.98;
+
+  /**
+  The number of server threads for the datanode.
+  */
+  dfs.datanode.handler.count 3;
+
+
+
+  /**
+    The datanode http server address and port.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.http.address  "0.0.0.0:50075";
+
+
+  dfs.datanode.https.address "0.0.0.0:50475";
+
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.ipc.address "0.0.0.0:50020";
+
+  /**The number of bytes to view for a file on the browser.
+  */
+  dfs.default.chunk.view.size  32768;
+
+  /**Disk usage statistics refresh interval in msec.*/
+  dfs.df.interval  (60 * 1000);
+
+
+  /**Determines datanode heartbeat interval in seconds.*/
+  dfs.heartbeat.interval  3;
+
+
+  /**Names a file that contains a list of hosts that are
+  permitted to connect to the namenode. The full pathname of the file
+  must be specified.  If the value is empty, all hosts are
+  permitted.*/
+  dfs.hosts  "";
+
+  /**Names a file that contains a list of hosts that are
+  not permitted to connect to the namenode.  The full pathname of the
+  file must be specified.  If the value is empty, no hosts are
+  excluded.*/
+  dfs.hosts.exclude  "";
+
+
+  /**
+    The address and the base port where the dfs namenode web ui will listen on.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.http.address  "0.0.0.0:50070";
+
+  dfs.https.address "0.0.0.0:50470";
+
+  /**
+   The logging level for dfs namenode.
+  values are
+  "dir"(trace namespace mutations),
+  "block"(trace block under/over replications and block creations/deletions),
+  or "all".*/
+  DFS_LOG_LEVEL_DIR "dir";
+  DFS_LOG_LEVEL_INFO "info";
+  DFS_LOG_LEVEL_BLOCK "block";
+  DFS_LOG_LEVEL_ALL "all";
+  dfs.namenode.logging.level  DFS_LOG_LEVEL_INFO;
+
+
+
+  /**The maximum number of files, directories and blocks
+  dfs supports. A value of zero indicates no limit to the number
+  of objects that dfs supports.
+  */
+  dfs.max.objects  0;
+
+
+  /**Determines where on the local filesystem the DFS name node
+      should store the name table.  If this is a comma-delimited list
+      of directories then the name table is replicated in all of the
+      directories, for redundancy. */
+  dfs.name.dir (hadoop.tmp.dir ++ "/dfs/name");
+
+
+  /**Namenode periodicity in seconds to check if decommission is complete.*/
+  dfs.namenode.decommission.interval  (5 * 60);
+
+  /**The number of server threads for the namenode.*/
+  dfs.namenode.handler.count  10;
+
+
+  /*
+  The logging level for dfs namenode. Other values are "dir"(trac
+  e namespace mutations), "block"(trace block under/over replications and block
+  creations/deletions), or "all".
+  */
+  dfs.namenode.logging.level "info";
+
+  /**
+  Specifies a script name that print the network location path
+  of the current machine.
+  */
+  dfs.network.script  "";
+
+  /**
+    If true, enable permission checking in HDFS.
+    If false, permission checking is turned off,
+    but all other behavior is unchanged.
+    Switching from one parameter value to the other does not change the mode,
+    owner or group of files or directories.
+  */
+  dfs.permissions  true;
+
+  /**The name of the group of super-users.*/
+  dfs.permissions.supergroup  "supergroup";
+
+  /**Default block replication.
+  The actual number of replications can be specified when the file is created.
+  The default is used if replication is not specified in create time.
+  */
+  dfs.replication  3;
+
+
+  /**
+  Decide if chooseTarget considers the target's load or not
+  */
+  dfs.replication.considerLoad  true;
+
+
+  /**The periodicity in seconds with which the namenode computes repliaction work for datanodes. */
+  dfs.replication.interval  3;
+
+  /**Maximal block replication.
+  */
+  dfs.replication.max  512;
+
+  /**Minimal block replication.
+  */
+  dfs.replication.min  1;
+
+
+
+  /**
+    Specifies the percentage of blocks that should satisfy
+    the minimal replication requirement defined by dfs.replication.min.
+    Values less than or equal to 0 mean not to start in safe mode.
+    Values greater than 1 will make safe mode permanent.
+  */
+  dfs.safemode.threshold.pct  0.999;
+
+  /**
+    Determines extension of safe mode in milliseconds
+    after the threshold level is reached.
+  */
+  dfs.safemode.extension  30000;
+
+
+
+  /**
+    The secondary namenode http server address and port.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.secondary.http.address  "0.0.0.0:50090";
+
+
+
+  /**
+  The user account used by the web interface.
+  Syntax: USERNAME,GROUP1,GROUP2, ...
+  */
+  dfs.web.ugi  "webuser,webgroup";
+
+
+/* file system properties */
+
+  fs.default.name  "file:///";
+
+
+  /**Determines where on the local filesystem the DFS secondary
+      name node should store the temporary images and edits to merge.
+  */
+  fs.checkpoint.dir  "${hadoop.tmp.dir}/dfs/namesecondary";
+
+  /**The number of seconds between two periodic checkpoints.
+  */
+  fs.checkpoint.period  (60 * 60);
+
+  /**The size of the current edit log (in bytes) that triggers
+       a periodic checkpoint even if the fs.checkpoint.period hasn't expired.
+  */
+  fs.checkpoint.size  (65536 * 1024);
+
+
+
+
+
+  /**The name of the default file system.  A URI whose
+  scheme and authority determine the FileSystem implementation.  The
+  uri's scheme determines the config property (fs.SCHEME.impl) naming
+  the FileSystem implementation class.  The uri's authority is used to
+  determine the host, port, etc. for a filesystem.*/
+
+  /**Number of minutes between trash checkpoints.
+  If zero, the trash feature is disabled.
+  */
+  fs.trash.interval  0;
+
+  /**The FileSystem for file: uris.*/
+  fs.file.impl  "org.apache.hadoop.fs.LocalFileSystem";
+
+  /**The FileSystem for hdfs: uris.*/
+  fs.hdfs.impl  "org.apache.hadoop.hdfs.DistributedFileSystem";
+
+  fs.hftp.impl  "org.apache.hadoop.hdfs.HftpFileSystem";
+
+  fs.hsftp.impl "org.apache.hadoop.hdfs.HsftpFileSystem";
+
+    /**The FileSystem for kfs: uris.*/
+  fs.kfs.impl  "org.apache.hadoop.fs.kfs.KosmosFileSystem";
+
+  /**The FileSystem for ramfs: uris.*/
+  fs.ramfs.impl  "org.apache.hadoop.fs.InMemoryFileSystem";
+
+  /**The FileSystem for s3: uris.*/
+  fs.s3.impl  "org.apache.hadoop.fs.s3.S3FileSystem";
+
+
+  /* =============================================================== */
+  /** RAMFS options */
+  //size of memory for an inmemory FS
+  fs.inmemory.size.mb 75;
+
+  /* =============================================================== */
+  /** local filesystem options */
+  fs.local.block.size ((32 * 1024)* 1024);
+
+
+
+  /* =============================================================== */
+  /* S3 options */
+
+    /**Block size to use when writing files to S3.*/
+  fs.s3.block.size  (65536 * 1024);
+
+  fs.s3.buffer.dir  "${hadoop.tmp.dir}/s3";
+  /**Determines where on the local filesystem the S3 filesystem
+  should store its blocks before it sends them to S3
+  or after it retrieves them from S3.
+  */
+
+  /**The maximum number of retries for reading or writing blocks to S3,
+  before we signal failure to the application.
+  */
+  fs.s3.maxRetries  4;
+
+  /**The number of seconds to sleep between each S3 retry.
+  */
+  fs.s3.sleepTimeSeconds  10;
+
+  /**
+   * trash management
+   */
+  /**
+   Number of minutes between trash checkpoints.
+  If zero, the trash feature is disabled.
+  */
+  fs.trash.interval 0;
+
+
+
+/* =============================================================== */
+
+  /**
+  If job tracker is static the history files are stored
+  in this single well known place. If No value is set here, by default,
+  it is in the local file system at ${hadoop.log.dir}/history.
+  */
+
+  hadoop.job.history.location "jobTracker/history";
+
+  /**
+  User can specify a location to store the history files of
+  a particular job. If nothing is specified, the logs are stored in
+  output directory. The files are stored in "_logs/history/" in the directory.
+  User can stop logging by giving the value "none".
+  */
+  //hadoop.job.history.user.location
+
+  /**The max size of each log file*/
+  hadoop.logfile.size 10000000
+
+
+  /**The max number of log files*/
+  hadoop.logfile.count 10;
+
+  /**
+  Should native hadoop libraries, if present, be used.
+  */
+  hadoop.native.lib true;
+
+  /* =============================================================== */
+  /* Proxy Configuration */
+
+  /** Default SocketFactory to use. This parameter is expected to be
+    formatted as "package.FactoryClassName".
+  */
+  hadoop.rpc.socket.factory.class.default  "org.apache.hadoop.net.StandardSocketFactory";
+
+  /** SocketFactory to use to connect to a DFS. If null or empty, use
+    hadoop.rpc.socket.class.default. This socket factory is also used by
+    DFSClient to create sockets to DataNodes.
+  */
+  hadoop.rpc.socket.factory.class.ClientProtocol  "";
+
+  /** SocketFactory to use to connect to a Map/Reduce master
+    (JobTracker). If null or empty, then use hadoop.rpc.socket.class.default.
+  */
+  hadoop.rpc.socket.factory.class.JobSubmissionProtocol  "";
+
+  /** Address (host:port) of the SOCKS server to be used by the
+    SocksSocketFactory.
+  */
+  hadoop.socks.server  "";
+
+/*
+  A base for other temporary directories
+*/
+  hadoop.tmp.dir ("/tmp/hadoop-" ++ PROPERTY user.name );
+
+
+  /**
+   The name of the resource from which ssl keystore information
+  will be extracted
+  */
+  https.keystore.info.rsrc "sslinfo.xml";
+
+  /* =============================================================== */
+  /* i/o properties */
+
+
+
+  /** Do not compress records. */
+  COMPRESSION_NONE "NONE";
+  /** Compress values only, each separately. */
+  COMPRESSION_RECORD "RECORD";
+  /** Compress sequences of records together in blocks. */
+  COMPRESSION_BLOCK "BLOCK";
+
+  /**The number of bytes per checksum.  Must not be larger than
+  io.file.buffer.size.*/
+  //used when fs is ramfs
+  io.bytes.per.checksum  512;
+
+  /**
+  A list of the compression codec classes that can be used
+  for compression/decompression.*/
+  io.compression.codecs  "org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec";
+
+
+  /**
+  The size of buffer for use in sequence files.
+  The size of this buffer should probably be a multiple of hardware
+  page size (4096 on Intel x86), and it determines how much data is
+  buffered during read and write operations.*/
+  io.file.buffer.size  4096;
+
+
+
+  /**
+  Number of index entries to skip between each entry.
+  Zero by default. Setting this to values larger than zero can
+  facilitate opening large map files using less memory.
+  */
+  io.map.index.skip  0;
+
+  /**
+  The minimum block size for compression in block compressed
+  SequenceFiles.
+  */
+  io.seqfile.compress.blocksize 10000;
+  io.seqfile.compression.type COMPRESSION_RECORD;
+
+
+  /**
+  Should values of block-compressed SequenceFiles be decompressed
+  only when necessary.
+  */
+  io.seqfile.lazydecompress  true;
+
+  /**
+  The limit on number of records to be kept in memory in a spill
+  in SequenceFiles.Sorter
+  */
+  io.seqfile.sorter.recordlimit  1000000;
+
+  /*
+   A list of serialization classes that can be used for
+  obtaining serializers and deserializers.
+  */
+  io.serializations Classnames:WritableSerialization;
+  //should checksum errors be skipped?
+  //SequenceFile.handleChecksumException()
+
+  /**
+  If true, when a checksum error is encountered while
+  reading a sequence file, entries are skipped, instead of throwing an
+  exception.
+  */
+  io.skip.checksum.errors false;
+
+
+
+  /**The number of streams to merge at once while sorting
+  files.  This determines the number of open file handles.*/
+  io.sort.factor  10;
+
+  /**The total amount of buffer memory to use while sorting
+  files, in megabytes.  By default, gives each merge stream 1MB, which
+  should minimize seeks.*/
+  io.sort.mb  100;
+
+  /*
+  The percentage of io.sort.mb dedicated to tracking record
+  boundaries. Let this value be r, io.sort.mb be x. The maximum number
+  of records collected before the collection thread must block is equal
+  to (r * x) / 4
+  */
+  io.sort.record.percent 0.05;
+
+  /*
+  The soft limit in either the buffer or record collection
+  buffers. Once reached, a thread will begin to spill the contents to disk
+  in the background. Note that this does not imply any chunking of data to
+  the spill. A value less than 0.5 is not recommended.
+  */
+  io.sort.spill.percent 0.80
+
+
+  /* =============================================================== */
+  /* ipc properties */
+
+
+  /**
+  The maximum time after which a client will bring down the
+  connection to the server.
+  */
+  ipc.client.connection.maxidletime  1000;
+
+  /**
+  Indicates the number of retries a client will make to establish
+  a server connection.
+  */
+  ipc.client.connect.max.retries 10;
+
+
+  /**
+  Defines the threshold number of connections after which
+  connections will be inspected for idleness.
+  */
+  ipc.client.idlethreshold  4000;
+
+  /**
+  Defines the maximum number of clients to disconnect in one go.
+  */
+  ipc.client.kill.max 10;
+
+
+  /**
+  Defines the maximum idle time for a connected client after
+  which it may be disconnected.
+  */
+  ipc.client.maxidletime  (12*1000);
+
+  /**
+  Turn on/off Nagle's algorithm for the TCP socket connection on
+  the client. Setting to true disables the algorithm and may decrease latency
+  with a cost of more/smaller packets.
+  */
+  ipc.client.tcpnodelay false;
+
+  /**
+  Defines the timeout for IPC calls in milliseconds
+  */
+  ipc.client.timeout  (60*1000);
+
+  /**
+   * time between pings for the client
+   */
+  ipc.ping.interval (60*1000);
+
+  /**
+  Indicates the length of the listen queue for servers accepting
+  client connections.
+  */
+  ipc.server.listen.queue.size  128;
+
+  /**
+  Turn on/off Nagle's algorithm for the TCP socket connection on
+  the server. Setting to true disables the algorithm and may decrease latency
+  with a cost of more/smaller packets.
+  */
+  ipc.server.tcpnodelay  false;
+
+  /**
+  Turn on/off Nagle's algorithm for the TCP socket connection on
+  the client. Setting to true disables the algorithm and may decrease latency
+  with a cost of more/smaller packets.
+  */
+  ipc.client.tcpnodelay  false;
+
+
+
+  /**The filter for controlling the output of the task's userlogs sent
+             to the console of the JobClient.
+             The permissible options are: NONE, KILLED, FAILED, SUCCEEDED and
+             ALL.
+  */
+  jobclient.output.filter  "FAILED";
+
+
+  /* =============================================================== */
+/* Job Notification Configuration */
+
+ /**Indicates url which will be called on completion of job to inform
+    end status of job.
+    User can give at most 2 variables with URI : $jobId and $jobStatus.
+    If they are present in URI, then they will be replaced by their
+    respective values.
+*/
+/*
+ job.end.notification.url "http://localhost:8080/jobstatus.php?jobId=$jobId&amp;jobStatus=$jobStatus";
+*/
+
+  /**
+  Indicates how many times hadoop should attempt to contact the
+   notification URL */
+  job.end.retry.attempts  0;
+
+   /**
+   Indicates time in milliseconds between notification URL retry
+  calls*/
+  job.end.retry.interval   30000;
+
+  /**
+   * these values are from the job tracker source
+   */
+  jobtracker.task.commit.batch.size 5000;
+
+
+  /**
+  Should the files for failed tasks be kept. This should only be
+   used on jobs that are failing, because the storage is never
+   reclaimed. It also prevents the map outputs from being erased
+   from the reduce directory as they are consumed.
+   */
+  keep.failed.task.files  false;
+
+  /**
+  Keep all files from tasks whose task names match the given
+  regular expression. Defaults to none.
+  */
+
+  keep.task.files.pattern  NULL;
+
+
+  /* =============================================================== */
+  /* This is really a mapred property */
+  /**
+  The limit on the size of cache you want to keep, set by default
+  to 10GB. This will act as a soft limit on the cache directory for out of band data.
+  */
+  local.cache.size  10737418240l;
+
+
+  /* =============================================================== */
+  /* map/reduce properties */
+
+
+  /**
+  * SOURCEONLY TaskTracker.taskFinished()
+  * lines of diagnostics to add. -1 means oall
+  */
+  mapred.debug.out.lines -1;
+ 
+
+  /**
+  The local directory where MapReduce stores intermediate
+  data files.
+  May be a comma-separated list of
+  directories on different devices in order to spread disk i/o.
+  Directories that do not exist are ignored.
+  */
+  mapred.local.dir  (hadoop.tmp.dir ++"/mapred/local");
+
+  /**
+  The shared directory where MapReduce stores control files.
+  */
+  mapred.system.dir  ("/tmp/hadoop/mapred/system");
+
+  /**
+  A shared directory for temporary files.
+  */
+  mapred.temp.dir  ("/mapred/temp");
+
+
+  /**
+  Java opts for the task tracker child processes.
+  The following symbol, if present, will be interpolated: @taskid@ is replaced
+  by current TaskID. Any other occurrences of '@' will go unchanged.
+  For example, to enable verbose gc logging to a file named for the taskid in
+  /tmp and to set the heap maximum to be a gigabyte, pass a 'value' of:
+      -Xmx1024m -verbose:gc -Xloggc:/tmp/@taskid@.gc
+  */
+  mapred.child.java.opts  "-Xmx200m";
+
+  /**
+  To set the value of tmp directory for map and reduce tasks.
+  If the value is an absolute path, it is directly assigned. Otherwise, it is
+  prepended with task's working directory. The java tasks are executed with
+  option -Djava.io.tmpdir='the absolute path of the tmp dir'. Pipes and
+  streaming are set with environment variable,
+  TMPDIR='the absolute path of the tmp dir'
+  */
+  mapred.child.tmp  "./tmp";
+
+
+/**
+  The maximum virtual memory, in KB, of a process launched by the
+  Map-Reduce framework. This can be used to control both the Mapper/Reducer
+  tasks and applications using Hadoop Pipes, Hadoop Streaming etc.
+  By default it is left unspecified to let cluster admins control it via
+  limits.conf and other such relevant mechanisms.
+
+  Note: mapred.child.ulimit must be greater than or equal to the -Xmx passed to
+  JavaVM, else the VM might not start.
+  */
+  mapred.child.ulimit "";
+
+
+  /**
+  Should the outputs of the maps be compressed before being
+  sent across the network. Uses SequenceFile compression.
+  */
+  mapred.compress.map.output false;
+
+  /**Names a file that contains the list of nodes that may
+  connect to the jobtracker.  If the value is empty, all hosts are
+  permitted.*/
+  mapred.hosts  "";
+
+  /**Names a file that contains the list of hosts that
+  should be excluded by the jobtracker.  If the value is empty, no
+  hosts are excluded.*/
+  mapred.hosts.exclude  "";
+
+
+  /**
+  The threshold, in terms of the number of files
+  for the in-memory merge process. When we accumulate threshold number of files
+  we initiate the in-memory merge and spill to disk. A value of 0 or less than
+  0 indicates we want to DON'T have any threshold and instead depend only on
+  the ramfs's memory consumption to trigger the merge.
+  */
+  mapred.inmem.merge.threshold  1000;
+
+
+
+  /**
+  The host and port that the MapReduce job tracker runs
+  at.  If "local", then jobs are run in-process as a single map
+  and reduce task.
+  */
+  mapred.job.tracker  "localhost:8012";
+
+  /**
+  The maximum number of complete jobs per user to keep around before delegating them
+  to the job history.
+  */
+  mapred.jobtracker.completeuserjobs.maximum  100;
+
+  /**
+  The number of server threads for the JobTracker. This should be roughly
+  4% of the number of tasktracker nodes.
+  */
+  mapred.job.tracker.handler.count  10;
+
+  /**
+  The job tracker http server address and port the server will listen on.
+  If the port is 0 then the server will start on a free port.
+  */
+  mapred.job.tracker.http.address  "0.0.0.0:50030";
+
+
+  /**
+  Indicates if persistency of job status information is
+  active or not.
+  */
+  mapred.job.tracker.persist.jobstatus.active    false;
+
+  /**
+  The number of hours job status information is persisted in DFS.
+  The job status information will be available after it drops of the memory
+  queue and between jobtracker restarts. With a zero value the job status
+  information is not persisted at all in DFS.
+  */
+  mapred.job.tracker.persist.jobstatus.hours  0;
+
+  /**
+  The directory where the job status information is persisted
+  in a file system to be available after it drops of the memory queue and
+  between jobtracker restarts.
+  */
+  mapred.job.tracker.persist.jobstatus.dir    "/jobtracker/jobsInfo";
+
+
+
+  /**
+   * Some values that appear related to job retirement
+   */
+  mapred.jobtracker.retirejob.check  (60 * 1000);
+  mapred.jobtracker.retirejob.interval  (24 * 60 * 60 * 1000);
+
+  /**
+   * These appear to be related to scheduling policy
+   */
+  mapred.jobtracker.taskalloc.loadbalance.epsilon  0.2;
+  mapred.jobtracker.taskalloc.capacitypad  0.01;
+
+
+
+ /**
+   Number of lines per split in NLineInputFormat.
+   */
+  mapred.line.input.format.linespermap 1;
+
+ /**
+  If the space in mapred.local.dir drops under this,
+  do not ask for more tasks.
+  Value in bytes.
+  */
+  mapred.local.dir.minspacestart  0;
+
+  /**
+  If the space in mapred.local.dir drops under this,
+  do not ask more tasks until all the current ones have finished and
+  cleaned up. Also, to save the rest of the tasks we have running,
+  kill one of them, to clean up some space. Start with the reduce tasks,
+  then go with the ones that have finished the least.
+  Value in bytes.
+  */
+  mapred.local.dir.minspacekill  0;
+
+  /**
+  The default number of map tasks per job.  Typically set
+  to a prime several times greater than number of available hosts.
+  Ignored when mapred.job.tracker is "local".
+  */
+  mapred.map.tasks  2;
+
+  /**
+  Expert: The maximum number of attempts per map task.
+  In other words, framework will try to execute a map task these many number
+  of times before giving up on it.
+  */
+  mapred.map.max.attempts  4;
+
+
+
+  /**If the map outputs are compressed, how should they be
+             compressed?
+  */
+  mapred.map.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
+
+  /**
+  If the map outputs are to compressed, how should they
+  be compressed? Should be one of NONE, RECORD or BLOCK.
+  */
+  mapred.map.output.compression.type  COMPRESSION_RECORD;
+
+
+  /**
+  The number of task-failures on a tasktracker of a given job
+  after which new tasks of that job aren't assigned to it.
+  */
+  mapred.max.tracker.failures  4;
+
+  /**
+  The minimum size chunk that map input should be split
+  into.  Note that some file formats may have minimum split sizes that
+  take priority over this setting.
+  */
+  mapred.min.split.size  0;
+
+  /**
+  Should the job outputs be compressed?
+  */
+  mapred.output.compress  false;
+
+
+  /**
+  If the job outputs are to compressed as SequenceFiles, how should
+  they be compressed? Should be one of NONE, RECORD or BLOCK.
+  */
+  mapred.output.compression.type  COMPRESSION_RECORD;
+
+  /**
+  If the job outputs are compressed, how should they be compressed?
+  */
+  mapred.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
+
+
+ /**
+  The maximum amount of time (in seconds) a reducer spends on
+  fetching one map output before declaring it as failed.
+  */
+  mapred.reduce.copy.backoff  (5 * 60);
+
+  /**
+  Expert: The maximum number of attempts per reduce task.
+  In other words, framework will try to execute a reduce task these many number
+  of times before giving up on it.
+  */
+  mapred.reduce.max.attempts  4;
+
+  /**
+  The default number of parallel transfers run by reduce
+  during the copy(shuffle) phase.
+  */
+  mapred.reduce.parallel.copies  5;
+
+  /**
+  The default number of reduce tasks per job.  Typically set
+  to a prime close to the number of available hosts.  Ignored when
+  mapred.job.tracker is "local".
+  */
+  mapred.reduce.tasks  1;
+
+
+  /**
+  If true, then multiple instances of some reduce tasks
+  may be executed in parallel.*/
+  mapred.reduce.tasks.speculative.execution  true;
+
+
+  /**
+  The default sort class for sorting keys.
+  */
+  map.sort.class  "org.apache.hadoop.mapred.MergeSorter";
+
+  /**
+  The replication level for submitted job files.  This
+  should be around the square root of the number of nodes.
+  */
+  mapred.submit.replication 10;
+
+  /*
+  This is the max level of the task cache. For example, if
+    the level is 2, the tasks cached are at the host level and at the rack
+    level.
+  */
+  mapred.task.cache.levels 2;
+
+  /**To set whether the system should collect profiler
+  information for some of the tasks in this job? The information is stored
+  in the the user log directory. The value is true if task profiling
+  is enabled.*/
+  mapred.task.profile    false;
+
+  /** To set the ranges of map tasks to profile.
+  mapred.task.profile has to be set to true for the value to be accounted.
+  */
+  mapred.task.profile.maps    "0-2";
+
+  /** To set the ranges of reduce tasks to profile.
+  mapred.task.profile has to be set to true for the value to be accounted.
+  */
+  mapred.task.profile.reduces    "0-2";
+
+
+  /**
+  The number of milliseconds before a task will be
+  terminated if it neither reads an input, writes an output, nor
+  updates its status string.
+  */
+  mapred.task.timeout  (600*1000);
+
+  /**
+  The name of the Network Interface from which a task
+  tracker should report its IP address.
+  */
+  mapred.tasktracker.dns.interface  "default";
+
+  /**
+  The host name or IP address of the name server (DNS)
+  which a TaskTracker should use to determine the host name used by
+  the JobTracker for communication and display purposes.
+  */
+  mapred.tasktracker.dns.nameserver  "default";
+
+  /**
+   * SOURCEONLY the probe sample size (?)
+   */
+  mapred.tasktracker.events.batchsize 500;
+
+  /**
+  Expert: The time-interval, in miliseconds, after which
+  a tasktracker is declared 'lost' if it doesn't send heartbeats.
+  */
+  mapred.tasktracker.expiry.interval  (10 * 60 * 1000);
+
+
+
+  /**
+  The maximum number of map tasks that will be run
+  simultaneously by a task tracker.
+  */
+  mapred.tasktracker.map.tasks.maximum  2;
+
+  /**
+  The minimum number of reduce tasks that will be run
+  simultaneously by a task tracker.
+  */
+  mapred.tasktracker.reduce.tasks.minimum  2;
+
+ /**
+  The interface and port that task tracker server listens on.
+  Since it is only connected to by the tasks, it uses the local interface.
+  EXPERT ONLY. Should only be changed if your host does not have the loopback
+  interface.*/
+  mapred.task.tracker.report.address  "127.0.0.1:0";
+  
+  /**
+  The number of worker threads that for the http server. This is
+ used for map output fetching
+  */
+  tasktracker.http.threads  40;
+
+  /**
+  The task tracker http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  mapred.task.tracker.http.address  "0.0.0.0:50060";
+
+
+  /**
+  The maximum size of user-logs of each task in KB.
+   0 disables the cap.
+  */
+  mapred.userlog.limit.kb  0;
+
+  /**The maximum time, in hours, for which the user-logs are to be
+        retained.
+  */
+  mapred.userlog.retain.hours  24;
+
+  /**
+   * Used by tasktrackers to determine their name. If not null, it is used instead of the local
+   * hostname
+   */
+  slave.host.name NULL;
+
+  /**
+  enable the server to track time spent waiting on locks
+  */
+  tasktracker.contention.tracking false;
+
+  /**
+   * number of worker threads for the task tracker
+   */
+  tasktracker.http.threads 40;
+
+  /**
+   The default implementation of the DNSToSwitchMapping. It
+    invokes a script specified in topology.script.file.name to resolve
+    node names. If the value for topology.script.file.name is not set, the
+    default value of DEFAULT_RACK is returned for all node names.
+  */
+  topology.node.switch.mapping.impl "org.apache.hadoop.net.ScriptBasedMapping";
+
+
+/**
+    The script name that should be invoked to resolve DNS names to
+    NetworkTopology names. Example: the script would take host.foo.bar as an
+    argument, and return /rack1 as the output.
+*/
+  topology.script.file.name NULL;
+
+
+   /**
+   The max number of args that the script configured with
+    topology.script.file.name should be run with. Each arg is an
+    IP address.
+    */
+  topology.script.number.args 20;
+
+  /* =============================================================== */
+
+/* Web Interface Configuration */
+
+  /** If set to true, the web interfaces of JT and NN may contain
+                actions, such as kill job, delete file, etc., that should
+                not be exposed to public. Enable this option if the interfaces
+                are only reachable by those who have the right authorization.
+  */
+  webinterface.private.actions  false;
+}
+
+/**
+ * Simple site
+ */
+
+SimpleSite extends HadoopConfiguration{
+ fs.default.name  "localhost:9000"
+ mapred.job.tracker "localhost:9001"
+ dfs.replication 1;
+}
+
+/**
+ * These are the task statuses for the jobclient.output.filter property
+ */
+TaskStatus extends  NULL {
+  None "NONE";
+  Killed "KILLED";
+  Failed "FAILED";
+  Succeeded "SUCCEEDED";
+  ALL "ALL";
+  }
+
+
+  /**
+  * Used to describe the priority of the running job.
+  *
+  */
+JobPriority  extends  NULL{
+  VeryHigh "VERY_HIGH";
+  High     "HIGH";
+  Normal   "NORMAL";
+  Low      "LOW";
+  VeryLow  "VERY_LOW";
+}
+
+
+/**
+ * Job Configuration derived from all the defaults
+ */
+
+JobConfiguration extends HadoopConfiguration  {
+
+
+  /**
+   directories to define
+   */
+   //mapred.output.dir
+   //mapred.input.dir
+   //mapred.working.dir
+   //mapred.local.dir
+
+
+  //enumeration of task statuses
+
+  jobclient.output.filter TaskStatus:Failed;
+
+
+  keep.failed.task.files false;
+
+  /*a regular expression for task names that should be kept.
+   * The regular expression ".*_m_000123_0" would keep the files
+   * for the first instance of map 123 that ran.
+   */
+
+  keep.task.files.pattern ".*";
+
+
+
+
+  /**
+   * Get the user-defined combiner class used to combine map-outputs
+   * before being sent to the reducers. Typically the combiner is same as the
+   * the Reducer for the job */
+  mapred.combiner.class mapred.reducer.class;
+
+  /**
+  Should output be compressed?
+  */
+  mapred.compress.map.output true;
+
+
+
+  mapred.input.format.class Classnames:TextInputFormat;
+  mapred.input.key.class Classnames:LongWritable;
+  mapred.input.value.class Classnames:Text;
+
+  /**
+  * the user-specified job name. This is only used to identify the
+  * job to the user.
+  */
+  mapred.job.name "";
+
+
+
+  /**
+   * the JobPriority for this job.
+   */
+  mapred.job.priority JobPriority:Normal;
+
+
+
+ /*
+  the max number of attempts per map task.
+  */
+  mapred.map.max.attempts 4;
+
+  mapred.mapoutput.key.class NULL;
+  mapred.mapoutput.value.class NULL;
+
+  /**
+   Compression to use on ouput
+   */
+  mapred.map.output.compression.type COMPRESSION_RECORD;
+
+  mapred.mapper.class Classnames:IdentityMapper;
+
+  /**
+   * Class to run the map reduce
+   */
+  mapred.map.runner.class Classnames:MapRunner;
+
+  /**
+   * The number of map tasks for this job.
+   */
+  mapred.map.tasks  1;
+
+  /**
+  Should speculative execution be used for this job for map tasks?
+  */
+  mapred.map.tasks.speculative.execution true;
+
+  /**
+   * the maximum no. of failures of a given job per tasktracker. If the no. of task failures exceeds
+   * <code>noFailures</code>, the tasktracker is <i>blacklisted</i> for this job.
+   */
+
+  mapred.max.tracker.failures 4;
+
+  /**
+  the maximum percentage of map tasks that can fail without
+  the job being aborted.
+  */
+  mapred.max.map.failures.percent 0;
+
+
+  /**
+   * the maximum percentage of reduce tasks that can fail without
+   *  the job being aborted
+   */
+  mapred.max.reduce.failures.percent 0;
+
+
+  mapred.output.key.class Classnames:LongWritable;
+  mapred.output.key.comparator.class NULL;
+  mapred.output.format.class Classnames:TextOutputFormat;
+  mapred.output.value.groupfn.class NULL;
+  mapred.output.value.class Classnames:Text;
+
+
+  /*
+  the Partitioner class used to partition Mapper-outputs to be sent to the Reducers.
+  */
+  mapred.partitioner.class Classnames:HashPartitioner;
+
+  /**
+   the max number of attempts per reduce task.
+   */
+
+  mapred.reduce.max.attempts 4
+  /*
+  the number of reduce tasks for this job.
+  */
+  mapred.reduce.tasks 1;
+
+  /**
+  Should speculative execution be used for this job for reduce tasks?
+  */
+  mapred.reduce.tasks.speculative.execution true;
+
+  /**
+   the Reducer class for the job.
+   */
+  mapred.reducer.class Classnames:IdentityReducer;
+
+  /**
+  Should speculative execution be used for this job?
+  */
+  mapred.speculative.execution true;
+
+  /**
+   * Policy for replicating the job JAR
+   */
+  mapred.submit.replication 10;
+
+  /**
+   * whether the task profiling is enabled.
+   */
+  mapred.task.profile false;
+
+
+
+
+ /**
+   * The user-specified session identifier. The default is the empty string.
+   *
+   * The session identifier is used to tag metric data that is reported to some
+   * performance metrics system via the org.apache.hadoop.metrics API.  The
+   * session identifier is intended, in particular, for use by Hadoop-On-Demand
+   * (HOD) which allocates a virtual Hadoop cluster dynamically and transiently.
+   * HOD will set the session identifier by modifying the hadoop-site.xml file
+   * before starting the cluster.
+   *
+   * When not running under HOD, this identifer is expected to remain set to
+   * the empty string.
+   *
+   */
+
+    session.id "";
+
+
+    user.name PROPERTY user.name;
+
+    /* job user group info */
+    hadoop.job.ugi ((PROPERTY user.name) ++ ", users");
+
+}
+
+
+/**
+ * Extra configuration from the source
+ */
+JobTrackerConfiguration extends HadoopConfiguration {
+
+ mapred.tasktracker.expiry.interval (10 * 60 * 1000);
+ mapred.jobtracker.retirejob.interval (24 * 60 * 60 * 1000l);
+ mapred.jobtracker.retirejob.check (60 * 1000);
+ mapred.jobtracker.taskalloc.loadbalance.epsilon 0.2f;
+ mapred.jobtracker.taskalloc.capacitypad 0.01f;
+
+
+}
+
+
+
+/**
+ * A prim that is tied to a cluster
+ */
+ClusterPrim extends Prim  {
+  /** lazy reference to a cluster configuration */
+  cluster TBD;
+}

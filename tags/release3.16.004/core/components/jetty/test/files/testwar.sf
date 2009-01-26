@@ -1,0 +1,125 @@
+
+#include "/org/smartfrog/services/www/webapplication.sf"
+#include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
+#include "/org/smartfrog/services/utils/concat/components.sf"
+#include "org/smartfrog/services/jetty/components.sf";
+
+/**
+ * this is our test file
+ */
+ 
+ 
+ 
+ /*
+  * these are the properties of the database
+  */
+   DatabaseProperties extends SystemProperties {
+        
+        dbport TBD;
+        dbpassword TBD;
+        dburl TBD;
+        dbdriver TBD;
+        setOnStartup true;
+        setOnDeploy false;
+        properties [
+            ["db.port",dbport],
+            ["db.passwd",dbpassword],
+            ["db.url",dburl],
+            ["db.driver",dbdriver]
+        ];
+    
+    }
+
+
+    
+
+DeployServerOnJetty extends Compound {
+
+    port TBD;
+    home LAZY PROPERTY java.io.tmpdir;
+    liveness false;
+    happy.page "/happy";
+
+    props extends DatabaseProperties;
+ 
+   /*
+    this is the jetty server itself
+    */
+   jettyServer extends CoreJettyServer {
+
+      jettyhome PARENT:home;
+
+      port PARENT:port;
+
+    }
+
+
+    listener extends JettySocketConnector {
+        server LAZY jettyServer;
+    }
+    
+    TestWar extends File {
+    
+        //deployment time property
+        filename PROPERTY test.war.file;
+        //check it exists when we deploy
+        testOnDeploy true;
+        
+    }
+    
+    
+    webapp extends WebApplication {
+        contextPath "/";
+        filename LAZY TestWar;
+        server LAZY jettyServer;
+    }
+
+    
+    happyPath extends LazyConcat {
+       string extends LAZY {
+          -- LAZY webapp:contextPath;
+          -- happy.page;
+       }
+    }
+    
+    //fetch the page every so often, just to see that we are happy
+    
+    ping extends LivenessPage {
+        enabled PARENT:liveness;
+        host LAZY PARENT:listener:ipaddr;
+        port PARENT:port;
+        page LAZY PARENT:happyPath:concat;
+        checkFrequency 10;
+    }
+    
+}
+
+
+sfConfig extends DeployServerOnJetty {
+
+  //get this from the running system
+
+    port 5050;
+    location "hosted on jetty";
+    liveness true;
+    
+    dbhost "localhost";
+    dbdatabase "test";
+    props:dbport 80;
+    props:dbuser "user";
+    props:dbpassword "secret";
+    props:dbdriver "com.mysql.jdbc.Driver";
+    dburl extends LazyConcat {
+       string extends LAZY {
+          -- "jdbc:mysql://";
+          -- dbhost;
+          -- "/";
+          -- dbdatabase;
+       }
+    }    
+    props:dburl "jdbc:mysql://localhost/test";
+    //props:dburl LAZY dburl:concat;
+
+}
