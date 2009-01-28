@@ -141,8 +141,7 @@ public class DelayedTerminator implements Runnable {
             log.debug("Interrupted " + description);
         }
 
-        Prim target=null;
-        TerminationRecord record=null;
+        Prim target = null;
         synchronized (this) {
             try {
                 if (shutdown) {
@@ -153,34 +152,29 @@ public class DelayedTerminator implements Runnable {
                 if (shouldTerminate) {
                     //termination time
                     target = getTarget();
-                    if (target == null) {
-                        log.debug("Target no longer exists for " + description);
-                    } else {
-                        try {
-                            if (target.sfIsStarted()) {
-                                setForcedShutdown(true);
-                                record = createTerminationRecord(target);
-                            }
-                        } catch (RemoteException e) {
-                            terminationFault = e;
-                        }
-                    }
+
                 }
             } finally {
                 //cease to exist
                 self = null;
                 primref = null;
             }
-            //now do a shutdown, outside the sychronized area. This means we have updated our expectations before
-            //we actually force the termination
-            //the target!=null test is gratuitous, as record is only set if it is not null, but
-            //this stops the IDEs from warning
-            if(record!=null && target!=null) {
-                try {
+        }
+
+        //now do a shutdown, outside the sychronized area. This means we have updated our expectations before
+        //we actually force the termination
+        if (target == null) {
+            log.debug("Target no longer exists for " + description);
+        } else {
+            try {
+                if (target.sfIsStarted()) {
+                    TerminationRecord record;
+                    setForcedShutdown(true);
+                    record = createTerminationRecord(target);
                     target.sfTerminate(record);
-                } catch (RemoteException e) {
-                    terminationFault = e;
                 }
+            } catch (RemoteException e) {
+                terminationFault = e;
             }
         }
 
@@ -203,12 +197,12 @@ public class DelayedTerminator implements Runnable {
      * Flag set to true if we forced system shutdown
      * @return whether system was forced
      */
-    public synchronized boolean isForcedShutdown() {
+    public boolean isForcedShutdown() {
         return forcedShutdown;
     }
 
 
-    public synchronized void setForcedShutdown(boolean forcedShutdown) {
+    public void setForcedShutdown(boolean forcedShutdown) {
         this.forcedShutdown = forcedShutdown;
     }
 }
