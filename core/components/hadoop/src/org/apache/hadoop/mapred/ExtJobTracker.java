@@ -64,7 +64,8 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo  {
     }
 
     /**
-     * This service terminates itself by stopping the {@link JobEndNotifier} and then closing down the job tracker
+     * This service terminates itself by stopping the {@link JobEndNotifier}
+     * and then closing down the job tracker
      *
      * @throws IOException exceptions which will be logged
      */

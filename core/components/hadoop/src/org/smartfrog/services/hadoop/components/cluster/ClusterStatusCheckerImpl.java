@@ -24,7 +24,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobTracker;
-import org.apache.hadoop.conf.Configuration;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.submitter.SubmitterImpl;
 import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
@@ -117,7 +116,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             return client;
         }
         try {
-            ManagedConfiguration conf = ManagedConfiguration.createConfiguration(this, true, false);
+            ManagedConfiguration conf = ManagedConfiguration.createConfiguration(this, false, false, true);
             sfLog().info("Connecting to " + jobTracker);
             client = new JobClient(conf);
             return client;
@@ -148,6 +147,12 @@ public class ClusterStatusCheckerImpl extends PrimImpl
         }
     }
 
+    private void maybeDumpConfiguration(ManagedConfiguration conf) {
+        if(sfLog().isDebugEnabled()) {
+            sfLog().debug(conf.dump());
+        }
+    }
+
     /**
      * Check the cluster status
      *
@@ -168,8 +173,10 @@ public class ClusterStatusCheckerImpl extends PrimImpl
                 String impl = "fs." + uri.getScheme() + ".impl";
                 String classname = conf.get(impl);
                 if(classname == null) {
+                    maybeDumpConfiguration(conf);
                     throw new SFHadoopException("File system " + uri + " will not load "
-                            +" - no configuration mapping for " + impl,
+                            +" - no configuration mapping for " + impl
+                            +" in "+ conf.dump(),
                             this,
                             conf);
                 }

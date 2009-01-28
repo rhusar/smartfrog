@@ -17,43 +17,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.test.system.local.tracker;
 
-
-/**
- * A component that takes a job and submits it.
- */
-JobSubmitter extends JobTrackingWorkflowComponent  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
-
-
-  job TBD;
-  /**
-  terminate on shutdown
-  */
-  terminateJob false;
-  /**
-   ping the job on liveness by checking its status
-   */
-  pingJob true;
-
-  /**
-   only relevant when pingJob==true ; should we terminate when the job has finished?
-   */
-  terminateWhenJobFinishes false;
-
-  /**
-   * should we delete the output directory on startup?
-   */
-  deleteOutputDirOnStartup true;
-
-}
+import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
 /**
- this job submitter blocks until the job is complete
+ *
+ * Created 20-May-2008 17:35:13
+ *
  */
-BlockingJobSubmitter extends JobSubmitter {
-  terminateJob true;
-  terminateWhenJobFinishes true;
-  //this disables an auto terminate after submitting
-  sfShouldTerminate false;
+
+public class JobSubmissionTest extends HadoopTestBase {
+    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
+
+    public JobSubmissionTest(String name) {
+        super(name);
+    }
+
+  public void testJobSubmission() throws Throwable {
+        enablePortCheck();
+        checkTaskTracker();
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission");
+    }
+
 }

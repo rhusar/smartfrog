@@ -261,15 +261,49 @@ MapReduceTestSequence extends JobTrackerSequence {
   testDirIn  (testDir ++ "/in");
   testDirOut (testDir ++ "/out");
   testDirWorking (testDir ++ "/working");
-  testFile (testDirIn ++ "/test.csv");
+  testFile (testDirIn ++ "/in.txt");
+  inputFileDFS testFile;
+  outputFileDFS ( testDirOut ++ "/in.txt");
+  LocalDataDir PROPERTY test.work.dir;
+  inputFileLocal (LocalDataDir  ++ "/in.txt")
+  outputFileLocal (LocalDataDir  ++ "/out.txt")
 
-
-  files extends FileCreation {
-    cluster LAZY PARENT:cluster;
-    dest testFile;
+  inputFile extends TextFile {
+    filename inputFileLocal;
+    createParentDirs true;
+    sfShouldTerminate true;
+    text ##1,one,un,ein
+2,two,deux,zwei
+3,three,trois,drei
+4,four,quatre,vier
+5,five,cinq,funf#;
   }
 
-  MRCompound extends Compound {
+     
+  CopyDataIn extends DfsCopyFileIn {
+    cluster LAZY PARENT:cluster;
+    source inputFileLocal;
+    dest testFile;
+    sfShouldTerminate true;
+  }
+
+  SourceExists extends DfsPathExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path inputFileDFS;
+  }
+
+  lsIn extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirIn;
+  }
+
+  mkOutputDir extends DfsCreateDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirOut;
+ }
+
+
+  MRCompound extends Parallel {
     job extends TestJob  {
           //this is the job information
       jobTracker LAZY PARENT:PARENT:jobTracker;
@@ -279,7 +313,8 @@ MapReduceTestSequence extends JobTrackerSequence {
       mapred.output.dir testDirOut;
       mapred.working.dir testDirWorking;
       mapred.local.dir (testDir ++ "/local");
-      mapred.job.split.file (testDir ++ "/split");
+      mapred.mapper.new-api true;
+      //mapred.job.split.file (testDir ++ "/split");
       mapred.job.tracker jobTracker:mapred.job.tracker;
       keep.failed.task.files true;
       filename "";
@@ -291,15 +326,30 @@ MapReduceTestSequence extends JobTrackerSequence {
     submission extends BlockingJobSubmitter {
       //get our settings from ourselves.
       job LAZY PARENT:job;
+      mapred.mapper.new-api true;
       cluster LAZY PARENT:PARENT:cluster;
       fileRequired false;
     }
 
-    sleep extends Delay {
-    //cleanup delay
-      time 1000;
-    }
+  }
 
+  s1 extends Sleep;
+
+  lsOut extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirOut;
+  }
+
+  ResultExists extends DfsPathExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path outputFileDFS;
+  }
+
+  CopyDataOut extends DfsCopyFileOut {
+    cluster LAZY PARENT:cluster;
+    source outputFileDFS;
+    dest outputFileLocal;
+    sfShouldTerminate true;
   }
 
 }

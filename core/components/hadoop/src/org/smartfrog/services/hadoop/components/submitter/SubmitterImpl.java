@@ -95,7 +95,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         String outputDir = validateOrResolve(ConfigurationAttributes.MAPRED_OUTPUT_DIR, Job.ATTR_OUTPUT_DIR);
         validateOrResolve(ConfigurationAttributes.MAPRED_WORKING_DIR, Job.ATTR_WORKING_DIR);
         validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, Job.ATTR_LOCAL_DIR);
-        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
+//        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
 
 
         if (deleteOutputDirOnStartup) {
@@ -123,7 +123,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
 
 
     /**
-     * Handle notifications of termination
+     * Handle notifications of termination by (maybe) terminating the running job
      *
      * @param status termination status of sender
      * @param comp   sender of termination
@@ -144,8 +144,13 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         }
     }
 
+    /**
+     * Terminate any running job; leaves {@link #runningJob} null.
+     * @throws IOException for any problems terminating the job
+     */
     public synchronized void terminateJob() throws IOException {
         if (runningJob != null) {
+            sfLog().info("Terminating job " + jobID);
             try {
                 runningJob.killJob();
             } finally {
@@ -185,7 +190,8 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             } catch (IOException e) {
                 SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
                         + ": " + e,
-                        e, SubmitterImpl.this);
+                        e,
+                        SubmitterImpl.this);
                 fault.addConfiguration(jobConf);
                 throw fault;
             }
@@ -194,10 +200,14 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         /**
          * Override point: the termination message
          *
-         * @return {@link #WORKER_THREAD_COMPLETED} or {@link #WORKER_THREAD_FAILED} depending on the outcome
+         * @return Job information
          */
         protected String getTerminationMessage() {
-            return "Submitted job " + jobID + " and URL " + jobURL;
+            if (jobID != null) {
+                return "Submitted job " + jobID + " and URL " + jobURL;
+            } else {
+                return "Failed to submit a job";
+            }
         }
     }
 
@@ -221,7 +231,8 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                             + " has " + (succeeded ? " succeeded" : "failed");
                     sfLog().info(message);
                     if (terminateWhenJobFinishes) {
-                        TerminationRecord record = succeeded ? TerminationRecord.normal(message, getName()) :
+                        TerminationRecord record = succeeded ?
+                                TerminationRecord.normal(message, getName()) :
                                 TerminationRecord.abnormal(message, getName());
                         new ComponentHelper(this).targetForTermination(record, false, false);
                     }

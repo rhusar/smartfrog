@@ -25,4 +25,5 @@
 /**
  * Test case
  */
-sfConfig testLocalJobTracker;
+sfConfig extends testJobSubmissionForked {
+}

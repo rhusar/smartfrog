@@ -212,6 +212,9 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             }
         } finally {
             sfLog().info("Exiting JobTracker worker thread; service is " + hadoopService);
+            if(hadoopService!=null && hadoopService.isTerminated()) {
+                sfLog().warn("Service does not consider itself terminated yet");
+            }
             //terminateService(hadoopService);
         }
     }
