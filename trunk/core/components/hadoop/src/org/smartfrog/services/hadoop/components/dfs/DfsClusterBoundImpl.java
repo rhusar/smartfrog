@@ -81,7 +81,7 @@ public class DfsClusterBoundImpl extends PrimImpl {
      * @throws RemoteException    network problems
      */
     public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, true);
+        return ManagedConfiguration.createConfiguration(this, true, true, false);
     }
 
     /**

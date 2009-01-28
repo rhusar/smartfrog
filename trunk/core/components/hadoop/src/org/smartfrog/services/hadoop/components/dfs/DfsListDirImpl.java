@@ -68,9 +68,15 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
     @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
+        if (path==null) {
+            throw new SmartFrogLivenessException("No path for the DfsListDir operation", this);
+        }
         try {
             long size = 0;
-            FileStatus[] stats = fileSystem.listStatus(getPath());
+            FileStatus[] stats = fileSystem.listStatus(path);
+            if (stats == null) {
+                throw new SmartFrogLivenessException("Path not found in the remote filesystem: " + path, this);
+            }
             StringBuilder builder = new StringBuilder();
             for (FileStatus file : stats) {
                 size += file.getLen();
@@ -88,12 +94,14 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
             if (count < minFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is below the minFileCount value of " + minFileCount
-                                + "\n" + builder.toString());
+                                + "\n" + builder.toString(),
+                        this);
             }
             if (maxFileCount > -1 && count > maxFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is above the maxFileCount value of " + minFileCount
-                                + "\n" + builder.toString());
+                                + "\n" + builder.toString(),
+                        this);
             }
 
         } catch (IOException e) {

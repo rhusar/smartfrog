@@ -79,6 +79,10 @@
       for JSP support in the test classpath
       ${toString:tests.run.classpath}
     </fail>
+
+
+    <property name="test.work.dir" location="${test.dir}/work" />
+    <mkdir dir="${test.work.dir}" />
   </target>
 
   <target name="copy-hadoop" depends="ivy-retrieve,ivy-report"

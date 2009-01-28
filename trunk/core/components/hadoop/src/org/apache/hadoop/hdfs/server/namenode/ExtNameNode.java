@@ -112,7 +112,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
      * @return true if we have stopped
      */
     public boolean isStopped() {
-        return getServiceState() == ServiceState.TERMINATED;
+        return getServiceState() == ServiceState.CLOSED;
     }
 
     /**

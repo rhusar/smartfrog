@@ -43,7 +43,7 @@ testLocalJobTrackerForked extends testLocalJobTracker {
 /**
  * Test the local node
  */
-testLocalTaskTracker extends ExpectDeploy {
+testJobSubmission extends ExpectDeploy {
   description "bring up a Task Tracker";
 
   action extends LocalClusterCompound {
@@ -88,9 +88,9 @@ testOrphanTracker extends ExpectDeploy {
 
 
 
-testLocalTaskTrackerForked extends testLocalTaskTracker {
-  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:datanode:sfProcessName "testDataNodeForkedProcess";
-  action:clusterActions:then:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
-  action:clusterActions:then:taskTracker:sfProcessName "testLocalJobTrackerForked-taskTracker";
+testJobSubmissionForked extends testJobSubmission {
+  action:namenode:sfProcessName "testJobSubmission-namenode";
+  action:datanode:sfProcessName "testJobSubmission-datanode";
+  action:clusterActions:then:jobTracker:sfProcessName "testJobSubmission-jobtracker";
+  action:clusterActions:then:taskTracker:sfProcessName "testJobSubmission-taskTracker";
 }

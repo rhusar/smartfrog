@@ -29,7 +29,6 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -93,8 +92,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        sfLog().info("Initiating " + getServiceName() + " termination"
-                + " deployerThread=" + deployerThread + " service=" + service);
+        sfLog().info("Initiating " + getServiceName() + " termination;"
+                + " serviceThread=" + deployerThread + " service=" + service);
         terminationInitiated = true;
         try {
             terminateDeployerThread();
@@ -194,7 +193,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         }
         sfLog().info("waiting for thread to finish");
         if (deployer.waitForThreadTermination(SHUTDOWN_DELAY)) {
-            sfLog().warn("Deployer thread did not terminate within the specified shutdown delay; "
+            sfLog().warn("Hadoop Service thread did not terminate within the expected shutdown period: "
                     + "service is " + getService());
         }
     }
@@ -260,7 +259,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     //@Override
     public void onStateChange(Service hadoopService, Service.ServiceState oldState,
                               Service.ServiceState newState) {
-        if (newState == Service.ServiceState.TERMINATED && !terminationInitiated) {
+        if (newState == Service.ServiceState.CLOSED && !terminationInitiated) {
             TerminationRecord tr;
             Throwable thrown = hadoopService.getFailureCause();
             if (expectNodeTermination) {
@@ -309,7 +308,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                                 "Service has Failed: " + serviceStatus,
                                 service.getFailureCause(), this);
 
-                    case TERMINATED:
+                    case CLOSED:
                         throw new SmartFrogLivenessException(
                                 "Service has Terminated: " + serviceStatus,
                                 service.getFailureCause(), this);

@@ -601,21 +601,22 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @param useClusterReferenceFirst if set, resolve {@link ClusterBound#ATTR_CLUSTER} from the source and use that
      *                                 first.
      * @param clusterRequired          if set, the cluster attribute must resolve.
+     * @param loadDefaults             flag to say "load the default values"
      * @return the new element
      * @throws SmartFrogException for any failure to resolve all the attributes
      * @throws RemoteException              network problems. These are always passed up
      */
     public static ManagedConfiguration createConfiguration(Prim source,
                                                            boolean useClusterReferenceFirst,
-                                                           boolean clusterRequired)
+                                                           boolean clusterRequired, boolean loadDefaults)
             throws SmartFrogException, RemoteException {
-        ManagedConfiguration conf = new ManagedConfiguration(source);
+        ManagedConfiguration conf = new ManagedConfiguration(loadDefaults, source);
         if (useClusterReferenceFirst) {
             //pull in the cluster if requested
             Prim clusterSource = source.sfResolve(REF_CLUSTER, (Prim) null, clusterRequired);
             if (clusterSource != null) {
                 //if we have a cluster source, use it
-                conf.copyProperties(source, new ManagedConfiguration(clusterSource));
+                conf.copyProperties(source, new ManagedConfiguration(loadDefaults, clusterSource));
                 //createConfiguration(source, clusterSource);
             }
         }
