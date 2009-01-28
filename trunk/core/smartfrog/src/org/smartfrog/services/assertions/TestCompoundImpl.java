@@ -447,11 +447,19 @@ public class TestCompoundImpl extends ConditionCompound
      * @param record exit status
      */
     @Override
-    public synchronized void sfTerminateWith(TerminationRecord record) {
+    public void sfTerminateWith(TerminationRecord record) {
         sendEvent(new TerminatedEvent(this, record));
         super.sfTerminateWith(record);
-        shutdown(actionTerminator);
-        shutdown(testsTerminator);
+        try {
+            shutdown(actionTerminator);
+        } finally {
+            actionTerminator = null;
+        }
+        try {
+            shutdown(testsTerminator);
+        } finally {
+            testsTerminator = null;
+        }
     }
 
     /**
