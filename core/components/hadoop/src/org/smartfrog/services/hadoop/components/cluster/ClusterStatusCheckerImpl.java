@@ -20,9 +20,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobTracker;
+import org.apache.hadoop.conf.Configuration;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.submitter.SubmitterImpl;
 import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
@@ -39,6 +41,7 @@ import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.net.URI;
 
 /**
  * Created 30-Apr-2008 14:20:50
@@ -106,6 +109,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      *
      * @return a client which may exist already
      * @throws SFHadoopException if the connection cannot be made
+     * @throws RemoteException for network problems
      */
 
     private synchronized JobClient createClientOnDemand() throws SmartFrogException, RemoteException {
@@ -113,7 +117,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             return client;
         }
         try {
-            ManagedConfiguration conf = new ManagedConfiguration(this);
+            ManagedConfiguration conf = ManagedConfiguration.createConfiguration(this, true, false);
             sfLog().info("Connecting to " + jobTracker);
             client = new JobClient(conf);
             return client;
@@ -148,6 +152,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * Check the cluster status
      *
      * @throws SFHadoopException on any problem with the checks
+     * @returns a cluster status string
      */
     private String checkClusterStatus() throws SmartFrogException {
 
@@ -157,19 +162,41 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             StringBuilder result = new StringBuilder();
 
             if (supportedFileSystem) {
+                Path sysDir = cluster.getSystemDir();
+                URI uri = sysDir.toUri();
+                ManagedConfiguration conf = (ManagedConfiguration) cluster.getConf();
+                String impl = "fs." + uri.getScheme() + ".impl";
+                String classname = conf.get(impl);
+                if(classname == null) {
+                    throw new SFHadoopException("File system " + uri + " will not load "
+                            +" - no configuration mapping for " + impl,
+                            this,
+                            conf);
+                }
                 try {
+                    conf.getClassByName(classname);
+                } catch (ClassNotFoundException e) {
+                    throw new SFHadoopException("File system " + uri + " will not load "
+                            + " - unable to locate class " + impl + " : "+e,
+                            e,
+                            this,
+                            conf);
+                }
+                try {
+                    result.append("Filesystem: ").append(uri).append(" ; ");
                     FileSystem fs = cluster.getFs();
-                    result.append("Filesystem: ").append(fs.getUri()).append(" ; ");
                 } catch (IOException e) {
-                    throw new SFHadoopException("File system will not load "
+                    throw new SFHadoopException("File system "+ uri + " will not load "
                             + e,
                             e,
-                            this);
+                            this,
+                            conf);
                 } catch (IllegalArgumentException e) {
                     throw new SFHadoopException("Bad File system URI"
                             + e,
                             e,
-                            this);
+                            this,
+                            conf);
                 }
             }
             if (jobTrackerLive) {
