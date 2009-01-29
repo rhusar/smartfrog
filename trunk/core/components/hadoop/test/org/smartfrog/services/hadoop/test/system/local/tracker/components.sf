@@ -44,7 +44,7 @@ testLocalJobTrackerForked extends testLocalJobTracker {
  * Test the local node
  */
 testJobSubmission extends ExpectDeploy {
-  description "bring up a Task Tracker";
+  description "Submit a job to a cluster and copy out the result";
 
   action extends LocalClusterCompound {
   
