@@ -23,7 +23,7 @@
     It requires
       -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 2.0 beta 2 or later from ant.apache.org
+      -Ivy 2.0 or later from ant.apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
@@ -972,7 +972,7 @@
   <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="2.0.0-rc2" />
+    <property name="ivy.version" value="2.0.0" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="../antbuild" />
@@ -994,6 +994,15 @@
       ${ivy.jar}
       Artifacts created in this build will not be published.
     </echo>
+  </target>
+
+  <target name="ivy-require-ivy" depends="ivy-properties" unless="ivy.found">
+    <fail >
+      No Ivy file found:
+      ${ivy.jar}
+      Either ivy.version is inconsistent with the artifacts in ${ivy.lib.dir}, or that directory
+      and/or the file inside it is missing
+    </fail>
   </target>
 
   <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">
