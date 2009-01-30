@@ -17,7 +17,7 @@
         description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"  extends="antxml"
         description="artifacts needed to compile the application"/>
-    <conf name="daemon" visibility="private"
+    <conf name="daemon" visibility="private" extends="test"
         description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="default,compile,antxml"
         description="the classpath needed to run tests"/>
@@ -27,8 +27,6 @@
         extends="redist"/>
     <conf name="antxml"
         description="extra dependencies for Ant XML output"/>
-
-
     <conf name="documentation"
           description="all documentation artifacts"/>
   </configurations>

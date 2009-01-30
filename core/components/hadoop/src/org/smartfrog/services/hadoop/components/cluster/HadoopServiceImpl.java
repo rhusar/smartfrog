@@ -237,7 +237,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * Get the deployer thread; may be null
      *
-     * @return
+     * @return the thread that is hosting the service
      */
     protected final ServiceDeployerThread getDeployerThread() {
         return deployerThread;

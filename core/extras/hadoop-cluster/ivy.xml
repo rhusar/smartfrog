@@ -14,29 +14,30 @@
   </configurations>
   -->
 <configurations defaultconfmapping="default">
-  <conf name="default" extends="master,runtime"
-      description="default configuration contains artifacts and runtime dependencies"/>
+  <conf name="default" extends="master,runtime"/>
   <conf name="build" visibility="private"
       description="artifacts needed to build the application"/>
   <conf name="compile" visibility="private"
       description="artifacts needed to compile the application"/>
-  <conf name="daemon" visibility="private"
+  <conf name="daemon" visibility="private" extends="test"
       description="the classpath needed to run smartfrog daemons"/>
-  <conf name="test" extends="default,compile"
+  <conf name="test" extends="default,compile,server"
       description="the classpath needed to run tests"/>
   <conf name="master" description="contains the artifact but no dependencies"/>
   <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
   <conf name="runtime" description="runtime but not the artifact"
       extends="redist"/>
+  <conf name="server" description="server-side dependencies"
+      extends="runtime"/>
   <conf name="documentation"
-        description="all documentation artifacts"/>
+      description="all documentation artifacts"/>
 </configurations>
 
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-anubis-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-anubis-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-hadoop-cluster" conf="documentation" ext="zip"/>
+    <artifact name="sf-hadoop-cluster" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
@@ -71,7 +72,7 @@
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
-        conf="runtime->server,default"/>
+        conf="server->server;compile->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-rpmtools" changing="true"
