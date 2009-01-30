@@ -1944,7 +1944,7 @@ Exist.
 
 
   <target name="ivy-properties" depends="init-common-simpledefinitions,load-versions" >
-    <property name="ivy.version" value="2.0.0-beta1" />
+    <property name="ivy.version" value="2.0.0" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
@@ -2135,6 +2135,22 @@ ${ivy.reports.dir}
         artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
+  <target name="ivy-warn-no-ivy" depends="ivy-properties" unless="ivy.found">
+    <echo level="error">
+      No Ivy file found:
+      ${ivy.jar}
+      Artifacts created in this build will not be published.
+    </echo>
+  </target>
+
+  <target name="ivy-require-ivy" depends="ivy-properties" unless="ivy.found">
+    <fail>
+      No Ivy file found:
+      ${ivy.jar}
+      Either ivy.version is inconsistent with the artifacts in ${ivy.lib.dir}, or that directory
+      and/or the file inside it is missing
+    </fail>
+  </target>
 
   <!--jars,-->
   <target name="ready-to-publish" depends="checksum-target-jar,ivy-report"/>
