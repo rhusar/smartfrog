@@ -39,14 +39,12 @@ HadoopCluster extends Compound {
   jobTracker extends ClusterJobTrackerCompound {
 
   }
-*/
 
-/*
+
   taskTracker extends ClusterTaskTrackerCompound {
 
-  }
+  }*/
 
-*/
 }
 
 sfConfig extends HadoopCluster;

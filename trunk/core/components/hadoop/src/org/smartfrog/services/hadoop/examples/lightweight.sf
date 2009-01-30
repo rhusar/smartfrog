@@ -166,7 +166,7 @@ TransientNameDataNodeCompound extends TransientNameNodeCompound {
 TransientJobTrackerCompound extends TransientHadoopCompound {
   description "A job tracker";
 
-  jobTracker extends LightweightJobTracker {
+  jobtracker extends LightweightJobTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     dataDir LAZY PARENT:ATTRIB dataDir;
     dataDirectories [dataDir];
@@ -185,7 +185,7 @@ TransientTaskTrackerCompound extends HadoopCompoundBase  {
 
   description "A compound with a task tracker";
 
-  taskTracker extends LightweightTaskTracker {
+  tasktracker extends LightweightTaskTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
     //yes, this is milliseconds. But there is a sleep involved too

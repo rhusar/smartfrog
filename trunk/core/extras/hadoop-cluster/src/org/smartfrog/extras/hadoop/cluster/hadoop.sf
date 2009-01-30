@@ -51,7 +51,6 @@ ClusterDataNodeCompound extends TransientDataNodeCompound {
   fs.default.name namenode.filesystem;
   //datanode:mapred.job.tracker.handler.count threads;
 }
-/*
 
 ClusterJobTrackerCompound extends TransientJobTrackerCompound  {
   threads WORKER_THREADS;
@@ -66,5 +65,4 @@ ClusterTaskTrackerCompound extends TransientJobTrackerCompound  {
   tasktracker.http.threads threads;
 }
 
-*/
 
