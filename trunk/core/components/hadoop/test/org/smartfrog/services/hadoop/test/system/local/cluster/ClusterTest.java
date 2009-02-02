@@ -38,6 +38,7 @@ public class ClusterTest extends HadoopTestBase {
         enablePortCheck();
         checkJobTracker();
         checkTaskTracker();
+        checkDataNode();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalCluster");
         terminateApplication();
         enableFailOnPortCheck();

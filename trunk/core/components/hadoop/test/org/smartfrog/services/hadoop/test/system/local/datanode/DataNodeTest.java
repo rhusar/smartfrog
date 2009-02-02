@@ -35,6 +35,7 @@ public class DataNodeTest extends HadoopTestBase {
     }
 
     public void testLocalDataNode() throws Throwable {
+        checkDataNode();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalDataNode");
         enableFailOnPortCheck();
     }
@@ -45,6 +46,7 @@ public class DataNodeTest extends HadoopTestBase {
     }
 
     public void testOrphanDatanode() throws Throwable {
+        checkDataNode();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanDatanode");
         enableFailOnPortCheck();
     }

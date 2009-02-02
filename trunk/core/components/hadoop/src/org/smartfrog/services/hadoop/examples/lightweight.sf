@@ -54,14 +54,9 @@ LightweightDataNode extends DataNode {
   dfs.datanode.handler.count ClientHandlerThreads;
   hostaddress HOSTNAME;
   any_port  (hostaddress ++ ":0");
-  dfs.datanode.http.address any_port;
-  dfs.datanode.https.address any_port;
-
-  /**
-   The datanode ipc server address and port.
-   If the port is 0 then the server will start on a free port.
-  */
-  dfs.datanode.ipc.address any_port;
+  dfs.datanode.http.address  (hostaddress ++ ":" ++ DataNodeHttpPort);
+  dfs.datanode.https.address (hostaddress ++ ":" ++ DataNodeHttpsPort);
+  dfs.datanode.address (hostaddress ++ ":" ++ DataNodeIpcPort);
 
   dfs.blockreport.intervalMsec 10000;
   dfs.blockreport.initialDelay 0;
@@ -76,7 +71,7 @@ LightweightDataNode extends DataNode {
 HadoopCompoundBase extends Compound {
   fs.default.name  FS.DEFAULT.NAME;
   nameNodeURL      NAME_NODE_URL;
-  dataNodeURL      DATA_NODE_URL ;
+  dataNodeURL      DATA_NODE_IPC_URL ;
   mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
 
   logDir extends TempDir {

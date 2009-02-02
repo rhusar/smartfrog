@@ -30,15 +30,26 @@ DUMP_CONF false;
 //set the flag to say : Delete directories on shutdown
 TEST_MODE true;
 
-NameNodeIpcPort "8020";
-NameNodeHttpPort "8021";
-DataNodeHttpPort "0";
+NameNodeIpcPort   "8020";
+NameNodeHttpPort  "8021";
+DataNodeHttpPort  "8022";
+DataNodeHttpsPort "8023";
+DataNodeIpcPort   "8024";
+
+
+DataNodeHttpPort2  "8032";
+DataNodeHttpsPort2 "8033";
+DataNodeIpcPort2   "8034";
+
+
 HandlerThreads 4;
 ClientHandlerThreads 2;
 HOSTNAME "127.0.0.1";
 FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort ++ "/");
 NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort ++ "/");
 DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpPort ++ "/");
+DATA_NODE_IPC_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeIpcPort ++ "/");
+
 STARTUP_SLEEP_TIME 5000;
 IPC_CONNECT_TIMEOUT 10000;
 //"ipc.client.connect.max.retries"
