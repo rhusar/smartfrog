@@ -355,6 +355,9 @@ MapReduceTestSequence extends JobTrackerSequence {
  }
 
 
+  io.sort 0.1;
+
+
   MRCompound extends Parallel {
     job extends TestJob  {
           //this is the job information
@@ -370,9 +373,10 @@ MapReduceTestSequence extends JobTrackerSequence {
       mapred.job.tracker jobTracker:mapred.job.tracker;
       keep.failed.task.files true;
       filename "";
-
-
+      fileRequired false;
       fs.default.name cluster:fs.default.name;
+      mapred.jar NULL;
+      io.sort.record.percent io.sort;
     }
 
     submission extends BlockingJobSubmitter {
@@ -381,6 +385,8 @@ MapReduceTestSequence extends JobTrackerSequence {
       mapred.mapper.new-api true;
       cluster LAZY PARENT:PARENT:cluster;
       fileRequired false;
+      mapred.jar NULL;
+      io.sort.record.percent io.sort;
     }
 
   }

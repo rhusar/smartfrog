@@ -86,7 +86,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         if (fileRequired) {
             String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String) null, false);
             if (filePath != null) {
-                if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
+                if (sfLog().isDebugEnabled()) sfLog().info("Job is using JAR " + filePath);
                 jobConf.setJar(filePath);
             }
         }
@@ -229,6 +229,23 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                     String message = "Job " + runningJob.getJobName()
                             +" ID=" + runningJob.getID().toString() 
                             + " has " + (succeeded ? " succeeded" : "failed");
+                    if(!succeeded) {
+                        StringBuilder builder = new StringBuilder();
+
+                        TaskCompletionEvent[] events = runningJob.getTaskCompletionEvents(0);
+                        for(TaskCompletionEvent event:events) {
+                            builder.append(event.isMapTask()?"\nMap: ":"\nReduce: ");
+                            builder.append(event.toString());
+                            if(event.getTaskStatus()!= TaskCompletionEvent.Status.SUCCEEDED) {
+                                String[] diagnostics = runningJob.getTaskDiagnostics(event.getTaskAttemptId());
+                                for(String line:diagnostics) {
+                                    builder.append("\n ");
+                                    builder.append(line);
+                                }
+                            }
+                        }
+                        message = message +builder.toString();
+                    }
                     sfLog().info(message);
                     if (terminateWhenJobFinishes) {
                         TerminationRecord record = succeeded ?

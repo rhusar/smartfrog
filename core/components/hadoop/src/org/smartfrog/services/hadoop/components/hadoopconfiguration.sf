@@ -540,8 +540,9 @@ HadoopConfiguration extends Prim {
   of records collected before the collection thread must block is equal
   to (r * x) / 4
   */
-  io.sort.record.percent 0.05;
-
+  //io.sort.record.percent 0.05;
+  io.sort.record.percent 0.1;
+  
   /*
   The soft limit in either the buffer or record collection
   buffers. Once reached, a thread will begin to spill the contents to disk
