@@ -50,7 +50,9 @@ TwoDataNodeCluster extends LocalDataNodeCompound {
 
   datanode2 extends datanode {
     dataDirectories [LAZY localDataDir2];
-    dfs.datanode.https.address any_port;
+    dfs.datanode.http.address  (hostaddress ++ ":" ++ DataNodeHttpPort2);
+    dfs.datanode.https.address (hostaddress ++ ":" ++ DataNodeHttpsPort2);
+    dfs.datanode.address (hostaddress ++ ":" ++ DataNodeIpcPort2)
   }
 }
 
@@ -252,6 +254,65 @@ JobTrackerSequence extends FileSystemLiveSequence {
 
 }
 
+CountingFile extends TextFile {
+    filename inputFileLocal;
+    createParentDirs true;
+    sfShouldTerminate true;
+    text ##1,one,un,ein
+2,two,deux,zwei
+3,three,trois,drei
+4,four,quatre,vier
+5,five,cinq,funf#;
+  }
+
+
+CopyFileInAndOut extends FileSystemLiveSequence {
+
+  testDir "/tests/CopyFileInAndOu";
+  testDirIn  (testDir ++ "/in");
+  testDirOut (testDir ++ "/out");
+  testDirWorking (testDir ++ "/working");
+  testFile (testDirIn ++ "/in.txt");
+  inputFileDFS testFile;
+  outputFileDFS ( testDirOut ++ "/in.txt");
+  LocalDataDir PROPERTY test.work.dir;
+  inputFileLocal (LocalDataDir  ++ "/in.txt")
+  outputFileLocal (LocalDataDir  ++ "/out.txt")
+
+  inputFile extends CountingFile;
+
+
+  CopyDataIn extends DfsCopyFileIn {
+    cluster LAZY PARENT:cluster;
+    source inputFileLocal;
+    dest testFile;
+    sfShouldTerminate true;
+  }
+
+  SourceExists extends DfsPathExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path inputFileDFS;
+  }
+
+  lsIn extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirIn;
+  }
+
+  ResultExists extends DfsPathExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path testFile;
+  }
+
+  CopyDataOut extends DfsCopyFileOut {
+    cluster LAZY PARENT:cluster;
+    source testFile;
+    dest outputFileLocal;
+    sfShouldTerminate true;
+  }
+
+}
+
 /**
  * this is a complete MR workflow
  */
@@ -268,16 +329,7 @@ MapReduceTestSequence extends JobTrackerSequence {
   inputFileLocal (LocalDataDir  ++ "/in.txt")
   outputFileLocal (LocalDataDir  ++ "/out.txt")
 
-  inputFile extends TextFile {
-    filename inputFileLocal;
-    createParentDirs true;
-    sfShouldTerminate true;
-    text ##1,one,un,ein
-2,two,deux,zwei
-3,three,trois,drei
-4,four,quatre,vier
-5,five,cinq,funf#;
-  }
+  inputFile extends CountingFile;
 
      
   CopyDataIn extends DfsCopyFileIn {

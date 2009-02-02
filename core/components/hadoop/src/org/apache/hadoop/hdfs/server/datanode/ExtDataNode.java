@@ -26,10 +26,14 @@ import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.apache.hadoop.net.NetUtils;
+import org.apache.hadoop.conf.Configuration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractList;
+import java.net.BindException;
+import java.net.InetSocketAddress;
 
 /**
  * This class is in the hadoop dfs package to get at package scoped operations and internal datastructures that are only
@@ -66,9 +70,44 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
      */
     @Override
     public void innerStart() throws IOException {
-        super.innerStart();
-        register();
-        startWorkerThread();
+      try {
+          super.innerStart();
+      } catch (BindException e) {
+          InetSocketAddress http = getHttpAddress(getConf());
+          InetSocketAddress https = getHttpsAddress(getConf(), http.getHostName());
+          InetSocketAddress ipc = getIpcAddress(getConf());
+
+          throw (BindException)new BindException("Failed to bind listening ports : " + e
+                  +" HTTP="+http
+                  +" HTTPS="+https
+                  +" IPC="+ipc).initCause(e);
+      }
+      register();
+      startWorkerThread();
+    }
+
+    public InetSocketAddress getHttpsAddress(Configuration conf, String hostname) {
+
+        return NetUtils.createSocketAddr(conf.get(
+                "dfs.datanode.https.address", hostname + ":" + 0));
+    }
+
+    public InetSocketAddress getHttpAddress(Configuration conf) {
+        String address =
+                NetUtils.getServerAddress(conf,
+                        "dfs.datanode.info.bindAddress",
+                        "dfs.datanode.info.port",
+                        "dfs.datanode.http.address");
+        return NetUtils.createSocketAddr(address);
+    }
+
+    public InetSocketAddress getIpcAddress(Configuration conf) {
+        String address =
+                NetUtils.getServerAddress(conf,
+                        "dfs.datanode.bindAddress",
+                        "dfs.datanode.port",
+                        "dfs.datanode.address");
+        return NetUtils.createSocketAddr(address);
     }
 
     /**

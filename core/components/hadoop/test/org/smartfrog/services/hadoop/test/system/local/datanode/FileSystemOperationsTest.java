@@ -31,7 +31,16 @@ public class FileSystemOperationsTest extends HadoopTestBase {
 
     public FileSystemOperationsTest(String name) {
         super(name);
+    }
+
+    /**
+     * Sets up the fixture,by extracting the hostname and classes dir
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
         enablePortCheck();
+        checkDataNode();
     }
 
     public void testClusterShutDownCleanly() throws Throwable {
@@ -44,6 +53,10 @@ public class FileSystemOperationsTest extends HadoopTestBase {
 
     public void testClusterShutDownCleanly2() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+    }
+
+    public void testFileSystemCopyFileInAndOut() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemCopyFileInAndOut");
     }
 
 }

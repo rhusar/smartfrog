@@ -87,6 +87,17 @@ testFileSystemOperations extends LocalDataNodeTest {
 }
 
 
+testFileSystemCopyFileInAndOut extends LocalDataNodeTest {
+
+  description "copy a file in and out the file system";
+
+  tests extends CopyFileInAndOut {
+
+    namenode LAZY action:namenode;
+    datanode LAZY action:datanode;;
+  }
+}
+
 
 
 /**

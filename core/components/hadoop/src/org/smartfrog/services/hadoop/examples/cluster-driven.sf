@@ -108,7 +108,6 @@ DataNodeClusterCompound extends NameNodeClusterCompound {
     cluster LAZY PARENT:conf;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
-    //dfs.datanode.address dataNodeURL  ;
   }
 
 }
