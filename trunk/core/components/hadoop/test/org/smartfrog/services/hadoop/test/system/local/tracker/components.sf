@@ -57,6 +57,10 @@ testJobSubmission extends ExpectDeploy {
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
+
+
+    //action:cluster:io.sort.record.percent io.sort;
+
   }
 
 
