@@ -19,6 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
+import java.util.List;
+
+
 /**
  * Created 09-Oct-2008 13:47:59
  */
@@ -54,4 +57,11 @@ public interface ServiceInfo {
      */
 
     int getLiveWorkerCount();
+
+    /**
+     * Get a list of binding information; the names of ports in use/urls, with their configuration names
+     * This can be propagated back to the live component
+     * @return the binding information
+     */
+    List<BindingTuple> getBindingInformation();
 }

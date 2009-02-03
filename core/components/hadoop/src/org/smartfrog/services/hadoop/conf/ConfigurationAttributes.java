@@ -283,4 +283,5 @@ public interface ConfigurationAttributes extends Remote {
 
     /** {@value} */
     String USER_NAME = "user.name";
+    String MAPRED_TASK_TRACKER_REPORT_ADDRESS = "mapred.task.tracker.report.address";
 }

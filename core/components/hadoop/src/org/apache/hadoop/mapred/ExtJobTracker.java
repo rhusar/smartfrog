@@ -22,11 +22,16 @@ package org.apache.hadoop.mapred;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.util.NodeUtils;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.BindingTuple;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -34,7 +39,7 @@ import java.io.IOException;
  *
  */
 
-public class ExtJobTracker extends JobTracker implements ServiceInfo  {
+public class ExtJobTracker extends JobTracker implements ServiceInfo, ConfigurationAttributes {
 
     private static final Log LOG= LogFactory.getLog(ExtJobTracker.class);
     private ServiceStateChangeNotifier notifier;
@@ -102,6 +107,22 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo  {
     //@Override
     public int getLiveWorkerCount() {
         return getNumResolvedTaskTrackers();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the binding information
+     */
+    //@Override
+    public List<BindingTuple> getBindingInformation() {
+        List<BindingTuple> bindings = new ArrayList<BindingTuple>();
+        bindings.add(
+                NodeUtils.toBindingTuple(MAPRED_JOB_TRACKER, "ipc",
+                        interTrackerServer.getListenerAddress() ));
+        bindings.add(new BindingTuple(MAPRED_JOB_TRACKER_HTTP_ADDRESS,
+                NodeUtils.toURL("http", localMachine ,getInfoPort())));
+        return bindings;
     }
 
     /**

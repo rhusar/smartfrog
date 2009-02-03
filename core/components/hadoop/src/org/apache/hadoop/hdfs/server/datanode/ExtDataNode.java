@@ -22,16 +22,21 @@
 package org.apache.hadoop.hdfs.server.datanode;
 
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.util.NodeUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractList;
+import java.util.List;
+import java.util.ArrayList;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 
@@ -40,7 +45,7 @@ import java.net.InetSocketAddress;
  * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
  * will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode implements ServiceInfo {
+public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationAttributes {
 
     private volatile boolean stopped;
     private ExtDataNodeThread worker;
@@ -77,36 +82,39 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
           InetSocketAddress https = getHttpsAddress(getConf(), http.getHostName());
           InetSocketAddress ipc = getIpcAddress(getConf());
 
-          throw (BindException)new BindException("Failed to bind listening ports : " + e
-                  +" HTTP="+http
-                  +" HTTPS="+https
-                  +" IPC="+ipc).initCause(e);
+          throw (BindException) new BindException("Failed to bind listening ports : " + e
+                  + " HTTP=" + http
+                  + " HTTPS=" + https
+                  + " IPC=" + ipc).initCause(e);
       }
       register();
+
+
       startWorkerThread();
     }
 
     public InetSocketAddress getHttpsAddress(Configuration conf, String hostname) {
 
         return NetUtils.createSocketAddr(conf.get(
-                "dfs.datanode.https.address", hostname + ":" + 0));
+                DFS_DATANODE_HTTPS_ADDRESS,
+                hostname + ":" + 0));
     }
 
     public InetSocketAddress getHttpAddress(Configuration conf) {
         String address =
                 NetUtils.getServerAddress(conf,
-                        "dfs.datanode.info.bindAddress",
-                        "dfs.datanode.info.port",
-                        "dfs.datanode.http.address");
+                        DFS_DATANODE_INFO_BIND_ADDRESS,
+                        DFS_DATANODE_INFO_BIND_PORT,
+                        DFS_DATANODE_HTTP_ADDRESS);
         return NetUtils.createSocketAddr(address);
     }
 
     public InetSocketAddress getIpcAddress(Configuration conf) {
         String address =
                 NetUtils.getServerAddress(conf,
-                        "dfs.datanode.bindAddress",
-                        "dfs.datanode.port",
-                        "dfs.datanode.address");
+                        DFS_DATANODE_BIND_ADDRESS,
+                        DFS_DATANODE_PORT,
+                        DFS_DATANODE_ADDRESS);
         return NetUtils.createSocketAddr(address);
     }
 
@@ -160,6 +168,20 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
     public int getWebPort() {
         //return this.infoServer.getPort();
         return ServiceInfo.PORT_UNDEFINED;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the binding information
+     */
+    public List<BindingTuple> getBindingInformation() {
+        List<BindingTuple> bindings=new ArrayList<BindingTuple>();
+        bindings.add(NodeUtils.toBindingTuple(DFS_DATANODE_ADDRESS, "http", getSelfAddr()));
+        bindings.add(new BindingTuple(DFS_DATANODE_HTTP_ADDRESS, 
+                NodeUtils.toURL("http", dnRegistration.getHost(), dnRegistration.getInfoPort() )));
+        return bindings;
     }
 
     /**
