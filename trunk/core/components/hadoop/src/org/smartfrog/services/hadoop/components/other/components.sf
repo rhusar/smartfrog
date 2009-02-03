@@ -37,3 +37,50 @@ ServiceValueChecker extends Prim {
   sfClass "org.smartfrog.services.hadoop.components.other.ServiceValueCheckerImpl"
   expectedValues [];
 }
+
+CheckJspClasses extends LoadClass {
+
+  classes [
+   classname
+   ];
+  create false;
+  retain false;
+  message "Failed to load a JSP class. These may not have been compiled in correctly";
+  sfShouldTerminate true;
+}
+
+HadoopJspClasses extends CheckJspClasses {
+   dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
+   browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
+   analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
+   classes [dfshealth, browseBlock,  analyseJobHistory ];
+
+}
+
+CheckNamenodeJspClass extends CheckJspClasses{
+  classname HadoopJspClasses:dfshealth;
+}
+
+CheckDatanodeJspClass extends CheckJspClasses{
+  classname HadoopJspClasses:browseBlock;
+}
+
+CheckJobtrackerJspClass extends CheckJspClasses{
+  classname HadoopJspClasses:analyseJobHistory;
+}
+
+
+
+/**
+ * helper component to check that we can load JSP classes
+ */
+CheckJava6PlusClassesPresent extends LoadClass {
+  classes [
+   "java.net.CookieManager"
+   ];
+  create false;
+  retain false;
+  message "Failed to load a Java 6 class. Hadoop requires Java 6 or later";
+  sfShouldTerminate true;
+}
+

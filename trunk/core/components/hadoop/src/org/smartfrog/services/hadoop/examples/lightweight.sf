@@ -192,3 +192,15 @@ TransientTaskTrackerCompound extends HadoopCompoundBase  {
   }
 }
 
+/**
+ * This is either a sequence to check the system is well
+ */
+
+
+HealthCheck extends Sequence {
+  checkNamenodeJspClass CheckNamenodeJspClass;
+  checkJobtrackerJspClass CheckJobtrackerJspClass;
+  checkDatanodeJspClass CheckDatanodeJspClass;
+  checkJspClassesPresent  HadoopJspClasses ;
+  checkJava6PlusClassesPresent CheckJava6PlusClassesPresent;
+}

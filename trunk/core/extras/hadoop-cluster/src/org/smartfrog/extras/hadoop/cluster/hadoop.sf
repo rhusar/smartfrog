@@ -68,6 +68,10 @@ ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
 
 HadoopClusterCompound extends Compound {
 
+  health extends HadoopJspClasses {
+    sfShouldTerminate false;
+  }
+
 }
 
 HadoopFilesystem extends HadoopClusterCompound {
@@ -88,6 +92,7 @@ HadoopFilesystem extends HadoopClusterCompound {
 HadoopCluster extends HadoopFilesystem {
 
 
+
   jobTracker extends ClusterJobTrackerCompound {
 
   }
@@ -97,4 +102,11 @@ HadoopCluster extends HadoopFilesystem {
 
   }
 
+}
+
+ForkedCluster extends HadoopCluster {
+  jobTracker:sfProcessName "jobTracker";
+  taskTracker:sfProcessName "taskTracker";
+  namenode:sfProcessName "namenode";
+  datanode:sfProcessName "datanode";
 }

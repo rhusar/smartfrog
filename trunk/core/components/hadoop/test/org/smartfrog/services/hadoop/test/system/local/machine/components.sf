@@ -75,3 +75,8 @@ testBasicDiskSpaceSkipMissingDir extends ExpectTerminate {
     skipAbsentDirectories true;
   }
 }
+
+testJvmHealth extends ExpectTerminate {
+  description "check the jvm health";
+  action extends HealthCheck;
+}

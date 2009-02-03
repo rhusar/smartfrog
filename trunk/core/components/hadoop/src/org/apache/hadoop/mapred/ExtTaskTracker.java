@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Task tracker with some lifecycle support
+ * Task tracker with some lifecycle support and state information
  */
 
 public class ExtTaskTracker extends TaskTracker implements ServiceInfo, ConfigurationAttributes {
@@ -104,7 +104,12 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     //@Override
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings = new ArrayList<BindingTuple>();
-        bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_REPORT_ADDRESS, "http", getTaskTrackerReportAddress()));
+        bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_REPORT_ADDRESS, "http",
+                getTaskTrackerReportAddress()));
+        bindings.add(new BindingTuple(MAPRED_TASK_TRACKER_HTTP_ADDRESS,
+                NodeUtils.toURL("http",
+                        getTaskTrackerReportAddress().getHostName(), 
+                        getWebPort())));
         return bindings;
     }
 
