@@ -53,4 +53,7 @@ public class MachineTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testBasicDiskSpaceSkipMissingDir");
     }
 
+    public void testJvmHealth() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJvmHealth");
+    }
 }

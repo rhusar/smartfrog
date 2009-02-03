@@ -56,7 +56,10 @@
   <target name="init" depends="common.init">
     <property name="namenode" value="localhost" />
     <property name="test.namenode" value="${namenode}" />
-    <property name="cluster.sf" value="org/smartfrog/extras/hadoop/cluster/cluster.sf" />
+    <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
+    <property name="cluster.sf" value="${cluster}/cluster.sf" />
+    <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
+
     <property name="deploy.sf" value="${cluster.sf}" />
     <property name="deploy.host" value="${namenode}" />
   </target>
@@ -78,6 +81,14 @@
     <deploy>
       <application name="cluster"
               descriptor="/${cluster.sf}"/>
+    </deploy>
+  </target>
+
+  <target name="cluster2" depends="ready-to-deploy"
+      description="deploy a forked cluster">
+    <deploy>
+      <application name="cluster"
+          descriptor="/${cluster2.sf}"/>
     </deploy>
   </target>
 
