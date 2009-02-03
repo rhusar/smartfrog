@@ -24,16 +24,21 @@ package org.apache.hadoop.hdfs.server.namenode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.sfcore.prim.Prim;
+import org.apache.hadoop.util.NodeUtils;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
  */
-public class ExtNameNode extends NameNode implements ServiceInfo {
+public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationAttributes {
 
     private boolean checkRunning;
     private Prim owner;
@@ -90,11 +95,6 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
     /**
      * Return an extended service name
      *
@@ -143,6 +143,18 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
         return getNamesystem().heartbeats.size();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return the binding information
+     */
+    //@Override
+    public List<BindingTuple> getBindingInformation() {
+        List<BindingTuple> bindings = new ArrayList<BindingTuple>();
+        bindings.add(NodeUtils.toBindingTuple(FS_DEFAULT_NAME, "hdfs", getNameNodeAddress()));
+        bindings.add(NodeUtils.toBindingTuple(DFS_HTTP_ADDRESS, "http", getHttpAddress()));
+        return bindings;
+    }
 
     /**
      * Override point - aethod called whenever there is a state change.

@@ -25,12 +25,16 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
+import org.smartfrog.services.hadoop.core.ServiceInfo;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.WorkflowThread;
@@ -80,7 +84,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        expectNodeTermination = true; //conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
+        expectNodeTermination = true;
+        //conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
         completeName = sfCompleteName();
     }
 
@@ -374,6 +379,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         return service;
     }
 
+
     /**
      * Set the current service value; null is acceptable
      *
@@ -387,17 +393,25 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         this.service = service;
     }
 
+    /**
+     * Get the service, cast to a ServiceInfo
+     * @return the service information interface
+     */
+    protected final ServiceInfo getServiceInfo() {
+        return (ServiceInfo) getService();
+    }
+
 
     /**
-     * Deploy a service. It must be in the CREATED state. The field {@link #service} is set to the service argument,
-     * which must be null. There is special handling for wrapped Jetty exceptions
-     *
-     * @param hadoopService service to bind to and deploy.
-     * @param conf          configuration -used for diagnostics
-     * @throws SmartFrogException           on any problem
-     * @throws SFHadoopException            for Jetty exceptions and other causes of trouble
-     * @throws SmartFrogDeploymentException on some wrapped IOExceptions
-     */
+    * Deploy a service. It must be in the CREATED state. The field {@link #service} is set to the service argument,
+    * which must be null. There is special handling for wrapped Jetty exceptions
+    *
+    * @param hadoopService service to bind to and deploy.
+    * @param conf          configuration -used for diagnostics
+    * @throws SmartFrogException           on any problem
+    * @throws SFHadoopException            for Jetty exceptions and other causes of trouble
+    * @throws SmartFrogDeploymentException on some wrapped IOExceptions
+    */
     protected synchronized void deployService(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         deployerThread = createDeployerThread(hadoopService, conf);
         deployerThread.start();
@@ -522,6 +536,10 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         Service s = getService();
         if (s != null && !sfIsTerminated) {
             sfLog().info(getServiceName() + " deployment complete: service is: " + s);
+            //now we copy over the port values
+            ServiceInfo si = getServiceInfo();
+            List<BindingTuple> bindingTupleList = si.getBindingInformation();
+            copyBindingList(this, "live." ,bindingTupleList);
         } else {
             String message = getServiceName() + " deployment completed after component was terminated."
                     + "Hadoop service is " + hadoopService;
@@ -534,13 +552,29 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-     * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)} to create the service, then {@link
-     * #deployService(Service, ManagedConfiguration)}. This usually starts an asynchronous thread to deploy the service
-     * via {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)}
-     *
-     * @throws SmartFrogException wrapping any other exception thrown
-     * @throws RemoteException    network problems
+     * Copy the binding list
+     * @param target prim to update
+     * @param prefix prefix to insert for every attribute (use "" for none)
+     * @param bindingTupleList a list of binding tuples
+     * @throws SmartFrogRuntimeException failure to update
+     * @throws RemoteException network trouble
      */
+    protected final void copyBindingList(Prim target, String prefix, List<BindingTuple> bindingTupleList)
+            throws SmartFrogRuntimeException, RemoteException {
+        for (BindingTuple binding: bindingTupleList) {
+            target.sfReplaceAttribute(prefix + binding.name, binding.value);
+        }
+
+    }
+
+    /**
+    * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)} to create the service, then {@link
+    * #deployService(Service, ManagedConfiguration)}. This usually starts an asynchronous thread to deploy the service
+    * via {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)}
+    *
+    * @throws SmartFrogException wrapping any other exception thrown
+    * @throws RemoteException    network problems
+    */
     protected void createAndDeployService() throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = createConfiguration();
         configuration = conf;

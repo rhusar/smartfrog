@@ -21,17 +21,22 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.util.NodeUtils;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.BindingTuple;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Task tracker with some lifecycle support
  */
 
-public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
+public class ExtTaskTracker extends TaskTracker implements ServiceInfo, ConfigurationAttributes {
 
     private static final Log LOG = LogFactory.getLog(ExtTaskTracker.class);
     private ServiceStateChangeNotifier notifier;
@@ -89,6 +94,18 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
     //@Override
     public int getLiveWorkerCount() {
         return workerThreads;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the binding information
+     */
+    //@Override
+    public List<BindingTuple> getBindingInformation() {
+        List<BindingTuple> bindings = new ArrayList<BindingTuple>();
+        bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_REPORT_ADDRESS, "http", getTaskTrackerReportAddress()));
+        return bindings;
     }
 
     /**
