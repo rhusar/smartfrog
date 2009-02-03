@@ -81,6 +81,14 @@
     </deploy>
   </target>
 
+  <target name="hdfs" depends="ready-to-deploy"
+      description="deploy a hdfs filesystem">
+    <deploy>
+      <application name="hdfs"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/hdfs.sf"/>
+    </deploy>
+  </target>
+
    <target name="namenode" depends="ready-to-deploy"
       description="deploy a namenode">
     <deploy>
@@ -97,4 +105,21 @@
     </deploy>
   </target>
 
+  <target name="jobtracker" depends="ready-to-deploy"
+      description="deploy a jobtracker">
+    <deploy>
+      <application name="jobtracker"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/jobtracker/default.sf"/>
+    </deploy>
+  </target>
+
+
+  <target name="tasktracker" depends="ready-to-deploy"
+      description="deploy a tasktracker">
+    <deploy>
+      <application name="tasktracker"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/tasktracker/default.sf"/>
+    </deploy>
+  </target>
+  
 </project>

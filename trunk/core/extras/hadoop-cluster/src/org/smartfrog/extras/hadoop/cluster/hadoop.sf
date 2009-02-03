@@ -39,7 +39,7 @@ Bindings extends {
 
 
 
-ClusterNameNodeCompound extends TransientNameNodeCompound{
+ClusterNameNodeCompound extends TransientNameNodeCompound {
   threads WORKER_THREADS;
   fs.default.name namenode.filesystem;
   namenode:dfs.datanode.handler.count threads;
@@ -59,10 +59,42 @@ ClusterJobTrackerCompound extends TransientJobTrackerCompound  {
 }
 
 
-ClusterTaskTrackerCompound extends TransientJobTrackerCompound  {
+ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
   threads WORKER_THREADS;
   fs.default.name namenode.filesystem;
   tasktracker.http.threads threads;
 }
 
 
+HadoopClusterCompound extends Compound {
+
+}
+
+HadoopFilesystem extends HadoopClusterCompound {
+
+
+  namenode extends ClusterNameNodeCompound {
+
+  }
+
+  datanode extends ClusterDataNodeCompound {
+
+  }
+
+
+}
+
+
+HadoopCluster extends HadoopFilesystem {
+
+
+  jobTracker extends ClusterJobTrackerCompound {
+
+  }
+
+
+  taskTracker extends ClusterTaskTrackerCompound {
+
+  }
+
+}
