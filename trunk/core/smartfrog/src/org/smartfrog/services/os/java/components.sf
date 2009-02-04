@@ -109,5 +109,16 @@ LoadClass extends WorkflowPrim {
     create false;
     retain true;
     message "";
+    //flag to say we are conditional
+    isCondition false;
 }
 
+/**
+ * Load a class as a condition
+ */
+
+LoadClassCondition extends LoadClass {
+    //flag to say we are conditional
+    isCondition true;
+    retain false;
+}
