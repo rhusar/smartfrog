@@ -732,7 +732,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		attributeTags.remove(key);
 		attributeTagsWrappers.remove(key);
 		
-		CoreSolver.getInstance().addUndoPut(this, key, r);
+		if (r!=null) CoreSolver.getInstance().addUndoPut(this, key, r);
 		return r;
 	}
 
