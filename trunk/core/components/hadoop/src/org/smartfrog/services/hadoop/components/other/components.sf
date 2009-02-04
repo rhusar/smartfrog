@@ -49,24 +49,45 @@ CheckJspClasses extends LoadClass {
   sfShouldTerminate true;
 }
 
+
+CheckJasperClasses extends CheckJspClasses {
+  classes [
+    "javax.servlet.http.HttpServletRequest",
+    "org.apache.jasper.runtime.HttpJspBase",
+    "org.apache.jasper.runtime.JspSourceDependent",
+    "javax.servlet.jsp.JspWriter"
+  ];
+}
+
 HadoopJspClasses extends CheckJspClasses {
-   dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
-   browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
-   analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
-   classes [dfshealth, browseBlock,  analyseJobHistory ];
+   nn_dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
+   nn_dfsnodelist"org.apache.hadoop.hdfs.server.namenode.dfsnodelist_jsp";
+   dn_browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
+   dn_browseDirectory   "org.apache.hadoop.hdfs.server.datanode.browseDirectory_jsp";
+   dn_tail "org.apache.hadoop.hdfs.server.datanode.tail_jsp";
+   jt_analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
+   tt_tasktracker  "org.apache.hadoop.mapred.tasktracker_jsp";
+   classes [
+    nn_dfshealth,
+//    dn_browseBlock,
+//    dn_browseDirectory,
+//    dn_tail,
+    jt_analyseJobHistory,
+    tt_tasktracker  
+    ];
 
 }
 
 CheckNamenodeJspClass extends CheckJspClasses{
-  classname HadoopJspClasses:dfshealth;
+  classname HadoopJspClasses:nn_dfshealth;
 }
 
 CheckDatanodeJspClass extends CheckJspClasses{
-  classname HadoopJspClasses:browseBlock;
+  classname HadoopJspClasses:dn_browseBlock;
 }
 
 CheckJobtrackerJspClass extends CheckJspClasses{
-  classname HadoopJspClasses:analyseJobHistory;
+  classname HadoopJspClasses:jt_analyseJobHistory;
 }
 
 
