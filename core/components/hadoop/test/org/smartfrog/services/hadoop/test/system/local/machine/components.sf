@@ -78,5 +78,41 @@ testBasicDiskSpaceSkipMissingDir extends ExpectTerminate {
 
 testJvmHealth extends ExpectTerminate {
   description "check the jvm health";
+  action:sfShouldTerminate true;
   action extends HealthCheck;
 }
+
+testJSPHealth extends ExpectTerminate {
+  description "check for JSP pages";
+}
+
+
+testCheckNamenodeJspClass extends testJSPHealth {
+  action extends CheckNamenodeJspClass {
+    sfShouldTerminate true;
+  }
+}
+
+testCheckDatanodeJspClass extends testJSPHealth {
+  action extends CheckDatanodeJspClass {
+    sfShouldTerminate true;
+  }
+}
+testCheckJobtrackerJspClass extends testJSPHealth {
+  action extends CheckJobtrackerJspClass {
+    sfShouldTerminate true;
+  }
+}
+testCheckJasperClasses extends testJSPHealth {
+  action extends CheckJasperClasses {
+    sfShouldTerminate true;
+  }
+}
+
+testHadoopJspClasses extends testJSPHealth {
+  action extends HadoopJspClasses {
+    sfShouldTerminate true;
+  }
+}
+
+

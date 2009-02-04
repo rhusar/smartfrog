@@ -26,31 +26,34 @@ import org.smartfrog.test.DeployingTestBase;
 /**
  *
  */
-public class MachineTest extends DeployingTestBase {
+public class HealthTest extends DeployingTestBase {
     public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/machine/";
 
-    public MachineTest(String name) {
+    public HealthTest(String name) {
         super(name);
     }
 
-    public void testJasperOnClasspath() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJasperOnClasspath");
+    public void testCheckDatanodeJspClass() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckDatanodeJspClass");
     }
 
-    public void testBasicDiskSpace() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testBasicDiskSpace");
+    public void testCheckNamenodeJspClass() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckNamenodeJspClass");
     }
 
-    public void testPetaByte() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testPetaByte");
+    public void testCheckJobtrackerJspClass() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJobtrackerJspClass");
     }
 
-    public void testBasicDiskSpaceMissingDir() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testBasicDiskSpaceMissingDir");
+    public void testCheckJasperClasses() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJasperClasses");
     }
 
-    public void testBasicDiskSpaceSkipMissingDir() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testBasicDiskSpaceSkipMissingDir");
+    public void testHadoopJspClasses() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopJspClasses");
     }
 
+    public void testJvmHealth() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJvmHealth");
+    }
 }
