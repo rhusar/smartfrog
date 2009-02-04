@@ -47,6 +47,15 @@ CheckJspClasses extends LoadClass {
   retain false;
   message "Failed to load a JSP class. These may not have been compiled in correctly";
   sfShouldTerminate true;
+
+     nn_jsphelper "org.apache.hadoop.hdfs.server.namenode.JspHelper";
+   nn_dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
+   nn_dfsnodelist"org.apache.hadoop.hdfs.server.namenode.dfsnodelist_jsp";
+   dn_browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
+   dn_browseDirectory   "org.apache.hadoop.hdfs.server.datanode.browseDirectory_jsp";
+   dn_tail "org.apache.hadoop.hdfs.server.datanode.tail_jsp";
+   jt_analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
+   tt_tasktracker  "org.apache.hadoop.mapred.tasktracker_jsp";
 }
 
 
@@ -60,34 +69,50 @@ CheckJasperClasses extends CheckJspClasses {
 }
 
 HadoopJspClasses extends CheckJspClasses {
-   nn_dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
-   nn_dfsnodelist"org.apache.hadoop.hdfs.server.namenode.dfsnodelist_jsp";
-   dn_browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
-   dn_browseDirectory   "org.apache.hadoop.hdfs.server.datanode.browseDirectory_jsp";
-   dn_tail "org.apache.hadoop.hdfs.server.datanode.tail_jsp";
-   jt_analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
-   tt_tasktracker  "org.apache.hadoop.mapred.tasktracker_jsp";
+
    classes [
+    nn_jsphelper,
     nn_dfshealth,
-//    dn_browseBlock,
-//    dn_browseDirectory,
-//    dn_tail,
+    nn_dfsnodelist,
+    dn_browseBlock,
+    dn_browseDirectory,
+    dn_tail,
     jt_analyseJobHistory,
     tt_tasktracker  
     ];
 
 }
 
-CheckNamenodeJspClass extends CheckJspClasses{
-  classname HadoopJspClasses:nn_dfshealth;
+CheckNamenodeJspClass extends CheckJspClasses {
+     classes [
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.jsp.JspWriter",
+    "org.apache.hadoop.conf.Configuration",
+    "org.apache.hadoop.hdfs.DFSClient",
+    "org.apache.hadoop.hdfs.protocol.DatanodeID",
+    "org.apache.hadoop.hdfs.protocol.DatanodeInfo",
+    "org.apache.hadoop.hdfs.protocol.LocatedBlock",
+    "org.apache.hadoop.hdfs.protocol.FSConstants",
+    "org.apache.hadoop.hdfs.server.common.HdfsConstants",
+    "org.apache.hadoop.hdfs.server.common.UpgradeStatusReport",
+    "org.apache.hadoop.hdfs.server.datanode.DataNode",
+    "org.apache.hadoop.fs.Path",
+    "org.apache.hadoop.util.StringUtils",
+    "org.apache.hadoop.net.NetUtils",
+    "org.apache.hadoop.security.UnixUserGroupInformation",
+    nn_jsphelper,
+    nn_dfshealth,
+    nn_dfsnodelist
+    ];
+
 }
 
-CheckDatanodeJspClass extends CheckJspClasses{
-  classname HadoopJspClasses:dn_browseBlock;
+CheckDatanodeJspClass extends CheckJspClasses {
+  classname dn_browseBlock;
 }
 
-CheckJobtrackerJspClass extends CheckJspClasses{
-  classname HadoopJspClasses:jt_analyseJobHistory;
+CheckJobtrackerJspClass extends CheckJspClasses {
+  classname jt_analyseJobHistory;
 }
 
 
