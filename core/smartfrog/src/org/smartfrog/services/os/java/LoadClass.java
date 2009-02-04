@@ -44,4 +44,9 @@ public interface LoadClass extends Remote {
      * @value
      */
     String ATTR_MESSAGE = "message";
+
+    /**
+     * @value
+     */
+    String ATTR_IS_CONDITION = "isCondition";
 }
