@@ -23,7 +23,41 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/options.sf"
 
+CLUSTER_UPTIME 10;
 
-sfConfig extends Compound {
-
+SleepSequence extends Sequence {
+  sleep extends Delay {
+    time (CLUSTER_UPTIME * 1000);
+  }
 }
+
+ExpectLive extends ExpectDeploy {
+
+  tests SleepSequence;
+}
+
+testCluster extends ExpectLive {
+  action HadoopCluster;
+}
+
+testForkedCluster extends ExpectLive {
+  action ForkedCluster;
+}
+
+testHDFS extends ExpectLive {
+  action HadoopFilesystem;
+}
+
+testAnubis extends ExpectLive {
+  action HadoopAnubisService;
+}
+
+
+testJasperHealth extends ExpectTerminate {
+  action CheckJasperClasses;
+}
+
+testHealth extends ExpectTerminate {
+  action HadoopJspClasses;
+}
+

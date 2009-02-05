@@ -25,14 +25,14 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 05-Jan-2009 16:12:47
  */
 
-public class ClusterTest extends DeployingTestBase implements Names {
+public class FilesystemTest extends DeployingTestBase implements Names {
 
 
-    public ClusterTest(String name) {
+    public FilesystemTest(String name) {
         super(name);
     }
 
-    public void testCluster() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCluster.sf");
+    public void testHDFS() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHDFS.sf");
     }
 }
