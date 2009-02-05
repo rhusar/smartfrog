@@ -42,7 +42,7 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-
+  <property name="system.tests.enabled" value="true"/>
   <!-- override point -->
   <property file="build.properties"/>
 
@@ -87,7 +87,7 @@
   <target name="cluster2" depends="ready-to-deploy"
       description="deploy a forked cluster">
     <deploy>
-      <application name="cluster"
+      <application name="cluster2"
           descriptor="/${cluster2.sf}"/>
     </deploy>
   </target>

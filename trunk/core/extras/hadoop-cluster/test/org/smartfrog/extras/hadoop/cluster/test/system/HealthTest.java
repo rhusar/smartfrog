@@ -25,14 +25,18 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 05-Jan-2009 16:12:47
  */
 
-public class ClusterTest extends DeployingTestBase implements Names {
+public class HealthTest extends DeployingTestBase implements Names {
 
 
-    public ClusterTest(String name) {
+    public HealthTest(String name) {
         super(name);
     }
 
-    public void testCluster() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCluster.sf");
+    public void testJasperHealth() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJasperHealth.sf");
+    }
+
+    public void testHealth() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHealth.sf");
     }
 }
