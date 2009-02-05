@@ -268,7 +268,7 @@ CountingFile extends TextFile {
 
 CopyFileInAndOut extends FileSystemLiveSequence {
 
-  testDir "/tests/CopyFileInAndOu";
+  testDir "/tests/CopyFileInAndOut";
   testDirIn  (testDir ++ "/in");
   testDirOut (testDir ++ "/out");
   testDirWorking (testDir ++ "/working");
@@ -358,37 +358,25 @@ MapReduceTestSequence extends JobTrackerSequence {
   io.sort 0.1;
 
 
-  MRCompound extends Parallel {
-    job extends TestJob  {
-          //this is the job information
-      jobTracker LAZY PARENT:PARENT:jobTracker;
-      cluster LAZY PARENT:PARENT:cluster;
-      name "testsubmission";
-      mapred.input.dir testDirIn;
-      mapred.output.dir testDirOut;
-      mapred.working.dir testDirWorking;
-      mapred.local.dir (testDir ++ "/local");
-      mapred.mapper.new-api true;
-      //mapred.job.split.file (testDir ++ "/split");
-      mapred.job.tracker jobTracker:mapred.job.tracker;
-      keep.failed.task.files true;
-      filename "";
-      fileRequired false;
-      fs.default.name cluster:fs.default.name;
-      mapred.jar NULL;
-      io.sort.record.percent io.sort;
-    }
-
-    submission extends BlockingJobSubmitter {
-      //get our settings from ourselves.
-      job LAZY PARENT:job;
-      mapred.mapper.new-api true;
-      cluster LAZY PARENT:PARENT:cluster;
-      fileRequired false;
-      mapred.jar NULL;
-      io.sort.record.percent io.sort;
-    }
-
+  job extends TestJob {
+    mapred.mapper.new-api true;
+    cluster LAZY PARENT:PARENT:cluster;
+    jobTracker LAZY PARENT:PARENT:jobTracker;
+    results LAZY PARENT;
+    name "testsubmission";
+    mapred.input.dir testDirIn;
+    mapred.output.dir testDirOut;
+    mapred.working.dir testDirWorking;
+    mapred.local.dir (testDir ++ "/local");
+    mapred.mapper.new-api true;
+    //mapred.job.split.file (testDir ++ "/split");
+    mapred.job.tracker jobTracker:mapred.job.tracker;
+    keep.failed.task.files true;
+    filename "";
+    fileRequired false;
+    fs.default.name cluster:fs.default.name;
+    mapred.jar NULL;
+    io.sort.record.percent io.sort;
   }
 
   s1 extends Sleep;

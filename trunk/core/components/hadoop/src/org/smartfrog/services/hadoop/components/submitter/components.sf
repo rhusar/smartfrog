@@ -19,5 +19,5 @@ For more information: www.smartfrog.org
 */
 
 
-#include "/org/smartfrog/services/hadoop/components/submitter/job.sf"
+//#include "/org/smartfrog/services/hadoop/components/submitter/job.sf"
 #include "/org/smartfrog/services/hadoop/components/submitter/submitter.sf"
