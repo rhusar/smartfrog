@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
  * This component checks up on cluster status; can be used to validate a deployment without shipping any work its way
  * using JobClient#getClusterStatus()
  */
-ClusterStatus extends JobTrackingWorkflowComponent {
+ClusterStatus extends WorkflowPrim {
   sfClass "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl";
 
   // mapred.job.tracker is required to point to a job tracker (i.e. a URL)

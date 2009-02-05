@@ -24,6 +24,7 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.apache.hadoop.mapreduce.JobID;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -40,7 +41,6 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -49,7 +49,7 @@ import java.rmi.RemoteException;
  * A component to submit jobs to a hadoop cluster Created 16-Apr-2008 14:28:22
  */
 
-public class SubmitterImpl extends EventCompoundImpl implements Submitter {
+public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     private RunningJob runningJob;
     private boolean terminateJob;
     private boolean terminateWhenJobFinishes;
@@ -57,11 +57,11 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     private boolean deleteOutputDirOnStartup;
     private TaskCompletionEventLogger events;
     public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
-    private Prim jobPrim;
     private String jobURL;
     private JobID jobID;
     private ManagedConfiguration jobConf;
     private JobSubmitThread worker;
+    private Prim results;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -74,27 +74,32 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        jobPrim = sfResolve(ATTR_JOB, (Prim) null, true);
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATE_WHEN_JOB_FINISHES, true, true);
         }
-        jobConf = new ManagedConfiguration(jobPrim);
-        boolean fileRequired = sfResolve(Job.ATTR_FILE_REQUIRED, true, true);
+
+        results = sfResolve(ATTR_RESULTS, results, false);
+
+        //create the job configuration
+        jobConf = ManagedConfiguration.createConfiguration(this, true, true, true);
+
+        //look for the file
+        boolean fileRequired = sfResolve(ATTR_FILE_REQUIRED, true, true);
         if (fileRequired) {
-            String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String) null, false);
+            String filePath = sfResolve(ATTR_ABSOLUTE_PATH, (String) null, false);
             if (filePath != null) {
-                if (sfLog().isDebugEnabled()) sfLog().info("Job is using JAR " + filePath);
+                if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
                 jobConf.setJar(filePath);
             }
         }
 
-        validateOrResolve(ConfigurationAttributes.MAPRED_INPUT_DIR, Job.ATTR_INPUT_DIR);
-        String outputDir = validateOrResolve(ConfigurationAttributes.MAPRED_OUTPUT_DIR, Job.ATTR_OUTPUT_DIR);
-        validateOrResolve(ConfigurationAttributes.MAPRED_WORKING_DIR, Job.ATTR_WORKING_DIR);
-        validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, Job.ATTR_LOCAL_DIR);
+        validateOrResolve(ConfigurationAttributes.MAPRED_INPUT_DIR, ATTR_INPUT_DIR);
+        String outputDir = validateOrResolve(ConfigurationAttributes.MAPRED_OUTPUT_DIR, ATTR_OUTPUT_DIR);
+        validateOrResolve(ConfigurationAttributes.MAPRED_WORKING_DIR, ATTR_WORKING_DIR);
+        validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, ATTR_LOCAL_DIR);
 //        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
 
 
@@ -107,16 +112,16 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     }
 
     String validateOrResolve(String hadoopAttr, String sourceAttr) throws SmartFrogRuntimeException, RemoteException {
-        String directory = jobPrim.sfResolve(hadoopAttr, "", false);
+        String directory = sfResolve(hadoopAttr, "", false);
         if (directory == null) {
             //resolve the directory attribute instead
-            directory = FileSystem.lookupAbsolutePath(jobPrim, sourceAttr, null, null, true, null);
+            directory = FileSystem.lookupAbsolutePath(this, sourceAttr, null, null, true, null);
             //set it
             sfReplaceAttribute(hadoopAttr, directory);
         }
         //now validate the directory
         if (directory.length() == 0) {
-            throw new SmartFrogRuntimeException("Empty directory attribute: " + hadoopAttr);
+            throw new SmartFrogResolutionException("Empty directory attribute: " + hadoopAttr, this);
         }
         return directory;
     }
@@ -173,17 +178,20 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
          * @throws Throwable if anything went wrong
          */
         public void execute() throws Throwable {
-            String jobTracker = resolveJobTracker(jobPrim, new Reference(MAPRED_JOB_TRACKER));
+            String jobTracker = resolveJobTracker(SubmitterImpl.this, new Reference(MAPRED_JOB_TRACKER));
             try {
                 sfLog().info("Submitting to " + jobTracker);
                 JobClient jc = new JobClient(jobConf);
                 runningJob = jc.submitJob(jobConf);
 
-                //JobClient.runJob(conf);
                 jobID = runningJob.getID();
-                sfReplaceAttribute(ATTR_JOBID, jobID);
                 jobURL = runningJob.getTrackingURL();
+                sfReplaceAttribute(ATTR_JOBID, jobID);
                 sfReplaceAttribute(ATTR_JOBURL, jobURL);
+                if(results!=null) {
+                    results.sfReplaceAttribute(ATTR_JOBID, jobID);
+                    results.sfReplaceAttribute(ATTR_JOBURL, jobURL);
+                }
                 sfLog().info("Job ID: " + jobID + " URL: " + jobURL);
                 //set up to log events
                 events = new TaskCompletionEventLogger(runningJob, sfLog());
@@ -220,49 +228,69 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (runningJob == null) {
-            return;
-        } else {
+        if (runningJob != null) {
             try {
                 if (pingJob && runningJob.isComplete()) {
-                    boolean succeeded = runningJob.isSuccessful();
-                    String message = "Job " + runningJob.getJobName()
-                            +" ID=" + runningJob.getID().toString() 
-                            + " has " + (succeeded ? " succeeded" : "failed");
-                    if(!succeeded) {
-                        StringBuilder builder = new StringBuilder();
-
-                        TaskCompletionEvent[] events = runningJob.getTaskCompletionEvents(0);
-                        for(TaskCompletionEvent event:events) {
-                            builder.append(event.isMapTask()?"\nMap: ":"\nReduce: ");
-                            builder.append(event.toString());
-                            if(event.getTaskStatus()!= TaskCompletionEvent.Status.SUCCEEDED) {
-                                String[] diagnostics = runningJob.getTaskDiagnostics(event.getTaskAttemptId());
-                                for(String line:diagnostics) {
-                                    builder.append("\n ");
-                                    builder.append(line);
-                                }
-                            }
-                        }
-                        message = message +builder.toString();
-                    }
-                    sfLog().info(message);
-                    if (terminateWhenJobFinishes) {
-                        TerminationRecord record = succeeded ?
-                                TerminationRecord.normal(message, getName()) :
-                                TerminationRecord.abnormal(message, getName());
-                        new ComponentHelper(this).targetForTermination(record, false, false);
-                    }
+                    processEndOfJob();
                 }
-                TaskCompletionEvent[] taskEvents = events.pollForNewEvents();
-                if (taskEvents.length > 0) {
-                    for (TaskCompletionEvent event : taskEvents) {
-                        sfLog().info(event.toString());
-                    }
-                }
+                pollAndLogTaskEvents();
             } catch (IOException e) {
                 throw (SmartFrogLivenessException) SmartFrogLifecycleException.forward(e);
             }
+        }
+    }
+
+    /**
+     * Look for and process task events
+     * @throws IOException
+     */
+    private void pollAndLogTaskEvents() throws IOException {
+        TaskCompletionEvent[] taskEvents = events.pollForNewEvents();
+        if (taskEvents.length > 0) {
+            for (TaskCompletionEvent event : taskEvents) {
+                processTaskCompletionEvent(event);
+            }
+        }
+    }
+
+    /**
+     * Process task completions. The base class just logs it
+     * @param event event that has just finished
+     */
+    protected void processTaskCompletionEvent(TaskCompletionEvent event) {
+        sfLog().info(event.toString());
+    }
+
+    /**
+     * Handl the end of the job
+     * @throws IOException
+     */
+    private void processEndOfJob() throws IOException {
+        boolean succeeded = runningJob.isSuccessful();
+        String message = "Job " + runningJob.getJobName()
+                +" ID=" + runningJob.getID().toString()
+                + " has " + (succeeded ? " succeeded" : "failed");
+            StringBuilder builder = new StringBuilder();
+
+            TaskCompletionEvent[] history = runningJob.getTaskCompletionEvents(0);
+            for (TaskCompletionEvent event : history) {
+                builder.append(event.isMapTask() ? "\nMap: " : "\nReduce: ");
+                builder.append(event.toString());
+                if (event.getTaskStatus() != TaskCompletionEvent.Status.SUCCEEDED) {
+                    String[] diagnostics = runningJob.getTaskDiagnostics(event.getTaskAttemptId());
+                    for (String line : diagnostics) {
+                        builder.append("\n ");
+                        builder.append(line);
+                    }
+                }
+            message = message + builder.toString();
+        }
+        sfLog().info(message);
+        if (terminateWhenJobFinishes) {
+            TerminationRecord record = succeeded ?
+                    TerminationRecord.normal(message, sfCompleteNameSafe()) :
+                    TerminationRecord.abnormal(message, sfCompleteNameSafe());
+            new ComponentHelper(this).targetForTermination(record, false, false);
         }
     }
 

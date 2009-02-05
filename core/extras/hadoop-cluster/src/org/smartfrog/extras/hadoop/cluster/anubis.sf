@@ -32,7 +32,7 @@ HadoopAnubisService extends AnubisService {
   magic 0xfad00f;
 
   anubisParameters extends AnubisDefaultParameters {
-    identity:magic magic;
+    identity:magic PARENT:ATTRIB magic;
     contactAddress:port contactPort;
     testAddress:port testPort;
   }

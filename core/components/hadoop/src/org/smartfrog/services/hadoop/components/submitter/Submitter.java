@@ -27,16 +27,25 @@ import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
  */
 
 
-public interface Submitter extends HadoopConfiguration, HadoopCluster {
+public interface Submitter extends HadoopConfiguration, HadoopCluster, Job {
 
     /**
      * {@value}
      */
-    String ATTR_JOB = "job";
+//    String ATTR_JOB = "job";
 
+    /**
+     * {@value}
+     */
     String ATTR_TERMINATEJOB = "terminateJob";
 
+    /**
+     * {@value}
+     */
     String ATTR_JOBID = "jobID";
+    /**
+     * {@value}
+     */
     String ATTR_JOBURL = "jobURL";
 
     /**
@@ -51,8 +60,14 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster {
 
     /**
      * should we delete the output directory on startup?
+     * {@value}
      */
 
     String ATTR_DELETE_OUTPUT_DIR_ON_STARTUP = "deleteOutputDirOnStartup";
+
+    /**
+     * {@value}
+     */
+    String ATTR_RESULTS = "results";
 
 }

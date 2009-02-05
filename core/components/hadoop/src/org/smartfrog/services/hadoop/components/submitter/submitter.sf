@@ -22,11 +22,15 @@ For more information: www.smartfrog.org
 /**
  * A component that takes a job and submits it.
  */
-JobSubmitter extends JobTrackingWorkflowComponent  {
+JobSubmitter extends WorkflowPrim  {
   sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 
 
-  job TBD;
+  cluster TBD;
+
+
+  fileRequired true;
+
   /**
   terminate on shutdown
   */
@@ -46,6 +50,11 @@ JobSubmitter extends JobTrackingWorkflowComponent  {
    */
   deleteOutputDirOnStartup true;
 
+  /**
+   * A LAZY reference to a component that is to get all the results as they happen: jobID, test results, etc
+   * this is intended to outlast the workflow job runs
+   */
+ //results
 }
 
 /**
@@ -56,4 +65,16 @@ BlockingJobSubmitter extends JobSubmitter {
   terminateWhenJobFinishes true;
   //this disables an auto terminate after submitting
   sfShouldTerminate false;
+}
+
+
+
+Job extends BlockingJobSubmitter {
+  //do we need a filename attribute?
+  fileRequired true;
+
+}
+
+JobWithoutJARFile extends Job {
+  fileRequired false;
 }
