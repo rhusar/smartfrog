@@ -431,13 +431,14 @@ java.class.path=
     <property name="junit.showoutput" value="true" />
     <!-- set to brief for brief, plain for more -->
     <property name="junit.printformatter" value="plain" />
+    <property name="junit.timeout" value="6000000"/>
     <presetdef name="sf-junit">
       <junit printsummary="${junit.printsummary}"
           fork="true"
            forkmode="once"
            includeantruntime="true"
            showoutput="true"
-           timeout="6000000"
+           timeout="${junit.timeout}"
            >
         <jvmarg value="-ea"/>
         <jvmarg value="-esa"/>
