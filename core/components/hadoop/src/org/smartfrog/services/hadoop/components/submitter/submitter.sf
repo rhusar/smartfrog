@@ -26,7 +26,8 @@ JobSubmitter extends WorkflowPrim  {
   sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 
 
-  cluster TBD;
+  //the cluster reference is optional
+  //cluster TBD;
 
 
   fileRequired true;

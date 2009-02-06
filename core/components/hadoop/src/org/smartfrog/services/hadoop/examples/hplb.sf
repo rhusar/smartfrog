@@ -46,7 +46,7 @@ HplbCluster extends HadoopCluster {
 }
 
 
-HplbJob extends Job {
+HplbJob extends JobSubmitter {
   name TBD;
   fs.default.name HplbCluster:filesystem;
   mapred.job.tracker HplbCluster:jobTracker;

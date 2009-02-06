@@ -57,6 +57,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     private boolean deleteOutputDirOnStartup;
     private TaskCompletionEventLogger events;
     public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
+    public static final String ERROR_SUBMIT_FAILED = "Failed to submit a job";
     private String jobURL;
     private JobID jobID;
     private ManagedConfiguration jobConf;
@@ -83,8 +84,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
         results = sfResolve(ATTR_RESULTS, results, false);
 
-        //create the job configuration
-        jobConf = ManagedConfiguration.createConfiguration(this, true, true, true);
+        //create the job configuration. The cluster reference is optional
+        jobConf = ManagedConfiguration.createConfiguration(this, false, true, true);
 
         //look for the file
         boolean fileRequired = sfResolve(ATTR_FILE_REQUIRED, true, true);
@@ -165,6 +166,10 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     }
 
     private class JobSubmitThread extends WorkflowThread {
+
+        private String jobTracker;
+
+
         /**
          * Create a basic thread. Notification is bound to a local notification object.
          *
@@ -178,7 +183,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
          * @throws Throwable if anything went wrong
          */
         public void execute() throws Throwable {
-            String jobTracker = resolveJobTracker(SubmitterImpl.this, new Reference(MAPRED_JOB_TRACKER));
+            jobTracker = resolveJobTracker(SubmitterImpl.this, new Reference(MAPRED_JOB_TRACKER));
             try {
                 sfLog().info("Submitting to " + jobTracker);
                 JobClient jc = new JobClient(jobConf);
@@ -214,7 +219,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             if (jobID != null) {
                 return "Submitted job " + jobID + " and URL " + jobURL;
             } else {
-                return "Failed to submit a job";
+                return ERROR_FAILED_TO_START_JOB + jobTracker;
             }
         }
     }
@@ -242,7 +247,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     /**
      * Look for and process task events
-     * @throws IOException
+     * @throws IOException IO problems
      */
     private void pollAndLogTaskEvents() throws IOException {
         TaskCompletionEvent[] taskEvents = events.pollForNewEvents();

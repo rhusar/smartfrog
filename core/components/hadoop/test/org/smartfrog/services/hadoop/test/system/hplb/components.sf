@@ -20,12 +20,17 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/hplb.sf"
 
+/**
+ * These are all for the local work cluster, which is only accessible from a
+ * 15. node and needs to be in sync with the version under test for submissions to
+ * work.
+ */
 
 IsHPLBEnabled extends IsPropertyTrue {
     property "test.hplb.enabled";
 }
 
-HPLBJobSubmitter extends JobSubmitter {
+TerminatingHplbJob extends HplbJob {
   terminateJob true;
   terminateWhenJobFinishes true;
   sfShouldTerminate true;
@@ -40,7 +45,7 @@ Status extends HplbClusterStatus {
 /**
  * this job has no jar file; it is not needed
  */
-HplbJobNoJAR extends HplbJob  {
+HplbJobNoJAR extends TerminatingHplbJob  {
   fileRequired false;
 }
 
@@ -62,41 +67,36 @@ WordnetJob extends HplbJobNoJAR  {
   mapred.output.dir "/playground/wordnet";
 }
 
-SubmissionCompound extends Compound {
-  job extends SimpleJob;
-  submitter extends HPLBJobSubmitter {
-    job LAZY PARENT:job;
-    sfShouldTerminate true;
-    //deleteOutputDirOnStartup true;
-  }
-}
-
 
 ExpectDeployHPLB extends ExpectDeploy {
+  description "a test that is expected to deploy, that is conditional on the hplb tests being enabled";
   condition IsHPLBEnabled;
 }
 
 
 ExpectTerminateHPLB extends ExpectTerminate {
+  description "a test that is expected to terminate, that is conditional on the hplb tests being enabled";
   condition IsHPLBEnabled;
 }
 
 
 ExpectDeployFailureHPLB extends ExpectDeployFailure {
+  description "a test that is expected to fail to deploy, that is conditional on the hplb tests being enabled";
   condition IsHPLBEnabled;
 }
 
-testJobSubmission extends ExpectDeployHPLB {
-  action extends SubmissionCompound ;
+testJobSubmission extends ExpectTerminateHPLB {
+  action extends SimpleJob ;
 }
 
 testJobSubmissionBroken extends ExpectDeployFailureHPLB {
-  action extends SubmissionCompound ;
+  description "Expect a failure to submit a job. Why?";
+  action extends SimpleJob ;
   exitText "Failed to submit job";
   exceptions [
-  ["","Failed to submit job"],
-  ["java.io.IOException","Job failed!"]
-  ];
+    ["","Failed to submit job"],
+    ["java.io.IOException","Job failed!"]
+    ];
 }
 
 testWordnetJob extends ExpectDeployHPLB {
