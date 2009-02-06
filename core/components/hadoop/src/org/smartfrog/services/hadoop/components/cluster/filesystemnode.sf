@@ -43,9 +43,14 @@ FileSystemNode extends ClusterNode, FSActions {
   //not test nodes; directories are to be retained afterwards.
   //if true: the node may clean up its working directories on shutdown
   testModeDeleteDirectories false;
+
+  //don't expect nodes to die on us
+  expectNodeTermination false;
 }
 
 FileSystemNodeWithCluster extends ClusterNodeWithCluster {
   minDiskSpaceMB FileSystemNode:minDiskSpaceMB;
   testModeDeleteDirectories FileSystemNode:testModeDeleteDirectories;
+  //don't expect nodes to die on us
+  expectNodeTermination false;
 }

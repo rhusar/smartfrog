@@ -35,6 +35,7 @@ MockService extends ClusterNode {
  */
 ServiceValueChecker extends Prim {
   sfClass "org.smartfrog.services.hadoop.components.other.ServiceValueCheckerImpl"
+  expectNodeTermination false;
   expectedValues [];
 }
 
@@ -48,14 +49,14 @@ CheckJspClasses extends LoadClass {
   message "Failed to load a JSP class. These may not have been compiled in correctly";
   sfShouldTerminate true;
 
-     nn_jsphelper "org.apache.hadoop.hdfs.server.namenode.JspHelper";
-   nn_dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
-   nn_dfsnodelist"org.apache.hadoop.hdfs.server.namenode.dfsnodelist_jsp";
-   dn_browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
-   dn_browseDirectory   "org.apache.hadoop.hdfs.server.datanode.browseDirectory_jsp";
-   dn_tail "org.apache.hadoop.hdfs.server.datanode.tail_jsp";
-   jt_analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
-   tt_tasktracker  "org.apache.hadoop.mapred.tasktracker_jsp";
+  nn_jsphelper "org.apache.hadoop.hdfs.server.namenode.JspHelper";
+  nn_dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
+  nn_dfsnodelist"org.apache.hadoop.hdfs.server.namenode.dfsnodelist_jsp";
+  dn_browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
+  dn_browseDirectory   "org.apache.hadoop.hdfs.server.datanode.browseDirectory_jsp";
+  dn_tail "org.apache.hadoop.hdfs.server.datanode.tail_jsp";
+  jt_analyseJobHistory  "org.apache.hadoop.mapred.analysejobhistory_jsp";
+  tt_tasktracker  "org.apache.hadoop.mapred.tasktracker_jsp";
 }
 
 
