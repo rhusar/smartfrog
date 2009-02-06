@@ -52,8 +52,8 @@ testJobSubmission extends ExpectDeploy {
 
   tests extends MapReduceTestSequence {
     s extends Sleep;
-    jobTracker LAZY action:jobTracker;
-    taskTracker LAZY action:taskTracker;
+    jobTracker LAZY PARENT:action:jobTracker;
+    taskTracker LAZY PARENT:action:taskTracker;
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
@@ -70,7 +70,7 @@ testJobSubmission extends ExpectDeploy {
 /**
  * Start an orphan task tracker. We expect it to be dead afterwards
  */
-testOrphanTracker extends ExpectDeploy {
+testOrphanTracker extends ExpectDeployFailure {
   description "bring up an orphan Task Tracker, see what happens.";
 
 
@@ -86,6 +86,7 @@ testOrphanTracker extends ExpectDeploy {
     }
   }
 
+  exceptions [["java.net.ConnectException","Connection refused"]];
 
 }
 

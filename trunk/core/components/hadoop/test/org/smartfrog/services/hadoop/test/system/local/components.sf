@@ -360,8 +360,8 @@ MapReduceTestSequence extends JobTrackerSequence {
 
   job extends TestJob {
     mapred.mapper.new-api true;
-    cluster LAZY PARENT:PARENT:cluster;
-    jobTracker LAZY PARENT:PARENT:jobTracker;
+    cluster LAZY PARENT:cluster;
+    jobTracker LAZY PARENT:jobTracker;
     results LAZY PARENT;
     name "testsubmission";
     mapred.input.dir testDirIn;

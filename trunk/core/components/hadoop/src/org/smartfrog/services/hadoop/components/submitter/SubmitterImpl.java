@@ -85,7 +85,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         results = sfResolve(ATTR_RESULTS, results, false);
 
         //create the job configuration. The cluster reference is optional
-        jobConf = ManagedConfiguration.createConfiguration(this, false, true, true);
+        jobConf = ManagedConfiguration.createConfiguration(this, true, false, true);
 
         //look for the file
         boolean fileRequired = sfResolve(ATTR_FILE_REQUIRED, true, true);

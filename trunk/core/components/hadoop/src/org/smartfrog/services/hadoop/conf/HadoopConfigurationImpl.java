@@ -24,7 +24,9 @@ import org.apache.hadoop.fs.Path;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
 
@@ -38,11 +40,12 @@ import java.util.Vector;
  * ensures the values are there for other components
  */
 
-public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfiguration {
+public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfiguration, ClusterBound {
 
     private ManagedConfiguration managedConf;
     private boolean readEarly;
     private static final Reference refRequired = new Reference(ATTR_REQUIRED);
+    public static final String ERROR_NO_CLUSTER_AND_XML = "Cannot extend an existing cluster and import XML resources or files";
 
     public HadoopConfigurationImpl() throws RemoteException {
     }
@@ -80,23 +83,38 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
         boolean loadDefaults = sfResolve(ATTR_LOAD_DEFAULTS, true, true);
         List<String> resources = ListUtils.resolveStringList(this, new Reference(ATTR_RESOURCES), true);
         Vector<String> files = FileSystem.resolveFileList(this, new Reference(ATTR_FILES), null, true, null);
-        Configuration baseConf = new Configuration(loadDefaults);
 
-        //run through all the resources
-        for (String resource : resources) {
-            loadXmlResource(baseConf, resource);
-        }
+        Prim cluster = sfResolve(ATTR_CLUSTER,(Prim)null,false);
+        if(cluster!=null) {
+            //inheriting a cluster
+            if(!resources.isEmpty() || !files.isEmpty()) {
+                throw new SmartFrogResolutionException(ERROR_NO_CLUSTER_AND_XML);
+            }
+            managedConf = ManagedConfiguration.createConfiguration(this,true,false,loadDefaults);
+            managedConf.copyPropertiesToPrim(this);
 
-        //run through the filenames
-        for (String filename : files) {
-            loadXmlFile(baseConf, filename);
-        }
+        } else {
+            //no cluster reference, so create an empty unmanaged configuration and build it up
+            //then copy its (name,value) pairs into a new ManagedConfiguration that is
+            //bound to us
+            Configuration baseConf = new Configuration(loadDefaults);
 
-        //this now creates a baseConf which is full of all our values.
-        //the next step is to override with any in-scope attributes.
+            //run through all the resources
+            for (String resource : resources) {
+                loadXmlResource(baseConf, resource);
+            }
 
-        managedConf = new ManagedConfiguration(this);
-        managedConf.copyProperties(this, baseConf);
+            //run through the filenames
+            for (String filename : files) {
+                loadXmlFile(baseConf, filename);
+            }
+
+            //this now creates a baseConf which is full of all our values.
+            //the next step is to override with any in-scope attributes.
+
+            managedConf = new ManagedConfiguration(this);
+            managedConf.copyProperties(this, baseConf);
+            }
 
         //dump it to the log at debug level or if the dump attribute is true, in which
         //case it comes out at INFO level
