@@ -36,6 +36,7 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
+  <property name="junit.timeout" value="120000000"/>
 
   <!-- override point -->
   <property file="build.properties"/>
