@@ -94,7 +94,10 @@ testNameNodeHasNoWorkers extends ExpectDeployFailure {
   }
 
   tests extends Sequence {
-
+    wait extends WaitForWorkersLive {
+      service LAZY ATTRIB action:namenode;
+      minCount 0;
+    }
 
   }
 

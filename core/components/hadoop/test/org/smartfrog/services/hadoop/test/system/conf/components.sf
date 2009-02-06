@@ -25,10 +25,12 @@ HADOOP_EXAMPLE "/org/smartfrog/services/hadoop/test/system/conf/hadoop-example.x
 MISSING_ATTRIBUTE CONSTANT "org.smartfrog.services.hadoop.conf.ManagedConfiguration.MISSING_ATTRIBUTE";
 HDFS "org.apache.hadoop.hdfs.DistributedFileSystem";
 
+CONF_DUMP false;
+
 testDefaultConf extends TestCompound {
 
   action extends DefaultHadoopConfiguration  {
-    conf.dump true;
+    conf.dump CONF_DUMP ;
   }
 
   tests extends Sequence {
@@ -86,22 +88,11 @@ testRequiredAttributes extends testDefaultConf {
 }
 
 
-testEmptyConf extends TestCompound {
+
+testEmptyConf extends ExpectDeploy {
 
   action extends EmptyHadoopConfiguration  {
-    conf.dump true;
-  }
-
-  tests extends Sequence {
-
-  }
-}
-
-
-testEmptyConf extends TestCompound {
-
-  action extends EmptyHadoopConfiguration  {
-    conf.dump true;
+    conf.dump CONF_DUMP ;
   }
 
   tests extends Sequence {

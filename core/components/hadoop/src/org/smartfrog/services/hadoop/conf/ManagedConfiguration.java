@@ -55,7 +55,7 @@ import java.util.TreeSet;
  * the default values. This makes the reload process more complex, as it re-evaluates it from a component
  */
 public final class ManagedConfiguration extends JobConf implements PrimSource,
-        ConfigurationAttributes {
+        ConfigurationAttributes, Cloneable{
 
     private Prim source;
 
@@ -477,7 +477,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     public String dump() {
         StringBuilder builder = new StringBuilder();
         Properties p = getProps();
-        TreeSet<String> ts=new TreeSet(p.keySet());
+        TreeSet<String> ts=(TreeSet<String>) new TreeSet(p.keySet());
         for (String key : ts) {
             builder.append(key);
             builder.append(" \"");
@@ -527,14 +527,43 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             String value = entry.getValue();
             setIfUnset(key, value);
             value = get(key);
-            try {
-                target.sfResolveHere(key);
-            } catch (SmartFrogResolutionException ignored) {
-                target.sfReplaceAttribute(key, value);
-            }
+            addSFAttributeIfNeeded(target, key, value);
         }
         reloadConfiguration();
     }
+
+    /**
+     * Copy all new properties to the target prim as attributes
+     * @param target target
+     * @throws SmartFrogRuntimeException failure to read/write attributes
+     * @throws RemoteException network trouble
+     */
+    public void copyPropertiesToPrim(Prim target) throws SmartFrogRuntimeException, RemoteException {
+        for (Map.Entry<String, String> entry : this) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            addSFAttributeIfNeeded(target, key, value);
+        }
+    }
+
+
+    /**
+     * Add a SmartFrog attribute if it is needed
+     * @param target target component
+     * @param key key to set
+     * @param value value to set
+     * @throws SmartFrogRuntimeException failure to set the attribute
+     * @throws RemoteException network problems
+     */
+    private void addSFAttributeIfNeeded(Prim target, String key, String value)
+            throws RemoteException, SmartFrogRuntimeException {
+        try {
+            target.sfResolveHere(key);
+        } catch (SmartFrogResolutionException ignored) {
+            target.sfAddAttribute(key, value);
+        }
+    }
+
 
     /**
      * Creates and returns a copy of this object. A configuration reload is triggered, so that datastructures are not
@@ -572,7 +601,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         if (size > 0) {
             StringBuilder text = new StringBuilder(MISSING_ATTRIBUTE + (size > 1 ? "s" : "") + ":");
             for (String attr : missing) {
-                text.append("\"");
+                text.append('"');
                 text.append(attr);
                 text.append("\" ");
             }
@@ -598,7 +627,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * This creates a configuration from a source prim
      *
      * @param source                   source prim
-     * @param useClusterReferenceFirst if set, resolve {@link ClusterBound#ATTR_CLUSTER} from the source and use that
+     * @param useClusterReference if set, resolve {@link ClusterBound#ATTR_CLUSTER} from the source and use that
      *                                 first.
      * @param clusterRequired          if set, the cluster attribute must resolve.
      * @param loadDefaults             flag to say "load the default values"
@@ -607,11 +636,11 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws RemoteException              network problems. These are always passed up
      */
     public static ManagedConfiguration createConfiguration(Prim source,
-                                                           boolean useClusterReferenceFirst,
+                                                           boolean useClusterReference,
                                                            boolean clusterRequired, boolean loadDefaults)
             throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = new ManagedConfiguration(loadDefaults, source);
-        if (useClusterReferenceFirst) {
+        if (useClusterReference) {
             //pull in the cluster if requested
             Prim clusterSource = source.sfResolve(REF_CLUSTER, (Prim) null, clusterRequired);
             if (clusterSource != null) {
