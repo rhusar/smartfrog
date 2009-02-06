@@ -62,6 +62,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     private volatile boolean terminationInitiated;
     private Reference completeName;
     public static final String SERVICE_HAS_HALTED = "Service has halted";
+    public static final String SERVICE_HAS_FAILED = "Service has failed";
     public static final String ERROR_NO_START = "Failed to start the ";
     private ManagedConfiguration configuration;
     private List<PortEntry> portList;
@@ -84,8 +85,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        expectNodeTermination = true;
-        //conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
+//        expectNodeTermination = true;
+        expectNodeTermination = sfResolve(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true, true);
         completeName = sfCompleteName();
     }
 
@@ -197,9 +198,10 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             deployer.interrupt();
         }
         sfLog().info("waiting for thread to finish");
-        if (deployer.waitForThreadTermination(SHUTDOWN_DELAY)) {
-            sfLog().warn("Hadoop Service thread did not terminate within the expected shutdown period: "
-                    + "service is " + getService());
+        if (deployer.waitForThreadTermination(SHUTDOWN_DELAY) && getDeployerThread() != null) {
+            Service s = getService();
+            sfLog().warn("Hadoop Service thread did not terminate within the expected shutdown period."
+                    + (s != null? (" Service is " + s) : ""));
         }
     }
 
@@ -267,7 +269,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         if (newState == Service.ServiceState.CLOSED && !terminationInitiated) {
             TerminationRecord tr;
             Throwable thrown = hadoopService.getFailureCause();
-            if (expectNodeTermination) {
+            if(thrown!=null) {
+                tr = TerminationRecord.abnormal(SERVICE_HAS_FAILED, completeName, thrown);
+            } else if (expectNodeTermination) {
                 tr = TerminationRecord.normal(SERVICE_HAS_HALTED, completeName, thrown);
             } else {
                 tr = TerminationRecord.abnormal(SERVICE_HAS_HALTED, completeName, thrown);
@@ -375,7 +379,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @return the service
      */
-    public synchronized final Service getService() {
+    public final synchronized Service getService() {
         return service;
     }
 
@@ -385,7 +389,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @param service the new value
      */
-    protected synchronized final void setService(Service service) {
+    protected final synchronized void setService(Service service) {
         if (service != null && this.service != null) {
             throw new IllegalStateException("Cannot set a non-null service " + service + " on top of a valid service "
                     + this.service);
