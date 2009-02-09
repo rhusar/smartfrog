@@ -154,11 +154,34 @@ Ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
 
-LazyRef extends Ref {
+PolicyRef extends Ref {
+    sfFunctionLazy true;
+    returnNULLOnException;
+    doNotNullifyParent;
+}
+
+RawRef extends PolicyRef {
     lazy true;
 }
 
-Constraint extends Function {
+AggregateSpecifier extends AggregateSpecifierArrayPath {
+    sfIsAggregateSpecifier;
+    [sfIgnoreLink] pred;
+}
+
+AggregateSpecifierArrayPath extends {
+    [sfIgnoreLink] array;
+    [sfIgnoreLink] path;
+}
+
+UpdateSpecifierPathKey extends {
+    [sfIgnoreLink] path;
+    [sfIgnoreLink] key;
+    [sfIgnoreLink] update;
+    [sfIgnoreLink] deployComponent;
+}
+
+Constraint extends Function, AggregateSpecifierArrayPath {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
 }
 
@@ -197,11 +220,11 @@ ArrayGenerator extends {
      sfIsArrayGenerator;
 }
 
-Aggregator extends Function {
+Aggregator extends Function, AggregateSpecifierArrayPath {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
 }
 
-PrettyPrint extends Function {
+PrettyPrint extends Function, AggregateSpecifierArrayPath {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.PrettyPrint";
 }
 
@@ -247,11 +270,17 @@ ResourceAllocator extends Constraint {
 
 }
 
-PolicyEvaluation extends Function {
-    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
-}
-
 DynamicPolicyEvaluation extends Function {
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+    sfFunctionLazy true;
+}
+
+Effect extends UpdateSpecifierPathKey{}
+
+ApplyEffects extends Function, UpdateSpecifierPathKey {
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ApplyEffects";
+}
+
+PolicyEffects extends ApplyEffects {
     sfFunctionLazy true;
 }
