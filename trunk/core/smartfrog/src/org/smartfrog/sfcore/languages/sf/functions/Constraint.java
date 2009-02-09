@@ -175,7 +175,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	
     	HashMap<FreeVar, Object> assigns = new HashMap<FreeVar, Object>(); 
     	
-    	System.out.println("In constraint...");
+    	//System.out.println("In constraint...");
     	
     	if (!CoreSolver.getInstance().getConstraintsPossible()) return comp; 
     	
@@ -183,7 +183,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 
 		Vector<CompositeSource> aggs=new Vector<CompositeSource>();
 		
-		System.out.println("Fetching aggregate sources");
+		//System.out.println("Fetching aggregate sources");
 		getAggregateSources(comp, aggs);
 		
 		for (int i=0;i<aggs.size();i++){
@@ -519,13 +519,14 @@ public class Constraint extends BaseFunction implements MessageKeys {
     }
     
     public static void getAggregateSources(ComponentDescription comp, Vector<CompositeSource> css) throws SmartFrogFunctionResolutionException{
-    	System.out.println("YESYES");
+    	//System.out.println("YESYES");
+    	//Thread.dumpStack();
     	
     	Context context = (Context) comp.sfContext().copy();
 		Enumeration en = context.keys();
 		Object key=null;
 		
-		System.out.println("Comp"+comp);
+		//System.out.println("Comp"+comp);
 		
 		Object array = null;
 		Object path = null;
@@ -536,12 +537,12 @@ public class Constraint extends BaseFunction implements MessageKeys {
 		array = context.remove(ConstraintConstants.ARRAY);	
 		path = context.remove(ConstraintConstants.PATH);
 		
-		System.out.println("111");
+		//System.out.println("GAS111");
 		
 		
 		if (path!=null && path!=SFNull.get()){  //mandatory for aggregates and updates...
 		
-			System.out.println("222");
+			//System.out.println("GAS222");
 			
 			if (array!=SFNull.get()){
 				Reference array_ref=null;
@@ -558,7 +559,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 				if (!(array instanceof ComponentDescription) && !(array instanceof Prim)) throw new SmartFrogFunctionResolutionException("array ref:"+array_ref+" in: "+comp+" does not resolve to a Prim/ComponentDescription");	
 			} else array=comp;
 		
-			System.out.println("333");
+			//System.out.println("GAS333");
 			
 			if (!(path instanceof Reference)) throw new SmartFrogFunctionResolutionException("path in comp: "+comp+" must be a Reference");
 			
@@ -573,7 +574,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 				}
 			} //we assume that if it were present it would be as a cd...
 			
-			System.out.println("444");
+			//System.out.println("GAS444");
 			
 			
 			//Prefix...
@@ -584,9 +585,9 @@ public class Constraint extends BaseFunction implements MessageKeys {
 			}
 			context.remove(ConstraintConstants.PREFIX);
 			
-			System.out.println("555");
+			//System.out.println("GAS555");
 			
-			
+			boolean aggregated=false;
 			Enumeration restKeys = context.keys();
 			while (restKeys.hasMoreElements()){
 				Object restKey = restKeys.nextElement();
@@ -598,7 +599,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 				if (restComp.sfContext().get(ConstraintConstants.AGG_SPEC)!=null){
 					Object unify = restComp.sfContext().get(ConstraintConstants.UNIFY);
 					
-					System.out.println("ADDING:::"+cihm+":"+array+":"+prefix+":"+path+":"+restKey+":"+restComp+":"+unify);
+					//System.out.println("ADDING:::"+cihm+":"+array+":"+prefix+":"+path+":"+restKey+":"+restComp+":"+unify);
 			       	CompositeSource cs = new CompositeSource(cihm, 
 			       												array, 
 			       												(String)prefix, 
@@ -607,10 +608,21 @@ public class Constraint extends BaseFunction implements MessageKeys {
 			       												restComp, 
 			       												unify);
 			    		css.add(cs);
+			    		aggregated=true;
 					
 				}
 			}
 			
+			if (!aggregated) {
+				CompositeSource cs = new CompositeSource(cihm, 
+								array, 
+								(String)prefix, 
+								(Reference)path, 
+								null,
+								null, 
+								null);
+							css.add(cs);
+			}
 		}				
 		//System.out.println("Leaving getCS");
     } 
@@ -625,6 +637,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	try {en=(p!=null?p.sfContext():c.sfContext()).keys();} catch (Exception e){/*Shouldn't happen*/}
     	while (en.hasMoreElements()){
     		
+    		//System.out.println("222");
+    		
     		String key = en.nextElement().toString();
         	
     		if (key.startsWith(cs.prefix)){
@@ -635,6 +649,9 @@ public class Constraint extends BaseFunction implements MessageKeys {
     			p = (source instanceof Prim?(Prim)source:null);
     	    	c = (source instanceof ComponentDescription?(ComponentDescription)source:null);
     	    
+    	    	
+    	    	//System.out.println("333");
+        		
     	    	
     			if (p!=null || c!=null){
     		
@@ -655,60 +672,75 @@ public class Constraint extends BaseFunction implements MessageKeys {
     					}
     				}
     				
+    				//System.out.println("444");
+    	    		
+    				
     				if (loc==null) throw new SmartFrogFunctionResolutionException("No location information available in extracting aggregation from array:"+cssource); 
     				
-    				////System.out.println("111"+cs.context);
+    				//System.out.println("111"+cs.context);
     				
-    				//Add resolving context...
-    				Iterator keys = cs.context.keySet().iterator();
-    				while (keys.hasNext()){
-    					Object ckey = keys.next();
-    					Object cval = cs.context.get(ckey);
-    					try {
-    					if (c instanceof Prim) ((Prim)c).sfReplaceAttribute(ckey, cval);
-    		    		else ((ComponentDescription)c).sfReplaceAttribute(ckey, cval);
-    					} catch(Exception e){/*Shouldn't happen*/}
+    				if (cs.update!=null){
+    				
+	    				//Add resolving context...
+	    				Iterator keys = cs.context.keySet().iterator();
+	    				while (keys.hasNext()){
+	    					Object ckey = keys.next();
+	    					Object cval = cs.context.get(ckey);
+	    					try {
+	    					if (c instanceof Prim) ((Prim)c).sfReplaceAttribute(ckey, cval);
+	    		    		else ((ComponentDescription)c).sfReplaceAttribute(ckey, cval);
+	    					} catch(Exception e){/*Shouldn't happen*/}
+	    				}
+	    				
     				}
+	    				
+    				//System.out.println("555");
+    	    		
     				
-    				////System.out.println("222"+c.sfContext());
+    				//System.out.println("222"+c.sfContext());
     				
-    				////System.out.println("Source not null...");
+    				//System.out.println("Source not null...");
+	    				
+	    				
+	    			if (cs.update!=null){	
+	    				//Get the update record and pull out pred...
+	    				Reference pred = null;
+	    				try { pred = (Reference) cs.update.sfContext().get("pred"); }
+	    				catch (ClassCastException cce){/*Do nothing*/}
+	    				if (pred!=null){
+	    					//System.out.println("Pred not null..."+pred);
+	    					//Reference pred = cs.pred.copyandRemoveLazy();
+	    					try {
+	    					if (pred instanceof SFReference) pred=((SFReference) pred).sfAsReference();
+	    					} catch (SmartFrogCompilationException sfce){ throw new SmartFrogFunctionResolutionException(sfce);}
+	    					////System.out.println("Pred not null..."+pred);
+	    					
+	    					Object eval_pred = null;
+	    					try {
+	    						eval_pred = resolve(p,c,pred);
+	    					} catch (Exception e)
+	    					{
+	    						//System.out.println("FART::::"+e);
+	    						/*Intentionally Leave*/
+	    					}
+	    					if (eval_pred!=null && eval_pred instanceof Boolean) {
+	    						//System.out.println("Is pred false?..."+eval_pred);
+	    						if (!((Boolean)eval_pred).booleanValue()) continue; //round while...
+	    					}
+	    					else if (eval_pred==null || !(eval_pred instanceof SFNull)) throw new SmartFrogFunctionResolutionException("In extracting values as per source, pred "+pred+" should yield Boolean from: "+source);
+	    				}
+	    			}
+	    			
+				//System.out.println("We have a match...");
+				cs.source=source;		
+				ComponentResolution cr = getComponentResolution(cs.source,cs.path);
+	    		cs.arguments.put(loc, cr.val);
+				if (cr.val instanceof FreeVar) cs.freevars=true;
     				
-    				//Get the update record and pull out pred...
-    				Reference pred = null;
-    				try { pred = (Reference) cs.update.sfContext().get("pred"); }
-    				catch (ClassCastException cce){/*Do nothing*/}
-    				if (pred!=null){
-    					////System.out.println("Pred not null..."+cs.pred);
-    					//Reference pred = cs.pred.copyandRemoveLazy();
-    					try {
-    					if (pred instanceof SFReference) pred=((SFReference) pred).sfAsReference();
-    					} catch (SmartFrogCompilationException sfce){ throw new SmartFrogFunctionResolutionException(sfce);}
-    					////System.out.println("Pred not null..."+pred);
-    					
-    					Object eval_pred = null;
-    					try {
-    						eval_pred = resolve(p,c,pred);
-    					} catch (Exception e)
-    					{
-    						////System.out.println("FART::::"+e);
-    						/*Intentionally Leave*/
-    					}
-    					if (eval_pred!=null && eval_pred instanceof Boolean) {
-    						////System.out.println("Is pred false?..."+eval_pred);
-    						if (!((Boolean)eval_pred).booleanValue()) continue; //round while...
-    					}
-    					else if (eval_pred==null || !(eval_pred instanceof SFNull)) throw new SmartFrogFunctionResolutionException("In extracting values as per source, pred "+pred+" should yield Boolean from: "+source);
-    				}
-    				////System.out.println("We have a match...");
-    				cs.source=source;		
-    				ComponentResolution cr = getComponentResolution(cs.source,cs.path);
-    	    		cs.arguments.put(loc, cr.val);
-    				if (cr.val instanceof FreeVar) cs.freevars=true;
-    				
-    				////System.out.println("And the other side...1");
+    			if (cs.update!=null){
+    				//System.out.println("And the other side...1");
     				//Remove resolving context...
-    				keys = cs.context.keySet().iterator();
+    				Iterator keys = cs.context.keySet().iterator();
     				while (keys.hasNext()){
     					Object ckey = keys.next();
     					Object cval = cs.context.get(ckey);
@@ -717,7 +749,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
     		    		else ((ComponentDescription)c).sfRemoveAttribute(ckey);
     					} catch(Exception e){/*Shouldn't happen*/}
     				}
-    				////System.out.println("And the other side...2");
+    				//System.out.println("And the other side...2");
+    				}
     			}
     			
     		}

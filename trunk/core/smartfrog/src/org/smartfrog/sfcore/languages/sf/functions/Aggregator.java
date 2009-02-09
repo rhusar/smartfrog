@@ -52,8 +52,10 @@ public class Aggregator extends BaseFunction implements MessageKeys {
 	    HashMap<Object, Object> others = new HashMap<Object, Object>();
 	
 	    //System.out.println("Getting sources...");
-	    
+
 	    Constraint.getAggregateSources(comp, css);
+	    
+	    //System.out.println("***AGGREGATOR***"+css.size());
 	    
 	    //System.out.println("Got sources...");
 	    
@@ -62,9 +64,9 @@ public class Aggregator extends BaseFunction implements MessageKeys {
 	    for (int i=0; i<css.size(); i++){
 	    	CompositeSource cs = css.get(i);
 	    	
-	    	//System.out.println("****"+cs);
-	    	
 	    	Constraint.extractArgumentsFromSource(cs);	 
+	    	
+	    	//System.out.println("***cs***"+cs);
 	    	    	
 	    	//Attach arguments to contained function types...
 	    	Enumeration el_enum = orgContext.keys();
