@@ -1497,6 +1497,7 @@ smartfrog.tasks.classpath=
   The classpath of the daemon is set to tests.run.classpath;
   -->
   <target name="declare-system-test-tasks" depends="declare-extended-smartfrog-tasks,init-codebase" >
+    <property name="daemon.jvmargs"  value=""/>
     <presetdef name="sf-system-test">
       <sf-functionaltest testTimeout="600" shutdownTime="10">
         <application>
@@ -1507,6 +1508,7 @@ smartfrog.tasks.classpath=
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
               classpathref="tests.run.classpath">
+            <jvmarg line="${daemon.jvmargs}" />
             <!--all properties beginning with test. or run.-->
             <syspropertyset>
               <propertyref prefix="test."/>
