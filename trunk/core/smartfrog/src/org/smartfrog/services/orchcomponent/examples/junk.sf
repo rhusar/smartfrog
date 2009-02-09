@@ -1,0 +1,372 @@
+		 
+
+
+
+
+/* 
+    ReflectGrantInObserved extends DATA {
+        context "desired:connections:connectionGrants:?fc_id:?conn_id:status";
+        grantstatus extends LazyRef { reference ("desired:connections:connectionGrants:" ++ fc_id ++ ":" + conn_id ++ ":status"); }
+        effects extends LazyApplyEffects {
+           reflectState extends DATA {
+	       path -- extends LazyRef { reference ("observed:connectionStatus:" ++ fc_id ++ ":" ++ conn_id); }
+               key "grant";
+               update LAZY grantstatus; 
+           }
+        }
+     }
+	ConnWithoutVol extends DATA {
+	     invariant extends DATA {
+	        context "desired:connections:?fc_id:?conn_id";
+	        vol_id extends LazyRef { reference ("desired:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":vol_id"); }
+                exists extends LazyRef { reference ("desired:volumes:" ++ vol_id); } 
+	        pred LAZY exists!=NULL;
+	     }
+	     enforcedBy extends DATA {
+	         -- LAZY VolFromConn;
+	     }
+      }
+
+      GrantWithoutVRInj extends IntegrityConstraint {
+	     invariant extends DATA {
+	        context "desired:connections:connectionGrants:?fc_id:?conn_id";
+	        status extends LazyRef { reference ("desired:connections:connectionGrants:" ++ fc_id ++ ":" ++ conn_id ++ ":status"); }
+	        vr_id extends LazyRef { reference ("desired:connections:connectionGrants:" ++ fc_id ++ :" ++ conn_id ++ ":vr_id"); }
+	        exists extends LazyRef { reference ("vrInjectors:" ++ vr_id); }
+	        pred (LAZY status=="ok" -> exists!=NULL);
+	     }
+	     enforcedBy extends DATA {
+	        -- LAZY VRInjFromGrant;
+	     }
+      }
+*/
+/*
+   VolFromConn extends DATA {
+       context "desired:connections:?fc_id:?conn_id";
+       vol_id extends LazyRef { reference ("desired:connections:"++ fc_id ++ ":" + conn_id ++ "vol_id"); }
+       effects extends LazyApplyEffects {
+           createVolEntry extends DATA {
+	      path LAZY desired:volumes;
+	      key LAZY vol_id;
+              update LAZY desired:volumes:templates:vol; 
+	   }
+       }
+   }
+
+   VRInjFromGrant extends DATA {
+      context "desired:connections:connectionGrants:?fc_id:?conn_id:status";
+      vr_id extends LazyRef { reference ("desired:connections:connectionGrants:" ++ fc_id ++ :" ++ conn_id ++ ":vr_id"); }
+      effects extends LazyApplyEffects {
+         createInjector extends DATA {
+             path LAZY vrInjectors;
+             key LAZY vr_id;
+	     update LAZY desired:volumes:templates:vrInj;
+         }
+      }
+   }
+*/   
+
+
+			 /*connCreate extends DATA {
+			     context "desired:connections:?fc_id:?conn_id";
+			     effects extends LazyApplyEffects {
+			        copyAndDeployConnTemplate extends DATA {
+				      path extends LazyRef { reference ("orchestration:connections:" ++ fc_id); }
+				      key LAZY conn_id;
+				      update LAZY templates:oConn; 
+			        }
+			        copyFarmId extends DATA {
+				       path extends LazyRef { reference ("orchestration:connections:" ++ fc_id ++ ":" ++ conn_id ++ "conn");}
+				       key "fc_id";
+				       update LAZY fc_id;
+				    }
+				    copyConnId extends DATA {
+				       path extends LazyRef { reference ("orchestration:vms:" ++ fc_id ++ ":" ++ conn_id ++ "conn");}
+				       key "conn_id";
+				       update LAZY conn_id;
+				    }
+				 }
+			 }
+			
+			 volCreate extends DATA {
+			     context -- "desired:volumes:?vol_id";
+			     effects extends LazyApplyEffects {
+			        copyAndDeployVolTemplate extends DATA {
+				      path LAZY orchestration:volumes";
+				      key LAZY vol_id;
+				      update LAZY templates:oVol; 
+			        }
+			        copyVolId extends DATA {
+				       path extends LazyRef { reference ("orchestration:volumes:" ++ vol_id ++ "vol");}
+				       key "vol_id";
+				       update LAZY vol_id;
+				    }
+				 }
+			 }*/
+
+
+/*				pendingToStarted extends Transition {
+				   guard (LAZY ostate:status=="pending");
+				   
+				   //INVOKE RULES TABLES MODIFICATION
+		           //CALL VMSTART()
+		
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO STARTING
+			              update "starting";
+				   }
+				}
+
+				startedToStopping extends Transition {
+				   guard (LAZY ostate:status=="started");
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO STOPPING
+			              update "stopping";
+				   }
+				}
+		
+				stoppingToStopped extends Transition {		
+				   guard (LAZY ostate:status=="stopping");
+		
+				   //INVOKE VMSTOP(), if (!observed:vmStatus:?fc_id:?vm_id:power=="failed")
+		           //Async.
+		
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO STOPPED
+			              update "stopped";
+				      	  movePowerToStopped extends DATA {
+				             path extends LazyRef { reference ("observed:vmStatus" ++ fc_id ++ ":" ++ vm_id); }
+				             key "power";
+		                     update LAZY PARENT:update;
+		                  }     
+			           }
+				}
+		
+				stoppedToPending extends Transition {
+				   guard (LAZY ostate:status=="stopped");
+		
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO PENDING
+			              update "pending";
+				   }
+				}
+				
+			}
+		
+		    stoppedToTerminate extends CompositeTerminator {
+		      terminateCond (LAZY vm:ostate:status=="stopped");
+		    }
+	
+	        
+	
+		    
+	         vmPendingDesiredDependency extends Dependency {
+		         by LAZY vm;
+	             relevant (LAZY by:ostate:status=="stopped");
+	             enabled (LAZY by:dstate:status=="on");
+		     }
+		
+		     vmPendingDependency extends Dependency {
+			     on LAZY vmPendingConnsAnd;
+			     by LAZY vm;
+			     relevant (LAZY by:ostate:status=="stopped");
+			     enabled true;
+		     }
+	
+		     vmStartConnsAnd extends AndConnectorExists;
+		     vmPendingConnsAnd extends AndConnectorExists;
+	
+		     vmTerminateDependency extends Dependency {
+	             on extends LazyRef { reference ("desired:vms:" ++ fc_id ++ ":" ++ vm_id) };
+		         by LAZY vm;
+	             relevant (LAZY by:ostate:status=="stopped");
+	             enabled (LAZY on!=NULL);
+		     }	     
+	 }
+
+
+
+	 /*
+	 oConn extends Composite{
+	    conn extends StateComponent {
+                sfClass "org.smartfrog.services.orchcomponent.examples.oConn";
+                dstate extends LazyRef { reference ("desired:connections:" ++ fc_id ++ conn_id); }
+
+		ostate extends DATA {
+                   sfReflectState extends DATA {
+		      path extends LazyRef { reference ("observed:connectionStatus" ++ fc_id); }
+                      key LAZY conn_id;
+                      toreflect extends LazyRef { reference ("orchestration:connections:" ++ fc_id + ":" +conn_id ++ ":conn:ostate"); }
+	           }
+		   status "pending";  //"requested", "ok", "removing", "failing", "terminating"
+		}
+
+		pendingToRequested extends Transition {
+                    guard (LAZY ostate:status=="pending");
+
+                    effects extends ChangeStatusEffects {   //UPDATE STATUS TO REQUESTED
+	              update "requested";
+	              recordConnectionRequestId extends DATA {
+                         path LAZY ostate;
+                         key "connreq_id";
+ 	                 update extends GenConId {   //NOTE ATTRIBUTE NAME
+				      -- LAZY dstate:conn_id;
+		         } 
+	              }
+                      addConnectionRequest extends DATA {
+			 path extends LazyRef { reference ("observed:connectionRequests" ++ dstate:sm_id); } 
+                         key LAZY connreq_id; 
+                         update extends DATA {};
+	              }
+		    }
+		}
+
+		
+
+		okToFailing extends Transition {
+		   guard (LAZY ostate:status=="ok");
+	           effects extends ChangeStatusEffects {   //UPDATE STATUS TO FAILING
+	              update "failing";
+                   }
+		}
+
+		failingToPending extends Transition {
+		    guard (LAZY ostate:status=="failing");
+
+		    //CALL REMOVE DEVICE
+		
+		    effects extends ChangeStatusEffects {   //UPDATE STATUS TO PENDING
+	              update "pending";
+	              removeConnectionRequest extends DATA {
+                         path extends LazyRef { reference ("observed:connectionRequests" ++ dstate:sm_id); } 
+                         key LAZY connreq_id; 
+		      }
+		    }
+
+		}
+	     }
+
+	    terminatingToTerminate extends CompositeTerminator {
+		  guard (conn:ostate:status=="terminating");
+	    }
+
+
+	    connOnVMStoppedDependency extends Dependency {
+		by LAZY conn;
+                on extends LazyRef { reference ("vms:" ++ LAZY fc_id ++ ":" ++ dstate:vm_id ++ ":vm"); }
+		relevant (LAZY by:ostate:status=="removing" || by:ostate:status=="failing");
+		enabled (LAZY on:ostate:status=="stopped"); 
+	    }
+
+	    vmStoppingConnDependency extends Dependency {
+                on LAZY conn;
+                by extends LazyRef { reference ("vms:" ++ LAZY fc_id ++ ":" ++ dstate:vm_id ++ ":vmStoppingConnOr"); }
+		relevant (LAZY on:ostate:status=="ok");
+		enabled false;
+	    }
+
+	    vmStartConnDependency extends Dependency {
+		on LAZY conn;
+                by extends LazyRef { reference ("vms:" ++ LAZY fc_id ++ ":" ++ dstate:vm_id ++ ":vmStartConnsAnd"); }
+		relevant (LAZY on:ostate:status!="ok");
+		enabled false;
+	    }
+
+	    vmPendingConnDependency extends Dependency {
+		on LAZY conn;
+                by extends LazyRef { reference ("vms:" ++ LAZY fc_id ++ ":" ++ dstate:vm_id ++ ":vmPendingConnsAnd"); }
+		relevant (LAZY on:ostate:status!="ok" || on:ostate:status!="pending");
+		enabled false;
+	    }
+
+	    connOnVolTerminateDependency extends Dependency {
+		on LAZY conn;
+                by extends LazyRef { reference ("vols:" ++ dstate:vol_id ++ ":connsVolAnd"); }
+		relevant true;  //default
+		enabled false;  //default
+	    }
+
+	    connOnVolAvailableDependency extends Dependency {
+		by LAZY conn;
+                on extends LazyRef { reference ("vols:" ++ dstate:vol_id ++ ":vol"); }
+		relevant (LAZY by:ostate:status=="requested");  
+		enabled (LAZY on:ostate:status=="ok");  
+	    }
+
+	    connOkDependency extends Dependency {
+               on extends LazyRef { reference ("desired:connections:connectionGrants:" ++ fc_id ++ ":" ++ conn_id); }
+	       by LAZY conn;
+               relevant (LAZY by:ostate:status=="requested");
+               enabled (LAZY on:status=="ok");
+	    }
+
+	    okToRemovingDependency extends Dependency {
+               on extends LazyRef { reference ("desired:connections:" ++ fc_id ++ ":" ++ conn_id); }
+	       by LAZY conn;
+               relevant (LAZY by:ostate:status=="ok");
+               enabled (LAZY !on:status);
+	     }
+
+
+	     okToFailingDependency extends Dependency {
+                on extends LazyRef { reference ("desired:connections:connectionGrants:" ++ fc_id ++ ":" ++ conn_id); }
+		by LAZY conn;
+		relevant (LAZY by:ostate:status=="ok");
+		enabled (LAZY !on:status=="failed");
+	     }
+
+	 }
+
+	 oVol extends Composite{
+	    vol extends StateComponent {
+                sfClass "org.smartfrog.services.orchcomponent.examples.oVol";
+                dstate extends LazyRef { reference ("desired:volumes:" ++ vol_id); }
+
+		ostate extends DATA {
+		   status "pending";  //"realizing", "ok"
+		}          
+
+		pendingToRealizing extends Transition {
+		    guard (LAZY ostate:status=="pending");
+
+		    //HARDCODED API CALL TO VOLUMEREALIZER
+
+		    effects extends ChangeStatusEffects {   //UPDATE STATUS TO REALIZING
+	              update "realizing";
+	            }
+		}
+
+		realizingToOk extends Transition {
+		    guard (LAZY ostate:status=="realizing");
+
+		    effects extends ChangeStatusEffects {   //UPDATE STATUS TO OK
+	              update "ok";
+	            }
+		}
+	    }
+
+	    OkToTerminate extends CompositeTerminator {
+		guard (LAZY vol:ostate:status=="ok");
+	    }
+	 }
+	 volTerminateDependency extends Dependency {
+		on LAZY connsVolAnd;
+		by LAZY vol;
+		relevant (LAZY by:ostate:status=="ok");
+		enabled true;
+	 }
+	 connsVolAnd extends AndConnector;      
+
+	 volRealizingDependency extends Dependency {
+	       on extends LazyRef { reference ("desired:volumes:volumeRealizations:" ++ dstate:vr-id); 
+	       by LAZY vol;
+               relevant (LAZY by:ostate:status=="pending");
+               enabled (LAZY on!=NULL);
+	 }
+
+	 volOkDependency extends Dependency {
+	       on extends LazyRef { reference ("desired:volumes:localDev:" ++ dstate:vr-id); } 
+	       by LAZY vol;
+               relevant (LAZY by:ostate:status=="realizing");
+               enabled (LAZY on);
+	 }
+      }
+      
+      }
+      */
