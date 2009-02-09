@@ -68,28 +68,25 @@ public class Array extends BaseFunction implements MessageKeys {
     	
     	//Now do the tagged versions...
     	Enumeration key_enum = orgContext.keys();
-    	Object key = key_enum.nextElement();
     	
+    	Object key = null; 
     	Object path=null;
     	Object prefix=null;
     	String prefix_s=null;
     	
     	//Get the prefix...
     	prefix = orgContext.get(ConstraintConstants.PREFIX);
-    	
     	if (prefix==null){
-    		while (true){	//Get first attribute of note
+    		while (key_enum.hasMoreElements()){
 	    		key = key_enum.nextElement();
 	    		if (orgContext.sfContainsTag(key, ConstraintConstants.PREFIX_TAG)){
 		    		prefix = orgContext.get(key);
-		    		
 		    		break;
 	    		}
 	    	}
-    	} 
+    	}
     	
     	if (prefix==null) throw new SmartFrogFunctionResolutionException("Array: "+comp+" has no prefix");
-    	
     	if (prefix instanceof String) prefix_s= (String) prefix;
 		else throw new SmartFrogFunctionResolutionException("In Array: "+comp+", prefix must be a String...");     	
     	
@@ -118,31 +115,23 @@ public class Array extends BaseFunction implements MessageKeys {
     	if (extent!=null){
     		process_array_members(dest,prefix_s,extent,generator);
     	} else {    	
-    	
     		boolean first=true;
-    		
-	    	//Now for the extents and generators...
-	    	while (true){	
-	    		
-	    		if (key_enum.hasMoreElements()) {  //even if spare_key, there must be a generator...
-	    			//if (spare_key) spare_key=false;
-	    			/*else*/ key = key_enum.nextElement();
-		    		if (!orgContext.sfContainsTag(key, ConstraintConstants.EXTENT_TAG)) {
-		    			if (first) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", extent must follow prefix...");
-		    			else break; //from while...
-		    		}
-		    		extent = orgContext.get(key);
-		    		if (key_enum.hasMoreElements()) {
-			    		key = key_enum.nextElement();
-			    		if (!orgContext.sfContainsTag(key, ConstraintConstants.GENERATOR_TAG)) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", generator must follow extent...");     			
-			    		generator = orgContext.get(key);
-			    		boolean md = process_array_members(dest,prefix_s,extent,generator);
-			    		if (md && !first)  throw new SmartFrogFunctionResolutionException("In Array: "+comp+", multi-dimensional arrays can not define multiple extents...");
-			    		first=false;
-		    		} else throw new SmartFrogFunctionResolutionException("In Array: "+comp+", generator must follow extent...");  
-	    		} else if (first) throw new SmartFrogFunctionResolutionException("Array: "+comp+" has no extent");
-	    		else break;
+	    	while (key_enum.hasMoreElements()){		    		
+    			key = key_enum.nextElement();
+	    		//System.out.println("key:"+key);
+    			if (!orgContext.sfContainsTag(key, ConstraintConstants.EXTENT_TAG)) continue; //around while...
+	    		extent = orgContext.get(key);
+	    		if (key_enum.hasMoreElements()) {
+		    		key = key_enum.nextElement();
+		    		//System.out.println("key:"+key);
+		    		if (!orgContext.sfContainsTag(key, ConstraintConstants.GENERATOR_TAG)) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", generator must follow extent...");     			
+		    		generator = orgContext.get(key);
+		    		boolean md = process_array_members(dest,prefix_s,extent,generator);
+		    		if (md && !first)  throw new SmartFrogFunctionResolutionException("In Array: "+comp+", multi-dimensional arrays can not define multiple extents...");
+		    		first=false;
+	    		} 
 	    	}   
+	    	if (first) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", extent & generator must follow prefix...");
     	}
     	
     	//Set sfFunctionClass to "done"
