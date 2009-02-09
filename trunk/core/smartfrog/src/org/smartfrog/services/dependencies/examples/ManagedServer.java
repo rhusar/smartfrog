@@ -22,32 +22,31 @@ package org.smartfrog.services.dependencies.examples;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
-import org.smartfrog.services.dependencies.statemodel.state.ThreadedState;
+import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 
-public class ManagedServer extends ThreadedState implements Prim {
+public class ManagedServer extends StateComponent implements Prim {
 			
 	public ManagedServer() throws RemoteException {super();}  
 	
 	public boolean requireThread(){ return true; }  
 	
 	public boolean threadBody(){
-		try {
+		/*try {
 			
 			HashMap<String, Object> sthm = getLocalState();
 			
 			HashMap<String, ComponentDescription> hm = getPossibleTransitions();
 		    if (hm.get("tstart")!=null){ 
 		    	//System.out.println("+++Component Transitioning:"+name+" starting");
-		    	setTransitionToCommit("tstart");
+		    	go("tstart");
 		    } else if (hm.get("tstop")!=null){ 
 		    	//System.out.println("+++Component Transitioning:"+name+" stopping");
-		    	setTransitionToCommit("tstop");
+		    	go("tstop");
 		    } else return true;
 		    
-		    go();
-		} catch (Exception e){}
+		} catch (Exception e){}*/
 		return true;
 	}
 }

@@ -1,5 +1,9 @@
 package org.smartfrog.services.dependencies.threadpool;
 
+import java.util.concurrent.Future;
+
+import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
+
 /**
  * Interface to a threadpool object
  * Provides the methods of the a threadpool object.
@@ -21,13 +25,11 @@ public interface ThreadPool {
      * @param run The instances of a Runnable
      * @return An Object corresponding to the Runnable
      */
-    public Object addToQueue(Runnable run);
-
-    /**
-     * Remove a runnable from the registered Runnable jobs
-     *
-     * @param task the task to remove
-     * @return true if successful, fales if it did not exist or was already allocated
-     */
-    public boolean removeFromQueue(Object task);
+    public Future<?> addToQueue(Runnable run);
+    
+    public Future<?> removeFromQueue(Future<?> task);
+    
+    public void setIdleRunnable(Runnable idle);
+    
+    public void runIdle();
 }

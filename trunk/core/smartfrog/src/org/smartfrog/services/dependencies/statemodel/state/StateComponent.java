@@ -6,15 +6,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
+import org.smartfrog.services.dependencies.threadpool.ThreadPool;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
+import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -31,41 +33,38 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 public abstract class StateComponent extends PrimImpl implements Prim, StateDependencies, StateChangeNotification, DependencyValidation {
 
    private HashSet dependencies = new HashSet();
-
    private boolean asAndConnector = false;
-   private Vector stateData = new Vector();
-   
-   protected NotificationLock parentLocking = null;
-   
+     
    private HashMap<String,ComponentDescription> transitions = new HashMap<String,ComponentDescription>();
    private HashMap<String,ComponentDescription> enabled = null;
-   private HashMap<String,Object> toset = null;
-   private ComponentDescription statefunction = null;
-   protected String name="";
-   private boolean notificationNeeded=false;
-   private boolean haveLocked=false;  /*This needs tidying*/
+   private String name="";
    private Vector<ApplyReference> dpes=new Vector<ApplyReference>();
-   protected int sfIndex = -1;
+      
+   private ThreadPool threadpool;
+   private Future<?> currentActionFuture = null;
+   private boolean asyncResponse = false;
+   private boolean m_running=false;
+   private ReentrantLock transitionLock = new ReentrantLock();
    
    public StateComponent() throws RemoteException {
    }
 
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
       super.sfDeploy();
-      
+            
+      //System.out.println("&&&&& IN STATECOMPONENT DEPLOY &&&&&");
+	     
+      threadpool = (ThreadPool) sfResolve("threadpool", false);
       Context cxt = sfContext();
-      stateData = (Vector) cxt.get("sfStateData");
-      if (stateData==null) stateData = new Vector();
       asAndConnector = sfResolve("asAndConnector", asAndConnector, true);
-      parentLocking = (NotificationLock)sfParent();
       
-      //transitions and dpes
+      //transitions, dpes, state reflection...
       Enumeration keys = cxt.keys();
       while (keys.hasMoreElements()){
     	  String key = (String) keys.nextElement();
     	  Object val = cxt.get(key);
     	  
-    	  System.out.println("REGISTRATION REGISTRATION!!!"+key+val);
+    	  //System.out.println("REGISTRATION REGISTRATION!!!"+key+val);
     	  
     	  if (val instanceof ComponentDescription){
     		  ComponentDescription cd = (ComponentDescription) val;
@@ -74,85 +73,73 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     		  ApplyReference ar = (ApplyReference) val;
     		  ComponentDescription cd = ar.getComponentDescription();
     		  String functionClass = (String) cd.sfContext().get("sfFunctionClass");
-    		  System.out.println("REGISTRATION REGISTRATION!!!fc"+functionClass);
+    		  //System.out.println("REGISTRATION REGISTRATION!!!fc"+functionClass);
     		  if (functionClass.endsWith("DynamicPolicyEvaluation")) {
     			  dpes.add(ar);
-    		  } else System.out.println("Haven't filed...");
+    		  } //else System.out.println("Haven't filed...");
     	  }
       }
       
       //My name...
       Object name_o = cxt.get("name");
-      if (name_o==null) cxt.get("sfUniqueComponentID");
+      //if (name_o==null) cxt.get("sfUniqueComponentID");
       
       if (name_o!=null && name_o instanceof String) name = (String) name_o;
-      else name = (String) sfParent.sfAttributeKeyFor(this);
+      else name = (String) sfParent().sfAttributeKeyFor(this);
       
-      //My index
-      Integer indexI = null;
-      
-      try { indexI = (Integer) sfResolve(new Reference(ReferencePart.attrib("sfIndex"))); } catch (Exception e){/*Just ignore if not there*/}
-      if (indexI!=null)  sfIndex= ((Integer)indexI).intValue();    
    }
 
-   private HashMap<String, Object> getLocalOrchestrationState(int orch){
+   private boolean checkRunning(){
+	   System.out.println("Am I running -IN-"+name+"?"+m_running);
+	   if (!m_running){
+		   Boolean runValue = null;
+		   try { runValue = (Boolean) sfResolve(new Reference(ReferencePart.attrib("running"))); }
+		   catch (Exception e){/*System.out.println("Wee exception:"+e);*/}
+		   if (runValue!=null) m_running = runValue.booleanValue();
+	   }
+	   System.out.println("Am I running -OUT-"+name+"?"+m_running);
+	   return m_running;
+   }
+   
+   public HashMap<String, Object> getLocalState(){
 	   HashMap<String, Object> state = new HashMap<String, Object>();
 	   Enumeration keys = sfContext().keys();
 	   while (keys.hasMoreElements()){
 		   Object key = keys.nextElement();
-		   boolean isorch = stateData.contains(key);
-		   if (orch==g_ORCH && !isorch || orch==g_NONORCH && isorch) continue;
-		   
 		   Object val = null;
 		   try { 
 			   val=sfResolve(new Reference(ReferencePart.here(key)));
-		   } catch (Exception e){/*pah*/}
-		   
+		   } catch (Exception e){/*pah*/} 
 		   state.put(key.toString(), val);
 	   }
 	   return state;
    }
-
-   private static final int g_ALL=0;
-   private static final int g_ORCH=1;
-   private static final int g_NONORCH=2;
    
-   public HashMap<String, Object> getLocalState() {
-	   return getLocalOrchestrationState(g_ALL);
-   }
-   
-   public HashMap<String, Object> getLocalOrchestrationState() {
-	   return getLocalOrchestrationState(g_ORCH);
-   }
-   
-   public HashMap<String, Object> getLocalNonOrchestrationState() {
-	   return getLocalOrchestrationState(g_NONORCH);
-   }
-   
-   public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc){
-	   System.out.println("Hoping to acquire the lock...");
+   public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException {
+	   //System.out.println("Hoping to acquire the lock...");
 	   acquireLock();
-	   System.out.println("Hoping to acquire the lock2...");
+	   //System.out.println("Hoping to acquire the lock2...");
 	   resetPossibleTransitions();
-	   System.out.println("Hoping to acquire the lock3...");
+	   //System.out.println("Hoping to acquire the lock3...");
 	   iasc.actOn(this);
-	   System.out.println("Hoping to acquire the lock4...");
+	   //System.out.println("Hoping to acquire the lock4...");
 	   clean();
-	   System.out.println("Hoping to acquire the lock5...");
+	   //System.out.println("Hoping to acquire the lock5...");
    }
    
-   private ReentrantLock transitionLock = new ReentrantLock();
-
-   private StateComponentTransitionException transitionException = null;
    
-   private void resetPossibleTransitions() {
+   private void resetPossibleTransitions() throws StateComponentTransitionException {
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").resetPossibleTransitions()");
-	   //System.out.println("IN: State("+name+").resetPossibleTransitions()");
+	   System.out.println("IN: State("+name+").resetPossibleTransitions()");
 	   
-	   transitionException = null;
+	   enabled=null;
+	   
+	   if (!checkRunning() || !checkIsEnabled()) throw new StateComponentTransitionException(StateComponentTransitionException.g_COMPONENTNOTENABLED);
+	   
 	   enabled = (HashMap<String,ComponentDescription>) transitions.clone(); 
 	  
 	  //Remove externally disabled transitions...
+	  System.out.println("Going thru dependencies...");
       for (Iterator d = dependencies.iterator(); d.hasNext();) {
           DependencyValidation dv = (DependencyValidation) d.next();
           String transition = dv.getTransition();
@@ -169,11 +156,12 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		   
 		   
 		   System.out.println("transition"+trans);
-		   try { go = trans.sfResolve("sfGuard", false, true); } catch (Exception e){
+		   try { go = trans.sfResolve(ConstraintConstants.GUARD, false, true); } catch (Exception e){
+			   enabled=null;
 			   /**Exception needs handling properly**/
 			   System.out.println("We have excepted!!!");
-			   transitionException = new StateComponentTransitionException(StateComponentTransitionException.g_DEPENDENCYVALUEUNRESOLVABLE);
-			   enabled=null;
+			   throw new StateComponentTransitionException(StateComponentTransitionException.g_DEPENDENCYVALUEUNRESOLVABLE);
+			   
 		   }
 		   
 		   System.out.println("transitionresult"+go);
@@ -181,10 +169,11 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Key:"+key+":"+go);
 		   
 		   if (go) {
+			   System.out.println("Component: "+name+", enabled transition: "+key);
+			   
 			   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency enabled.");
 		   } else {
 			   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency not enabled."); 
-			   System.out.println("enabled+"+enabled+"+key+"+key);
 		      enabled.remove(key);
 		   }
 	   }
@@ -194,125 +183,21 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").resetPossibleTransitions()");
    }
    
-   private void checkLock() throws StateComponentTransitionException {
-	   if (!(transitionLock.isHeldByCurrentThread())) throw new StateComponentTransitionException(StateComponentTransitionException.g_NOTPERMITTED);
-   }
-   
    protected void acquireLock(){
+	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").aquireLock(...)");
 	   transitionLock.lock();
-	   parentLocking.lock();
-	   notificationNeeded=false;
+	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").aquireLock(...)");
+	   
    }
    
    protected void cleanLock(){
-	   while (transitionLock.isHeldByCurrentThread()) {
-		   parentLocking.unlock(notificationNeeded);
+	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").cleanLock(...)");
+	   while (transitionLock.isHeldByCurrentThread()) {  //CHECK!
 		   transitionLock.unlock();
 	   }
+	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").cleanLock(...)");
    }
-   
-   public HashMap getPossibleTransitions() throws StateComponentTransitionException {	   
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").getPossibleTransitions()");
-	   
-	   if (transitionException!=null) throw transitionException;
-	   if (enabled==null) throw new StateComponentTransitionException(StateComponentTransitionException.g_NOTRANSITIONS);
-	   
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").getPossibleTransitions()");
-	   
-	   return enabled;
-   }
-	   
-   public void setTransitionToCommit(String key) throws StateComponentTransitionException {
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").setTransitionToCommit(...)");
-	   
-	   checkLock();
-	   	   
-	   sfLog().debug("1");
-	   
-	   if (enabled==null) throw new StateComponentTransitionException(StateComponentTransitionException.g_NOTRANSITIONS);
-	   
-	   sfLog().debug("2");
-	   
-	    ComponentDescription trans = (ComponentDescription) enabled.get(key);
-	    
-	    sfLog().debug("3");
-	    
-	    if (trans==null) throw new StateComponentTransitionException(StateComponentTransitionException.g_NOSUCHAVAILABLETRANSITION);
-	    
-	    sfLog().debug("4");
-	    
-	    Object sfo = trans.sfContext().get("sfEffects");
-	    if (sfo==null || !(sfo instanceof ComponentDescription)) 
-	    	throw new StateComponentTransitionException(StateComponentTransitionException.g_INVALIDSTATEFUNCTION); //probably should throw...
-	    
-	    sfLog().debug("5");
-	    
-	    statefunction = (ComponentDescription) sfo;
-	    toset = new HashMap<String, Object>();
-	    
-	    sfLog().debug("6");
-	    
-	    Enumeration keys = statefunction.sfContext().keys();
-	    while (keys.hasMoreElements()){
-	    	
-	    	String sfkey = (String) keys.nextElement();
-	    	Object val = null;
-	    	try { val = statefunction.sfResolveHere(sfkey); } 
-	    	catch (Exception e) { throw new StateComponentTransitionException(StateComponentTransitionException.g_ALLOWEDVALUEUNRESOLVABLE); }
-	    	
-	    	
-	    	if (val instanceof ComponentDescription) continue;
-	    	toset.put(sfkey, val);
-	    }
-	    
-	    sfLog().debug("7");
-	    
-	    if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").setTransitionToCommit(...)");
-   }
-   
-   public void setAttribute(String key, Object value) throws StateComponentTransitionException {	   
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").setAttribute(...)");
-
-	   if (!(stateData.contains(key))) {
-		   try {sfReplaceAttribute(key, value);} catch (Exception e){/*Shouldn't happen*/}
-		   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").setAttribute(...)");
-		   return;
-	   }
-	   
-	   //Orchestration state attribute...
-	   
-	   checkLock();
-	   
-	   if (statefunction==null) throw new StateComponentTransitionException(StateComponentTransitionException.g_NOTRANSITIONSELECTED);
-	   
-	   if (toset.get(key)!=null) throw new StateComponentTransitionException(StateComponentTransitionException.g_VALUEALREADYSET); 
-	   
-	   Object allowed_value = null;
-	   try { allowed_value = statefunction.sfResolve(key); } catch (Exception e){;}
-	   if (allowed_value==null) throw new StateComponentTransitionException(StateComponentTransitionException.g_ALLOWEDVALUEUNRESOLVABLE);
-	    
-	   //Must be a choice to be still in the list of attributes to be set...
-	   ComponentDescription choice = (ComponentDescription) allowed_value;
-		   
-	   //Check value is in alloweds...
-	   Enumeration keys = choice.sfContext().keys();
-	   boolean ok=false;
-	   while (keys.hasMoreElements()){
-		   Object poss_value = null;
-		   try { choice.sfResolveHere(keys.nextElement()); } 
-		   catch (Exception e){ throw new StateComponentTransitionException(StateComponentTransitionException.g_ALLOWEDVALUEUNRESOLVABLE);}
-		   if (value.equals(poss_value)) {
-			   ok=true;
-			   break;
-		   }
-	   }
-	   if (!ok) throw new StateComponentTransitionException(StateComponentTransitionException.g_INVALIDSUPPLIEDVALUE);    
-	   
-	   toset.put(key, value);
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").setAttribute(...)");
-	   
-   }
-      
+       
    public boolean selectSingleAndGo(){	   
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").selectSingleAndGo(...)");
 
@@ -320,21 +205,19 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
 	   boolean result=true;
 	   try {
-		   checkLock();
-		   
-		   HashMap trans = getPossibleTransitions();		
+		 
+		   resetPossibleTransitions(); 		
 		   
 		   //System.out.println("IN: State("+name+").selectSingleAndGo(...)"+trans.size());
 
-		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Number transitions..."+trans.size());
-		   if (trans.size()==0 || trans.size()>1) return false;		   
+		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Number transitions..."+enabled.size());
+		   if (enabled.size()==0 || enabled.size()>1) return false;		   
 		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Single transition...");
 		   
-		   Iterator keys = trans.keySet().iterator(); 
+		   Iterator keys = enabled.keySet().iterator(); 
 		   if (keys.hasNext()){
 				String key = (String) keys.next();
-				setTransitionToCommit(key);
-				go();
+				go(key);
 		   }
 	   } catch (StateComponentTransitionException e) {result=false;}
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").selectSingleAndGo(...)");
@@ -342,22 +225,13 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   return result;
    }
    
-   public void go() throws StateComponentTransitionException {
+   public void go(String transition) throws StateComponentTransitionException {
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").go()");
-	    
-	   checkLock();
 	   
-	   if (toset==null) throw new StateComponentTransitionException(StateComponentTransitionException.g_NOTRANSITIONSELECTED);
-	    
-	   for (Iterator keys = toset.keySet().iterator(); keys.hasNext();) {
-           Object key = keys.next();
-           Object value = toset.get(key);
-           if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").go(). Setting:"+key+" to:"+value+" within component:"+name);
-           try {sfReplaceAttribute(key, value);} catch (Exception e){/*Shouldn't happen*/}
-           
-           notificationNeeded=true;
-           
-        }
+	   ComponentDescription trans = (ComponentDescription) enabled.get(transition);
+	   try {
+		   trans.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));
+	   } catch (Exception e){throw new StateComponentTransitionException("Unable to apply effects in transition: "+trans, StateComponentTransitionException.g_UNABLETOAPPLYEFFECTS);}
 	   
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").go()");
    }
@@ -374,19 +248,22 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   return ret;
    }
      
-   protected void clean(){
+   public void clean(){
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").clean(...)");
-	   toset=null;
-	   statefunction=null;
+	   currentActionFuture=null;
 	   cleanLock();
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").clean(...)");
    }
    
    public void handleStateChange() { 
 	   
+	  //System.out.println("++++++++++++++++++++HANDLE STATE CHANGE!!! COMPONENT:"+name);
 	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleStateChange()");
 	  
-	  System.out.println("To run DPEs..."+dpes.size());
+	  /*
+	   *This needs re-implementing. Check whether they applicable. If they are -- new thread. 
+	   
+	   System.out.println("To run DPEs..."+dpes.size());
 	  
 	  boolean progress=false;
 	  
@@ -399,20 +276,17 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  
 	  if (progress) {
 		  System.out.println("Progress made");
-		  notifyStateChange();
+		  threadpool.runIdle();
 		  System.out.println("Other side!");System.out.flush();
 		  return; //skip now, as this will come round...
+	  }*/
+	  try {
+	  resetPossibleTransitions();
+	  } catch (Exception e){
+		
+		  enabled=null;
 	  }
 	  
-	  if (checkIsEnabled()) {
-		  if (sfLog().isTraceEnabled()) sfLog().trace("enabled..." + sfCompleteNameSafe() + " " + true); 
-   		} else {
-		  if (sfLog().isTraceEnabled()) sfLog().trace("enabled..." + sfCompleteNameSafe() + " " + false);
-		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange()");
-		  return;
-	  } 
-	  
-	  resetPossibleTransitions(); 
 	  if (enabled==null) {
 		  System.out.println("no enabled transitions...");
 		  
@@ -428,20 +302,15 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }     
 
    public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
+	  System.out.println("Dependency Registration. Component: "+name+", d: "+d.toString());
       dependencies.add(d);
    }
 
    public void deregister(DependencyValidation d) throws SmartFrogStateLifecycleException {
       dependencies.remove(d);
-      notifyStateChange();
    }
 
-   public void notifyStateChange() {
-	  if (parentLocking!=null) parentLocking.notifyStateChange();
-   }
-
-   // ready in case we need it for the dependencies to link through components!
-   protected boolean checkIsEnabled() {  //and connector on the dependencies
+   private boolean checkIsEnabled() {  //and connector on the dependencies
 	   //System.out.println("IN: State("+name+").checkIsEnabled()"+name);
 
       for (Iterator d = dependencies.iterator(); d.hasNext();) {
@@ -461,18 +330,53 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   return null;
    }
    
-   protected abstract void setState() throws StateComponentTransitionException;
-   protected abstract boolean clearCurrentAction();
-
    public synchronized Object sfReplaceAttribute(Object name, Object value)
-   		throws SmartFrogRuntimeException, RemoteException {
+		throws SmartFrogRuntimeException, RemoteException {
+  
+	   //System.out.println("*****************************************************************************************Replacing Attribute..."+name+":"+value);
+	  
+	   Object result = super.sfReplaceAttribute(name,value);
 	   
-	    System.out.println("*****************************************************************************************Replacing Attribute..."+name+":"+value);
-	   
-	    Object result = super.sfReplaceAttribute(name,value);
-	    
-	    if (!Constraint.isUpdateContextLocked()) notifyStateChange();
-	    return result;
+	   if (!Constraint.isUpdateContextLocked() && threadpool!=null) threadpool.runIdle();
+	   return result;
+   }
+   
+   private Future<?> clearCurrentAction(){
+	   if (currentActionFuture ==null) return null;
+	   return (currentActionFuture = threadpool.removeFromQueue(currentActionFuture)); 
+   }
+   
+   public void setState() throws StateComponentTransitionException {
+	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateComponent.setState()");
+      
+	  if (clearCurrentAction()!=null) return; //Not appropriate to allow further transition at this time...
+	 
+      currentActionFuture= threadpool.addToQueue(new StateUpdateThread());
+     
+      if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateComponent.setState()");
+   }
+   
+   protected abstract boolean threadBody() throws StateComponentTransitionException;
+
+   /**
+    * ********************************************************
+    * thread definition
+    * ********************************************************
+    */
+   public class StateUpdateThread implements Runnable {
+      public void run() {
+    	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateUpdateThread.run()");
+    	  acquireLock();
+    	  try{
+    	   if (threadBody()) {
+    		   StateComponent.this.asyncResponse=false;
+    		   StateComponent.this.clean();
+           } else {
+        	   StateComponent.this.asyncResponse=true;
+           }
+    	  }  catch (StateComponentTransitionException stce) {/*Hardly acceptable handling*/}
+          if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateUpdateThread.run()");
+      }
    }
    
 }

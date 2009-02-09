@@ -21,15 +21,12 @@ package org.smartfrog.services.dependencies.statemodel.state;
 
 import java.rmi.RemoteException;
 
-import org.smartfrog.services.dependencies.statemodel.state.ThreadedState;
 import org.smartfrog.sfcore.prim.Prim;
 
-public class BaseStateComponent extends ThreadedState implements Prim {
+public class SimpleStateComponent extends StateComponent implements Prim {
 			
-	public BaseStateComponent() throws RemoteException {super();}  
-	
-	public boolean requireThread(){ return true; }  
-	
+	public SimpleStateComponent() throws RemoteException {super();}  
+
 	public boolean threadBody(){
 		selectSingleAndGo();  //ignore return value...
 		return true;

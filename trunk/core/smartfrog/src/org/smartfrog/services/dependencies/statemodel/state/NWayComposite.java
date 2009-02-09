@@ -1,17 +1,19 @@
 package org.smartfrog.services.dependencies.statemodel.state;
 
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.prim.Prim;
-
 import java.rmi.RemoteException;
 import java.util.Iterator;
+
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  *
  */
-public class NWayComposite extends Composite implements Compound, StateChangeNotification, NotificationLock {
+public class NWayComposite extends Composite implements Compound, StateChangeNotification {
    ComponentDescription template;
    ComponentDescription instances;
    int instanceCount;

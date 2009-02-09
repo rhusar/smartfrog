@@ -1,16 +1,15 @@
 package org.smartfrog.services.dependencies.statemodel.termination;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
 
-import org.smartfrog.services.dependencies.statemodel.state.ThreadedState;
+import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  */
-public class CompositeTermination extends ThreadedState {
+public class CompositeTermination extends StateComponent {
    Prim toTerminate = null;
    TerminationRecord tr = TerminationRecord.normal(sfCompleteName());
    boolean required;
@@ -23,12 +22,12 @@ public class CompositeTermination extends ThreadedState {
    public void sfDeploy() throws RemoteException, SmartFrogException {
       super.sfDeploy();
       toTerminate = (Prim) sfResolve("toTerminate", true);
-      detach = sfResolve("detachfirst", detach, false);
+      detach = sfResolve("detachFirst", detach, false);
    }
 
-   public boolean requireThread() { 
-	     if (sfLog().isInfoEnabled()) sfLog().info("terminating model with " + tr);
-	     System.out.println("terminating model with " + tr);
+   public boolean threadBody() {
+	   if (sfLog().isInfoEnabled()) sfLog().info("terminating composite with " + tr);
+	     //System.out.println("terminating model with " + tr);
 	     
 	     try {
 	        if (detach) {
@@ -39,10 +38,6 @@ public class CompositeTermination extends ThreadedState {
 	     } catch (RemoteException e) {
 	        sfLog().error("failed to terminate model - hope liveness picks it up!", e);
 	     }
-      return false;
-   }
-
-   public boolean threadBody() {
 	   return true;
    }
 }

@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/dependencies/statemodel/components.sf"
 #include "org/smartfrog/services/dependencies/threadpool/components.sf"
 
-ManagedEntity extends State {
+ManagedEntity extends StateComponent {
    sfClass "org.smartfrog.services.dependencies.examples.ManagedEntity";
 
    created false;
@@ -29,15 +29,15 @@ ManagedEntity extends State {
    name TBD;
    
    tcreated extends Transition {       
-      dependency (! LAZY created);
-      statefunction extends {
+      sfGuard (! LAZY created);
+      sfEffects extends {
           created true;
       }
    }
    
    tremoved extends Transition {
-      dependency (LAZY created  && (! LAZY removed));
-      statefunction extends {
+      sfGuard (LAZY created  && (! LAZY removed));
+      sfEffects extends {
           removed true;
       }
    }  
@@ -54,10 +54,6 @@ removedDependency extends Dependency {
 }
  
 ManagedEntities extends Model {
-
-   killMe extends CompositeTerminator {
-   	  terminateCond LAZY foo0:removed;
-   }
 
    foo0 extends ManagedEntity{
       name "foo0";
@@ -91,8 +87,8 @@ ManagedEntities extends Model {
       by LAZY foo0;
    }
    
-   -- extends VerificationRecord {
+   /*-- extends VerificationRecord {
    	  proposition "AG({foo0:created} -> {foo1:created})";
-   }
+   }*/
 }
 
