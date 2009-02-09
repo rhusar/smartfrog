@@ -26,38 +26,17 @@ import org.smartfrog.test.DeployingTestBase;
 /**
  *
  */
-public class HealthTest extends DeployingTestBase {
+public class JspHelperTest extends DeployingTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/machine/";
 
-    public HealthTest(String name) {
+    public JspHelperTest(String name) {
         super(name);
     }
 
-    public void testCheckDatanodeJspClasses() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckDatanodeJspClasses");
+    public void NotestCheckJspHelperClass() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJspHelperClass");
     }
-
-    public void testCheckNamenodeJspClasses() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckNamenodeJspClasses");
-    }
-
-    public void testCheckJobtrackerJspClasses() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJobtrackerJspClasses");
-    }
-
-    public void testCheckJasperClasses() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJasperClasses");
-    }
-
     public void testCheckJspHelperClasses() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJspHelperClasses");
-    }
-
-    public void testHadoopJspClasses() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopJspClasses");
-    }
-
-    public void testJvmHealth() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJvmHealth");
     }
 }

@@ -199,11 +199,12 @@ TestJob extends Job {
 
   //mapred.system.dir "/tmp/hadoop/mapred/system";
 
-  mapred.child.java.opts "-Xmx512m -d64 -server";
+  //mapred.child.java.opts "-Xmx512m -d64 -server";
   mapred.tasktracker.map.tasks.maximum 5;
   mapred.tasktracker.reduce.tasks.maximum 1;
   mapred.working.dir (hadoop.tmp.dir ++ "/" ++ name ++ "/working");
   mapred.local.dir (hadoop.tmp.dir ++ "/" ++ name ++ "local");
+  io.sort.record.percent 0.1F;
   //hadoop.job.ugi ;
 }
 
