@@ -53,7 +53,7 @@ public class PrettyPrint extends BaseFunction implements MessageKeys {
     protected Object doFunction()  throws SmartFrogFunctionResolutionException {
     	
     	java.util.Vector<CompositeSource> css = new java.util.Vector<CompositeSource>();
-	    Constraint.getCompositeSources(comp, css, null, true);
+	    Constraint.getAggregateSources(comp, css);
 	    
 	    CoreSolver.getInstance().setShouldUndo(true);
     	

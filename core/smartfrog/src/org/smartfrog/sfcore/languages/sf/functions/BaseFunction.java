@@ -59,11 +59,12 @@ public abstract class BaseFunction implements Function  {
     	this.context = ctx;
     	if (this.context!=null) this.comp = context.getOriginatingDescr();
     	if (this.comp!=null) this.orgContext = comp.sfContext();
-    	
+    
+    	Object doNotNullifyParent= context.get("doNotNullifyParent");
     	Object result = doFunction();
     	
-    	if (result instanceof ComponentDescription) {
-            ((ComponentDescription)result).setParent(null);
+    	if (doNotNullifyParent==null && result instanceof ComponentDescription) {
+    		((ComponentDescription)result).setParent(null);
             ((ComponentDescription)result).setPrimParent(null);
         }
     	return result;
