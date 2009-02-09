@@ -167,6 +167,7 @@ RawRef extends PolicyRef {
 AggregateSpecifier extends AggregateSpecifierArrayPath {
     sfIsAggregateSpecifier;
     [sfIgnoreLink] pred;
+    unify;
 }
 
 AggregateSpecifierArrayPath extends {
