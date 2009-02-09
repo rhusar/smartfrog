@@ -42,7 +42,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
       
    private ThreadPool threadpool;
    private Future<?> currentActionFuture = null;
-   private boolean asyncResponse = false;
+   protected boolean asyncResponse = false;
    private boolean m_running=false;
    private ReentrantLock transitionLock = new ReentrantLock();
    

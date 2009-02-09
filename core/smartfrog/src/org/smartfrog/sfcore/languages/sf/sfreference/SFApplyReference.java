@@ -245,6 +245,8 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
 
+        //System.out.println("SFAR:Going in..."+function.getClass().toString());
+        
        	forFunction.setOriginatingDescr(comp);
     	try {
     		result = function.doit(forFunction, null, rrcd, this, rrcd.sfAttributeKeyFor(this));

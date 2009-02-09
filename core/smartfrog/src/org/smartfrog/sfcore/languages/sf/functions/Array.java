@@ -93,7 +93,7 @@ public class Array extends BaseFunction implements MessageKeys {
     	if (prefix instanceof String) prefix_s= (String) prefix;
 		else throw new SmartFrogFunctionResolutionException("In Array: "+comp+", prefix must be a String...");     	
     	
-    	/* PATH's are not currently offered for Arrays for simplicity.  Additional measures for link resolution would need to be taken otherwise which I feel complicate matters
+    	/* PATHs are not currently offered for Arrays for simplicity.  Additional measures for link resolution would need to be taken otherwise which I feel complicate matters
     	 path = orgContext.get(ConstraintConstants.PATH);
     	 
     	
