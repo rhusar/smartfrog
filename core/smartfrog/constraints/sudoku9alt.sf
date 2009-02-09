@@ -1,0 +1,71 @@
+#include "/org/smartfrog/functions.sf"
+
+SuDoku9 extends {
+
+   puzzle TBD;  
+
+   Board extends Array {
+      prefix "square";
+      extent [9,9];
+      generator extends Constraint, ArrayGenerator {
+	  val extends Var {
+             range "[1..9]";
+             auto LAZY Label;
+          }
+      }
+    }
+
+   PreValues extends Constraint {
+      array LAZY Board;
+      prefix "square";
+      path   LAZY val;
+      update extends AggregateSpecifier {
+         unify puzzle;
+      }
+   }
+    
+   Constraints extends Array {
+      prefix "cons";
+      extent 9;
+      generator extends Constraint, ArrayGenerator {
+		  context extends DATA { index sfIndex; }  //local sfIndex
+		  array LAZY Board;
+		  prefix "square";
+		  path LAZY val;
+		  ver extends AggregateSpecifier { pred (index == LAZY sfIndex0); }
+		  hor extends AggregateSpecifier { pred (index == LAZY sfIndex1); }
+		  sq extends AggregateSpecifier { pred (index == (((LAZY sfIndex1 / 3)*3)  + (LAZY sfIndex0 / 3))); }  
+		  [sfConstraint] -- "alldifferent(hor), alldifferent(ver), alldifferent(sq)";
+      }
+   }  
+
+   Label extends LabellingPoint;
+
+   PrintSolution extends PrettyPrint {
+      array LAZY Board;
+      prefix "square";
+      path LAZY val;
+      output extends AggregateSpecifier;
+   }
+
+   WriteBack extends ApplyEffects {
+      key "puzzle";
+      update PrintSolution:output;
+   }
+
+}
+
+sfConfig extends SuDoku9 {
+   puzzle [ 
+     	             [[4,0],8], [[6,0],5],
+                     [[0,1],1], [[2,1],6],
+		     [[5,2],6], [[6,2],2], [[7,2],7], [[8,2],9],
+                     [[7,3],6], [[8,3],1],
+                     [[1,4],2], [[3,4],4], [[5,4],9], [[7,4],8],
+		     [[0,5],8], [[1,5],5], 
+                     [[0,6],9], [[1,6],1], [[2,6],2], [[3,6],5],
+                     [[6,7],7], [[8,7],2],
+		     [[2,8],8], [[4,8],4]
+	   ];
+
+}

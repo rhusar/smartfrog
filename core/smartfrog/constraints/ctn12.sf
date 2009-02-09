@@ -33,9 +33,9 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends {
   foo1 extends Array {
-     [sfPrefix] -- "zoo";
-     [sfExtent] -- 3;
-     [sfGenerator] -- extends {
+     prefix "zoo";
+     extent 3;
+     generator extends {
         help extends {
             help2 8; 
         }
@@ -43,9 +43,9 @@ sfConfig extends {
   }
   
   foo2 extends Aggregator {
-        [sfSource] -- LAZY foo1;
-	[sfPrefix] -- "zoo";
-	[sfPath] -- LAZY help:help2;  
+        array LAZY foo1;
+	prefix "zoo";
+	path LAZY help:help2;  
         foo3 extends nproduct;
   }
 }
