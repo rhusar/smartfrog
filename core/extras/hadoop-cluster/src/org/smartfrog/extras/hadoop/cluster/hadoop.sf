@@ -72,9 +72,15 @@ HadoopClusterCompound extends Compound {
     sfShouldTerminate false;
   }
 
-  health extends HadoopJspClasses {
+  namenodehealth extends CheckNamenodeJspClass {
     sfShouldTerminate false;
   }
+
+/*
+  allhealth extends HadoopJspClasses {
+    sfShouldTerminate false;
+  }
+*/
 
 }
 

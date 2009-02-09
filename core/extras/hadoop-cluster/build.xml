@@ -92,6 +92,15 @@
     </deploy>
   </target>
 
+  <target name="healthy" depends="ready-to-deploy"
+      description="deploy basic health checks">
+    <property name="healthy.name" value="healthy"/>
+    <deploy>
+      <application name="${healthy.name}"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/healthy.sf"/>
+    </deploy>
+  </target>
+
   <target name="hdfs" depends="ready-to-deploy"
       description="deploy a hdfs filesystem">
     <deploy>
