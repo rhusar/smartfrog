@@ -39,13 +39,10 @@ DesiredObservedBaseStateComponent extends StateComponent {
 Dependency extends Prim {
      sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
      sfUpdatable true;
-     on TBD; 
      by TBD;
      sfIsDependency;
      relevant true;
      enabled false;
-     sfByPrefix LAZY sfTag;
-     value (LAZY relevant -> LAZY enabled);
 }
 
 StateComponent extends Prim {
@@ -55,7 +52,6 @@ StateComponent extends Prim {
 	 [sfFinal] asAndConnector false;
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
-     model LAZY ROOT;
 }
 
 Composite extends Compound {
@@ -72,6 +68,12 @@ Composite extends Compound {
      }
 }
 
+CompositeWithSync extends Composite {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.SynchedComposite";
+   run false;
+   running false;
+} 
+
 NWayComposite extends Composite {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.NWayComposite";
      sfUpdatable false;
@@ -81,22 +83,21 @@ NWayComposite extends Composite {
 }
 
 
-Model extends Composite {
+Model extends CompositeWithSync {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.Model";
 	 //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
-     run true; // set to false if you do not want the model to generate new notification sweeps, true if do
 }
 
 CompositeTerminator extends StateComponent {
     sfClass "org.smartfrog.services.dependencies.statemodel.termination.CompositeTermination";
-    toTerminate LAZY ROOT;
-    detachFirst false;
+    toTerminate LAZY PARENT;
+    detachFirst true;
     terminateCond TBD;
     -- extends Transition {
-       sfGuard terminateCond;
-       sfEffects extends {}
+       guard terminateCond;
+       effects extends {}
     }
     sfUniqueComponentID false;  //not a component for model checking purposes
 }
@@ -108,6 +109,16 @@ AndConnector extends Prim {
 
 OrConnector extends Prim {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnector";
+    sfUpdatable true;
+}
+
+AndConnectorExists extends Prim {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnectorExists";
+    sfUpdatable true;
+}
+
+OrConnectorExists extends Prim {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnectorExists";
     sfUpdatable true;
 }
 
@@ -133,8 +144,8 @@ NXorConnector extends Prim {
 
 Transition extends {
     sfIsStateComponentTransition;
-    sfGuard true;
-    sfEffects TBD;
+    guard true;
+    effects TBD;
 }
 
 VerificationRecord extends {

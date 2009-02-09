@@ -17,6 +17,7 @@ public class Connector extends PrimImpl implements Prim, DependencyValidation, S
        }
        
 	   public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
+		      System.out.println("My dependencies:"+dependencies+" and me:"+d);
 		      dependencies.add(d);
 	   }
 	   public void deregister(DependencyValidation d) throws SmartFrogStateLifecycleException {

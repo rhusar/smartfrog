@@ -1,11 +1,14 @@
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import org.smartfrog.services.dependencies.threadpool.ThreadPool;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogUpdateException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.reference.ApplyReference;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -13,29 +16,44 @@ import java.util.Enumeration;
 /**
  *
  */
-public class Composite extends CompoundImpl implements Compound, StateChangeNotification, NotificationLock {
-   NotificationLock parentLocking;
+public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation {
 
+   private String name="";
+	
    public Composite() throws RemoteException {
 	   super();
    }
 
-   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-      super.sfDeploy();
-      checkParentNotificationLock();
+   public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
+	      super.sfDeploy();
+	            
+	      //My name...
+	      Object name_o = sfContext().get("name");
+	      if (name_o!=null && name_o instanceof String) name = (String) name_o;
+	      else name = (String) sfParent().sfAttributeKeyFor(this);
+	      
+	   }
+   
+   public synchronized void sfRun() throws SmartFrogException{
+	   System.out.println("IN: sfRun"+this);
+	   
+	   for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
+	         Object c = e.nextElement();
+	         if (c instanceof RunSynchronisation) {
+	        	 ((RunSynchronisation)c).sfRun();
+	         }
+	      }
+	   System.out.println("OUT: sfRun"+this);
    }
-
-   protected void checkParentNotificationLock () throws SmartFrogException {
-      try {
-         parentLocking = (NotificationLock) sfParent();
-      } catch (Exception e) {
-         throw new SmartFrogException("error in composite " + sfCompleteNameSafe() + ": parent is not a Composite or Model");
-      }
+   
+   public String getName(){
+	   return name;
    }
-
+   
    //child down to State, where it is handled
    public void handleStateChange() {
-	   System.out.println("handling state change...");
+	   //System.out.println("++++++++++++++++++++HANDLE STATE CHANGE!!! COMPOSITE");
+	   //System.out.println("handling state change...COMPOSITE");
       for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
          Object c = e.nextElement();
          if (c instanceof StateChangeNotification) {
@@ -44,33 +62,4 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
       }
    }
 
-   public void lock() {
-      ((NotificationLock)parentLocking).lock();
-   }
-
-   public void unlock(boolean notify) {
-      ((NotificationLock)parentLocking).unlock(notify);
-   }
-
-   public void notifyStateChange() {
-      ((NotificationLock)parentLocking).notifyStateChange();
-   }
-
-   public void threadStarted() {
-      ((NotificationLock)parentLocking).threadStarted();
-   }
-
-   public void threadStopped() {
-      ((NotificationLock)parentLocking).threadStopped();
-   }
-
-   public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
-      boolean result = super.sfUpdateWith(newCxt);
-
-      if (childrenToTerminate.size() > 0) {
-         throw new SmartFrogUpdateException("Composite may not (currently) be updated with terminations " +
-                            sfCompleteNameSafe());
-      }
-      return result;
-   }
 }

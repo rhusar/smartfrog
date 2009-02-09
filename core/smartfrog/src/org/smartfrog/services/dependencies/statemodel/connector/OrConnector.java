@@ -20,9 +20,11 @@ import java.rmi.RemoteException;
    }
 
    public boolean isEnabled() {
+	  boolean exists=false;
       for (Iterator d = dependencies.iterator(); d.hasNext();) {
             if (((DependencyValidation) d.next()).isEnabled()) return true;
+            exists=true;
       }
-      return false;
+      return !exists;
    }
 }

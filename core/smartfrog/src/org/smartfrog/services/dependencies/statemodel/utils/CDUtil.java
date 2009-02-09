@@ -183,7 +183,7 @@ public class CDUtil {
                 return false;
             }
             
-            System.out.println("checking attributes named " + k + " for equality");
+            //System.out.println("checking attributes named " + k + " for equality");
             
             /**
              * get both values
