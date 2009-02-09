@@ -57,47 +57,36 @@ public class DynamicPolicyEvaluation extends BaseFunction implements MessageKeys
     }
   	  
     protected Object doFunctionWkr() throws SmartFrogFunctionResolutionException {	
-    	
-    	boolean updateContextLocked = Constraint.isUpdateContextLocked();
-    	if (!updateContextLocked) Constraint.lockUpdateContext();
-    	
+    	    	
     	//Need to ascertain whether we do this or not
     	ComponentDescription comp = context.getOriginatingDescr();
     	context = comp.sfContext();
     	
-    	////System.out.println("***Comp***"+comp);
-    	
     	//Check the guards on the policy evaluation...
-    	//(1) Explicit sfGuard
-    	Object guard = null;
-    	try { guard = comp.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.GUARD)));}
-    	catch (SmartFrogResolutionException sfre){/*Intentionally do nothing*/}
-    	if (guard!=null){
-       	   if (!(guard instanceof Boolean)) throw new SmartFrogFunctionResolutionException("Guard in DynamicPolicyEvaluation: "+comp+" should be a Boolean");
-       	   ////System.out.println("Guard parsed...");
-       	   if (!((Boolean)guard).booleanValue()) return guard;
-       	   ////System.out.println("Guard is true.");
+    	//(1) Explicit guard
+    	Boolean guard = null;
+    	try { guard = (Boolean) comp.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.GUARD)));}
+    	catch (ClassCastException cce){throw new SmartFrogFunctionResolutionException("Guard in DynamicPolicyEvaluation: "+comp+" should be a Boolean");}
+    	catch (Exception e){/*Intentionally do nothing*/}
+    	if (guard!=null && !guard.booleanValue()) return guard;
+    	   	
+    	//Check the guards on the policy evaluation...
+    	//(1) Explicit guard
+    	ComponentDescription guards = null;
+    	try { guards = (ComponentDescription) comp.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.GUARDS)));}
+    	catch (ClassCastException cce){throw new SmartFrogFunctionResolutionException("Guards in DynamicPolicyEvaluation: "+comp+" should be a ComponentDescription");}
+    	catch (Exception e){/*Intentionally do nothing*/}
+    	if (guards!=null){
+    	   Enumeration gnum = guards.sfContext().keys();
+    	   while (gnum.hasMoreElements()){
+    		    guard = null;
+    	    	try { guard = (Boolean) comp.sfResolve(new Reference(ReferencePart.here(gnum.nextElement())));}
+    	    	catch (ClassCastException cce){throw new SmartFrogFunctionResolutionException("Guard in DynamicPolicyEvaluation: "+guards+" should be a Boolean");}
+    	    	catch (Exception e){/*Intentionally do nothing*/}
+    	    	if (guard!=null && !guard.booleanValue()) return guard;
+    	   }
     	}
-    	
-    	//(2) Tagged [sfGuard]s
-    	try {
-    		////System.out.println("TAGGED GUARDS...");
-	    	Enumeration e = context.keys();
-	    	while (e.hasMoreElements()){
-	    		Object key = e.nextElement();
-	    		////System.out.println("TAGGED GUARD?...");
-	    		if (comp.sfContainsTag(key, ConstraintConstants.GUARD_TAG)){
-	    			////System.out.println("TAGGED GUARD..."+key.toString());
-		    		
-	    			Object tagged_guard = comp.sfResolve(key.toString());
-	    			////System.out.println(""+tagged_guard);
-	    			if (!(tagged_guard instanceof Boolean)) throw new SmartFrogFunctionResolutionException("Tagged guard: "+key+" in DynamicPolicyEvaluation: "+comp+" should be a Boolean");
-	    			////System.out.println("TAGGED GUARD..."+key+":"+((Boolean)tagged_guard).booleanValue());
-	    	       	if (!((Boolean)tagged_guard).booleanValue()) return tagged_guard;
-	    		}	    		
-	    	}
-    	} catch (SmartFrogException e){/*Shouldn't happen*/}
-    
+    	    	    
     	//OK, so we are allowed to evaluate the DPE...
     	try {
 	    	Enumeration e = context.keys();
@@ -110,68 +99,11 @@ public class DynamicPolicyEvaluation extends BaseFunction implements MessageKeys
     	} catch (SmartFrogException e){/*Shouldn't happen*/}
     	
     	//Let's finish with a few effects...
-    	//(1) Explicit sfEffects
-    	Object effects = null;
-    	try { effects = comp.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));}
+    	
+    	try { comp.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));}
     	catch (SmartFrogResolutionException sfre){/*Intentionally do nothing*/}
-    	if (effects!=null){
-       	   if (!(effects instanceof ComponentDescription)) throw new SmartFrogFunctionResolutionException("Effects in DynamicPolicyEvaluation: "+comp+" should be a ComponentDescription");
-       	   //System.out.println("Effects parsed...");
-       	   applyEffects((ComponentDescription)effects);
-       	   
-    	} //else //System.out.println("No effects?");
-
-    	//(2) Tagged [sfEffects]s
-    	//System.out.println("TAGGED EFFECTS...");
-    	try {
-	    	Enumeration e = context.keys();
-	    	while (e.hasMoreElements()){
-	    		Object key = e.nextElement();
-	    		//System.out.println("TAGGED EFFECTS...?");
-	    		if (comp.sfContainsTag(key, ConstraintConstants.EFFECTS)){
-	    			//System.out.println("TAGGED EFFECTS...yes");
-	    			Object tagged_effects = comp.sfResolve(key.toString());
-	    		    if (!(tagged_effects instanceof ComponentDescription)) throw new SmartFrogFunctionResolutionException("Tagged effects in DynamicPolicyEvaluation: "+comp+" should be a ComponentDescription");
-	    		    //System.out.println("TAGGED EFFECTS..."+tagged_effects);
-	    		    applyEffects((ComponentDescription)tagged_effects);
-	    		    
-	    		}	    		
-	    	}
-    	} catch (SmartFrogException e){/*Shouldn't happen*/}
-    	
-    	if (!updateContextLocked) Constraint.applyUpdateContext();
-    	
+    	    	    	
         return new Boolean(true);
     }
-        
-    public static void applyEffects(ComponentDescription effects) throws SmartFrogFunctionResolutionException {
-    	
-    	    java.util.Vector<CompositeSource> css = new java.util.Vector<CompositeSource>();
-    	    java.util.Vector<Object> others = new java.util.Vector<Object>();
-    	
-    	    //System.out.println("IN applyEffects");
-    	    
-    	    Constraint.getCompositeSources(effects, css, others, false);
-    	    
-    	    //System.out.println("********************SIZES:"+css.size()+others.size());
-    	    
-    	    /*for (int i=0;i<css.size();i++){
-    	    	//System.out.println("******CS"+i);
-    	    	//System.out.println(css.get(i).toString());
-    	    }/*
-    	    for (int i=0;i<others.size();i++){
-    	    	//System.out.println("******others"+i);
-    	    	//System.out.println(others.get(i).toString());
-    	    }*/
-    	    
-    	    Constraint.updateValues(css);
-    	    	
-    	    for (int i=0; i<others.size(); i++){
-    	    	Object key = others.get(i);
-    	    	Constraint.updateSimpleValue(effects, key);
-    	    }
-    	    
-    	    //System.out.println("OUT:applyEffects...");
-    	} 
-   
+           
 }

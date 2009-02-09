@@ -53,7 +53,7 @@ public class Aggregator extends BaseFunction implements MessageKeys {
 	
 	    //System.out.println("Getting sources...");
 	    
-	    Constraint.getCompositeSources(comp, css, null, true);
+	    Constraint.getAggregateSources(comp, css);
 	    
 	    //System.out.println("Got sources...");
 	    

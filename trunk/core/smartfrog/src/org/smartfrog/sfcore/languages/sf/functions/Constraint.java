@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -40,8 +39,10 @@ import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintResolutionState.ConstraintContext;
 import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.ApplyReference;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -107,27 +108,29 @@ public class Constraint extends BaseFunction implements MessageKeys {
 		HashMap context;
 		Object source;
 		Reference path;
-		Object update;
+		ComponentDescription update;
 		String prefix; 
-		Reference pred;
 		Object key;
 		Object retval;
+		Object unify;
 		Arguments arguments=new Arguments();
 		boolean freevars=false;
 		int idx=-1;
 		
-		CompositeSource(HashMap context, Object source, String prefix, Reference path, Reference pred, Object key, Object update){
+		CompositeSource(HashMap context, 
+				        Object source, 
+				        String prefix, 
+				        Reference path, 
+				        Object key, 
+				        ComponentDescription update,
+				        Object unify){
 			this.context=context;
 			this.source=source;
 			this.prefix=prefix;
 			this.update=update;
 			this.key=key;
 			this.path=path;
-			this.pred=pred;
-		}
-		
-		public String toString(){
-			return ""+context+":"+source+":"+prefix+":"+path+":"+pred+":"+key+":"+update+":"+arguments+":"+freevars+":"+idx;
+			this.unify=unify;
 		}
 	}
 		
@@ -172,14 +175,16 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	
     	HashMap<FreeVar, Object> assigns = new HashMap<FreeVar, Object>(); 
     	
-    	//System.out.println("In constraint...");
+    	System.out.println("In constraint...");
     	
     	if (!CoreSolver.getInstance().getConstraintsPossible()) return comp; 
     	
 		CoreSolver.getInstance().setShouldUndo(true);
 
 		Vector<CompositeSource> aggs=new Vector<CompositeSource>();
-		getCompositeSources(comp, aggs, null, true);
+		
+		System.out.println("Fetching aggregate sources");
+		getAggregateSources(comp, aggs);
 		
 		for (int i=0;i<aggs.size();i++){
 			CompositeSource cs = aggs.get(i);
@@ -191,14 +196,13 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    	//System.out.println("+++++++++++++++++++++"+cs.key+":"+cs.arguments);
 	    	
 	    	//Unify arguments...
-	    	Object value = orgContext.get(cs.key);
-	    	unify(cs.arguments, value, assigns);
+	    	unify(cs.arguments, cs.unify, assigns);
 	    	String csargs = cs.arguments.toString();
 	    	//System.out.println("CSARGS!!!"+cs.key+":"+csargs);
 	    	orgContext.put(cs.key, cs.arguments.getArgs());
 	    	
 	    	try {
-	    		if (cs.freevars) orgContext.sfAddTag(cs.key, "sfFreeVars");	
+	    		if (cs.freevars) orgContext.sfAddTag(cs.key, ConstraintConstants.FREEVARS_TAG);	
 	    	} catch (SmartFrogContextException context){/*Shouldn't happen*/}
 		}	
 				
@@ -215,9 +219,9 @@ public class Constraint extends BaseFunction implements MessageKeys {
     		Object val = orgContext.get(key);
     		try {
 
-    			if (orgContext.sfContainsTag(key, "sfReturn")) ret_key=key;
+    			if (orgContext.sfContainsTag(key, ConstraintConstants.RETURN_TAG)) ret_key=key;
     			
-    			if (orgContext.sfContainsTag(key, "sfConstraint")) goal_attrs.add(key);
+    			if (orgContext.sfContainsTag(key, ConstraintConstants.CONSTRAINT_TAG)) goal_attrs.add(key);
     			else { 
     				
     				if (val instanceof String && !isLegal((String)val)) continue;	
@@ -230,8 +234,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    				//Make sure range is appropriated in free var
 	    				fv.constructRange(comp);
 	    				
-	    				if (orgContext.sfContainsTag(key, "sfConstraintAutoVar")) autos.add(key);
-		    			else if (orgContext.sfContainsTag(key, "sfConstraintUserVar")) isuservars=true;
+	    				if (orgContext.sfContainsTag(key, ConstraintConstants.AUTOVAR_TAG)) autos.add(key);
+		    			else if (orgContext.sfContainsTag(key, ConstraintConstants.USERVAR_TAG)) isuservars=true;
 	    				
 	    			} else if (val instanceof ComponentDescription){
 	    				
@@ -281,7 +285,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    						fv.setDefVal(qual_val);
 	    					} else if (cd.sfContext().get(ConstraintConstants.USERVAR)!=null){
 	    						isuservars=true;
-    							orgContext.sfAddTag(key, "sfConstraintUserVar");
+    							orgContext.sfAddTag(key, ConstraintConstants.USERVAR_TAG);
 	    					}
 	    						
 	    					
@@ -379,16 +383,6 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	//Mark (poss. backtracked) constraint as done...
     	CoreSolver.getInstance().setShouldUndo(true);
     
-    	//File preliminary results...
-    	//fileAggregates(comp);
-    	
-    	//Do propositions
-		//Speculatively, write the constraint in to its future home, to assess propositions...
-    	////System.out.println("KEYKEY:"+arkey+":"+comp+":"+orgContext);
-    	
-    	//System.out.println("�2");
-    	
-    	
     	if (!Proposition.getResult()) { 	
     		////System.out.println("WE ARE EVALLING PRPS!");
     		if (arkey!=null) ((ComponentDescription)rr).sfContext().put(arkey, comp);  //this will be undone if backtracking occurs...
@@ -419,7 +413,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	}
     	
     	//We're done...
-    	orgContext.put("sfFunctionClassStatus", "done");
+    	orgContext.put(ConstraintConstants.FunctionClassStatus, ConstraintConstants.FCS_DONE);
     	
     	//System.out.println("�3");
     	
@@ -450,7 +444,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	//System.out.println("Pre-specified value:"+val);
     	
     	String error_s = "aggregated value attribute has illegal pre-specfied value:"+val;
-    	if (val instanceof SFNull) return;  //Nothing to do...
+    	if (val==null || val instanceof SFNull) return;  //Nothing to do...
     	if (!(val instanceof Vector)) throw new SmartFrogFunctionResolutionException(error_s+", not a Vector!");
     	
     	Vector val_vec = (Vector) val;
@@ -524,162 +518,104 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	}
     }
     
-    void fileAggregates(ComponentDescription comp) throws SmartFrogFunctionResolutionException {
-		Vector<CompositeSource> aggs=new Vector<CompositeSource>();
-		getCompositeSources(comp, aggs, null, true);
-		
-		for (int i=0;i<aggs.size();i++){
-			CompositeSource cs = aggs.get(i);
-	    	try {
-				if (orgContext.sfContainsTag(cs.key, "sfFreeVars")){
-					////System.out.println("UPDATE UPDATE:"+cs.key+":"+cs.update);
-		        	if (cs.prefix==null) updateValue(cs);
-		        	else updateArrayOfValues(cs);	
-				}
-	    	} catch (SmartFrogContextException context){/*Shouldn't happen*/}
-		}	
-    }
-    
-    public static void getCompositeSources(ComponentDescription comp, Vector<CompositeSource> cs, java.util.Vector<Object> other, boolean mpred) throws SmartFrogFunctionResolutionException{
-    	Context context = comp.sfContext();
+    public static void getAggregateSources(ComponentDescription comp, Vector<CompositeSource> css) throws SmartFrogFunctionResolutionException{
+    	System.out.println("YESYES");
+    	
+    	Context context = (Context) comp.sfContext().copy();
 		Enumeration en = context.keys();
 		Object key=null;
 		
-		////System.out.println("Comp"+comp);
+		System.out.println("Comp"+comp);
 		
-		while ((key=getNextKey(en,comp))!=null){   
-			//Context information firstly...
-			HashMap contextInfo_hm = new HashMap();
-			Object contextInfo = getTaggedValue("sfContext", key, comp);
-			while (contextInfo!=null){
-				contextInfo_hm.put(key, contextInfo);
-				contextInfo = getTaggedValue("sfContext", getNextKey(en,comp), comp);
-			}
-			
-	    	Object source = getTaggedValue("sfSource", getNextKey(en,comp), comp, false);
-	    	
-	    	//System.out.println("Source"+source);
-	    	
-	    	if (source==null) {
-	    		/*Object val = getTaggedValue("sfReturn", key, comp);
-	    		if (val!=null){  
-	    			//sort ret val!
-	    			g_retval=val;
-	    		} else*/ if (other!=null) other.add(key);
-	    		leftover=null;
-	    		continue; //round while...
-	    	}
-	    	
-	    	//"Hand" resolve
-	    	if (!(source instanceof Reference)) throw new SmartFrogFunctionResolutionException("Tagged source: "+source+" in comp: "+comp+" should be a reference");	
-	    	Reference source_ref=null;
-	    	if (source instanceof SFReference) {
-	    		try {source_ref=((SFReference)source).sfAsReference();}
-	    		catch (SmartFrogCompilationException sfce){throw new SmartFrogFunctionResolutionException(sfce);}
-	    	}
-	    	else source_ref= (Reference) source;
-	    	
-	    	//System.out.println("SourceRef"+source_ref);
-	    	
-			Object prefix = getTaggedValue("sfPrefix", getNextKey(en,comp), comp);
-			Object path = getTaggedValue("sfPath", getNextKey(en,comp), comp, false);    
-			
-			if (prefix!=null || path!=null) {
-				try { source = resolve(comp, source_ref); } catch (Exception e) {throw new SmartFrogFunctionResolutionException("Can not resolve source ref:"+source_ref+" in: "+comp);}
-				if (!(source instanceof ComponentDescription) && !(source instanceof Prim)) throw new SmartFrogFunctionResolutionException("Source ref:"+source_ref+" in: "+comp+" does not resolve to a Prim/ComponentDescription");
-			} else {
-				path=source;
-				source=comp;
-			}
-			
-			Object pred = null;
-			Object update = null;
-						
-			//System.out.println("PREFIX:PATH"+prefix+path);
-			
-			if (path!=null && (!(path instanceof Reference))) throw new SmartFrogFunctionResolutionException("Tagged path in comp: "+comp+" must be a Reference");
-			
-			boolean first=true;
-			
-			if (mpred){
-				while (true){
-					pred = getTaggedValue("sfPred", getNextKey(en,comp), comp, false);
-					update = getTaggedValue("sfUpdate", getNextKey(en,comp), comp);
-					
-					//System.out.println("PRED:UPDATE"+pred+update);
-					
-					if (pred!=null && !(pred instanceof Reference)){
-						if ((pred instanceof Boolean && ((Boolean)pred).booleanValue()) || pred instanceof SFNull) pred=null;
-						else throw new SmartFrogFunctionResolutionException("Tagged pred: "+pred+" in comp: "+comp+" is not Reference or Boolean true");
-					}
-					
-					if (pred!=null && update==null) throw new SmartFrogFunctionResolutionException("Tagged source in comp: "+comp+" with no update");
-					
-					if (pred==null && update==null){
-						if (first) {
-							//System.out.println("1Adding");
-							CompositeSource comp_src = new CompositeSource(contextInfo_hm, source, (String)prefix, (Reference)path, null, null, null);
-							cs.add(comp_src);
-						}
-						break;
-					}
-					
-					first=false;				
-					
-					//System.out.println("2Adding");
-					CompositeSource comp_src = new CompositeSource(contextInfo_hm, source, (String)prefix, (Reference)path, (Reference)pred, lastKey, update);
-					cs.add(comp_src);
-				}
-			} else {
-				//System.out.println("nextup...");
-				
-				pred = getTaggedValue("sfPred", getNextKey(en,comp), comp, false);
-				update = getTaggedValue("sfUpdate", getNextKey(en,comp), comp);
-				
-				//System.out.println("PRED:UPDATE"+pred+update);
-				
-				if (pred!=null && !(pred instanceof Reference)){
-					if ((pred instanceof Boolean && ((Boolean)pred).booleanValue())  || pred instanceof SFNull) pred=null;
-					else throw new SmartFrogFunctionResolutionException("Tagged pred: "+pred+" in comp: "+comp+" is not Reference or Boolean true");
-				}
-				
-				if (update==null) throw new SmartFrogFunctionResolutionException("Tagged source in comp: "+comp+" with no update");
-				CompositeSource comp_src = new CompositeSource(contextInfo_hm, source, (String)prefix, (Reference)path, (Reference)pred, lastKey, update);
-				cs.add(comp_src);
-			}
-		}
+		Object array = null;
+		Object path = null;
+		Object cinfo = null;
+		HashMap cihm = new HashMap();
 		
+		cinfo = context.remove(ConstraintConstants.CONTEXT);
+		array = context.remove(ConstraintConstants.ARRAY);	
+		path = context.remove(ConstraintConstants.PATH);
+		
+		System.out.println("111");
+		
+		
+		if (path!=null && path!=SFNull.get()){  //mandatory for aggregates and updates...
+		
+			System.out.println("222");
+			
+			if (array!=SFNull.get()){
+				Reference array_ref=null;
+				
+				//"Hand" resolve
+		    	if (!(array instanceof Reference)) throw new SmartFrogFunctionResolutionException("array attribute: "+array+" in comp: "+comp+" should be a reference");	
+		    	
+		    	if (array instanceof SFReference) {
+		    		try {array_ref=((SFReference)array).sfAsReference();}
+		    		catch (SmartFrogCompilationException sfce){throw new SmartFrogFunctionResolutionException(sfce);}
+		    	} else array_ref= (Reference) array;
+		    	
+		    	try { array = resolve(comp, array_ref); } catch (Exception e) {throw new SmartFrogFunctionResolutionException("Can not resolve array ref:"+array_ref+" in: "+comp);}
+				if (!(array instanceof ComponentDescription) && !(array instanceof Prim)) throw new SmartFrogFunctionResolutionException("array ref:"+array_ref+" in: "+comp+" does not resolve to a Prim/ComponentDescription");	
+			} else array=comp;
+		
+			System.out.println("333");
+			
+			if (!(path instanceof Reference)) throw new SmartFrogFunctionResolutionException("path in comp: "+comp+" must be a Reference");
+			
+			//Get all the context info together...
+			if (cinfo!=null) {
+				//Must be a component description
+				ComponentDescription cinfo_cd = (ComponentDescription) cinfo;  /*Elaborate*/
+				Enumeration cienum = cinfo_cd.sfContext().keys();
+				while (cienum.hasMoreElements()){
+					Object cikey = cienum.nextElement();
+					cihm.put(cikey, cinfo_cd.sfContext().get(cikey));
+				}
+			} //we assume that if it were present it would be as a cd...
+			
+			System.out.println("444");
+			
+			
+			//Prefix...
+			String prefix = null;
+			try { prefix = (String) resolve(comp,ConstraintConstants.PREFIX); } 
+			catch (Exception e){
+				if (array!=null) throw new SmartFrogFunctionResolutionException("Unable to resolve prefix in comp: "+comp+" must be a String"); 
+			}
+			context.remove(ConstraintConstants.PREFIX);
+			
+			System.out.println("555");
+			
+			
+			Enumeration restKeys = context.keys();
+			while (restKeys.hasMoreElements()){
+				Object restKey = restKeys.nextElement();
+				Object restVal = context.get(restKey);
+				if (!(restVal instanceof ComponentDescription)) continue;
+				
+				ComponentDescription restComp = (ComponentDescription) restVal;
+				
+				if (restComp.sfContext().get(ConstraintConstants.AGG_SPEC)!=null){
+					Object unify = restComp.sfContext().get(ConstraintConstants.UNIFY);
+					
+					System.out.println("ADDING:::"+cihm+":"+array+":"+prefix+":"+path+":"+restKey+":"+restComp+":"+unify);
+			       	CompositeSource cs = new CompositeSource(cihm, 
+			       												array, 
+			       												(String)prefix, 
+			       												(Reference)path, 
+			       												restKey,
+			       												restComp, 
+			       												unify);
+			    		css.add(cs);
+					
+				}
+			}
+			
+		}				
 		//System.out.println("Leaving getCS");
-		
     } 
-    
-    static private abstract class AggregationOp {
-    	CompositeSource cs;
-    	AggregationOp(CompositeSource cs){
-    		this.cs=cs;
-    	}
-    	abstract void doIt(Object loc) throws SmartFrogFunctionResolutionException;
-    }
-    
-    static private class ExtractOp extends AggregationOp{
-    	ExtractOp(CompositeSource cs){ super(cs); }
-    	void doIt(Object loc) throws SmartFrogFunctionResolutionException {
-    		ComponentResolution cr = getComponentResolution(cs.source,cs.path);
-    		cs.arguments.put(loc, cr.val);
-			if (cr.val instanceof FreeVar) cs.freevars=true;
-    	}
-    }
-    
-    static private class UpdateOp extends AggregationOp{
-    	UpdateOp(CompositeSource cs){ super(cs); cs.idx=0;}
-    	void doIt(Object loc) throws SmartFrogFunctionResolutionException{
-    		updateValue(cs);
-    		cs.idx++;
-    	}
-    }
-    
-    static void doAggregationUpdate(AggregationOp ao) throws SmartFrogFunctionResolutionException {
-    	CompositeSource cs = ao.cs;
+        
+    static void extractArgumentsFromSource(CompositeSource cs) throws SmartFrogFunctionResolutionException {
     	Object cssource = cs.source;
     	Prim p = (cssource instanceof Prim?(Prim)cssource:null);
     	ComponentDescription c = (cssource instanceof ComponentDescription?(ComponentDescription)cssource:null);
@@ -706,11 +642,11 @@ public class Constraint extends BaseFunction implements MessageKeys {
     				try {context=(p!=null?p.sfContext():c.sfContext());}catch (Exception e){/*Shouldn't happen*/}
     				
     				Object loc=null;
-    				loc = context.get("sfIndex");
+    				loc = context.get(ConstraintConstants.INDEX);
     				if (loc==null) {
     					int i=0;
     					while (true){
-    						String index = "sfIndex"+i;
+    						String index = ConstraintConstants.INDEX+i;
     						Object loc1 = context.get(index);
     						if (loc1==null) break;
     						else if (loc==null) loc = new Vector();
@@ -737,10 +673,14 @@ public class Constraint extends BaseFunction implements MessageKeys {
     				////System.out.println("222"+c.sfContext());
     				
     				////System.out.println("Source not null...");
-    				if (cs.pred!=null){
+    				
+    				//Get the update record and pull out pred...
+    				Reference pred = null;
+    				try { pred = (Reference) cs.update.sfContext().get("pred"); }
+    				catch (ClassCastException cce){/*Do nothing*/}
+    				if (pred!=null){
     					////System.out.println("Pred not null..."+cs.pred);
     					//Reference pred = cs.pred.copyandRemoveLazy();
-    					Reference pred = cs.pred;
     					try {
     					if (pred instanceof SFReference) pred=((SFReference) pred).sfAsReference();
     					} catch (SmartFrogCompilationException sfce){ throw new SmartFrogFunctionResolutionException(sfce);}
@@ -758,11 +698,14 @@ public class Constraint extends BaseFunction implements MessageKeys {
     						////System.out.println("Is pred false?..."+eval_pred);
     						if (!((Boolean)eval_pred).booleanValue()) continue; //round while...
     					}
-    					else if (eval_pred==null || !(eval_pred instanceof SFNull)) throw new SmartFrogFunctionResolutionException("In extracting values as per source, pred "+cs.pred+" should yield Boolean from: "+source);
+    					else if (eval_pred==null || !(eval_pred instanceof SFNull)) throw new SmartFrogFunctionResolutionException("In extracting values as per source, pred "+pred+" should yield Boolean from: "+source);
     				}
     				////System.out.println("We have a match...");
-    				cs.source=source;
-    				ao.doIt(loc);
+    				cs.source=source;		
+    				ComponentResolution cr = getComponentResolution(cs.source,cs.path);
+    	    		cs.arguments.put(loc, cr.val);
+    				if (cr.val instanceof FreeVar) cs.freevars=true;
+    				
     				////System.out.println("And the other side...1");
     				//Remove resolving context...
     				keys = cs.context.keySet().iterator();
@@ -778,62 +721,9 @@ public class Constraint extends BaseFunction implements MessageKeys {
     			}
     			
     		}
-    	}
+    	}    	
     }
-    
-    static void extractArgumentsFromSource(CompositeSource cs) throws SmartFrogFunctionResolutionException {
-    	boolean freevar=false;
-    	
-    	////System.out.println("Extracting arguments from source...");
-    	
-    	/*SINGLE ARGUMENTS???
-    	 * if (cs.prefix==null){
-    		ComponentResolution cr = getComponentResolution(cs.source, cs.path);
-    		cs.arguments.add(cr.val);
-    		cs.freevars = (cr.val instanceof FreeVar);
-    	}*/
-    	
-    	doAggregationUpdate(new ExtractOp(cs));
-    	
-    }
-    
-    static void updateArrayOfValues(CompositeSource cs) throws SmartFrogFunctionResolutionException {	
-    	doAggregationUpdate(new UpdateOp(cs));
-    }
-    	
-    
-    static void updateValues(java.util.Vector<CompositeSource> css) throws SmartFrogFunctionResolutionException  {
-    	for (int i=0; i<css.size(); i++){
-        	CompositeSource cs = css.get(i);
-        	if (cs.prefix==null) updateValue(cs);
-        	else updateArrayOfValues(cs);
-    	}
-    }
-        	       
-    static void updateSimpleValue(Object source, Object key) throws SmartFrogFunctionResolutionException {
-    	////System.out.println("updateSimpleValue("+key);
-    	
-    	Prim p = (source instanceof Prim?(Prim)source:null);
-    	ComponentDescription c = (source instanceof ComponentDescription?(ComponentDescription)source:null);
-    	
-    	Object val = null;
-    	
-    	try {val = resolve(p,c,key.toString());} catch (Exception e){/*Intentionally Do Nothing*/}
-		Object s = source;
-		while (true){
-    		s = resolveParent(s);
-    		////System.out.println("s:::"+s);
-    		if (s==null) throw new SmartFrogFunctionResolutionException("Failed to find non-tagged source: "+key+" in effects: "+s+" with no update");
-    		Object cval = resolveKey(key,s);
-    		////System.out.println("Value returned:"+cval+val);
-    		if (cval!=null) {
-    			replaceAttribute(key,val,s);
-    			break;
-    		}
-    	}
-		////System.out.println("done!");
-    }
-    
+        
     static public class ComponentResolution {
     	Object pc;
     	Object key;
@@ -889,31 +779,6 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	return cr;
     }
     
-    static void updateValue(CompositeSource cs) throws SmartFrogFunctionResolutionException {
-    	//System.out.println("Update value!!!");
-    	
-    	ComponentResolution cr = getComponentResolution(cs.source, cs.path);
-    	
-    	//System.out.println("Past cr"+cr);
-    	
-    	Object update = cs.update;
-    	
-    	if (cs.idx>-1 && cs.update instanceof java.util.Vector){
-    		java.util.Vector vec = (java.util.Vector) cs.update;
-    		if (cs.idx<vec.size())  update = vec.get(cs.idx); 
-    	}
-    	
-    	//System.out.println("Pre ra update:"+update);
-    	if (update!=null && !(update instanceof FreeVar)) {
-    		replaceAttribute(cr.key, update, cr.pc);
-    		try {
-    		String name = (cr.pc instanceof Prim? ((Prim)cr.pc).sfParent().sfAttributeKeyFor(cr.pc):
-    			((ComponentDescription)cr.pc).sfParent().sfAttributeKeyFor(cr.pc)).toString();
-    		//System.out.println("Replacing attribute:"+cr.key+" with: "+update+" in: "+name);
-    		}catch(Exception e){/***/}
-    	}
-    	//System.out.println("Past ra"+cr);
-    }
 
     static Object resolve(Object so, Reference r) throws Exception {
     	Prim p = (so instanceof Prim? (Prim)so: null);
@@ -960,13 +825,46 @@ public class Constraint extends BaseFunction implements MessageKeys {
     }
         
     static void replaceAttribute(Object k, Object v, Object c){
-    	try {	
+    	try {
+    		if (v instanceof SFNull) v=null;
     		if (g_updateContext!=null) g_updateContext.add(new ComponentResolution(c,k,v));
-    		else if (c instanceof Prim) ((Prim)c).sfReplaceAttribute(k, v);
-    		else ((ComponentDescription)c).sfReplaceAttribute(k, v);
+    		else replaceAttributeWkr(k, v, c);
     	} catch (Exception e){/*Shouldn't happen*/}
     }
 
+    static void replaceAttributeWkr(Object k, Object v, Object c){    	
+    	if (c instanceof Prim) replaceAttributeWkrPrim(k, v, (Prim)c);  
+		else replaceAttributeWkrComp(k, v, (ComponentDescription)c);
+    }
+    
+    static void replaceAttributeWkrPrim(Object k, Object v, Prim p){    
+    	try{
+    		if (v!=null) p.sfReplaceAttribute(k, v);
+    		else p.sfRemoveAttribute(k);
+    		
+    		if (v instanceof ComponentDescription){
+    			((ComponentDescription)v).setPrimParent(p);
+    		}
+    		
+    	}catch(Exception e){/**/}
+    }
+    
+    static void replaceAttributeWkrComp(Object k, Object v, ComponentDescription c){  
+    	try{
+    		/*try {
+    		System.out.println("PARENT:"+c.sfParent());
+    		System.out.println("PARENT:PARENT"+c.sfParent().sfParent());
+    		}catch(Exception e){/**}*/
+    		
+    		if (v!=null) c.sfReplaceAttribute(k, v);
+    		else c.sfRemoveAttribute(k);
+    		
+    		if (v instanceof ComponentDescription){
+    			((ComponentDescription)v).setParent(c);
+    		}
+    		
+    	}catch(Exception e){/**/}
+    }
     
     static private Vector<ComponentResolution> g_updateContext; 
     static public boolean isUpdateContextLocked(){
@@ -979,10 +877,10 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	if (g_updateContext!=null){
     		for (int i=0;i<g_updateContext.size();i++){
     			ComponentResolution cr = g_updateContext.get(i);
-    			try {
-    				if (cr.pc instanceof Prim) ((Prim)cr.pc).sfReplaceAttribute(cr.key, cr.val);
-    				else ((ComponentDescription)cr.pc).sfReplaceAttribute(cr.key, cr.val);
-    			}catch(Exception e){/*Shouldn't happen*/}
+    			
+    			System.out.println("Replacing...1"+cr.key+":"+cr.val+":"+cr.pc);
+    			
+    			replaceAttributeWkr(cr.key, cr.val, cr.pc);
     		}
     	}
     	g_updateContext=null;
@@ -1018,72 +916,16 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	if (val.indexOf(0x2F)>-1) return false;	
     	return true;
     }
-        
-    static Object leftover=null;    
-    static Object lastKey=null;
-    
-    static Object getNextKey(Enumeration e, ComponentDescription comp){
-        return (lastKey=getNextKeyWkr(e, comp));
-    }
-    
-    static Object getNextKeyWkr(Enumeration e, ComponentDescription comp){
-    	//System.out.println("getNextKey");
-		if (leftover!=null){
-			Object ret=leftover;
-			leftover=null;
-			//System.out.println("return:"+ret);
-			return ret;
-		}
-		
-    	if (e.hasMoreElements()) {
-    		Object ret= e.nextElement();
-    		//System.out.println("return:"+ret);
-    		return ret;
-		} else return null;
-    }
-    
-	static Object getTaggedValue(String tag, Object key, ComponentDescription comp){
-		if (key==null) return null;
-		////System.out.println("RESOLUTIONPRIOR:"+":"+comp+":"+tag+":"+key);
-		try {
-		if (comp.sfContainsTag(key, tag)){
-			////System.out.println("GOING IN:"+":"+comp+":"+tag+":"+key);
-			Object val = resolve(comp,key.toString());
-			////System.out.println("RESOLUTION:"+tag+":"+key+":"+val);
-			return val;
-		} } catch (Exception e){/*Intentionally Leave*/}
-		//finally{     	SFReference.resolutionForceEager=false;  
-		//}
-		leftover=key;
-		return null;
-	}
-	
-	static Object getTaggedValue(String tag, Object key, ComponentDescription comp, boolean resolve){
-		if (key==null) return null;
-		if (resolve) return getTaggedValue(tag, key, comp); 
-		else try {
-			////System.out.println("RESOLUTIONPRIOR:"+":"+comp+":"+tag+":"+key);
-			if (comp.sfContainsTag(key, tag)){
-				////System.out.println("GOING IN:"+":"+comp+":"+tag+":"+key);
-				
-				Object val = comp.sfContext().get(key);
-				////System.out.println("RESOLUTION:"+tag+":"+key+":"+val);
-				return val;
-			} } catch (SmartFrogException e){/*Intentionally Leave*/}
-			leftover=key;
-			return null;
-	}
-	
+        	
     public static boolean leaveResolve(ComponentDescription comp, Object name){
     	boolean skip=false;	
     	try {
+    		
+    		//Because we don't want these attributes to be pre-evaluated in an SF/Apply Reference
+    		//Nothing to do with laziness, we just want control over when it happens...
+    		
     		//if (override && ...)  skip=true;
-            /*else*/ skip = comp.sfContainsTag(name, "sfSource") ||
-            	        comp.sfContainsTag(name, "sfValuePath") ||
-            	        comp.sfContainsTag(name, "sfPath") ||
-                        comp.sfContainsTag(name, "sfPred") ||
-                        comp.sfContainsTag(name, "sfPart") || 
-                        comp.sfContainsTag(name, "sfPartRef");  
+            /*else*/ skip = comp.sfContainsTag(name, ConstraintConstants.IGNORE_TAG);
             
             } catch (SmartFrogContextException sfce) {/*Shouldn't happen*/}
     	
