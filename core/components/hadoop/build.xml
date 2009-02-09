@@ -69,17 +69,22 @@
       test.awskey=${test.awskey}
       system.tests=${system.tests}
     </echo>
-    <fail >
-      <condition >
-        <not>
-          <available classname="org.apache.jasper.servlet.JspServlet" ignoresystemclasses="true"
-              classpathref="tests.run.classpath"/>
-        </not>
-      </condition>
-      Unable to locate org.apache.jasper.servlet.JspServlet, which is needed
-      for JSP support in the test classpath
-      ${toString:tests.run.classpath}
-    </fail>
+    <macrodef name="loadclass">
+      <attribute name="class" />
+    <sequential >
+      <fail >
+        <condition >
+          <not>
+            <available classname="@{class}" ignoresystemclasses="true"
+                classpathref="tests.run.classpath"/>
+          </not>
+        </condition>
+        Unable to load @{class} from
+        ${toString:tests.run.classpath}
+      </fail>
+    </sequential>
+    </macrodef>
+    <loadclass class="org.apache.jasper.servlet.JspServlet" />
 
 
     <property name="test.work.dir" location="${test.dir}/work" />
@@ -107,6 +112,10 @@
     </fail>
     <copy todir="${hadoop.target.dir}" file="${hadoop.artifact}"/>
     <echo>Copied ${hadoop.artifact}</echo>
+  </target>
+
+  <target name="loadclass" depends="ready-to-test">
+    <loadclass class="org.apache.hadoop.hdfs.server.namenode.JspHelper" />
   </target>
 
 </project>

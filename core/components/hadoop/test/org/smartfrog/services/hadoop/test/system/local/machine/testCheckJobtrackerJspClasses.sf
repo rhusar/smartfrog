@@ -25,4 +25,4 @@
 /**
  * Test case
  */
-sfConfig testCheckNamenodeJspClass ;
+sfConfig testCheckNamenodeJspClasses ;

@@ -87,19 +87,19 @@ testJSPHealth extends ExpectTerminate {
 }
 
 
-testCheckNamenodeJspClass extends testJSPHealth {
-  action extends CheckNamenodeJspClass {
+testCheckNamenodeJspClasses extends testJSPHealth {
+  action extends CheckNamenodeJspClasses {
     sfShouldTerminate true;
   }
 }
 
-testCheckDatanodeJspClass extends testJSPHealth {
-  action extends CheckDatanodeJspClass {
+testCheckDatanodeJspClasses extends testJSPHealth {
+  action extends CheckDatanodeJspClasses {
     sfShouldTerminate true;
   }
 }
 testCheckJobtrackerJspClass extends testJSPHealth {
-  action extends CheckJobtrackerJspClass {
+  action extends CheckJobtrackerJspClasses {
     sfShouldTerminate true;
   }
 }
@@ -108,11 +108,27 @@ testCheckJasperClasses extends testJSPHealth {
     sfShouldTerminate true;
   }
 }
-
 testHadoopJspClasses extends testJSPHealth {
   action extends HadoopJspClasses {
     sfShouldTerminate true;
   }
+}
+
+testCheckJspHelperClasses extends testJSPHealth {
+  action extends CheckJspHelperClasses {
+    sfShouldTerminate true;
+  }
+}
+
+testCheckJspHelperClass extends testJSPHealth {
+  description "Load the JSP helper class only";
+  action extends CheckJspHelperClasses {
+       classes [
+        nn_jsphelper
+      ];
+    sfShouldTerminate true;
+  }
+
 }
 
 
