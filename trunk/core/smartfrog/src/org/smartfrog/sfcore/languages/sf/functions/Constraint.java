@@ -620,7 +620,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 								(Reference)path, 
 								null,
 								null, 
-								null);
+								context.get("pred"));
 							css.add(cs);
 			}
 		}				
@@ -679,7 +679,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     				
     				//System.out.println("111"+cs.context);
     				
-    				if (cs.update!=null){
+    				if (cs.unify!=null){
     				
 	    				//Add resolving context...
 	    				Iterator keys = cs.context.keySet().iterator();
@@ -702,11 +702,13 @@ public class Constraint extends BaseFunction implements MessageKeys {
     				//System.out.println("Source not null...");
 	    				
 	    				
-	    			if (cs.update!=null){	
+	    			if (cs.unify!=null){	
 	    				//Get the update record and pull out pred...
 	    				Reference pred = null;
-	    				try { pred = (Reference) cs.update.sfContext().get("pred"); }
-	    				catch (ClassCastException cce){/*Do nothing*/}
+	    				try { 
+	    					if (cs.update!=null) pred = (Reference) cs.update.sfContext().get("pred"); 
+	    					else pred= (Reference) cs.unify;
+	    				} catch (ClassCastException cce){/*Do nothing*/}
 	    				if (pred!=null){
 	    					//System.out.println("Pred not null..."+pred);
 	    					//Reference pred = cs.pred.copyandRemoveLazy();
@@ -737,7 +739,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    		cs.arguments.put(loc, cr.val);
 				if (cr.val instanceof FreeVar) cs.freevars=true;
     				
-    			if (cs.update!=null){
+    			if (cs.unify!=null){
     				//System.out.println("And the other side...1");
     				//Remove resolving context...
     				Iterator keys = cs.context.keySet().iterator();
