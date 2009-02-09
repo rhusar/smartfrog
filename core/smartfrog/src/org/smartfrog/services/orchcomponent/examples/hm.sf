@@ -1,0 +1,642 @@
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/dependencies/statemodel/components.sf"
+#include "/org/smartfrog/services/dependencies/threadpool/components.sf"
+#include "/org/smartfrog/services/orchcomponent/components.sf"
+
+sfConfig extends Compound {
+    hm extends hostmanager{}
+    tp extends SimpleThreadPool {
+      sfProcessComponentName "threadpool";
+    } 
+	eventreg extends Prim {
+		sfClass "org.smartfrog.services.orchcomponent.examples.TestBench";
+		root LAZY PARENT:hm:orchModel;
+	}
+}
+
+hostmanager extends Compound {
+   orchModel extends hostmanagerWkr{}
+}
+
+hostmanagerWkr extends OrchComponentModel {
+   
+   desired extends DATA {
+      vms extends DATA {}
+      connectionGrants extends DATA {}
+      connections extends DATA {}
+      volumes extends DATA {}
+      templates extends DATA {
+         vrInj extends DATA {
+           foo "123";
+         }
+         vol extends DATA {}
+      }
+	  volumeRealizations extends DATA {}
+	  localDev extends DATA {}
+   }
+
+   injectors extends DATA {
+      bar "456";
+   }
+
+   observed extends DATA {
+      connectionRequests extends DATA {}
+      vmStatus extends DATA {}
+      connectionStatus extends DATA {}
+   }
+
+   integrityConstraints extends DATA {
+
+         VMCreate extends DATA {
+			 context "desired:vms:?fc_id:?vm_id";
+			 policies extends DATA {
+			    createFarmRecordInOrchestration extends DynamicPolicyEvaluation {
+		            exists extends PolicyRef { reference ("orchestration:vms:" ++ fc_id); } 
+		            guard (LAZY exists==NULL);
+		            effects extends PolicyEffects {
+		               path LAZY orchestration:vms;
+		               key LAZY fc_id;
+		               deployComponent LAZY orchestration:templates:oFC;
+		            }
+		         }   
+		         createFarmRecordInObserved extends DynamicPolicyEvaluation {
+		            exists extends PolicyRef { reference ("observed:vmStatus:" ++ fc_id); } 
+		            guard (LAZY exists==NULL);
+		            effects extends PolicyEffects {
+		               path LAZY observed:vmStatus;
+		               key LAZY fc_id;
+		               update extends DATA {}
+		            }
+		        } 
+		        createVMStatusRecordInObserved extends DynamicPolicyEvaluation {
+		            effects extends PolicyEffects {
+		               path extends PolicyRef { reference ("observed:vmStatus:" ++ fc_id); } 
+		               key LAZY vm_id;
+		               update extends DATA {}
+		            }
+		        } 
+		             
+			    createOrchComponent extends DynamicPolicyEvaluation {
+				 exists extends PolicyRef { reference ("orchestration:vms:" ++ fc_id ++ ":" ++ vm_id); } 
+		         guard (LAZY exists==NULL);   
+				 
+				 effects extends PolicyEffects {       
+			        copyAndDeployVMTemplate extends DATA {
+				      path extends PolicyRef { reference ("orchestration:vms:" ++ fc_id); }
+				      key LAZY vm_id;
+				      deployComponent LAZY orchestration:templates:oVM; 
+			        }
+			        copyFarmId extends DATA {
+				       path extends PolicyRef { reference ("orchestration:vms:" ++ fc_id ++ ":" ++ vm_id ++ ":vm");}
+				       key "fc_id";
+				       update LAZY fc_id;
+				    }
+				    copyVMId extends DATA {
+				       path extends PolicyRef { reference ("orchestration:vms:" ++ fc_id ++ ":" ++ vm_id ++ ":vm");}
+				       key "vm_id";
+				       update LAZY vm_id;
+				    }
+				    constructRefInObserved extends DATA {
+				       path extends PolicyRef { reference ("observed:vmStatus:" ++ fc_id ++ ":" ++ vm_id); }
+                       key "status";    
+				       update extends RawRef { reference ("orchestration:vms:" ++ fc_id ++ ":" ++ vm_id ++ ":vm:ostate"); }
+				    }  
+				}
+			   }
+			}
+		 }
+    
+         ConnCreate extends DATA {
+			 context "desired:connections:?fc_id:?conn_id";
+			 policies extends DATA {
+			  createFarmRecordInOrchestration extends DynamicPolicyEvaluation {
+		            exists extends PolicyRef { reference ("orchestration:connections:" ++ fc_id); } 
+		            guard (LAZY exists==NULL);
+		            effects extends PolicyEffects {
+		               path LAZY orchestration:connections;
+		               key LAZY fc_id;
+		               deployComponent LAZY orchestration:templates:oFC;
+		            }
+		         }   
+		     createFarmRecordInObserved extends DynamicPolicyEvaluation {
+		            exists extends PolicyRef { reference ("observed:connectionStatus:" ++ fc_id); } 
+		            guard (LAZY exists==NULL);
+		            effects extends PolicyEffects {
+		               path LAZY observed:connectionStatus;
+		               key LAZY fc_id;
+		               update extends DATA {}
+		            }
+		     }         
+			 
+			 createConnStatusRecordInObserved extends DynamicPolicyEvaluation {
+		            effects extends PolicyEffects {
+		               path extends PolicyRef { reference ("observed:connectionStatus:" ++ fc_id); } 
+		               key LAZY conn_id;
+		               update extends DATA {}
+		            }
+		        } 
+			 
+			 createOrchComponent extends DynamicPolicyEvaluation {
+				 exists extends PolicyRef { reference ("orchestration:connections:" ++ fc_id ++ ":" ++ conn_id); } 
+		         guard (LAZY exists==NULL);   
+				 
+				 effects extends PolicyEffects {       
+			        copyAndDeployConnTemplate extends DATA {
+				      path extends PolicyRef { reference ("orchestration:connections:" ++ fc_id); }
+				      key LAZY conn_id;
+				      deployComponent LAZY orchestration:templates:oConn; 
+			        }
+			        copyFarmId extends DATA {
+				       path extends PolicyRef { reference ("orchestration:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":conn");}
+				       key "fc_id";
+				       update LAZY fc_id;
+				    }
+				    copyConnId extends DATA {
+				       path extends PolicyRef { reference ("orchestration:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":conn");}
+				       key "conn_id";
+				       update LAZY conn_id;
+				    }
+				    constructRefInObserved extends DATA {
+				       path extends PolicyRef { reference ("observed:connectionStatus:" ++ fc_id ++ ":" ++ conn_id); }
+                       key "status";    
+				       update extends RawRef { reference ("orchestration:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":conn:ostate"); }
+				    }  
+				    copyVMId extends DATA {
+				       vm_id extends PolicyRef { reference ("desired:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":vm_id"); }
+				       path extends PolicyRef { reference ("orchestration:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":conn");}
+				       key "vm_id";
+				       update LAZY vm_id;
+				    }  
+				}
+			  }
+			  
+			  ConnWithoutStorageManagerEntry extends DynamicPolicyEvaluation {
+			    sm_id extends PolicyRef { reference ("desired:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":sm_id"); }
+	            exists extends PolicyRef { reference ("observed:connectionRequests:" ++ sm_id); }
+                guard (LAZY exists==NULL);
+	            
+	            effects extends PolicyEffects {       
+	               path LAZY observed:connectionRequests;
+	               key LAZY sm_id;
+	               update extends DATA {};
+	            }
+	          } 
+			  
+			  ConnWithoutVol extends DynamicPolicyEvaluation {
+	            vol_id extends PolicyRef { reference ("desired:connections:" ++ fc_id ++ ":" ++ conn_id ++ ":vol_id"); }
+                exists extends PolicyRef { reference ("desired:volumes:" ++ vol_id); } 
+	            guard (LAZY exists==NULL);
+	            
+	            effects extends PolicyEffects {       
+	               path LAZY desired:volumes;
+	               key LAZY vol_id;
+	               update LAZY desired:volumes:templates:vol;
+	            }
+	          }
+			}
+		 }
+		 
+		 HandleGrant extends DATA {
+		    context "desired:connectionGrants:?fc_id:?conn_id:status";
+		    policies extends DATA {
+		       ReflectInObserved extends DynamicPolicyEvaluation {
+		          effects extends PolicyEffects {
+		             path extends PolicyRef { reference ("observed:connectionStatus:" ++ fc_id ++ ":" ++ conn_id); }
+                     key "grantStatus";  //check
+                     update extends PolicyRef { reference ("desired:connectionGrants:" ++ fc_id ++ ":" ++ conn_id ++ ":status"); }
+		          }
+		       }
+		       ReflectInjector extends DynamicPolicyEvaluation {
+		          vr_id extends PolicyRef { reference ("desired:connectionGrants:" ++ fc_id ++ ":" ++ conn_id ++ ":vr_id"); }
+		          status extends PolicyRef { reference ("desired:connectionGrants:" ++ fc_id ++ ":" ++ conn_id ++ ":status"); }
+		          exists extends PolicyRef { reference ( "injectors:" ++vr_id );}
+		          guard ((LAZY status=="ok") && (exists==NULL));
+		          effects extends PolicyEffects {
+		             path LAZY injectors;
+                     key LAZY vr_id;  //check
+                     update LAZY desired:templates:vrInj; 
+                  }
+		       }
+		    }
+		 }
+		 
+		 VolCreate extends DATA {
+			 context "desired:volumes:?vol_id";
+			 policy extends DynamicPolicyEvaluation {
+				 exists extends PolicyRef { reference ("orchestration:volumes:" ++ vol_id); } 
+		         guard (LAZY exists==NULL);   
+				 
+				 effects extends PolicyEffects {       
+			        copyAndDeployVolTemplate extends DATA {
+				      path LAZY orchestration:volumes;
+				      key LAZY vol_id;
+				      deployComponent LAZY orchestration:templates:oVol; 
+			        }
+			        copyVolId extends DATA {
+				       path extends PolicyRef { reference ("orchestration:volumes:" ++ vol_id ++ ":vol");}
+				       key "vol_id";
+				       update LAZY vol_id;
+				    }
+				}
+			}
+		 }
+		 
+		 VolumeRealizationLinkToVolume extends DATA {
+		    context "desired:volumeRealizations:?vr_id";
+		    policy extends DynamicPolicyEvaluation { 
+		         vol_id extends PolicyRef { reference ("desired:volumeRealizations:" ++ vr_id ++ ":vol_id"); }
+				 exists extends PolicyRef { reference ("orchestration:volumes:" ++ vol_id ++ ":vol:ostate:vr_id"); } 
+		         guard (LAZY exists==NULL);  
+		         
+		         effects extends PolicyEffects {
+		            path extends PolicyRef { reference ("orchestration:volumes:" ++ vol_id ++ ":vol:ostate"); } 
+		            key "vr_id";
+		            update LAZY vr_id;
+		         }
+		    }
+		 }
+   }
+   
+   orchestration extends Composite {
+
+      vms extends Composite{}
+      connections extends Composite{}
+      volumes extends Composite{}      
+
+      templates extends DATA {
+
+         oFC extends Composite {}
+         
+      	 oVM extends CompositeWithSync {
+	        vm extends StateComponent {
+                sfClass "org.smartfrog.services.orchcomponent.model.OrchVM";
+                //sfClass "org.smartfrog.sfcore.prim.PrimImpl";
+                dstate extends PolicyRef { reference ("desired:vms:" ++ fc_id ++ ":" ++ vm_id); }
+
+				ostate extends DATA {
+		   	       status "pending"; //"started", "stopping", "stopped"
+		        }
+			
+			    //Narrative 1	
+				pendingToStarted extends Transition {
+				   guard (LAZY ostate:status=="pending");
+				   
+				   //INVOKE RULES TABLES MODIFICATION
+		           //CALL VMSTART()
+		
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO STARTED
+			              status "started";
+				   }
+				}
+				
+				//Narrative 2
+				startedToStopping extends Transition {
+				   guard (LAZY ostate:status=="started");
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO STOPPING
+			              status "stopping";
+				   }
+				}
+				
+				stoppingToStopped extends Transition {		
+				   guard (LAZY ostate:status=="stopping");
+		
+				   //INVOKE VMSTOP(), if (!observed:vmStatus:?fc_id:?vm_id:power=="failed")
+		           //Async.
+		
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO STOPPED
+			              status "stopped";
+				      	  /*movePowerToStopped extends Effect {
+				             path extends PolicyRef { reference ("observed:vmStatus:" ++ fc_id ++ ":" ++ vm_id); }
+				             key "power";
+		                     update "stopped";
+		                  }*/     
+			       }
+				}
+				
+				//Narrative 4
+				stoppedToPending extends Transition {
+				   guard (LAZY ostate:status=="stopped");
+		
+				   effects extends ChangeStatusEffects {   //UPDATE STATUS TO PENDING
+			              status "pending";
+				   }
+				}
+				
+				//Narrative 5
+				stoppedToTerminating extends Transition {
+		           guard (LAZY ostate:status=="stopped");
+
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO TERMINATING
+	                  status "terminating";
+		           }     
+		        }
+				
+    		}
+    		
+    		//Narrative 1
+    		vmStartDesiredDependency extends Dependency {
+		       by LAZY vm;
+	           relevant (LAZY by:ostate:status=="pending");
+	           enabled (LAZY by:dstate:status=="on");
+		    }
+	
+		    vmStartConnDependency extends Dependency {
+				on LAZY vmStartConnsAnd;
+				by LAZY vm;
+				relevant (LAZY by:ostate:status=="pending");
+				enabled true;
+		     }
+    		
+    		vmStartConnsAnd extends AndConnectorExists{}
+    		
+    		//Narrative 2
+    		vmStoppingDependency extends Dependency {
+				on LAZY vmStoppingOr;
+	            by LAZY vm;
+	            relevant (LAZY by:ostate:status=="started");
+	            enabled true;
+		     }
+	
+		     vmStoppingOr extends OrConnector;
+	         
+	         vmStoppingDesiredDependency extends Dependency {
+		         by LAZY vmStoppingOr;
+	             enabled (LAZY vm:dstate:status=="off");
+		     }
+	
+	         vmStoppingPowerFailedDependency extends Dependency {
+	             powerStatus extends PolicyRef { reference ("observed:vmStatus:" ++ vm:fc_id ++ ":" ++ vm:vm_id ++ ":power") };
+		         by LAZY vmStoppingOr;
+	             enabled (LAZY powerStatus=="failed");
+		     }
+	
+		     vmStoppingConnOr extends OrConnectorExists;
+	
+		     vmStoppingConnOrDependency extends Dependency {
+	             on LAZY vmStoppingConnOr;
+		         by LAZY vmStoppingOr;
+	             enabled true;
+		     }
+	
+		     vmStoppingRemovedDependency extends Dependency {
+	             exists extends PolicyRef { reference ("desired:vms:" ++ vm:fc_id ++ ":" ++ vm:vm_id) };
+		         by LAZY vmStoppingOr;
+		         relevant (LAZY by:ostate:status=="started");
+	             enabled (LAZY exists==NULL);
+		     }	     
+	
+	         //Narrative 4
+	         vmPendingDesiredDependency extends Dependency {
+		         by LAZY vm;
+		         transition "stoppedToPending";
+	             relevant (LAZY by:ostate:status=="stopped");
+	             enabled (LAZY by:dstate:status=="on");
+		     }
+		
+		     vmPendingDependency extends Dependency {
+			     on LAZY vmPendingConnsAnd;
+			     by LAZY vm;
+			     transition "stoppedToPending";
+			     relevant (LAZY by:ostate:status=="stopped");
+			     enabled true;
+		     }
+	
+		     vmPendingConnsAnd extends AndConnectorExists;
+    		
+    		 //Narrative 5
+    		 stoppedToTerminatingDependency extends Dependency {
+               exists extends PolicyRef { reference ("desired:vms:" ++ vm:fc_id ++ ":" ++ vm:vm_id); }
+	       	   by LAZY vm;
+	       	   transition "stoppedToTerminating";
+               relevant (LAZY by:ostate:status=="stopped");
+               enabled (LAZY exists==NULL);
+	         }
+    		 
+    		 terminatingToTerminated extends CompositeTerminator {
+		        terminateCond (LAZY vm:ostate:status=="terminating");
+		     }
+    		 
+   		}
+   		
+   		oConn extends CompositeWithSync {
+	        conn extends StateComponent {
+                sfClass "org.smartfrog.services.orchcomponent.model.OrchConn";
+                //sfClass "org.smartfrog.sfcore.prim.PrimImpl";
+                dstate extends PolicyRef { reference ("desired:connections:" ++ fc_id ++ ":" ++ conn_id); }
+
+			    ostate extends DATA {
+		           status "pending";  //"requested", "ok", "removing", "failing", "terminating"
+				}
+				
+				//Narrative 1
+				pendingToRequested extends Transition {
+                    guard (LAZY ostate:status=="pending");
+                    effects extends ChangeStatusEffects {   //UPDATE STATUS TO REQUESTED
+	                   status "requested";
+	                   recordConnectionRequestId extends Effect {
+                         path LAZY ostate;
+                         key "connreq_id";
+ 	                     update "insertgenerateConIdFuncCall";
+ 	                   } 
+                      addConnectionRequest extends Effect {
+			 			 path extends PolicyRef { reference ("observed:connectionRequests:" ++ dstate:sm_id); } 
+                         key LAZY ostate:connreq_id; 
+                         update extends DATA {};
+	                  }
+		            }
+		        }
+		        
+		        requestedToOk extends Transition {
+		           guard (LAZY ostate:status=="requested");
+
+	               //INVOKE ADDDEVICE()
+
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO OK
+	                  status "ok";
+                   }
+		        }
+		        
+		        //Narrative 3
+		        okToRemoving extends Transition {
+		   		   guard (LAZY ostate:status=="ok");
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO REMOVING
+	                  status "removing";
+                   }
+		        }
+		           
+		        removingToTerminating extends Transition {
+		           guard (LAZY ostate:status=="removing");
+
+		           //CALL REMOVE DEVICE
+
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO TERMINATING
+	                  status "terminating";
+	                  removeConnectionRequest extends Effect {
+                         path extends PolicyRef { reference ("observed:connectionRequests:" ++ dstate:sm_id); } 
+                         key LAZY ostate:connreq_id; 
+		              }
+		           }     
+		        }
+		        
+			    //Narrative 4
+		        okToFailing extends Transition {
+			       guard (LAZY ostate:status=="ok");
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO FAILING
+		              status "failing";
+	               }
+			    }
+		    
+		        failingToPending extends Transition {
+			       guard (LAZY ostate:status=="failing");
+	
+			       //CALL REMOVE DEVICE
+			
+			       effects extends ChangeStatusEffects {   //UPDATE STATUS TO PENDING
+		              status "pending";
+		              removeConnectionRequest extends Effect {
+                         path extends PolicyRef { reference ("observed:connectionRequests:" ++ dstate:sm_id); } 
+                         key LAZY ostate:connreq_id; 
+		              }
+			       }
+			    }
+		    }
+		 
+		    //Narrative 1   
+		    connOnVolAvailableDependency extends Dependency {
+		       by LAZY conn;
+               on extends PolicyRef { reference ("orchestration:volumes:" ++ conn:dstate:vol_id ++ ":vol"); }
+		       relevant (LAZY by:ostate:status=="requested");  
+		       enabled (LAZY on:ostate:status=="ok");  
+	        }
+
+	        connOkDependency extends Dependency {
+               on extends PolicyRef { reference ("desired:connectionGrants:" ++ conn:fc_id ++ ":" ++ conn:conn_id); }
+	           by LAZY conn;
+               relevant (LAZY by:ostate:status=="requested");
+               enabled (LAZY on:status=="grant");
+	        }
+	        
+	        vmStartConnDependency extends Dependency {
+		       on LAZY conn;
+               by extends PolicyRef { reference ("orchestration:vms:" ++ conn:fc_id ++ ":" ++ conn:dstate:vm_id ++ ":vmStartConnsAnd"); }
+		       relevant (LAZY on:ostate:status!="ok");
+		       enabled false;
+	        }
+	        
+	        //Narrative 2
+	        vmStoppingConnDependency extends Dependency {
+                on LAZY conn;
+                by extends PolicyRef { reference ("orchestration:vms:" ++ conn:fc_id ++ ":" ++ conn:dstate:vm_id ++ ":vmStoppingConnOr"); }
+				relevant (LAZY on:ostate:status=="ok");
+				enabled false;
+	    	}
+	    	
+	    	//Narrative 3
+	    	okToRemovingDependency extends Dependency {
+               exists extends PolicyRef { reference ("desired:connections:" ++ conn:fc_id ++ ":" ++ conn:conn_id); }
+	       	   by LAZY conn;
+               transition "okToRemoving";
+               relevant (LAZY by:ostate:status=="ok");
+               enabled (LAZY exists==NULL);
+	        }
+	        
+	        connOnVMStoppedDependency extends Dependency {
+			   by LAZY conn;
+               on extends PolicyRef { reference ("orchestration:vms:" ++ conn:fc_id ++ ":" ++ conn:vm_id ++ ":vm"); }
+		       relevant ((LAZY by:ostate:status=="removing") || (LAZY by:ostate:status=="failing"));
+		       enabled (LAZY on:ostate:status=="stopped"); 
+	        }
+	        
+	        terminatingToTerminated extends CompositeTerminator {
+		       terminateCond (LAZY conn:ostate:status=="terminating");
+	        } 
+	        
+	        //Narrative 4
+	        okToFailingDependency extends Dependency {
+               on extends PolicyRef { reference ("desired:connectionGrants:" ++ conn:fc_id ++ ":" ++ conn:conn_id); }
+		       by LAZY conn;
+		       transition "okToFailing";
+		       relevant (LAZY by:ostate:status=="ok");
+		       enabled (LAZY on:status=="failed");
+	        }
+	        
+	        vmPendingConnDependency extends Dependency {
+		       on LAZY conn;
+               by extends PolicyRef { reference ("orchestration:vms:" ++ conn:fc_id ++ ":" ++ conn:dstate:vm_id ++ ":vmPendingConnsAnd"); }
+		       relevant ( (LAZY on:ostate:status!="ok") && (LAZY on:ostate:status!="pending" ));
+		       enabled false;
+	        }
+	        
+		}
+				   		
+   		oVol extends CompositeWithSync {
+	        vol extends StateComponent {
+                sfClass "org.smartfrog.services.orchcomponent.model.OrchVol";
+                //sfClass "org.smartfrog.sfcore.prim.PrimImpl";
+                dstate extends PolicyRef { reference ("desired:volumes:" ++ vol_id); }
+
+			    ostate extends DATA {
+		           status "pending";  //"realizing", "ok"
+				}
+			
+				//Narrative 1	
+				pendingToRealizing extends Transition {
+		           guard (LAZY ostate:status=="pending");
+
+		           //HARDCODED API CALL TO VOLUMEREALIZER
+
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO REALIZING
+	                  status "realizing";
+	               }
+		        }
+		        
+		        realizingToOk extends Transition {
+		           guard (LAZY ostate:status=="realizing");
+
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO OK
+	                  status "ok";
+	               }
+		        }
+		        
+		        //Narrative 6
+				okToTerminating extends Transition {
+		           guard (LAZY ostate:status=="ok");
+
+		           effects extends ChangeStatusEffects {   //UPDATE STATUS TO TERMINATING
+	                  status "terminating";
+		           }     
+		        }
+		        
+   		    }
+   		    
+   		    //Narrative 1
+   		    volRealizingDependency extends Dependency {
+	           exists extends PolicyRef { reference ("desired:volumeRealizations:" ++ vol:ostate:vr_id); } 
+	           by LAZY vol;
+               relevant (LAZY by:ostate:status=="pending");
+               enabled (LAZY exists!=NULL);
+	        }
+	        
+	        volOkDependency extends Dependency {
+	            exists extends PolicyRef { reference ("desired:localDev:" ++ vol:ostate:vr_id); } 
+	            by LAZY vol;
+                relevant (LAZY by:ostate:status=="realizing");
+                enabled (LAZY exists!=NULL);
+	        }
+	        
+	        //Narrative 6
+	        terminatingToTerminated extends CompositeTerminator {
+		       terminateCond (LAZY vol:ostate:status=="terminating");
+	        }
+
+			okToTerminatingDependency extends Dependency {
+               exists extends PolicyRef { reference ("desired:volumes:" ++ vol:vol_id); }
+	       	   by LAZY vol;
+               relevant (LAZY by:ostate:status=="ok");
+               enabled (LAZY exists==NULL);
+	        }    
+   		}
+   	 }
+  }      
+}
+
