@@ -35,7 +35,7 @@ sfConfig extends {
   foo1 extends Array {
       [sfPrefix] -- "zoo";
       [sfExtent] -- 3;
-     [sfGenerator] -- extends ArrayGenerator, Constraint {
+      [sfGenerator] -- extends ArrayGenerator, Constraint {
          bar VAR "[0,1]";
          index sfIndex;
          [sfConstraint] -- "(index==0 -> bar=0; bar=1)"; 
@@ -43,9 +43,9 @@ sfConfig extends {
   }  
 
   foo2 extends Aggregator {
-        [sfSource] -- LAZY foo1;
-	[sfPrefix] -- "zoo";
-	[sfPath] -- LAZY bar;
+        array LAZY foo1;
+	prefix "zoo";
+	path LAZY bar;
         foo3 extends concat;        
   }
 }
