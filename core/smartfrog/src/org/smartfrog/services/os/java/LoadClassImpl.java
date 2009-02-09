@@ -37,7 +37,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * Class to force load another class (and keep it in memory till we undeploy. Liveness checks verify that the class
@@ -169,12 +168,12 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
                 NoClassDefFoundError ncdfe = (NoClassDefFoundError) thrown;
                 text.append("NoClassDefFoundError: A class definition is missing");
             } else {
-                text.append("Class failed to load due to a " + thrown.getClass().getSimpleName());
+                text.append("Class failed to load due to: " + thrown.getClass().getSimpleName());
             }
             if (doesClassExistAsResource(classname, codebase)) {
                 text.append("\n -the class was found on the classpath");
             } else {
-                text.append("\n -the class is not in any JAR on the classpath");
+                text.append("\n -the class is not on the classpath");
             }
             text.append("\ncodebase:");
             text.append(codebase);
