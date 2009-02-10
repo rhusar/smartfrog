@@ -48,7 +48,7 @@
   <property file="${hadoop.dir}/ivy/libraries.properties" />
 
   <!--system test switch-->
-<!--  <property name="system.tests" value="false"/>-->
+  <property name="system.tests" value="true"/>
 
   <echo
       message="==================================================================="/>
@@ -62,12 +62,10 @@
   <target name="ready-to-test" depends="common.ready-to-test">
     <echo level="verbose">
       test.ec2.enabled=${test.ec2.enabled}
-      test.jetty.home=${test.jetty.home}
-      test.demo.webapp=${test.demo.webapp}
-      test.testwar.war=${test.testwar.war}
       test.awsid=${test.awsid}
       test.awskey=${test.awskey}
       system.tests=${system.tests}
+      system.tests.enabled=${system.tests.enabled}
     </echo>
     <macrodef name="loadclass">
       <attribute name="class" />

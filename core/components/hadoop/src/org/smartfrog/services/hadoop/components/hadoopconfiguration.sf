@@ -541,7 +541,7 @@ HadoopConfiguration extends Prim {
   to (r * x) / 4
   */
   //io.sort.record.percent 0.05;
-  io.sort.record.percent 0.1;
+  io.sort.record.percent 0.1F;
   
   /*
   The soft limit in either the buffer or record collection
