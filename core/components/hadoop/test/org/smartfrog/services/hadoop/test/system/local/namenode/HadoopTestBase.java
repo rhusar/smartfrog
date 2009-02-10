@@ -181,6 +181,13 @@ public class HadoopTestBase extends DeployingTestBase {
         this.shutdownTimeout = shutdownTimeout;
     }
 
+    protected void checkMapRedCluster() {
+        enablePortCheck();
+        checkJobTracker();
+        checkTaskTracker();
+        checkDataNode();
+    }
+
     protected class PortPair {
 
         private PortPair(String name, int port) {

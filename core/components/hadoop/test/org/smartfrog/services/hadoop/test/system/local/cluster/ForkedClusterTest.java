@@ -34,14 +34,10 @@ public class ForkedClusterTest extends HadoopTestBase {
     public ForkedClusterTest(String name) {
         super(name);
     }
-
+    
     public void testLocalClusterForked() throws Throwable {
-        enablePortCheck();
-        checkDataNode();
-        checkJobTracker();
-        checkTaskTracker();
+        checkMapRedCluster();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalClusterForked");
         enableFailOnPortCheck();
-
     }
 }

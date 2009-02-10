@@ -35,10 +35,7 @@ public class ClusterTest extends HadoopTestBase {
     }
 
     public void testLocalCluster() throws Throwable {
-        enablePortCheck();
-        checkJobTracker();
-        checkTaskTracker();
-        checkDataNode();
+        checkMapRedCluster();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalCluster");
         terminateApplication();
         enableFailOnPortCheck();

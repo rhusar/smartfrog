@@ -34,10 +34,10 @@ public class JobSubmissionTest extends HadoopTestBase {
         super(name);
     }
 
-  public void testJobSubmission() throws Throwable {
-        enablePortCheck();
-        checkTaskTracker();
+    public void testJobSubmission() throws Throwable {
+        checkMapRedCluster();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission");
+        enableFailOnPortCheck();
     }
 
 }

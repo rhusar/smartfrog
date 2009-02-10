@@ -217,8 +217,21 @@ TestJobNoFile extends TestJob {
   mapred.output.dir testDirOut;
 }
 
+
+/**
+ Component that sleeps for a limited period
+ */
 Sleep extends Delay {
   time STARTUP_SLEEP_TIME;
+}
+
+
+/**
+ * this is a condition which is true only
+ * if a lazy property test.fork.tests.enabled is set
+ */
+IsForkTestsSet extends IsPropertyTrue {
+    property "test.fork.tests.enabled";
 }
 
 LocalClusterStatus extends ClusterStatus {

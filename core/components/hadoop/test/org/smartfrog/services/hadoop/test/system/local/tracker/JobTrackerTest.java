@@ -35,8 +35,7 @@ public class JobTrackerTest extends HadoopTestBase {
     }
 
     public void testLocalJobTracker() throws Throwable {
-        enablePortCheck();
-        checkJobTracker();
+        checkMapRedCluster();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTracker");
     }
 

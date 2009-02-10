@@ -26,12 +26,9 @@
 testLocalCluster extends ExpectDeploy {
   description "bring up a full cluster";
 
-
-
   action extends LocalClusterCompound {
 
   }
-
 
   tests extends JobTrackerSequence {
 
@@ -47,6 +44,7 @@ testLocalCluster extends ExpectDeploy {
 
 
 testLocalClusterForked extends testLocalCluster {
+  condition IsForkTestsSet;
   action:namenode:sfProcessName "testLocalClusterForked-namenode";
   action:datanode:sfProcessName "testLocalClusterForked-datanode";
   action:clusterActions:then:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
