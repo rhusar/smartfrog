@@ -70,4 +70,9 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster, Job {
      */
     String ATTR_RESULTS = "results";
 
+    /**
+     * {@value}
+     */
+    String ATTR_JOB_TIMEOUT = "jobTimeout";
+
 }

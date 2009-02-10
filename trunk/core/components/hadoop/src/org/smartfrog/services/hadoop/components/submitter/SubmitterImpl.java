@@ -63,6 +63,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     private ManagedConfiguration jobConf;
     private JobSubmitThread worker;
     private Prim results;
+    private long jobTimeout;
+    private long endTime;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -77,6 +79,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         super.sfStart();
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
+        jobTimeout = sfResolve(ATTR_JOB_TIMEOUT, 0L, true);
+        endTime = System.currentTimeMillis() + jobTimeout * 1000;
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATE_WHEN_JOB_FINISHES, true, true);
@@ -97,10 +101,10 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             }
         }
 
-        validateOrResolve(ConfigurationAttributes.MAPRED_INPUT_DIR, ATTR_INPUT_DIR);
-        String outputDir = validateOrResolve(ConfigurationAttributes.MAPRED_OUTPUT_DIR, ATTR_OUTPUT_DIR);
-        validateOrResolve(ConfigurationAttributes.MAPRED_WORKING_DIR, ATTR_WORKING_DIR);
-        validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, ATTR_LOCAL_DIR);
+        validateOrResolve(null, ConfigurationAttributes.MAPRED_INPUT_DIR, ATTR_INPUT_DIR);
+        String outputDir = validateOrResolve(null, ConfigurationAttributes.MAPRED_OUTPUT_DIR, ATTR_OUTPUT_DIR);
+        validateOrResolve(null, ConfigurationAttributes.MAPRED_WORKING_DIR, ATTR_WORKING_DIR);
+        validateOrResolve(null, ConfigurationAttributes.MAPRED_LOCAL_DIR, ATTR_LOCAL_DIR);
 //        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
 
 
@@ -112,11 +116,22 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         worker.start();
     }
 
-    String validateOrResolve(String hadoopAttr, String sourceAttr) throws SmartFrogRuntimeException, RemoteException {
-        String directory = sfResolve(hadoopAttr, "", false);
+    /**
+     * look up the hadoopAttr first, if it is not set, look up the sfDirAttr  as an absolute path
+     * and set the hadoopAttr to that value. The directory is validated -it must not be an empty string,
+     * but there are no checks on the dir existing (it may be  
+     * @param conf job configuration to work off
+     * @param hadoopAttr hadoop attribute to look for in the jobconf
+     * @param sfDirAttr SF directory attribute
+     * @return the directory
+     * @throws SmartFrogRuntimeException attribute setting problems
+     * @throws RemoteException network trouble
+     */
+    protected String validateOrResolve(ManagedConfiguration conf, String hadoopAttr, String sfDirAttr) throws SmartFrogRuntimeException, RemoteException {
+        String directory = conf.get(hadoopAttr,null);
         if (directory == null) {
             //resolve the directory attribute instead
-            directory = FileSystem.lookupAbsolutePath(this, sourceAttr, null, null, true, null);
+            directory = FileSystem.lookupAbsolutePath(this, sfDirAttr, null, null, true, null);
             //set it
             sfReplaceAttribute(hadoopAttr, directory);
         }
@@ -136,17 +151,21 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
      */
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         super.sfTerminatedWith(status, comp);
-        try {
-            SmartFrogThread.requestThreadTermination(worker);
-        } finally {
-            worker = null;
-        }
+        terminateWorker();
         if (terminateJob) {
             try {
                 terminateJob();
             } catch (IOException e) {
                 sfLog().info(e);
             }
+        }
+    }
+
+    private void terminateWorker() {
+        try {
+            SmartFrogThread.requestThreadTermination(worker);
+        } finally {
+            worker = null;
         }
     }
 
@@ -235,10 +254,16 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         super.sfPing(source);
         if (runningJob != null) {
             try {
+                //look for events
+                pollAndLogTaskEvents();
+                //look for end of job events
                 if (pingJob && runningJob.isComplete()) {
                     processEndOfJob();
+                } else {
+                    checkForJobTimeout();
                 }
-                pollAndLogTaskEvents();
+
+                //check for timeouts; handle by killing and failing
             } catch (IOException e) {
                 throw (SmartFrogLivenessException) SmartFrogLifecycleException.forward(e);
             }
@@ -258,6 +283,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         }
     }
 
+
     /**
      * Process task completions. The base class just logs it
      * @param event event that has just finished
@@ -266,9 +292,22 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         sfLog().info(event.toString());
     }
 
+    private void checkForJobTimeout() throws SmartFrogLivenessException, IOException {
+        if(jobTimeout>0) {
+            long now = System.currentTimeMillis();
+            if (now > endTime) {
+                sfLog().warn("Timeout, killing job");
+                terminateJob();
+                throw new SmartFrogLivenessException("Timeout before job completed");
+
+            }
+        }
+    }
+
+
     /**
      * Handl the end of the job
-     * @throws IOException
+     * @throws IOException on any failure
      */
     private void processEndOfJob() throws IOException {
         boolean succeeded = runningJob.isSuccessful();
