@@ -80,7 +80,9 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         jobTimeout = sfResolve(ATTR_JOB_TIMEOUT, 0L, true);
-        endTime = System.currentTimeMillis() + jobTimeout * 1000;
+        if (jobTimeout>0) {
+            endTime = System.currentTimeMillis() + jobTimeout * 1000;
+        }
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATE_WHEN_JOB_FINISHES, true, true);
@@ -101,10 +103,10 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             }
         }
 
-        validateOrResolve(null, ConfigurationAttributes.MAPRED_INPUT_DIR, ATTR_INPUT_DIR);
-        String outputDir = validateOrResolve(null, ConfigurationAttributes.MAPRED_OUTPUT_DIR, ATTR_OUTPUT_DIR);
-        validateOrResolve(null, ConfigurationAttributes.MAPRED_WORKING_DIR, ATTR_WORKING_DIR);
-        validateOrResolve(null, ConfigurationAttributes.MAPRED_LOCAL_DIR, ATTR_LOCAL_DIR);
+        validateOrResolve(jobConf, ConfigurationAttributes.MAPRED_INPUT_DIR, ATTR_INPUT_DIR);
+        String outputDir = validateOrResolve(jobConf, ConfigurationAttributes.MAPRED_OUTPUT_DIR, ATTR_OUTPUT_DIR);
+        validateOrResolve(jobConf, ConfigurationAttributes.MAPRED_WORKING_DIR, ATTR_WORKING_DIR);
+        validateOrResolve(jobConf, ConfigurationAttributes.MAPRED_LOCAL_DIR, ATTR_LOCAL_DIR);
 //        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
 
 
@@ -257,10 +259,12 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                 //look for events
                 pollAndLogTaskEvents();
                 //look for end of job events
-                if (pingJob && runningJob.isComplete()) {
-                    processEndOfJob();
-                } else {
-                    checkForJobTimeout();
+                if (pingJob) {
+                    if (runningJob.isComplete()) {
+                        processEndOfJob();
+                    } else {
+                        checkForJobTimeout();
+                    }
                 }
 
                 //check for timeouts; handle by killing and failing
@@ -293,14 +297,10 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     }
 
     private void checkForJobTimeout() throws SmartFrogLivenessException, IOException {
-        if(jobTimeout>0) {
-            long now = System.currentTimeMillis();
-            if (now > endTime) {
-                sfLog().warn("Timeout, killing job");
-                terminateJob();
-                throw new SmartFrogLivenessException("Timeout before job completed");
-
-            }
+        if (endTime > 0 && System.currentTimeMillis() > endTime) {
+            sfLog().warn("Timeout, killing job");
+            terminateJob();
+            throw new SmartFrogLivenessException("Timeout before job completed");
         }
     }
 

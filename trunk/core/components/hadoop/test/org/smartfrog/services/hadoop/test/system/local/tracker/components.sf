@@ -34,6 +34,7 @@ testLocalJobTracker extends ExpectDeploy {
 
 
 testLocalJobTrackerForked extends testLocalJobTracker {
+  condition IsForkTestsSet;
   action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
   action:datanode:sfProcessName "testDataNodeForkedProcess";
   action:clusterActions:then:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
@@ -67,6 +68,16 @@ testJobSubmission extends ExpectDeploy {
 }
 
 
+
+testJobSubmissionForked extends testJobSubmission {
+  condition IsForkTestsSet;
+  action:namenode:sfProcessName "testJobSubmission-namenode";
+  action:datanode:sfProcessName "testJobSubmission-datanode";
+  action:clusterActions:then:jobTracker:sfProcessName "testJobSubmission-jobtracker";
+  action:clusterActions:then:taskTracker:sfProcessName "testJobSubmission-taskTracker";
+}
+
+
 /**
  * Start an orphan task tracker. We expect it to be dead afterwards
  */
@@ -91,11 +102,3 @@ testOrphanTracker extends ExpectDeployFailure {
 }
 
 
-
-
-testJobSubmissionForked extends testJobSubmission {
-  action:namenode:sfProcessName "testJobSubmission-namenode";
-  action:datanode:sfProcessName "testJobSubmission-datanode";
-  action:clusterActions:then:jobTracker:sfProcessName "testJobSubmission-jobtracker";
-  action:clusterActions:then:taskTracker:sfProcessName "testJobSubmission-taskTracker";
-}

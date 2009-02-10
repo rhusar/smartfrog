@@ -22,9 +22,7 @@ package org.smartfrog.services.hadoop.test.system.local.tracker;
 import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
 /**
- *
  * Created 20-May-2008 17:35:13
- *
  */
 
 public class ForkedJobSubmissionTest extends HadoopTestBase {
@@ -34,10 +32,10 @@ public class ForkedJobSubmissionTest extends HadoopTestBase {
         super(name);
     }
 
-  public void testJobSubmissionForked() throws Throwable {
-        enablePortCheck();
-        checkTaskTracker();
+    public void testJobSubmissionForked() throws Throwable {
+        checkMapRedCluster();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmissionForked");
+        enableFailOnPortCheck();
     }
 
 }
