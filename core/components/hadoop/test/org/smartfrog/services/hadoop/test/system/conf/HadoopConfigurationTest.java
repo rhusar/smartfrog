@@ -39,10 +39,17 @@ public class HadoopConfigurationTest extends DeployingTestBase {
     public void testOverride() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testOverride");
     }
-
     public void testEmptyConf() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testEmptyConf");
     }
+    public void testFloatingPointValue() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testFloatingPointValue");
+    }
+
+    public void testFloatingPointStringConversion() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testFloatingPointStringConversion");
+    }
+    
     public void testRequiredAttributes() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testRequiredAttributes");
     }
