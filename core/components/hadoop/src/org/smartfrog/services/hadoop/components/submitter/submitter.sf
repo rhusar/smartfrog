@@ -52,6 +52,14 @@ JobSubmitter extends WorkflowPrim  {
   deleteOutputDirOnStartup true;
 
   /**
+   * Job timeout in seconds; used when tracking jobs and measured from
+   * start of submission.
+   * Warning: unstable; may be split in future to time to wait for submission,
+   * and time to wait for completion once a job is submitted
+   */
+  jobTimeout 0;
+
+  /**
    * A LAZY reference to a component that is to get all the results as they happen: jobID, test results, etc
    * this is intended to outlast the workflow job runs
    */

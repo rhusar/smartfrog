@@ -219,7 +219,12 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public String sfResolve(String name, String defaultValue)
             throws SmartFrogResolutionException, RemoteException {
-        Object result = source.sfResolve(name, true);
+        Object result = null;
+        try {
+            result = source.sfResolve(name, true);
+        } catch (SmartFrogResolutionException e) {
+            return defaultValue;
+        }
         if (result == null || result instanceof SFNull) {
             return defaultValue;
         }
