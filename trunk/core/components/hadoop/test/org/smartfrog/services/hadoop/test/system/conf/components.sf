@@ -97,6 +97,9 @@ testEmptyConf extends ExpectDeploy {
 
   tests extends Sequence {
 
+    Sleep extends Delay {
+      time 1000;
+    }
   }
 }
 
@@ -126,6 +129,43 @@ testManagedConfTest extends ExpectTerminate {
 
   action extends ManagedConfTestPrim  {
     prop2 "component-set-value";
+  }
+
+}
+
+
+testFloatingPointValue extends testDefaultConf {
+  description "test that values are read and attributes set from them";
+
+  action:conf.required ["io.sort.record.percent"];
+
+  tests extends Sequence {
+
+    fs.hdfs.impl extends AssertWorkflow {
+      equalityIgnoresCase true;
+      equalsString1 "0.05";
+      equalsString2 LAZY action:io.sort.record.percent;
+    }
+
+  }
+
+}
+
+
+testFloatingPointStringConversion extends testDefaultConf {
+  description "test that values are read and attributes set from them";
+
+  action:conf.required ["io.sort.record.percent"];
+  action:io.sort.record.percent 0.1F;
+
+  tests extends Sequence {
+
+    fs.hdfs.impl extends AssertWorkflow {
+      equalityIgnoresCase true;
+      equalsString1 "0.1";
+      equalsString2 LAZY action:io.sort.record.percent;
+    }
+
   }
 
 }
