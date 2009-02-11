@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.TimeoutInterval;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -65,7 +66,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     private JobSubmitThread worker;
     private Prim results;
     private long jobTimeout;
-    private long endTime;
+    private TimeoutInterval timeout;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -82,12 +83,12 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         jobTimeout = sfResolve(ATTR_JOB_TIMEOUT, 0L, true);
         if (jobTimeout > 0) {
-            endTime = System.currentTimeMillis() + (jobTimeout * 1000);
+            timeout = new TimeoutInterval(jobTimeout * 1000);
             if (sfLog().isDebugEnabled()) {
                 sfLog().debug("Terminating Job after " + jobTimeout + " seconds");
             }
         } else {
-            endTime = 0;
+            timeout = null;
         }
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
@@ -303,15 +304,20 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         sfLog().info(event.toString());
     }
 
+    /**
+     * Check for a job timing out
+     * @throws SmartFrogLivenessException if the timeout occurred
+     * @throws IOException when trouble happens when terminating the job
+     */
     private void checkForJobTimeout() throws SmartFrogLivenessException, IOException {
-        long now = System.currentTimeMillis();
-        if (endTime > 0 && now > endTime) {
-            double elapsedTime = (now - endTime)/1000.0;
-            sfLog().warn("Timeout, killing job after "+elapsedTime+" seconds");
-            terminateJob();
-            throw new SmartFrogLivenessException("Timeout before job completed after "
+        if (timeout != null && timeout.hasTimedOut()) {
+            double elapsedTime = timeout.getTimeSinceStarted() / 1000.0;
+            String message = "Timeout before job completed after "
                     + elapsedTime + " seconds"
-                    +" requested Timeout = "+jobTimeout);
+                    + " requested Timeout = " + jobTimeout;
+            sfLog().warn(message);
+            terminateJob();
+            throw new SmartFrogLivenessException(message);
         }
     }
 
