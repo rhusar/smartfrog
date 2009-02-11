@@ -75,4 +75,11 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster, Job {
      */
     String ATTR_JOB_TIMEOUT = "jobTimeout";
 
+    /**
+     * {@value}
+     * ask for the job configuration to be dumped on a complete failure.
+     * useful when you get odd configuration errors
+     */
+    String ATTR_DUMP_ON_FAILURE = "dumpOnFailure";
+
 }

@@ -60,6 +60,12 @@ JobSubmitter extends WorkflowPrim  {
   jobTimeout 0;
 
   /**
+   * ask for the job configuration to be dumped on a complete failure.
+   * useful when you get odd configuration errors
+   */
+  dumpOnFailure false;
+
+  /**
    * A LAZY reference to a component that is to get all the results as they happen: jobID, test results, etc
    * this is intended to outlast the workflow job runs
    */

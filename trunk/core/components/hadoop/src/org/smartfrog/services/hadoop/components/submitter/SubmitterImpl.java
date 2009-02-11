@@ -55,6 +55,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     private boolean terminateWhenJobFinishes;
     private boolean pingJob;
     private boolean deleteOutputDirOnStartup;
+    private boolean dumpOnFailure;
     private TaskCompletionEventLogger events;
     public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
     public static final String ERROR_SUBMIT_FAILED = "Failed to submit a job";
@@ -80,8 +81,13 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         jobTimeout = sfResolve(ATTR_JOB_TIMEOUT, 0L, true);
-        if (jobTimeout>0) {
-            endTime = System.currentTimeMillis() + jobTimeout * 1000;
+        if (jobTimeout > 0) {
+            endTime = System.currentTimeMillis() + (jobTimeout * 1000);
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("Terminating Job after " + jobTimeout + " seconds");
+            }
+        } else {
+            endTime = 0;
         }
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
@@ -89,6 +95,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         }
 
         results = sfResolve(ATTR_RESULTS, results, false);
+        dumpOnFailure = sfResolve(ATTR_DUMP_ON_FAILURE, false, true);
 
         //create the job configuration. The cluster reference is optional
         jobConf = ManagedConfiguration.createConfiguration(this, true, false, true);
@@ -246,11 +253,11 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     }
 
     /**
-     * Pings by polling for (and logging) remote events, triggering termination if the job has finished Failure to pull
-     * for a running job is an error; failure for liveness events is treated less seriously
+     * Pings by polling for (and logging) remote events, triggering termination
+     * if the job has finished or timed out
      *
      * @param source source of ping
-     * @throws SmartFrogLivenessException liveness failed
+     * @throws SmartFrogLivenessException the job failed or timed out
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -297,10 +304,14 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     }
 
     private void checkForJobTimeout() throws SmartFrogLivenessException, IOException {
-        if (endTime > 0 && System.currentTimeMillis() > endTime) {
-            sfLog().warn("Timeout, killing job");
+        long now = System.currentTimeMillis();
+        if (endTime > 0 && now > endTime) {
+            double elapsedTime = (now - endTime)/1000.0;
+            sfLog().warn("Timeout, killing job after "+elapsedTime+" seconds");
             terminateJob();
-            throw new SmartFrogLivenessException("Timeout before job completed");
+            throw new SmartFrogLivenessException("Timeout before job completed after "
+                    + elapsedTime + " seconds"
+                    +" requested Timeout = "+jobTimeout);
         }
     }
 
@@ -311,23 +322,33 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
      */
     private void processEndOfJob() throws IOException {
         boolean succeeded = runningJob.isSuccessful();
+        int taskCount = 0;
+        int failures = 0;
         String message = "Job " + runningJob.getJobName()
-                +" ID=" + runningJob.getID().toString()
+                + " ID=" + runningJob.getID().toString()
                 + " has " + (succeeded ? " succeeded" : "failed");
-            StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
-            TaskCompletionEvent[] history = runningJob.getTaskCompletionEvents(0);
-            for (TaskCompletionEvent event : history) {
-                builder.append(event.isMapTask() ? "\nMap: " : "\nReduce: ");
-                builder.append(event.toString());
-                if (event.getTaskStatus() != TaskCompletionEvent.Status.SUCCEEDED) {
-                    String[] diagnostics = runningJob.getTaskDiagnostics(event.getTaskAttemptId());
-                    for (String line : diagnostics) {
-                        builder.append("\n ");
-                        builder.append(line);
-                    }
+        TaskCompletionEvent[] history = runningJob.getTaskCompletionEvents(0);
+        for (TaskCompletionEvent event : history) {
+            taskCount++;
+            builder.append(event.isMapTask() ? "\nMap: " : "\nReduce: ");
+            builder.append(event.toString());
+            if (event.getTaskStatus() != TaskCompletionEvent.Status.SUCCEEDED) {
+                failures++;
+                String[] diagnostics = runningJob.getTaskDiagnostics(event.getTaskAttemptId());
+                for (String line : diagnostics) {
+                    builder.append("\n ");
+                    builder.append(line);
                 }
+            }
+            builder.append("\n Tasks run :").append(taskCount).append(" failed: ").append(failures);
+            if(!succeeded && dumpOnFailure) {
+                builder.append("Job configuration used");
+                builder.append(jobConf.dump());
+            }
             message = message + builder.toString();
+
         }
         sfLog().info(message);
         if (terminateWhenJobFinishes) {
