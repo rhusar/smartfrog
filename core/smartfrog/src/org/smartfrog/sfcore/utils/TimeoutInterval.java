@@ -73,6 +73,14 @@ public class TimeoutInterval {
     }
 
     /**
+     * Get the time since the timeout began, in millis
+     * @return time since we started
+     */
+    public long getTimeSinceStarted() {
+        return System.currentTimeMillis() - startTime;
+    }
+
+    /**
      * Sleep for a period of time
      * @param interval interval to sleep
      * @return return true if the sleep completed without interruption
