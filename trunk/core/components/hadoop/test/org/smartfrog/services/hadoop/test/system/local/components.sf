@@ -373,9 +373,6 @@ MapReduceTestSequence extends JobTrackerSequence {
  }
 
 
-  io.sort 0.1;
-
-
   job extends TestJob {
     mapred.mapper.new-api true;
     cluster LAZY PARENT:cluster;
@@ -394,7 +391,6 @@ MapReduceTestSequence extends JobTrackerSequence {
     fileRequired false;
     fs.default.name cluster:fs.default.name;
     mapred.jar NULL;
-    io.sort.record.percent io.sort;
   }
 
   s1 extends Sleep;
