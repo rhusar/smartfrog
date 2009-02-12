@@ -98,6 +98,7 @@ Java extends ExecuteProgram {
 
 LoadClassSchema extends Schema {
     classes extends Vector;
+    resources extends Vector;
     create extends Boolean;
     retain extends Boolean;
     message extends String;
@@ -109,6 +110,8 @@ LoadClass extends WorkflowPrim {
     create false;
     retain true;
     message "";
+    classes [];
+    resources [];
     //flag to say we are conditional
     isCondition false;
 }
