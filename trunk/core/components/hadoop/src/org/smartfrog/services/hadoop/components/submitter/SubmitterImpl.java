@@ -65,8 +65,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     private ManagedConfiguration jobConf;
     private JobSubmitThread worker;
     private Prim results;
-    private long jobTimeout;
     private TimeoutInterval timeout;
+    private long jobTimeout;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -82,14 +82,6 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         jobTimeout = sfResolve(ATTR_JOB_TIMEOUT, 0L, true);
-        if (jobTimeout > 0) {
-            timeout = new TimeoutInterval(jobTimeout * 1000);
-            if (sfLog().isDebugEnabled()) {
-                sfLog().debug("Terminating Job after " + jobTimeout + " seconds");
-            }
-        } else {
-            timeout = null;
-        }
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATE_WHEN_JOB_FINISHES, true, true);
@@ -229,6 +221,12 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                 sfLog().info("Job ID: " + jobID + " URL: " + jobURL);
                 //set up to log events
                 events = new TaskCompletionEventLogger(runningJob, sfLog());
+                if (jobTimeout > 0) {
+                    timeout = new TimeoutInterval(jobTimeout);
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug("Terminating Job after " + timeout.getDelayInSeconds() + " seconds");
+                    }
+                }
             } catch (IOException e) {
                 SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
                         + ": " + e,
@@ -314,7 +312,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             double elapsedTime = timeout.getTimeSinceStarted() / 1000.0;
             String message = "Timeout before job completed after "
                     + elapsedTime + " seconds"
-                    + " requested Timeout = " + jobTimeout;
+                    + " requested Timeout = " + timeout.getDelayInSeconds();
             sfLog().warn(message);
             terminateJob();
             throw new SmartFrogLivenessException(message);

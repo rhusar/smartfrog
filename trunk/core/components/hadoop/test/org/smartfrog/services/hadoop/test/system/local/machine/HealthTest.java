@@ -60,4 +60,12 @@ public class HealthTest extends DeployingTestBase {
     public void testJvmHealth() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testJvmHealth");
     }
+
+    public void testHadoopSiteResources() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopSiteResources");
+    }
+
+    public void testHadoopDefaultResources() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopDefaultResources");
+    }
 }

@@ -131,4 +131,16 @@ testCheckJspHelperClass extends testJSPHealth {
 
 }
 
+testHadoopDefaultResources extends testJSPHealth {
+  action extends HadoopDefaultResources {
+    sfShouldTerminate true;
+  }
+}
+
+testHadoopSiteResources extends testJSPHealth {
+  action extends HadoopSiteResources {
+    sfShouldTerminate true;
+  }
+}
+
 

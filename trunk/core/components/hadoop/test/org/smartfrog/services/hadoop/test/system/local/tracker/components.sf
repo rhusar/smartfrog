@@ -93,7 +93,7 @@ testOrphanTracker extends ExpectDeployFailure {
   //for our test we sleep; that's all.
   tests extends Sequence {
     Sleep extends Delay {
-      time ORPHAN_SLEEP_TIME;
+      time JOB_SLEEP_TIME;
     }
   }
 
