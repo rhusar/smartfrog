@@ -57,6 +57,15 @@ public class TimeoutInterval {
     }
 
     /**
+     * Get the delay
+     *
+     * @return delay in seconds; rounded down
+     */
+    public long getDelayInSeconds() {
+        return delay/1000;
+    }
+
+    /**
      * Get the time at which the interval will be deemed to have timed out
      * @return end time in milliseconds
      */
