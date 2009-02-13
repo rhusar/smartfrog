@@ -27,18 +27,16 @@ import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
  *
  */
 
-public class OrphanTaskTrackerTest extends HadoopTestBase {
+public class JobSetupTest extends HadoopTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
 
-    public OrphanTaskTrackerTest(String name) {
+    public JobSetupTest(String name) {
         super(name);
     }
 
-    public void testOrphanTracker() throws Throwable {
-        checkFileSystem();
-        checkTaskTracker();
-        setShutdownTimeout(60000);
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanTracker");
+    public void testJobSetup() throws Throwable {
+        checkMapRedCluster();
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSetup");
         enableFailOnPortCheck();
     }
 

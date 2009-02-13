@@ -17,22 +17,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.extras.hadoop.cluster.test.system;
-
-import org.smartfrog.test.DeployingTestBase;
+package org.smartfrog.services.hadoop.examples;
 
 /**
- * Created 05-Jan-2009 16:12:47
+ * Created 13-Feb-2009 14:24:20
  */
 
-public class ClusterTest extends DeployingTestBase implements Names {
 
-
-    public ClusterTest(String name) {
-        super(name);
-    }
-
-    public void testCluster() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testCluster.sf");
-    }
+public interface ExamplePorts {
 }

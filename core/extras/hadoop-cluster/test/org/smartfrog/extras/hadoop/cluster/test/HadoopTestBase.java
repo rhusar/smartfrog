@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.local.namenode;
+package org.smartfrog.extras.hadoop.cluster.test;
 
 import org.smartfrog.test.PortCheckingTestBase;
 import org.smartfrog.services.hadoop.examples.ExamplePorts;
@@ -34,13 +34,7 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
         super(name);
     }
 
-    protected void enablePortCheck() {
-        super.enablePortCheck();
-        checkNameNode();
-    }
-
-    protected void checkNameNode() {
-        enablePortCheck();
+    private void checkNameNode() {
         addPortCheck("NameNode IPC server", NAMENODE_IPC_PORT);
         addPortCheck("NameNode IPC server", NAMENODE_HTTP_PORT);
     }
@@ -49,7 +43,6 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
      * Add checks for the job tracker
      */
     protected void checkDataNode() {
-        enablePortCheck();
         addPortCheck("DATANODE_HTTP_PORT", DATANODE_HTTP_PORT);
         addPortCheck("DATANODE_HTTPS_PORT", DATANODE_HTTPS_PORT);
         addPortCheck("DATANODE_IPC_PORT", DATANODE_IPC_PORT);
@@ -59,7 +52,6 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
      * Add checks for the task tracker
      */
     protected void checkTaskTracker() {
-        enablePortCheck();
         addPortCheck("Task Tracker HTTP", TASKTRACKER_HTTP_PORT);
     }
 
@@ -67,7 +59,6 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
      * Add checks for the job tracker
      */
     protected void checkJobTracker() {
-        enablePortCheck();
         addPortCheck("Job Tracker IPC", JOBTRACKER_IPC_PORT);
         addPortCheck("Job Tracker HTTP", JOBTRACKER_HTTP_PORT);
     }
@@ -76,11 +67,12 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
         checkNameNode();
         checkDataNode();
     }
-
+    
     protected void checkMapRedCluster() {
-        checkFileSystem();
+        checkNameNode();
         checkJobTracker();
         checkTaskTracker();
+        checkDataNode();
     }
 
 }

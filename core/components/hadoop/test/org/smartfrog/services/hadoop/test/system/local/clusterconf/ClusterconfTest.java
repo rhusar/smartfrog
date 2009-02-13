@@ -45,7 +45,8 @@ public class ClusterconfTest extends HadoopTestBase {
     }
 
     public void testClusteredFilesystem() throws Throwable {
-        enablePortCheck();
+        checkNameNode();
+        checkDataNode();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusteredFilesystem");
         enableFailOnPortCheck();
     }

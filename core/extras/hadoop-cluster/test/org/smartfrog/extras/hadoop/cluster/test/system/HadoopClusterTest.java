@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,29 +17,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.local.tracker;
+package org.smartfrog.extras.hadoop.cluster.test.system;
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
 
 /**
- *
- * Created 20-May-2008 17:35:13
- *
+ * Created 05-Jan-2009 16:12:47
  */
 
-public class OrphanTaskTrackerTest extends HadoopTestBase {
-    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
+public class HadoopClusterTest extends HadoopTestBase implements Names {
 
-    public OrphanTaskTrackerTest(String name) {
+
+    public HadoopClusterTest(String name) {
         super(name);
     }
 
-    public void testOrphanTracker() throws Throwable {
+    public void testCluster() throws Throwable {
         checkFileSystem();
-        checkTaskTracker();
-        setShutdownTimeout(60000);
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanTracker");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCluster.sf");
         enableFailOnPortCheck();
     }
-
 }

@@ -67,7 +67,7 @@ ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
 
 
 HadoopClusterCompound extends Compound {
-
+/*
   jasperHealth extends CheckJasperClasses {
     sfShouldTerminate false;
   }
@@ -76,7 +76,7 @@ HadoopClusterCompound extends Compound {
     sfShouldTerminate false;
   }
 
-/*
+
   allhealth extends HadoopJspClasses {
     sfShouldTerminate false;
   }
