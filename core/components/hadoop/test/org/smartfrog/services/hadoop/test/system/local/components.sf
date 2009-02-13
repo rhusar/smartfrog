@@ -23,7 +23,7 @@
 
 
 //how long a job should take before we give up on it
-JOB_TIMEOUT 30;
+JOB_TIMEOUT 90000;
 
 LocalDataNodeCompound extends TransientNameDataNodeCompound;
 
