@@ -896,14 +896,14 @@ fi
 %{libdir}/sf-xml-${smartfrog.version}.jar
 %{libdir}/jdom-${jdom.version}.jar
 %{libdir}/xom-${xom.version}.jar
-%{libdir}/xmlParserAPIs-${xerces.version}.jar
+%{libdir}/xml-apis-${xml-apis.version}.jar
 %{libdir}/xercesImpl-${xerces.version}.jar
 %{libdir}/xalan-${xalan.version}.jar
 
 %{linkdir}/sf-xml.jar
 %{linkdir}/jdom.jar
 %{linkdir}/xom.jar
-%{linkdir}/xmlParserAPIs.jar
+%{linkdir}/xml-apis.jar
 %{linkdir}/xercesImpl.jar
 %{linkdir}/xalan.jar
 
@@ -919,11 +919,15 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Fri Feb 13 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.006-1.el4
+- Move up Xerces version, changing the xml-apis JAR name in the process
 * Wed Nov 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.15.001-1.el4
 - Jetty and Hadoop RPMs
 - slf4j libraries in the loggingservices RPM
-* Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4 changes to the security model so that signedLib is a symlink.
-* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4 changes to the security model so that signedLib is a symlink.
+* Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4
+- changes to the security model so that signedLib is a symlink.
+* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4
+- changes to the security model so that signedLib is a symlink.
 * Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.027-2.el4
 - add velocity template
 * Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.018-2.el4

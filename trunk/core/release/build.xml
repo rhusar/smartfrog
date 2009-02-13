@@ -570,7 +570,7 @@
     <ln artifact="sf-xml" version="${smartfrog.version}"/>
     <ln artifact="jdom" version="${jdom.version}"/>
     <ln artifact="xom" version="${xom.version}"/>
-    <ln artifact="xmlParserAPIs" version="${xerces.version}"/>
+    <ln artifact="xml-apis" version="${xml-apis.version}"/>
     <ln artifact="xercesImpl" version="${xerces.version}"/>
     <ln artifact="xalan" version="${xalan.version}"/>
 

@@ -66,9 +66,9 @@
         name="xercesImpl"
         rev="${xerces.version}"
         conf="parser->master"/>
-    <dependency org="xerces"
-        name="xmlParserAPIs"
-        rev="${xerces.version}"
+    <dependency org="xml-apis"
+        name="xml-apis"
+        rev="${xml-apis.version}"
         conf="parser->master"/>
     <!--xom depends on Jaxen, which is a mess. exclude it-->
     <dependency org="xom"
