@@ -108,11 +108,17 @@
         rev="latest.integration"
         conf="test->default"/>
 
+    <!--
+    The exclusion keeps bits of Jetty (such as the servlet API) off the classpath,
+    where it only complicates things. 
+    -->
     <dependency org="org.apache.hadoop"
         name="hadoop-core"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->default"/>
+        conf="hadoop-core->default">
+      <exclude org="org.mortbay.jetty" />
+    </dependency>
 
     <dependency org="commons-cli"
         name="commons-cli"
