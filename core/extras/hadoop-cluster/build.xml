@@ -42,9 +42,13 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="system.tests.enabled" value="true"/>
   <!-- override point -->
   <property file="build.properties"/>
+  <!--System tests are only turned on if Java6 or later is in use-->
+  <condition property="system.tests" >
+    <available classname="java.net.CookieManager"/>
+  </condition>
+
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
