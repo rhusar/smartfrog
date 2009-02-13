@@ -19,13 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.extras.hadoop.cluster.test.system;
 
-import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
 
 /**
  * Created 05-Jan-2009 16:12:47
  */
 
-public class FilesystemTest extends DeployingTestBase implements Names {
+public class FilesystemTest extends HadoopTestBase implements Names {
 
 
     public FilesystemTest(String name) {
@@ -33,6 +33,8 @@ public class FilesystemTest extends DeployingTestBase implements Names {
     }
 
     public void testHDFS() throws Throwable {
+        checkFileSystem();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testHDFS.sf");
+        enableFailOnPortCheck();
     }
 }

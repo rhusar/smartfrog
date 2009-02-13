@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,22 +19,10 @@
  */
 
 
-package org.smartfrog.services.hadoop.test.system.local.namenode;
+#include "/org/smartfrog/extras/hadoop/cluster/test/system/components.sf"
+
 
 /**
- *
+ * Test case
  */
-public class ForkedNameNodeTest extends HadoopTestBase {
-    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/namenode/";
-
-    public ForkedNameNodeTest(String name) {
-        super(name);
-    }
-
-    public void testNameNodeForked() throws Throwable {
-        checkNameNode();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeForked");
-        enableFailOnPortCheck();
-    }
-
-}
+sfConfig testNamenodeJspClasses ;

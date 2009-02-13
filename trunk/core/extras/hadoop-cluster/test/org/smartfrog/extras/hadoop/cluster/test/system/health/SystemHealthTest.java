@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.extras.hadoop.cluster.test.system;
+package org.smartfrog.extras.hadoop.cluster.test.system.health;
 
 import org.smartfrog.test.DeployingTestBase;
 
@@ -25,10 +25,11 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 05-Jan-2009 16:12:47
  */
 
-public class HealthTest extends DeployingTestBase implements Names {
+public class SystemHealthTest extends DeployingTestBase {
 
+    String PACKAGE = "/org/smartfrog/extras/hadoop/cluster/test/system/health";
 
-    public HealthTest(String name) {
+    public SystemHealthTest(String name) {
         super(name);
     }
 
@@ -38,5 +39,17 @@ public class HealthTest extends DeployingTestBase implements Names {
 
     public void testHealth() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testHealth.sf");
+    }
+
+    public void testHadoopSiteResources() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopSiteResources");
+    }
+
+    public void testHadoopDefaultResources() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopDefaultResources");
+    }
+
+    public void testNamenodeJspClasses() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testNamenodeJspClasses");
     }
 }

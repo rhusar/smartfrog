@@ -19,13 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.extras.hadoop.cluster.test.system;
 
-import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
 
 /**
  * Created 05-Jan-2009 16:12:47
  */
 
-public class AnubisTest extends DeployingTestBase implements Names {
+public class AnubisTest extends HadoopTestBase implements Names {
 
 
     public AnubisTest(String name) {

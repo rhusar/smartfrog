@@ -39,24 +39,27 @@ public class FileSystemOperationsTest extends HadoopTestBase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        enablePortCheck();
-        checkDataNode();
+        checkFileSystem();
     }
 
     public void testClusterShutDownCleanly() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+        enableFailOnPortCheck();
     }
     
     public void testFileSystemOperations() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemOperations");
+        enableFailOnPortCheck();
     }
 
     public void testClusterShutDownCleanly2() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+        enableFailOnPortCheck();
     }
 
     public void testFileSystemCopyFileInAndOut() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemCopyFileInAndOut");
+        enableFailOnPortCheck();
     }
 
 }

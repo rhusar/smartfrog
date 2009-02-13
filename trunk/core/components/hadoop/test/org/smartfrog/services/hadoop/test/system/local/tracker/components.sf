@@ -58,14 +58,30 @@ testJobSubmission extends ExpectDeploy {
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
-
-
-    //action:cluster:io.sort.record.percent io.sort;
-
   }
 
 
 }
+
+testJobSetup extends ExpectDeploy {
+  description "test that the job setup works";
+
+  action extends LocalClusterCompound {
+
+  }
+
+  tests extends MapReduceTestSequence {
+    s extends Sleep;
+    jobTracker LAZY PARENT:action:jobTracker;
+    taskTracker LAZY PARENT:action:taskTracker;
+    cluster LAZY PARENT:action:cluster;
+    datanode LAZY PARENT:action:datanode;
+    namenode LAZY PARENT:action:namenode;
+  }
+
+
+}
+
 
 
 

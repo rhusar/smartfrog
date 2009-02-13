@@ -32,8 +32,9 @@ public class NameNodeTest extends HadoopTestBase {
     }
 
     public void testNameNodeHasNoWorkers() throws Throwable {
-        enablePortCheck();
+        checkNameNode();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeHasNoWorkers");
+        enableFailOnPortCheck();
     }
 
 

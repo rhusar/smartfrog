@@ -19,20 +19,26 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.extras.hadoop.cluster.test.system;
 
-import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
 
 /**
  * Created 05-Jan-2009 16:12:47
  */
 
-public class ForkedClusterTest extends DeployingTestBase implements Names {
+public class ForkedHadoopClusterTest extends HadoopTestBase implements Names {
 
 
-    public ForkedClusterTest(String name) {
+    public ForkedHadoopClusterTest(String name) {
         super(name);
     }
 
+    public void testSkipped() throws Throwable {
+
+    }
+
     public void testForkedCluster() throws Throwable {
+        checkFileSystem();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testForkedCluster.sf");
+        enableFailOnPortCheck();
     }
 }

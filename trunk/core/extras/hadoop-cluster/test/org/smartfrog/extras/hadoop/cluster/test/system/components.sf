@@ -61,3 +61,23 @@ testHealth extends ExpectTerminate {
   action HadoopJspClasses;
 }
 
+
+testHadoopDefaultResources extends ExpectTerminate {
+  action extends HadoopDefaultResources {
+    sfShouldTerminate true;
+  }
+}
+
+testHadoopSiteResources extends ExpectTerminate {
+  action extends HadoopSiteResources {
+    sfShouldTerminate true;
+  }
+}
+
+
+testNamenodeJspClasses extends ExpectTerminate {
+  action extends CheckNamenodeJspClasses {
+    sfShouldTerminate true;
+  }
+}
+

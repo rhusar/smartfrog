@@ -334,7 +334,7 @@ CopyFileInAndOut extends FileSystemLiveSequence {
 /**
  * this is a complete MR workflow
  */
-MapReduceTestSequence extends JobTrackerSequence {
+JobTrackerSourceFileSequence extends JobTrackerSequence {
 
   testDir "/tests/mrtestsequence";
   testDirIn  (testDir ++ "/in");
@@ -372,6 +372,9 @@ MapReduceTestSequence extends JobTrackerSequence {
     path  testDirOut;
  }
 
+}
+
+MapReduceTestSequence extends JobTrackerSourceFileSequence {
 
   job extends TestJob {
     mapred.mapper.new-api true;

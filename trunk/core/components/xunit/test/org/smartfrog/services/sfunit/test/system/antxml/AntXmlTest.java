@@ -38,7 +38,7 @@ public class AntXmlTest extends DeployingTestBase {
         expectSuccessfulTestRun(PACKAGE, "testSFUnitAntXml");
     }
 
-    public void testSFUnitAntXmlNested() throws Throwable {
+    public void NotestSFUnitAntXmlNested() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testSFUnitAntXmlNested");
     }
 

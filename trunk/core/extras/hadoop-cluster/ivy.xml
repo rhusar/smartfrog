@@ -69,6 +69,11 @@
         rev="latest.integration"
         conf="runtime->default"/>
     <dependency org="org.smartfrog"
+      name="sf-xml" changing="true"
+      rev="latest.integration"
+      conf="runtime->default"/>
+    
+    <dependency org="org.smartfrog"
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
