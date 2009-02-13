@@ -852,7 +852,7 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-xml/xom-${xom.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-xml/xmlParserAPIs-${xerces.version}.jar"
+      <file src="ivy/lib/package-xml/xml-apis-${xml-apis.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-xml/xercesImpl-${xerces.version}.jar"
