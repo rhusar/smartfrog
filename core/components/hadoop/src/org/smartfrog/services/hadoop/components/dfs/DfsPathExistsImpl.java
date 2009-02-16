@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.FileExists;
 import org.smartfrog.services.hadoop.components.cluster.CheckableCondition;
@@ -48,7 +49,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
     private boolean verbose;
     public static final String ATTR_VERBOSE="verbose";
 
-    private DistributedFileSystem dfs;
+    private FileSystem dfs;
 
 
     public DfsPathExistsImpl() throws RemoteException {
