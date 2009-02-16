@@ -8,6 +8,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 
 /**
@@ -40,8 +42,15 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
 
    public synchronized void sfStart() throws SmartFrogException, RemoteException {
 	   //System.out.println("&&&&& IN DEP START &&&&&"+by);
-	     
-      super.sfStart();   
+	  
+	   super.sfStart();   
+	   
+	   //SHOULD BE A CHECK IN HERE ON RUNNING...
+	   Boolean running = null;
+	   try { running = (Boolean) sfResolve(new Reference(ReferencePart.attrib("running"))); }
+	   catch (Exception e){}
+	   
+	   if (running!=null && running.booleanValue()) sfRun();  //pre-empt...
    }
    
    public synchronized void sfRun() throws SmartFrogException{

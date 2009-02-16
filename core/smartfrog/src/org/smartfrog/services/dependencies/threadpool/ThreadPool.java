@@ -32,4 +32,6 @@ public interface ThreadPool {
     public void setIdleRunnable(Runnable idle);
     
     public void runIdle();
+    
+    public void runIdleAgain();
 }
