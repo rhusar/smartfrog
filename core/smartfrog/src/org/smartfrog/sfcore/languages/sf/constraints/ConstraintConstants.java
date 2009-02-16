@@ -36,6 +36,8 @@ public class ConstraintConstants {
 	public static final String PATH="path";
 	public static final String PATH_TAG="sfPath";
 
+	public static final String CARD="card";
+	
 	public static final String PRED="pred";
 	public static final String PRED_TAG="sfPred";
 	
@@ -83,6 +85,7 @@ public class ConstraintConstants {
 	
 	public static final String INDEX="sfIndex";
 	public static final String TAG="sfTag";
+	public static final String PROP_TAG="tag";
 	
 	public static final String RANGE="range";
 	public static final String RANGEREF="rangeref";
