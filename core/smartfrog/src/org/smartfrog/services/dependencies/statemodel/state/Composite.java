@@ -1,17 +1,13 @@
 package org.smartfrog.services.dependencies.statemodel.state;
 
-import org.smartfrog.services.dependencies.threadpool.ThreadPool;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogUpdateException;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.reference.ApplyReference;
-
 import java.rmi.RemoteException;
 import java.util.Enumeration;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  *
@@ -30,7 +26,11 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	      //My name...
 	      Object name_o = sfContext().get("name");
 	      if (name_o!=null && name_o instanceof String) name = (String) name_o;
-	      else name = (String) sfParent().sfAttributeKeyFor(this);
+	      else {
+	    	  Prim p = sfParent();
+	    	  if (p!=null) name = (String) sfParent().sfAttributeKeyFor(this);
+	    	  else name="sfConfig";
+	      }
 	      
 	   }
    
