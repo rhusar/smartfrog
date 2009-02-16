@@ -40,7 +40,7 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
     }
 
     protected void checkNameNode() {
-        enablePortCheck();
+        setCheckPorts(true);
         addPortCheck("NameNode IPC server", NAMENODE_IPC_PORT);
         addPortCheck("NameNode IPC server", NAMENODE_HTTP_PORT);
     }
@@ -49,7 +49,7 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
      * Add checks for the job tracker
      */
     protected void checkDataNode() {
-        enablePortCheck();
+        setCheckPorts(true);
         addPortCheck("DATANODE_HTTP_PORT", DATANODE_HTTP_PORT);
         addPortCheck("DATANODE_HTTPS_PORT", DATANODE_HTTPS_PORT);
         addPortCheck("DATANODE_IPC_PORT", DATANODE_IPC_PORT);
@@ -59,7 +59,7 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
      * Add checks for the task tracker
      */
     protected void checkTaskTracker() {
-        enablePortCheck();
+        setCheckPorts(true);
         addPortCheck("Task Tracker HTTP", TASKTRACKER_HTTP_PORT);
     }
 
@@ -67,7 +67,7 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
      * Add checks for the job tracker
      */
     protected void checkJobTracker() {
-        enablePortCheck();
+        setCheckPorts(true);
         addPortCheck("Job Tracker IPC", JOBTRACKER_IPC_PORT);
         addPortCheck("Job Tracker HTTP", JOBTRACKER_HTTP_PORT);
     }

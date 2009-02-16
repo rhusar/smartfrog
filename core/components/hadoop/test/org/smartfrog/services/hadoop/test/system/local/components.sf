@@ -159,12 +159,13 @@ FileSystemTestSequence extends FileSystemLiveSequence {
     touch extends DfsCreateFile {
       cluster LAZY PARENT:cluster;
       path "/test-filename";
-      text "this is a very small file for Hadoop";
+      text "0123456789012345678901234567890123456789";
     }
 
     assertFileExists extends DfsPathExistsWorkflow {
       cluster LAZY PARENT:cluster;
       path touch:path;
+      minSize 40;
     }
 
   }
@@ -197,8 +198,10 @@ TestJob extends Job {
   cluster TBD;
   jobTracker TBD;
   fs.default.name cluster:fs.default.name;
+  testURL (fs.default.name ++ testDir);
   mapred.job.tracker jobTracker:mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
+  hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
   jobTimeout JOB_TIMEOUT;
 
   //mapred.system.dir "/tmp/hadoop/mapred/system";
@@ -206,15 +209,18 @@ TestJob extends Job {
   //mapred.child.java.opts "-Xmx512m -d64 -server";
   mapred.tasktracker.map.tasks.maximum 5;
   mapred.tasktracker.reduce.tasks.maximum 1;
-  mapred.working.dir (hadoop.tmp.dir ++ "/" ++ name ++ "/working");
-  mapred.local.dir (hadoop.tmp.dir ++ "/" ++ name ++ "local");
+  mapred.working.dir (hadoop.tmp.URL ++ "/" ++ name ++ "/working");
+  mapred.local.dir (hadoop.tmp.URL ++ "/" ++ name ++ "local");
   io.sort.record.percent 0.1F;
+  mapred.input.dir (fs.default.name ++ testDirIn);
+  mapred.output.dir (fs.default.name ++ testDirOut);
+  mapred.working.dir (fs.default.name ++ testDirWorking);
+
   //hadoop.job.ugi ;
 }
 
 TestJobNoFile extends TestJob {
-  mapred.input.dir testDirIn;
-  mapred.output.dir testDirOut;
+
 }
 
 
@@ -310,6 +316,7 @@ CopyFileInAndOut extends FileSystemLiveSequence {
   SourceExists extends DfsPathExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path inputFileDFS;
+    minSize 40;
   }
 
   lsIn extends DfsListDir {
@@ -336,6 +343,8 @@ CopyFileInAndOut extends FileSystemLiveSequence {
  */
 JobTrackerSourceFileSequence extends JobTrackerSequence {
 
+  fs.default.name cluster:fs.default.name;
+  testURL (fs.default.name ++ testDir);
   testDir "/tests/mrtestsequence";
   testDirIn  (testDir ++ "/in");
   testDirOut (testDir ++ "/out");
@@ -347,9 +356,24 @@ JobTrackerSourceFileSequence extends JobTrackerSequence {
   inputFileLocal (LocalDataDir  ++ "/in.txt")
   outputFileLocal (LocalDataDir  ++ "/out.txt")
 
+  mapred.job.tracker jobTracker:mapred.job.tracker;
+  hadoop.tmp.dir "/tmp";
+  hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
+  jobTimeout JOB_TIMEOUT;
+
+  //mapred.system.dir "/tmp/hadoop/mapred/system";
+
+  //mapred.child.java.opts "-Xmx512m -d64 -server";
+  mapred.tasktracker.map.tasks.maximum 5;
+  mapred.tasktracker.reduce.tasks.maximum 1;
+
+  io.sort.record.percent 0.1F;
+  mapred.input.dir (fs.default.name ++ testDirIn);
+  mapred.output.dir (fs.default.name ++ testDirOut);
+  mapred.working.dir (fs.default.name ++ testDirWorking);
+
   inputFile extends CountingFile;
 
-     
   CopyDataIn extends DfsCopyFileIn {
     cluster LAZY PARENT:cluster;
     source inputFileLocal;
@@ -360,6 +384,7 @@ JobTrackerSourceFileSequence extends JobTrackerSequence {
   SourceExists extends DfsPathExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path inputFileDFS;
+    minSize 40;
   }
 
   lsIn extends DfsListDir {
@@ -382,18 +407,24 @@ MapReduceTestSequence extends JobTrackerSourceFileSequence {
     jobTracker LAZY PARENT:jobTracker;
     results LAZY PARENT;
     name "testsubmission";
-    mapred.input.dir testDirIn;
-    mapred.output.dir testDirOut;
-    mapred.working.dir testDirWorking;
-    mapred.local.dir (testDir ++ "/local");
+    fs.default.name PARENT:fs.default.name;
+    mapred.input.dir PARENT:mapred.input.dir;
+    mapred.output.dir PARENT:mapred.output.dir;
+    //mapred.working.dir PARENT:mapred.working.dir;
+    //mapred.local.dir PARENT:mapred.local.dir;
     mapred.mapper.new-api true;
     //mapred.job.split.file (testDir ++ "/split");
     mapred.job.tracker jobTracker:mapred.job.tracker;
+
+    mapred.working.dir (hadoop.tmp.URL ++ "/" ++ name ++ "/working");
+    mapred.local.dir (hadoop.tmp.URL ++ "/" ++ name ++ "local");
+
     keep.failed.task.files true;
     filename "";
     fileRequired false;
-    fs.default.name cluster:fs.default.name;
     mapred.jar NULL;
+    mapred.map.max.attempts 1;
+    mapred.reduce.max.attempts 1;
   }
 
   s1 extends Sleep;
@@ -406,6 +437,7 @@ MapReduceTestSequence extends JobTrackerSourceFileSequence {
   ResultExists extends DfsPathExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path outputFileDFS;
+    minSize 40;
   }
 
   CopyDataOut extends DfsCopyFileOut {
