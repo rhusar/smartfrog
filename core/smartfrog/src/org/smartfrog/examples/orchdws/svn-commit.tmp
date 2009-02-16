@@ -1,0 +1,11 @@
+SFOS-1100: Some minor code tidying
+--This line, and those below, will be ignored--
+
+M    balancer/LoadBalancerBindingImpl.java
+M    balancer/Server.java
+M    balancer/ServerSelector.java
+M    balancer/BalancerImpl.java
+M    balancer/ConnectionRelay.java
+M    balancer/ServerInstanceImpl.java
+M    sf/system.sf
+M    sf/ServiceOrchestration.sf
