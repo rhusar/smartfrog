@@ -64,14 +64,15 @@ abstract public class BaseProposition extends Proposition {
 		Enumeration en = context.keys();
 		while (en.hasMoreElements()){
 			Object key = en.nextElement();
-			try{
+			if (key.toString().startsWith("sf")) continue;
+			//try{
 				Object val = context.get(key);
-				if (comp.sfContainsTag(key, "sfProp")){
-					Proposition prop = createProposition(val, comp, key);
+				//if (comp.sfContainsTag(key, "sfProp")){
+					Proposition prop = createProposition(val, comp);
 					if (prop==null) throw new SmartFrogResolutionException("sfProp does not yield valid proposotion for key:"+key+" in: "+context);
 					else propsOrig.add(prop);
-				} 
-			} catch (SmartFrogContextException e) {/*Shouldn't happen*/}
+				//} 
+			//} catch (SmartFrogContextException e) {/*Shouldn't happen*/}
 		}
 		if (propsOrig.size()==0) throw new SmartFrogResolutionException("Prop with no propositions: "+context);
 		props = (Vector<Proposition>) propsOrig.clone();

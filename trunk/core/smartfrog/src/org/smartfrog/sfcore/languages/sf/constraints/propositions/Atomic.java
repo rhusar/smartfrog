@@ -56,8 +56,10 @@ public class Atomic extends Proposition {
 		   	Enumeration en = context.keys();
 			while (en.hasMoreElements()){
 				Object key = en.nextElement();
-				try{
-					if (comp.sfContainsTag(key, "sfProp")){
+				if (key.toString().startsWith("sf")) continue;
+				
+				//try{
+					//if (comp.sfContainsTag(key, "sfProp")){
 						Object val = context.get(key);
 						if (val instanceof SFReference) {
 							try {
@@ -65,8 +67,8 @@ public class Atomic extends Proposition {
 							}catch(SmartFrogCompilationException sfce){throw new SmartFrogResolutionException(sfce);}
 							break; //only want one reference!
 						} else throw new SmartFrogResolutionException("sfProp in Atomic Proposition is not a Reference, key:"+key+" in: "+context);
-					}
-				} catch (SmartFrogContextException e) {/*Shouldn't happen*/}
+					//}
+				//} catch (SmartFrogContextException e) {/*Shouldn't happen*/}
 			}
 			if (reference==null) 
 				throw new SmartFrogResolutionException("Atomic Proposition with no reference!: "+context);

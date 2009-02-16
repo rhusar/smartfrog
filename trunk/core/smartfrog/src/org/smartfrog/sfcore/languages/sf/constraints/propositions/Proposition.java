@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
@@ -68,10 +69,11 @@ abstract public class Proposition implements Cloneable{
 	    	
 	    	//System.out.println("Making Props"+prop_cds+prop_cds.size());
 			//Turn them into Propositions!
+	    	
 			for (int i=0;i<prop_cds.size();i++){
 				ComponentDescription prop_cd = prop_cds.get(i);
 				ComponentDescription p = prop_cd.sfParent();
-				Proposition prop = createProposition(prop_cd, p, p.sfAttributeKeyFor(comp));
+				Proposition prop = createProposition(prop_cd, p);
 				propositionsOrig.add(prop);
 			}
 			
@@ -161,54 +163,47 @@ abstract public class Proposition implements Cloneable{
 	}
     
     void initialise() throws SmartFrogResolutionException {
-    	//System.out.println("Proposition: initialise..."); 
+    	//System.out.println("333Proposition: initialise..."); 
     	
-    	Object prop_key=null;
-		Object prop_obj=null;
-		//Find me a tag (and a source etc whilst at it)!
-		Enumeration en = context.keys();
-		
-		//System.out.println("111"); 
-		while (en.hasMoreElements()){
-			Object key = en.nextElement();
-			Object val = context.get(key);
-			try{
-				if (comp.sfContainsTag(key, "sfTag")) tag_s = (String) val.toString();
-				else if (comp.sfContainsTag(key, "sfSource") && source_ref==null){
-					if (val instanceof Reference) source_ref = (Reference) val;
-					else throw new SmartFrogResolutionException("sfSource must be a Reference in Proposition: "+context);
-				}
-				else if (comp.sfContainsTag(key, "sfProp")){
-					prop_key=key;
-					prop_obj=val;
-				} 
-				else if (comp.sfContainsTag(key, "sfPrefix")){
-					if (val instanceof String) prefix_s = (String) val;
-					else throw new SmartFrogResolutionException("sfPrefix must be a String in: "+context);
-				}
-				else if (comp.sfContainsTag(key, "sfCard")){
-					if (val instanceof Integer) ref_card = ((Integer) val).intValue();
-					else throw new SmartFrogResolutionException("sfCard must be an Integer in: "+context);
-				}
-				
-				if (source_ref!=null && tag_s!=null && proposition!=null && prefix_s!=null) break; //from while
-			} catch (SmartFrogContextException e) {/*Shouldn't happen*/}
-		}
-		//System.out.println("222"); 
-		
-    	if (tag_s==null || source_ref==null || prop_obj==null || prefix_s==null) throw new SmartFrogResolutionException("Proposition should have sfTag, sfSource, sfProp and sfPrefix attributes: "+context);
-	
+    	Object tag=context.get(ConstraintConstants.PROP_TAG);
+    	if (tag!=null) tag_s = tag.toString();
+    	///System.out.println("333"+tag_s);
+    	
+    	
+    	Object source=context.get(ConstraintConstants.ARRAY);
+    	//System.out.println("333"+source);
+    	if (source_ref==null){
+    		if (source instanceof Reference) source_ref = (Reference) source;
+			else throw new SmartFrogResolutionException("sfSource must be a Reference in Proposition: "+context);
+    	}
+    	
+    	Object prop=context.get(ConstraintConstants.PRED);
+    	//System.out.println("333"+prop);
+    	
+    	
+    	Object prefix=context.get(ConstraintConstants.PREFIX);
+    	if (prefix!=null) prefix_s = prefix.toString();
+    	//System.out.println("333"+prefix_s);
+    	
+    	
+    	Object card=context.get(ConstraintConstants.CARD);
+    	if (card!=null){
+    		if (card instanceof Integer) ref_card = ((Integer) card).intValue();
+			else throw new SmartFrogResolutionException("sfCard must be an Integer in: "+context);
+    	}
+    	//System.out.println("333"+card);
+    	
+			
     	//Get the source...
-    	
     	if (source_ref instanceof SFReference) {
     		try {source_ref=((SFReference)source_ref).sfAsReference();}
     		catch (SmartFrogCompilationException sfce){throw new SmartFrogFunctionResolutionException(sfce);}
     	}
     	
-    	//System.out.println("333"+source_ref); 
     	
-    	proposition = Proposition.createProposition(prop_obj, comp, prop_key);
-		if (proposition==null) throw new SmartFrogResolutionException("Can not create Proposition instance from: "+prop_key+":"+prop_obj+" in: "+comp); 
+    	
+    	proposition = Proposition.createProposition(prop, comp);
+		if (proposition==null) throw new SmartFrogResolutionException("Can not create Proposition instance from: "+prop+" in: "+comp); 
     	
 		//System.out.println("888"); 
 		
@@ -261,7 +256,7 @@ abstract public class Proposition implements Cloneable{
     	return true;
     }
     
-    public static Proposition createProposition(Object val, ComponentDescription comp, Object key) 
+    public static Proposition createProposition(Object val, ComponentDescription comp) 
     throws SmartFrogResolutionException{
     	//System.out.println("createProposition..."+comp); 
 	       Proposition prop=null;
