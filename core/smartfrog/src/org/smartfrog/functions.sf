@@ -164,19 +164,18 @@ RawRef extends PolicyRef {
     lazy true;
 }
 
+AggregateSpecifierArrayPath extends {
+    [sfIgnoreLink] array;
+    [sfIgnoreLink] path;
+}
+
 AggregateSpecifier extends AggregateSpecifierArrayPath {
     sfIsAggregateSpecifier;
     [sfIgnoreLink] pred;
     unify;
 }
 
-AggregateSpecifierArrayPath extends {
-    [sfIgnoreLink] array;
-    [sfIgnoreLink] path;
-}
-
-UpdateSpecifierPathKey extends {
-    [sfIgnoreLink] path;
+UpdateSpecifier extends AggregateSpecifier {
     [sfIgnoreLink] key;
     [sfIgnoreLink] update;
     [sfIgnoreLink] deployComponent;
@@ -243,32 +242,32 @@ alldifferent extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
 }
 
+AllocatorList extends Constraint {
+   list extends AggregateSpecifier {}
+}
+
 ResourceAllocator extends Constraint {
-   [sfSource] providers_array;
-   [sfPrefix] providers_prefix;
-   [sfPath] providers_attr;
-   [sfUpdate] providers;
-   [sfSource] providers_caps_array;
-   [sfPrefix] providers_caps_prefix;
-   [sfPath] providers_caps_attr;
-   [sfUpdate] providers_caps;
-   [sfSource] consumers_array;
-   [sfPrefix] consumers_prefix;
-   [sfPath] consumers_attr;
-   [sfUpdate] consumers;
-   [sfSource] consumers_reqs_array;
-   [sfPrefix] consumers_reqs_prefix;
-   [sfPath] consumers_reqs_attr;
-   [sfUpdate] consumers_reqs;
-   [sfSource] allocations_array;
-   [sfPrefix] allocations_prefix;
-   [sfPath] allocations_attr;
-   [sfUpdate] allocations;
+   providerList extends AllocatorList{}
+   providers providerList:list;
+
+   providerCapsList extends AllocatorList{}
+   providerCaps providerCapsList:list;
+
+   consumerList extends AllocatorList{}
+   consumers consumerList:list;
+
+   consumerReqsList extends AllocatorList{}
+   consumerReqs consumerReqsList:list;
+
+   allocationList extends AllocatorList{}
+   allocations allocationList:list;
+
    colocations [];
    nocolocations [];
    hosted [];
-   [sfConstraint] -- "allocate(providers, providers_caps, consumers, consumers_reqs, allocations, colocations, nocolocations, hosted)";
 
+
+   [sfConstraint] -- "allocate(providers, providerCaps, consumers, consumerReqs, allocations, colocations, nocolocations, hosted)";
 }
 
 DynamicPolicyEvaluation extends Function {
@@ -276,9 +275,9 @@ DynamicPolicyEvaluation extends Function {
     sfFunctionLazy true;
 }
 
-Effect extends UpdateSpecifierPathKey{}
+Effect extends UpdateSpecifier{}
 
-ApplyEffects extends Function, UpdateSpecifierPathKey {
+ApplyEffects extends Function, UpdateSpecifier {
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ApplyEffects";
 }
 
