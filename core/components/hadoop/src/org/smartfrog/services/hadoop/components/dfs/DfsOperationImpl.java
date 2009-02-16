@@ -22,6 +22,7 @@
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -80,7 +81,7 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf)
+    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf)
             throws Exception {
 
     }
@@ -92,7 +93,7 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
      */
     protected void performDfsOperation() throws Exception {
         ManagedConfiguration conf = createConfiguration();
-        DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
+        FileSystem fileSystem = DfsUtils.createFileSystem(conf);
         try {
             performDfsOperation(fileSystem, conf);
         } catch (Exception e) {

@@ -44,11 +44,11 @@ DataNodeIpcPort2   "8034";
 
 HandlerThreads 4;
 ClientHandlerThreads 2;
-HOSTNAME "127.0.0.1";
-FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort ++ "/");
-NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort ++ "/");
-DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpPort ++ "/");
-DATA_NODE_IPC_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeIpcPort ++ "/");
+HOSTNAME "localhost";
+FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort );
+NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort );
+DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpPort );
+DATA_NODE_IPC_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeIpcPort );
 
 STARTUP_SLEEP_TIME 5000;
 IPC_CONNECT_TIMEOUT 10000;

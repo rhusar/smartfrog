@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -59,7 +59,7 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
      * @throws Exception on any failure
      */
     @Override
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path source = resolveDfsPath(ATTR_SOURCE);
         Path dest = resolveDfsPath(ATTR_DEST);
         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);

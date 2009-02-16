@@ -21,7 +21,6 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.hdfs.server.namenode.ExtDfsUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
@@ -63,7 +62,7 @@ public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPath
      * @throws Exception on any failure
      */
     @Override
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(org.apache.hadoop.fs.FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Vector<String> files = HadoopComponentImpl
                 .createDirectoryListAttribute(this, FileSystemNodeImpl.NAME_DIRECTORIES,
                         ConfigurationAttributes.DFS_NAME_DIR);

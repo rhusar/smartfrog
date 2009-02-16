@@ -21,7 +21,7 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -56,7 +56,7 @@ public class DfsCreateFileImpl extends DfsPathOperationImpl implements DfsPathOp
      * @throws Exception on any failure
      */
     @Override
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         String text = sfResolve("text", "", true);
         Path path = getPath();
         boolean overwrite = sfResolve(DfsCopyOperation.ATTR_OVERWRITE, true, true);

@@ -22,7 +22,7 @@
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -59,7 +59,7 @@ public class DfsCreateDirImpl extends DfsPathOperationImpl {
      * @throws Exception on any failure
      */
     @Override
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
         if (!fileSystem.exists(path)) {
             fileSystem.mkdirs(path);
