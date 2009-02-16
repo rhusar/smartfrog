@@ -39,10 +39,8 @@ import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintResolutionState.ConstraintContext;
 import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.ApplyReference;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -687,8 +685,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    					Object ckey = keys.next();
 	    					Object cval = cs.context.get(ckey);
 	    					try {
-	    					if (c instanceof Prim) ((Prim)c).sfReplaceAttribute(ckey, cval);
-	    		    		else ((ComponentDescription)c).sfReplaceAttribute(ckey, cval);
+	    					if (p!=null) p.sfReplaceAttribute(ckey, cval);
+	    		    		else c.sfReplaceAttribute(ckey, cval);
 	    					} catch(Exception e){/*Shouldn't happen*/}
 	    				}
 	    				
@@ -747,8 +745,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
     					Object ckey = keys.next();
     					Object cval = cs.context.get(ckey);
     					try {
-    					if (c instanceof Prim) ((Prim)c).sfRemoveAttribute(ckey);
-    		    		else ((ComponentDescription)c).sfRemoveAttribute(ckey);
+    					if (p!=null) p.sfRemoveAttribute(ckey);
+    		    		else c.sfRemoveAttribute(ckey);
     					} catch(Exception e){/*Shouldn't happen*/}
     				}
     				//System.out.println("And the other side...2");
