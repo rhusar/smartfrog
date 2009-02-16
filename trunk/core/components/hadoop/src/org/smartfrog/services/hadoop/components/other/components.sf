@@ -61,7 +61,7 @@ CheckJspClasses extends LoadClass {
 
 
 CheckJasperClasses extends CheckJspClasses {
-  message "Redistributatle JSP classes found in jasper JAR files";
+  message "Redistributable JSP classes found in jasper JAR files";
   classes [
     "javax.servlet.http.HttpServletRequest",
     "org.apache.jasper.runtime.HttpJspBase",

@@ -68,7 +68,7 @@ public class DfsUtils {
      *
      * @param dfs the dfs reference; can be null
      */
-    public static void closeQuietly(DistributedFileSystem dfs) {
+    public static void closeQuietly(FileSystem dfs) {
         if (dfs != null) {
             try {
                 dfs.close();
@@ -84,7 +84,7 @@ public class DfsUtils {
      * @param dfs filesystem
      * @throws SmartFrogRuntimeException if the filesystem does not close
      */
-    public static void closeDfs(DistributedFileSystem dfs) throws SmartFrogRuntimeException {
+    public static void closeDfs(FileSystem dfs) throws SmartFrogRuntimeException {
         try {
             dfs.close();
         } catch (IOException e) {
@@ -99,32 +99,48 @@ public class DfsUtils {
      *
      * @param conf configuration
      * @return a new DFS
-     * @throws SmartFrogRuntimeException if anything goes wrong
+     * @throws SFHadoopException if things go wrong
      */
-    public static DistributedFileSystem createFileSystem(ManagedConfiguration conf)
-            throws SmartFrogRuntimeException, SFHadoopException {
+    public static FileSystem createFileSystem(ManagedConfiguration conf)
+            throws SFHadoopException {
         String filesystemURL = conf.get(HadoopConfiguration.FS_DEFAULT_NAME);
-        if(filesystemURL == null) {
+        if (filesystemURL == null) {
             SFHadoopException hadoopException = new SFHadoopException(
                     "No filesystem URL " + HadoopConfiguration.FS_DEFAULT_NAME);
             hadoopException.addConfiguration(conf);
             throw hadoopException;
         }
+        return createFileSystem(filesystemURL, conf);
+    }
+
+    /**
+     * Create a DFS client instance from a given URL; initialize it from the configuration
+     * @param filesystemURL the URL of the filesystem
+     * @param conf configuration used when constructing the FS
+     * @return a filesystem client
+     * @throws SFHadoopException if things go wrong
+     */
+    public static FileSystem createFileSystem(String filesystemURL, ManagedConfiguration conf
+    )
+            throws SFHadoopException {
         URI uri = null;
         try {
             uri = new URI(filesystemURL);
         } catch (URISyntaxException e) {
-            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
+            SFHadoopException hadoopException = (SFHadoopException) SFHadoopException
                     .forward(ERROR_INVALID_FILESYSTEM_URI + filesystemURL,
                             e);
+            hadoopException.addConfiguration(conf);
+            throw hadoopException;
         }
         DistributedFileSystem dfs = new DistributedFileSystem();
         try {
             dfs.initialize(uri, conf);
         } catch (IOException e) {
-            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
+            SFHadoopException hadoopException = (SFHadoopException) SFHadoopException
                     .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM, e);
-
+            hadoopException.addConfiguration(conf);
+            throw hadoopException;
         }
         return dfs;
     }
@@ -139,7 +155,7 @@ public class DfsUtils {
      */
     public static void deleteDFSDirectory(ManagedConfiguration conf, String dir, boolean recursive)
             throws SmartFrogRuntimeException, SFHadoopException {
-        DistributedFileSystem dfs = createFileSystem(conf);
+        FileSystem dfs = createFileSystem(conf);
         deleteDFSDirectory(dfs, dir, recursive);
     }
 
@@ -151,7 +167,7 @@ public class DfsUtils {
      * @param recursive recurseive delete?
      * @throws SmartFrogRuntimeException if anything goes wrong
      */
-    public static void deleteDFSDirectory(DistributedFileSystem dfs, String dir, boolean recursive)
+    public static void deleteDFSDirectory(FileSystem dfs, String dir, boolean recursive)
             throws SmartFrogRuntimeException {
         URI dfsURI = dfs.getUri();
         Path path = new Path(dir);
@@ -174,7 +190,7 @@ public class DfsUtils {
      * @return the status or null for no such path
      * @throws IOException for communications problems
      */
-    public static FileStatus stat(DistributedFileSystem fileSystem, Path path) throws IOException {
+    public static FileStatus stat(FileSystem fileSystem, Path path) throws IOException {
         try {
             if (fileSystem.exists(path)) {
                 return fileSystem.getFileStatus(path);
@@ -222,7 +238,7 @@ public class DfsUtils {
      * @param dest       file
      * @throws SmartFrogRuntimeException failure to create the directories
      */
-    public static void mkParentDirs(DistributedFileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
+    public static void mkParentDirs(FileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
         try {
             if (!fileSystem.mkdirs(dest)) {
                 throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest);
@@ -292,7 +308,7 @@ public class DfsUtils {
      * @param overwrite  should there be an overwrite?
      * @throws SmartFrogRuntimeException if the copy failed
      */
-    public static void copyLocalFileIn(DistributedFileSystem fileSystem, File source, Path dest, boolean overwrite)
+    public static void copyLocalFileIn(FileSystem fileSystem, File source, Path dest, boolean overwrite)
             throws SmartFrogRuntimeException {
         if (!source.exists()) {
             throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + source);
@@ -319,7 +335,7 @@ public class DfsUtils {
      * @throws IOException for any problem
      * @see org.apache.hadoop.fs.FileSystem#globStatus(Path)
      */
-    public static void rename(DistributedFileSystem fileSystem, Path srcPath, Path dstPath) throws IOException {
+    public static void rename(FileSystem fileSystem, Path srcPath, Path dstPath) throws IOException {
         Path[] srcs = FileUtil.stat2Paths(fileSystem.globStatus(srcPath), srcPath);
         FileStatus destStatus = fileSystem.getFileStatus(dstPath);
         if (srcs.length > 1 && !destStatus.isDir()) {

@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ClusterBound;
@@ -91,10 +92,10 @@ public class DfsClusterBoundImpl extends PrimImpl {
      * @throws SmartFrogException for any problem creating the FS.
      * @throws RemoteException    network problems
      */
-    protected DistributedFileSystem createFileSystem()
+    protected FileSystem createFileSystem()
             throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = createConfiguration();
-        DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
+        FileSystem fileSystem = DfsUtils.createFileSystem(conf);
         return fileSystem;
     }
 }

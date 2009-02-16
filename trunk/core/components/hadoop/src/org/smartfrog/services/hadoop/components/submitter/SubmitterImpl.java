@@ -23,6 +23,9 @@ import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.apache.hadoop.mapreduce.JobID;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileStatus;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.services.hadoop.common.DfsUtils;
@@ -44,6 +47,7 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.utils.TimeoutInterval;
 
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 
 /**
@@ -110,32 +114,32 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 //        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
 
 
-        if (deleteOutputDirOnStartup) {
-            DfsUtils.deleteDFSDirectory(jobConf, outputDir, true);
-        }
-
         worker = new JobSubmitThread();
         worker.start();
     }
 
     /**
-     * look up the hadoopAttr first, if it is not set, look up the sfDirAttr  as an absolute path
-     * and set the hadoopAttr to that value. The directory is validated -it must not be an empty string,
-     * but there are no checks on the dir existing (it may be  
-     * @param conf job configuration to work off
+     * look up the hadoopAttr first, if it is not set, look up the sfDirAttr  as an absolute path and set the hadoopAttr
+     * to that value. The directory is validated -it must not be an empty string, but there are no checks on the dir
+     * existing (it may be
+     *
+     * @param conf       job configuration to work off
      * @param hadoopAttr hadoop attribute to look for in the jobconf
-     * @param sfDirAttr SF directory attribute
+     * @param sfDirAttr  SF directory attribute
      * @return the directory
      * @throws SmartFrogRuntimeException attribute setting problems
-     * @throws RemoteException network trouble
+     * @throws RemoteException           network trouble
      */
-    protected String validateOrResolve(ManagedConfiguration conf, String hadoopAttr, String sfDirAttr) throws SmartFrogRuntimeException, RemoteException {
-        String directory = conf.get(hadoopAttr,null);
+    protected String validateOrResolve(ManagedConfiguration conf, String hadoopAttr, String sfDirAttr)
+            throws SmartFrogRuntimeException, RemoteException {
+        String directory = conf.get(hadoopAttr, null);
         if (directory == null) {
             //resolve the directory attribute instead
             directory = FileSystem.lookupAbsolutePath(this, sfDirAttr, null, null, true, null);
             //set it
             sfReplaceAttribute(hadoopAttr, directory);
+            //push it down into the conf
+            conf.set(hadoopAttr, directory);
         }
         //now validate the directory
         if (directory.length() == 0) {
@@ -173,6 +177,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     /**
      * Terminate any running job; leaves {@link #runningJob} null.
+     *
      * @throws IOException for any problems terminating the job
      */
     public synchronized void terminateJob() throws IOException {
@@ -193,28 +198,56 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
         /**
          * Create a basic thread. Notification is bound to a local notification object.
-         *
          */
-        private JobSubmitThread( ) {
+        private JobSubmitThread() {
             super(SubmitterImpl.this, true);
         }
 
         /**
          * submit the job
+         *
          * @throws Throwable if anything went wrong
          */
         public void execute() throws Throwable {
+            //todo: add a delay until the cluster is live
+
+
             jobTracker = resolveJobTracker(SubmitterImpl.this, new Reference(MAPRED_JOB_TRACKER));
             try {
-                sfLog().info("Submitting to " + jobTracker);
+                String mapred_input_dir = jobConf.get(MAPRED_INPUT_DIR);
+                Path mr_input_path = new Path(mapred_input_dir);
+                String mapred_output_dir = jobConf.get(MAPRED_OUTPUT_DIR);
+                Path mr_output_path = new Path(mapred_output_dir);
+                sfLog().info("Submitting to " + jobTracker
+                        + "\n input directory " + mapred_input_dir
+                        + "\n output directory " + mapred_output_dir);
+
+
                 JobClient jc = new JobClient(jobConf);
+                org.apache.hadoop.fs.FileSystem dfs = jc.getFs();
+                if (deleteOutputDirOnStartup) {
+                    DfsUtils.deleteDFSDirectory(dfs, mapred_output_dir, true);
+                }
+                FileStatus inStat = null;
+                try {
+                    inStat = dfs.getFileStatus(mr_input_path);
+                    if (!inStat.isDir()) {
+                        throw new SFHadoopException("the input directory is not a directory " + mr_input_path,
+                                SubmitterImpl.this, jobConf);
+                    }
+                } catch (FileNotFoundException e) {
+                    throw new SFHadoopException("the input directory does not exist" + mr_input_path,
+                            SubmitterImpl.this, jobConf);
+
+                }
+
                 runningJob = jc.submitJob(jobConf);
 
                 jobID = runningJob.getID();
                 jobURL = runningJob.getTrackingURL();
                 sfReplaceAttribute(ATTR_JOBID, jobID);
                 sfReplaceAttribute(ATTR_JOBURL, jobURL);
-                if(results!=null) {
+                if (results != null) {
                     results.sfReplaceAttribute(ATTR_JOBID, jobID);
                     results.sfReplaceAttribute(ATTR_JOBURL, jobURL);
                 }
@@ -252,8 +285,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     }
 
     /**
-     * Pings by polling for (and logging) remote events, triggering termination
-     * if the job has finished or timed out
+     * Pings by polling for (and logging) remote events, triggering termination if the job has finished or timed out
      *
      * @param source source of ping
      * @throws SmartFrogLivenessException the job failed or timed out
@@ -282,6 +314,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     /**
      * Look for and process task events
+     *
      * @throws IOException IO problems
      */
     private void pollAndLogTaskEvents() throws IOException {
@@ -296,6 +329,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     /**
      * Process task completions. The base class just logs it
+     *
      * @param event event that has just finished
      */
     protected void processTaskCompletionEvent(TaskCompletionEvent event) {
@@ -304,8 +338,9 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     /**
      * Check for a job timing out
+     *
      * @throws SmartFrogLivenessException if the timeout occurred
-     * @throws IOException when trouble happens when terminating the job
+     * @throws IOException                when trouble happens when terminating the job
      */
     private void checkForJobTimeout() throws SmartFrogLivenessException, IOException {
         if (timeout != null && timeout.hasTimedOut()) {
@@ -322,6 +357,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     /**
      * Handl the end of the job
+     *
      * @throws IOException on any failure
      */
     private void processEndOfJob() throws IOException {
@@ -347,7 +383,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                 }
             }
             builder.append("\n Tasks run :").append(taskCount).append(" failed: ").append(failures);
-            if(!succeeded && dumpOnFailure) {
+            if (!succeeded && dumpOnFailure) {
                 builder.append("Job configuration used");
                 builder.append(jobConf.dump());
             }
@@ -364,14 +400,14 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
     }
 
     /**
-     * Resolve a job tracker reference. This resolves the reference then
-     * looks for {@link #MAPRED_JOB_TRACKER} value underneath. Works with
-     * both Prim and ComponentDescription references
+     * Resolve a job tracker reference. This resolves the reference then looks for {@link #MAPRED_JOB_TRACKER} value
+     * underneath. Works with both Prim and ComponentDescription references
+     *
      * @param prim component to work with
-     * @param ref reference to resolve
+     * @param ref  reference to resolve
      * @return the job tracker URL
      * @throws SmartFrogResolutionException resolution problems
-     * @throws RemoteException network problems
+     * @throws RemoteException              network problems
      */
     public static String resolveJobTracker(Prim prim, Reference ref)
             throws SmartFrogResolutionException, RemoteException {

@@ -21,7 +21,7 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -66,7 +66,7 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
      * @throws Exception on any failure
      */
     @Override
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
         if (path==null) {
             throw new SmartFrogLivenessException("No path for the DfsListDir operation", this);

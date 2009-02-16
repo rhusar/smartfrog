@@ -21,6 +21,7 @@ package org.smartfrog.services.hadoop.components.io;
 
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.TupleDataSource;
 import org.smartfrog.services.filesystem.TupleReaderThread;
@@ -42,7 +43,7 @@ import java.rmi.RemoteException;
 public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToHadoop {
 
     private TupleUploadThread worker;
-    private DistributedFileSystem fileSystem;
+    private FileSystem fileSystem;
     private Path dest;
     private String lineBegin;
     private String lineEnd;
