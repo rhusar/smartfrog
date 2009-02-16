@@ -91,14 +91,14 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }
 
    private boolean checkRunning(){
-	   System.out.println("Am I running -IN-"+name+"?"+m_running);
+	   //System.out.println("Am I running -IN-"+name+"?"+m_running);
 	   if (!m_running){
 		   Boolean runValue = null;
 		   try { runValue = (Boolean) sfResolve(new Reference(ReferencePart.attrib("running"))); }
 		   catch (Exception e){/*System.out.println("Wee exception:"+e);*/}
 		   if (runValue!=null) m_running = runValue.booleanValue();
 	   }
-	   System.out.println("Am I running -OUT-"+name+"?"+m_running);
+	   //System.out.println("Am I running -OUT-"+name+"?"+m_running);
 	   return m_running;
    }
    
@@ -131,7 +131,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    
    private void resetPossibleTransitions() throws StateComponentTransitionException {
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").resetPossibleTransitions()");
-	   System.out.println("IN: State("+name+").resetPossibleTransitions()");
+	   //System.out.println("IN: State("+name+").resetPossibleTransitions()");
 	   
 	   enabled=null;
 	   
@@ -140,7 +140,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   enabled = (HashMap<String,ComponentDescription>) transitions.clone(); 
 	  
 	  //Remove externally disabled transitions...
-	  System.out.println("Going thru dependencies...");
+	  //System.out.println("Going thru dependencies...");
       for (Iterator d = dependencies.iterator(); d.hasNext();) {
           DependencyValidation dv = (DependencyValidation) d.next();
           String transition = dv.getTransition();
@@ -156,21 +156,21 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		   boolean go=false; 
 		   
 		   
-		   System.out.println("transition"+trans);
+		   //System.out.println("transition"+trans);
 		   try { go = trans.sfResolve(ConstraintConstants.GUARD, false, true); } catch (Exception e){
 			   enabled=null;
 			   /**Exception needs handling properly**/
-			   System.out.println("We have excepted!!!");
+			   //System.out.println("We have excepted!!!");
 			   throw new StateComponentTransitionException(StateComponentTransitionException.g_DEPENDENCYVALUEUNRESOLVABLE);
 			   
 		   }
 		   
-		   System.out.println("transitionresult"+go);
+		   //System.out.println("transitionresult"+go);
 		   
 		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Key:"+key+":"+go);
 		   
 		   if (go) {
-			   System.out.println("Component: "+name+", enabled transition: "+key);
+			   //System.out.println("Component: "+name+", enabled transition: "+key);
 			   
 			   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency enabled.");
 		   } else {
@@ -262,7 +262,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  //System.out.println("++++++++++++++++++++HANDLE STATE CHANGE!!! COMPONENT:"+name);
 	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleStateChange()");
 	  	   
-	  System.out.println("To run DPEs..."+dpes.size());
+	  //System.out.println("To run DPEs..."+dpes.size());
 	  
 	  boolean progress=false;
 	  
@@ -271,12 +271,12 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		  progress = runDPEs();	  
 		  Constraint.applyUpdateContext();
 	  }
-	  System.out.println("^^^^^^^^^^^^^^^^^^^Progress"+progress);System.out.flush();
+	  //System.out.println("^^^^^^^^^^^^^^^^^^^Progress"+progress);System.out.flush();
 	  
 	  if (progress) {
-		  System.out.println("Progress made");
+		  //System.out.println("Progress made");
 		  threadpool.runIdleAgain();
-		  System.out.println("Other side!");System.out.flush();
+		  //System.out.println("Other side!");System.out.flush();
 		  return; //skip now, as this will come round...
 	  }
 	  
@@ -287,7 +287,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  }
 	  
 	  if (enabled==null) {
-		  System.out.println("no enabled transitions...");
+		  //System.out.println("no enabled transitions...");
 		  
 		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Nothing to do...");
 		  return;  //nothing to do...
@@ -301,7 +301,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }     
 
    public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
-	  System.out.println("Dependency Registration. Component: "+name+", d: "+d.toString());
+	  //System.out.println("Dependency Registration. Component: "+name+", d: "+d.toString());
       dependencies.add(d);
    }
 

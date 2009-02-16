@@ -21,8 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 
 import org.smartfrog.services.dependencies.statemodel.state.SynchedComposite;
 import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
@@ -36,10 +34,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.ComponentResolution;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
@@ -274,8 +271,14 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     static private void replaceSingleValue(Object key, Object update, Object source){    	
     	String fullname="";
     	try {
-    	if (source instanceof Prim) fullname = ((Prim)source).sfCompleteName().toString();
-    	else fullname = ((ComponentDescription)source).sfCompleteName().toString();
+    	if (source instanceof Prim) {
+    		PrimImpl p = (PrimImpl) source;
+    		fullname = p.sfCompleteName().toString();
+    		if (p.sfLog().isInfoEnabled())  p.sfLog().info("Replacing: "+key+" with: "+update+ " in: "+fullname);    
+    	}
+    	else {
+    		fullname = ((ComponentDescription)source).sfCompleteName().toString();
+    	}
     	}catch(Exception e){}
     	
     	//System.out.println("Replacing: "+key+" with: "+update+ " in: "+fullname);

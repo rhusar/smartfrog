@@ -54,13 +54,13 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
    }
    
    public synchronized void sfRun() throws SmartFrogException{
-	   System.out.println("IN: sfRun: "+name+" registering...");
+	  //System.out.println("IN: sfRun: "+name+" registering...");
 	   try {by = (StateDependencies) sfResolve("by"); } catch(Exception e) {/*Elaborate*/}
-	   System.out.println("1");
+	   //System.out.println("1");
 	   try {on = (DependencyValidation) sfResolve("on"); } catch(Exception e) {/*Elaborate*/}
-	   System.out.println("2:"+by);
+	   //System.out.println("2:"+by);
 	   by.register(this);
-	   System.out.println("OUT: sfRun: "+name+" registering...");
+	   //System.out.println("OUT: sfRun: "+name+" registering...");
    }
 
    public synchronized void sfTerminateWith(TerminationRecord tr) {
@@ -79,29 +79,29 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
 	   boolean relevant;
 	   boolean enabled;
 	   boolean isEnabled=true;
-	   System.out.println("Dependency Enablement check:"+ name); 
+	   //System.out.println("Dependency Enablement check:"+ name); 
       
 	  try {
          relevant = sfResolve("relevant", true, false);
          
          if (relevant){
-        	 System.out.println("I am relevant!");
+        	 //System.out.println("I am relevant!");
         	 boolean onEnabled;
         	 enabled = sfResolve("enabled", false, false);
              
-        	 System.out.println("I am enabled?"+enabled);
+        	 //System.out.println("I am enabled?"+enabled);
         	 
         	 if (on!=null) onEnabled = ((!(on instanceof DependencyValidation)) || ((DependencyValidation) on).isEnabled());
         	 else onEnabled=true;
         	 
-        	 System.out.println("I am onEnabled?"+onEnabled);
+        	//System.out.println("I am onEnabled?"+onEnabled);
          
         	 isEnabled = (enabled && onEnabled);
          }
          
       } catch (Exception e) {/*Elaborate*/ isEnabled=false;}
 
-      System.out.println("Enabled:"+isEnabled);
+      //System.out.println("Enabled:"+isEnabled);
       return isEnabled;
    }
 
