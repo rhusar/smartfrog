@@ -1,37 +1,41 @@
 //phaseList [|"type", "place", "function", "sfConfig", "link", "modelcheck"|];
 
-BaseStateComponent extends StateComponent {
-   sfClass "org.smartfrog.services.dependencies.statemodel.state.BaseStateComponent";   
+SimpleStateComponent extends StateComponent {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.SimpleStateComponent";   
    up false;
    tstart extends Transition {
-      sfGuard (!LAZY up);
-      sfEffects extends {
-	    up true;
+      guard (!LAZY up);
+      effects extends PolicyEffects {
+	    key "up";
+	    update true;
       }
    }
    tstop extends Transition {
-      sfGuard (LAZY up);
-      sfEffects extends {
-	     up false;
+      guard (LAZY up);
+      effects extends PolicyEffects {
+	     key "up";
+	     update false;
       }
    }
 }
 
-DesiredObservedBaseStateComponent extends StateComponent {
-   sfClass "org.smartfrog.services.dependencies.statemodel.state.BaseStateComponent";   
+DesiredObservedStateComponent extends StateComponent {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.SimpleStateComponent";   
    dup false;
    oup false;
 
    tstart extends Transition {
-      sfGuard ((!LAZY oup) && (LAZY dup));
-      sfEffects extends {
-	     oup true;
+      guard ((!LAZY oup) && (LAZY dup));
+      effects extends PolicyEffects {
+	     key "oup"; 
+	     update true;
       }
    }
    tstop extends Transition {
-      sfGuard ((LAZY oup) && (!LAZY dup));
-      sfEffects extends {
-	    oup false;
+      guard ((LAZY oup) && (!LAZY dup));
+      effects extends PolicyEffects {
+	    key "oup";
+	    update false;
       }
    }
 }
@@ -88,6 +92,7 @@ Model extends CompositeWithSync {
 	 //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
+     running true;  //note this has changed in meaning from legacy versions
 }
 
 CompositeTerminator extends StateComponent {

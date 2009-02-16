@@ -27,6 +27,7 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Thre
    private ExecutorService es;
    private boolean suspended=false;
    private Runnable idleRunnable;
+   private boolean runAgain=false;
   
    public SimpleThreadPoolImpl() throws RemoteException {
    }
@@ -71,7 +72,11 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Thre
 		   toRun=run;
 	   }
 	   public void run(){
-		   toRun.run();
+		   runAgain=true;
+		   while(runAgain){
+		       runAgain=false;
+			   toRun.run();
+		   }
 		   synchronized(SimpleThreadPoolImpl.this){ 
 			   suspended=false;
 			   SimpleThreadPoolImpl.this.notifyAll(); 
@@ -88,8 +93,12 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Thre
       return (cancelled?null:task);
    }
    
+   public void runIdleAgain(){
+	  runAgain=true;
+   }
+   
    public void runIdle(){
-	   if (busyThreads==0  && !suspended) {
+	   if (busyThreads==0 && !suspended) {
 		   suspended=true;
 		   es.submit(idleRunnable);
 	   }
