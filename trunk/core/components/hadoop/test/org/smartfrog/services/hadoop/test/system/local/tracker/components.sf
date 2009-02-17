@@ -70,7 +70,7 @@ testJobSetup extends ExpectDeploy {
 
   }
 
-  tests extends MapReduceTestSequence {
+  tests extends JobTrackerSourceFileSequence {
     s extends Sleep;
     jobTracker LAZY PARENT:action:jobTracker;
     taskTracker LAZY PARENT:action:taskTracker;

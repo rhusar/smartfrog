@@ -151,21 +151,29 @@ FileSystemTestSequence extends FileSystemLiveSequence {
 
 
 
-    rootDirExists extends DfsPathExistsWorkflow {
+    rootDirExists extends DfsDirExistsWorkflow {
       cluster LAZY PARENT:cluster;
       path "/";
+      verbose true;
     }
 
-    touch extends DfsCreateFile {
+    touch extends DfsCreateFileWorkflow {
       cluster LAZY PARENT:cluster;
       path "/test-filename";
       text "0123456789012345678901234567890123456789";
     }
 
-    assertFileExists extends DfsPathExistsWorkflow {
+    assertFileExists extends DfsFileExistsWorkflow {
       cluster LAZY PARENT:cluster;
       path touch:path;
       minSize 40;
+      verbose true;
+    }
+
+    rootDirHasOneEntry extends rootDirExists {
+      minFileCount 1;
+      maxFileCount minFileCount;
+      minTotalFileSize assertFileExists:minSize;
     }
 
   }
@@ -189,7 +197,6 @@ FileSystemTestSequence extends FileSystemLiveSequence {
       cluster LAZY PARENT:cluster;
       source LAZY sourceFile;
       dest testFile;
-
     }
   }
 
@@ -306,14 +313,13 @@ CopyFileInAndOut extends FileSystemLiveSequence {
   inputFile extends CountingFile;
 
 
-  CopyDataIn extends DfsCopyFileIn {
+  CopyDataIn extends DfsCopyFileInWorkflow {
     cluster LAZY PARENT:cluster;
     source inputFileLocal;
     dest testFile;
-    sfShouldTerminate true;
   }
 
-  SourceExists extends DfsPathExistsWorkflow {
+  SourceExists extends DfsFileExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path inputFileDFS;
     minSize 40;
@@ -324,16 +330,15 @@ CopyFileInAndOut extends FileSystemLiveSequence {
     path  testDirIn;
   }
 
-  ResultExists extends DfsPathExistsWorkflow {
+  ResultExists extends DfsFileExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path testFile;
   }
 
-  CopyDataOut extends DfsCopyFileOut {
+  CopyDataOut extends DfsCopyFileOutWorkflow {
     cluster LAZY PARENT:cluster;
     source testFile;
     dest outputFileLocal;
-    sfShouldTerminate true;
   }
 
 }
@@ -351,10 +356,11 @@ JobTrackerSourceFileSequence extends JobTrackerSequence {
   testDirWorking (testDir ++ "/working");
   testFile (testDirIn ++ "/in.txt");
   inputFileDFS testFile;
-  outputFileDFS ( testDirOut ++ "/in.txt");
+  outputFileDFS ( testDirOut ++ "/part-0000");
   LocalDataDir PROPERTY test.work.dir;
   inputFileLocal (LocalDataDir  ++ "/in.txt")
-  outputFileLocal (LocalDataDir  ++ "/out.txt")
+  outputDirLocal (LocalDataDir  ++ "/out")
+  //outputFileLocal (LocalDataDir  ++ "/out.txt")
 
   mapred.job.tracker jobTracker:mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
@@ -374,14 +380,13 @@ JobTrackerSourceFileSequence extends JobTrackerSequence {
 
   inputFile extends CountingFile;
 
-  CopyDataIn extends DfsCopyFileIn {
+  CopyDataIn extends DfsCopyFileInWorkflow {
     cluster LAZY PARENT:cluster;
     source inputFileLocal;
     dest testFile;
-    sfShouldTerminate true;
   }
 
-  SourceExists extends DfsPathExistsWorkflow {
+  SourceExists extends DfsFileExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path inputFileDFS;
     minSize 40;
@@ -395,7 +400,16 @@ JobTrackerSourceFileSequence extends JobTrackerSequence {
   mkOutputDir extends DfsCreateDir {
     cluster LAZY PARENT:cluster;
     path  testDirOut;
- }
+  }
+
+/*
+  DestDirExists extends DfsDirExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path testDirOut;
+    maxFileCount 0;
+  }
+
+*/
 
 }
 
@@ -429,22 +443,31 @@ MapReduceTestSequence extends JobTrackerSourceFileSequence {
 
   s1 extends Sleep;
 
+
   lsOut extends DfsListDir {
     cluster LAZY PARENT:cluster;
-    path  testDirOut;
+    path  mapred.output.dir;
   }
 
-  ResultExists extends DfsPathExistsWorkflow {
+  OutDirHasOneFile extends DfsDirExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path mapred.output.dir;
+    minFileCount 1;
+    verbose true;
+  }
+
+/*
+  ResultExists extends DfsFileExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path outputFileDFS;
     minSize 40;
   }
+*/
 
-  CopyDataOut extends DfsCopyFileOut {
+  CopyDataOut extends DfsCopyFileOutWorkflow {
     cluster LAZY PARENT:cluster;
-    source outputFileDFS;
-    dest outputFileLocal;
-    sfShouldTerminate true;
+    source mapred.output.dir;
+    dest outputDirLocal;
   }
 
 }
