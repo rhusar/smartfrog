@@ -236,8 +236,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                                 SubmitterImpl.this, jobConf);
                     }
                 } catch (FileNotFoundException e) {
-                    throw new SFHadoopException("the input directory does not exist" + mr_input_path,
-                            SubmitterImpl.this, jobConf);
+                    throw (SFHadoopException) new SFHadoopException("the input directory does not exist" + mr_input_path,
+                            SubmitterImpl.this, jobConf).initCause(e);
 
                 }
 

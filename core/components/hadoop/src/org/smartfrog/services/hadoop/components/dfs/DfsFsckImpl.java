@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.hdfs.tools.DFSck;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.hdfs.tools.DFSck;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
