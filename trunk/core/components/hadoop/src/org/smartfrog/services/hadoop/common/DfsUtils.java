@@ -314,7 +314,6 @@ public class DfsUtils {
             throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + source);
         }
         Path localSource = new Path(source.toURI().toString());
-        mkParentDirs(fileSystem, dest);
         try {
             fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
         } catch (IOException e) {

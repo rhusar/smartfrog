@@ -109,12 +109,26 @@ For more information: www.smartfrog.org
     canBeFile true;
     //flag to say the path can resolve to a directory
     canBeDirectory true;
+    //print info about the file?
+    verbose false;
+
+    // File only checks: size and replication
+
     //minimum size of the file (only checked if the path resolves to a file)
     minSize 0;
     //maximum size of the file (only checked if the path resolves to a file); -1 means 'dont care'
     maxSize -1;
-    //print info about the file?
-    verbose false;
+
+    //minimum replication factor
+    minReplicationFactor 1;
+    //maximum replication factor; -1 is 'don't check'
+    maxReplicationFactor -1;
+
+    //checks that are only made if the path is a dirctory: #of files underneath, total # of bytes
+    minFileCount 0;
+    maxFileCount -1;
+    minTotalFileSize 0;
+    maxTotalFileSize -1;
   }
 
 
@@ -136,7 +150,22 @@ For more information: www.smartfrog.org
   DfsPathExistsWorkflow extends DfsPathExists {
     sfShouldTerminate true;
     checkOnLiveness false;
-    verbose true;
+  }
+
+  DfsFileExists extends DfsPathExists {
+    canBeDirectory false;
+  }
+
+  DfsFileExistsWorkflow extends DfsPathExistsWorkflow {
+    canBeDirectory false;
+  }
+
+  DfsDirExists extends DfsPathExists {
+    canBeFile false;
+  }
+
+  DfsDirExistsWorkflow extends DfsPathExistsWorkflow {
+    canBeFile false;
   }
 
   /**
@@ -164,13 +193,19 @@ For more information: www.smartfrog.org
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileInImpl";
   }
 
+  DfsCopyFileInWorkflow extends DfsCopyFileIn {
+    sfShouldTerminate true;
+  }
+
   /**
    * copy an HDFS file into a local file
    */
   DfsCopyFileOut extends DfsCopyOperation {
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileOutImpl";
   }
-
+  DfsCopyFileOutWorkflow extends DfsCopyFileOut {
+    sfShouldTerminate true;
+  }
 
   /**
    * copy an HDFS file into another HDFS file.
@@ -188,6 +223,10 @@ For more information: www.smartfrog.org
    */
   DfsMoveFile extends DfsSourceDestOperation {
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsMoveFileImpl";
+  }
+
+  DfsMoveFileWorkflow extends DfsMoveFile {
+    sfShouldTerminate true;
   }
 
   /**
@@ -212,15 +251,29 @@ For more information: www.smartfrog.org
     overwrite true;
   }
 
+
+
+  DfsCreateFileWorkflow extends DfsCreateFile {
+    sfShouldTerminate true;
+  }
+
   /**
   * Touch a file to zero bytes. Anything there is deleted
   */
   DfsTouchFile extends DfsCreateFile {
-    text "";
+  }
+  
+ /**
+  * Touch a file to zero bytes. Anything there is deleted
+  */
+  DfsTouchFileWorkflow extends DfsCreateFileWorkflow {
   }
 
-  DfsFsck extends DfsOperation {
 
+  /**
+  * Check the filesystem
+  */
+  DfsFsck extends DfsOperation {
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsFsckImpl";
     sfShouldTerminate true;
     move false;
