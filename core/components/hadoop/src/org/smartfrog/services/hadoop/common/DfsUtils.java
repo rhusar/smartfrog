@@ -151,12 +151,17 @@ public class DfsUtils {
      * @param conf      DFS configuration
      * @param dir       directory to delete
      * @param recursive recurseive delete?
-     * @throws SmartFrogRuntimeException if anything goes wrong
+     * @throws SmartFrogRuntimeException failure to delete
+     * @throws SFHadoopException filesystem binding failures
      */
     public static void deleteDFSDirectory(ManagedConfiguration conf, String dir, boolean recursive)
             throws SmartFrogRuntimeException, SFHadoopException {
         FileSystem dfs = createFileSystem(conf);
-        deleteDFSDirectory(dfs, dir, recursive);
+        try {
+            deleteDFSDirectory(dfs, dir, recursive);
+        } finally {
+            closeDfs(dfs);
+        }
     }
 
     /**
@@ -179,7 +184,6 @@ public class DfsUtils {
                     .forward(ERROR_FAILED_TO_DELETE_PATH + path + " on " + dfsURI,
                             e);
         }
-        closeDfs(dfs);
     }
 
     /**
