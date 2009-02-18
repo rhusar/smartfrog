@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,16 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 public interface RemoteScriptPrim
     extends Remote {
-  /**
+    String ATTR_SF_DEPLOY_CODE = "sfDeployCode";
+    String ATTR_SF_START_CODE = "sfStartCode";
+    String ATTR_PING_CODE = "sfPingCode";
+    String ATTR_SF_TERMINATE_WITH_CODE = "sfTerminateWithCode";
+    String ATTR_PORT = "port";
+    String ATTR_SF_SCRIPT_CODE_BASE = "sfScriptCodeBase";
+    String ATTR_ATTRIBUTES_AS_VARIABLES = "attributesAsVariables";
+    String ATTR_LANGUAGE = "language";
+
+    /**
    * Evaluate the String as a beanshell script
    * @param script the script as a string.
    * @throws Exception if the execution of the script fails.

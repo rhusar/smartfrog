@@ -50,12 +50,6 @@ public class ScriptPrimImpl
 
     /** The location of the code */
     private String sfScriptCodeBase = "";
-    public static final String ATTR_SF_TERMINATE_WITH_CODE = "sfTerminateWithCode";
-    public static final String ATTR_SF_START_CODE = "sfStartCode";
-    public static final String ATTR_PORT = "port";
-    public static final String ATTR_SF_SCRIPT_CODE_BASE = "sfScriptCodeBase";
-    public static final String ATTR_ATTRIBUTES_AS_VARIABLES = "attributesAsVariables";
-    public static final String ATTR_SF_DEPLOY_CODE = "sfDeployCode";
     public static final String SCRIPT_PRIM = "prim";
     public static final String SCRIPT_STATUS = "status";
 
