@@ -19,6 +19,6 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/scripting/javax/components.sf"
 
-JavaScript extends Compound {
-  language "JAVASCRIPT";
+JavaScript extends JavaxScripting {
+  language JAVASCRIPT;
 }
