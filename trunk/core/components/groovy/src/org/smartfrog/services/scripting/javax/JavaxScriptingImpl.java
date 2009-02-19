@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -21,41 +21,27 @@
 package org.smartfrog.services.scripting.javax;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.services.scripting.RemoteScriptPrim;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import javax.script.ScriptException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 /**
  * ScriptPrimImpl is a SmartFrog component which allows the user to write bits of java code in the description.
  * BeansShell is used to interpret them. It also implements the RemoteBSH which allows bsh scripts to be remotely
  * executed
  */
-public class JavaxScriptingImpl
-        extends PrimImpl
-        implements Prim, RemoteScriptPrim {
+public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
     /**
      * The Beanshell interpreter
      */
     private ScriptHelper scriptHelper;
-    public ScriptHelper.LoadedEngine interpreter;
+    private ScriptHelper.LoadedEngine engine;
 
-    /**
-     * The location of the code
-     */
-    private String sfScriptCodeBase = "";
-    public static final String SCRIPT_PRIM = "prim";
-    public static final String SCRIPT_STATUS = "status";
     public static final String ERROR_EVAL = "There was an error in evaluating the script:";
 
     /**
@@ -63,7 +49,6 @@ public class JavaxScriptingImpl
      * @throws RemoteException superclass trouble
      */
     public JavaxScriptingImpl() throws RemoteException {
-        super();
     }
 
 
@@ -79,46 +64,37 @@ public class JavaxScriptingImpl
      * phases.</li>
      * <li> If the 'sfDeployCode' is present the deploy script is evaluated.</li>
      */
+    @Override
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         String language = sfResolve(ATTR_LANGUAGE, "", true);
         scriptHelper = new ScriptHelper(this);
-        interpreter = scriptHelper.createEngine(language);
-        try {
-            interpreter.set(SCRIPT_PRIM, this);
-            boolean attAsVar = sfResolve(ATTR_ATTRIBUTES_AS_VARIABLES, false, true);
-
-            if (attAsVar) {
-                // go through all the attributes and bind them in the interpreter.
-                for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
-                    String attName = (String) e.nextElement();
-                    interpreter.set(attName, sfContext().get(attName));
-                }
-            }
-            sfScriptCodeBase = sfResolve(ATTR_SF_SCRIPT_CODE_BASE, "", true);
-            String sfDeployCodeSource = sfScriptCodeBase + sfResolve(ATTR_SF_DEPLOY_CODE);
-            interpreter.eval(getScript(sfDeployCodeSource));
-        } catch (ScriptException e) {
-            throw SmartFrogLifecycleException.forward(ERROR_EVAL + e,
-                    e, this);
-        }
-
+        engine = scriptHelper.createEngine(language);
+        engine.bindAttributes();
+        resolveAndEvaluate(ATTR_SF_DEPLOY_RESOURCE, ATTR_SF_DEPLOY_CODE);
     }
 
     /**
-     * Start phase : execute the code described with the 'sfStartCode' attribute.
+     * Start phase : execute the startup code, then maybe begin the termination phase
      *
-     * @throws Exception if the start phase fails.
+     * @throws SmartFrogException startup failure
+     * @throws RemoteException remote failure
      */
+    @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        resolveAndEvaluate(ATTR_SF_START_RESOURCE, ATTR_SF_START_CODE);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,sfCompleteName(),null);
+    }
+
+    @Override
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
         try {
-            String sfStartCodeSource = sfScriptCodeBase +
-                    sfResolve(ATTR_SF_START_CODE);
-            interpreter.eval(getScript(sfStartCodeSource));
-        } catch (ScriptException e2) {
-            throw SmartFrogLifecycleException.forward(ERROR_EVAL + e2.getMessage(),
-                    e2, this);
+            engine.resolveAndEvaluate(ATTR_SF_PING_RESOURCE, ATTR_SF_PING_CODE);
+        } catch (Exception e) {
+            throw (SmartFrogLivenessException)
+                    SmartFrogLivenessException.forward(ERROR_EVAL + e, e);
         }
     }
 
@@ -128,13 +104,11 @@ public class JavaxScriptingImpl
      *
      * @param status the TerminationRecord for this phase.
      */
+    @Override
     public void sfTerminateWith(TerminationRecord status) {
         try {
-            String sfTerminateWithCodeSource = sfScriptCodeBase +
-                    sfResolve(ATTR_SF_TERMINATE_WITH_CODE);
-            interpreter.set(SCRIPT_STATUS, status);
-            interpreter.eval(getScript(sfTerminateWithCodeSource));
-        } catch (SmartFrogResolutionException e) {
+            engine.resolveAndEvaluate(ATTR_SF_TERMINATE_WITH_RESOURCE, ATTR_SF_TERMINATE_WITH_CODE);
+        } catch (SmartFrogException e) {
             sfLog().ignore(e);
         } catch (RemoteException e) {
             sfLog().error(e);
@@ -142,6 +116,23 @@ public class JavaxScriptingImpl
             sfLog().error(e);
         }
         super.sfTerminateWith(status);
+    }
+
+    /**
+     * Resolve the attributes, evaluate the code, convert Scripting Exceptions into SmartFrog ones
+     * @param resource resource attribute to look for
+     * @param inline inline source attribute to look for
+     * @return the return value of the evaluation
+     * @throws SmartFrogException if the resolution or the script fails
+     * @throws RemoteException network problems
+     */
+    protected Object resolveAndEvaluate(String resource, String inline) throws SmartFrogException, RemoteException {
+        try {
+            return engine.resolveAndEvaluate(resource, inline);
+        } catch (ScriptException e) {
+            throw SmartFrogLifecycleException.forward(ERROR_EVAL + e,
+                    e, this);
+        }
     }
 
 
@@ -154,7 +145,7 @@ public class JavaxScriptingImpl
     public synchronized void setRemote(String name, Object obj) throws
             SmartFrogException, RemoteException {
         try {
-            interpreter.set(name, obj);
+            engine.set(name, obj);
         }
         catch (Throwable thr) {
             throw SmartFrogException.forward(thr);
@@ -172,24 +163,11 @@ public class JavaxScriptingImpl
     public synchronized Object eval(String script) throws SmartFrogException,
             RemoteException {
         try {
-            return interpreter.eval(script);
+            return engine.eval(script);
         } catch (ScriptException e) {
             throw new SmartFrogException(e, this);
         }
     }
 
-    /**
-     * Interpret the string passed as a value in the ScriptPrimImpl description. If it's a file, return a reader on this
-     * file. If it's the script itself, a reader on the string.
-     *
-     * @param script the String describing either the script or its URL.
-     * @return a Reader on the script.
-     */
-    public Reader getScript(String script) {
-        try {
-            return new InputStreamReader(SFClassLoader.getResourceAsStream(script));
-        } catch (Exception ignored) {
-            return new StringReader(script);
-        }
-    }
+
 }

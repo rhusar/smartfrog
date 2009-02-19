@@ -17,10 +17,63 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/services/scripting/js/components.sf"
 
-sfConfig extends Compound {
 
+scriptbase "/org/smartfrog/test/system/services/scripting/js/";
+hello "hello.js";
+
+
+LifecycleInlineWorkflow extends JavaScriptWorkflow {
+  sfScriptCodeBase scriptbase;
+  sfDeployCode ##
+   log.info("deploy");
+   #;
+
+  sfStartCode  ##
+   log.info("start");
+   #;
+  
+  sfPingCode  ##
+   log.info("ping");
+   #;
+
+  sfTerminateWithCode
+   ##
+   log.info("terminated");
+   #;
 }
+
+HelloOnStartup extends LifecycleInlineWorkflow {
+  sfStartResource hello;
+}
+
+testInlineLifecycle extends ExpectDeploy {
+
+  action extends LifecycleInlineWorkflow {
+    sfShouldTerminate false;
+  }
+
+  tests extends Sequence {
+  
+}
+}
+
+testInlineLifecycleTerminating extends ExpectTerminate {
+
+  action extends LifecycleInlineWorkflow {
+  }
+}
+
+
+testResourceTerminating extends ExpectTerminate {
+
+  action extends HelloOnStartup {
+  }
+}
+
+
+
+
+

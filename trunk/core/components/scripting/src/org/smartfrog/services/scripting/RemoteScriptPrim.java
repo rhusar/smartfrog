@@ -34,7 +34,7 @@ public interface RemoteScriptPrim
     extends Remote {
     String ATTR_SF_DEPLOY_CODE = "sfDeployCode";
     String ATTR_SF_START_CODE = "sfStartCode";
-    String ATTR_PING_CODE = "sfPingCode";
+    String ATTR_SF_PING_CODE = "sfPingCode";
     String ATTR_SF_TERMINATE_WITH_CODE = "sfTerminateWithCode";
     String ATTR_PORT = "port";
     String ATTR_SF_SCRIPT_CODE_BASE = "sfScriptCodeBase";
