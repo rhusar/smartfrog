@@ -18,20 +18,49 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/functions.sf"
+#include "/org/smartfrog/components.sf"
 
-JavaxScripting extends Prim {
-  sfClass "org.smartfrog.services.scripting.javax.JavaxScriptPrimImpl";
+/**
+ * Scripting engine;
+ *
+ * the resource attributes are read before the code ones; if both are empty strings then
+ * that specific phase is a no-op
+ */
+JavaxScripting extends WorkflowPrim {
+  sfClass "org.smartfrog.services.scripting.javax.JavaxScriptingImpl";
   language "";
+
   sfScriptCodeBase "";
-  attributesAsVariables true;
+
+
+  sfDeployResource "";
   sfDeployCode "";
+
+  sfStartResource "";
   sfStartCode "";
+
+  sfPingResource "";
   sfPingCode "";
+
+  sfTerminateWithResource "";
   sfTerminateWithCode "";
+
 
   JAVASCRIPT "javascript";
   JAVAFX "fx";
-  GROOVY "Groovy";
+  GROOVY "groovy";
   
+}
+
+/**
+ * this component will terminate after the start operation
+ */
+JavaxScriptingWorkflow extends JavaxScripting {
+  sfShouldTerminate true;
+}
+
+JavaxScriptingCondition extends JavaxScripting {
+  sfClass "org.smartfrog.services.scripting.javax.JavaxScriptingConditionImpl";
+  sfConditionResource "";
+  sfConditionCode "";
 }

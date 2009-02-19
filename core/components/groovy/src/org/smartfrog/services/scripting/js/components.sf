@@ -22,3 +22,12 @@ For more information: www.smartfrog.org
 JavaScript extends JavaxScripting {
   language JAVASCRIPT;
 }
+
+JavaScriptWorkflow extends JavaxScriptingWorkflow {
+  language JAVASCRIPT;
+}
+
+JavaScriptCondition extends JavaxScriptingCondition {
+  language JAVASCRIPT;
+}
+

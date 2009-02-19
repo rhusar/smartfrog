@@ -15,22 +15,24 @@
   </configurations>
   -->
 <configurations defaultconfmapping="default">
-    <conf name="default" extends="master,runtime"
-        description="default configuration contains artifacts and runtime dependencies"/>
+   <conf name="default" extends="master,runtime"
+     description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
-        description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private" 
-        description="artifacts needed to compile the application"/>
+      description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private" extends="runtime"
+      description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
-        description="the classpath needed to run smartfrog daemons"/>
+      description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="default,compile"
-        description="the classpath needed to run tests"/>
+      description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"
+      extends="groovy"/>
     <conf name="runtime" description="runtime but not the artifact"
-        extends="redist"  />
+      extends="redist"/>
     <conf name="documentation"
-        description="all documentation artifacts"/>
+      description="all documentation artifacts"/>
+    <conf name="groovy" description="contains the groovy JARs"/>
 </configurations> 
 
   <publications>
@@ -62,6 +64,11 @@
     <dependency org="org.codehaus.groovy"
       name="groovy-all-minimal"
       rev="${groovy.version}"
-      conf="compile->default;redist->default"/>
+      conf="groovy->default"/>
+    <dependency org="com.sun.script"
+      name="groovy-engine"
+      rev="${groovy-engine.version}"
+      conf="groovy->default"/>
+    
   </dependencies>
 </ivy-module>

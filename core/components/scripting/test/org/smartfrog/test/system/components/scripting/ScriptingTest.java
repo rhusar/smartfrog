@@ -39,9 +39,7 @@ import java.net.*;
 /**
  * JUnit test class for test cases related to "Scripting" component
  */
-public class ScriptingTest
-   
-	extends SmartFrogTestBase {
+public class ScriptingTest extends SmartFrogTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/components/scripting/";
 
