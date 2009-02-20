@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/scripting/js/components.sf"
-
+#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 
 scriptbase "/org/smartfrog/test/system/services/scripting/js/";
 hello "hello.js";
@@ -45,19 +45,38 @@ LifecycleInlineWorkflow extends JavaScriptWorkflow {
    #;
 }
 
+
+LifecycleInline extends LifecycleInlineWorkflow {
+  sfShouldTerminate false;
+}
+
 HelloOnStartup extends LifecycleInlineWorkflow {
   sfStartResource hello;
 }
 
+
+FailOnStartup extends LifecycleInlineWorkflow {
+
+  sfStartCode  ##
+   self.fail("wake up, time to die");
+  #;
+}
+
 testInlineLifecycle extends ExpectDeploy {
 
-  action extends LifecycleInlineWorkflow {
-    sfShouldTerminate false;
-  }
+  action extends LifecycleInline;
 
   tests extends Sequence {
   
+  }
 }
+
+
+testFailOnStartup extends ExpectDeployFailure {
+  exitText "wake up, time to die";
+
+  action extends FailOnStartup {
+  }
 }
 
 testInlineLifecycleTerminating extends ExpectTerminate {
@@ -73,7 +92,48 @@ testResourceTerminating extends ExpectTerminate {
   }
 }
 
+ConditionInline extends JavaScriptCondition {
+  value true;
+  sfConditionCode "self.condition = value;";
+}
 
+testConditionTrue extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends ConditionInline {
+      
+    }
+  }
+}
+
+testConditionScriptError extends ExpectDeployFailure {
+
+  action extends EvaluateCondition {
+    condition extends JavaScriptCondition {
+      sfConditionCode "this does not parse properly!";
+    }
+  }
+}
+
+testConditionFalse extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends Not {
+      condition extends ConditionInline {
+        value false;
+      }
+    }
+  }
+}
+
+testConditionResourceTrue extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends ConditionInline {
+
+    }
+  }
+}
 
 
 

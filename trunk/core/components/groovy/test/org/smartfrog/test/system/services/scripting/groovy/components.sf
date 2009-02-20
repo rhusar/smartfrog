@@ -47,6 +47,14 @@ HelloOnStartup extends LifecycleInlineWorkflow {
   sfStartResource hello;
 }
 
+
+FailOnStartup extends Groovy {
+
+  sfStartCode  ##
+   self.fail 'wake up, time to die'
+  #;
+}
+
 testInlineLifecycle extends ExpectDeploy {
 
   action extends LifecycleInlineWorkflow {
@@ -55,7 +63,7 @@ testInlineLifecycle extends ExpectDeploy {
 
   tests extends Sequence {
 
-}
+  }
 }
 
 testInlineLifecycleTerminating extends ExpectTerminate {
@@ -68,5 +76,59 @@ testInlineLifecycleTerminating extends ExpectTerminate {
 testResourceTerminating extends ExpectTerminate {
 
   action extends HelloOnStartup {
+  }
+}
+
+/*
+testFailOnStartup extends ExpectTerminate {
+  //exitText "wake up, time to die";
+
+  action extends FailOnStartup {
+  }
+}
+*/
+
+
+
+testFailOnStartup extends ExpectDeployFailure {
+  exitText "wake up, time to die";
+
+  action extends FailOnStartup {
+  }
+}
+
+
+
+ConditionInline extends GroovyCondition {
+  value true;
+  sfConditionCode "self.condition = value";
+}
+
+testConditionTrue extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends ConditionInline {
+
+    }
+  }
+}
+
+testConditionScriptError extends ExpectDeployFailure {
+
+  action extends EvaluateCondition {
+    condition extends GroovyCondition {
+      sfConditionCode "this does not parse properly!";
+    }
+  }
+}
+
+testConditionFalse extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends Not {
+      condition extends ConditionInline {
+        value false;
+      }
+    }
   }
 }

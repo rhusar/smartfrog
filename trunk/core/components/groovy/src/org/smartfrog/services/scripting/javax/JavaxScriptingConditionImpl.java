@@ -21,26 +21,49 @@
 
 package org.smartfrog.services.scripting.javax;
 
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
 
 /**
- *
+ * scriptable condition
  */
-public class JavaxScriptingConditionImpl extends JavaxScriptingImpl implements Condition {
+public class JavaxScriptingConditionImpl extends JavaxScriptingImpl implements JavaxScriptingCondition {
+    public static final String ERROR_NOT_BOOLEAN = "Return value is not a boolean:";
+
+    private boolean condition;
 
     public JavaxScriptingConditionImpl() throws RemoteException {
     }
 
+    @Override
+    protected void bindAttributes() throws SmartFrogResolutionException, RemoteException {
+        condition = sfResolve(ATTR_CONDITION, condition, true);
+        super.bindAttributes();
+    }
+
+    public boolean isCondition() {
+        return condition;
+    }
+
+    public void setCondition(boolean condition) throws SmartFrogRuntimeException, RemoteException {
+        this.condition = condition;
+        sfReplaceAttribute(ATTR_CONDITION, condition);
+    }
+
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        Object result = resolveAndEvaluate(ATTR_SF_CONDITION_RESOURCE,ATTR_SF_CONDITION_CODE);
-        if(!(result instanceof Boolean)) {
-            throw new SmartFrogException("Return value is not a boolean:"+result);
+        Object result = resolveAndEvaluate(ATTR_SF_CONDITION_RESOURCE, ATTR_SF_CONDITION_CODE);
+        return isCondition();
+
+/*
+        if (!(result instanceof Boolean)) {
+            throw new SmartFrogException(ERROR_NOT_BOOLEAN + result);
 
         } else {
-            return ((Boolean)result);
+            return ((Boolean) result);
         }
+*/
     }
 }

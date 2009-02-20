@@ -59,8 +59,33 @@ JavaxScriptingWorkflow extends JavaxScripting {
   sfShouldTerminate true;
 }
 
+/**
+ * The condition component has all the same scripted events as the main scripting component,
+ * but also provides a new script that is executed whenever the condition interfaces evaluate() method
+ * is called. The return value from this script must be boolean/Boolean, or an error is raised
+ */
 JavaxScriptingCondition extends JavaxScripting {
   sfClass "org.smartfrog.services.scripting.javax.JavaxScriptingConditionImpl";
   sfConditionResource "";
   sfConditionCode "";
+  //this attribute is read to see if the condition succeeded.
+  condition false;
+}
+
+/**
+ * here are some constants
+ */
+JavaxScriptingErrors extends {
+
+  /**
+   * Error in a condition when the return is not a boolean
+   */
+  ERROR_NOT_BOOLEAN CONSTANT org.smartfrog.services.scripting.javax.JavaxScriptingConditionImpl.ERROR_NOT_BOOLEAN;
+
+  /**
+   * text seen when a script would not evaluate
+   */
+  ERROR_EVAL CONSTANT org.smartfrog.services.scripting.javax.JavaxScriptingImpl.ERROR_EVAL;
+
+
 }

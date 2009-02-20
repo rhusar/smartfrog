@@ -23,6 +23,7 @@ package org.smartfrog.services.scripting.javax;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -70,8 +71,12 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
         String language = sfResolve(ATTR_LANGUAGE, "", true);
         scriptHelper = new ScriptHelper(this);
         engine = scriptHelper.createEngine(language);
-        engine.bindAttributes();
+        bindAttributes();
         resolveAndEvaluate(ATTR_SF_DEPLOY_RESOURCE, ATTR_SF_DEPLOY_CODE);
+    }
+
+    protected void bindAttributes() throws SmartFrogResolutionException, RemoteException {
+        engine.bindAttributes();
     }
 
     /**
@@ -94,7 +99,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
             engine.resolveAndEvaluate(ATTR_SF_PING_RESOURCE, ATTR_SF_PING_CODE);
         } catch (Exception e) {
             throw (SmartFrogLivenessException)
-                    SmartFrogLivenessException.forward(ERROR_EVAL + e, e);
+                    SmartFrogLivenessException.forward(ERROR_EVAL + e, scriptHelper.convert(e));
         }
     }
 
@@ -130,8 +135,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
         try {
             return engine.resolveAndEvaluate(resource, inline);
         } catch (ScriptException e) {
-            throw SmartFrogLifecycleException.forward(ERROR_EVAL + e,
-                    e, this);
+            throw scriptHelper.convert(e);
         }
     }
 
@@ -165,9 +169,17 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
         try {
             return engine.eval(script);
         } catch (ScriptException e) {
-            throw new SmartFrogException(e, this);
+            throw scriptHelper.convert(e);
         }
     }
 
+    /**
+     * For nested scripts: thrown an exception with a text message
+     * @param message text to include in the message
+     * @throws SmartFrogException the exception that is thrown
+     */
+    public void fail(String message) throws SmartFrogException{
+        throw new SmartFrogException(message);
+    }
 
 }
