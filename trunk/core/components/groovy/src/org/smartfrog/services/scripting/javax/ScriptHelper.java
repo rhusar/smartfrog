@@ -29,6 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.Compilable;
 import javax.script.ScriptException;
 import javax.script.CompiledScript;
+import javax.script.ScriptContext;
 import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -158,6 +159,14 @@ public class ScriptHelper {
             }
         }
 
+        /**
+         * Remove a property
+         * @param name property to remove from context
+         */
+        public void unset(String name) {
+            engine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
+        }
+
         public Object eval(String script) throws ScriptException {
             return engine.eval(script);
         }
@@ -167,8 +176,13 @@ public class ScriptHelper {
         }
 
         public Object evalResource(String resource) throws ScriptException, SmartFrogException, RemoteException {
-            Reader reader = loadResource(resource);
-            return eval(reader);
+            set(ScriptEngine.FILENAME, resource);
+            try {
+                Reader reader = loadResource(resource);
+                return eval(reader);
+            } finally {
+                unset(ScriptEngine.FILENAME);
+            }
         }
 
         public boolean canCompile() {
