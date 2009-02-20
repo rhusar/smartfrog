@@ -21,7 +21,6 @@
 package org.smartfrog.services.scripting.javax;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -47,6 +46,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
 
     /**
      * Standard RMI constructor
+     *
      * @throws RemoteException superclass trouble
      */
     public JavaxScriptingImpl() throws RemoteException {
@@ -54,16 +54,11 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
 
 
     /**
-     * Deploy the ScriptPrimImpl component.
-     * It binds the 'prim' string to this instance for the interpreter.
-     * The following attributes are looked up : -
-     * <ol>
-     * <li>If the 'attributesAsVariables' attribute is set to true / "true" in
-     * the description, binds all attributes present during deploy phase to their keys for easier use in the
-     * interpreter.</li>
-     *  <li> If the 'sfScriptCodeBase' attribute is present it will be used to find all the source scripts for all
-     * phases.</li>
-     * <li> If the 'sfDeployCode' is present the deploy script is evaluated.</li>
+     * Deploy the ScriptPrimImpl component. It binds the 'prim' string to this instance for the interpreter. The
+     * following attributes are looked up : - <ol> <li>If the 'attributesAsVariables' attribute is set to true / "true"
+     * in the description, binds all attributes present during deploy phase to their keys for easier use in the
+     * interpreter.</li> <li> If the 'sfScriptCodeBase' attribute is present it will be used to find all the source
+     * scripts for all phases.</li> <li> If the 'sfDeployCode' is present the deploy script is evaluated.</li>
      */
     @Override
     public void sfDeploy() throws SmartFrogException, RemoteException {
@@ -83,13 +78,13 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * Start phase : execute the startup code, then maybe begin the termination phase
      *
      * @throws SmartFrogException startup failure
-     * @throws RemoteException remote failure
+     * @throws RemoteException    remote failure
      */
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         resolveAndEvaluate(ATTR_SF_START_RESOURCE, ATTR_SF_START_CODE);
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,sfCompleteName(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, sfCompleteName(), null);
     }
 
     @Override
@@ -125,11 +120,12 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
 
     /**
      * Resolve the attributes, evaluate the code, convert Scripting Exceptions into SmartFrog ones
+     *
      * @param resource resource attribute to look for
-     * @param inline inline source attribute to look for
+     * @param inline   inline source attribute to look for
      * @return the return value of the evaluation
      * @throws SmartFrogException if the resolution or the script fails
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     protected Object resolveAndEvaluate(String resource, String inline) throws SmartFrogException, RemoteException {
         try {
@@ -162,7 +158,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * @param script the script as a string.
      * @return the result
      * @throws SmartFrogException execution failure
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
     public synchronized Object eval(String script) throws SmartFrogException,
             RemoteException {
@@ -175,10 +171,11 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
 
     /**
      * For nested scripts: thrown an exception with a text message
+     *
      * @param message text to include in the message
      * @throws SmartFrogException the exception that is thrown
      */
-    public void fail(String message) throws SmartFrogException{
+    public void fail(String message) throws SmartFrogException {
         throw new SmartFrogException(message);
     }
 

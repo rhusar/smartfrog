@@ -28,7 +28,7 @@ import org.smartfrog.test.DeployingTestBase;
  */
 public class JavascriptTest extends DeployingTestBase {
 
-    public static final String PACKAGE="/org/smartfrog/test/system/services/scripting/js/";
+    public static final String PACKAGE = "/org/smartfrog/test/system/services/scripting/js/";
 
     public JavascriptTest(String name) {
         super(name);

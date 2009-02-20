@@ -19,22 +19,22 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.scripting.javax;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptEngine;
 import javax.script.Compilable;
-import javax.script.ScriptException;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
-import java.io.Reader;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
+import java.io.Reader;
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 /**
  * Anything to help with script engine work
@@ -161,6 +161,7 @@ public class ScriptHelper {
 
         /**
          * Remove a property
+         *
          * @param name property to remove from context
          */
         public void unset(String name) {

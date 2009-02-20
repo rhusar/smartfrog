@@ -34,6 +34,6 @@ public interface JavaxScript extends RemoteScriptPrim {
     String ATTR_SF_TERMINATE_WITH_RESOURCE = "sfTerminateWithResource";
     String ATTR_SF_CONDITION_RESOURCE = "sfConditionResource";
     String ATTR_SF_CONDITION_CODE = "sfConditionCode";
-    String ATTR_COMPILE="compile";
- 
+    String ATTR_COMPILE = "compile";
+
 }
