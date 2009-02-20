@@ -53,7 +53,7 @@ public class JavaxScriptingConditionImpl extends JavaxScriptingImpl implements J
         sfReplaceAttribute(ATTR_CONDITION, condition);
     }
 
-    public boolean evaluate() throws RemoteException, SmartFrogException {
+    public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         Object result = resolveAndEvaluate(ATTR_SF_CONDITION_RESOURCE, ATTR_SF_CONDITION_CODE);
         return isCondition();
 
