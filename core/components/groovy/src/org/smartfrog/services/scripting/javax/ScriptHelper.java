@@ -45,6 +45,9 @@ public class ScriptHelper {
     private ComponentHelper compHelper;
     private ScriptEngineManager manager;
     public static final String ERROR_NO_ENGINE = "Failed to load a scripting engine for the language ";
+    public static final String FILENAME = "filename";
+    public static final String LINE = "line";
+    public static final String COLUMN = "column";
 
     public ScriptHelper(PrimImpl owner) {
         this.owner = owner;
@@ -55,23 +58,65 @@ public class ScriptHelper {
 
     public LoadedEngine createEngine(String language) throws SmartFrogLifecycleException {
         ScriptEngine engine = manager.getEngineByName(language);
-        if(engine==null) {
+        if (engine == null) {
             throw new SmartFrogLifecycleException(ERROR_NO_ENGINE
-                    +language);
+                    + language);
         }
         return new LoadedEngine(language, engine);
     }
 
     /**
      * Load a resource
+     *
      * @param resource resource to load
      * @return a reader for that resource
      * @throws SmartFrogException if the resource can not be found
-     * @throws RemoteException for network problems
+     * @throws RemoteException    for network problems
      */
     public Reader loadResource(String resource) throws SmartFrogException, RemoteException {
         InputStream inputStream = compHelper.loadResource(resource);
         return new InputStreamReader(inputStream);
+    }
+
+
+    /**
+     * Convert a caught exception into a smartforg exception. This can include extracting of an existing SmartFrog
+     * exception from inside a ScriptException
+     *
+     * @param thrown what was thrown
+     * @return a SmartFrog exception.
+     */
+    public SmartFrogLifecycleException convert(Throwable thrown) {
+        String message = thrown.toString();
+        SmartFrogException sfe = extractNestedSFE(thrown);
+        if (sfe != null) {
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(message, sfe, owner);
+        } else {
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(message, thrown, owner);
+        }
+    }
+
+    /**
+     * recurse down to find any nested SmartFrog exception
+     *
+     * @param thrown what was thrown, can be null
+     * @return the first SmartFrogException in the chain, or null
+     */
+    public SmartFrogException extractNestedSFE(Throwable thrown) {
+        if (thrown == null) {
+            return null;
+        }
+        if (thrown instanceof SmartFrogException) {
+            return (SmartFrogException) thrown;
+        }
+        SmartFrogException extracted = extractNestedSFE(thrown.getCause());
+        if (extracted != null && thrown instanceof ScriptException) {
+            ScriptException se = (ScriptException) thrown;
+            extracted.add(FILENAME, se.getFileName());
+            extracted.add(LINE, se.getLineNumber());
+            extracted.add(COLUMN, se.getColumnNumber());
+        }
+        return extracted;
     }
 
 
@@ -99,10 +144,10 @@ public class ScriptHelper {
         }
 
         /**
-         * Put a name value pair into the context of the engine.
-         * This extends {@link ScriptEngine#put(String,Object)} by
+         * Put a name value pair into the context of the engine. This extends {@link ScriptEngine#put(String,Object)} by
          * special support for JavaFX naming policy, copying Ant's example
-         * @param name name to use
+         *
+         * @param name  name to use
          * @param value value to put
          */
         public void set(String name, Object value) {
@@ -147,7 +192,7 @@ public class ScriptHelper {
         }
 
         private Compilable getCompilable() {
-            return ((Compilable)engine);
+            return ((Compilable) engine);
         }
 
 
@@ -168,33 +213,33 @@ public class ScriptHelper {
 
 
         /**
-         * Resolve the resource and inline attributes (both of which must be present),
-         * <ol>
-         * <li>If the resource attribute resolves to a non-empty string, then the attribute
-         * {@link JavaxScript#ATTR_SF_SCRIPT_CODE_BASE} is resolved and prepended to the resource
-         * attribute; the resource is then loaded and executed</li>
-         * <li>If the inline attribute resolves to a non-empty string, it is evaluated</li>
-         * </ol>
+         * Resolve the resource and inline attributes (both of which must be present), <ol> <li>If the resource
+         * attribute resolves to a non-empty string, then the attribute {@link JavaxScript#ATTR_SF_SCRIPT_CODE_BASE} is
+         * resolved and prepended to the resource attribute; the resource is then loaded and executed</li> <li>If the
+         * inline attribute resolves to a non-empty string, it is evaluated</li> </ol>
+         *
          * @param attrResource name of an attribute that should resolve to a resource
-         * @param attrInline name of an an attribute containing an inline string
+         * @param attrInline   name of an an attribute containing an inline string
          * @return the result of the evaluation, or null if neither got evaluated
          * @throws SmartFrogException Failure to load the resource, resolve attributes
-         * @throws RemoteException network problems
-         * @throws ScriptException if the script failed
+         * @throws RemoteException    network problems
+         * @throws ScriptException    if the script failed
          */
         public Object resolveAndEvaluate(String attrResource, String attrInline) throws SmartFrogException,
                 RemoteException, ScriptException {
             String resourceName = owner.sfResolve(attrResource, "", true);
             String inline = owner.sfResolve(attrInline, "", true);
 
-            if(!resourceName.isEmpty()) {
-                String codebase = owner.sfResolve(JavaxScript.ATTR_SF_SCRIPT_CODE_BASE,"",true);
-                return evalResource(codebase+resourceName);
-            } else if(!inline.isEmpty()) {
+            if (!resourceName.isEmpty()) {
+                String codebase = owner.sfResolve(JavaxScript.ATTR_SF_SCRIPT_CODE_BASE, "", true);
+                return evalResource(codebase + resourceName);
+            } else if (!inline.isEmpty()) {
                 return eval(inline);
             } else {
                 return null;
             }
         }
     }
+
 }
+

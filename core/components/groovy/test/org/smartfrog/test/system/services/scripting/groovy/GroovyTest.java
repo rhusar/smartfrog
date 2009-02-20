@@ -45,4 +45,21 @@ public class GroovyTest extends DeployingTestBase {
     public void testResourceTerminating() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testResourceTerminating");
     }
+
+
+    public void testConditionTrue() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testConditionTrue");
+    }
+
+    public void testConditionFalse() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testConditionFalse");
+    }
+
+    public void testFailOnStartup() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testFailOnStartup");
+    }
+
+    public void testConditionScriptError() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testConditionScriptError");
+    }
 }

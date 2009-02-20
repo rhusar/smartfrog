@@ -29,4 +29,9 @@ public interface Variables {
     String STATUS = "status";
     String SELF = "self";
     String LOG = "log";
+    /**
+     * The attribute which is set for a true condition:
+     * self.condition = true
+     */
+    String CONDITION = "condition";
 }
