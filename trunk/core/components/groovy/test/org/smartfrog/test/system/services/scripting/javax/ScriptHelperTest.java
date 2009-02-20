@@ -49,7 +49,7 @@ public class ScriptHelperTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        helper=new ScriptHelper(null);
+        helper = new ScriptHelper(null);
         base = new ScriptException("base", FILENAME, LINE_NUMBER, COLUMN_NUMBER);
         rte = new RuntimeException("inner");
         base.initCause(rte);
@@ -104,7 +104,7 @@ public class ScriptHelperTest extends TestCase {
     }
 
     private void assertIsLiveness(SmartFrogException sfe) {
-        assertSame(sfException,sfe);
+        assertSame(sfException, sfe);
     }
 
 

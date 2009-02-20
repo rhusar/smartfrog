@@ -22,8 +22,8 @@
 package org.smartfrog.services.scripting.javax;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.rmi.RemoteException;
 

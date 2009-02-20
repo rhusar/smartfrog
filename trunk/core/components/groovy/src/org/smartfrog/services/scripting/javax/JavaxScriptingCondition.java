@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.scripting.javax;
 
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
 

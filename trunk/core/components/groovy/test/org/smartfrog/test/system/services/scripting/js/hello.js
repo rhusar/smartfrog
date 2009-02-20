@@ -1,1 +1,1 @@
-    log.info("hello from JavaScript");
+log.info("hello from JavaScript");
