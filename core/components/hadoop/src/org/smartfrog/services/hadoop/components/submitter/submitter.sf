@@ -70,6 +70,11 @@ JobSubmitter extends WorkflowPrim  {
    * this is intended to outlast the workflow job runs
    */
  //results
+
+ /**
+  * turn off complaints about parsing
+  */
+  mapred.used.genericoptionsparser true;
 }
 
 /**
