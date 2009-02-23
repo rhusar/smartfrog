@@ -33,9 +33,14 @@ public class JspHelperTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * this is disabled because everything fails when it is turned on
+     * @throws Throwable something
+     */
     public void NotestCheckJspHelperClass() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJspHelperClass");
     }
+    
     public void testCheckJspHelperClasses() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckJspHelperClasses");
     }
