@@ -55,8 +55,18 @@
   <!-- NO requirement for smartfrog jar or similar to exist -->
   <!-- ========================================================== -->
 
-  
-  <target name="init-common-simpledefinitions">
+
+  <target  name="init-java-versions" >
+    <!-- work out our java version by introspection -->
+    <condition property="java1.5+" >
+      <available classname="java.lang.Readable"/>
+    </condition>
+    <condition property="java1.6+" >
+      <available classname="java.net.CookieManager"/>
+    </condition>
+  </target>
+
+  <target name="init-common-simpledefinitions" depends="init-java-versions">
      <!-- load in the local override -->
     <property file="build.properties"/>
     
@@ -177,10 +187,7 @@
         <!-- information about the ant tasks -->
     <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>
 
-    <!-- work out our java version by introspection -->
-    <condition property="java1.5+" >
-      <available classname="java.lang.Readable"/>
-    </condition>
+
 
     <!--this is the version used in artifact dependences inside ivy.xml files-->
     <property name="smartfrog.artifact.version" value="latest.integration" />
@@ -942,7 +949,9 @@ smartfrog.tasks.classpath=
       depends="init,use-smartfrog-tasks,declare-classpaths">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
-        logStackTraces="true" spawn="true">
+        logStackTraces="true" spawn="true"
+        dir="${build.test.dir}"
+          >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
