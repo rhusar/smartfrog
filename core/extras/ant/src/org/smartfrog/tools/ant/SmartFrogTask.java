@@ -577,6 +577,14 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
+     * Set the directory for the SmartFrog process.
+     * @param dir the directory to use
+     */
+    public void setDir(File dir) {
+        smartfrog.setDir(dir);
+    }
+
+    /**
      * run smartfrog and throw an exception if something went awry. failure texts are for when smartfrog ran and failed;
      * errorTexts when smartfrog wouldnt run.
      *
