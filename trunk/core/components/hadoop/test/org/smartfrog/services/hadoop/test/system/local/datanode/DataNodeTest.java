@@ -34,8 +34,16 @@ public class DataNodeTest extends HadoopTestBase {
         super(name);
     }
 
-    public void testLocalDataNode() throws Throwable {
+    /**
+     * Sets up the fixture,by extracting the hostname and classes dir
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
         checkDataNode();
+    }
+
+    public void testLocalDataNode() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalDataNode");
         enableFailOnPortCheck();
     }
@@ -46,7 +54,6 @@ public class DataNodeTest extends HadoopTestBase {
     }
 
     public void testOrphanDatanode() throws Throwable {
-        checkDataNode();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanDatanode");
         enableFailOnPortCheck();
     }

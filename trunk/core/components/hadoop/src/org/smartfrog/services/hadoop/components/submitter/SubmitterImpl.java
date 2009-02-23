@@ -236,8 +236,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                                 SubmitterImpl.this, jobConf);
                     }
                 } catch (FileNotFoundException e) {
-                    throw (SFHadoopException) new SFHadoopException("the input directory does not exist" + mr_input_path,
-                            SubmitterImpl.this, jobConf).initCause(e);
+                    throw new SFHadoopException("the input directory does not exist" + mr_input_path,
+                            e, SubmitterImpl.this, jobConf);
 
                 }
 
@@ -261,12 +261,11 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                     }
                 }
             } catch (IOException e) {
-                SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
+                throw new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
                         + ": " + e,
                         e,
-                        SubmitterImpl.this);
-                fault.addConfiguration(jobConf);
-                throw fault;
+                        SubmitterImpl.this,
+                        jobConf);
             }
         }
 

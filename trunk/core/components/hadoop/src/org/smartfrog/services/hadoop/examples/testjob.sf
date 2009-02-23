@@ -1,0 +1,266 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+
+
+
+FileSystemLiveSequence extends Sequence {
+    description "this is a base sequence that blocks until the filesystem is live"
+
+    namenode TBD;
+    datanode TBD;
+    datanodeCount 1;
+    //the cluster for all the tests
+    cluster namenode;
+
+    waitForNameNode extends WaitForNameNodeLive {
+      service LAZY PARENT:namenode;
+    }
+
+    waitForDataNode extends WaitForDataNodeLive {
+      service LAZY PARENT:datanode;
+    }
+
+
+}
+
+
+/**
+ * A small file that can be created at the far end
+ */
+
+SmallCountingFile extends TextFile {
+    filename TBD;
+    createParentDirs true;
+    sfShouldTerminate true;
+    text ##1,one,un,ein
+2,two,deux,zwei
+3,three,trois,drei
+4,four,quatre,vier
+5,five,cinq,funf#;
+  }
+
+CopyFileInAndOutSequence extends FileSystemLiveSequence {
+  LocalDataDir TBD;
+
+  testDir "/tests/CopyFileInAndOut";
+  testDirIn  (testDir ++ "/in");
+  testDirOut (testDir ++ "/out");
+  testDirWorking (testDir ++ "/working");
+  testFile (testDirIn ++ "/in.txt");
+  inputFileDFS testFile;
+  outputFileDFS ( testDirOut ++ "/in.txt");
+  inputFileLocal (LocalDataDir  ++ "/in.txt")
+  outputFileLocal (LocalDataDir  ++ "/out.txt")
+
+  inputFile extends SmallCountingFile {
+    filename inputFileLocal;
+  };
+
+
+  CopyDataIn extends DfsCopyFileInWorkflow {
+    cluster LAZY PARENT:cluster;
+    source inputFileLocal;
+    dest testFile;
+  }
+
+  SourceExists extends DfsFileExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path inputFileDFS;
+    minSize 40;
+  }
+
+  lsIn extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirIn;
+  }
+
+  ResultExists extends DfsFileExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path testFile;
+  }
+
+  CopyDataOut extends DfsCopyFileOutWorkflow {
+    cluster LAZY PARENT:cluster;
+    source testFile;
+    dest outputFileLocal;
+  }
+
+}
+
+
+
+/**
+ Component that sleeps for a limited period
+ */
+Sleep extends Delay {
+  time STARTUP_SLEEP_TIME;
+}
+
+/**
+ * sequence that waits for the filesystem and job trackers
+ */
+
+JobTrackerLiveSequence extends FileSystemLiveSequence {
+
+  jobTracker TBD;
+  taskTracker TBD;
+
+  //do we really need this? Surely the wait would suffice
+  sleep extends Sleep;
+
+  waitForTaskTracker extends WaitForServiceLive {
+    serviceName "TaskTracker";
+    service LAZY PARENT:taskTracker;
+  }
+
+  waitForJobTracker extends WaitForJobTrackerLive {
+    service LAZY PARENT:jobTracker;
+  }
+
+/*  waitForFilesystem extends WaitForFilesystemLive {
+    service LAZY PARENT:jobTracker;
+    minCount datanodeCount;
+  }*/
+
+}
+
+
+/**
+ * this is a complete MR workflow
+ */
+JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
+  LocalDataDir PROPERTY test.work.dir;
+
+  fs.default.name cluster:fs.default.name;
+  testURL (fs.default.name ++ testDir);
+  testDir "/tests/mrtestsequence";
+  testDirIn  (testDir ++ "/in");
+  testDirOut (testDir ++ "/out");
+  testDirWorking (testDir ++ "/working");
+  testFile (testDirIn ++ "/in.txt");
+  inputFileDFS testFile;
+  outputFileDFS ( testDirOut ++ "/part-0000");
+  inputFileLocal (LocalDataDir  ++ "/in.txt")
+  outputDirLocal (LocalDataDir  ++ "/out")
+  //outputFileLocal (LocalDataDir  ++ "/out.txt")
+
+  mapred.job.tracker jobTracker:mapred.job.tracker;
+  hadoop.tmp.dir "/tmp";
+  hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
+  jobTimeout JOB_TIMEOUT;
+
+  //mapred.system.dir "/tmp/hadoop/mapred/system";
+
+  //mapred.child.java.opts "-Xmx512m -d64 -server";
+  mapred.tasktracker.map.tasks.maximum 5;
+  mapred.tasktracker.reduce.tasks.maximum 1;
+
+  io.sort.record.percent 0.1F;
+  mapred.input.dir (fs.default.name ++ testDirIn);
+  mapred.output.dir (fs.default.name ++ testDirOut);
+  mapred.working.dir (fs.default.name ++ testDirWorking);
+
+  inputFile extends CountingFile;
+
+  CopyDataIn extends DfsCopyFileInWorkflow {
+    cluster LAZY PARENT:cluster;
+    source inputFileLocal;
+    dest testFile;
+  }
+
+  SourceExists extends DfsFileExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path inputFileDFS;
+    minSize 40;
+  }
+
+  lsIn extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirIn;
+  }
+
+  mkOutputDir extends DfsCreateDir {
+    cluster LAZY PARENT:cluster;
+    path  testDirOut;
+  }
+
+}
+
+MapReduceSequence extends JobTrackerSourceFileSetupSequence {
+
+  job extends TestJob {
+    mapred.mapper.new-api true;
+    cluster LAZY PARENT:cluster;
+    jobTracker LAZY PARENT:jobTracker;
+    results LAZY PARENT;
+    name "testsubmission";
+    fs.default.name PARENT:fs.default.name;
+    mapred.input.dir PARENT:mapred.input.dir;
+    mapred.output.dir PARENT:mapred.output.dir;
+    //mapred.working.dir PARENT:mapred.working.dir;
+    //mapred.local.dir PARENT:mapred.local.dir;
+    mapred.mapper.new-api true;
+    //mapred.job.split.file (testDir ++ "/split");
+    mapred.job.tracker jobTracker:mapred.job.tracker;
+
+    mapred.working.dir (hadoop.tmp.URL ++ "/" ++ name ++ "/working");
+    mapred.local.dir (hadoop.tmp.URL ++ "/" ++ name ++ "local");
+
+    keep.failed.task.files true;
+    filename "";
+    fileRequired false;
+    mapred.jar NULL;
+    mapred.map.max.attempts 1;
+    mapred.reduce.max.attempts 1;
+  }
+
+  //s1 extends Sleep;
+
+
+  lsOut extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    path  mapred.output.dir;
+  }
+
+  OutDirHasOneFile extends DfsDirExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path mapred.output.dir;
+    minFileCount 1;
+    verbose true;
+  }
+
+/*
+  ResultExists extends DfsFileExistsWorkflow {
+    cluster LAZY PARENT:cluster;
+    path outputFileDFS;
+    minSize 40;
+  }
+*/
+
+  CopyDataOut extends DfsCopyFileOutWorkflow {
+    cluster LAZY PARENT:cluster;
+    source mapred.output.dir;
+    dest outputDirLocal;
+  }
+
+}
