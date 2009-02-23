@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -45,10 +45,8 @@ The build script for SmartFrog Scripting component.
   <import file="${root.dir}/common.xml"/>
 
 
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
 
 
