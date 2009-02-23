@@ -44,11 +44,8 @@ Groovy support for SmartFrog; Java6+ only
   <!--available file="../../common.xml" property="root.dir" value="../.."/-->
   <import file="${root.dir}/common.xml"/>
 
-
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
 
 </project>
