@@ -57,4 +57,7 @@ public class HadoopConfigurationTest extends DeployingTestBase {
     public void testManagedConfTest() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testManagedConfTest");
     }
+    public void testConfCheckerOverride() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testConfCheckerOverride");
+    }
 }

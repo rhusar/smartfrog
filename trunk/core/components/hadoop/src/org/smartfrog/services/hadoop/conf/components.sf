@@ -53,3 +53,28 @@ EmptyHadoopConfiguration extends Prim {
 DefaultHadoopConfiguration extends EmptyHadoopConfiguration {
   conf.load.defaults true;
 }
+
+/**
+ * A component to verify that expected components match what is expected
+ */
+ConfChecker extends Prim {
+
+  sfClass "org.smartfrog.services.hadoop.conf.ConfCheckerImpl";
+
+  cluster TBD;
+
+    //dump the final state to the log at INFO
+  conf.dump false;
+  
+  //list of attributes to look for. If not empty, this is checked.
+  conf.required [];
+
+  //list of [name,value] pairs where the actual value of the conf entry name must equal that of the value
+  //(case sensitive matching)
+  conf.matches [];
+
+}
+
+ConfCheckerWorkflow extends ConfChecker {
+  sfShouldTerminate true;
+}
