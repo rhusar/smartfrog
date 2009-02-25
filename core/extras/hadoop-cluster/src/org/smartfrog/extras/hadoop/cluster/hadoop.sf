@@ -25,6 +25,19 @@ WORKER_THREADS 8;
 
 namenode PROPERTY test.namenode;
 
+NAMENODE_PROCESS "namenode";
+DATANODE1_PROCESS "datanode1";
+DATANODE2_PROCESS "datanode2";
+DATANODE3_PROCESS "datanode3";
+DATANODE4_PROCESS "datanode4";
+JOBTRACKER_PROCESS "jobtracker";
+TASKTRACKER1_PROCESS "tasktracker1";
+TASKTRACKER2_PROCESS "tasktracker2";
+TASKTRACKER3_PROCESS "tasktracker3";
+TASKTRACKER4_PROCESS "tasktracker4";
+
+
+
 namenode.filesystem ("hdfs://" ++ namenode ++ ":" ++ NameNodeIpcPort ++ "/");
 namenode.url ("http://" ++ namenode ++ ":" ++ NameNodeHttpPort ++ "/");
 
@@ -88,11 +101,11 @@ HadoopFilesystem extends HadoopClusterCompound {
 
 
   namenode extends ClusterNameNodeCompound {
-
+    sfProcessName NAMENODE_PROCESS;
   }
 
   datanode extends ClusterDataNodeCompound {
-
+    sfProcessName DATANODE1_PROCESS;
   }
 
 
@@ -104,19 +117,23 @@ HadoopCluster extends HadoopFilesystem {
 
 
   jobTracker extends ClusterJobTrackerCompound {
+    sfProcessName JOBTRACKER_PROCESS;
 
   }
 
 
   taskTracker extends ClusterTaskTrackerCompound {
+    sfProcessName TASKTRACKER1_PROCESS;
 
   }
 
 }
 
 ForkedCluster extends HadoopCluster {
+/*
   jobTracker:sfProcessName "jobTracker";
   taskTracker:sfProcessName "taskTracker";
   namenode:sfProcessName "namenode";
   datanode:sfProcessName "datanode";
+*/
 }

@@ -35,10 +35,10 @@ public class ForkedHadoopClusterTest extends HadoopTestBase implements Names {
     public void testSkipped() throws Throwable {
 
     }
-
+/*
     public void testForkedCluster() throws Throwable {
         checkFileSystem();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testForkedCluster.sf");
         enableFailOnPortCheck();
-    }
+    }*/
 }
