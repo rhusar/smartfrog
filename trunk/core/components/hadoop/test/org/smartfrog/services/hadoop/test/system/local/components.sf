@@ -242,6 +242,8 @@ CopyFileInAndOut extends CopyFileInAndOutSequence {
   LocalDataDir PROPERTY test.work.dir;
 }
 
+
+
 /**
  * this is a complete MR workflow
  */

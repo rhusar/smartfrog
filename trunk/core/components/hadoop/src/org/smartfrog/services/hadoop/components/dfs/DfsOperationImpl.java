@@ -36,40 +36,9 @@ import java.rmi.RemoteException;
  */
 public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
 
-    private WorkflowThread worker;
 
 
     protected DfsOperationImpl() throws RemoteException {
-    }
-
-    /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
-     * compound (if ever registered)
-     *
-     * @param status termination status
-     */
-    @Override
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        //shut down any non-null worker
-        terminateWorker();
-    }
-
-    /**
-     * Shut down any worker if running
-     */
-    protected synchronized void terminateWorker() {
-        WorkflowThread w = worker;
-        worker = null;
-        SmartFrogThread.requestThreadTermination(w);
-    }
-
-    protected final synchronized WorkflowThread getWorker() {
-        return worker;
-    }
-
-    protected final synchronized void setWorker(WorkflowThread worker) {
-        this.worker = worker;
     }
 
 

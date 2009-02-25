@@ -35,10 +35,6 @@ import java.util.Date;
  */
 
 public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOperation {
-    private int minFileCount;
-    private int maxFileCount;
-    public static final String ATTR_MIN_FILE_COUNT = "minFileCount";
-    public static final String ATTR_MAX_FILE_COUNT = "maxFileCount";
 
     public DfsListDirImpl() throws RemoteException {
     }
@@ -53,8 +49,6 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        minFileCount = sfResolve(ATTR_MIN_FILE_COUNT, 0, true);
-        maxFileCount = sfResolve(ATTR_MAX_FILE_COUNT, 0, true);
         startWorkerThread();
     }
 
@@ -68,9 +62,13 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
     @Override
     protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
-        if (path==null) {
+        if (path == null) {
             throw new SmartFrogLivenessException("No path for the DfsListDir operation", this);
         }
+        int minFileCount = sfResolve(ATTR_MIN_FILE_COUNT, 0, true);
+        int maxFileCount = sfResolve(ATTR_MAX_FILE_COUNT, 0, true);
+        long minTotalFileSize = sfResolve(ATTR_MIN_TOTAL_FILE_SIZE, 0L, true);
+        long maxTotalFileSize = sfResolve(ATTR_MAX_TOTAL_FILE_SIZE, 0L, true);
         try {
             long size = 0;
             FileStatus[] stats = fileSystem.listStatus(path);
@@ -88,19 +86,32 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
                 builder.append("\n  group=").append(file.getGroup());
                 builder.append("\n  permissions=").append(file.getPermission()).append('\n');
             }
-            sfLog().info(builder.toString());
+            String listing = builder.toString();
+            sfLog().info(listing);
             int count = stats.length;
             sfLog().info("Files: " + count + "  total size=" + size);
             if (count < minFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is below the minFileCount value of " + minFileCount
-                                + "\n" + builder.toString(),
+                                + "\n" + listing,
                         this);
             }
             if (maxFileCount > -1 && count > maxFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is above the maxFileCount value of " + minFileCount
-                                + "\n" + builder.toString(),
+                                + "\n" + listing,
+                        this);
+            }
+            if (size < minTotalFileSize) {
+                throw new SmartFrogLivenessException(
+                        "File size " + size + " is below the minTotalFileSize value of " + minTotalFileSize
+                                + "\n" + listing,
+                        this);
+            }
+            if (maxFileCount > -1 && size > maxFileCount) {
+                throw new SmartFrogLivenessException(
+                        "File size " + size + " is above the maxTotalFileSize value of " + maxTotalFileSize
+                                + "\n" + listing,
                         this);
             }
 

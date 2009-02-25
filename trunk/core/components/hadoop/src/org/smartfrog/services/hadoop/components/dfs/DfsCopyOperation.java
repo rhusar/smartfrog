@@ -43,4 +43,30 @@ public interface DfsCopyOperation extends DfsOperation {
      * {@value}
      */
     String ATTR_BLOCKSIZE = "blocksize";
+
+    /**
+     * Regexp to use when singleFile==false
+     * {@value}
+     */
+    String ATTR_PATTERN = "pattern";
+
+
+    /**
+     * {@value}
+     */
+    String ATTR_SOURCEFS = "sourceFS";
+
+    /**
+     * URL to the destination filesystem
+     * {@value}
+     */
+    String ATTR_DESTFS = "destFS";
+
+    /**
+     * Flag to say delete source files after the copy
+     */
+    String ATTR_DELETE_SOURCE ="deleteSource";
 }
+
+
+

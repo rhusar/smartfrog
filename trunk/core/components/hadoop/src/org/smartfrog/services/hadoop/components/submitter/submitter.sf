@@ -75,6 +75,12 @@ JobSubmitter extends WorkflowPrim  {
   * turn off complaints about parsing
   */
   mapred.used.genericoptionsparser true;
+
+  /**
+   * use the new API
+   */
+  mapred.mapper.new-api true;
+
 }
 
 /**

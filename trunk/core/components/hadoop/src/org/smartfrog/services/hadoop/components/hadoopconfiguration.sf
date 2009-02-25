@@ -288,7 +288,7 @@ HadoopConfiguration extends Prim {
 
 /* file system properties */
 
-  fs.default.name  "file:///";
+  fs.default.name  FS_FILE_URL;
 
 
   /**Determines where on the local filesystem the DFS secondary
@@ -307,8 +307,6 @@ HadoopConfiguration extends Prim {
 
 
 
-
-
   /**The name of the default file system.  A URI whose
   scheme and authority determine the FileSystem implementation.  The
   uri's scheme determines the config property (fs.SCHEME.impl) naming
@@ -319,6 +317,8 @@ HadoopConfiguration extends Prim {
   If zero, the trash feature is disabled.
   */
   fs.trash.interval  0;
+
+  FS_FILE_URL "file:///";
 
   /**The FileSystem for file: uris.*/
   fs.file.impl  "org.apache.hadoop.fs.LocalFileSystem";

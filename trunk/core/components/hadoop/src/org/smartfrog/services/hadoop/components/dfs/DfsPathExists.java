@@ -28,10 +28,7 @@ import org.smartfrog.services.filesystem.FileExists;
 
 public interface DfsPathExists extends DfsPathOperation, FileExists {
 
-    String ATTR_MIN_FILE_COUNT = "minFileCount";
-    String ATTR_MAX_FILE_COUNT = "maxFileCount";
-    String ATTR_MIN_TOTAL_FILE_SIZE = "minTotalFileSize";
-    String ATTR_MAX_TOTAL_FILE_SIZE = "maxTotalFileSize";
+
     String ATTR_MIN_REPLICATION_FACTOR = "minReplicationFactor";
     String ATTR_MAX_REPLICATION_FACTOR = "maxReplicationFactor";
     String ATTR_VERBOSE = "verbose";

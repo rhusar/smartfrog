@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.RemoteException;
 
 /**
- * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
+ * Component to copy a file within DFS Created 17-Jun-2008 15:06:23
  */
 
 public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
@@ -67,6 +67,6 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
         int blocksize = sfResolve(ATTR_BLOCKSIZE, 0, true);
         DfsUtils.assertNotDependent(fileSystem,source, fileSystem, dest);
         DfsUtils.mkParentDirs(fileSystem, dest);
-        DfsUtils.copyFile(fileSystem,source, fileSystem, dest, overwrite, blocksize);
+        DfsUtils.copyFile(fileSystem, source, fileSystem, dest, overwrite, blocksize);
     }
 }

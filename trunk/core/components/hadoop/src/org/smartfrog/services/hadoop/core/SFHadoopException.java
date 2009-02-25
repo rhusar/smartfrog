@@ -258,4 +258,26 @@ public class SFHadoopException extends SmartFrogException {
         }
         return "";
     }
+
+
+    /**
+     * To forward SmartFrog exceptions instead of chain them. If thr is an instance of SmartFrogException then the
+     * exception is returned without any modification, if not a new SmartFrogException is created with message as a
+     * paramenter
+     *
+     * @param message String message
+     * @param thr     throwable object to be forwarded
+     * @return Throwable that is a SmartFrogException
+     */
+    public static SFHadoopException forward(String message, Throwable thr) {
+        if (thr instanceof SFHadoopException) {
+            if (message != null) {
+                ((SFHadoopException) thr).add("msg: ", message);
+            }
+            return (SFHadoopException) thr;
+        } else {
+            return new SFHadoopException(message, thr);
+        }
+    }
+
 }

@@ -23,7 +23,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.IOUtils;
 import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -120,29 +119,28 @@ public class DfsUtils {
      * @return a filesystem client
      * @throws SFHadoopException if things go wrong
      */
-    public static FileSystem createFileSystem(String filesystemURL, ManagedConfiguration conf
-    )
+    public static FileSystem createFileSystem(String filesystemURL, ManagedConfiguration conf)
             throws SFHadoopException {
         URI uri = null;
         try {
             uri = new URI(filesystemURL);
         } catch (URISyntaxException e) {
-            SFHadoopException hadoopException = (SFHadoopException) SFHadoopException
+            SFHadoopException hadoopException = SFHadoopException
                     .forward(ERROR_INVALID_FILESYSTEM_URI + filesystemURL,
                             e);
             hadoopException.addConfiguration(conf);
             throw hadoopException;
         }
-        DistributedFileSystem dfs = new DistributedFileSystem();
         try {
+            FileSystem dfs = FileSystem.get(uri, conf);
             dfs.initialize(uri, conf);
+            return dfs;
         } catch (IOException e) {
-            SFHadoopException hadoopException = (SFHadoopException) SFHadoopException
+            SFHadoopException hadoopException = SFHadoopException
                     .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM, e);
             hadoopException.addConfiguration(conf);
             throw hadoopException;
         }
-        return dfs;
     }
 
     /**
