@@ -160,7 +160,7 @@ testFloatingPointStringConversion extends testDefaultConf {
 
   tests extends Sequence {
 
-    fs.hdfs.impl extends AssertWorkflow {
+    io.sort.record.percentl extends AssertWorkflow {
       equalityIgnoresCase true;
       equalsString1 "0.1";
       equalsString2 LAZY action:io.sort.record.percent;
@@ -168,4 +168,21 @@ testFloatingPointStringConversion extends testDefaultConf {
 
   }
 
+}
+
+testConfCheckerOverride extends testDefaultConf {
+
+
+  tests extends Sequence {
+
+    fs.default.name extends ConfCheckerWorkflow {
+      cluster LAZY action;
+      fs.default.name "overridden";
+
+      conf.matches [
+        ["fs.default.name","overridden"]
+      ];
+    }
+
+  }
 }
