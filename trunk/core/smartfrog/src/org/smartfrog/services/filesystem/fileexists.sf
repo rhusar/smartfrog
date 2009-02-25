@@ -73,8 +73,26 @@ FileExists extends Conditional {
 
 
 /**
+ * version for using in workflows
+ */
+FileExistsWorkflow extends FileExists {
+  /** Check on startup*/
+  checkOnStartup true;
+  sfShouldTerminate true;
+}
+
+
+/**
  * A condition that asks for a directory
  */
 DirectoryExists extends FileExists {
+  canBeFile false;
+}
+
+
+/**
+ * version for using in workflows
+ */
+DirectoryExistsWorkflow extends FileExistsWorkflow {
   canBeFile false;
 }
