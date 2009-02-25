@@ -70,8 +70,8 @@ testJobSetup extends ExpectDeploy {
 
   }
 
-  tests extends JobTrackerSourceFileSequence {
-    s extends Sleep;
+  tests extends JobTrackerSequence {
+    //s extends Sleep;
     jobTracker LAZY PARENT:action:jobTracker;
     taskTracker LAZY PARENT:action:taskTracker;
     cluster LAZY PARENT:action:cluster;

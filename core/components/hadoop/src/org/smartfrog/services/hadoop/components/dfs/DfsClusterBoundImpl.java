@@ -35,9 +35,17 @@ import java.rmi.RemoteException;
  * This is a base class for components that work with a cluster.
  */
 
-public class DfsClusterBoundImpl extends PrimImpl {
+public class DfsClusterBoundImpl extends WorkerThreadPrimImpl {
 
     public DfsClusterBoundImpl() throws RemoteException {
+    }
+
+    /**
+     * Override point: is the cluster attribute required
+     * @return true by default
+     */
+    protected boolean isClusterRequired() {
+        return true;
     }
 
     /**
@@ -48,7 +56,9 @@ public class DfsClusterBoundImpl extends PrimImpl {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        sfResolve(ClusterBound.ATTR_CLUSTER, (Prim) null, true);
+        if(isClusterRequired()) {
+            sfResolve(ClusterBound.ATTR_CLUSTER, (Prim) null, true);
+        }
     }
 
     /**
@@ -81,7 +91,7 @@ public class DfsClusterBoundImpl extends PrimImpl {
      * @throws RemoteException    network problems
      */
     public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, true, false);
+        return ManagedConfiguration.createConfiguration(this, true, isClusterRequired(), false);
     }
 
     /**

@@ -340,28 +340,6 @@ FileSystemTestSequence extends FileSystemLiveSequence {
     }
   }
 
-TestJob extends Job {
-  name TBD;
-  cluster TBD;
-  jobTracker TBD;
-  fs.default.name cluster:fs.default.name;
-  mapred.job.tracker jobTracker:mapred.job.tracker;
-  hadoop.tmp.dir "/tmp";
-
-  //mapred.system.dir "/tmp/hadoop/mapred/system";
-
-  mapred.child.java.opts "-Xmx512m -d64 -server";
-  mapred.tasktracker.map.tasks.maximum 5;
-  mapred.tasktracker.reduce.tasks.maximum 1;
-  mapred.working.dir (hadoop.tmp.dir ++ "/" ++ name ++ "/working");
-  mapred.local.dir (hadoop.tmp.dir ++ "/" ++ name ++ "local");
-  //hadoop.job.ugi ;
-}
-
-TestJobNoFile extends TestJob {
-  mapred.input.dir testDirIn;
-  mapred.output.dir testDirOut;
-}
 
 
 LocalClusterStatus extends ClusterStatus {

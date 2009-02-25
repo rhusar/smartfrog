@@ -92,6 +92,8 @@ For more information: www.smartfrog.org
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsListDirImpl";
     minFileCount 0;
     maxFileCount -1;
+    minTotalFileSize 0;
+    maxTotalFileSize -1;
   }
  
 
@@ -207,15 +209,46 @@ For more information: www.smartfrog.org
     sfShouldTerminate true;
   }
 
-  /**
-   * copy an HDFS file into another HDFS file.
+
+ /**
+   * copy one file in the remote FS
    * This will go via the local machine, even if both files are remote and on the same node.
-   * Deploy the operation close to the files.
+   * Deploy the operation close to one of the files.
    */
   DfsCopyFile extends DfsCopyOperation {
-    blocksize 65536;
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileImpl";
-    blocksize 65536;
+    blocksize (64*1024);
+  }
+
+  DfsCopyFileWorkflow extends DfsCopyFiles {
+      sfShouldTerminate true;
+  }
+
+  /**
+   * copy one or more files between filesystems
+   * This will go via the local machine, even if both files are remote and on the same node.
+   * Deploy the operation close to one of the files.
+   */
+  DfsCopyFiles extends DfsCopyOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFilesImpl";
+    blocksize (64*1024);
+    //source filesystem URL
+    sourceFS TBD;
+    //URL to the destination filesystem
+    destFS TBD;
+
+    //any files that match the pattern
+    pattern ".+";
+
+    //do not delete the files
+    deleteSource false;
+
+    minFileCount 0;
+    maxFileCount -1;
+  }
+
+  DfsCopyFilesWorkflow extends DfsCopyFiles {
+      sfShouldTerminate true;
   }
 
   /**

@@ -105,6 +105,30 @@ CopyFileInAndOutSequence extends FileSystemLiveSequence {
     dest outputFileLocal;
   }
 
+
+  fs.default.name.Checker extends ConfCheckerWorkflow {
+    cluster LAZY PARENT:cluster;
+    fs.default.name HadoopConfiguration:FS_FILE_URL;
+    conf.matches [
+      ["fs.default.name",HadoopConfiguration:FS_FILE_URL]
+    ];
+  }
+
+
+  /**
+   * need to extend ls to allow overrides
+   */
+   lsLocalData extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    fs.default.name HadoopConfiguration:FS_FILE_URL;
+    path  LocalDataDir;
+    minTotalFileSize 40;
+    minFileCount 1;
+  }
+
+  checkDataWasCopied extends FileExistsWorkflow {
+    filename outputFileLocal;
+  }
 }
 
 
@@ -159,10 +183,11 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
   testDirWorking (testDir ++ "/working");
   testFile (testDirIn ++ "/in.txt");
   inputFileDFS testFile;
-  outputFileDFS ( testDirOut ++ "/part-0000");
-  inputFileLocal (LocalDataDir  ++ "/in.txt")
-  outputDirLocal (LocalDataDir  ++ "/out")
-  //outputFileLocal (LocalDataDir  ++ "/out.txt")
+  partName "/part-00000";
+  outputFileDFS ( testDirOut ++ partName );
+  inputFileLocal (LocalDataDir  ++ "/in.txt");
+  outputDirLocal (LocalDataDir  ++ "/out");
+  outputFileLocal (outputDirLocal  ++ partName );
 
   mapred.job.tracker jobTracker:mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
@@ -206,10 +231,38 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
 
 }
 
+
+TestJob extends BlockingJobSubmitter {
+  name TBD;
+  cluster TBD;
+  jobTracker TBD;
+  fs.default.name cluster:fs.default.name;
+  mapred.job.tracker jobTracker:mapred.job.tracker;
+  hadoop.tmp.dir "/tmp";
+
+  //mapred.system.dir "/tmp/hadoop/mapred/system";
+
+  mapred.child.java.opts "-Xmx512m -d64 -server";
+  mapred.tasktracker.map.tasks.maximum 5;
+  mapred.tasktracker.reduce.tasks.maximum 1;
+  mapred.working.dir (hadoop.tmp.dir ++ "/" ++ name ++ "/working");
+  mapred.local.dir (hadoop.tmp.dir ++ "/" ++ name ++ "local");
+  keep.failed.task.files true;
+
+  mapred.map.max.attempts 1;
+  mapred.reduce.max.attempts 1;
+}
+
+TestJobNoFile extends TestJob {
+  filename "";
+  fileRequired false;
+  mapred.jar NULL;
+}
+
+
 MapReduceSequence extends JobTrackerSourceFileSetupSequence {
 
-  job extends TestJob {
-    mapred.mapper.new-api true;
+  job extends TestJobNoFile {
     cluster LAZY PARENT:cluster;
     jobTracker LAZY PARENT:jobTracker;
     results LAZY PARENT;
@@ -219,27 +272,17 @@ MapReduceSequence extends JobTrackerSourceFileSetupSequence {
     mapred.output.dir PARENT:mapred.output.dir;
     //mapred.working.dir PARENT:mapred.working.dir;
     //mapred.local.dir PARENT:mapred.local.dir;
-    mapred.mapper.new-api true;
     //mapred.job.split.file (testDir ++ "/split");
     mapred.job.tracker jobTracker:mapred.job.tracker;
-
     mapred.working.dir (hadoop.tmp.URL ++ "/" ++ name ++ "/working");
     mapred.local.dir (hadoop.tmp.URL ++ "/" ++ name ++ "local");
-
-    keep.failed.task.files true;
-    filename "";
-    fileRequired false;
-    mapred.jar NULL;
-    mapred.map.max.attempts 1;
-    mapred.reduce.max.attempts 1;
   }
-
-  //s1 extends Sleep;
-
 
   lsOut extends DfsListDir {
     cluster LAZY PARENT:cluster;
     path  mapred.output.dir;
+    minTotalFileSize 40;
+    minFileCount 1;
   }
 
   OutDirHasOneFile extends DfsDirExistsWorkflow {
@@ -249,18 +292,53 @@ MapReduceSequence extends JobTrackerSourceFileSetupSequence {
     verbose true;
   }
 
-/*
+ //problem here is the pathname
   ResultExists extends DfsFileExistsWorkflow {
     cluster LAZY PARENT:cluster;
     path outputFileDFS;
     minSize 40;
   }
-*/
 
-  CopyDataOut extends DfsCopyFileOutWorkflow {
+  CopyDataOut extends DfsCopyFilesWorkflow {
     cluster LAZY PARENT:cluster;
     source mapred.output.dir;
     dest outputDirLocal;
+
+    //source filesystem URL
+    sourceFS PARENT:fs.default.name;
+    //URL to the destination filesystem
+    destFS HadoopConfiguration:FS_FILE_URL;
+
+    //any files that match the pattern
+    pattern "part-.+";
+    minFileCount 1;
+    maxFileCount 1;
   }
+
+
+  fs.default.name.Checker extends ConfCheckerWorkflow {
+    cluster LAZY PARENT:cluster;
+    fs.default.name HadoopConfiguration:FS_FILE_URL;
+    conf.matches [
+      ["fs.default.name",HadoopConfiguration:FS_FILE_URL]
+    ];
+  }
+
+
+  /**
+   * need to extend ls to allow overrides
+   */
+   lsLocalData extends DfsListDir {
+    cluster LAZY PARENT:cluster;
+    fs.default.name HadoopConfiguration:FS_FILE_URL;
+    path  outputDirLocal;
+    minTotalFileSize 40;
+    minFileCount 1;
+  }
+
+  checkDataWasCopied extends FileExistsWorkflow {
+    filename outputFileLocal;
+  }
+
 
 }
