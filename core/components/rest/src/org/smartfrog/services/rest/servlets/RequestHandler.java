@@ -24,7 +24,6 @@ import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.smartfrog.SFSystem;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.rest.Restful;
 import org.smartfrog.services.rest.XmlConstants;
 import org.smartfrog.services.rest.data.AttributeStub;
@@ -47,11 +46,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Locale;
 
@@ -64,12 +62,10 @@ import java.util.Locale;
 public class RequestHandler extends HttpServlet {
 
     /**
-     * Performs initialisation tasks for the Servlet. Namely, ensures the local
-     * SmartFrog system has been initialised and is ready for reference
-     * resolution.
+     * Performs initialisation tasks for the Servlet. Namely, ensures the local SmartFrog system has been initialised
+     * and is ready for reference resolution.
      *
-     * @throws ServletException If an unexpected error occurs during the
-     * initialisation.
+     * @throws ServletException If an unexpected error occurs during the initialisation.
      */
     public void init() throws ServletException {
         try {
@@ -87,9 +83,8 @@ public class RequestHandler extends HttpServlet {
     }
 
     /**
-     * Performs an HTTP DELETE request on the resource specified by the URI.
-     * Default behaviour is that attributes, descriptions and references are
-     * removed using sfRemoveAttribute and components are removed using
+     * Performs an HTTP DELETE request on the resource specified by the URI. Default behaviour is that attributes,
+     * descriptions and references are removed using sfRemoveAttribute and components are removed using
      * sfDetachAndTerminate.
      */
     public void doDelete(HttpServletRequest servletRequest,
@@ -143,32 +138,31 @@ public class RequestHandler extends HttpServlet {
         }
     }
 
-  /*  private void writeResponse(HttpServletResponse servletResponse,
-                               HttpRestResponse restResponse)
-            throws IOException {
-        // A buffered output stream is used incase the return content is binary
-        BufferedOutputStream os = new BufferedOutputStream(servletResponse.getOutputStream());
-        try {
-            os.write(restResponse.getContents());
-        } finally {
-            // flush and close
-            FileSystem.close(os);
+    /*  private void writeResponse(HttpServletResponse servletResponse,
+                                   HttpRestResponse restResponse)
+                throws IOException {
+            // A buffered output stream is used incase the return content is binary
+            BufferedOutputStream os = new BufferedOutputStream(servletResponse.getOutputStream());
+            try {
+                os.write(restResponse.getContents());
+            } finally {
+                // flush and close
+                FileSystem.close(os);
+            }
         }
-    }
-*/
+    */
 
-     private void writeResponse(HttpServletResponse servletResponse,
+    private void writeResponse(HttpServletResponse servletResponse,
                                HttpRestResponse restResponse)
             throws IOException {
-       	PrintWriter out = servletResponse.getWriter();
+        PrintWriter out = servletResponse.getWriter();
         out.println(restResponse.getStringContents());
     }
 
-   
+
     /**
-     * Performs an HTTP GET request on the resource specified by the URI. Default
-     * behaviour is simple to return the value of getXmlRepresentation as specified
-     * in the {@link Restful} interface.
+     * Performs an HTTP GET request on the resource specified by the URI. Default behaviour is simple to return the
+     * value of getXmlRepresentation as specified in the {@link Restful} interface.
      */
     public void doGet(HttpServletRequest servletRequest,
                       HttpServletResponse servletResponse)
@@ -215,12 +209,10 @@ public class RequestHandler extends HttpServlet {
     }
 
     /**
-     * Performs an HTTP POST request on the resource specified by the URI. Default
-     * behaviour is to parse the incoming contents as a {@link
-     * ComponentDescription}, {@link Reference} or boxed primitive object (that is,
-     * Integer, Boolean et cetera) and then act accordingly (that is, store as an
-     * attribute or deploy as a component). POST requests will generate an
-     * exception if the target resource already exists.
+     * Performs an HTTP POST request on the resource specified by the URI. Default behaviour is to parse the incoming
+     * contents as a {@link ComponentDescription}, {@link Reference} or boxed primitive object (that is, Integer,
+     * Boolean et cetera) and then act accordingly (that is, store as an attribute or deploy as a component). POST
+     * requests will generate an exception if the target resource already exists.
      */
     public void doPost(HttpServletRequest servletRequest,
                        HttpServletResponse servletResponse)
@@ -278,13 +270,11 @@ public class RequestHandler extends HttpServlet {
     }
 
     /**
-     * Performs an HTTP PUT request on the resource specified by the URI. Default
-     * behaviour is to parse the incoming contents as a {@link
-     * ComponentDescription}, {@link Reference} or boxed primitive object (that is,
-     * Integer, Boolean et cetera) and then act accordingly (that is, store as an
-     * attribute or deploy as a component). PUT requests may over-write existing
-     * attributes but may cause exceptions if attempts are made to redeploy
-     * identically named components.
+     * Performs an HTTP PUT request on the resource specified by the URI. Default behaviour is to parse the incoming
+     * contents as a {@link ComponentDescription}, {@link Reference} or boxed primitive object (that is, Integer,
+     * Boolean et cetera) and then act accordingly (that is, store as an attribute or deploy as a component). PUT
+     * requests may over-write existing attributes but may cause exceptions if attempts are made to redeploy identically
+     * named components.
      */
     public void doPut(HttpServletRequest servletRequest,
                       HttpServletResponse servletResponse)
@@ -334,8 +324,17 @@ public class RequestHandler extends HttpServlet {
 
 
     /**
-     * Given a valid HttpRestRequest, this utility function will obtain references
-     * to the subject of the request and its owner.
+     * Given a valid HttpRestRequest, this utility function will obtain references to the subject of the request and its
+     * owner.
+     * <p/>
+     * stubs are not created; this must exist alrady
+     *
+     * @param restRequest the request
+     * @param createStubs true to create a stub on demand
+     *
+     * @return the resolved reference
+     *
+     * @throws Exception as the RootLocator interface does
      */
     private ResolutionResult resolveResources(HttpRestRequest restRequest)
             throws Exception {
@@ -343,11 +342,17 @@ public class RequestHandler extends HttpServlet {
     }
 
     /**
-     * Given a valid HttpRestRequest, this utility function will obtain references
-     * to the subject of the request and its owner. createStubs is a parameter,
-     * which, when set to true means that if the subject identified by this request
-     * does not exist, a stub object of the right type should be created (that is,
-     * for PUT and POST requests) so the application can continue to function.
+     * Given a valid HttpRestRequest, this utility function will obtain references to the subject of the request and its
+     * owner. createStubs is a parameter, which, when set to true means that if the subject identified by this request
+     * does not exist, a stub object of the right type should be created (that is, for PUT and POST requests) so the
+     * application can continue to function.
+     *
+     * @param restRequest the request
+     * @param createStubs true to create a stub on demand
+     *
+     * @return the resolved reference
+     *
+     * @throws Exception as the RootLocator interface does
      */
     private ResolutionResult resolveResources(HttpRestRequest restRequest,
                                               boolean createStubs)
@@ -448,9 +453,13 @@ public class RequestHandler extends HttpServlet {
     }
 
     /**
-     * Given an exception and an HttpServletResponse instance, this utility method
-     * will transcode an exception into XML format and present it to the user along
-     * with an HTTP 500 Internal Server Error response.
+     * Given an exception and an HttpServletResponse instance, this utility method will transcode an exception into XML
+     * format and present it to the user along with an HTTP 500 Internal Server Error response.
+     *
+     * @param t               thrown exception
+     * @param servletResponse the response to fill in
+     *
+     * @throws ServletException if there are problems writing the exception to the response
      */
     private void reportException(Throwable t,
                                  HttpServletResponse servletResponse)
@@ -461,8 +470,13 @@ public class RequestHandler extends HttpServlet {
     }
 
     /**
-     * As with the previous method except the user is able to define their own HTTP
-     * status code used in the response.
+     * As with the previous method except the user is able to define their own HTTP status code used in the response.
+     *
+     * @param t               thrown exception
+     * @param statusCode      status code to respond with
+     * @param servletResponse the response to fill in
+     *
+     * @throws ServletException if there are problems writing the exception to the response
      */
     private void reportException(Throwable t,
                                  HttpServletResponse servletResponse,
@@ -514,7 +528,7 @@ public class RequestHandler extends HttpServlet {
             throw new ServletException(
                     "An exception was encountered while attempting to report on an exception" +
                             " encountered during the processing of the request. As a result, the system is unable to " +
-					" continue processing this request.", unhandleable);
-		}
-	}
+                            " continue processing this request.", unhandleable);
+        }
+    }
 }
