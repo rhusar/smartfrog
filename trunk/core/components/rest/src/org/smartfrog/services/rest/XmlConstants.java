@@ -24,5 +24,7 @@ package org.smartfrog.services.rest;
  */
 
 public class XmlConstants {
+
     public static final String APPLICATION_XML = "application/xml";
+    public static final String TEXT_XML = "text/xml";
 }

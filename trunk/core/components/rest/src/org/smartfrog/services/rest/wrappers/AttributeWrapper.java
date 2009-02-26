@@ -1,21 +1,21 @@
 /**
-	(C) Copyright 2006 Hewlett-Packard Development Company, LP
+ (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-	For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
  */
 
 package org.smartfrog.services.rest.wrappers;
@@ -40,191 +40,174 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.rmi.RemoteException;
 
 /**
- * The attribute wrapper is used to encapsulate {@link Reference} and
- * all non-traversable SmartFrog objects and their descendants.
+ * The attribute wrapper is used to encapsulate {@link Reference} and all non-traversable SmartFrog objects and their
+ * descendants.
  *
  * @author Derek Mortimer
  * @version 1.0
  */
-public class AttributeWrapper implements Restful
-{
-	/**
-	 * Creates a new instance of the wrapper containing the subject and its owner.
-	 *
-	 * @param result The result containing a reference to the subject and its owner.
-	 * @param restRequest The request object containing all of the necessary request information.
-	 *
-	 * @throws RemoteException If a network error occurs during attempt remote invocation of this method.
-	 */
-	public AttributeWrapper(ResolutionResult result, HttpRestRequest restRequest) throws RemoteException
-	{
-		this.result = result;
-		this.restRequest = restRequest;
+public class AttributeWrapper implements Restful {
 
-		owner = result.getOwner();
-		//Object owner = result.getOwner();
+    /**
+     * Creates a new instance of the wrapper containing the subject and its owner.
+     *
+     * @param result      The result containing a reference to the subject and its owner.
+     * @param restRequest The request object containing all of the necessary request information.
+     *
+     * @throws RemoteException If a network error occurs during attempt remote invocation of this method.
+     */
+    public AttributeWrapper(ResolutionResult result, HttpRestRequest restRequest) throws RemoteException {
+        this.result = result;
+        this.restRequest = restRequest;
 
-		ownerContext = (owner instanceof Prim) ?
-			((Prim) owner).sfContext() : ((ComponentDescription) owner).sfContext();
-	}
+        owner = result.getOwner();
+        //Object owner = result.getOwner();
 
-	public void doDelete(HttpRestRequest restRequest, HttpRestResponse restResponse)
-			throws MethodNotSupportedException, RemoteException, RestException
-	{
-		try
-		{
-			String targetName = restRequest.getTargetResourceName();
+        ownerContext = (owner instanceof Prim) ?
+                ((Prim) owner).sfContext() : ((ComponentDescription) owner).sfContext();
+    }
 
-			String response;
-			if (result.getSubject() instanceof Reference)
-				response = HttpRestResponse.generateResponseXML("OK", "The specified Reference has been successfully" +
-						" removed from the SmartFrog tree.");
-			else
-				response = HttpRestResponse.generateResponseXML("OK", "The specified attribute has been successfully" +
-						" removed from the SmartFrog tree.");
+    public void doDelete(HttpRestRequest restRequest, HttpRestResponse restResponse)
+            throws MethodNotSupportedException, RemoteException, RestException {
+        try {
+            String targetName = restRequest.getTargetResourceName();
 
-			if (owner instanceof Prim) {
-				((Prim) owner).sfRemoveAttribute(restRequest.getTargetResourceName());
-			} else {
-				((ComponentDescription) owner).sfRemoveAttribute(restRequest.getTargetResourceName());
-			}
-			restResponse.setContentType(XmlConstants.APPLICATION_XML);
-			restResponse.setContentLength(response.length());
-			restResponse.setContents(response.getBytes());
-			restResponse.setStringContents(response);
-		}
-		catch (Exception e)
-		{
-			throw new RestException(e.getMessage(), e);
-		}
-	}
+            String response;
+            if (result.getSubject() instanceof Reference) {
+                response = HttpRestResponse.generateResponseXML("OK", "The specified Reference has been successfully" +
+                        " removed from the SmartFrog tree.");
+            } else {
+                response = HttpRestResponse.generateResponseXML("OK", "The specified attribute has been successfully" +
+                        " removed from the SmartFrog tree.");
+            }
 
-	public void doGet(HttpRestRequest restRequest, HttpRestResponse restResponse)
-			throws MethodNotSupportedException, RemoteException, RestException
-	{
-		String responseType = restRequest.getresponseType();
-		if (responseType == null || responseType.equals("XML")) {
-			Document xmlResponse = getXMLRepresentation();
+            if (owner instanceof Prim) {
+                ((Prim) owner).sfRemoveAttribute(restRequest.getTargetResourceName());
+            } else {
+                ((ComponentDescription) owner).sfRemoveAttribute(restRequest.getTargetResourceName());
+            }
+            restResponse.setContentType(XmlConstants.APPLICATION_XML);
+            restResponse.setContentLength(response.length());
+            restResponse.setContents(response.getBytes());
+            restResponse.setStringContents(response);
+        }
+        catch (Exception e) {
+            throw new RestException(e);
+        }
+    }
 
-			restResponse.setContentType(XmlConstants.APPLICATION_XML);
-			restResponse.setContentLength(xmlResponse.toXML().length());
-			restResponse.setContents(xmlResponse.toXML().getBytes());
-			restResponse.setDocument(xmlResponse);
-			restResponse.setStringContents(xmlResponse.toXML());
-		} 
-	}
+    public void doGet(HttpRestRequest restRequest, HttpRestResponse restResponse)
+            throws MethodNotSupportedException, RemoteException, RestException {
+        String responseType = restRequest.getresponseType();
+        if (responseType == null || responseType.equals("XML")) {
+            Document xmlResponse = getXMLRepresentation();
 
-	public void doPost(HttpRestRequest restRequest, HttpRestResponse restResponse)
-			throws MethodNotSupportedException, RemoteException, RestException
-	{
-		try
-		{
-			ParsedResourceRequest resourceRequest = new ParsedResourceRequest(restRequest);
+            restResponse.setContentType(XmlConstants.APPLICATION_XML);
+            restResponse.setContentLength(xmlResponse.toXML().length());
+            restResponse.setContents(xmlResponse.toXML().getBytes());
+            restResponse.setDocument(xmlResponse);
+            restResponse.setStringContents(xmlResponse.toXML());
+        }
+    }
 
-			SFParser parser = new SFParser();
+    public void doPost(HttpRestRequest restRequest, HttpRestResponse restResponse)
+            throws MethodNotSupportedException, RemoteException, RestException {
+        try {
+            ParsedResourceRequest resourceRequest = new ParsedResourceRequest(restRequest);
 
-			Object data;
-			String response;
+            SFParser parser = new SFParser();
 
-			if (resourceRequest.getTargetType().equals("attribute"))
-			{
-				data = parser.sfParsePrimitiveValue(resourceRequest.getPayload());
-				response = HttpRestResponse.generateResponseXML("OK", "The provided value was suscessfully parsed" +
-						" as a primitive value and stored as an attribute.");
-			}
-			else
-			{
-				data = parser.sfParseReference(resourceRequest.getPayload());
-				response = HttpRestResponse.generateResponseXML("OK", "The provided value was successfully parsed" +
-						" as a valid SmartFrog reference and added to the tree.");
-			}
-			if (owner instanceof Prim) {
-				((Prim) owner).sfAddAttribute(restRequest.getTargetResourceName(), data);
-			} else {
-				((ComponentDescription) owner).sfAddAttribute(restRequest.getTargetResourceName(), data);
-			}
+            Object data;
+            String response;
 
-			restResponse.setContentType(XmlConstants.APPLICATION_XML);
-			restResponse.setContentLength(response.length());
-			restResponse.setContents(response.getBytes());
-			restResponse.setStringContents(response);
-		}
-		catch (Exception e)
-		{
-			throw new RestException(e.getMessage(), e);
-		}
-	}
+            if (resourceRequest.getTargetType().equals("attribute")) {
+                data = parser.sfParsePrimitiveValue(resourceRequest.getPayload());
+                response = HttpRestResponse.generateResponseXML("OK", "The provided value was suscessfully parsed" +
+                        " as a primitive value and stored as an attribute.");
+            } else {
+                data = parser.sfParseReference(resourceRequest.getPayload());
+                response = HttpRestResponse.generateResponseXML("OK", "The provided value was successfully parsed" +
+                        " as a valid SmartFrog reference and added to the tree.");
+            }
+            if (owner instanceof Prim) {
+                ((Prim) owner).sfAddAttribute(restRequest.getTargetResourceName(), data);
+            } else {
+                ((ComponentDescription) owner).sfAddAttribute(restRequest.getTargetResourceName(), data);
+            }
 
-	public void doPut(HttpRestRequest restRequest, HttpRestResponse restResponse)
-			throws MethodNotSupportedException, RemoteException, RestException
-	{
-		try
-		{
-			ParsedResourceRequest resourceRequest = new ParsedResourceRequest(restRequest);
+            restResponse.setContentType(XmlConstants.APPLICATION_XML);
+            restResponse.setContentLength(response.length());
+            restResponse.setContents(response.getBytes());
+            restResponse.setStringContents(response);
+        }
+        catch (Exception e) {
+            throw new RestException(e);
+        }
+    }
 
-			SFParser parser = new SFParser();
+    public void doPut(HttpRestRequest restRequest, HttpRestResponse restResponse)
+            throws MethodNotSupportedException, RemoteException, RestException {
+        try {
+            ParsedResourceRequest resourceRequest = new ParsedResourceRequest(restRequest);
 
-			Object data;
-			String response;
+            SFParser parser = new SFParser();
 
-			if (resourceRequest.getTargetType().equals("attribute"))
-			{
-				data = parser.sfParsePrimitiveValue(resourceRequest.getPayload());
-				response = HttpRestResponse.generateResponseXML("OK", "The provided value was suscessfully parsed" +
-						" as a primitive value and stored as an attribute.");
-			}
-			else
-			{
-				data = parser.sfParseReference(resourceRequest.getPayload());
-				response = HttpRestResponse.generateResponseXML("OK", "The provided value was successfully parsed" +
-						" as a valid SmartFrog reference and added to the tree.");
-			}
+            Object data;
+            String response;
 
-			if (owner instanceof Prim) {
-				((Prim) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), data);
-			} else {
-				((ComponentDescription) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), data);
-			}
-			restResponse.setContentType(XmlConstants.APPLICATION_XML);
-			restResponse.setContentLength(response.length());
-			restResponse.setContents(response.getBytes());
-			restResponse.setStringContents(response);
-		}
-		catch (Exception e)
-		{
-			throw new RestException(e.getMessage(), e);
-		}
-	}
+            if (resourceRequest.getTargetType().equals("attribute")) {
+                data = parser.sfParsePrimitiveValue(resourceRequest.getPayload());
+                response = HttpRestResponse.generateResponseXML("OK", "The provided value was suscessfully parsed" +
+                        " as a primitive value and stored as an attribute.");
+            } else {
+                data = parser.sfParseReference(resourceRequest.getPayload());
+                response = HttpRestResponse.generateResponseXML("OK", "The provided value was successfully parsed" +
+                        " as a valid SmartFrog reference and added to the tree.");
+            }
 
-	public Document getXMLRepresentation() throws RemoteException
-	{
-		Element root = new Element("resource");
+            if (owner instanceof Prim) {
+                ((Prim) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), data);
+            } else {
+                ((ComponentDescription) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), data);
+            }
+            restResponse.setContentType(XmlConstants.APPLICATION_XML);
+            restResponse.setContentLength(response.length());
+            restResponse.setContents(response.getBytes());
+            restResponse.setStringContents(response);
+        }
+        catch (Exception e) {
+            throw new RestException(e);
+        }
+    }
 
-		String resourceLink = restRequest.getScheme() + "://" + restRequest.getServerName() + ":" +
-				restRequest.getServerPort() + restRequest.getRequestURI();
-				//restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
+    public Document getXMLRepresentation() throws RemoteException {
+        Element root = new Element("resource");
 
-		String resourceType = (result.getSubject() instanceof Reference) ? "reference" : "attribute";
+        String resourceLink = restRequest.getScheme() + "://" + restRequest.getServerName() + ":" +
+                restRequest.getServerPort() + restRequest.getRequestURI();
+        //restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
 
-		// each resource has a name, type, class and link
-		Attribute rName =	new Attribute("name", restRequest.getTargetResourceName());
-		Attribute rType =	new Attribute("type", resourceType);
-		Attribute rClass =	new Attribute("class", result.getSubject().getClass().getName());
-		Attribute rLink =	new Attribute("href", resourceLink);
+        String resourceType = (result.getSubject() instanceof Reference) ? "reference" : "attribute";
 
-		root.addAttribute(rName);
-		root.addAttribute(rType);
-		root.addAttribute(rClass);
-		root.addAttribute(rLink);
+        // each resource has a name, type, class and link
+        Attribute rName = new Attribute("name", restRequest.getTargetResourceName());
+        Attribute rType = new Attribute("type", resourceType);
+        Attribute rClass = new Attribute("class", result.getSubject().getClass().getName());
+        Attribute rLink = new Attribute("href", resourceLink);
 
-		// dump the contents of it's toString() method into the root tag as CDATA
-		root.appendChild(result.getSubject().toString());
+        root.addAttribute(rName);
+        root.addAttribute(rType);
+        root.addAttribute(rClass);
+        root.addAttribute(rLink);
 
-		return new Document(root);
-	}
+        // dump the contents of it's toString() method into the root tag as CDATA
+        root.appendChild(result.getSubject().toString());
 
-	private final Object owner; 
-	private final Context ownerContext;
-	private final ResolutionResult result;
-	private final HttpRestRequest restRequest;
+        return new Document(root);
+    }
+
+    private final Object owner;
+    private final Context ownerContext;
+    private final ResolutionResult result;
+    private final HttpRestRequest restRequest;
 }
