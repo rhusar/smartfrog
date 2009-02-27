@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="localhost" default="teardown">
+
+<description>
+ Tests for hostname calculation
+</description>
+
+  <import file="test-common.xml" />
+
+  <target name="testEmpty">
+    <sf-localhost/>
+  </target>
+
+  <target name="testNoProperty">
+    <sf-localhost useAddress="true"/>
+  </target>
+
+
+  <target name="testHostname">
+    <sf-localhost property="testHostname" />
+    <fail unless="testHostname" />
+  </target>
+
+  <target name="testHostAddress">
+    <sf-localhost property="testHostAddress" useAddress="true"/>
+    <fail unless="testHostAddress" />
+  </target>
+  
+
+</project>

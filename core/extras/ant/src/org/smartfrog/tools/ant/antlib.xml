@@ -18,16 +18,17 @@
   <taskdef name="functionaltest"
       classname="org.smartfrog.tools.ant.FunctionalTestTask"/>
   <taskdef name="gui" classname="org.smartfrog.tools.ant.StartSmartFrogGui"/>
+  <taskdef name="localhost" classname="org.smartfrog.tools.ant.LocalHost"/>
   <taskdef name="management-console" classname="org.smartfrog.tools.ant.StartManagementConsole"/>
   <taskdef name="parse" classname="org.smartfrog.tools.ant.Parse"/>
   <taskdef name="ping" classname="org.smartfrog.tools.ant.PingTask"/>
   <taskdef name="run" classname="org.smartfrog.tools.ant.RunApplicationTask"/>
-  <taskdef name="tourl" classname="org.smartfrog.tools.ant.ToUrlTask"/>
   <taskdef name="sign" classname="org.smartfrog.tools.ant.SmartFrogSign"/>
   <taskdef name="stopdaemon" classname="org.smartfrog.tools.ant.StopDaemon"/>
   <taskdef name="startdaemon" classname="org.smartfrog.tools.ant.StartDaemon"/>
-  <taskdef name="undeploy" classname="org.smartfrog.tools.ant.StopApplication"/>
   <taskdef name="timer" classname="org.smartfrog.tools.ant.SFTimer"/>
+  <taskdef name="tourl" classname="org.smartfrog.tools.ant.ToUrlTask"/>
+  <taskdef name="undeploy" classname="org.smartfrog.tools.ant.StopApplication"/>
 
   <!-- this is the security type declaration -->
   <typedef name="security" classname="org.smartfrog.tools.ant.Security"/>
