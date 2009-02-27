@@ -144,7 +144,7 @@
     <property name="test.classes.dir" location="${build.test.dir}/classes"/>
     <property name="test.data.dir" location="${build.test.dir}/data"/>
     <property name="test.reports.dir" location="${build.test.dir}/reports"/>
-  
+    <property name="test.work.dir" location="${build.test.dir}/work" />
     <property name="dist.dir" location="dist"/>
     <property name="dist.lib.dir" location="${dist.dir}/lib"/>
     <property name="dist.doc.dir" location="${dist.dir}/docs"/>
@@ -651,6 +651,7 @@ java.class.path=
         <include name="doc/**/*.pdf" />
         <include name="doc/**/*.sx?" />
         <include name="doc/**/*.txt" />
+        <include name="doc/**/*.od?" />
       </zipfileset>
     </zip>
   </target>
@@ -681,6 +682,7 @@ java.class.path=
     <mkdir dir="${test.classes.dir}" />
     <mkdir dir="${test.data.dir}" />
     <mkdir dir="${test.reports.dir}" />
+    <mkdir dir="${test.work.dir}" />
 
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
