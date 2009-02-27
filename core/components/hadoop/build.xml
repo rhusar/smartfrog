@@ -86,8 +86,7 @@
     <loadclass class="org.apache.jasper.servlet.JspServlet" />
 
 
-    <property name="test.work.dir" location="${test.dir}/work" />
-    <mkdir dir="${test.work.dir}" />
+
   </target>
 
   <target name="copy-hadoop" depends="ivy-retrieve,ivy-report"
