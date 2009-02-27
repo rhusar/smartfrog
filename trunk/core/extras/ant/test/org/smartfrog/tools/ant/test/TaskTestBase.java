@@ -75,11 +75,6 @@ public abstract class TaskTestBase extends BuildFileTest {
         configureProject(basedir + "/" + filename);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * assert that a property is null.
      *
