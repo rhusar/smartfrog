@@ -1430,7 +1430,7 @@ smartfrog.tasks.classpath=
   </target>
 
   <!-- ========================================================== -->
-  <!-- set the property codebasel this can be overridden-->
+  <!-- set the property codebase - this can be overridden-->
   <!-- ========================================================== -->
   <target name="init-codebase" depends="declare-classpaths,init-deploy-properties,package-tests"
       description="set up the codebase property">
