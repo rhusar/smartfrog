@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="parse" default="teardown">
+<project name="to-url" default="teardown">
 
 <description>
  Tests for starting the daemon. We of course have to stop the daemon afterwards
