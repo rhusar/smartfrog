@@ -21,10 +21,13 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 
@@ -39,6 +42,8 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
     public static final String ATTR_SERVICE = "service";
     public static final String ATTR_SERVICE_STATE = "serviceState";
     public static final String ATTR_SERVICE_DESCRIPTION = "serviceDescription";
+    private static final Reference refService = new Reference(ATTR_SERVICE);
+
 
     private HadoopService service;
 
@@ -56,7 +61,13 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        service = (HadoopService) sfResolve(ATTR_SERVICE, (Prim) null, true);
+        Prim prim = sfResolve(refService, (Prim) null, true);
+        if (!(prim instanceof HadoopService)) {
+            String error = "Unable to bind to a component that is not a Hadoop service: "
+                    + prim.sfCompleteName();
+            throw new SmartFrogResolutionException(refService, sfCompleteNameSafe(), error);
+        }
+        service = (HadoopService) prim;
     }
 
     /**
