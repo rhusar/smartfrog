@@ -36,7 +36,6 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
   <!--  <import file="${root.dir}/common.xml"/>-->
 
-
   <!-- ========================================================== -->
   <!-- this is the gump entry point; it does packaging and but no tests!-->
   <!-- this keeps the gump compile target separate from the tests run-->
@@ -196,13 +195,11 @@ no -components suffix-->
   -->
   <target name="run-tests" depends="package-tests">
     <property name="filter.trace" value="true"/>
-    <property name="junit.timeout" value="60000"/>
     <sf-junit
         errorProperty="test.failed"
         failureProperty="test.failed"
         includeantruntime="true"
         filtertrace="${filter.trace}"
-        timeout="300000"
         >
       <classpath
           refid="tests.run.classpath"/>
