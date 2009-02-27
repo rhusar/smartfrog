@@ -126,60 +126,6 @@ NamenodeShutdownSequence extends Sequence {
 }
 
 
-/**
- * A sequence of operations on a cluster */
-FileSystemTestSequence extends FileSystemLiveSequence {
-
-
-
-    rootDirExists extends DfsDirExistsWorkflow {
-      cluster LAZY PARENT:cluster;
-      path "/";
-      verbose true;
-    }
-
-    touch extends DfsCreateFileWorkflow {
-      cluster LAZY PARENT:cluster;
-      path "/test-filename";
-      text "0123456789012345678901234567890123456789";
-    }
-
-    assertFileExists extends DfsFileExistsWorkflow {
-      cluster LAZY PARENT:cluster;
-      path touch:path;
-      minSize 40;
-      verbose true;
-    }
-
-    rootDirHasOneEntry extends rootDirExists {
-      minFileCount 1;
-      maxFileCount minFileCount;
-      minTotalFileSize assertFileExists:minSize;
-    }
-
-  }
-
-  FileCreation extends Compound  {
-    cluster TBD;
-    dest TBD;
-
-    sfShouldTerminate true;
-
-    sourceFile extends InlineTupleSource {
-      data [
-        ["one",43],
-        ["two", "43"],
-        ["one",12]
-      ]
-
-    }
-
-    UploadHadoopCsvFile extends TuplesToHadoop {
-      cluster LAZY PARENT:cluster;
-      source LAZY sourceFile;
-      dest testFile;
-    }
-  }
 
 TestJob extends Job {
   name TBD;

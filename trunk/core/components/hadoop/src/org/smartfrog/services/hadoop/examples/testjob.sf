@@ -17,11 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
-
-
 
 FileSystemLiveSequence extends Sequence {
     description "this is a base sequence that blocks until the filesystem is live"
@@ -133,6 +128,63 @@ CopyFileInAndOutSequence extends FileSystemLiveSequence {
 
 
 
+
+/**
+ * A sequence of operations on a cluster */
+FileSystemTestSequence extends FileSystemLiveSequence {
+
+
+
+    rootDirExists extends DfsDirExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path "/";
+      verbose true;
+    }
+
+    touch extends DfsCreateFileWorkflow {
+      cluster LAZY PARENT:cluster;
+      path "/test-filename";
+      text "0123456789012345678901234567890123456789";
+    }
+
+    assertFileExists extends DfsFileExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path touch:path;
+      minSize 40;
+      verbose true;
+    }
+
+    rootDirHasOneEntry extends rootDirExists {
+      minFileCount 1;
+      maxFileCount minFileCount;
+      minTotalFileSize assertFileExists:minSize;
+    }
+
+  }
+
+  FileCreation extends Compound  {
+    cluster TBD;
+    dest TBD;
+
+    sfShouldTerminate true;
+
+    sourceFile extends InlineTupleSource {
+      data [
+        ["one",43],
+        ["two", "43"],
+        ["one",12]
+      ]
+
+    }
+
+    UploadHadoopCsvFile extends TuplesToHadoop {
+      cluster LAZY PARENT:cluster;
+      source LAZY sourceFile;
+      dest testFile;
+    }
+  }
+
+
 /**
  Component that sleeps for a limited period
  */
@@ -205,7 +257,7 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
   mapred.output.dir (fs.default.name ++ testDirOut);
   mapred.working.dir (fs.default.name ++ testDirWorking);
 
-  inputFile extends CountingFile;
+  inputFile extends SmallCountingFile;
 
   CopyDataIn extends DfsCopyFileInWorkflow {
     cluster LAZY PARENT:cluster;
