@@ -18,38 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
-
-
-WORKER_THREADS 8;
-
-namenode PROPERTY test.namenode;
-
-NAMENODE_PROCESS "namenode";
-DATANODE1_PROCESS "datanode1";
-DATANODE2_PROCESS "datanode2";
-DATANODE3_PROCESS "datanode3";
-DATANODE4_PROCESS "datanode4";
-JOBTRACKER_PROCESS "jobtracker";
-TASKTRACKER1_PROCESS "tasktracker1";
-TASKTRACKER2_PROCESS "tasktracker2";
-TASKTRACKER3_PROCESS "tasktracker3";
-TASKTRACKER4_PROCESS "tasktracker4";
-
-
-
-namenode.filesystem ("hdfs://" ++ namenode ++ ":" ++ NameNodeIpcPort ++ "/");
-namenode.url ("http://" ++ namenode ++ ":" ++ NameNodeHttpPort ++ "/");
-
-
-/**
- * Here are common bindings
- */
-Bindings extends {
-  threads WORKER_THREADS;
-  fs.default.name namenode.filesystem;
-}
-
+#include "/org/smartfrog/extras/hadoop/cluster/bindings.sf"
 
 
 ClusterNameNodeCompound extends TransientNameNodeCompound {
@@ -136,4 +105,12 @@ ForkedCluster extends HadoopCluster {
   namenode:sfProcessName "namenode";
   datanode:sfProcessName "datanode";
 */
+}
+
+
+DistributedCluster extends HadoopCluster {
+  jobTracker:sfProcessHost jobtracker.host;
+  taskTracker:sfProcessHost tasktracker1.host;
+  namenode:sfProcessHost namenode.host;
+  datanode:sfProcessHost datanode1.host;
 }

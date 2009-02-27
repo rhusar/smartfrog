@@ -25,20 +25,16 @@ import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
  * Created 05-Jan-2009 16:12:47
  */
 
-public class ForkedHadoopClusterTest extends HadoopTestBase implements Names {
+public class DistributedClusterTest extends HadoopTestBase implements Names {
 
 
-    public ForkedHadoopClusterTest(String name) {
+    public DistributedClusterTest(String name) {
         super(name);
     }
 
-    public void testSkipped() throws Throwable {
-
-    }
-/*
-    public void testForkedCluster() throws Throwable {
+    public void testDistributedCluster() throws Throwable {
         checkFileSystem();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testForkedCluster.sf");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testDistributedCluster.sf");
         enableFailOnPortCheck();
-    }*/
+    }
 }

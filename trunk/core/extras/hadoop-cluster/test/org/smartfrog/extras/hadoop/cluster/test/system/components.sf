@@ -22,6 +22,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/os/java/components.sf"
 #include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/options.sf"
+#include "/org/smartfrog/services/hadoop/examples/testjob.sf"
+#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
 
 CLUSTER_UPTIME 10;
 
@@ -38,10 +40,40 @@ ExpectLive extends ExpectDeploy {
 
 testCluster extends ExpectLive {
   action HadoopCluster;
+
+  tests extends FileSystemTestSequence {
+
+    namenode LAZY action:namenode;
+    datanode LAZY action:datanode;;
+  }
 }
 
-testForkedCluster extends ExpectLive {
-  action ForkedCluster;
+CopyFileInAndOut extends CopyFileInAndOutSequence {
+  LocalDataDir PROPERTY test.work.dir;
+}
+
+
+testFileSystemCopyFileInAndOut extends testCluster {
+
+  description "copy a file in and out the file system";
+
+  tests extends CopyFileInAndOut {
+
+    namenode LAZY action:namenode;
+    datanode LAZY action:datanode;;
+  }
+}
+
+
+
+testDistributedCluster extends ExpectLive {
+  action DistributedCluster;
+
+  tests extends FileSystemTestSequence {
+
+    namenode LAZY action:namenode:namenode;
+    datanode LAZY action:datanode:datanode;
+  }
 }
 
 testHDFS extends ExpectLive {

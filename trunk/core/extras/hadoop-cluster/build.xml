@@ -48,7 +48,7 @@
   <condition property="system.tests" >
     <available classname="java.net.CookieManager"/>
   </condition>
-
+  <property name="junit.timeout" value="120000000"/>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
@@ -57,18 +57,28 @@
 
 
 
-  <target name="init" depends="common.init">
-    <property name="namenode" value="localhost" />
-    <property name="test.namenode" value="${namenode}" />
+  <target name="init-deploy-properties" depends="declare-extended-smartfrog-tasks">
+    <!-- work out our host address-->
+    <sf-localhost property="localhost" />
+    <sf-localhost property="localip" useAddress="true" />
+    <echo>Local host = ${localhost} ${localip} </echo>
+    <property name="test.namenode" value="${localhost}" />
+    <property name="test.jobtracker" value="${localhost}" />
+    <property name="test.datanode1" value="${localhost}" />
+    <property name="test.tasktracker1" value="${localhost}" />
+    
     <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
     <property name="cluster.sf" value="${cluster}/cluster.sf" />
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
 
     <property name="deploy.sf" value="${cluster.sf}" />
     <property name="deploy.host" value="${namenode}" />
+    <property name="application.name" value="${project.name}"/>
   </target>
 
 
+  <target name="hosts">
+  </target>
 
   <target name="ready-to-deploy" depends="common.ready-to-deploy,echo-deploy-settings" />
 
@@ -77,6 +87,7 @@
       Deploying to ${deploy.host}
     </echo>
   </target>
+
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
