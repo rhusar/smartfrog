@@ -114,23 +114,23 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
 
     /**
      * Undeploy the component
-     * @param application
-     * @return
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param application application to undeploy/terminate
+     * @return true if it was terminated
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException    network problems
      */
     protected boolean undeploy(File application) throws SmartFrogException, RemoteException {
         String name = name(application);
         String subprocess = subprocess(application, name);
         ProcessCompound targetProcess = SFProcess.sfSelectTargetProcess((InetAddress) null, subprocess);
-        Object child = null;
+        Object child;
         try {
             child = targetProcess.sfResolve(name);
-        } catch (SmartFrogResolutionException e) {
+        } catch (SmartFrogResolutionException ignored) {
             sfLog().info("Not currently deployed: " + name);
             return false;
         } catch (RemoteException e) {
-            sfLog().info("Network problems when undeploying: " + name);
+            sfLog().info("Network problems when undeploying: " + name, e);
             return false;
         }
         if (child instanceof Prim) {
@@ -153,6 +153,7 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
      * Determine the subprocess of an application
      *
      * @param application application to work with
+     * @param name of app
      * @return currently, null
      */
     private String subprocess(File application, String name) {
