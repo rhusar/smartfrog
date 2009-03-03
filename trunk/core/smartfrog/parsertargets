@@ -49,3 +49,4 @@ org/smartfrog/examples/arithnet/example4.sf
 org/smartfrog/examples/spawn/example.sf
 org/smartfrog/services/assertions/example.sf
 
+org/smartfrog/services/hostnames/components.sf
