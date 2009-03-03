@@ -68,6 +68,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     private List<PortEntry> portList;
     private static final int CONNECT_TIMEOUT = 2000;
     private boolean serviceStartupInProgress;
+    protected static final String LIVE_ATTRIBUTE_PREFIX = "live.";
 
 
     protected HadoopServiceImpl() throws RemoteException {
@@ -541,9 +542,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         if (s != null && !sfIsTerminated) {
             sfLog().info(getServiceName() + " deployment complete: service is: " + s);
             //now we copy over the port values
-            ServiceInfo si = getServiceInfo();
-            List<BindingTuple> bindingTupleList = si.getBindingInformation();
-            copyBindingList(this, "live." ,bindingTupleList);
+            publishBindingInfo(LIVE_ATTRIBUTE_PREFIX);
         } else {
             String message = getServiceName() + " deployment completed after component was terminated."
                     + "Hadoop service is " + hadoopService;
@@ -553,6 +552,18 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             //then fail gracelessly
             throw new SmartFrogException(message);
         }
+    }
+
+    /**
+     * Publish the service's binding information to this component, with the specified prefix
+     * @param prefix prefix -can be null
+     * @throws IOException        IO/hadoop problems
+     * @throws SmartFrogException smartfrog problems
+     */
+    protected void publishBindingInfo(String prefix) throws SmartFrogRuntimeException, RemoteException {
+        ServiceInfo si = getServiceInfo();
+        List<BindingTuple> bindingTupleList = si.getBindingInformation();
+        copyBindingList(this, prefix, bindingTupleList);
     }
 
     /**

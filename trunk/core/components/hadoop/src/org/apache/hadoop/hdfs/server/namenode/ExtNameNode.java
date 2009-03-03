@@ -168,6 +168,9 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: NameNode is now "+ newState);
+        //when we go live, we also push out our new URL
+
+        //tell anyone listening
         notifier.onStateChange(oldState, newState);
     }
 
