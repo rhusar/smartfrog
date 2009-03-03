@@ -30,6 +30,8 @@ LocalDataNodeCompound extends TransientNameDataNodeCompound;
 
 OrphanDatanodeCompound  extends LocalHadoopCompound  {
 
+  hostname LOCALHOST;
+
   description "A cluster with a task tracker but not job tracker";
 
   localDataDir extends TempDir {
@@ -37,6 +39,7 @@ OrphanDatanodeCompound  extends LocalHadoopCompound  {
   }
 
   datanode extends  LightweightDataNode {
+    hostname PARENT:hostname;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;

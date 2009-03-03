@@ -45,7 +45,7 @@ import java.net.URISyntaxException;
 public class DfsUtils {
     public static final String ERROR_INVALID_FILESYSTEM_URI = "Invalid " + HadoopConfiguration.FS_DEFAULT_NAME
             + " URI: ";
-    public static final String ERROR_FAILED_TO_INITIALISE_FILESYSTEM = "Failed to initialise filesystem";
+    public static final String ERROR_FAILED_TO_INITIALISE_FILESYSTEM = "Failed to initialise filesystem: ";
     public static final String ERROR_FAILED_TO_DELETE_PATH = "Failed to delete path ";
     public static final String ERROR_FAILED_TO_CLOSE = "Failed to close ";
     public static final String ERROR_MKDIR_FAILED = "Unable to create the destination directories for ";
@@ -121,7 +121,7 @@ public class DfsUtils {
      */
     public static FileSystem createFileSystem(String filesystemURL, ManagedConfiguration conf)
             throws SFHadoopException {
-        URI uri = null;
+        URI uri;
         try {
             uri = new URI(filesystemURL);
         } catch (URISyntaxException e) {
@@ -137,7 +137,7 @@ public class DfsUtils {
             return dfs;
         } catch (IOException e) {
             SFHadoopException hadoopException = SFHadoopException
-                    .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM, e);
+                    .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM + filesystemURL, e);
             hadoopException.addConfiguration(conf);
             throw hadoopException;
         }
@@ -246,7 +246,9 @@ public class DfsUtils {
                 throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest);
             }
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest + " : " + e, e);
+            throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest
+                    + " in " + fileSystem.getUri()
+                    + " : " + e, e);
         }
     }
 
@@ -270,15 +272,16 @@ public class DfsUtils {
                                 int blocksize) throws SmartFrogRuntimeException {
         assertNotDependent(srcFS, src, dstFS, dst);
         FileStatus status;
+        URI fsuri = srcFS.getUri();
         try {
             status = srcFS.getFileStatus(src);
         } catch (FileNotFoundException fe) {
-            throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + src + " in " + srcFS.getUri(), fe);
+            throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + src + " in " + fsuri, fe);
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(ERROR_NO_STAT + src + " in " + srcFS.getUri() + " : " + e, e);
+            throw new SmartFrogRuntimeException(ERROR_NO_STAT + src + " in " + fsuri + " : " + e, e);
         }
         if (status.isDir()) {
-            throw new SmartFrogRuntimeException(ERROR_NO_DIRECTORY_COPY + src + " in " + srcFS.getUri());
+            throw new SmartFrogRuntimeException(ERROR_NO_DIRECTORY_COPY + src + " in " + fsuri);
         }
         InputStream in = null;
         OutputStream out = null;
@@ -293,7 +296,7 @@ public class DfsUtils {
         try {
             IOUtils.copyBytes(in, out, blocksize, true);
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(ERROR_COPY_FAILED + src + " in " + srcFS.getUri()
+            throw new SmartFrogRuntimeException(ERROR_COPY_FAILED + src + " in " + fsuri
                     + " to " + dst + " in " + dstFS.getUri()
                     + " : " + e,
                     e);
@@ -320,7 +323,9 @@ public class DfsUtils {
             fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
         } catch (IOException e) {
             throw new SmartFrogRuntimeException(
-                    FAILED_TO_COPY + source + " to " + dest, e);
+                    FAILED_TO_COPY + source + " to " + dest
+                            + " on " + fileSystem.getUri(),
+                    e);
         }
     }
 
@@ -351,7 +356,7 @@ public class DfsUtils {
                     srcFstatus = fileSystem.getFileStatus(src);
                 } catch (FileNotFoundException e) {
                   FileNotFoundException fnf = new FileNotFoundException(src +
-                          ": No such file or directory");
+                          ": No such file or directory in " + fileSystem.getUri());
                   fnf.initCause(e);
                   throw fnf;
                 }
@@ -363,11 +368,13 @@ public class DfsUtils {
                 if ((srcFstatus != null) && (dstFstatus != null)) {
                     if (srcFstatus.isDir() && !dstFstatus.isDir()) {
                         throw new IOException("cannot overwrite non directory "
-                                + dstPath + " with directory " + srcPath);
+                                + dstPath + " with directory " + srcPath
+                                + " in " + fileSystem.getUri());
                     }
                 }
                 throw new IOException("Failed to rename '" + srcPath
-                        + "' to '" + dstPath + "'");
+                        + "' to '" + dstPath + "'"
+                        + " in " + fileSystem.getUri());
             }
         }
     }

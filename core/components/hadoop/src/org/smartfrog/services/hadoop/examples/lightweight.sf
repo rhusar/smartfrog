@@ -52,11 +52,10 @@ LightweightDataNode extends DataNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.heartbeat.interval 1;
   dfs.datanode.handler.count ClientHandlerThreads;
-  hostaddress HOSTNAME;
-  any_port  (hostaddress ++ ":0");
-  dfs.datanode.http.address  (hostaddress ++ ":" ++ DataNodeHttpPort);
-  dfs.datanode.https.address (hostaddress ++ ":" ++ DataNodeHttpsPort);
-  dfs.datanode.address (hostaddress ++ ":" ++ DataNodeIpcPort);
+  hostname LOCALHOST;
+  dfs.datanode.http.address  (hostname ++ ":" ++ DataNodeHttpPort);
+  dfs.datanode.https.address (hostname ++ ":" ++ DataNodeHttpsPort);
+  dfs.datanode.address (hostname ++ ":" ++ DataNodeIpcPort);
 
   dfs.blockreport.intervalMsec 10000;
   dfs.blockreport.initialDelay 0;
@@ -70,8 +69,10 @@ LightweightDataNode extends DataNode {
 
 HadoopCompoundBase extends Compound {
   fs.default.name  FS.DEFAULT.NAME;
+/*
   nameNodeURL      NAME_NODE_URL;
   dataNodeURL      DATA_NODE_IPC_URL ;
+*/
   mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
 
   logDir extends TempDir {
@@ -101,6 +102,13 @@ TransientNameNodeCompound extends TransientHadoopCompound {
 
   cluster LAZY namenode;
 
+  hostname LOCALHOST;
+  IpcPort NameNodeIpcPort;
+  HttpPort NameNodeHttpPort
+
+  fs.default.name ("hdfs://" ++ hostname ++ ":" ++ NameNodeIpcPort );
+  namenode.URL      ("http://" ++ hostname ++ ":" ++ HttpPort );
+
   namenode extends LightweightNameNode {
     fs.default.name PARENT:fs.default.name;
     dataDir LAZY PARENT:dataDir;
@@ -110,9 +118,10 @@ TransientNameNodeCompound extends TransientHadoopCompound {
     nameDirectories [nameDirectory];
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup ACTION_FORMAT;
-    dfs.http.address nameNodeURL;
+    dfs.http.address namenode.URL;
     dfs.permissions false;
     minWorkerCount 0;
+
   }
 }
 
@@ -122,15 +131,17 @@ TransientNameNodeCompound extends TransientHadoopCompound {
 TransientDataNodeCompound extends HadoopCompoundBase {
   description "A data node bound to a temporary directory";
 
+  hostname LOCALHOST;
+
   localDataDir extends TempDir {
 
   }
 
   datanode extends  LightweightDataNode {
+    hostname PARENT:hostname;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
-    dfs.datanode.address dataNodeURL  ;
   }
 
 }
@@ -147,10 +158,11 @@ TransientNameDataNodeCompound extends TransientNameNodeCompound {
   }
 
   datanode extends  LightweightDataNode {
+    hostname PARENT:hostname;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
-    dfs.datanode.address dataNodeURL  ;
+
   }
 
 }

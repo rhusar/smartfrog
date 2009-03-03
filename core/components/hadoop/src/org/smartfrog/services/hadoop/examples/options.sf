@@ -32,23 +32,23 @@ TEST_MODE true;
 
 NameNodeIpcPort   "8020";
 NameNodeHttpPort  "8021";
-DataNodeHttpPort  "8022";
-DataNodeHttpsPort "8023";
-DataNodeIpcPort   "8024";
+DataNodeHttpPort  "8030";
+DataNodeHttpsPort "8031";
+DataNodeIpcPort   "8042";
 
 
-DataNodeHttpPort2  "8032";
-DataNodeHttpsPort2 "8033";
-DataNodeIpcPort2   "8034";
+DataNodeHttpPort2  "8040";
+DataNodeHttpsPort2 "8041";
+DataNodeIpcPort2   "8042";
 
 
 HandlerThreads 4;
 ClientHandlerThreads 2;
-HOSTNAME "localhost";
-FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort );
-NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort );
-DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpPort );
-DATA_NODE_IPC_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeIpcPort );
+LOCALHOST "localhost";
+FS.DEFAULT.NAME    ("hdfs://" ++ LOCALHOST ++ ":" ++ NameNodeIpcPort );
+NAME_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ NameNodeHttpPort );
+DATA_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ DataNodeHttpPort );
+DATA_NODE_IPC_URL  ("http://" ++ LOCALHOST ++ ":" ++ DataNodeIpcPort );
 
 STARTUP_SLEEP_TIME 5000;
 IPC_CONNECT_TIMEOUT 10000;

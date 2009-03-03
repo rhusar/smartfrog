@@ -36,7 +36,7 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   dfs.datanode.handler.count ClientHandlerThreads;
   nameNodeURL      NAME_NODE_URL;
   dataNodeURL      DATA_NODE_URL ;
-  hostaddress HOSTNAME;
+  hostaddress LOCALHOST;
   any_port  (hostaddress ++ ":0");
   dfs.datanode.address any_port;
   dfs.datanode.http.address any_port;

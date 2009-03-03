@@ -257,7 +257,9 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
   mapred.output.dir (fs.default.name ++ testDirOut);
   mapred.working.dir (fs.default.name ++ testDirWorking);
 
-  inputFile extends SmallCountingFile;
+  inputFile extends SmallCountingFile {
+    filename inputFileLocal;
+  }
 
   CopyDataIn extends DfsCopyFileInWorkflow {
     cluster LAZY PARENT:cluster;
