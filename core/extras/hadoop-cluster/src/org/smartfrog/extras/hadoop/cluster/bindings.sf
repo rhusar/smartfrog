@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
 
 
+
 WORKER_THREADS 8;
 
 namenode.host PROPERTY test.namenode;
@@ -43,8 +44,8 @@ TASKTRACKER4_PROCESS "tasktracker4";
 
 
 
-namenode.filesystem ("hdfs://" ++ namenode.host ++ ":" ++ NameNodeIpcPort ++ "/");
-namenode.url ("http://" ++ namenode.host ++ ":" ++ NameNodeHttpPort ++ "/");
+//namenode.filesystem ("hdfs://" ++ namenode.host ++ ":" ++ NameNodeIpcPort ++ "/");
+//namenode.url ("http://" ++ namenode.host ++ ":" ++ NameNodeHttpPort ++ "/");
 
 
 /**
@@ -52,5 +53,5 @@ namenode.url ("http://" ++ namenode.host ++ ":" ++ NameNodeHttpPort ++ "/");
  */
 Bindings extends {
   threads WORKER_THREADS;
-  fs.default.name namenode.filesystem;
+  //fs.default.name namenode.filesystem;
 }

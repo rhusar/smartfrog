@@ -38,13 +38,15 @@ ExpectLive extends ExpectDeploy {
   tests SleepSequence;
 }
 
+
+
 testCluster extends ExpectLive {
-  action HadoopCluster;
+  action HadoopFilesystem;
 
   tests extends FileSystemTestSequence {
 
-    namenode LAZY action:namenode;
-    datanode LAZY action:datanode;;
+    namenode LAZY action:namenode:namenode;
+    datanode LAZY action:datanode:datanode;
   }
 }
 
@@ -57,10 +59,11 @@ testFileSystemCopyFileInAndOut extends testCluster {
 
   description "copy a file in and out the file system";
 
+  action HadoopFilesystem;
   tests extends CopyFileInAndOut {
 
-    namenode LAZY action:namenode;
-    datanode LAZY action:datanode;;
+    namenode LAZY action:namenode:namenode;
+    datanode LAZY action:datanode:datanode;
   }
 }
 

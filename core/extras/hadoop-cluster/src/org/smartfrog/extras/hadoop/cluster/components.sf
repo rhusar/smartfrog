@@ -20,7 +20,9 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
-
+#include "/org/smartfrog/services/hadoop/components/components.sf"
+#include "/org/smartfrog/services/anubis/components.sf"
+#include "/org/smartfrog/services/hostnames/components.sf"
 #include "/org/smartfrog/services/deploydir/components.sf"
 #include "/org/smartfrog/extras/hadoop/cluster/anubis.sf"
 #include "/org/smartfrog/extras/hadoop/cluster/hadoop.sf"
