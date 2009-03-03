@@ -20,31 +20,43 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/extras/hadoop/cluster/bindings.sf"
 
-
 ClusterNameNodeCompound extends TransientNameNodeCompound {
+
+  namenodeHost Localhost;
+
   threads WORKER_THREADS;
-  fs.default.name namenode.filesystem;
+  //localhost.name APPLY lookupLocalhost;
+  namenodeHostname LAZY namenodeHost:hostname;
+  fs.default.name ("hdfs://" ++ (namenodeHostname) ++ ":" ++ NameNodeIpcPort ++ "/");
+// WAS  namenode.filesystem;
   namenode:dfs.datanode.handler.count threads;
   namenode:checkRunning false;
 }
 
 ClusterDataNodeCompound extends TransientDataNodeCompound {
   threads WORKER_THREADS;
-  fs.default.name namenode.filesystem;
+  fs.default.name  TBD;
+  workerHost Localhost;
+//  fs.default.name namenode.filesystem;
   //datanode:mapred.job.tracker.handler.count threads;
 }
 
 ClusterJobTrackerCompound extends TransientJobTrackerCompound  {
   threads WORKER_THREADS;
-  fs.default.name namenode.filesystem;
+  fs.default.name  TBD;
+
+  jobtrackerHost Localhost;
+
+//  fs.default.name namenode.filesystem;
   jobtracker:mapred.job.tracker.handler.count threads;
 }
 
 
 ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
   threads WORKER_THREADS;
-  fs.default.name namenode.filesystem;
+//  fs.default.name namenode.filesystem;
   tasktracker.http.threads threads;
+  workerHost Localhost;
 }
 
 
@@ -68,12 +80,15 @@ HadoopClusterCompound extends Compound {
 
 HadoopFilesystem extends HadoopClusterCompound {
 
+//fs.name LAZY namenode:namenode:live.fs.default.name;
+  fs.name LAZY namenode:namenode:fs.default.name;
 
   namenode extends ClusterNameNodeCompound {
     sfProcessName NAMENODE_PROCESS;
   }
 
   datanode extends ClusterDataNodeCompound {
+    fs.default.name fs.name;
     sfProcessName DATANODE1_PROCESS;
   }
 
@@ -86,14 +101,15 @@ HadoopCluster extends HadoopFilesystem {
 
 
   jobTracker extends ClusterJobTrackerCompound {
+    fs.default.name fs.name;
     sfProcessName JOBTRACKER_PROCESS;
 
   }
 
 
   taskTracker extends ClusterTaskTrackerCompound {
+    fs.default.name fs.name;
     sfProcessName TASKTRACKER1_PROCESS;
-
   }
 
 }
@@ -107,6 +123,10 @@ ForkedCluster extends HadoopCluster {
 */
 }
 
+DistributedFilesystem extends HadoopFilesystem {
+  namenode:sfProcessHost namenode.host;
+  datanode:sfProcessHost datanode1.host;
+}
 
 DistributedCluster extends HadoopCluster {
   jobTracker:sfProcessHost jobtracker.host;
@@ -114,3 +134,4 @@ DistributedCluster extends HadoopCluster {
   namenode:sfProcessHost namenode.host;
   datanode:sfProcessHost datanode1.host;
 }
+
