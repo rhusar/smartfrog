@@ -199,15 +199,17 @@ Sleep extends Delay {
 JobTrackerLiveSequence extends FileSystemLiveSequence {
 
   jobTracker TBD;
-  taskTracker TBD;
+  //taskTracker TBD;
 
   //do we really need this? Surely the wait would suffice
-  sleep extends Sleep;
+  //sleep extends Sleep;
 
+/*
   waitForTaskTracker extends WaitForServiceLive {
     serviceName "TaskTracker";
     service LAZY PARENT:taskTracker;
   }
+*/
 
   waitForJobTracker extends WaitForJobTrackerLive {
     service LAZY PARENT:jobTracker;

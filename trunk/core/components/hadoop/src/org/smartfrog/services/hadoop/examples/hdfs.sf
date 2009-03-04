@@ -126,9 +126,9 @@ LocalFileSystemCompound extends FilesystemWithActions {
 LocalJobTrackerCompound extends LocalFileSystemCompound {
   description "A cluster with a job tracker";
 
-  jobTracker LAZY clusterActions:then:jobTracker;
 
-  clusterActions:then:jobTracker extends LightweightJobTracker {
+
+  jobTracker extends LightweightJobTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     dataDir LAZY PARENT:ATTRIB dataDir;
     dataDirectories [dataDir];
@@ -145,9 +145,7 @@ LocalJobTrackerCompound extends LocalFileSystemCompound {
 LocalTaskTrackerCompound extends LocalJobTrackerCompound {
   description "A cluster with a task tracker";
 
-  taskTracker LAZY clusterActions:then:taskTracker;
-
-  clusterActions:then:taskTracker extends LightweightTaskTracker {
+  taskTracker extends LightweightTaskTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     mapred.job.tracker LAZY ATTRIB jobTracker:mapred.job.tracker;
   }
@@ -166,7 +164,9 @@ WaitForHadoopLive extends FailingWaitFor {
   timeout CLUSTER_STARTUP_TIMEOUT ;
 }
 
-
+/**
+ * wait for the FS to come up, but not the job tracker
+ */
 WaitForFilesystemLive extends WaitForHadoopLive  {
   service TBD;
   jobTrackerLive false;
@@ -176,6 +176,9 @@ WaitForFilesystemLive extends WaitForHadoopLive  {
   }
 }
 
+/**
+ * wait for the FS to come up, and the job tracker
+ */
 WaitForJobTrackerLive extends WaitForFilesystemLive {
   cluster service;
   message ("WaitForFilesystem or JobTracker Live failed ClusterStatusCondition test"  ++ LAZY condition:serviceDescription);
