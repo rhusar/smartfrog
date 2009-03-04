@@ -74,7 +74,7 @@
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
 
     <property name="deploy.sf" value="${cluster.sf}" />
-    <property name="deploy.host" value="${namenode}" />
+    <property name="deploy.host" value="${test.namenode}" />
     <property name="application.name" value="${project.name}"/>
   </target>
 
