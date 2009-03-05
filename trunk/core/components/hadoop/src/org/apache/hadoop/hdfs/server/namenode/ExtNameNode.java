@@ -127,9 +127,9 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
         if (checkRunning) {
             int workers = getLiveWorkerCount();
             if(workers < minWorkerCount ){
-              throw new LivenessException("The number of worker nodes is only "
+                status.addThrowable(new LivenessException("The number of worker nodes is only "
                       + workers
-                      +"\n - less than the minimum of " + minWorkerCount);
+                      +"\n - less than the minimum of " + minWorkerCount));
             }
         }
     }
