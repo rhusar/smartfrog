@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created 03-Mar-2009 14:41:31
@@ -35,8 +36,11 @@ import java.net.InetAddress;
 public class LocalhostPrimImpl extends PrimImpl implements Prim {
     public static final String ATTR_HOSTNAME = "hostname";
     public static final String ATTR_ADDRESS = "address";
+    public static final String ATTR_FULL_HOSTNAME = "fullHostname";
     public static final String ATTR_DEPLOYED_HOSTNAME = "deployedHostname";
     public static final String ATTR_DEPLOYED_HOST_ADDRESS = "deployedHostAddress";
+    public static final String ATTR_IS_LOOPBACK = "isLoopback";
+    public static final String ATTR_HOSTNAME_UNKNOWN = "isHostnameUnknown";
     public static final String ATTR_TARGET = "target";
 
     public LocalhostPrimImpl() throws RemoteException {
@@ -53,9 +57,18 @@ public class LocalhostPrimImpl extends PrimImpl implements Prim {
         super.sfDeploy();
         String address = HostnameUtils.getLocalHostAddress();
         String hostname = HostnameUtils.getLocalHostname();
-        Prim target=sfResolve(ATTR_TARGET,this,false);
-        target.sfReplaceAttribute(ATTR_HOSTNAME,hostname);
+        Prim target = sfResolve(ATTR_TARGET, this, false);
+        target.sfReplaceAttribute(ATTR_HOSTNAME, hostname);
+        try {
+            InetAddress localhost = HostnameUtils.getLocalHost();
+            target.sfReplaceAttribute(ATTR_FULL_HOSTNAME, localhost.getCanonicalHostName());
+            target.sfReplaceAttribute(ATTR_IS_LOOPBACK, localhost.isLoopbackAddress());
+        } catch (UnknownHostException uhe) {
+            sfLog().warn("The local host is not known -network problems", uhe);
+            target.sfReplaceAttribute(ATTR_HOSTNAME_UNKNOWN, true);
+        }
         target.sfReplaceAttribute(ATTR_ADDRESS, address);
+
         InetAddress deployedHost = SFProcess.sfDeployedHost();
         target.sfReplaceAttribute(ATTR_DEPLOYED_HOSTNAME, deployedHost.getHostName());
         target.sfReplaceAttribute(ATTR_DEPLOYED_HOST_ADDRESS, deployedHost.getHostAddress());

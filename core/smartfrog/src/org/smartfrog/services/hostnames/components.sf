@@ -53,9 +53,13 @@ lookupLocalhostAddress extends Function {
   The values are set early, in the sfDeployPhase
   Attributes that are set on the target
   hostname  localhostname
+  fullHostname the fully qualified domain name if known; something shorter if not
   address   local host address
   deployedHostname  the hostname that Smartfrog is running on
   deployedHostAddress the hostname that Smartfrog is running on
+  isLoopback attribute set to true if loopback, false if not
+  isHostnameUnknown attribute that is only set to true if the local system cannot determine its own hostname. Undefined
+    if all is well. If this attribute is set, it is a sign of a system with a very badly configured network
   */
 
 Localhost extends WorkflowPrim {
