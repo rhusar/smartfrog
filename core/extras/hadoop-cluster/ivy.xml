@@ -61,17 +61,21 @@
         rev="latest.integration"
         conf="test->default"/>
     <dependency org="org.smartfrog"
-        name="sf-anubis" changing="true"
+        name="sf-scripting" changing="true"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="runtime->runtime;server->default"/>
     <dependency org="org.smartfrog"
         name="sf-csvfiles" changing="true"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="runtime->runtime;server->default"/>
     <dependency org="org.smartfrog"
       name="sf-xml" changing="true"
       rev="latest.integration"
-      conf="runtime->default"/>
+      conf="runtime->runtime;server->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-anubis" changing="true"
+        rev="latest.integration"
+        conf="runtime->runtime;server->default"/>    
     
     <dependency org="org.smartfrog"
         name="sf-hadoop"
