@@ -52,7 +52,7 @@ LightweightDataNode extends DataNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.heartbeat.interval 1;
   dfs.datanode.handler.count ClientHandlerThreads;
-  hostname LOCALHOST;
+  hostname ANY_HOST ;
   dfs.datanode.http.address  (hostname ++ ":" ++ DataNodeHttpPort);
   dfs.datanode.https.address (hostname ++ ":" ++ DataNodeHttpsPort);
   dfs.datanode.address (hostname ++ ":" ++ DataNodeIpcPort);
@@ -131,7 +131,7 @@ TransientNameNodeCompound extends TransientHadoopCompound {
 TransientDataNodeCompound extends HadoopCompoundBase {
   description "A data node bound to a temporary directory";
 
-  hostname LOCALHOST;
+  hostname ANY_HOST;
 
   localDataDir extends TempDir {
 

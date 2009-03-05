@@ -45,6 +45,7 @@ DataNodeIpcPort2   "8042";
 HandlerThreads 4;
 ClientHandlerThreads 2;
 LOCALHOST "localhost";
+ANY_HOST "0.0.0.0";
 FS.DEFAULT.NAME    ("hdfs://" ++ LOCALHOST ++ ":" ++ NameNodeIpcPort );
 NAME_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ NameNodeHttpPort );
 DATA_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ DataNodeHttpPort );

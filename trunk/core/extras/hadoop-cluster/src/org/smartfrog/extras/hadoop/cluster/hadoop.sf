@@ -37,6 +37,7 @@ ClusterDataNodeCompound extends TransientDataNodeCompound {
   threads WORKER_THREADS;
   fs.default.name  TBD;
   workerHost Localhost;
+  hostname "0.0.0.0";
 //  fs.default.name namenode.filesystem;
   //datanode:mapred.job.tracker.handler.count threads;
 }
@@ -61,20 +62,7 @@ ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
 
 
 HadoopClusterCompound extends Compound {
-/*
-  jasperHealth extends CheckJasperClasses {
-    sfShouldTerminate false;
-  }
 
-  namenodehealth extends CheckNamenodeJspClasses {
-    sfShouldTerminate false;
-  }
-
-
-  allhealth extends HadoopJspClasses {
-    sfShouldTerminate false;
-  }
-*/
 
 }
 
@@ -115,12 +103,6 @@ HadoopCluster extends HadoopFilesystem {
 }
 
 ForkedCluster extends HadoopCluster {
-/*
-  jobTracker:sfProcessName "jobTracker";
-  taskTracker:sfProcessName "taskTracker";
-  namenode:sfProcessName "namenode";
-  datanode:sfProcessName "datanode";
-*/
 }
 
 DistributedFilesystem extends HadoopFilesystem {
