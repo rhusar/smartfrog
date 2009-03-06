@@ -31,4 +31,6 @@ public interface Names {
     String PACKAGE = "/org/smartfrog/extras/hadoop/cluster/test/system/";
 
 
+    String MR_PACKAGE =
+            "/org/smartfrog/extras/hadoop/cluster/test/system/mapreduce/";
 }
