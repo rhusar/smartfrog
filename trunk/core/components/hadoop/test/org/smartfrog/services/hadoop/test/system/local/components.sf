@@ -22,8 +22,6 @@
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/testjob.sf"
 
-//how long a job should take before we give up on it
-JOB_TIMEOUT 90000;
 
 LocalDataNodeCompound extends TransientNameDataNodeCompound;
 

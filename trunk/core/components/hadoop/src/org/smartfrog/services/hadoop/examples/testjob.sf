@@ -27,6 +27,9 @@ FileSystemLiveSequence extends Sequence {
     //the cluster for all the tests
     cluster namenode;
 
+    //this is where we sleep
+    startupSleep extends Sleep;
+
     waitForNameNode extends WaitForNameNodeLive {
       service LAZY PARENT:namenode;
     }
@@ -246,7 +249,7 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
   mapred.job.tracker jobTracker:mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
   hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
-  jobTimeout JOB_TIMEOUT;
+  jobTimeout JOB_EXECUTE_TIMEOUT;
 
   //mapred.system.dir "/tmp/hadoop/mapred/system";
 
