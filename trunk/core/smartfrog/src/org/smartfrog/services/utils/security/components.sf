@@ -26,6 +26,8 @@ CheckSecurityManagerLive extends WorkflowPrim {
   requireExitTrapping true;
   testSystemExit false;
 
+  ERROR_NOT_EXIT_TRAPPING CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_NOT_EXIT_TRAPPING;
+  ERROR_NO_SECURITY_MANAGER CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_NO_SECURITY_MANAGER;
 }
 
 CheckSecurityBlocksSystemExit extends CheckSecurityManagerLive {

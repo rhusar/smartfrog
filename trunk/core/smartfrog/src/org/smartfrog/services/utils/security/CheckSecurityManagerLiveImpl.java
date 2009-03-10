@@ -37,6 +37,8 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
     public static final String ATTR_REQUIRE_SECURITY_MANAGER = "requireSecurityManager";
     public static final String ATTR_TEST_SYSTEM_EXIT = "testSystemExit";
 
+    public static final String ERROR_NOT_EXIT_TRAPPING = "Security manager is not a SmartFrog exit-trapping manager";
+    public static final String ERROR_NO_SECURITY_MANAGER = "No security manager installed";
     private boolean testSystemExit, requireExitTrapping, requireSecurityManager;
 
     public CheckSecurityManagerLiveImpl() throws RemoteException {
@@ -58,12 +60,12 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
         SecurityManager current = System.getSecurityManager();
 
         if (requireSecurityManager && current == null) {
-            throw new SmartFrogDeploymentException("No security manager installed");
+            throw new SmartFrogDeploymentException(ERROR_NO_SECURITY_MANAGER);
         }
         sfLog().info("Current security manager " + current);
         if (requireExitTrapping && !ExitTrappingSecurityManager.isSecurityManagerRunning()) {
             throw new SmartFrogDeploymentException(
-                    "Security manager " + current + " is not a SmartFrog exit trapping manager");
+                    ERROR_NOT_EXIT_TRAPPING + current);
         }
         if (testSystemExit) {
             try {
