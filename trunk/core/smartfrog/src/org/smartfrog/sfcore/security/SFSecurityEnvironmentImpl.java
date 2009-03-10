@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -113,7 +113,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
     public SFSecurityEnvironmentImpl(InetAddress bindAddr) throws SFGeneralSecurityException {
         // Init debugging.
         debug = SFDebug.getInstance("SFSecurityEnvironmentImpl");
-        this.rmissfBindAddr = bindAddr;
+        rmissfBindAddr = bindAddr;
         // Check that requests comes from trusted code.
         SFSecurity.checkSFCommunity();
 
@@ -156,7 +156,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
             ks.load(SFClassLoader.getResourceAsStream(keyStoreName),
                 keyStorePasswd.toCharArray());
         } catch (Exception e) {
-            throw new SFGeneralSecurityException(e.getMessage());
+            throw new SFGeneralSecurityException(e);
         }
     }
 
@@ -172,7 +172,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
             kmf.init(ks, keyStorePasswd.toCharArray());
             keyManagers = kmf.getKeyManagers();
         } catch (Exception e) {
-            throw new SFGeneralSecurityException(e.getMessage());
+            throw new SFGeneralSecurityException(e);
         }
     }
 
@@ -188,7 +188,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
             tmf.init(ks);
             trustManagers = tmf.getTrustManagers();
         } catch (Exception e) {
-            throw new SFGeneralSecurityException(e.getMessage());
+            throw new SFGeneralSecurityException(e);
         }
     }
 
@@ -203,7 +203,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
             context = SSLContext.getInstance("TLS");
             context.init(keyManagers, trustManagers, null); //default RNG for now.
         } catch (Exception e) {
-            throw new SFGeneralSecurityException(e.getMessage());
+            throw new SFGeneralSecurityException(e);
         }
     }
 
