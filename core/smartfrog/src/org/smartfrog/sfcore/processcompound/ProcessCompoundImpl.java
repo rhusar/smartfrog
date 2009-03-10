@@ -937,18 +937,35 @@ public class ProcessCompoundImpl extends CompoundImpl
     public ProcessCompound sfResolveProcess(Object name,
                                             ComponentDescription cd)
             throws Exception {
-        ProcessCompound pc;
+        ProcessCompound pc = null;
 
         if (sfParent() == null) { // I am the root
+            Reference reference = new Reference(new HereReferencePart(
+                    name));
+            Object resolvedObject;
             try {
-                pc = (ProcessCompound) sfResolve(new Reference(new HereReferencePart(
-                        name)));
+                resolvedObject = sfResolve(reference);
             } catch (SmartFrogResolutionException e) {
+                //the reference failed to resolve 
+                resolvedObject = null;
                 if (sfLog().isTraceEnabled()) {
-                    sfLog().trace(" Creating a new ProcessCompound: " + name.toString(),e);
+                    sfLog().trace(" Creating a new ProcessCompound: " + name.toString(), e);
                 }
                 pc = addNewProcessCompound(name, cd);
                 pc.sfParentageChanged();
+            }
+            if (resolvedObject != null) {
+                //this branch is only executed if the resolution succeeded. 
+                //check it for being a valid type
+                if (!(resolvedObject instanceof ProcessCompound)) {
+                    //wrong type: throw a relevant exceptions
+                    throw SmartFrogResolutionException.illegalClassType(reference,
+                            sfCompleteNameSafe(),
+                            resolvedObject,
+                            resolvedObject.getClass().toString(),
+                            "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl");
+                }
+                pc = (ProcessCompound) resolvedObject;
             }
         } else { // I am a child process - find in the parent
             pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
