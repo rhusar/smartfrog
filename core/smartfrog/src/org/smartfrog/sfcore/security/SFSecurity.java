@@ -71,12 +71,11 @@ public class SFSecurity {
                     System.setProperty("java.rmi.server.RMIClassLoaderSpi",
                             "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
                 } catch (AccessControlException e) {
-                    throw (SFGeneralSecurityException) new SFGeneralSecurityException(
+                    throw new SFGeneralSecurityException(
                             ("Java Security Access control exception - "
                                     + "SmartFrog is configured to run with security on, but the smartfrog JAR is not "
                                     + "signed by a trusted CA: "
-                                    + e.getMessage()))
-                            .initCause(e);
+                                    + e.getMessage()), e);
 
                 }
 
@@ -84,7 +83,7 @@ public class SFSecurity {
 
                 if (Boolean.getBoolean(SFSecurityProperties.propSecurityOn)) {
                     // Activate the real security manager.
-                    System.setSecurityManager(new SecurityManager());
+                    ExitTrappingSecurityManager.registerSecurityManager(true);
 
                     securityEnv = new SFSecurityEnvironmentImpl(null);
 
@@ -131,7 +130,7 @@ public class SFSecurity {
                     // This is necessary for dynamic classloading to work.
                     String secPro = System.getProperty("java.security.policy");
                     if  (secPro != null) {
-                        System.setSecurityManager(new ExitTrappingSecurityManager());
+                        ExitTrappingSecurityManager.registerSecurityManager(false);
                     }
 
                     securityOn = false;
@@ -140,7 +139,7 @@ public class SFSecurity {
             }
         } catch (IOException e) {
             // Problems setting up RMI.
-            throw (SFGeneralSecurityException)new SFGeneralSecurityException(e.toString()).initCause(e);
+            throw new SFGeneralSecurityException(e);
         }
     }
 

@@ -25,9 +25,12 @@ import java.security.Permission;
  * Created 28-Oct-2008 13:52:18
  */
 
-public class ExitTrappingSecurityManager extends DummySecurityManager {
+public class ExitTrappingSecurityManager extends DummySecurityManager implements ExitTrapping {
 
     private static volatile boolean systemExitPermitted = false;
+
+    public ExitTrappingSecurityManager() {
+    }
 
     /**
      * Query to see if the security manager permits system exits
@@ -56,11 +59,52 @@ public class ExitTrappingSecurityManager extends DummySecurityManager {
      */
     @Override
     public void checkExit(int status) {
-        if (systemExitPermitted) {
+        if (isSystemExitPermitted()) {
             super.checkExit(status);
         } else {
             throw new SystemExitException(status);
         }
+    }
+
+    /**
+     * Returns a string representation of the object. 
+     * @return a string representation of the object.
+     */
+    @Override
+    public String toString() {
+        return "ExitTrappingSecurityManager, systemExitPermitted="+isSystemExitPermitted();
+    }
+
+    /**
+     * Tells you if an exit trapping security manager is installed. 
+     * @return true if there is a security manager and it is exit trapping
+     */
+    public static boolean isSecurityManagerRunning() {
+        SecurityManager current = System.getSecurityManager();
+        return current != null && current instanceof ExitTrapping;
+    }
+
+    /**
+     * Register the security manager. 
+     * @return true if there is now an ExitTrapping SecurityManager running
+     */
+    public static boolean registerSecurityManager() {
+        return registerSecurityManager(false);
+    }
+
+    /**
+     * Register the security manager.
+     * @param real flag to indicate whether a real or dummy security manager is desired
+     * @return true if there is now an ExitTrappingSecurityManager running
+     */
+    public static boolean registerSecurityManager(boolean real) {
+        SecurityManager current = System.getSecurityManager();
+        if (current != null) {
+            return current instanceof ExitTrapping;
+        }
+        System.setSecurityManager(
+                real? new ExitTrappingRealSecurityManager(): new ExitTrappingSecurityManager());
+        return true;
     }
 
     /**
@@ -75,7 +119,7 @@ public class ExitTrappingSecurityManager extends DummySecurityManager {
          *
          * @param status exit code that was used for this exit request
          */
-        private SystemExitException(int status) {
+        public SystemExitException(int status) {
             super("SystemExit with status code " + status + " blocked");
             this.status = status;
         }
@@ -89,4 +133,5 @@ public class ExitTrappingSecurityManager extends DummySecurityManager {
             return status;
         }
     }
+
 }
