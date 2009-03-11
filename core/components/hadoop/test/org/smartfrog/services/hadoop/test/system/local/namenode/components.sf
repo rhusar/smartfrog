@@ -32,7 +32,9 @@ testLocalNameNodeCompound extends ExpectDeploy {
     namenodeLive extends CheckNameNodePort {
       cluster LAZY action:cluster;
     }
-
+    
+    //there's a bit of delay needed here as the system is still initialising
+    s extends Sleep;
 
   }
 
@@ -58,6 +60,8 @@ testLocalNameNodeCompoundTerminates extends ExpectDeploy {
       cluster LAZY PARENT:namenode;
     }
 
+//there's a bit of delay needed here as the system is still initialising
+    s extends Sleep;
 
     //detach and terminate
     terminateNameNode extends Terminator {
