@@ -69,16 +69,32 @@ public class ExitTrappingTest extends TestCase {
         }
     }
 
-    public void testSettingSecurityManager() throws Throwable {
+    public void testSystemExit() throws Throwable {
         if (System.getSecurityManager() != null) {
             fail("There is a security manager already");
         }
         try {
-            System.setSecurityManager(manager);
+            assertFalse(ExitTrappingSecurityManager.isSecurityManagerRunning());
+            assertTrue(ExitTrappingSecurityManager.registerSecurityManager());
             System.exit(1);
         } catch (ExitTrappingSecurityManager.SystemExitException expected) {
             //all is well
             assertEquals(1, expected.getStatus());
+        } finally {
+            System.setSecurityManager(null);
+        }
+    }
+    public void testRuntimeExit() throws Throwable {
+        if (System.getSecurityManager() != null) {
+            fail("There is a security manager already");
+        }
+        try {
+            assertFalse(ExitTrappingSecurityManager.isSecurityManagerRunning());
+            assertTrue(ExitTrappingSecurityManager.registerSecurityManager());
+            Runtime.getRuntime().exit(-1);
+        } catch (ExitTrappingSecurityManager.SystemExitException expected) {
+            //all is well
+            assertEquals(-1, expected.getStatus());
         } finally {
             System.setSecurityManager(null);
         }
