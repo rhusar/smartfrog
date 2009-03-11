@@ -137,7 +137,7 @@ TestJob extends Job {
   mapred.job.tracker jobTracker:mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
   hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
-  jobTimeout JOB_TIMEOUT;
+  jobTimeout JOB_EXECUTE_TIMEOUT;
 
   //mapred.system.dir "/tmp/hadoop/mapred/system";
 
