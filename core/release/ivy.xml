@@ -85,6 +85,10 @@
     <conf name="package-testharness"
         description="testharness"/>
 
+    <conf name="everything"
+        extends="default,package-core,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp,package-extras,package-gui,package-testharness"
+        description="all our dependencies in one place"/>
+
 
   </configurations>
 
