@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.security.ExitTrappingSecurityManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -86,7 +87,6 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-//        expectNodeTermination = true;
         expectNodeTermination = sfResolve(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true, true);
         completeName = sfCompleteName();
     }

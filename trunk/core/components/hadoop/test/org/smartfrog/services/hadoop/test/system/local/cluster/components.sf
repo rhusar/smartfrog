@@ -20,7 +20,7 @@
 
 
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
-
+#include "/org/smartfrog/services/utils/security/components.sf"
 
 
 testLocalCluster extends ExpectDeploy {
@@ -51,3 +51,22 @@ testLocalClusterForked extends testLocalCluster {
   action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
 }
 
+/**
+ * these take a close look at security
+ * but currently show that we arent' checking very reliably. 
+ */
+testSecurityLive extends FailingTestCompound {
+  exitText CheckSecurityBlocksSystemExit:ERROR_NO_SECURITY_MANAGER;
+  action extends CheckSecurityBlocksSystemExit {
+  }
+}
+
+
+testSecurityForked extends testSecurityLive {
+  sfProcessName "testSecurityForked"; 
+}
+
+testSecurityExitBlocked extends ExpectDeploy {
+  action extends CheckSecurityBlocksRealSystemExit {
+  }
+}
