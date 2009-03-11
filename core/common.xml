@@ -1428,6 +1428,7 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
   <target name="init-deploy-properties" depends="init">
     <property name="deploy.host" value="localhost"/>
+    <property name="deploy.timeout" value="30000"/>
     <property name="application.name" value="${project.name}"/>
   </target>
 
@@ -1458,7 +1459,7 @@ smartfrog.tasks.classpath=
       <sf-deploy classpathref="tests.run.classpath"
           logStackTraces="true"
           host="${deploy.host}"
-          timeout="30000"
+          timeout="${deploy.timeout}"
           >
         <codebase url="${codebase}"/>
         <syspropertyset>
