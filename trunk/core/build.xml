@@ -41,6 +41,7 @@ For more information: www.smartfrog.org
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
     <property name="toplevel.dir" location=".." />
+    <property name="build.dir" location="build" />
     <property name="main.project" location="smartfrog" />
     <property name="test.project" location="testharness" />
     <property name="components.project" location="components" />
@@ -369,30 +370,6 @@ For more information: www.smartfrog.org
      >
   </target>
 
-  <!-- =================================================================== -->
-  <!-- Luntbuild target for distribution -->
-  <!-- =================================================================== -->
-  <target name="luntbuild-clean" depends="clean,luntbuild-incremental"/>
-
-
-  <!-- =================================================================== -->
-  <!-- incremental build                                    -->
-  <!-- =================================================================== -->
-  <target name="luntbuild-incremental"
-      depends="dist,tasks,components"/>
-
-  <!-- =================================================================== -->
-  <!-- luntbuild test suite                                           -->
-  <!-- =================================================================== -->
-  <target name="luntbuild-test"
-      depends="tested"/>
-
-  <!-- =================================================================== -->
-  <!-- luntbuild release process-->
-  <!-- =================================================================== -->
-  <target name="luntbuild-release"
-      depends="clean,release" />
-
 
   <!-- =================================================================== -->
   <!-- Gump target for distribution -->
@@ -403,15 +380,6 @@ For more information: www.smartfrog.org
   <!-- Gump best practises say unit tests only -->
   <!-- =================================================================== -->
   <target name="gump-test" depends="test" />
-
-
-  <!-- =================================================================== -->
-  <!-- cddlm compile is handed down-->
-  <!-- =================================================================== -->
-  <target name="cddlm" depends="ivy-cddlm" />
-
-  <target name="bamboo-build-all" depends="published"
-    description="entry point for Bamboo CI system" />
 
 
   <target name="ivy-properties">
@@ -621,13 +589,11 @@ ${child.projects.list}
     <ivy-delegate target="pdf-doc-folder" />
   </target>
 
-  <target name="ivy-cddlm" depends="ivy-init">
-    <ivy-projects reference="cddlm.projects" root="sf-deployapi">
-      <fileset file="components/deployapi/build.xml" />
-      <fileset file="extras/cdl/build.xml"/>
+  <target name="ivy-hadoop" depends="ivy-init">
+    <ivy-projects reference="hadoop.projects" root="sf-hadoop-cluster">
     </ivy-projects>
-    <subant  target="published" verbose="true">
-      <buildpath refid="cddlm.projects"/>
+    <subant  target="hadoop" verbose="true">
+      <buildpath refid="hadoop.projects"/>
       <!--<property file="master.properties"/>-->
     </subant>
   </target>
@@ -681,17 +647,19 @@ ${child.projects.list}
   <!-- CLOVER -->
   <target name="init.clover" depends="init">
     <property name="clover.dir" location="clover" />
-    <property name="build.clover.dir" location="build/clover" />
+    <property name="clover.jar" location="${clover.dir}/clover.jar" />
+    <property name="build.clover.dir" location="${build.dir}/clover" />
     <property name="build.clover.history.dir" location="${build.clover.dir}/history" />
     <property name="build.clover.html.dir" location="${build.clover.dir}/html" />
     <property name="build.clover.pdf" location="${build.clover.dir}/coverage.pdf" />
+
     <mkdir dir="${build.clover.history.dir}" />
     <mkdir dir="${build.clover.html.dir}" />
-    <available property="clover.jar.present" file="${clover.dir}/clover.jar" />
+    <available property="clover.jar.present" file="${clover.jar}" />
   </target>
 
   <target name="declare-clover" depends="init.clover" if="clover.jar.present">
-    <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar" uri="http://cenqua.com/clover"/>
+    <taskdef resource="cloverlib.xml" classpath="${clover.jar}" uri="http://cenqua.com/clover"/>
     <available property="clover.installed" classname="com.cenqua.clover.CloverInstr"/>
   </target>
 
