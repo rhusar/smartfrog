@@ -72,7 +72,7 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
      */
     @Override
     public String toString() {
-        return "ExitTrappingSecurityManager, systemExitPermitted="+isSystemExitPermitted();
+        return "ExitTrappingSecurityManager, systemExitPermitted=" + isSystemExitPermitted();
     }
 
     /**
@@ -102,8 +102,8 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
         if (current != null) {
             return current instanceof ExitTrapping;
         }
-        System.setSecurityManager(
-                real? new ExitTrappingRealSecurityManager(): new ExitTrappingSecurityManager());
+        SecurityManager newManager = real ? new ExitTrappingRealSecurityManager() : new ExitTrappingSecurityManager();
+        System.setSecurityManager(newManager);
         return true;
     }
 
