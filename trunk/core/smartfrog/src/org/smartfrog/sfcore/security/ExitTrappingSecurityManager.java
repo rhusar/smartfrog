@@ -102,7 +102,12 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
         if (current != null) {
             return current instanceof ExitTrapping;
         }
-        SecurityManager newManager = real ? new ExitTrappingRealSecurityManager() : new ExitTrappingSecurityManager();
+        SecurityManager newManager;
+        if (real) {
+            newManager = new ExitTrappingRealSecurityManager();
+        } else {
+            newManager = new ExitTrappingSecurityManager();
+        }
         System.setSecurityManager(newManager);
         return true;
     }
