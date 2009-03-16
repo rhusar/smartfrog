@@ -1368,6 +1368,18 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
     </sf-conditional>
 
 
+    <rootssh
+        failonerror="true"
+        command="rpm -qf ${rpm.install.dir}/lib/*.jar"
+        outputProperty="rpm.qf.lib.results"/>
+    <fail>
+      <condition>
+          <contains string="${rpm.qf.lib.results}"
+                    substring="is not owned by any package"/>
+      </condition>
+      One of the directories/files in the RPM lib dir is not declared as being owned by any RPM.
+      ${rpm.qf.lib.results}
+    </fail>
   </target>
 
 
