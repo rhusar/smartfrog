@@ -102,7 +102,6 @@ public class LocalHost extends Task {
      * Get the IPAddress of the local host as a string. This may be a loop back value.
      *
      * @return the IPAddress of the localhost
-     * @throws UnknownHostException if not even "localhost" resolves.
      */
     private static String getLocalHostIPAddress() {
         try {
