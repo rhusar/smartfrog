@@ -61,7 +61,12 @@ ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
 }
 
 
-HadoopClusterCompound extends Compound {
+/**
+ * The parallel container is used here to leave up any part of the system
+ * which can come up. This allows us to permit partial cluster failure, without
+ * failing ourselves.
+ */
+HadoopClusterCompound extends Parallel {
 
 
 }

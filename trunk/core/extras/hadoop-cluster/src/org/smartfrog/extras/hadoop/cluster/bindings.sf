@@ -31,16 +31,16 @@ datanode1.host PROPERTY test.datanode1;
 tasktracker1.host PROPERTY test.tasktracker1;
 
 
-NAMENODE_PROCESS "namenode";
-DATANODE1_PROCESS "datanode1";
-DATANODE2_PROCESS "datanode2";
-DATANODE3_PROCESS "datanode3";
-DATANODE4_PROCESS "datanode4";
-JOBTRACKER_PROCESS "jobtracker";
-TASKTRACKER1_PROCESS "tasktracker1";
-TASKTRACKER2_PROCESS "tasktracker2";
-TASKTRACKER3_PROCESS "tasktracker3";
-TASKTRACKER4_PROCESS "tasktracker4";
+NAMENODE_PROCESS "namenode-ps";
+DATANODE1_PROCESS "datanode1-ps";
+DATANODE2_PROCESS "datanode2-ps";
+DATANODE3_PROCESS "datanode3-ps";
+DATANODE4_PROCESS "datanode4-ps";
+JOBTRACKER_PROCESS "jobtracker-ps";
+TASKTRACKER1_PROCESS "tasktracker1-ps";
+TASKTRACKER2_PROCESS "tasktracker2-ps";
+TASKTRACKER3_PROCESS "tasktracker3-ps";
+TASKTRACKER4_PROCESS "tasktracker4-ps";
 
 
 
