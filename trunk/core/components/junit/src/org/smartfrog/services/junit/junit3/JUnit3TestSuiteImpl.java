@@ -89,6 +89,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     /** Error if sysproperties are uneven. {@value} */
     public static final String ERROR_UNEVEN_PROPERTIES = "There is an unbalanced number of properties in "
             + ATTR_SYSPROPS;
+    /** {@value } */
     private static final String SUITE_METHOD_NAME = "suite";
     public static final String WARN_IGNORING_REMOTE_FAULT = "Ignoring remote fault";
 
