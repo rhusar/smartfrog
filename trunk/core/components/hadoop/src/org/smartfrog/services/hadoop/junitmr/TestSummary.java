@@ -21,13 +21,13 @@ package org.smartfrog.services.hadoop.junitmr;
 
 import org.apache.hadoop.io.WritableComparable;
 
-import java.io.IOException;
-import java.io.DataOutput;
 import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /**
  * Created 17-Mar-2009 14:00:23
-*/
+ */
 public class TestSummary implements WritableComparable<TestSummary> {
 
     public int attempts;
@@ -36,43 +36,39 @@ public class TestSummary implements WritableComparable<TestSummary> {
     public int failures;
     public String name;
 
+
     /**
-     * Serialize the fields of this object to <code>out</code>.
+     * {@inheritDoc}
      *
      * @param out <code>DataOuput</code> to serialize this object into.
-     * @throws IOException
+     * @throws IOException IO trouble
      */
     public void write(DataOutput out) throws IOException {
         out.writeInt(attempts);
         out.writeInt(successes);
         out.writeInt(skips);
         out.writeInt(failures);
-        JUnitMRUtils.writeText(out, name);
+        out.writeUTF(name);
     }
 
 
     /**
-     * Deserialize the fields of this object from <code>in</code>.
-     *
-     * <p>For efficiency, implementations should attempt to re-use storage in the existing object where possible.</p>
+     * {@inheritDoc}
      *
      * @param in <code>DataInput</code> to deseriablize this object from.
-     * @throws IOException
+     * @throws IOException IO trouble
      */
     public void readFields(DataInput in) throws IOException {
         attempts = in.readInt();
         successes = in.readInt();
         skips = in.readInt();
         failures = in.readInt();
-        name = JUnitMRUtils.readText(in);
+        name = in.readUTF();
     }
 
 
     /**
-     * Compares this object with the specified object for order.  Returns a negative integer, zero, or a positive
-     * integer as this object is less than, equal to, or greater than the specified object.
-     *
-     * we compare on name only
+     * {@inheritDoc} we compare on name only
      */
     public int compareTo(TestSummary that) {
         return this.name.compareTo(that.name);

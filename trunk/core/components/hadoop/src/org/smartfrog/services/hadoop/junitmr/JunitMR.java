@@ -19,14 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.junitmr;
 
+import junit.framework.Test;
+import junit.framework.TestResult;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-
-import junit.framework.TestResult;
-import junit.framework.Test;
 
 /**
  * Created 17-Mar-2009 13:18:16
@@ -35,6 +34,9 @@ import junit.framework.Test;
 public class JunitMR {
 
 
+    /**
+     * This mapper executes the junit test classes listed
+     */
     public static class JunitMap extends
             Mapper<Text, Text, Text, SingleTestRun> {
 
@@ -46,16 +48,17 @@ public class JunitMR {
         protected void map(Text key, Text value,
                            Context context)
                 throws IOException, InterruptedException {
-            super.map(key, value, context);
             String test = value.toString();
             TestResult result = new TestResult();
             try {
                 Class testClass = JUnitMRUtils.loadTestClass(test);
                 Test testSuite = JUnitMRUtils.extractTest(testClass);
-                SingleTestRun run = new SingleTestRun();
-                result.addListener(run);
+                TestSuiteRun tsr = new TestSuiteRun();
+                result.addListener(tsr);
                 testSuite.run(result);
-                context.write(key, run);
+                for (SingleTestRun singleTestRun : tsr.getTests()) {
+                    context.write(new Text(singleTestRun.name), singleTestRun);
+                }
             } catch (ClassNotFoundException e) {
                 throw (IOException) new IOException("Could not load " + test).initCause(e);
             }
@@ -64,6 +67,9 @@ public class JunitMR {
 
     }
 
+    /**
+     * This reducer takes the test results and summmarises them for each test method
+     */
     public static class JUnitReducer
             extends Reducer<Text, SingleTestRun, Text, TestSummary> {
 
@@ -82,7 +88,7 @@ public class JunitMR {
                 if (outcome.skipped) {
                     summary.skips++;
                 }
-                if (outcome.text.length()>0) {
+                if (outcome.text.length() > 0) {
                     //do something with text here
                 }
             }
