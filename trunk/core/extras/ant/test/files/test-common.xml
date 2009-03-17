@@ -33,7 +33,7 @@
   <property name="long.timeout" value="${long.timeout.seconds}000"/>
   <property name="medium.timeout.seconds" value="10000"/>
   <property name="medium.timeout" value="${medium.timeout.seconds}000"/>
-  <property name="short.timeout.seconds" value="5"/>
+  <property name="short.timeout.seconds" value="10"/>
   <property name="short.timeout" value="${short.timeout.seconds}000"/>
   <property name="new.port" value="3805"/>
   <property name="shutdown.time.seconds" value="5"/>
