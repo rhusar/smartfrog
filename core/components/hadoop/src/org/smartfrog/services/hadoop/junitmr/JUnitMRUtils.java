@@ -19,19 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.junitmr;
 
-import org.apache.hadoop.io.Text;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-
-import java.io.DataInput;
-import java.io.IOException;
-import java.io.DataOutput;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.rmi.RemoteException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.apache.hadoop.io.Text;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Created 17-Mar-2009 13:59:23
@@ -54,7 +50,6 @@ public class JUnitMRUtils {
         Text t = new Text(s);
         t.write(out);
     }
-
 
     /**
      * get the tests from the class, either as a suite or as introspected tests. There is no verification here that a
@@ -88,6 +83,7 @@ public class JUnitMRUtils {
      *
      * @param classname class
      * @return the loaded class
+     * @throws ClassNotFoundException if it isn't found
      */
     public static Class loadTestClass(String classname)
             throws ClassNotFoundException {
