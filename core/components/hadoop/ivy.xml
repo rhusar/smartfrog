@@ -88,7 +88,6 @@
         rev="latest.integration"
         conf="test->default"/>
 
-
     <dependency org="org.smartfrog"
         name="sf-tasks"
         rev="latest.integration"
@@ -167,6 +166,11 @@
         rev="${commons-net.version}"
         conf="ftp->default"/>
 
+    <!-- needed for the junit MR-->
+    <dependency org="junit"
+      name="junit"
+      rev="${junit3.version}"
+      conf="compile->default"/>
 
   </dependencies>
 </ivy-module>
