@@ -65,7 +65,7 @@
         <sf-startdaemon >
         </sf-startdaemon>
       </application>
-      <probe>
+      <probe message="Timeout waiting for app server on ${smartfrog.daemon.port}">
         <socket port="${smartfrog.daemon.port}" server="localhost"/>
       </probe>
       <teardown>
@@ -82,7 +82,8 @@
         <sf-startdaemon port="${new.port}">
         </sf-startdaemon>
       </application>
-      <probe maxwait="${short.timeout.seconds}">
+      <probe maxwait="${short.timeout.seconds}"
+          message="Timeout waiting for app server on ${new.port}" >
         <socket port="${new.port}" server="localhost"/>
       </probe>
       <teardown>
