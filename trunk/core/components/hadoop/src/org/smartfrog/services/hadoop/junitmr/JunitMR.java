@@ -39,8 +39,8 @@ public class JunitMR {
             Mapper<Text, Text, Text, SingleTestRun> {
 
         /**
-         * Called once for each key/value pair in the input split. Most applications should override this, but the default
-         * is the identity function.
+         * Called once for each key/value pair in the input split. Most applications should override this, but the
+         * default is the identity function.
          */
         @Override
         protected void map(Text key, Text value,
@@ -57,11 +57,11 @@ public class JunitMR {
                 testSuite.run(result);
                 context.write(key, run);
             } catch (ClassNotFoundException e) {
-                throw new IOException("Could not load "+test,e);
+                throw (IOException) new IOException("Could not load " + test).initCause(e);
             }
 
         }
-        
+
     }
 
     public static class JUnitReducer
@@ -82,7 +82,7 @@ public class JunitMR {
                 if (outcome.skipped) {
                     summary.skips++;
                 }
-                if (!outcome.text.isEmpty()) {
+                if (outcome.text.length()>0) {
                     //do something with text here
                 }
             }
