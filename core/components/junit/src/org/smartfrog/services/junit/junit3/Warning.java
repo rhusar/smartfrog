@@ -23,9 +23,8 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
- * A variant on how JUnit3 reports problems.
- * This pseudo-test case class throws whichever fault is passed in
- * created 24-Oct-2006 13:38:22
+ * A variant on how JUnit3 reports problems. This pseudo-test case class throws whichever fault is passed in created
+ * 24-Oct-2006 13:38:22
  */
 
 public class Warning extends TestCase {
@@ -47,7 +46,8 @@ public class Warning extends TestCase {
 
     /**
      * Constructs a test case with the given name.
-     * @param name test name
+     *
+     * @param name   test name
      * @param thrown exception to raise later
      */
     public Warning(String name, Throwable thrown) {
@@ -56,19 +56,20 @@ public class Warning extends TestCase {
     }
 
     /**
-     * A constructor that creates a new {@link AssertionFailedError} with the
-     * specified message
-     * @param name test name
+     * A constructor that creates a new {@link AssertionFailedError} with the specified message
+     *
+     * @param name    test name
      * @param message error message
      */
     public Warning(String name, String message) {
         super(name);
-        thrown=new AssertionFailedError(message);
+        thrown = new AssertionFailedError(message);
     }
 
 
     /**
      * Throws whatever is in the thrown attribute
+     *
      * @throws Throwable whatever we were constructed with
      */
     public void testReportError() throws Throwable {
