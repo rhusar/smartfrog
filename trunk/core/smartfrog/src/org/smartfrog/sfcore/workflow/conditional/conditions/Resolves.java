@@ -19,6 +19,10 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+
 import java.rmi.RemoteException;
 
 /**
@@ -31,4 +35,21 @@ public class Resolves extends AbstractTargetedCondition implements TargetedCondi
     public Resolves() throws RemoteException {
     }
 
+    /**
+     * Try to resolve the target
+     * @return
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    @Override
+    public boolean evaluate() throws RemoteException, SmartFrogException {
+        try {
+            Prim target = getTarget();
+            return true;
+        } catch (SmartFrogResolutionException e) {
+            return false;
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
 }
