@@ -76,14 +76,14 @@
 
   <presetdef name="sf-system-test2">
     <sf-functionaltest
-        testTimeout="${short.timeout.seconds}"
+        testTimeout="${medium.timeout.seconds}"
         shutdownTime="${shutdown.time.seconds}">
       <application>
         <sf-startdaemon port="${new.port}">
         </sf-startdaemon>
       </application>
-      <probe maxwait="${short.timeout.seconds}"
-          message="Timeout waiting for app server on ${new.port}" >
+      <probe maxwait="${medium.timeout.seconds}"
+          message="Timeout waiting for app server on ${new.port}" after "${medium.timeout.seconds}" seconds>
         <socket port="${new.port}" server="localhost"/>
       </probe>
       <teardown>
