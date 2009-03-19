@@ -37,7 +37,7 @@ public class OrCompoundCondition extends AbstractCompoundCondition {
      * Override point; reset the accumulator to its starting value
      */
     protected void resetAccumulator() {
-        accumulator=false;
+        accumulator = false;
     }
 
     /**

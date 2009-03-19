@@ -19,12 +19,12 @@
  */
 package org.smartfrog.sfcore.workflow.conditional;
 
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.rmi.RemoteException;
 
@@ -56,7 +56,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * Starts the component by deploying the condition
      *
      * @throws SmartFrogException in case of problems creating the child
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -66,15 +66,17 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     /**
      * Override point: where the condition is deployed at startup.
      * The default action is to call {@link #deployCondition()}
+     *
      * @throws SmartFrogException in case of problems creating the child
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
-    protected void deployConditionAtStartup() throws SmartFrogException, RemoteException{
+    protected void deployConditionAtStartup() throws SmartFrogException, RemoteException {
         deployCondition();
     }
 
     /**
      * Override point: is the condition required. IF not, there is no attempt to deploy it at startup
+     *
      * @return true
      */
     protected boolean isConditionRequired() {
@@ -83,11 +85,12 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
 
     /**
      * Deploy the condition.
-     * @see #isConditionRequired()
+     *
      * @throws SmartFrogResolutionException if the condition is required, and it is not there, or the condition
-     * itself fails to deploy.
-     * @throws RemoteException network problems
+     *                                      itself fails to deploy.
+     * @throws RemoteException              network problems
      * @throws SmartFrogDeploymentException deployment problems
+     * @see #isConditionRequired()
      */
     protected void deployCondition() throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
         condition = (Condition) deployChildCD(ATTR_CONDITION, isConditionRequired());
@@ -95,6 +98,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
 
     /**
      * Get the condition
+     *
      * @return the deployed condition or null if there is none active
      */
     public Condition getCondition() {
@@ -105,8 +109,9 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     /**
      * Evaluate the condition by delegating to the underlying condition.
      * throws an exception if there is no deployed condition.
+     *
      * @return true if it is successful, false if not
-     * @throws RemoteException for network problems
+     * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
@@ -118,6 +123,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
 
     /**
      * Override point. Handle a missing condition
+     *
      * @return the value of the condition.
      * @throws SmartFrogException throws an exception as there is no deployed condition.
      */
@@ -132,7 +138,6 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     protected synchronized void finish() {
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.normal(getName()));
     }
-
 
 
 }

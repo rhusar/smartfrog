@@ -26,7 +26,7 @@ package org.smartfrog.sfcore.workflow.conditional;
 
 public interface If extends Conditional {
 
-    String ATTR_THEN="then";
-    String ATTR_ELSE="else";
+    String ATTR_THEN = "then";
+    String ATTR_ELSE = "else";
 
 }

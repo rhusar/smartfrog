@@ -20,7 +20,6 @@
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.rmi.RemoteException;
 

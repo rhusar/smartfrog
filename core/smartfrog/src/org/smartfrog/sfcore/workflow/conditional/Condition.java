@@ -33,8 +33,9 @@ public interface Condition extends Remote {
 
     /**
      * Evaluate the condition.
+     *
      * @return true if it is successful, false if not
-     * @throws RemoteException for network problems
+     * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
     boolean evaluate() throws RemoteException, SmartFrogException;

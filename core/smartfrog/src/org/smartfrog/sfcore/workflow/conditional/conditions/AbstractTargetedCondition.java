@@ -21,8 +21,8 @@ package org.smartfrog.sfcore.workflow.conditional.conditions;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 
@@ -40,8 +40,9 @@ public abstract class AbstractTargetedCondition extends PrimImpl implements Targ
     /**
      * Get the target.
      * This resolves every time it is called, so conditions may call it repeatedly
+     *
      * @return the target prim
-     * @throws RemoteException for network problems
+     * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException if the target does not resolve
      */
     public Prim getTarget() throws SmartFrogResolutionException, RemoteException {
@@ -53,7 +54,7 @@ public abstract class AbstractTargetedCondition extends PrimImpl implements Targ
      * Evaluate the condition.
      *
      * @return true if it is successful, false if not
-     * @throws RemoteException for network problems
+     * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {

@@ -26,7 +26,9 @@ import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
 
-/** created 30-Nov-2006 13:35:19 */
+/**
+ * created 30-Nov-2006 13:35:19
+ */
 
 public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable {
 
@@ -44,7 +46,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
      * Starts the component by deploying the condition
      *
      * @throws SmartFrogException in case of problems creating the child
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -56,8 +58,9 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     /**
      * read the values of this component. Subclass
      * (calling super.readValues() to read in more data during the condition)
+     *
      * @throws SmartFrogException problems reading in data
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     protected void readValues() throws SmartFrogException, RemoteException {
         interval = sfResolve(ATTR_INTERVAL, interval, true);
@@ -102,7 +105,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
             Throwable fault = null;
             try {
                 boolean test;
-                long now=start;
+                long now = start;
                 test = evaluate();
                 while (!test && now < end) {
                     Thread.sleep(interval);
@@ -145,14 +148,15 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     /**
      * This is an override point; handling of post-condition operations.
      * The base class chooses a branch to spawn on success/failure
+     *
      * @param success whether or not the waitfor was a success
      * @return true if the workflow should now schedule itself for completion.
-     * Any exception thrown will trigger abnormal component termination
+     *         Any exception thrown will trigger abnormal component termination
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems.
+     * @throws RemoteException    network problems.
      */
     protected boolean onWaitForComplete(boolean success)
-            throws SmartFrogException, RemoteException{
+            throws SmartFrogException, RemoteException {
         //we have either timed out or the test has passed.
         //chose the branch to test
         String branch = success ? ATTR_THEN : ATTR_ELSE;

@@ -31,7 +31,7 @@ import java.util.Locale;
 
 public class StringEquals extends AbstractTwoArgumentCondition implements TwoArgumentCondition {
 
-    public final String ATTR_CASE_SENSITIVE="caseSensitive";
+    public final String ATTR_CASE_SENSITIVE = "caseSensitive";
 
     private boolean caseSensitive;
 
@@ -43,27 +43,25 @@ public class StringEquals extends AbstractTwoArgumentCondition implements TwoArg
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure of some kind
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        caseSensitive=sfResolve(ATTR_CASE_SENSITIVE,caseSensitive,true);
+        caseSensitive = sfResolve(ATTR_CASE_SENSITIVE, caseSensitive, true);
     }
 
     /**
      * Evaluate the condition.
      *
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws SmartFrogException failure of some kind
+     * @throws RemoteException    In case of network/rmi error
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         String lstr = getLeft().toString();
         String rstr = getRight().toString();
-        if(!caseSensitive) {
+        if (!caseSensitive) {
             lstr = lstr.toLowerCase(Locale.ENGLISH);
             rstr = rstr.toLowerCase(Locale.ENGLISH);
         }
