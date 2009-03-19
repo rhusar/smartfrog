@@ -77,7 +77,7 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
-    dfs.datanode.address dataNodeURL  ;
+    //dfs.datanode.address dataNodeURL  ;
   }
 
 
@@ -194,10 +194,12 @@ WaitForServiceLive extends WaitForHadoopLive  {
     service LAZY PARENT:service;
   }
   else extends Sequence {
+  /* no longer valid if the service doesn't come up
     ping extends PingTarget {
       target LAZY PARENT:ATTRIB service;
       sfShouldTerminate true;
     }
+    */
     exit extends Terminator {
       description PARENT:ATTRIB message;
       selftype Terminator:ABNORMAL;

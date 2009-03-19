@@ -43,7 +43,7 @@ NameNode extends NameDataLogNode {
   //startup mode
   dfs.namenode.startup ACTION_REGULAR;
 
-  dfs.http.address "http://localhost:8021";
+  //dfs.http.address "http://localhost:8021";
 /*
   dfs.info.bindAddress NULL;
   dfs.info.port NULL;

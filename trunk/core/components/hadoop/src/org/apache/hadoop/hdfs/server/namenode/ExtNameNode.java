@@ -74,8 +74,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     public static ExtNameNode create(Prim owner,
                                      ManagedConfiguration conf)
             throws IOException {
-        ExtNameNode enn = new ExtNameNode(owner, conf);
-        return enn;
+        return new ExtNameNode(owner, conf);
     }
 
     /**
@@ -157,7 +156,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     }
 
     /**
-     * Override point - aethod called whenever there is a state change.
+     * Override point - method called whenever there is a state change.
      *
      * The base class logs the event.
      *
@@ -196,5 +195,10 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
 
     public void setNotifier(ServiceStateChangeNotifier notifier) {
         this.notifier = notifier;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

@@ -195,7 +195,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     }
 
     /**
-     * Override point - aethod called whenever there is a state change.
+     * Override point - method called whenever there is a state change.
      *
      * The base class logs the event.
      *
