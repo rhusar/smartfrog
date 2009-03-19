@@ -19,15 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
 
 /**
- *
  * Created 06-May-2008 12:56:34
- *
  */
 
 public class IsPropertyTrue extends IsPropertySet implements Condition {
@@ -39,7 +37,8 @@ public class IsPropertyTrue extends IsPropertySet implements Condition {
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * Can be called to start components.
+     * Subclasses should override to provide functionality Do not block in this call,
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
@@ -56,9 +55,6 @@ public class IsPropertyTrue extends IsPropertySet implements Condition {
      */
     public boolean evaluate() {
         String valueAsString = resolveProperty();
-        if (valueAsString == null) {
-            return false;
-        }
-        return Boolean.valueOf(valueAsString).booleanValue();
+        return valueAsString != null && Boolean.valueOf(valueAsString);
     }
 }

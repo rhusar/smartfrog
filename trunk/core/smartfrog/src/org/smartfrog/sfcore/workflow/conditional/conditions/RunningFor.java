@@ -21,7 +21,9 @@ package org.smartfrog.sfcore.workflow.conditional.conditions;
 
 import java.rmi.Remote;
 
-/** created 27-Feb-2007 13:48:23 */
+/**
+ * created 27-Feb-2007 13:48:23
+ */
 
 
 public interface RunningFor extends Remote {
@@ -30,25 +32,25 @@ public interface RunningFor extends Remote {
      * Unit of time.
      * {@value}
      */
-    String ATTR_MILLISECONDS="milliseconds";
+    String ATTR_MILLISECONDS = "milliseconds";
     /**
      * Unit of time.
      * {@value}
      */
-    String ATTR_SECONDS="seconds";
+    String ATTR_SECONDS = "seconds";
     /**
      * Unit of time.
      * {@value}
      */
-    String ATTR_MINUTES="minutes";
+    String ATTR_MINUTES = "minutes";
     /**
      * Unit of time.
      * {@value}
      */
-    String ATTR_HOURS="hours";
+    String ATTR_HOURS = "hours";
     /**
      * Unit of time.
      * {@value}
      */
-    String ATTR_DAYS="days";
+    String ATTR_DAYS = "days";
 }

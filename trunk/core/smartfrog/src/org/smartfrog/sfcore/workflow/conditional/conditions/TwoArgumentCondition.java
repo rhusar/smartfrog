@@ -28,7 +28,9 @@ import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 public interface TwoArgumentCondition extends Condition {
 
+    /** {@value} */
     String ATTR_LEFT = "left";
+    /** {@value} */
     String ATTR_RIGHT = "right";
 
 }

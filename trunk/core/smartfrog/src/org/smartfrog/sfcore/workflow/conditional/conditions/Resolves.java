@@ -37,9 +37,10 @@ public class Resolves extends AbstractTargetedCondition implements TargetedCondi
 
     /**
      * Try to resolve the target
-     * @return
-     * @throws RemoteException
-     * @throws SmartFrogException
+     *
+     * @return true if the target resolves
+     * @throws SmartFrogException failure of some kind
+     * @throws RemoteException    In case of network/rmi error
      */
     @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {

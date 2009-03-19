@@ -19,13 +19,13 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
-import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -49,22 +49,23 @@ public abstract class AbstractCompoundCondition extends ConditionCompound {
      * Override point; reset the accumulator to its starting value
      */
     protected void resetAccumulator() {
-        accumulator=false;
+        accumulator = false;
     }
 
     /**
-    * Apply the next part of the operation;
-    * @param next the next value to apply to the accumulator
-    * @return true if the test is to continue; false if short circuiting indicates we could exit now
-    */
+     * Apply the next part of the operation;
+     *
+     * @param next the next value to apply to the accumulator
+     * @return true if the test is to continue; false if short circuiting indicates we could exit now
+     */
     protected abstract boolean apply(boolean next);
 
     /**
-    * Starts the component by deploying the condition
-    *
-    * @throws SmartFrogException  in case of problems creating the child
-    * @throws RemoteException In case of network/rmi error
-    */
+     * Starts the component by deploying the condition
+     *
+     * @throws SmartFrogException in case of problems creating the child
+     * @throws RemoteException    In case of network/rmi error
+     */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         //create all the children
@@ -74,24 +75,26 @@ public abstract class AbstractCompoundCondition extends ConditionCompound {
 
     /**
      * Check that everything is a condition
-     * @throws RemoteException for network problems
+     *
+     * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
     public synchronized void verifyConditional() throws RemoteException, SmartFrogException {
-    	for (Prim prim:sfChildList()) {
-    		if (!(prim instanceof Condition)) {
-    			//but require everything to be a condition
-    			throw new SmartFrogDeploymentException("Not a Condition", prim);
-    		}
+        for (Prim prim : sfChildList()) {
+            if (!(prim instanceof Condition)) {
+                //but require everything to be a condition
+                throw new SmartFrogDeploymentException("Not a Condition", prim);
+            }
         }
     }
 
 
     /**
      * Stop the parent from deploying a condition
+     *
      * @throws SmartFrogResolutionException not thrown
-     * @throws SmartFrogDeploymentException not thrown 
-     * @throws RemoteException for network problems
+     * @throws SmartFrogDeploymentException not thrown
+     * @throws RemoteException              for network problems
      */
     protected void deployCondition()
             throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
@@ -102,7 +105,7 @@ public abstract class AbstractCompoundCondition extends ConditionCompound {
      * Evaluate the condition by delegating to the underlying condition.
      *
      * @return true if it is successful, false if not
-     * @throws RemoteException for network problems
+     * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {

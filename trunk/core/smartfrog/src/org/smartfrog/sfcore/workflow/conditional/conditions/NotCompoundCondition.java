@@ -19,9 +19,9 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.workflow.conditional.Conditional;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
@@ -41,9 +41,8 @@ public class NotCompoundCondition extends ConditionCompound implements Condition
      * So we delegate to super.evaluate(), then invert the result.
      *
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         return !super.evaluate();

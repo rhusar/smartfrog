@@ -19,8 +19,8 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 
@@ -31,9 +31,9 @@ import java.rmi.RemoteException;
 public abstract class AbstractTwoArgumentCondition extends PrimImpl implements TwoArgumentCondition {
 
     /**
-     *  The values resolved at start time
+     * The values resolved at start time
      */
-    private  Object left,right;
+    private Object left, right;
 
     protected AbstractTwoArgumentCondition() throws RemoteException {
     }
@@ -43,13 +43,12 @@ public abstract class AbstractTwoArgumentCondition extends PrimImpl implements T
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        left=sfResolve(ATTR_LEFT,true);
+        left = sfResolve(ATTR_LEFT, true);
         right = sfResolve(ATTR_RIGHT, true);
     }
 

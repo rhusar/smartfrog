@@ -39,7 +39,7 @@ public class EvaluateConditionImpl extends ConditionCompound implements Evaluate
      * Starts the component by deploying the condition
      *
      * @throws SmartFrogException in case of problems
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -49,9 +49,10 @@ public class EvaluateConditionImpl extends ConditionCompound implements Evaluate
 
     /**
      * This is the test that runs on startup. Override it to change the startup behaviour
+     *
      * @throws SmartFrogException if the test fails and {@link #failOnFalse} is true,
-     * {@link Condition#evaluate()} trows the exception, or {@link ConditionCompound#finish()} throws it.
-     * @throws RemoteException In case of network/rmi error
+     *                            {@link Condition#evaluate()} trows the exception, or {@link ConditionCompound#finish()} throws it.
+     * @throws RemoteException    In case of network/rmi error
      */
     protected void startupTest() throws SmartFrogException, RemoteException {
         testCondition();
@@ -60,15 +61,15 @@ public class EvaluateConditionImpl extends ConditionCompound implements Evaluate
 
     /**
      * Test the condition
-     * @throws SmartFrogException if the condition evalutes to false and {@link #failOnFalse} is true, or
-     * {@link Condition#evaluate()} trrows the exception.
      *
-     * @throws RemoteException networking problems
+     * @throws SmartFrogException if the condition evalutes to false and {@link #failOnFalse} is true, or
+     *                            {@link Condition#evaluate()} trrows the exception.
+     * @throws RemoteException    networking problems
      */
     protected void testCondition() throws SmartFrogException, RemoteException {
         boolean result = evaluate();
         sfReplaceAttribute(ATTR_RESULT, Boolean.valueOf(result));
-        if(!result && failOnFalse) {
+        if (!result && failOnFalse) {
             String message = sfResolve(ATTR_MESSAGE, "", true);
             if (sfLog().isInfoEnabled()) {
                 sfLog().info("message: " + message);

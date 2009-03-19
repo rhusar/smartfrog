@@ -19,13 +19,15 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
-import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
 
-/** created 27-Feb-2007 13:50:56 */
+/**
+ * created 27-Feb-2007 13:50:56
+ */
 
 public class RunningForImpl extends PrimImpl implements Condition, RunningFor {
 
@@ -78,8 +80,6 @@ public class RunningForImpl extends PrimImpl implements Condition, RunningFor {
      * @throws SmartFrogException for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        long now = System.currentTimeMillis();
-        boolean overrun = now >= endTime;
-        return overrun;
+        return System.currentTimeMillis() >= endTime;
     }
 }
