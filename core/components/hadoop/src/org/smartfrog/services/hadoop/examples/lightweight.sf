@@ -46,6 +46,12 @@ LightweightNameNode extends NameNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.namenode.handler.count HandlerThreads;
   testModeDeleteDirectories TEST_MODE;
+  hostname ANY_HOST ;
+  //these properties set the HTTP ports. The NN gets its IPC port from the fs.default.name URL
+  dfs.http.address  (hostname ++ ":" ++ NameNodeHttpPort);
+  dfs.https.address (hostname ++ ":" ++ NameNodeHttpsPort);
+
+
 }
 
 LightweightDataNode extends DataNode {
@@ -55,7 +61,9 @@ LightweightDataNode extends DataNode {
   hostname ANY_HOST ;
   dfs.datanode.http.address  (hostname ++ ":" ++ DataNodeHttpPort);
   dfs.datanode.https.address (hostname ++ ":" ++ DataNodeHttpsPort);
+  //IPC port
   dfs.datanode.address (hostname ++ ":" ++ DataNodeIpcPort);
+
 
   dfs.blockreport.intervalMsec 10000;
   dfs.blockreport.initialDelay 0;

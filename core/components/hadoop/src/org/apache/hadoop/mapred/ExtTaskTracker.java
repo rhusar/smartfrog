@@ -130,6 +130,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      */
     @Override
     public String toString() {
-        return super.toString() + "; web port=" + getWebPort();
+        String address = ""+getTaskTrackerReportAddress();
+        return super.toString() + ". web port=" + getWebPort() + " reporting "+address;
     }
 }
