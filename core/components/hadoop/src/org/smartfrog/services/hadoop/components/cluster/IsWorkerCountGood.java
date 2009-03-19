@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
 
@@ -29,7 +30,6 @@ import java.rmi.RemoteException;
 
 public class IsWorkerCountGood extends IsHadoopServiceLive {
 
-    private ClusterManager manager;
     private int minCount;
 
     public IsWorkerCountGood() throws RemoteException {
@@ -40,7 +40,6 @@ public class IsWorkerCountGood extends IsHadoopServiceLive {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         minCount = sfResolve("minCount", 0, true);
-        manager = (ClusterManager) getService();
     }
 
     /**
@@ -52,6 +51,6 @@ public class IsWorkerCountGood extends IsHadoopServiceLive {
      */
     @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        return super.evaluate() && manager.getLiveWorkerCount() >= minCount;
+        return super.evaluate() && ((ClusterManager) getService()).getLiveWorkerCount() >= minCount;
     }
 }

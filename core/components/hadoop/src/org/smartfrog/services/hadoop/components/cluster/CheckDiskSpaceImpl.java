@@ -105,6 +105,10 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
         }
     }
 
+    /**
+     * Check the disk space
+     * @return
+     */
     String checkDiskSpace() {
         for (File dir : directories) {
             if (!dir.exists()) {

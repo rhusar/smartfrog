@@ -134,8 +134,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
             }
             path.append(directory.getAbsolutePath());
         }
-        String value = path.toString();
-        return value;
+        return path.toString();
     }
 
 
