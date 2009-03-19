@@ -21,14 +21,15 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
 
 
-IsHadoopServiceLive extends Prim {
+IsHadoopServiceLive extends ConditionPrim {
   sfClass "org.smartfrog.services.hadoop.components.cluster.IsHadoopServiceLive";
   //define a service to look for
   service TBD;
+  target service;
   //gets changed after evaluation to the service description
-  serviceDescription "";
+  serviceDescription "undefined";
   //gets changed after evaluation to the service state
-  serviceState "";
+  serviceState "undefined";
 }
 
 /**

@@ -21,12 +21,10 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractTargetedCondition;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
@@ -37,48 +35,31 @@ import java.rmi.RemoteException;
  *
  */
 
-public class IsHadoopServiceLive extends PrimImpl implements Condition {
+public class IsHadoopServiceLive extends AbstractTargetedCondition implements Condition {
 
     public static final String ATTR_SERVICE = "service";
     public static final String ATTR_SERVICE_STATE = "serviceState";
     public static final String ATTR_SERVICE_DESCRIPTION = "serviceDescription";
-    private static final Reference refService = new Reference(ATTR_SERVICE);
+    private static final Reference refTarget = new Reference(ATTR_TARGET);
 
-
-    private HadoopService service;
 
     public IsHadoopServiceLive() throws RemoteException {
     }
 
     /**
      * Get the service
-     * @return the service or null
+     * @return the service
+     * @throws RemoteException for network problems
+     * @throws SmartFrogResolutionException if the target does not resolven
      */
-    public HadoopService getService() {
-        return service;
-    }
-
-    @Override
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        Prim prim = sfResolve(refService, (Prim) null, true);
+    public HadoopService getService() throws SmartFrogResolutionException, RemoteException {
+        Prim prim = getTarget();
         if (!(prim instanceof HadoopService)) {
             String error = "Unable to bind to a component that is not a Hadoop service: "
                     + prim.sfCompleteName();
-            throw new SmartFrogResolutionException(refService, sfCompleteNameSafe(), error);
+            throw new SmartFrogResolutionException(refTarget, sfCompleteNameSafe(), error);
         }
-        service = (HadoopService) prim;
-    }
-
-    /**
-     * set the service to null
-     *
-     * @param status termination status
-     */
-    @Override
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        service = null;
+        return (HadoopService) prim;
     }
 
     /**
@@ -90,6 +71,14 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
      */
     //@Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
+        HadoopService service = null;
+        try {
+            service = getService();
+        } catch (SmartFrogResolutionException e) {
+            //resolution problem; log at debug level
+            sfLog().debug("Failed to resolve service", e);
+            return false;
+        }
         Service.ServiceState state = service.getServiceState();
         sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());
         sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, service.getDescription());

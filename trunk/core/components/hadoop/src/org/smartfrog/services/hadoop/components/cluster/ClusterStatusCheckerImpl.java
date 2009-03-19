@@ -157,7 +157,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * Check the cluster status
      *
      * @throws SFHadoopException on any problem with the checks
-     * @returns a cluster status string
+     * @return a cluster status string
      */
     private String checkClusterStatus() throws SmartFrogException {
 
