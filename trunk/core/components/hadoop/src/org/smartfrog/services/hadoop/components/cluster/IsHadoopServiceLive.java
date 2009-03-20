@@ -46,6 +46,18 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
     public IsHadoopServiceLive() throws RemoteException {
     }
 
+
+    /**
+     * startup-time resolution
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException if the target does not resolve
+     */
+    @Override
+    protected void resolveTargetOnStartup() throws SmartFrogResolutionException, RemoteException {
+        super.resolveTargetOnStartup();
+        getService();
+    }
+
     /**
      * Get the service
      * @return the service
@@ -71,17 +83,19 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
      */
     //@Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        HadoopService service = null;
+        HadoopService service;
         try {
             service = getService();
         } catch (SmartFrogResolutionException e) {
             //resolution problem; log at debug level
             sfLog().debug("Failed to resolve service", e);
+            setFailureCause(e);
             return false;
         }
         Service.ServiceState state = service.getServiceState();
         sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());
-        sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, service.getDescription());
-        return service.isServiceLive();
+        String description = service.getDescription();
+        sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, description);
+        return evalOrFail(service.isServiceLive(),"service is not live "+description);
     }
 }

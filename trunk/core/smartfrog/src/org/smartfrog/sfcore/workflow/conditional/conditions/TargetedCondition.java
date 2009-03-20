@@ -29,4 +29,7 @@ import org.smartfrog.sfcore.workflow.conditional.Condition;
 public interface TargetedCondition extends Condition {
     /** {@value} */
     String ATTR_TARGET = "target";
+
+    /** {@value} */
+    String ATTR_RESOLVE_TARGET_ON_STARTUP = "resolveTargetOnStartup";
 }
