@@ -50,7 +50,7 @@ import java.net.URL;
 public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
 
     public static final String[] LOG4J_LEVELS =
-            {"ALL", "DEBUG", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"};
+            {"ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"};
 
     private static final String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
     /**
@@ -363,10 +363,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
         if (ignoreSetLogLevel) return;
         int level = getLevel();
         if (level != currentLogLevel) {
-            //Level TRACE and DEBUG are the same in Log4J
-            if (!(((currentLogLevel == 1) || (currentLogLevel == 2)) && ((level == 1) || (level == 2)))) {
-                logger.setLevel(Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
-            }
+            logger.setLevel(Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
         }
     }
 
@@ -432,14 +429,14 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * <p> Log a message with trace log level.</p>
      */
     public final void trace(Object message) {
-        log(Level.DEBUG, message, null);
+        log(Level.TRACE, message, null);
     }
 
     /**
      * <p> Log an error with trace log level.</p>
      */
     public final void trace(Object message, Throwable t) {
-        log(Level.DEBUG, message, t);
+        log(Level.TRACE, message, t);
     }
 
     /**
@@ -552,7 +549,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * logger. </p>
      */
     public final boolean isTraceEnabled() {
-        return logger.isDebugEnabled();
+        return logger.isTraceEnabled();
     }
 
     /**
