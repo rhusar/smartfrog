@@ -20,9 +20,12 @@
 package org.smartfrog.sfcore.workflow.conditional;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
 
 import java.rmi.RemoteException;
 
@@ -159,8 +162,12 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
             throws SmartFrogException, RemoteException {
         //we have either timed out or the test has passed.
         //chose the branch to test
+        if (!success) {
+            propagateFailureCause(getCondition());
+        }
         String branch = success ? ATTR_THEN : ATTR_ELSE;
         Prim prim = deployChildCD(branch, false);
         return prim == null;
     }
+
 }

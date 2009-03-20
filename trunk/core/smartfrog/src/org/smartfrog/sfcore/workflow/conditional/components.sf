@@ -57,6 +57,8 @@ WaitFor extends If {
       description "time in milliseconds after which the test is deemed to have failed";
     };
   }
+  //this text is updated by tests that can explain why they failed
+  failureText "wait for timed out";
   sfClass "org.smartfrog.sfcore.workflow.conditional.WaitForImpl";
 }
 
@@ -93,7 +95,8 @@ EvaluateCondition extends ConditionalEventCompound {
     };
   }
   sfClass "org.smartfrog.sfcore.workflow.conditional.EvaluateConditionImpl";
-  message "Condition evaluated to false";
+  message failureText;
+  failureText "Condition evaluated to false";
   failOnFalse true;
 }
 

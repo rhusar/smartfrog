@@ -69,12 +69,15 @@ public class EvaluateConditionImpl extends ConditionCompound implements Evaluate
     protected void testCondition() throws SmartFrogException, RemoteException {
         boolean result = evaluate();
         sfReplaceAttribute(ATTR_RESULT, Boolean.valueOf(result));
-        if (!result && failOnFalse) {
-            String message = sfResolve(ATTR_MESSAGE, "", true);
-            if (sfLog().isInfoEnabled()) {
-                sfLog().info("message: " + message);
+        if (!result) {
+            propagateFailureCause(getCondition());
+            if (failOnFalse) {
+                String message = sfResolve(ATTR_MESSAGE, "", true);
+                if (sfLog().isInfoEnabled()) {
+                    sfLog().info("message: " + message);
+                }
+                throw new SmartFrogException(message);
             }
-            throw new SmartFrogException(message);
         }
     }
 }

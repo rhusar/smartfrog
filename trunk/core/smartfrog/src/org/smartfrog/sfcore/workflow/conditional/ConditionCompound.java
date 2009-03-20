@@ -19,11 +19,10 @@
  */
 package org.smartfrog.sfcore.workflow.conditional;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.rmi.RemoteException;
@@ -140,4 +139,21 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     }
 
 
+    /**
+     * For use on condition failure.
+     * If the condition implements {@link ConditionWithFailureCause}, then the cause is extracted
+     * and added as the {@link ConditionWithFailureCause#ATTR_FAILURE_CAUSE}
+     * and {@link ConditionWithFailureCause#ATTR_FAILURE_TEXT} attributes on this component
+     * @param failingCondition the condition
+     * @throws SmartFrogRuntimeException smartfrog problems
+     * @throws RemoteException    network problems.
+     */
+    protected void propagateFailureCause(Condition failingCondition) throws SmartFrogRuntimeException, RemoteException {
+        if (failingCondition!= null && failingCondition instanceof ConditionWithFailureCause) {
+            ConditionWithFailureCause cwf = (ConditionWithFailureCause) failingCondition;
+            sfReplaceAttribute(ConditionWithFailureCause.ATTR_FAILURE_TEXT, cwf.getFailureText());
+            sfReplaceAttribute(ConditionWithFailureCause.ATTR_FAILURE_CAUSE,
+                    SmartFrogExtractedException.convert(cwf.getFailureCause()));
+        }
+    }
 }

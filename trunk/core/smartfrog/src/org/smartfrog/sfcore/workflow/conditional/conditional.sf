@@ -40,6 +40,10 @@ ConditionalSchema extends Schema {
   condition extends Condition;
 }
 
+TargetedConditionPrim extends ConditionPrim {
+  target TBD;
+  resolveTargetOnStartup true;
+}
 
 
 /*
