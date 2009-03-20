@@ -30,12 +30,62 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:48:34
  */
 
-public abstract class AbstractTargetedCondition extends PrimImpl implements TargetedCondition {
+public abstract class AbstractTargetedCondition extends PrimImpl implements TargetedCondition,
+        ConditionWithFailureCause {
 
+    private Throwable failureCause;
+    private String failureText;
 
     protected AbstractTargetedCondition() throws RemoteException {
     }
 
+    protected void setFailureCause(String text, Throwable t) {
+        failureCause = t;
+        setFailureText(text);
+    }
+
+    protected void setFailureCause(Throwable t) {
+        failureCause = t;
+        setFailureText(failureCause.toString());
+    }
+
+    public void setFailureText(String failureText) {
+        this.failureText = failureText;
+
+    }
+
+    public String getFailureText() throws RemoteException {
+        return failureText;
+    }
+
+    public Throwable getFailureCause() throws RemoteException {
+        return failureCause;
+    }
+
+    protected final boolean evalOrFail(boolean state, String failureText) {
+        if(!state) {
+            setFailureText(failureText);
+        }
+        return state;
+    }
+
+    @Override
+    public void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        boolean resolveTargetOnStartup = sfResolve(ATTR_RESOLVE_TARGET_ON_STARTUP,true,true);
+        if(resolveTargetOnStartup) {
+            resolveTargetOnStartup();
+        }
+    }
+
+    /**
+     * startup-time resolution
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException if the target does not resolve
+     */
+    protected void resolveTargetOnStartup() throws SmartFrogResolutionException, RemoteException {
+        getTarget();
+    }
 
     /**
      * Get the target.
@@ -48,7 +98,6 @@ public abstract class AbstractTargetedCondition extends PrimImpl implements Targ
     public Prim getTarget() throws SmartFrogResolutionException, RemoteException {
         return sfResolve(ATTR_TARGET, (Prim) null, true);
     }
-
 
     /**
      * Evaluate the condition.

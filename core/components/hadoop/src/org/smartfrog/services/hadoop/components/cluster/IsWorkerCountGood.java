@@ -51,6 +51,10 @@ public class IsWorkerCountGood extends IsHadoopServiceLive {
      */
     @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        return super.evaluate() && ((ClusterManager) getService()).getLiveWorkerCount() >= minCount;
+        if(!super.evaluate()) {
+            return false;
+        }
+        int workerCount = ((ClusterManager) getService()).getLiveWorkerCount();
+        return evalOrFail(workerCount >= minCount, "worker count is "+ workerCount);
     }
 }
