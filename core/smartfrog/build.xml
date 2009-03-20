@@ -1041,8 +1041,8 @@
      <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
      <sha1 file="${sf-services.pom}" todir="${dist.metadata.dir}"/>
      <sha1 file="${sf-examples.pom}" todir="${dist.metadata.dir}"/>
-	 <sha1 file="${sf-rmi-spi.pom}" todir="${dist.metadata.dir}"/>
-	 <sha1 file="${sf-osgi.pom}" todir="${dist.metadata.dir}"/>
+	 <!--<sha1 file="${sf-rmi-spi.pom}" todir="${dist.metadata.dir}"/>
+	 <sha1 file="${sf-osgi.pom}" todir="${dist.metadata.dir}"/> -->
 
    </target>
 
