@@ -207,6 +207,8 @@ values as a cue -->
       -->
       <exclude name="${systemtests}/reference/CyclicReferenceTest.*" unless="run.failing.tests"/>
           <!-- if="jrockit.jvm" -->
+		  
+      <exclude name="${systemtests}/reference/*.*" unless="run.failing.tests"/>		  
           
     </patternset>
 

@@ -197,7 +197,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "Possible cause: cyclic reference.");
     }
 
-	/**
+
     public void testCaseTCN98() throws Exception {
         deployExpectingException(FILES+"tcn98.sf",
                 "tcn98",
@@ -216,5 +216,5 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
 		"SmartFrogResolutionException",
                 "Possible cause: cyclic reference.");
     }
-	**/
+
 }
