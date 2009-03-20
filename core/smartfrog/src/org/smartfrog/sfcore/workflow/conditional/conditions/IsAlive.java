@@ -50,6 +50,7 @@ public class IsAlive extends AbstractTargetedCondition implements TargetedCondit
         } catch (RemoteException e) {
             thrown = e;
         }
+        setFailureCause(thrown);
         if (sfLog().isDebugEnabled()) {
             sfLog().debug("liveness failure", thrown);
         }
