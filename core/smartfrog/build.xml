@@ -1088,6 +1088,7 @@
 	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
+<!--
     <m2-install
       destdir="${m2.sf-rmi-spi}"
       target="${sf-rmi-spi.jar}"
@@ -1100,7 +1101,7 @@
 	  target.md5="${dist.metadata.dir}/${sf-osgi.stub}.jar.md5"
       pom="${sf-osgi.pom}"
       />
-
+-->
 
   </target>
 
