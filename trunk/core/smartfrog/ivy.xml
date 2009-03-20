@@ -20,7 +20,7 @@
         description="the classpath needed to run systemtests"/>
     <conf name="test" extends="unittest,systemtest"
         description="the classpath needed to run tests"/>
-    <conf name="core" description="the core smartfrog JAR only"/>
+    <conf name="core" description="the core smartfrog JARs only"/>
     <conf name="services"
         description="the core and sfServices JAR" extends="core,services-master"/>
     <conf name="services-master" description="the sfServices JAR" />
@@ -44,6 +44,8 @@
   <publications>
     <!--get the artifact from our module name-->
     <artifact name="${smartfrog.title}" conf="core"/>
+    <artifact name="${sf-rmi-spi.title}" conf="core"/>
+    <artifact name="${sf-osgi.title}" conf="core"/>
     <artifact name="${sf-services.title}" conf="services-master"/>
     <artifact name="${sf-examples.title}" conf="examples-master"/>
     <artifact name="sf-core-install" conf="installation" type="zip"/>
@@ -52,9 +54,20 @@
 
   </publications>
   <dependencies>
+
     <!--javacc is used for the javacc task-->
     <!-- this has been disabled so that the core always builds, even if the network is missing-->
 <!--    <dependency org="net.java.dev.javacc" name="javacc" rev="3.2"
         conf="javacc->default"/>-->
+
+      <dependency org="org.osgi"
+                  name="osgi_R4_core"
+                  rev="1.0"
+                  conf="compile->default"/>
+
+      <dependency org="org.osgi"
+                  name="osgi_R4_compendium"
+                  rev="1.0"
+                  conf="compile->default"/>
   </dependencies>
 </ivy-module>
