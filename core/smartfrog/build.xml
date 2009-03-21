@@ -60,6 +60,7 @@
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message="      Build dir: ${basedir} "/>
+	<echo message="      ArtifactsCache dir: ${artifactsCache.dir}"/>
     <echo message=" --------------------------------------------------------"/>
     <echo
       message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
@@ -115,20 +116,26 @@
     <echo message=""/>
   </target>
 
+   
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
+  <target name="initClassPath" depends="declare-classpaths"> 
+	<pathconvert property="path.compile.classpath" 
+               refid="compile.classpath">
+    </pathconvert>
+  
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
 	<pathelement path="./lib/eclipse-clp-5.10.jar"/>
-    <!-- <pathelement path="./lib/ProActive.jar"/>-->
+	<pathelement path="${path.compile.classpath}"/>
   </path>
   <!-- to get the classpath in a printable form -->
   <pathconvert pathsep="${line.separator}|   |-- "  
                property="echo.smartfrog.class.path" 
                refid="smartfrog.class.path">
   </pathconvert>
-   
+  </target>   
   
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
@@ -371,27 +378,6 @@
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
         javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
-
-    <!-- =================================================================== -->
-  <!-- Initialization path (Libs needed for compiling)                     -->
-  <!-- =================================================================== -->
-  <target name="initClassPath" depends="declare-classpaths"> 
-	<pathconvert property="path.compile.classpath" 
-               refid="compile.classpath">
-    </pathconvert>
-  
-  <path id="smartfrog.class.path">
-    <pathelement path="${classpath}"/>
-	<pathelement path="./lib/eclipse.jar"/>
-	<pathelement path="${path.compile.classpath}"/>
-  </path>
-  <!-- to get the classpath in a printable form -->
-  <pathconvert pathsep="${line.separator}|   |-- "  
-               property="echo.smartfrog.class.path" 
-               refid="smartfrog.class.path">
-  </pathconvert>
-  </target>
-  
   
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
