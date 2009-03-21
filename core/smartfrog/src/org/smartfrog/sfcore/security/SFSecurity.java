@@ -27,6 +27,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
 import java.security.AccessControlException;
+import java.util.Properties;
+import java.util.Map;
 
 import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
 
@@ -55,12 +57,52 @@ public class SFSecurity {
     /** A RMIServerSocketFactory used when security is off */
     private static SFServerSocketFactory nonSecServerSocketFactory;
 
+    /**
+     * Get a string containing interesting security information.
+     * @return
+     */
+    public static String getSecurityInformation() {
+        SecurityManager manager = System.getSecurityManager();
+        if (manager == null) {
+            return "";
+        } else {
+            StringBuilder details=new StringBuilder();
+            details.append(manager.toString())
+                    .append("; class: ").append(manager.getClass())
+                    .append("; exit trapping: ").append(manager instanceof ExitTrapping);
+            details.append("\nJava System Properties:\n");
+            try {
+                Properties properties = System.getProperties();
+                for(Object key:properties.keySet()) {
+                    details.append(key.toString());
+                    details.append("=\"");
+                    details.append(properties.get(key).toString());
+                    details.append("\"\n");
+                }
+            } catch (SecurityException  e) {
+                details.append("access to properties denied: ").append(e);
+            }
+            details.append("\nEnvironment variablss:\n");
+            try {
+                Map<String,String> env = System.getenv();
+                for(String key:env.keySet()) {
+                    details.append(key);
+                    details.append("=\"");
+                    details.append(env.get(key));
+                    details.append("\"\n");
+                }
+            } catch (SecurityException  e) {
+                details.append("access to environment variables denied: ").append(e);
+            }
+            return details.toString();
+        }
+    }
 
     /**
      * Initializes the security using system properties to decide on the level
      * of security required.
      *
-     * @throws SFGeneralSecurityException if error initializing security.
+     * @throws SFGeneralSecurityException if there is any error initializing security.
      */
     synchronized public static void initSecurity()
         throws SFGeneralSecurityException {
@@ -72,10 +114,12 @@ public class SFSecurity {
                             "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
                 } catch (AccessControlException e) {
                     throw new SFGeneralSecurityException(
-                            ("Java Security Access control exception - "
-                                    + "SmartFrog is configured to run with security on, but the smartfrog JAR is not "
-                                    + "signed by a trusted CA: "
-                                    + e.getMessage()), e);
+                            "Java Security Access control exception - "
+                                    + "SmartFrog is running under a security manager, but the main JAR is not "
+                                    + "signed by a trusted CA, or the permissions files are mis-configured"
+                                    + "\n" + e
+                                    + "\nSecurity manager "+ getSecurityInformation(),
+                            e);
 
                 }
 
@@ -139,7 +183,9 @@ public class SFSecurity {
             }
         } catch (IOException e) {
             // Problems setting up RMI.
-            throw new SFGeneralSecurityException(e);
+            throw new SFGeneralSecurityException(e.toString()
+                    + "\nSecurity manager " + getSecurityInformation(),
+                    e);
         }
     }
 
