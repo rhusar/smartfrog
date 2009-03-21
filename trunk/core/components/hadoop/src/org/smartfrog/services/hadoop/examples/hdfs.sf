@@ -29,8 +29,8 @@ LocalHadoopCompound extends Compound {
   //ordered startup/shutdown of child components
   //sfSyncTerminate true;
   fs.default.name  FS.DEFAULT.NAME;
-  nameNodeURL      NAME_NODE_URL;
-  dataNodeURL      DATA_NODE_URL ;
+  namenodeURL      NAME_NODE_URL;
+  datanodeURL      DATA_NODE_URL ;
 
   logDir extends TempDir {
 
@@ -59,7 +59,7 @@ LocalNameNodeCompound extends LocalHadoopCompound {
     nameDirectories [nameDirectory];
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup IF (TEST_MODE) THEN ACTION_FORMAT ELSE ACTION_REGULAR FI;
-    dfs.http.address nameNodeURL;
+    dfs.http.address namenodeURL;
     dfs.permissions false;
     minWorkerCount 0;
   }
@@ -77,7 +77,6 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
-    //dfs.datanode.address dataNodeURL  ;
   }
 
 
@@ -128,7 +127,7 @@ LocalJobTrackerCompound extends LocalFileSystemCompound {
 
 
 
-  jobTracker extends LightweightJobTracker {
+  jobtracker extends LightweightJobTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     dataDir LAZY PARENT:ATTRIB dataDir;
     dataDirectories [dataDir];
@@ -145,9 +144,9 @@ LocalJobTrackerCompound extends LocalFileSystemCompound {
 LocalTaskTrackerCompound extends LocalJobTrackerCompound {
   description "A cluster with a task tracker";
 
-  taskTracker extends LightweightTaskTracker {
+  tasktracker extends LightweightTaskTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
-    mapred.job.tracker LAZY ATTRIB jobTracker:mapred.job.tracker;
+    mapred.job.tracker LAZY ATTRIB jobtracker:mapred.job.tracker;
   }
 }
 
@@ -162,54 +161,46 @@ LocalClusterCompound extends LocalTaskTrackerCompound {
 WaitForHadoopLive extends FailingWaitFor {
   interval CLUSTER_POLL_INTERVAL;
   timeout CLUSTER_STARTUP_TIMEOUT ;
+  name "service";
+  message ("Wait for " ++ name  ++ " failed, cause " ++ LAZY failureText ++ ". service state " ++ LAZY condition:serviceDescription);
+
 }
+
 
 /**
  * wait for the FS to come up, but not the job tracker
  */
 WaitForFilesystemLive extends WaitForHadoopLive  {
   service TBD;
-  jobTrackerLive false;
-  message ("WaitForFilesystemLive failed ClusterStatusCondition test " ++ LAZY condition:serviceDescription);
+  jobtrackerLive false;
+  name "WaitForFilesystemLive";
   condition extends ClusterStatusCondition {
     mapred.job.tracker PARENT:service:mapred.job.tracker;
   }
 }
+
 
 /**
  * wait for the FS to come up, and the job tracker
  */
 WaitForJobTrackerLive extends WaitForFilesystemLive {
   cluster service;
-  message ("WaitForFilesystem or JobTracker Live failed ClusterStatusCondition test"  ++ LAZY condition:serviceDescription);
-  jobTrackerLive true;
+  name "WaitForJobTrackerLive";
+  jobtrackerLive true;
 }
 
 
 WaitForServiceLive extends WaitForHadoopLive  {
   service TBD;
-  serviceName service:name;
-  message ("hadoop service " ++ serviceName ++ " not live - state is " ++ LAZY condition:serviceDescription);
+  name service:name;
   condition extends IsHadoopServiceLive {
     service LAZY PARENT:service;
-  }
-  else extends Sequence {
-  /* no longer valid if the service doesn't come up
-    ping extends PingTarget {
-      target LAZY PARENT:ATTRIB service;
-      sfShouldTerminate true;
-    }
-    */
-    exit extends Terminator {
-      description PARENT:ATTRIB message;
-      selftype Terminator:ABNORMAL;
-    }
   }
 }
 
 WaitForWorkersLive extends WaitForHadoopLive  {
   service TBD;
-  message ("WaitForWorkersLive not enough workers for this service " ++ LAZY condition:serviceDescription);
+  name service:name;
   minCount 1;
   condition extends IsWorkerCountGood {
     service LAZY PARENT:service;
@@ -221,6 +212,7 @@ WaitForPortFree extends FailingWaitFor {
   interval CLUSTER_POLL_INTERVAL;
   timeout CLUSTER_SHUTDOWN_TIMEOUT;
   port NameNodeIpcPort;
+  message ("Port not free " ++ address)
   address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
   condition extends Not {
     condition extends CheckPortCondition {
@@ -246,11 +238,11 @@ AssertNameNodeHttpClosed extends AssertLocalPortClosed {
 }
 
 WaitForNameNodeLive extends WaitForServiceLive {
-  serviceName "namenode";
+  name "namenode";
 }
 
 WaitForDataNodeLive extends WaitForServiceLive {
-  serviceName "datanode";
+  nName "datanode";
 }
 
 
@@ -261,8 +253,7 @@ Test sequence that checks that when a namenode is shut down, it goes away
 NamenodeShutdownSequence extends Sequence {
   namenode TBD;
 
-  waitForNameNode extends WaitForServiceLive {
-    serviceName "namenode";
+  waitForNameNode extends WaitForNameNodeLive {
     service LAZY PARENT:namenode;
   }
 
@@ -348,11 +339,11 @@ FileSystemTestSequence extends FileSystemLiveSequence {
 
 
 LocalClusterStatus extends ClusterStatus {
-  jobTracker TBD;
+  jobtracker TBD;
 
-  fs.default.name jobTracker:fs.default.name;
-  mapred.job.tracker jobTracker;
-  hadoop.job.ugi jobTracker:hadoop.job.ugi;
+  fs.default.name jobtracker:fs.default.name;
+  mapred.job.tracker jobtracker;
+  hadoop.job.ugi jobtracker:hadoop.job.ugi;
   sfShouldTerminate true;
   supportedFileSystem true;
 }

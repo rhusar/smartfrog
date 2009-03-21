@@ -23,7 +23,6 @@ import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.apache.hadoop.mapreduce.JobID;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileStatus;
 import org.smartfrog.services.filesystem.FileSystem;
@@ -193,7 +192,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
 
     private class JobSubmitThread extends WorkflowThread {
 
-        private String jobTracker;
+        private String jobtracker;
 
 
         /**
@@ -212,13 +211,13 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             //todo: add a delay until the cluster is live
 
 
-            jobTracker = resolveJobTracker(SubmitterImpl.this, new Reference(MAPRED_JOB_TRACKER));
+            jobtracker = resolveJobTracker(SubmitterImpl.this, new Reference(MAPRED_JOB_TRACKER));
             try {
                 String mapred_input_dir = jobConf.get(MAPRED_INPUT_DIR);
                 Path mr_input_path = new Path(mapred_input_dir);
                 String mapred_output_dir = jobConf.get(MAPRED_OUTPUT_DIR);
                 Path mr_output_path = new Path(mapred_output_dir);
-                sfLog().info("Submitting to " + jobTracker
+                sfLog().info("Submitting to " + jobtracker
                         + "\n input directory " + mapred_input_dir
                         + "\n output directory " + mapred_output_dir);
 
@@ -261,7 +260,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                     }
                 }
             } catch (IOException e) {
-                throw new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
+                throw new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobtracker
                         + ": " + e,
                         e,
                         SubmitterImpl.this,
@@ -278,7 +277,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             if (jobID != null) {
                 return "Submitted job " + jobID + " and URL " + jobURL;
             } else {
-                return ERROR_FAILED_TO_START_JOB + jobTracker;
+                return ERROR_FAILED_TO_START_JOB + jobtracker;
             }
         }
     }
@@ -412,12 +411,12 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
             throws SmartFrogResolutionException, RemoteException {
         Object target = prim.sfResolve(ref, true);
         if (target instanceof Prim) {
-            Prim jobTracker = (Prim) target;
-            return jobTracker.sfResolve(MAPRED_JOB_TRACKER, "", true);
+            Prim jobtracker= (Prim) target;
+            return jobtracker.sfResolve(MAPRED_JOB_TRACKER, "", true);
         }
         if (target instanceof ComponentDescription) {
-            ComponentDescription jobTracker = (ComponentDescription) target;
-            return jobTracker.sfResolve(MAPRED_JOB_TRACKER, "", true);
+            ComponentDescription jobtracker = (ComponentDescription) target;
+            return jobtracker.sfResolve(MAPRED_JOB_TRACKER, "", true);
         }
         //neither of those? resolve to a string and let the runtime handle errors
         return prim.sfResolve(ref, "", true);

@@ -194,7 +194,7 @@ HadoopConfiguration extends Prim {
       should store the name table.  If this is a comma-delimited list
       of directories then the name table is replicated in all of the
       directories, for redundancy. */
-  dfs.name.dir (hadoop.tmp.dir ++ "/dfs/name");
+  dfs.name.dir (LAZY hadoop.tmp.dir ++ "/dfs/name");
 
 
   /**Namenode periodicity in seconds to check if decommission is complete.*/
@@ -294,7 +294,7 @@ HadoopConfiguration extends Prim {
   /**Determines where on the local filesystem the DFS secondary
       name node should store the temporary images and edits to merge.
   */
-  fs.checkpoint.dir  "${hadoop.tmp.dir}/dfs/namesecondary";
+  fs.checkpoint.dir  (hadoop.tmp.dir ++ "/dfs/namesecondary";
 
   /**The number of seconds between two periodic checkpoints.
   */

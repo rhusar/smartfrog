@@ -116,7 +116,7 @@ testClusterLiveFileSystemSupported extends testClusterLive {
 testBadTrackerPort extends ExpectDeployFailureHPLB {
   exitText LAZY CONSTANT "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl.ERROR_CANNOT_CONNECT";
   action extends Status  {
-   host HplbCluster:jobTrackerHost;
+   host HplbCluster:jobtrackerHost;
    port "2020";
    mapred.job.tracker (host ++ ":" ++ port );
    sfShouldTerminate true;

@@ -26,17 +26,17 @@ For more information: www.smartfrog.org
 
 HplbCluster extends HadoopCluster {
   host "hadoop-prj-1.hpl.hp.com";
-  jobTrackerPort 54311;
+  jobtrackerPort 54311;
   namenodePort 54310;
   nameWebPort 50070;
   trackerWebPort 50030;
-  jobTrackerHost host;
-  nameNodeHost host;
-  jobTracker (jobTrackerHost ++ ":" ++ jobTrackerPort );
-  namenode (nameNodeHost ++ ":" ++ namenodePort );
+  jobtrackerHost host;
+  namenodeHost host;
+  jobtracker (jobtrackerHost ++ ":" ++ jobtrackerPort );
+  namenode (namenodeHost ++ ":" ++ namenodePort );
   filesystem ("hdfs://" ++ namenode);
-  trackerUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
-  nameUrl ("http:" ++ jobTracker ++ ":" ++ nameWebPort ++ "/");
+  trackerUrl ("http:" ++ jobtracker ++ ":" ++ trackerWebPort ++ "/");
+  nameUrl ("http:" ++ jobtracker ++ ":" ++ nameWebPort ++ "/");
   hadoop.tmp.dir "/home/hadoop/tmp/hadoop-hadoop";
   user "hadoop";
   group "supergroup";
@@ -49,7 +49,7 @@ HplbCluster extends HadoopCluster {
 HplbJob extends JobSubmitter {
   name TBD;
   fs.default.name HplbCluster:filesystem;
-  mapred.job.tracker HplbCluster:jobTracker;
+  mapred.job.tracker HplbCluster:jobtracker;
   hadoop.tmp.dir HplbCluster:hadoop.tmp.dir;
 
   //mapred.system.dir "/tmp/hadoop/mapred/system";
@@ -64,7 +64,7 @@ HplbJob extends JobSubmitter {
 
 HplbClusterStatus extends ClusterStatus {
   fs.default.name HplbCluster:filesystem;
-  mapred.job.tracker HplbCluster:jobTracker;
+  mapred.job.tracker HplbCluster:jobtracker;
   hadoop.job.ugi HplbCluster:usergroup;
 }
 

@@ -20,5 +20,5 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 
 sfConfig extends ClusterDataNodeCompound {
-
+    fs.default.name LAZY ROOT:namenode:fs.default.name;
 }

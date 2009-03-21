@@ -64,23 +64,22 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
     }
 
     /**
-    * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-    * but spawn off any main loops!
-    *
-    * @throws SmartFrogException failure while starting
-    * @throws RemoteException    In case of network/rmi error
-    */
+     * Start the service deployment in a new thread
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        configureLogDir();
         createAndDeployService();
     }
 
     /** {@inheritDoc} */
     @Override
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
-        ExtTaskTracker tracker = new ExtTaskTracker(this, configuration);
-        return tracker;
+        return new ExtTaskTracker(this, configuration);
     }
 
     /**

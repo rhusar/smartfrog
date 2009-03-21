@@ -41,7 +41,7 @@ OrphanDatanodeCompound  extends LocalHadoopCompound  {
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
-    dfs.datanode.address dataNodeURL  ;
+    dfs.datanode.address datanodeURL  ;
   }
 }
 
@@ -72,7 +72,7 @@ LocalFileSystemCompound extends FilesystemWithActions {
 LocalJobTrackerCompound2 extends LocalFileSystemCompound {
   description "A cluster with a job tracker";
 
-  jobTracker extends LightweightJobTracker {
+  jobtracker extends LightweightJobTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     dataDir LAZY PARENT:ATTRIB dataDir;
     dataDirectories [dataDir];
@@ -88,7 +88,7 @@ OrphanTaskTrackerCompound extends LocalHadoopCompound  {
 
   mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
 
-  taskTracker extends LightweightTaskTracker {
+  tasktracker extends LightweightTaskTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
     //yes, this is milliseconds. But there is a sleep involved too
@@ -131,10 +131,10 @@ NamenodeShutdownSequence extends Sequence {
 TestJob extends Job {
   name TBD;
   cluster TBD;
-  jobTracker TBD;
+  jobtracker TBD;
   fs.default.name cluster:fs.default.name;
   testURL (fs.default.name ++ testDir);
-  mapred.job.tracker jobTracker:mapred.job.tracker;
+  mapred.job.tracker jobtracker:mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
   hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
   jobTimeout JOB_EXECUTE_TIMEOUT;
@@ -168,11 +168,11 @@ IsForkTestsSet extends IsPropertyTrue {
 }
 
 LocalClusterStatus extends ClusterStatus {
-  jobTracker TBD;
+  jobtracker TBD;
 
-  fs.default.name jobTracker:fs.default.name;
-  mapred.job.tracker jobTracker;
-  hadoop.job.ugi jobTracker:hadoop.job.ugi;
+  fs.default.name jobtracker:fs.default.name;
+  mapred.job.tracker jobtracker;
+  hadoop.job.ugi jobtracker:hadoop.job.ugi;
   sfShouldTerminate true;
   supportedFileSystem true;
 }

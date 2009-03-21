@@ -34,8 +34,8 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   mapred.task.tracker.connect.timeout IPC_CONNECT_TIMEOUT;
   dfs.heartbeat.interval 1;
   dfs.datanode.handler.count ClientHandlerThreads;
-  nameNodeURL      NAME_NODE_URL;
-  dataNodeURL      DATA_NODE_URL ;
+  namenodeURL      NAME_NODE_URL;
+  datanodeURL      DATA_NODE_URL ;
   hostaddress LOCALHOST;
   any_port  (hostaddress ++ ":0");
   dfs.datanode.address any_port;
@@ -51,7 +51,7 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   dfs.blockreport.initialDelay 0;
   dfs.namenode.startup NameNode:ACTION_FORMAT;
   dfs.permissions false;
-  dfs.http.address nameNodeURL;
+  dfs.http.address namenodeURL;
   dfs.permissions false;
 }
 
@@ -83,7 +83,6 @@ NameNodeClusterCompound extends ClusterCompound {
 
 
   namenode extends NameNodeWithCluster {
-    //dataNodeURL      DATA_NODE_URL ;
     cluster LAZY PARENT:conf;
     dataDir LAZY PARENT:dataDir;
     dataDirectories [dataDir];

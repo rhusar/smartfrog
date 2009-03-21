@@ -35,6 +35,8 @@
     datanode
     tasktracker
     jobtracker
+    filesystem  the filesystem
+    cluster     full cluster
 
     and run them. All will need the property namenode set
 
@@ -102,13 +104,26 @@
   </target>
 
   <target name="cluster2" depends="ready-to-deploy"
-      description="deploy a forked cluster">
+          description="deploy a forked cluster">
     <deploy>
       <application name="cluster2"
-          descriptor="/${cluster2.sf}"/>
+                   descriptor="/${cluster2.sf}"/>
     </deploy>
   </target>
-
+  <target name="filesystem" depends="ready-to-deploy"
+      description="deploy a filesystem">
+    <deploy>
+      <application name="filesystem"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/filesystem.sf"/>
+    </deploy>
+  </target>
+  <target name="checksecurity" depends="ready-to-deploy"
+          description="deploy a component to check the security settings">
+    <deploy>
+      <application name="checksecurity"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/checksecurity.sf"/>
+    </deploy>
+  </target>
   <target name="healthy" depends="ready-to-deploy"
       description="deploy basic health checks">
     <property name="healthy.name" value="healthy"/>

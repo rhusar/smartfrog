@@ -76,13 +76,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
-        //to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
-        //to an empty string if it is not set
-        //see https://issues.apache.org/jira/browse/HADOOP-3438
-        if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
-            System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
-        }
+        configureLogDir();
         createAndDeployService();
     }
 

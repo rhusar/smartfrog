@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,25 +17,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.components;
-
-import java.rmi.Remote;
-
-/**
- * Created 16-Apr-2008 14:32:37
- */
+#include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 
 
-public interface HadoopCluster extends Remote {
 
-    
-    /**
-     * {@value}
-     */
-    String ATTR_NAMENODE = "nameNode";
-
-    /**
-     * {@value}
-     */
-    String ATTR_JOBTRACKER = "jobtracker";
-}
+sfConfig extends CheckSecurityManagerLive {
+  requireSecurityManager false;
+  requireExitTrapping false;
+  }
