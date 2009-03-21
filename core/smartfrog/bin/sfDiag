@@ -63,5 +63,19 @@ fi
 if test "$SFDEFAULTSF"; then
     echo SFDEFAULTSF="$SFDEFAULTSF"
 fi
-
+#look for some other values
+if test $SFPRIVATE; then echo SFPRIVATE="$SFPRIVATE"; fi
+if test $SFHOSTNAME; then echo SFHOSTNAME="$SFHOSTNAME"; fi
+if test $SFSECURERESOURCES_OFF; then
+    echo SFSECURERESOURCES_OFF="$SFSECURERESOURCES_OFF";
+fi
+if test "$SFDEFAULTSECURITY"; then
+    echo SFDEFAULTSECURITY="$SFDEFAULTSECURITY";
+fi
+if test "$SFJVM"; then
+    echo SFJVM="$SFJVM";
+fi
+if test "$SFRMIHOSTNAME"; then
+    echo SFRMIHOSTNAME="$SFRMIHOSTNAMEFJVM";
+fi
 
