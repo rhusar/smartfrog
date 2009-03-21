@@ -27,15 +27,16 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
-/**
- * Created 10-Mar-2009 12:18:11
- */
+/** Created 10-Mar-2009 12:18:11 */
 
 public class CheckSecurityManagerLiveImpl extends PrimImpl {
 
     public static final String ATTR_REQUIRE_EXIT_TRAPPING = "requireExitTrapping";
     public static final String ATTR_REQUIRE_SECURITY_MANAGER = "requireSecurityManager";
     public static final String ATTR_TEST_SYSTEM_EXIT = "testSystemExit";
+    public static final String ATTR_SECURITY_MANAGER_TO_STRING = "securityManagerToString";
+    public static final String ATTR_SECURITY_MANAGER_CLASSNAME = "securityManagerClassname";
+    public static final String ATTR_SECURITY_MANAGER_FOUND = "securityManagerFound";
 
     public static final String ERROR_NOT_EXIT_TRAPPING = "Security manager is not a SmartFrog exit-trapping manager";
     public static final String ERROR_NO_SECURITY_MANAGER = "No security manager installed";
@@ -59,23 +60,34 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
         testSystemExit = sfResolve(ATTR_TEST_SYSTEM_EXIT, true, true);
         SecurityManager current = System.getSecurityManager();
 
-        if (requireSecurityManager && current == null) {
-            throw new SmartFrogDeploymentException(ERROR_NO_SECURITY_MANAGER);
-        }
-        sfLog().info("Current security manager " + current);
-        if (requireExitTrapping && !ExitTrappingSecurityManager.isSecurityManagerRunning()) {
-            throw new SmartFrogDeploymentException(
-                    ERROR_NOT_EXIT_TRAPPING + current);
-        }
-        if (testSystemExit) {
-            try {
-                System.exit(-1);
-            } catch (Throwable t) {
-                sfLog().info("Exit call intercepted ", t);
+        boolean hasManager = current != null;
+        sfReplaceAttribute(ATTR_SECURITY_MANAGER_FOUND, hasManager);
+
+        if (!hasManager) {
+            if (requireSecurityManager) {
+                throw new SmartFrogDeploymentException(ERROR_NO_SECURITY_MANAGER);
+            }
+        } else {
+            Class<? extends SecurityManager> classname = current.getClass();
+            String securityString = current.toString();
+            sfReplaceAttribute(ATTR_SECURITY_MANAGER_CLASSNAME, classname);
+            sfReplaceAttribute(ATTR_SECURITY_MANAGER_TO_STRING, securityString);
+            String description = securityString + " classname " + classname;
+            sfLog().info("Current security manager " + description);
+            if (requireExitTrapping && !ExitTrappingSecurityManager.isSecurityManagerRunning()) {
+                throw new SmartFrogDeploymentException(
+                        ERROR_NOT_EXIT_TRAPPING + description);
+            }
+            if (testSystemExit) {
+                try {
+                    System.exit(-1);
+                } catch (Throwable t) {
+                    sfLog().info("Exit call intercepted ", t);
+                }
             }
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal", "Security Manager is "+current, 
-                sfCompleteNameSafe(), 
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal", "Security Manager is " + current,
+                sfCompleteNameSafe(),
                 null);
     }
 
