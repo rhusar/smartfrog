@@ -1117,6 +1117,7 @@
       </sequential>
     </macrodef>
 
+
     <fileset id="rpm.upload.fileset" dir="${upload.dir}">
       <include name="*.rpm"/>
     </fileset>
@@ -1128,6 +1129,15 @@
     <!--this is the full rpm destination-->
     <property name="rpm.full.ssh.dir"
         value="/home/${rpm.ssh.user}/${rpm.ssh.dir}"/>
+    <macrodef name="rpm-uninstall">
+      <attribute name="rpms" />
+      <attribute name="failonerror" default="true" />
+      <sequential >
+        <rootssh
+            command="rpm --erase --nodeps --allmatches ${rpm.verbosity} @{rpms}"
+            failonerror="@{failonerror}"/>
+      </sequential>
+    </macrodef>
     <!--list of rpms-->
 
 
@@ -1142,18 +1152,16 @@
 
     <property name="rpms.core.list"
         value="${rpm.base.list} ${rpms.components.list} ${rpms.www.list} ${rpms.testing.list} "/>
-<!--
-    <property name="rpms.cloud.list"
-        value="smartfrog-hadoop smartfrog-ec2"/>
--->
+<!--    <property name="rpms.cloud.list"
+        value="smartfrog-hadoop smartfrog-ec2"/>-->
 
     <property name="rpms.cloud.list"
-        value="smartfrog-hadoop smartfrog-ec2"/>
+        value="smartfrog-hadoop"/>
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
     
     <property name="rpms.list"
-        value="${rpms.core.list} ${rpms.private.list}  ${rpms.cloud.list}"/>
+        value="${rpms.core.list} ${rpms.private.list} ${rpms.cloud.list}"/>
 
 
     <!--here are all the signed RPMs that are generated-->
@@ -1236,12 +1244,11 @@
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
       description="A forced uninstall of the RPMs, no dependency checking">
-    <rootssh
-        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.private.list} ${rpms.dependent.list}"
-        failonerror="false"/>
-    <rootssh
-        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.list}"
-        failonerror="false"/>
+    <rpm-uninstall failonerror="false" rpms="${rpms.private.list}" />
+    <rpm-uninstall failonerror="false" rpms="${rpms.cloud.list}" />
+    <echo> do not worry if there is an error message about no rpms to uninstall next.</echo>
+    <rpm-uninstall failonerror="false" rpms="${rpms.dependent.list}" />
+    <rpm-uninstall failonerror="false" rpms="${rpms.core.list}" />
   </target>
 
   <target name="rpm-remote-test"
