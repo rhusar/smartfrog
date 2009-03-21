@@ -37,7 +37,7 @@ ClusterStatus extends WorkflowPrim {
   /**
    * Declares that the job tracker is live
    */
-  jobTrackerLive true;
+  jobtrackerLive true;
 
   /**
    For all the min/max values, <0 means 'dont check'

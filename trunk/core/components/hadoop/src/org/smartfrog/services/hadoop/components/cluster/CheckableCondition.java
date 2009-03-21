@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.assertions.AssertComponent;
+import org.smartfrog.services.assertions.Assert;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 /**
@@ -31,10 +32,10 @@ public interface CheckableCondition extends Condition {
     /**
      * Check on startup {@value}
      */
-    String ATTR_CHECK_ON_STARTUP = AssertComponent.ATTR_CHECK_ON_STARTUP;
+    String ATTR_CHECK_ON_STARTUP = Assert.ATTR_CHECK_ON_STARTUP;
     /**
      * Check on liveness {@value}
      */
-    String ATTR_CHECK_ON_LIVENESS = AssertComponent.ATTR_CHECK_ON_LIVENESS;
+    String ATTR_CHECK_ON_LIVENESS = Assert.ATTR_CHECK_ON_LIVENESS;
 
 }

@@ -44,6 +44,6 @@ public interface ClusterStatusChecker extends Remote {
     /**
      * Declares that the job tracker is live
      */
-    String ATTR_JOBTRACKERLIVE = "jobTrackerLive";
+    String ATTR_JOBTRACKERLIVE = "jobtrackerLive";
 
 }
