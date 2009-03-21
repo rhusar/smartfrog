@@ -1209,7 +1209,8 @@ java.class.path=
       <echo message=" --------------------------------------------------------"/>
 	    <echo message=" Project: ${ant.project.name}"/>
 	    <echo message=" Ant file: ${ant.file}"/>
-      <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
+        <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
+		<echo message=" ArtifactsCache dir: ${artifactsCache.dir}"/>
 	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
