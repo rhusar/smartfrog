@@ -26,6 +26,13 @@ CheckSecurityManagerLive extends WorkflowPrim {
   requireExitTrapping true;
   testSystemExit false;
 
+/*
+  set on startup
+  securityManagerFound  -boolean
+  securityManagerToString -string value
+  securityManagerClassname -string classname
+  */
+
   ERROR_NOT_EXIT_TRAPPING CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_NOT_EXIT_TRAPPING;
   ERROR_NO_SECURITY_MANAGER CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_NO_SECURITY_MANAGER;
 }
@@ -38,4 +45,12 @@ CheckSecurityBlocksSystemExit extends CheckSecurityManagerLive {
 
 CheckSecurityBlocksRealSystemExit extends CheckSecurityBlocksSystemExit {
   testSystemExit true;
+}
+
+/**
+ * just check the details and set the attributes, no failures if one is absent
+ */
+CheckSecurityManagerDetails extends CheckSecurityManagerLive {
+  requireSecurityManager false;
+  requireExitTrapping false;
 }
