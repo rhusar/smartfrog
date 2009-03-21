@@ -51,7 +51,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
         implements HadoopConfiguration, HadoopCluster, ClusterStatusChecker, Condition {
     private JobClient client;
     private boolean checkOnLiveness;
-    private boolean jobTrackerLive;
+    private boolean jobtrackerLive;
 
     //declares that we can handle the filesystem
     private boolean supportedFileSystem;
@@ -65,7 +65,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
     private int maxActiveReduceTasks;
     private int maxSupportedMapTasks;
     private int maxSupportedReduceTasks;
-    private String jobTracker;
+    private String jobtracker;
     public static final String STATUS_CHECKED = "Hadoop Cluster status checked against ";
     public static final String ERROR_CANNOT_CONNECT = "Cannot connect to ";
 
@@ -83,9 +83,9 @@ public class ClusterStatusCheckerImpl extends PrimImpl
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        jobTracker = SubmitterImpl.resolveJobTracker(this, new Reference(MAPRED_JOB_TRACKER));
+        jobtracker = SubmitterImpl.resolveJobTracker(this, new Reference(MAPRED_JOB_TRACKER));
         supportedFileSystem = sfResolve(ATTR_SUPPORTEDFILESYSTEM, false, true);
-        jobTrackerLive = sfResolve(ATTR_JOBTRACKERLIVE, false, true);
+        jobtrackerLive = sfResolve(ATTR_JOBTRACKERLIVE, false, true);
         minActiveMapTasks = sfResolve(ATTR_MIN_ACTIVE_MAP_TASKS, 0, true);
         maxActiveMapTasks = sfResolve(ATTR_MAX_ACTIVE_MAP_TASKS, 0, true);
         maxSupportedMapTasks = sfResolve(ATTR_MAX_SUPPORTED_MAP_TASKS, 0, true);
@@ -99,7 +99,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             checkClusterStatus();
             new ComponentHelper(this)
                     .sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
-                            STATUS_CHECKED + jobTracker, null, null);
+                            STATUS_CHECKED + jobtracker, null, null);
         }
     }
 
@@ -117,13 +117,13 @@ public class ClusterStatusCheckerImpl extends PrimImpl
         }
         try {
             ManagedConfiguration conf = ManagedConfiguration.createConfiguration(this, false, false, true);
-            sfLog().info("Connecting to " + jobTracker);
+            sfLog().info("Connecting to " + jobtracker);
             client = new JobClient(conf);
             return client;
         } catch (RemoteException e) {
             throw e;
         } catch (IOException e) {
-            throw new SFHadoopException(ERROR_CANNOT_CONNECT + jobTracker, e, this);
+            throw new SFHadoopException(ERROR_CANNOT_CONNECT + jobtracker, e, this);
         }
     }
 
@@ -206,10 +206,10 @@ public class ClusterStatusCheckerImpl extends PrimImpl
                             conf);
                 }
             }
-            if (jobTrackerLive) {
+            if (jobtrackerLive) {
                 JobTracker.State state = status.getJobTrackerState();
                 if (!state.equals(JobTracker.State.RUNNING)) {
-                    throw new SFHadoopException("Job Tracker at " + jobTracker
+                    throw new SFHadoopException("Job Tracker at " + jobtracker
                             + " is not running. It is in the state " + state, this);
                 }
                 result.append("Job tracker is in state " + status);
@@ -222,7 +222,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             result.append(" Reduce Tasks = " + status.getReduceTasks());
             return result.toString();
         } catch (IOException e) {
-            throw new SFHadoopException("Cannot connect to" + jobTracker, e, this);
+            throw new SFHadoopException("Cannot connect to" + jobtracker, e, this);
         }
     }
 

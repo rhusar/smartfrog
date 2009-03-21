@@ -30,43 +30,9 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:48:34
  */
 
-public abstract class AbstractTargetedCondition extends PrimImpl implements TargetedCondition,
-        ConditionWithFailureCause {
-
-    private Throwable failureCause;
-    private String failureText;
+public abstract class AbstractTargetedCondition extends AbstractConditionPrim implements TargetedCondition {
 
     protected AbstractTargetedCondition() throws RemoteException {
-    }
-
-    protected void setFailureCause(String text, Throwable t) {
-        failureCause = t;
-        setFailureText(text);
-    }
-
-    protected void setFailureCause(Throwable t) {
-        failureCause = t;
-        setFailureText(failureCause.toString());
-    }
-
-    public void setFailureText(String failureText) {
-        this.failureText = failureText;
-
-    }
-
-    public String getFailureText() throws RemoteException {
-        return failureText;
-    }
-
-    public Throwable getFailureCause() throws RemoteException {
-        return failureCause;
-    }
-
-    protected final boolean evalOrFail(boolean state, String failureText) {
-        if(!state) {
-            setFailureText(failureText);
-        }
-        return state;
     }
 
     @Override
