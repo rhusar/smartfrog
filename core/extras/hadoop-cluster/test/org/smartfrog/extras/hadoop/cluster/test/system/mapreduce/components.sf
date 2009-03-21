@@ -27,14 +27,13 @@ For more information: www.smartfrog.org
 testJobSubmission extends testDistributedCluster {
   description "Submit a job to a cluster and copy out the result";
 
-  action extends LocalClusterCompound {
+  /*action extends LocalClusterCompound {
 
-  }
+  }*/
 
   tests extends MapReduceSequence {
-     LocalDataDir PROPERTY test.work.dir;
-
-    jobTracker LAZY PARENT:action:jobTracker:jobTracker;
+    LocalDataDir PROPERTY test.work.dir;
+    jobtracker LAZY PARENT:action:jobtracker:jobtracker;
     namenode LAZY PARENT:action:namenode:namenode;
     datanode LAZY PARENT:action:datanode:datanode;
 

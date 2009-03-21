@@ -44,10 +44,7 @@ NameNode extends NameDataLogNode {
   dfs.namenode.startup ACTION_REGULAR;
 
   //dfs.http.address "http://localhost:8021";
-/*
-  dfs.info.bindAddress NULL;
-  dfs.info.port NULL;
-  */
+
 
   //this is set from logDir
   //hadoop.log.dir TBD
@@ -57,8 +54,6 @@ NameNode extends NameDataLogNode {
   //fs.default.name
 
   dfs.namenode.decommission.interval (5 * 60);
-
-  //dfs.name.dir TBD: directory for the names
 
   dfs.permissions.supergroup "supergroup";
   dfs.upgrade.permission "0777"

@@ -31,8 +31,7 @@ testLocalJobTracker extends ExpectDeploy {
   }
 
   tests extends JobTrackerLiveSequence {
-    jobTracker LAZY PARENT:action:jobTracker;
-  //  taskTracker LAZY PARENT:action:taskTracker;
+    jobtracker LAZY PARENT:action:jobtracker;
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
@@ -45,8 +44,8 @@ testLocalJobTrackerForked extends testLocalJobTracker {
   condition IsForkTestsSet;
   action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
   action:datanode:sfProcessName "testDataNodeForkedProcess";
-  action:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
-//  action:clusterActions:then:taskTracker:sfProcessName "testLocalJobTrackerForked-taskTracker";
+  action:jobtracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
+//  action:clusterActions:then:tasktracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
 }
 
 /**
@@ -61,8 +60,7 @@ testJobSubmission extends ExpectDeploy {
 
   tests extends MapReduceTestSequence {
     //s extends Sleep;
-    jobTracker LAZY PARENT:action:jobTracker;
-    //taskTracker LAZY PARENT:action:taskTracker;
+    jobtracker LAZY PARENT:action:jobtracker;
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
@@ -80,8 +78,7 @@ testJobSetup extends ExpectDeploy {
 
   tests extends JobTrackerSequence {
     //s extends Sleep;
-    jobTracker LAZY PARENT:action:jobTracker;
-    //taskTracker LAZY PARENT:action:taskTracker;
+    jobtracker LAZY PARENT:action:jobtracker;
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
@@ -97,8 +94,8 @@ testJobSubmissionForked extends testJobSubmission {
   condition IsForkTestsSet;
   action:namenode:sfProcessName "testJobSubmission-namenode";
   action:datanode:sfProcessName "testJobSubmission-datanode";
-  action:jobTracker:sfProcessName "testJobSubmission-jobtracker";
-  //action:taskTracker:sfProcessName "testJobSubmission-taskTracker";
+  action:jobtracker:sfProcessName "testJobSubmission-jobtracker";
+  //action:tasktracker:sfProcessName "testJobSubmission-tasktracker";
 }
 
 

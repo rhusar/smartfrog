@@ -32,6 +32,6 @@
 
 
 HadoopCluster extends Prim {
-  jobTracker TBD;
+  jobtracker TBD;
 }
 

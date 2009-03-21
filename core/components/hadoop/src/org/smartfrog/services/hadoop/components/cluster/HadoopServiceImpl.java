@@ -688,6 +688,21 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
+     * to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
+     to an empty string if it is not set
+     @see <a href="https://issues.apache.org/jira/browse/HADOOP-3438">HADOOP-3438</a>
+     @see <a href="https://issues.apache.org/jira/browse/HADOOP-5546">HADOOP-5546</a>
+     */
+    protected void configureLogDir() {
+        //to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
+        //to an empty string if it is not set
+        //see https://issues.apache.org/jira/browse/HADOOP-3438
+        if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
+            System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
+        }
+    }
+
+    /**
     * This is the thread that starts the deployment
     */
     public class ServiceDeployerThread extends WorkflowThread {

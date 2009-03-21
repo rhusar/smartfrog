@@ -50,8 +50,7 @@ LightweightNameNode extends NameNode {
   //these properties set the HTTP ports. The NN gets its IPC port from the fs.default.name URL
   dfs.http.address  (hostname ++ ":" ++ NameNodeHttpPort);
   dfs.https.address (hostname ++ ":" ++ NameNodeHttpsPort);
-
-
+  //mapred.system.dir TBD;
 }
 
 LightweightDataNode extends DataNode {
@@ -77,10 +76,6 @@ LightweightDataNode extends DataNode {
 
 HadoopCompoundBase extends Compound {
   fs.default.name  FS.DEFAULT.NAME;
-/*
-  nameNodeURL      NAME_NODE_URL;
-  dataNodeURL      DATA_NODE_IPC_URL ;
-*/
   mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
 
   logDir extends TempDir {
@@ -92,14 +87,9 @@ HadoopCompoundBase extends Compound {
 
 TransientHadoopCompound extends HadoopCompoundBase {
 
-  dataDir extends TempDir {
-
-  }
-
-  nameDir extends TempDir {
-
-  }
-
+  dataDir extends TempDir;
+  nameDir extends TempDir;
+  tmpDir extends TempDir;
 }
 
 /**
@@ -113,17 +103,20 @@ TransientNameNodeCompound extends TransientHadoopCompound {
   hostname LOCALHOST;
   IpcPort NameNodeIpcPort;
   HttpPort NameNodeHttpPort
-
+  //systemDir extends TempDir;
   fs.default.name ("hdfs://" ++ hostname ++ ":" ++ NameNodeIpcPort );
   namenode.URL      ("http://" ++ hostname ++ ":" ++ HttpPort );
 
   namenode extends LightweightNameNode {
     fs.default.name PARENT:fs.default.name;
-    dataDir LAZY PARENT:dataDir;
+    dataDir LAZY PARENT:dataDir:absolutePath;
     dataDirectories [dataDir];
     //dataDirectories [LAZY PARENT:dataDir];
-    nameDirectory LAZY PARENT:nameDir;
+    nameDirectory LAZY PARENT:nameDir:absolutePath;
     nameDirectories [nameDirectory];
+    //dfs.name.dir nameDirectories;
+    hadoop.tmp.dir LAZY PARENT:tmpDir;
+
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup ACTION_FORMAT;
     dfs.http.address namenode.URL;
@@ -141,15 +134,15 @@ TransientDataNodeCompound extends HadoopCompoundBase {
 
   hostname ANY_HOST;
 
-  localDataDir extends TempDir {
+  localDataDir extends TempDir;
 
-  }
 
   datanode extends  LightweightDataNode {
     hostname PARENT:hostname;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
+
   }
 
 }

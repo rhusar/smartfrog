@@ -123,8 +123,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
     /** {@inheritDoc} */
     @Override
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
-        ExtNameNode nameNode = ExtNameNode.create(this, configuration);
-        return nameNode;
+        return ExtNameNode.create(this, configuration);
     }
 
 
