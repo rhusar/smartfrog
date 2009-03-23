@@ -60,7 +60,7 @@
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message="      Build dir: ${basedir} "/>
-    <echo message="   Core dir: ${core.dir}"/>	
+    <echo message="      Core dir: ${core.dir}"/>	
 	<echo message="      ArtifactsCache dir: ${artifactsCache.dir}"/>
     <echo message=" --------------------------------------------------------"/>
     <echo
