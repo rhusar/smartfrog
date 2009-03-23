@@ -772,16 +772,21 @@
       basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
 
+  <!-- OGSI  -->
   <target name="sfRmiSpiJar" depends="build,target-names">
-     <!-- Create sfRmiSpi.jar file -->
+   
+     <!-- Create sfRmiSpi.jar file 
     <jar jarfile="${sf-rmi-spi.jar}"
       basedir="${build.classes.dir}" includes="**/rmispi/**" manifest="${manifestName}"/>
+	  -->
   </target>
-
+   
+   
     <target name="sfOSGiJar" depends="build,target-names">
-        <!-- Create sfOSGi.jar file -->
+    <!-- Create sfOSGi.jar file 
         <jar jarfile="${sf-osgi.jar}"
              basedir="${build.classes.dir}" includes="**/osgi/**" manifest="${manifestName}"/>
+	-->		 
     </target>
 
   <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfRmiSpiJar,sfOSGiJar"/>
@@ -878,8 +883,10 @@
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
+		<!--  OSGI
         <pathelement location="${sf-rmi-spi.jar}"/>
         <pathelement location="${sf-osgi.jar}"/>
+		-->
         <pathelement location="${sf-services.jar}"/>
         <pathelement location="${sf-examples.jar}"/>
         <pathelement location="${dist.lib.dir}/sf-scripting.jar"/>
@@ -933,8 +940,10 @@
     <sha1 file="${smartfrog.jar}" todir="${dist.metadata.dir}"/>
     <sha1 file="${sf-examples.jar}" todir="${dist.metadata.dir}"/>
     <sha1 file="${sf-services.jar}" todir="${dist.metadata.dir}"/>
+	<!--  OSGI
 	<sha1 file="${sf-rmi-spi.jar}" todir="${dist.metadata.dir}"/>
     <sha1 file="${sf-osgi.jar}" todir="${dist.metadata.dir}"/>
+	-->
   </target>
 
   <!-- ========================================================== -->
@@ -1076,7 +1085,7 @@
 	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
-<!--
+<!--  OSGI
     <m2-install
       destdir="${m2.sf-rmi-spi}"
       target="${sf-rmi-spi.jar}"
@@ -1174,8 +1183,10 @@
     <copy file="${smartfrog.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
+<!--  OSGI	
     <copy file="${sf-rmi-spi.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-osgi.jar}" todir="${artifacts.dir}" />
+-->	
   </target>
 
   <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact,documentation"/>
@@ -1234,8 +1245,10 @@
         <include name="${smartfrog.stub}.*" />
         <include name="${sf-services.stub}.*" />
         <include name="${sf-examples.stub}.*" />
+		<!--  OSGI
 		<include name="${sf-rmi-spi.stub}.*" />
 		<include name="${sf-osgi.stub}.*" />
+		-->
       </zipfileset>
     </zip>
   </target>
@@ -1246,8 +1259,10 @@
     <fileexists file="${unzip.install.dir}/lib/${smartfrog.stub}.jar" />
     <fileexists file="${unzip.install.dir}/lib/${sf-services.stub}.jar" />
     <fileexists file="${unzip.install.dir}/lib/${sf-examples.stub}.jar" />
+	<!--  OSGI
 	<fileexists file="${unzip.install.dir}/lib/${sf-rmi-spi.stub}.jar" />
 	<fileexists file="${unzip.install.dir}/lib/${sf-osgi.stub}.jar" />
+	-->
   </target>
 
   <target name="publish-all" depends="published" />  
