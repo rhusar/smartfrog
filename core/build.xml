@@ -568,7 +568,7 @@ ${child.projects.list}
     </exec>
   </target>
 
-  <target name="ivy-clean" depends="ivy-init"
+  <target name="ivy-clean" depends="ivy-init,ivy-dirs"
     description="pass clean down to all the ivy-managed projects">
     <ivy-delegate target="clean" />
   </target>
