@@ -81,8 +81,8 @@
     <property name="core.dir" location="${antfile.dir}"/>
 	
 	 <!-- where the ivy/maven artifacts are stored -->	 
-    <property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>
-    <!-- <property name="artifactsCache.dir" location="${user.home}"/>-->
+    <!--<property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>-->
+    <property name="artifactsCache.dir" location="${user.home}"/>
 	<property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
 	
     <!--if unset, we work it out here too-->
@@ -1210,6 +1210,7 @@ java.class.path=
 	    <echo message=" Project: ${ant.project.name}"/>
 	    <echo message=" Ant file: ${ant.file}"/>
         <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
+		<echo message=" Core dir: ${core.dir}"/>
 		<echo message=" ArtifactsCache dir: ${artifactsCache.dir}"/>
 	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
