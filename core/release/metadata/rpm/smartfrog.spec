@@ -562,6 +562,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfManagementConsole
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfParse
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPing
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPrintSettings
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfRun
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStart
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStop
