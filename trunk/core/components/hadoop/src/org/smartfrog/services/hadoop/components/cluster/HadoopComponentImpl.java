@@ -101,15 +101,6 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
     protected ManagedConfiguration createClusterAttrConfiguration()
             throws SmartFrogException, RemoteException {
         return ManagedConfiguration.createConfiguration(this, true, true, false);
-/*
-        Prim target = sfResolve(targetAttribute, (Prim) null, true);
-        if (target == null) {
-            Object o = sfResolve(targetAttribute,true);
-            throw new SmartFrogResolutionException("Could not resolve attribute \""+targetAttribute+"\""
-                    +" got "+o,this);
-        }
-        return new ManagedConfiguration(target);
-*/
     }
 
     /**

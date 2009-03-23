@@ -59,6 +59,7 @@ public class JUnitMRUtils {
      * @return the test
      * @throws JUnitMRException if the test suite setup failed
      */
+    @SuppressWarnings({"RawUseOfParameterizedType"})
     public static Test extractTest(Class clazz) throws JUnitMRException {
         //todo: verify that the class implements test or testsuite
         try {
@@ -78,15 +79,4 @@ public class JUnitMRUtils {
     }
 
 
-    /**
-     * load the test class, using the secure classloader framework.
-     *
-     * @param classname class
-     * @return the loaded class
-     * @throws ClassNotFoundException if it isn't found
-     */
-    public static Class loadTestClass(String classname)
-            throws ClassNotFoundException {
-        return Thread.currentThread().getClass().getClassLoader().loadClass(classname);
-    }
 }

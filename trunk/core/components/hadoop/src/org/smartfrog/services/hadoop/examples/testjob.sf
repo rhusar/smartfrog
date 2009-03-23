@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/hadoop/junitmr/healthtests/components.sf"
 
 FileSystemLiveSequence extends Sequence {
     description "this is a base sequence that blocks until the filesystem is live"
@@ -51,11 +52,12 @@ SmallCountingFile extends TextFile {
     filename TBD;
     createParentDirs true;
     sfShouldTerminate true;
-    text ##1,one,un,ein
-2,two,deux,zwei
-3,three,trois,drei
-4,four,quatre,vier
-5,five,cinq,funf#;
+    text [
+    "1,one,un,ein",
+    "2,two,deux,zwei",
+    "3,three,trois,drei",
+    "4,four,quatre,vier",
+    "5,five,cinq,funf"];
   }
 
 CopyFileInAndOutSequence extends FileSystemLiveSequence {
@@ -71,7 +73,7 @@ CopyFileInAndOutSequence extends FileSystemLiveSequence {
   inputFileLocal (LocalDataDir  ++ "/in.txt")
   outputFileLocal (LocalDataDir  ++ "/out.txt")
 
-  inputFile extends SmallCountingFile {
+  inputFile extends HealthTestsTextFile {
     filename inputFileLocal;
   };
 
@@ -251,7 +253,7 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
   mapred.output.dir (fs.default.name ++ testDirOut);
   mapred.working.dir (fs.default.name ++ testDirWorking);
 
-  inputFile extends SmallCountingFile {
+  inputFile extends HealthTestsTextFile {
     filename inputFileLocal;
   }
 
