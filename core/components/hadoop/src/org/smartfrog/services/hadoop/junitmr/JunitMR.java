@@ -45,25 +45,51 @@ public class JunitMR {
          * default is the identity function.
          */
         @Override
-        protected void map(Text key, Text value,
-                           Context context)
+        @SuppressWarnings({"RefusedBequest"})
+        protected void map(Text key, Text test, Context context)
                 throws IOException, InterruptedException {
-            String test = value.toString();
             TestResult result = new TestResult();
+            Class<?> testClass = loadClass(context, test);
+            Test testSuite = JUnitMRUtils.extractTest(testClass);
+            //set the configuration if it is supported
+            if (testSuite instanceof JUnitHadoopContext) {
+                JUnitHadoopContext ctx = (JUnitHadoopContext) testSuite;
+                ctx.setConfiguration(context.getConfiguration());
+            }
+            TestSuiteRun tsr = new TestSuiteRun();
+            result.addListener(tsr);
+            testSuite.run(result);
+            for (SingleTestRun singleTestRun : tsr.getTests()) {
+                context.write(new Text(singleTestRun.name), singleTestRun);
+            }
+        }
+
+      private Class<?> loadClass(Context context, Text test)
+              throws IOException {
+        return loadClass(context, test.toString());
+      }
+
+      private Class<?> loadClass(Context context, String test) throws IOException {
             try {
-                Class testClass = JUnitMRUtils.loadTestClass(test);
-                Test testSuite = JUnitMRUtils.extractTest(testClass);
-                TestSuiteRun tsr = new TestSuiteRun();
-                result.addListener(tsr);
-                testSuite.run(result);
-                for (SingleTestRun singleTestRun : tsr.getTests()) {
-                    context.write(new Text(singleTestRun.name), singleTestRun);
-                }
+                return context.getConfiguration().getClassLoader().loadClass(test);
             } catch (ClassNotFoundException e) {
                 throw (IOException) new IOException("Could not load " + test).initCause(e);
             }
-
         }
+
+protected void map2(Text key, Text test, Context context)
+        throws IOException, InterruptedException {
+  TestResult result = new TestResult();
+  Class<?> testClass = loadClass(context, test);
+  Test testSuite = JUnitMRUtils.extractTest(testClass);
+  TestSuiteRun tsr = new TestSuiteRun();
+  result.addListener(tsr);
+  testSuite.run(result);
+  for (SingleTestRun singleTestRun : tsr.getTests()) {
+    context.write(new Text(singleTestRun.name),
+            singleTestRun);
+  }
+}
 
     }
 
@@ -73,6 +99,7 @@ public class JunitMR {
     public static class JUnitReducer
             extends Reducer<Text, SingleTestRun, Text, TestSummary> {
 
+        @SuppressWarnings({"RefusedBequest"})
         public void reduce(Text key, Iterable<SingleTestRun> values,
                            Context context)
                 throws IOException, InterruptedException {
