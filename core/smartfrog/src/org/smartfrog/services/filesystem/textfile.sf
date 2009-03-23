@@ -53,3 +53,14 @@ TextFileUtf16 extends TextFile {
     //encoding is utf16
     encoding "UTF-16";
 }
+
+/**
+ * A text file represented as a list of strings
+ */
+TextListFile extends TextFile {
+  textFileSchema extends TextFileSchema {
+    text extends Vector;
+  }
+  sfClass "org.smartfrog.services.filesystem.TextListFileImplImpl"
+  text [];
+}
