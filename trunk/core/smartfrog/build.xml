@@ -60,8 +60,6 @@
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message="      Build dir: ${basedir} "/>
-    <echo message="      Core dir: ${core.dir}"/>	
-	<echo message="      ArtifactsCache dir: ${artifactsCache.dir}"/>
     <echo message=" --------------------------------------------------------"/>
     <echo
       message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
@@ -117,26 +115,20 @@
     <echo message=""/>
   </target>
 
-   
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
-  <target name="initClassPath" depends="declare-classpaths"> 
-	<pathconvert property="path.compile.classpath" 
-               refid="compile.classpath">
-    </pathconvert>
-  
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
 	<pathelement path="./lib/eclipse-clp-5.10.jar"/>
-	<pathelement path="${path.compile.classpath}"/>
+    <!-- <pathelement path="./lib/ProActive.jar"/>-->
   </path>
   <!-- to get the classpath in a printable form -->
   <pathconvert pathsep="${line.separator}|   |-- "  
                property="echo.smartfrog.class.path" 
                refid="smartfrog.class.path">
   </pathconvert>
-  </target>   
+   
   
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
@@ -146,22 +138,6 @@
   <property file="../build.properties"/>
   <!-- properties file to modify version.sf -->
   <property file="sf-build-version.properties"/>
-  
-  
-  <!-- this is where we work out the base directory    -->
-  <!-- only here when running this task raw, to test targets inside -->
-  <property name="ant.file.common" location="${ant.file}" />
-  <!-- this will be set by the runtime during importation --> 
-
-  <!-- it is how we infer the base directory of the system -->
-  <dirname property="antfile.dir" file="${ant.file.common}"/>
-	
-  <property name="core.dir" location="${antfile.dir}/.."/>
-  <!-- where the ivy/maven artifacts are stored -->
-  <!--<property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>-->
-  <property name="artifactsCache.dir" location="${user.home}"/>
-   
-  <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
 
   <property environment="env"/>
   <!-- Release Directories -->
@@ -229,8 +205,6 @@
 
 
 
-  
-  
   <!-- ================================================================== -->
   <!-- Import the security-related ant file -->
   <!-- ================================================================== -->
@@ -380,20 +354,15 @@
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
         javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
-  
+
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="compile-source" depends="initbuild,createParser,declare-classpaths,initClassPath" description="Compiles the source code">
+  <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
     <!-- Compile the java code -->
-    <pathconvert pathsep="${line.separator}|   |-- "  
-               property="echo.compile.smartfrog.class.path" 
-               refid="smartfrog.class.path">
-    </pathconvert>
-	<echo message=" --------------------------------------------------------"/>
-	<echo message=" javac ${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}"/>
-    <echo message="   Class Path= ${line.separator}|   |-- ${echo.compile.smartfrog.class.path}"/>
-	<echo message=" --------------------------------------------------------"/>
+    <echo level="verbose">${javac.java.version}
+      build.compiler=${build.compiler}
+      javac.compiler=${javac.compiler}</echo>
     <javac compiler="${javac.compiler}" 
       srcdir="${src.dir}"
       includes="**/*.java" 
@@ -454,18 +423,6 @@
     </copy>
   </target>
   <!-- =================================================================== -->
-  <!-- Copy configuration files that have to be inside the OSGi JAR        -->
-  <!-- =================================================================== -->
-  <target name="copyOSGi" depends="initbuild">
-        <copy todir="${build.classes.dir}">
-            <fileset dir="${src.dir}">
-                <include name="**/osgi/system.properties"/>
-                <include name="**/osgi/default.sf"/>
-                <include name="**/osgi/default.ini"/>
-            </fileset>
-        </copy>
-  </target>
-  <!-- =================================================================== -->
   <!--   Copy .prolog files to "build" directories                             -->
   <!-- =================================================================== -->
   <target name="copyProlog" depends="initbuild">
@@ -512,37 +469,15 @@
   <target name="copyGif" depends="initbuild">
     <copy todir="${build.classes.dir}">
       <fileset dir="${src.dir}">
-        <include name="**/*.gif"/>
-      </fileset>
-    </copy>
-  </target>
-
-  <!-- =================================================================== -->
-  <!--  Copy ico files to "build" directories                              -->
-  <!-- =================================================================== -->
-  <target name="copyIco" depends="initbuild">
-    <copy todir="${build.classes.dir}">
-      <fileset dir="${src.dir}">
         <include name="**/*.ico"/>
+		<include name="**/*.gif"/>
       </fileset>
     </copy>
   </target>
-    <!-- =================================================================== -->
-    <!--                                                                     -->
-    <!-- =================================================================== -->
-    <target name="copyIvyDependencies" depends="initbuild">
-        <ivy:cachepath conf="redist" pathid="redist.jars"/>
-        <!-- Using <copy> with a nested referenced path does not seem to work.
-        Using the undocumented <copypath> instead. -->
-        <copypath destdir="${dist.lib.dir}" pathref="redist.jars">
-            <flattenmapper/>
-        </copypath>
-    </target>
-
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copylibs" depends="initbuild,copyIvyDependencies">
+  <target name="copylibs" depends="initbuild">
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
@@ -649,7 +584,10 @@
     <mkdir dir="${dist.jdocs.dir}"/>
   </target>
 
-  <target name="jdocs" depends="ready-to-javadoc,jjdocs"  unless="javadoc.disabled"  description="Generates the API documentation">
+  <target name="jdocs"
+  depends="ready-to-javadoc,jjdocs"
+  unless="javadoc.disabled"
+  description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo>
     ------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------
@@ -685,7 +623,7 @@
     </java>
   </target>
 
-  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs" unless="javadoc.disabled"/>
+  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs"/>
 
  <!--create a zipfile with the javadocs; the prefix in the zip file is configurable-->
   <target name="package-javadocs" depends="ready-to-package-javadocs"
@@ -705,7 +643,7 @@
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
   <target name="prebuild"
-    depends="initbuild,generateversion,compile,copySF,copyGif,copyIco,copyBAT,copyHTML,copyDefault,copySFCD,copyProlog,copyOSGi" />
+    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD, copyProlog" />
 
   <target name="build"
     depends="prebuild"
@@ -732,31 +670,18 @@
 
     <property name="sf-examples.title"
         value="sfExamples" />
+
     <property name="sf-examples.stub"
       value="${sf-examples.title}-${Version}" />
     <property name="sf-examples.jar"
       location="${dist.lib.dir}/${sf-examples.stub}.jar" />
-
-    <property name="sf-rmi-spi.title"
-        value="sfRmiSpi" />		
-    <property name="sf-rmi-spi.stub"
-      value="${sf-rmi-spi.title}-${Version}" />	  
-    <property name="sf-rmi-spi.jar"
-      location="${dist.lib.dir}/${sf-rmi-spi.stub}.jar" />
-
-    <property name="sf-osgi.title"
-	  value="sfOSGi"/>
-	<property name="sf-osgi.stub"
-	  value="${sf-osgi.title}-${Version}"/>
-	<property name="sf-osgi.jar"
-	  location="${dist.lib.dir}/${sf-osgi.stub}.jar"/>
 
   </target>
 
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
     <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
-      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**,**/rmispi/**,**/osgi/**" manifest="${manifestName}"/>
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
@@ -772,24 +697,8 @@
       basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
 
-  <!-- OGSI  -->
-  <target name="sfRmiSpiJar" depends="build,target-names">
-   
-     <!-- Create sfRmiSpi.jar file 
-    <jar jarfile="${sf-rmi-spi.jar}"
-      basedir="${build.classes.dir}" includes="**/rmispi/**" manifest="${manifestName}"/>
-	  -->
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
   </target>
-   
-   
-    <target name="sfOSGiJar" depends="build,target-names">
-    <!-- Create sfOSGi.jar file 
-        <jar jarfile="${sf-osgi.jar}"
-             basedir="${build.classes.dir}" includes="**/osgi/**" manifest="${manifestName}"/>
-	-->		 
-    </target>
-
-  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar,sfRmiSpiJar,sfOSGiJar"/>
 
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->
@@ -819,7 +728,9 @@
   <target name="published-distribution" depends="dist"
       description="create a distribution and publish all artifacts with Ivy"/>
   <target name="dis"
-      depends="build,jars,copybins,copyPrivate,copydocs, copylibs,copyexamples,copyTestCA,buildSetup" description="Fast dist. No ivy publish">
+      depends="build,jars,copybins,copyPrivate,copydocs,
+      copylibs,copyexamples,copyTestCA,buildSetup"
+      description="Fast dist. No ivy publish">
   </target>
 	  
   <target name="dist"
@@ -883,10 +794,6 @@
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
-		<!--  OSGI
-        <pathelement location="${sf-rmi-spi.jar}"/>
-        <pathelement location="${sf-osgi.jar}"/>
-		-->
         <pathelement location="${sf-services.jar}"/>
         <pathelement location="${sf-examples.jar}"/>
         <pathelement location="${dist.lib.dir}/sf-scripting.jar"/>
@@ -940,22 +847,18 @@
     <sha1 file="${smartfrog.jar}" todir="${dist.metadata.dir}"/>
     <sha1 file="${sf-examples.jar}" todir="${dist.metadata.dir}"/>
     <sha1 file="${sf-services.jar}" todir="${dist.metadata.dir}"/>
-	<!--  OSGI
-	<sha1 file="${sf-rmi-spi.jar}" todir="${dist.metadata.dir}"/>
-    <sha1 file="${sf-osgi.jar}" todir="${dist.metadata.dir}"/>
-	-->
   </target>
 
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-  <target name="m2-init" depends="init,generateversion,target-names" unless="publish.disabled">
+  <target name="m2-init" depends="init,generateversion,target-names">
 
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts.
       -->
-    <property name="m2.repository" location="${artifactsCache.dir}/.m2/repository"/>
+    <property name="m2.repository" location="${user.home}/.m2/repository"/>
     <!-- and by default, they publish somewhere other than the local repository-->
     <property name="m2.publish.repository" location="${core.dir}/build/m2/repository"/>
     <mkdir dir="${m2.publish.repository}"/>
@@ -986,31 +889,15 @@
       groupIDpath="${m2.groupID.path}"
       artifactID="sfExamples"
       version="${Version}" />
-    <m2-makepath property="m2.sf-osgi"
-      groupIDpath="${m2.groupID.path}"
-      artifactID="sfOSGi"
-      version="${Version}" />
-    <m2-makepath property="m2.sf-rmi-spi"
-      groupIDpath="${m2.groupID.path}"
-      artifactID="sfRmiSpi"
-      version="${Version}" />
 	  
     <property name="smartfrog.pom"
       location="${dist.metadata.dir}/${smartfrog.stub}.pom" />
     <property name="target.pom"
       value="${smartfrog.pom}" />
-	  
     <property name="sf-services.pom"
       location="${dist.metadata.dir}/${sf-services.stub}.pom" />
-	  
     <property name="sf-examples.pom"
       location="${dist.metadata.dir}/${sf-examples.stub}.pom" />
-	
-	<property name="sf-osgi.pom"
-      location="${dist.metadata.dir}/${sf-osgi.stub}.pom" />	
-	
-	<property name="sf-rmi-spi.pom"
-      location="${dist.metadata.dir}/${sf-rmi-spi.stub}.pom" />
 	  
      <property name="metadata.dir" location="bin/metadata" />
      <presetdef name="expandingcopy">
@@ -1024,7 +911,7 @@
 
 
    <!-- create POMs from templates held in the metadata dir -->
-   <target name="m2-pom" depends="m2-init,sha1macro" unless="publish.disabled">
+   <target name="m2-pom" depends="m2-init,sha1macro" >
    
      <expandingcopy file="${metadata.dir}/smartfrog.pom"
        tofile="${smartfrog.pom}"/>
@@ -1032,15 +919,10 @@
          tofile="${sf-services.pom}"/>
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
-	 <!--<expandingcopy file="${metadata.dir}/sfRmiSpi.pom" tofile="${sf-rmi-spi.pom}"/> 
-	 <expandingcopy file="${metadata.dir}/sfOSGi.pom" tofile="${sf-osgi.pom}"/> -->
 		 
      <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
      <sha1 file="${sf-services.pom}" todir="${dist.metadata.dir}"/>
      <sha1 file="${sf-examples.pom}" todir="${dist.metadata.dir}"/>
-	 <!--<sha1 file="${sf-rmi-spi.pom}" todir="${dist.metadata.dir}"/>
-	 <sha1 file="${sf-osgi.pom}" todir="${dist.metadata.dir}"/> -->
-
    </target>
 
 
@@ -1048,7 +930,7 @@
   <!-- this is not  normally for overriding -->
   <!-- install the jar, to the maven2 publish repository -->
   <!-- ========================================================== -->
-  <target name="m2-install" depends="checksum-target-jar,m2-pom" unless="publish.disabled"
+  <target name="m2-install" depends="checksum-target-jar,m2-pom"
       description="copy the JAR file maven publish repository">
 
     <macrodef name="m2-install">
@@ -1058,7 +940,6 @@
       <attribute name="pom" />
       <attribute name="pom.md5" default="@{pom}.md5"/>
       <sequential>
-	    <echo>Copying @{target} to @{destdir}</echo>
         <mkdir dir="@{destdir}"/>
         <copy file="@{target}" todir="@{destdir}"/>
         <!-- copy a pom -->
@@ -1085,21 +966,6 @@
 	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
-<!--  OSGI
-    <m2-install
-      destdir="${m2.sf-rmi-spi}"
-      target="${sf-rmi-spi.jar}"
-	  target.md5="${dist.metadata.dir}/${sf-rmi-spi.stub}.jar.md5"
-      pom="${sf-rmi-spi.pom}"
-      />
-    <m2-install
-      destdir="${m2.sf-osgi}"
-      target="${sf-osgi.jar}"
-	  target.md5="${dist.metadata.dir}/${sf-osgi.stub}.jar.md5"
-      pom="${sf-osgi.pom}"
-      />
--->
-
   </target>
 
 
@@ -1161,50 +1027,33 @@
     <ivy:retrieve />  
   </target>
 
-  <target name="ivy-report" depends="ivy-resolve" unless="ivy-report.disabled" if="ivy.found" >  
+  <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
     <ivy:report todir="${ivy.reports.dir}"/>
-    <echo>
-	------------Creating Ivy report to ${ivy.reports.dir} ---------
-    To skip this stage, set ivy-report.disabled=true
+    <echo> published Ivy report to 
+${ivy.reports.dir}
     </echo>
   </target>
-
-	<target name="declare-classpaths"  depends= "ivy.compile.classpath"/>
-	<target name="ivy.compile.classpath" depends="ivy-resolve">
-	  <ivy:cachepath pathid="compile.classpath" conf="compile" />
-	  <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
-	</target>
-
 
   <!--copy these in to the same dir that the other artifacts go,
   so that they can be published together-->
   <target name="copy-target-jars" depends="jars,artifact-names">
-    <echo>Publishing artifacts to ${artifacts.dir} </echo>
     <copy file="${smartfrog.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
-<!--  OSGI	
-    <copy file="${sf-rmi-spi.jar}" todir="${artifacts.dir}" />
-    <copy file="${sf-osgi.jar}" todir="${artifacts.dir}" />
--->	
   </target>
 
   <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact,documentation"/>
 
-  <target name="ivy-publish" depends="ready-to-publish" unless="publish.disabled" if="ivy.found"> 
+  <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
         artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
   </target>
 
   
-  <target name="published" depends="ivy-publish,m2-install" unless="publish.disabled"
-      description="Publish artifacts to the local repositories">
-	  <echo>
-	------------ Publish artifacts ---------
-    To skip this stage, set publish.disabled=true
-    </echo> 
-  </target> 	
+  <target name="published" depends="ivy-publish,m2-install"
+      description="Publish artifacts to the local repositories"
+      />
 
   <target name="artifact-names" depends="target-names">
     <property name="artifacts.dir" location="${build.extra.dir}/artifacts" />
@@ -1245,10 +1094,6 @@
         <include name="${smartfrog.stub}.*" />
         <include name="${sf-services.stub}.*" />
         <include name="${sf-examples.stub}.*" />
-		<!--  OSGI
-		<include name="${sf-rmi-spi.stub}.*" />
-		<include name="${sf-osgi.stub}.*" />
-		-->
       </zipfileset>
     </zip>
   </target>
@@ -1259,10 +1104,6 @@
     <fileexists file="${unzip.install.dir}/lib/${smartfrog.stub}.jar" />
     <fileexists file="${unzip.install.dir}/lib/${sf-services.stub}.jar" />
     <fileexists file="${unzip.install.dir}/lib/${sf-examples.stub}.jar" />
-	<!--  OSGI
-	<fileexists file="${unzip.install.dir}/lib/${sf-rmi-spi.stub}.jar" />
-	<fileexists file="${unzip.install.dir}/lib/${sf-osgi.stub}.jar" />
-	-->
   </target>
 
   <target name="publish-all" depends="published" />  
@@ -1415,7 +1256,7 @@
   </target>
   
   <!-- CLOVER -->
-  <!--<taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/> -->
+  <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/>
 	
   <target name="with.clover">
    <clover-setup/>

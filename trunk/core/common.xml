@@ -74,17 +74,9 @@
     <!-- only here when running this task raw, to test targets inside -->
     <property name="ant.file.common" location="${ant.file}" />
     <!-- this will be set by the runtime during importation --> 
-	
     <!-- it is how we infer the base directory of the system -->
     <dirname property="antfile.dir" file="${ant.file.common}"/>
-	
     <property name="core.dir" location="${antfile.dir}"/>
-	
-	 <!-- where the ivy/maven artifacts are stored -->	 
-    <!--<property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>-->
-    <property name="artifactsCache.dir" location="${user.home}"/>
-	<property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
-	
     <!--if unset, we work it out here too-->
     <property name="root.dir" location="${core.dir}"/>
     
@@ -345,11 +337,11 @@ java.class.path=
      <available file="${ant.home}/lib/junit-3.8.2.jar"/>
    </condition>
 
-   <condition property="junit.jar" value="${artifactsCache.dir}/.ant/lib/junit-3.8.1.jar">
-     <available file="${artifactsCache.dir}/.ant/lib/junit-3.8.1.jar" />
+   <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
+     <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
    </condition>
-   <condition property="junit.jar" value="${artifactsCache.dir}/.ant/lib/junit-3.8.2.jar">
-     <available file="${artifactsCache.dir}/.ant/lib/junit-3.8.2.jar"/>
+   <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.2.jar">
+     <available file="${user.home}/.ant/lib/junit-3.8.2.jar"/>
    </condition>
 
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
@@ -385,7 +377,7 @@ java.class.path=
             includeAntRuntime="${javac.include.ant}"
             memoryMaximumSize="${javac.max.memory}"
             includes="**/*.java"
-            >
+            >	   
        </javac>
     </presetdef>
 
@@ -937,11 +929,13 @@ java.class.path=
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
     <echo level="verbose">
-      Loading tasks from ${toString:smartfrog.tasks.classpath}
+Loading tasks from
+${toString:smartfrog.tasks.classpath}
     </echo>
     <fail unless="sfTasks.present">
-      Smartfrog tasks not found in the classpath. Are the dependencies in ivy.xml right?
-      smartfrog.tasks.classpath="${toString:smartfrog.tasks.classpath}"
+Smartfrog tasks not found in the classpath. Are the dependencies in ivy.xml right?
+smartfrog.tasks.classpath=
+"${toString:smartfrog.tasks.classpath}"
     </fail>
     <typedef
       resource="org/smartfrog/tools/ant/tasks.properties"
@@ -957,7 +951,9 @@ java.class.path=
       depends="init,use-smartfrog-tasks,declare-classpaths">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
-        logStackTraces="true" spawn="true">
+        logStackTraces="true" spawn="true"
+        dir="${build.test.dir}"
+          >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
@@ -1209,9 +1205,8 @@ java.class.path=
       <echo message=" --------------------------------------------------------"/>
 	    <echo message=" Project: ${ant.project.name}"/>
 	    <echo message=" Ant file: ${ant.file}"/>
+		<echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
         <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
-		<echo message=" Core dir: ${core.dir}"/>
-		<echo message=" ArtifactsCache dir: ${artifactsCache.dir}"/>
 	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
@@ -1481,6 +1476,7 @@ java.class.path=
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
+
   <target name="deploy" depends="ready-to-deploy"
       description="deploy">
     <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
@@ -1837,7 +1833,7 @@ Exist.
       are their own artifacts.
       -->
 
-    <property name="m2.repository" location="${artifactsCache.dir}/.m2/repository"/>
+    <property name="m2.repository" location="${user.home}/.m2/repository"/>
     <!-- and by default, they publish somewhere other than the local repository-->
     <property name="m2.publish.repository" location="${core.dir}/build/m2/repository"/>
     <mkdir dir="${m2.publish.repository}" />
@@ -1880,7 +1876,7 @@ Exist.
         value="http://ibiblio.org/maven2"/>
 
     <property name="m1.local.repository"
-        location="${artifactsCache.dir}/.maven/repository"/>
+        location="${user.home}/.maven/repository"/>
     <!--if there is no m1 repository, create it-->
     <mkdir dir="${m1.local.repository}"/>
     <sf-tourl file="${m1.local.repository}"
@@ -1966,12 +1962,12 @@ Exist.
     <property name="ivy.version" value="2.0.0" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.user.dir" location="${artifactsCache.dir}/.ivy" />
+    <property name="ivy.user.dir" location="${user.home}/.ivy" />
     <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
     <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
 
     <!--Ivy 2 uses some separate directories, that also need cleanup-->
-    <property name="ivy2.user.dir" location="${artifactsCache.dir}/.ivy2" />
+    <property name="ivy2.user.dir" location="${user.home}/.ivy2" />
     <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
     <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
 
