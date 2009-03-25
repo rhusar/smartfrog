@@ -38,7 +38,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.WorkflowThread;
-import org.smartfrog.sfcore.security.ExitTrappingSecurityManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -454,9 +453,10 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws IOException network problems
      */
     public String getDescription() throws RemoteException {
-        return getServiceName() + " managing " + service == null ?
+        return getServiceName() + " managing "
+                + (service == null ?
                 "No Service"
-                : service.toString();
+                : service.toString());
     }
 
 
@@ -557,8 +557,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * Publish the service's binding information to this component, with the specified prefix
      * @param prefix prefix -can be null
-     * @throws IOException        IO/hadoop problems
-     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException        network problems
+     * @throws SmartFrogRuntimeException smartfrog problems
      */
     protected void publishBindingInfo(String prefix) throws SmartFrogRuntimeException, RemoteException {
         ServiceInfo si = getServiceInfo();
@@ -634,6 +634,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * Get the filesystem name
      * @param conf the configuration to work with
      * @return the string name of the filesystem
+     * @throws SFHadoopException hadoop exception
      */
     protected String getFilesystemName(ManagedConfiguration conf) throws SFHadoopException {
         String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);

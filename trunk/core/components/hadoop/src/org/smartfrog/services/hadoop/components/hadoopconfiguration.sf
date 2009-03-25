@@ -294,7 +294,7 @@ HadoopConfiguration extends Prim {
   /**Determines where on the local filesystem the DFS secondary
       name node should store the temporary images and edits to merge.
   */
-  fs.checkpoint.dir  (hadoop.tmp.dir ++ "/dfs/namesecondary";
+  fs.checkpoint.dir  (hadoop.tmp.dir ++ "/dfs/namesecondary");
 
   /**The number of seconds between two periodic checkpoints.
   */
