@@ -83,7 +83,8 @@
         </sf-startdaemon>
       </application>
       <probe maxwait="${medium.timeout.seconds}"
-          message="Timeout waiting for app server on ${new.port}" after "${medium.timeout.seconds}" seconds>
+          message="Timeout waiting for app server on ${new.port}"
+          after="${medium.timeout.seconds}" >
         <socket port="${new.port}" server="localhost"/>
       </probe>
       <teardown>
