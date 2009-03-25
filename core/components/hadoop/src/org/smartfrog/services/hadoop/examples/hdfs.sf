@@ -242,7 +242,7 @@ WaitForNameNodeLive extends WaitForServiceLive {
 }
 
 WaitForDataNodeLive extends WaitForServiceLive {
-  nName "datanode";
+  name "datanode";
 }
 
 

@@ -125,13 +125,6 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     public synchronized void innerClose() throws IOException {
         LOG.info("Terminating ExtDataNode");
         super.innerClose();
-/*
-        if (!isStopped()) {
-            stopped();
-            SmartFrogThread.requestThreadTermination(worker);
-            worker = null;
-        }
-*/
     }
 
 

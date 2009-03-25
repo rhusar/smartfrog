@@ -27,3 +27,5 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/extras/hadoop/cluster/anubis.sf"
 #include "/org/smartfrog/extras/hadoop/cluster/hadoop.sf"
 #include "/org/smartfrog/services/utils/security/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
+#include "/org/smartfrog/services/hadoop/examples/testjob.sf"
