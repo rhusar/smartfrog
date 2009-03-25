@@ -17,11 +17,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/hadoop/components/components.sf"
-#include "/org/smartfrog/services/hadoop/examples/options.sf"
-#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
-#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
-#include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
-#include "/org/smartfrog/services/hadoop/examples/jsppages.sf"
+
+package org.smartfrog.services.hadoop.test.system.local.jsp;
+
+import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+
+public class DfsJSPTest extends HadoopTestBase {
+    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/jsp/";
+
+    public DfsJSPTest(String name) {
+        super(name);
+    }
+
+    public void testDfsHealth() throws Throwable {
+        checkMapRedCluster();
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testDfsHealth");
+        terminateApplication();
+        enableFailOnPortCheck();
+    }
+
+}

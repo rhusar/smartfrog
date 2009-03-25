@@ -173,5 +173,13 @@
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/tasktracker/default.sf"/>
     </deploy>
   </target>
-  
+
+  <target name="testjob" depends="ready-to-deploy"
+          description="deploy a test job">
+    <deploy>
+      <application name="testjob"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/simplejob.sf"/>
+    </deploy>
+  </target>
+
 </project>
