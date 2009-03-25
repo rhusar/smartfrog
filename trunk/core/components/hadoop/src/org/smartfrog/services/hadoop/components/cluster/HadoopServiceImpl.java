@@ -634,7 +634,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * Get the filesystem name
      * @param conf the configuration to work with
      * @return the string name of the filesystem
-     * @throws SFHadoopException hadoop exception
+     * @throws SFHadoopException resolution problems
      */
     protected String getFilesystemName(ManagedConfiguration conf) throws SFHadoopException {
         String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
@@ -652,7 +652,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * Get the URI of the filesystem. It also verifies that an HDFS URI sets the port value
      * @param conf configuration to use
      * @return the URI
-     * @throws SFHadoopException
+     * @throws SFHadoopException failure to build a valid URI, including resolution problems
      */
     protected URI getFilesystemURI(ManagedConfiguration conf) throws SFHadoopException {
         String filesystemName = getFilesystemName(conf);

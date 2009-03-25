@@ -37,6 +37,7 @@
     jobtracker
     filesystem  the filesystem
     cluster     full cluster
+    simplejob simple data in/out test job
 
     and run them. All will need the property namenode set
 
@@ -174,10 +175,10 @@
     </deploy>
   </target>
 
-  <target name="testjob" depends="ready-to-deploy"
-          description="deploy a test job">
+  <target name="simplejob" depends="ready-to-deploy"
+          description="deploy a simple test job">
     <deploy>
-      <application name="testjob"
+      <application name="simplejob"
                    descriptor="/org/smartfrog/extras/hadoop/cluster/simplejob.sf"/>
     </deploy>
   </target>

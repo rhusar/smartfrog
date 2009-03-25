@@ -18,4 +18,16 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/extras/hadoop/cluster/bindings.sf"
+#include "/org/smartfrog/extras/hadoop/cluster/components.sf"
+
+
+simpleJob extends MapReduceSequence {
+  localcluster LAZY PROCESS:cluster2;
+  LocalDataDir ".";
+  jobtracker LAZY localcluster:jobtracker:jobtracker;
+  namenode LAZY localcluster:namenode:namenode;
+  datanode LAZY localcluster:datanode:datanode;
+
+}
+
+sfConfig extends simpleJob;

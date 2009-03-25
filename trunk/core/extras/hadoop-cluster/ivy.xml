@@ -37,7 +37,6 @@
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
     <artifact name="sf-hadoop-cluster" conf="documentation" ext="zip"/>
-    <artifact name="sf-hadoop-cluster" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
@@ -81,7 +80,7 @@
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
-        conf="server->server;compile->default"/>
+        conf="runtime->runtime;server->server;compile->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-rpmtools" changing="true"
