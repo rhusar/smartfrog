@@ -21,15 +21,9 @@ For more information: www.smartfrog.org
 
 
 
-/**
- * Test the local node
- */
+
 testJobSubmission extends testDistributedCluster {
   description "Submit a job to a cluster and copy out the result";
-
-  /*action extends LocalClusterCompound {
-
-  }*/
 
   tests extends MapReduceSequence {
     LocalDataDir PROPERTY test.work.dir;
@@ -38,6 +32,5 @@ testJobSubmission extends testDistributedCluster {
     datanode LAZY PARENT:action:datanode:datanode;
 
   }
-
 
 }
