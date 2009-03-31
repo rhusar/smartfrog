@@ -42,7 +42,7 @@ public class HadoopTestBase extends PortCheckingTestBase implements ExamplePorts
     protected void checkNameNode() {
         setCheckPorts(true);
         addPortCheck("NameNode IPC server", NAMENODE_IPC_PORT);
-        addPortCheck("NameNode IPC server", NAMENODE_HTTP_PORT);
+        addPortCheck("NameNode HTTP port", NAMENODE_HTTP_PORT);
     }
 
     /**
