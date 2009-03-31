@@ -88,10 +88,8 @@ HadoopFilesystemSingleProcess extends HadoopClusterCompound {
 }
 
 HadoopFilesystemMultiProcess extends HadoopFilesystemSingleProcess {
-
   namenode:sfProcessName NAMENODE_PROCESS;
   datanode:sfProcessName DATANODE1_PROCESS;
-
 }
 
 HadoopFilesystem extends HadoopFilesystemSingleProcess {
