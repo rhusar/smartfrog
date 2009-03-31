@@ -14,7 +14,7 @@ if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
 # ------------------------------------------------------
 
 # -- Security properties --
-export SFSECURITY="-Djava.security.policy==$SFPRIVATE/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties"
+export SFSECURITY="-Djava.security.policy==$SFPRIVATE/sf.policy -Djava.security.manager=org.smartfrog.sfcore.security.ExitTrappingRealSecurityManager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties"
 
 if test "$SFSECURERESOURCES_OFF"; then
 	export SFSECURITY="$SFSECURITY -Dorg.smartfrog.sfcore.security.secureResourcesOff=true"
