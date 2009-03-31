@@ -1251,8 +1251,12 @@
     <rpm-uninstall failonerror="false" rpms="${rpms.core.list}" />
   </target>
 
+  <target name="rpm-remote-test-no-uninstall"
+          depends="rpm-remote-version,rpm-remote-initd,rpm-queries-test,rpm-remote-uninstall-strict"
+          description="install and verify the RPMs to a remote target"/>
+
   <target name="rpm-remote-test"
-      depends="rpm-remote-version,rpm-remote-initd,rpm-queries-test,rpm-remote-uninstall-strict"
+      depends="rpm-remote-test-no-uninstall"
       description="install, verify and uninstall the RPMs to a remote target"/>
 
   <target name="rpm-remote-version"
