@@ -38,14 +38,7 @@ public class PortCheckingTestBase extends DeployingTestBase {
     protected long shutdownTimeout = 20000;
     private int pollInterval = 1000;
     private List<PortPair> ports = new ArrayList<PortPair>();
-    protected static final int NAMENODE_HTTP_PORT = 8020;
-    protected static final int NAMENODE_IPC_PORT = 8021;
-    protected static final int DATANODE_HTTP_PORT = 8022;
-    protected static final int DATANODE_HTTPS_PORT = 8023;
-    protected static final int DATANODE_IPC_PORT = 8024;
-    protected static final int JOBTRACKER_HTTP_PORT = 50030;
-    protected static final int JOBTRACKER_IPC_PORT = 8012;
-    protected static final int TASKTRACKER_HTTP_PORT = 50060;
+
 
     public PortCheckingTestBase(String name) {
         super(name);

@@ -25,4 +25,12 @@ package org.smartfrog.services.hadoop.examples;
 
 
 public interface ExamplePorts {
+    int NAMENODE_HTTP_PORT = 8020;
+    int NAMENODE_IPC_PORT = 8021;
+    int DATANODE_HTTP_PORT = 8022;
+    int DATANODE_HTTPS_PORT = 8023;
+    int DATANODE_IPC_PORT = 8024;
+    int JOBTRACKER_HTTP_PORT = 50030;
+    int JOBTRACKER_IPC_PORT = 8012;
+    int TASKTRACKER_HTTP_PORT = 50060;
 }
