@@ -38,10 +38,10 @@
 
 
   <target name="testCSV">
-    <property name="here" location="." />
+    <property name="prefix" location="." />
     <echo >here="${here}"</echo>
     <sf-listresources property="testCSV"
-        prefixtostrip="/home/slo/Projects/SmartFrog/Forge/core/extras/ant/test/files/"
+        prefixtostrip="${prefix}/"
         suffixtostrip=".xml"
         startentry='"' endentry='",&#10;'
         startFile="testList extends {&#10;"
