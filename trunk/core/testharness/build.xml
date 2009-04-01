@@ -316,17 +316,14 @@ values as a cue -->
     <pathconvert pathsep="${line.separator}|   |-- "  
 	               property="echo.testharness.daemon.classpath" 
 	               refid="testharness.daemon.classpath">
-	  </pathconvert>
-      <echo message=" --------------------------------------------------------"/>
-      <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>	
+    </pathconvert>
+    <echo message=" --------------------------------------------------------"/>
+    <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>	
 	  <echo message=" --------------------------------------------------------"/>
 	  
     <presetdef name="junit-system-test-run">
 	  
       <sf-junit
-          fork="true"
-          forkmode="once"
-          maxmemory="512m"
           errorProperty="system.test.failed"
           failureProperty="system.test.failed"
           >
