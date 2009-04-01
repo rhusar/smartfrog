@@ -112,6 +112,7 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
             return false;
         }
     }
+    
 
     /**
      * An exception that gets returned when someone called system.exit but the exit was blocked.

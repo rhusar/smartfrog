@@ -64,4 +64,5 @@ public class ExitTrappingRealSecurityManager extends SecurityManager implements 
         return "ExitTrappingRealSecurityManager, systemExitPermitted=" + isSystemExitPermitted();
     }
 
+    
 }

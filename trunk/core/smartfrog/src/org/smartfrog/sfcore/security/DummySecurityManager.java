@@ -57,16 +57,15 @@ public class DummySecurityManager extends SecurityManager {
             super.checkPermission(perm);
 
             if (debug != null) {
-                debug.println("OOKKK!!! in checkPermission " + perm +
+                debug.println("In checkPermission " + perm +
                     " checked");
             }
         } catch (SecurityException e) {
             // We allow it anyway ...
             if (debug != null) {
-                debug.println("BADDDD!!! in checkPermission " + perm +
-                    " checked");
-                debug.println("Not allowed!!");
-                e.printStackTrace();
+                debug.println("In  checkPermission " + perm +
+                    " checked Not allowed");
+                debug.println(e);
             }
         }
     }

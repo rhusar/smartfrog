@@ -82,7 +82,7 @@ public class SFSecurity {
             } catch (SecurityException  e) {
                 details.append("access to properties denied: ").append(e);
             }
-            details.append("\nEnvironment variablss:\n");
+            details.append("\nEnvironment variables:\n");
             try {
                 Map<String,String> env = System.getenv();
                 for(String key:env.keySet()) {
@@ -116,9 +116,9 @@ public class SFSecurity {
                     throw new SFGeneralSecurityException(
                             "Java Security Access control exception - "
                                     + "SmartFrog is running under a security manager, but the main JAR is not "
-                                    + "signed by a trusted CA, or the permissions files are mis-configured"
+                                    + "signed by a trusted CA, or the permissions files are mis-configured: "
                                     + "\n" + e
-                                    + "\nSecurity manager "+ getSecurityInformation(),
+                                    + "\n Security manager "+ getSecurityInformation(),
                             e);
 
                 }
