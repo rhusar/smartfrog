@@ -22,7 +22,7 @@
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="default"
+    <conf name="test" extends="default, package-all"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
@@ -30,6 +30,8 @@
         extends="redist"/>
 <!--    <conf name="izpack" visibility="private"
         description="izpack libraries"/>-->
+    <conf name="package-all" description="all the packages in one big dependency"
+      extends="package-core,package-examples,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp"/>
     <!-- From here on, every Package we bundle in Ivy contains its own configuration -->
     <conf name="package-core-install"
         description="The .zip file containing the complete base distribution of SmartFrog"/>
@@ -106,8 +108,19 @@
     <dependency org="org.smartfrog"
         name="sf-tasks" changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="redist->redist;package-core->master"/>
+        conf="redist->redist;package-core->master;build->default"/>
 
+    
+    <!-- the testharness. This is not redistributed, it is used to test the RPMs-->
+
+    <dependency org="org.smartfrog"
+      name="sf-testharness"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default,testjar"/>
+    
+    <!-- the ant build, which contains the zipped/tarred directory tree-->
+    
     <dependency org="org.smartfrog"
         name="sf-antbuild" changing="true"
         rev="${ivy.smartfrog.version}"
