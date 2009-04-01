@@ -18,6 +18,7 @@
   <taskdef name="functionaltest"
       classname="org.smartfrog.tools.ant.FunctionalTestTask"/>
   <taskdef name="gui" classname="org.smartfrog.tools.ant.StartSmartFrogGui"/>
+  <taskdef name="listresources" classname="org.smartfrog.tools.ant.ListResources" />
   <taskdef name="localhost" classname="org.smartfrog.tools.ant.LocalHost"/>
   <taskdef name="management-console" classname="org.smartfrog.tools.ant.StartManagementConsole"/>
   <taskdef name="parse" classname="org.smartfrog.tools.ant.Parse"/>

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<project name="localhost" default="teardown">
+
+<description>
+ Tests for hostname calculation
+</description>
+
+  <import file="test-common.xml" />
+
+  <target name="testEmpty">
+    <sf-listresources/>
+  </target>
+
+  <target name="testNoProperty">
+    <sf-listresources>
+      <fileset dir="." includes="**/*.xml" />
+    </sf-listresources>
+  </target>
+
+  <target name="testProperty">
+    <sf-listresources property="testProperty">
+      <fileset dir="." includes="**/*.xml" />
+    </sf-listresources>
+    <fail  unless="testProperty">Not set: testProperty</fail>
+    <echo >${testProperty}</echo>
+  </target>
+
+  <target name="testDestFile">
+    <property  name="destFile" location="${java.io.tmpdir}/testfile.txt" />
+    <sf-listresources destFile="${destFile}">
+      <fileset dir="." includes="**/*.xml" />
+    </sf-listresources>
+    <fail>
+    <condition><not><available file="${destFile}"/></not></condition>
+      Not found: "${destFile}"
+    </fail>
+  </target>
+
+
+  <target name="testCSV">
+    <property name="here" location="." />
+    <echo >here="${here}"</echo>
+    <sf-listresources property="testCSV"
+        prefixtostrip="/home/slo/Projects/SmartFrog/Forge/core/extras/ant/test/files/"
+        suffixtostrip=".xml"
+        startentry='"' endentry='",&#10;'
+        startFile="testList extends {&#10;"
+        endFile='""}&#10;'>
+      <fileset dir="." includes="**/*.xml" />
+    </sf-listresources>
+    <fail  unless="testCSV">Not set: testCSV</fail>
+    <echo >${testCSV}</echo>
+  </target>
+
+  <target name="testDirSplitter">
+    <sf-listresources property="testDirSplitter"
+        dirSplitter="|"
+        suffixtostrip=".xml">
+      <fileset dir="." includes="**/*.xml" />
+    </sf-listresources>
+    <fail  unless="testDirSplitter">Not set: testDirSplitter</fail>
+    <echo >${testDirSplitter}</echo>
+  </target>
+</project>
