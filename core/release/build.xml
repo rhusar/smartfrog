@@ -1508,4 +1508,111 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
     </echo>
   </target>
 
+  
+  <!-- Junit testing against a remote installation -->
+  
+  <target name="init-tests"
+    description="Run the functional tests against the remote RPM installation.
+    This does not install the RPMs; they must be already deployed"
+    depends="ready-to-compile-tests">
+    <echo level="verbose">
+      system.tests.enabled=${system.tests.enabled}
+      run.failing.tests=${run.failing.tests}
+      testcase=${testcase}
+    </echo>
+    <property name="services" value="org/smartfrog/services/"/>
+    <property name="unittests" value="org/smartfrog/test/unit/"/>
+    <property name="systemtests" value="org/smartfrog/test/system/"/>
+    <property name="processtests" value="org/smartfrog/test/process/"/>
+    <property name="componenttests" value="${systemtests}components/"/>
+    <patternset id="teststhatfail">
+      <!--SFOS-403-->
+      <!--<exclude name="${systemtests}/workflow/conditional/FailingConditionTest.*"
+          unless="run.failing.tests"/>-->
+      <!-- SFOS-154; test failing on VMWare and CruiseControl (sometimes). Possible race condition-->
+      <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
+        unless="run.failing.tests"/>
+      <!--SFOS-202 test case tcn1 is being skipped (failing) -->
+      <exclude name="${systemtests}/deploy/DeployTCN1Test.*"
+        unless="run.failing.tests"/>
+      <!-- SFOS-563 Constant tests are failing -->
+      <exclude name="${systemtests}/reference/constant/ConstantReferenceTest.*"
+        unless="run.failing.tests"/>
+
+      <!-- SFOS-890 Chmod "failing" tests are failing and marked as skipped -->
+      <exclude name="${systemtests}/filesystem/ChmodFailureTest.*"
+        unless="run.failing.tests"/>
+      <exclude name="${systemtests}/filesystem/ChmodTest.*"
+        unless="run.failing.tests"/>
+
+      <!-- SFOS-886  DetachingCompoundTest is failing and being skipped-->
+      <exclude name="${systemtests}/**/DetachingCompoundTest.*"
+        unless="run.failing.tests"/>
+
+
+      <!-- SFOS-761 TestCompound doesnt terminate correctly in all circumstances when the action terminates normally (as expected) -->
+      <exclude name="${systemtests}/workflow/thread/WorkflowThreadTest.*"
+        unless="run.failing.tests"/>
+
+
+      <!-- SFOS-565 cyclic reference test tcn19.sf is now spinning instead of detecting a cyclic reference 
+       (this is a JRockit problem)
+      -->
+      <exclude name="${systemtests}/reference/CyclicReferenceTest.*"
+        unless="run.failing.tests"/>
+    </patternset>
+    
+  </target>
+
+
+  <!-- refactoring of test run process-->
+  <target name="init-system-test-run" depends="init-tests,declare-system-test-tasks">
+    <pathconvert pathsep="${line.separator}|   |-- "
+      property="echo.testharness.daemon.classpath"
+      refid="testharness.daemon.classpath">
+    </pathconvert>
+    <echo message=" --------------------------------------------------------"/>
+    <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>
+    <echo message=" --------------------------------------------------------"/>
+
+    <presetdef name="junit-system-test-run">
+
+      <sf-junit
+        errorProperty="system.test.failed"
+        failureProperty="system.test.failed"
+        >
+        <sysproperty key="emma.coverage.out.file" file="${coverage.dir}/coverage.emma"/>
+        <sysproperty key="emma.coverage.out.merge" value="true"/>
+        <sysproperty key="emma.verbosity.level" value="verbose"/>
+        <!--
+                <syspropertyset>
+                  <propertyref prefix="emma."/>
+                </syspropertyset>
+        -->
+        <syspropertyset>
+          <propertyref prefix="runtime"/>
+        </syspropertyset>
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
+        <classpath refid="testharness.daemon.classpath"/>
+        <!-- #Test case isolation technique -->
+        <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
+        <batchtest todir="${test.data.dir}" unless="testcase">
+          <!-- bulk test case -->
+          <fileset dir="${test.classes.dir}">
+            <!-- pull in everything -->
+            <include name="org/smartfrog/test/system/**/*Test.class"/>
+
+            <!-- failing tests excluded unless run.failing.tests is set -->
+            <patternset refid="teststhatfail"/>
+
+            <exclude name="${componenttests}utils/**/*Test.class"
+              unless="installer.present"/>
+
+          </fileset>
+        </batchtest>
+      </sf-junit>
+    </presetdef>
+  </target>
 </project>
