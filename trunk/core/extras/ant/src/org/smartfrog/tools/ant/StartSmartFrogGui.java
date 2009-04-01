@@ -31,6 +31,7 @@ public class StartSmartFrogGui extends StartDaemon {
      * @see SmartFrogJVMProperties#GUI_ENTRY_POINT
      * @return name of the GUI class providing a static void Main(String args[]) method
      */
+    @SuppressWarnings({"RefusedBequest"})
     protected String getEntrypoint() {
         return SmartFrogJVMProperties.GUI_ENTRY_POINT;
     }
@@ -40,6 +41,7 @@ public class StartSmartFrogGui extends StartDaemon {
      *
      * @return default timeout, return 1 number less than 0 for no timeout
      */
+    @SuppressWarnings({"RefusedBequest"})
     protected long getDefaultTimeout() {
         return NO_DEFAULT_TIMEOUT;
     }

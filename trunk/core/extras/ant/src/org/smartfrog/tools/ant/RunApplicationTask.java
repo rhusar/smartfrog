@@ -36,6 +36,10 @@ public class RunApplicationTask extends DeployingTaskBase {
     public RunApplicationTask() {
     }
 
+    /**
+     * Initialise, set the failonerror flag and turn the timeout off
+     * @throws BuildException
+     */
     public void init() throws BuildException {
         super.init();
         setFailOnError(true);
@@ -46,8 +50,7 @@ public class RunApplicationTask extends DeployingTaskBase {
     /**
      * run a task
      *
-     * @throws org.apache.tools.ant.BuildException
-     *          if something goes wrong with the build
+     * @throws BuildException if something goes wrong with the build
      */
     public void execute() throws BuildException {
         verifyHostUndefined();
