@@ -38,6 +38,9 @@ import org.apache.tools.ant.BuildException;
 public class StartDaemon extends DeployingTaskBase {
     public static final String ERROR_FAILED_TO_START_DAEMON = "Failed to start the smartfrog daemon";
 
+    /**
+     * Initialise and set the failonerror flag to true
+     */
     public StartDaemon() {
         setFailOnError(true);
     }
@@ -54,9 +57,9 @@ public class StartDaemon extends DeployingTaskBase {
     /**
      * Start the daemon in this thread or a new process.
      *
-     * @throws org.apache.tools.ant.BuildException
-     *          if something goes wrong with the build
+     * @throws BuildException if something goes wrong with the build
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         verifyHostUndefined();
         bindToLocalhost();

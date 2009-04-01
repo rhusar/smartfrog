@@ -127,6 +127,7 @@ public class FaultingWaitForTask extends Task {
      *
      * @throws BuildException if something goes wrong with the build.
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         String property = helper.createUniquePropertyName();
         waitFor.setProject(getProject());

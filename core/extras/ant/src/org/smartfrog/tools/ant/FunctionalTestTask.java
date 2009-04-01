@@ -180,9 +180,10 @@ public class FunctionalTestTask extends Task {
      * example, if target1 and target2 both depend on target3, then running "ant
      * target1 target2" will run all tasks in target3 twice.
      *
-     * @throws org.apache.tools.ant.BuildException
+     * @throws BuildException
      *          if something goes wrong with the build.
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
 
         //set up the test and application in parallel; if

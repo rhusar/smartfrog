@@ -32,6 +32,7 @@ public class StartManagementConsole extends StartDaemon {
      * @return name of the class providing a static void Main(String args[]) method
      * @see SmartFrogJVMProperties#MANAGEMENT_ENTRY_POINT
      */
+    @SuppressWarnings({"RefusedBequest"})
     protected String getEntrypoint() {
         return SmartFrogJVMProperties.MANAGEMENT_ENTRY_POINT;
     }
@@ -41,6 +42,7 @@ public class StartManagementConsole extends StartDaemon {
      *
      * @return default timeout, return 1 number less than 0 for no timeout
      */
+    @SuppressWarnings({"RefusedBequest"})
     protected long getDefaultTimeout() {
         return NO_DEFAULT_TIMEOUT;
     }

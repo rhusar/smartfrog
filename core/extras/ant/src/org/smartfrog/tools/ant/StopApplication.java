@@ -64,6 +64,7 @@ public class StopApplication extends SmartFrogTask {
      * @throws org.apache.tools.ant.BuildException
      *          on trouble
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyApplicationName(application);

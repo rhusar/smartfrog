@@ -169,6 +169,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      *
      * @throws BuildException
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         File tempFile=null;
         File targetFile;

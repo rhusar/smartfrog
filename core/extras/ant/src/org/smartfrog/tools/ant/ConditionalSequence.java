@@ -52,6 +52,7 @@ public class ConditionalSequence extends Sequential {
      *
      * @throws BuildException if one of the nested tasks fails.
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         if ((ifAttr.length() == 0 || getProject().getProperty(ifAttr) != null) &&
                 (unlessAttr.length() == 0 || getProject().getProperty(unlessAttr) == null)) {

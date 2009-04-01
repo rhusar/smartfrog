@@ -138,6 +138,7 @@ public class LocalHost extends Task {
      *
      * @throws BuildException Thrown in unrecoverable error.
      */
+    @SuppressWarnings({"RefusedBequest"})
     public void execute()
             throws BuildException {
         if (property == null) {
