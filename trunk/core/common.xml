@@ -333,20 +333,28 @@ java.class.path=
       <available file="${ant.home}/lib/junit-3.8.1.jar" />
     </condition>
 
-   <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.2.jar">
-     <available file="${ant.home}/lib/junit-3.8.2.jar"/>
-   </condition>
+    <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.2.jar">
+      <available file="${ant.home}/lib/junit-3.8.2.jar"/>
+    </condition>
 
-   <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
-     <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
-   </condition>
-   <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.2.jar">
-     <available file="${user.home}/.ant/lib/junit-3.8.2.jar"/>
-   </condition>
+    <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
+      <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
+    </condition>
+    <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.2.jar">
+      <available file="${user.home}/.ant/lib/junit-3.8.2.jar"/>
+    </condition>
 
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
 
+    <!--override with other security managers. Options
+     smartfrog
+     dummy
+     sun
+     full.classname.
+    -->
+   <property name="security.manager" value="none" />
+    
    <!--preset to copy with ant property expansion (and always overwrite)-->
    <presetdef name="expandingcopy">
      <copy overwrite="true">
@@ -439,14 +447,16 @@ java.class.path=
     <!-- set to brief for brief, plain for more -->
     <property name="junit.printformatter" value="plain" />
     <property name="junit.timeout" value="6000000"/>
+    <property name="junit.memory" value="512m"/>
     <presetdef name="sf-junit">
       <junit printsummary="${junit.printsummary}"
-          fork="true"
-           forkmode="once"
-           includeantruntime="true"
-           showoutput="true"
-           timeout="${junit.timeout}"
-           >
+        fork="true"
+        forkmode="once"
+        maxmemory="${junit.memory}"
+        includeantruntime="true"
+        showoutput="true"
+        timeout="${junit.timeout}"
+        >
         <jvmarg value="-ea"/>
         <jvmarg value="-esa"/>
 	    	<jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma" />
@@ -952,6 +962,7 @@ smartfrog.tasks.classpath=
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true"
+        securityManager="${security.manager}"
         dir="${build.test.dir}"
           >
           <!-- assertions are enabled -->
