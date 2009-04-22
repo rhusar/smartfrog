@@ -469,7 +469,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
     /**
      * set the diagnostics flag
-     * @param diagnostics
+     * @param diagnostics flag to set to true for extra diagnostics
      */
     public void setDiagnostics(boolean diagnostics) {
         this.diagnostics = diagnostics;
@@ -612,12 +612,13 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         //delayed setting only when the flag is true reduces the need to flip the bit
         propagateSpawnIncompatibleSettings();
         //do any security configurations we need
-        bindToSecurityManager();
-        if (securityHolder.isDefined()) {
-            securityHolder.applySecuritySettings(this);
-        } else {
-            //use the default or simpler settings
-            securityPolicy.applySecurityPolicy(this,smartfrog);
+        if(bindToSecurityManager()) {
+            if (securityHolder.isDefined()) {
+                securityHolder.applySecuritySettings(this);
+            } else {
+                //use the default or simpler settings
+                securityPolicy.applySecurityPolicy(this, smartfrog);
+            }
         }
 
         //last minute logging
@@ -798,11 +799,13 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
     /**
      * Bind to the chosen security manager.
+     * @return true if there is a security manager at work
      */
-    public void bindToSecurityManager() {
+    public boolean bindToSecurityManager() {
         String message;
         String jvmarg;
-        if (securityManager == null || securityManager.isEmpty() || NONE_SECURITY_OPTION.equals(securityManager)) {
+        
+        if (securityManager == null || securityManager.length()==0 || NONE_SECURITY_OPTION.equals(securityManager)) {
             message = "No Security Manager";
             jvmarg = null;
         } else if (SUN_SECURITY_OPTION.equals(securityManager)) {
@@ -823,6 +826,10 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         log(message, Project.MSG_VERBOSE);
         if (jvmarg != null) {
             defineJVMArg(jvmarg);
+            return true;
+        } else {
+            //no security manager
+            return false;
         }
     }
 }
