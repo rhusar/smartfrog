@@ -35,11 +35,8 @@ import java.io.IOException;
 /**
  * This is an element to contain security policy.
  *
- * <p/>
- * It supports one and only one resource, which can also be set by a
- * file or refid attribute.
- * <p/>
- * Created 19-Oct-2007 16:02:28
+ * <p/> It supports one and only one resource, which can also be set by a file or refid attribute. <p/> Created
+ * 19-Oct-2007 16:02:28
  */
 public class SecurityPolicy {
 
@@ -52,50 +49,47 @@ public class SecurityPolicy {
     /**
      * the security file
      */
-    protected File tempFile;
+    protected File fileToDelete;
 
     /**
-     * Error string.
-     * <p>
-     * {@value}
+     * Error string. <p> {@value}
      */
     public static final String ERROR_DUPLICATE_RESOURCES = "Cannot define duplicate resources in a security policy";
 
     /**
-     * resource containing the security policy to use if none is otherwise given
-     * <p>
-     * {@value}
+     * resource containing the security policy to use if none is otherwise given <p> {@value}
      */
-    public static final String DEFAULT_SECURITY_POLICY = "/org/smartfrog/tools/ant/sf.no.security.policy";
+    public static final String DEFAULT_SECURITY_POLICY = "org/smartfrog/tools/ant/sf.no.security.policy";
 
 
     public SecurityPolicy() {
     }
 
     /**
-     * Set a resource by refid.
-     * This creates a new resource
+     * Set a resource by refid. This creates a new resource
+     *
      * @param refid the id of the existing reference
      */
     public void setResourceRef(Reference refid) {
-        resource=new Resource();
+        resource = new Resource();
         resource.setRefid(refid);
     }
 
     /**
      * Add a resource
+     *
      * @param newResource the resource
      * @throws BuildException if a resource is already defined
      */
     public void addResource(Resource newResource) {
-        if(resource!=null) {
+        if (resource != null) {
             throw new BuildException(ERROR_DUPLICATE_RESOURCES);
         }
         resource = newResource;
     }
 
     public void setFile(File file) {
-        FileResource fr=new FileResource(file);
+        FileResource fr = new FileResource(file);
         addResource(fr);
     }
 
@@ -103,53 +97,86 @@ public class SecurityPolicy {
      * After a run, clean up
      */
     public synchronized void cleanup() {
-        if (tempFile != null) {
-            tempFile.delete();
-            tempFile = null;
+        if (fileToDelete != null) {
+            fileToDelete.delete();
+            fileToDelete = null;
         }
     }
 
-    public void applySecurityPolicy(ProjectComponent owner,Java process) {
-        try {
-            if(resource==null) {
-                //always apply a default policy
-                resource=new JavaResource(DEFAULT_SECURITY_POLICY,null);
-            }
-            //set the owner for any resource created in this class
-            if(resource.getProject()==null) {
-                resource.setProject(owner.getProject());
-            }
-            //existing files get used
-            File securityFile;
-            if(resource instanceof FileResource) {
+    /**
+     * Apply a security policy
+     * @param owner owning component
+     * @param process process to work with
+     */
+    public void applySecurityPolicy(ProjectComponent owner, Java process) {
+        //existing files get used
+        File securityFile;
+        boolean delete = false;
+        ResourceHelper rh = new ResourceHelper(owner);
+
+        if (resource == null) {
+            //always apply a default policy
+            //create a temp resource
+            delete = true;
+            securityFile = createTempFile();
+            rh.saveJavaResourceToFile(DEFAULT_SECURITY_POLICY, securityFile);
+        } else {
+
+            if (resource instanceof FileResource) {
                 //its already a file
-                FileResource fr=(FileResource) resource;
-                securityFile=fr.getFile();
+                FileResource fr = (FileResource) resource;
+                securityFile = fr.getFile();
             } else {
                 //create a temp resource
-                ResourceHelper rh=new ResourceHelper(owner);
-                tempFile= File.createTempFile("sfsecuritypolicy","txt");
-                rh.saveResourceToFile(resource,tempFile);
-                securityFile=tempFile;
+                delete = true;
+                securityFile = createTempFile();
+
+                rh.saveResourceToFile(resource, securityFile);
             }
-            Environment.Variable settings = new Environment.Variable();
-            settings.setFile(securityFile);
-            settings.setKey("java.security.policy=");
-            process.addSysproperty(settings);
-            owner.log("Security policy file: "+securityFile, Project.MSG_VERBOSE);
+        }
+        setSecurityPolicyFile(owner, process, securityFile, delete);
+    }
+
+    /**
+     * Create a temp file
+     * @throws BuildException if there is trouble
+     * @return the file
+     */
+    private File createTempFile() {
+        File securityFile;
+        try {
+            securityFile = File.createTempFile("sfsecuritypolicy", "txt");
         } catch (IOException e) {
             throw new BuildException(e);
         }
+        return securityFile;
+    }
+
+    /**
+     * Set the security policy file
+     * @param owner owning component
+     * @param process process to set up
+     * @param securityFile security file to delete with
+     * @param delete flag to set to target the file for deletion afterwards 
+     */
+    private void setSecurityPolicyFile(ProjectComponent owner, Java process, File securityFile, boolean delete) {
+        Environment.Variable settings = new Environment.Variable();
+        settings.setFile(securityFile);
+        settings.setKey("java.security.policy=");
+        process.addSysproperty(settings);
+        owner.log("Security policy file: " + securityFile, Project.MSG_VERBOSE);
+        fileToDelete = delete ? securityFile : null; 
     }
 
 
     /**
      * Returns a string representation of the object.
+     *
      * @return a string representation of the object.
      */
     public String toString() {
-        if(resource!=null) {
-            return "Security Policy in "+resource.toString();
+        if (resource != null) {
+            return "Security Policy in " + resource.toString();
         } else {
             return "Undefined Security Policy";
         }
