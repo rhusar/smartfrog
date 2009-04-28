@@ -20,14 +20,23 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.utils.security;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.security.ExitTrappingSecurityManager;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
+import java.security.Policy;
+import java.security.CodeSource;
+import java.security.PermissionCollection;
+import java.security.Permission;
+import java.util.PropertyPermission;
 
-/** Created 10-Mar-2009 12:18:11 */
+/**
+ * Created 10-Mar-2009 12:18:11
+ */
 
 public class CheckSecurityManagerLiveImpl extends PrimImpl {
 
@@ -38,9 +47,12 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
     public static final String ATTR_SECURITY_MANAGER_CLASSNAME = "securityManagerClassname";
     public static final String ATTR_SECURITY_MANAGER_FOUND = "securityManagerFound";
 
+    public static final String ATTR_PRINT_POLICY_INFO = "printPolicyInfo";
+    public static final String ATTR_ASSERT_POLICY_CAN_ADD_PERMISSIONS = "assertPolicyCanAddPermissions";
+
     public static final String ERROR_NOT_EXIT_TRAPPING = "Security manager is not a SmartFrog exit-trapping manager";
     public static final String ERROR_NO_SECURITY_MANAGER = "No security manager installed";
-    private boolean testSystemExit, requireExitTrapping, requireSecurityManager;
+    private boolean assertPolicyCanAddPermissions;
 
     public CheckSecurityManagerLiveImpl() throws RemoteException {
     }
@@ -55,9 +67,11 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        requireSecurityManager = sfResolve(ATTR_REQUIRE_SECURITY_MANAGER, true, true);
-        requireExitTrapping = sfResolve(ATTR_REQUIRE_EXIT_TRAPPING, true, true);
-        testSystemExit = sfResolve(ATTR_TEST_SYSTEM_EXIT, true, true);
+        boolean requireSecurityManager = sfResolve(ATTR_REQUIRE_SECURITY_MANAGER, true, true);
+        boolean requireExitTrapping = sfResolve(ATTR_REQUIRE_EXIT_TRAPPING, true, true);
+        boolean testSystemExit = sfResolve(ATTR_TEST_SYSTEM_EXIT, true, true);
+        boolean printPolicyInfo = sfResolve(ATTR_PRINT_POLICY_INFO, true, true);
+        assertPolicyCanAddPermissions = sfResolve(ATTR_ASSERT_POLICY_CAN_ADD_PERMISSIONS, true, true);
         SecurityManager current = System.getSecurityManager();
 
         boolean hasManager = current != null;
@@ -82,13 +96,58 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
                 try {
                     System.exit(-1);
                 } catch (Throwable t) {
-                    sfLog().info("Exit call intercepted ", t);
+                    sfLog().debug("Exit call intercepted ", t);
                 }
             }
+
+        }
+        if (printPolicyInfo) {
+            Policy policy = Policy.getPolicy();
+            sfLog().info("Policy " + policy + " class " + policy.getClass());
+        }
+        if (assertPolicyCanAddPermissions) {
+            checkPolicyPermissionAdd();
         }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal", "Security Manager is " + current,
                 sfCompleteNameSafe(),
                 null);
     }
 
+    /**
+     * the liveness test checks that if {@link #assertPolicyCanAddPermissions} is set, then the permission
+     * can be added.
+     * @param source source of call
+     * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     */
+    @Override
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+        if (assertPolicyCanAddPermissions) {
+            try {
+                checkPolicyPermissionAdd();
+            } catch (SmartFrogDeploymentException e) {
+                throw new SmartFrogLivenessException(e);
+            }
+        }
+    }
+
+    /**
+     * check that the policy supports the addition of permissions
+     * @throws SmartFrogDeploymentException if permissions cannot be added
+     */
+    public void checkPolicyPermissionAdd() throws SmartFrogDeploymentException {
+        if (assertPolicyCanAddPermissions) {
+            Policy policy = Policy.getPolicy();
+            try {
+                PermissionCollection permissions = policy.getPermissions((CodeSource) null);
+                Permission perm=new PropertyPermission("org.smartfrog","read");
+                permissions.add(perm);
+            } catch (SecurityException e) {
+                throw new SmartFrogDeploymentException("Failed to add a new permission " 
+                        + "-this could be due to a subclassed policy : "+ policy +" - " + e,
+                        e);
+            }
+        }
+    }
 }

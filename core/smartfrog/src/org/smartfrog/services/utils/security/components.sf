@@ -25,7 +25,8 @@ CheckSecurityManagerLive extends WorkflowPrim {
   requireSecurityManager true;
   requireExitTrapping true;
   testSystemExit false;
-
+  printPolicyInfo false;
+  assertPolicyCanAddPermissions false;
 /*
   set on startup
   securityManagerFound  -boolean
@@ -53,4 +54,10 @@ CheckSecurityBlocksRealSystemExit extends CheckSecurityBlocksSystemExit {
 CheckSecurityManagerDetails extends CheckSecurityManagerLive {
   requireSecurityManager false;
   requireExitTrapping false;
+}
+
+
+CheckPolicyPermissionsAddSupported extends CheckSecurityManagerDetails {
+  printPolicyInfo true;
+  assertPolicyCanAddPermissions true;
 }
