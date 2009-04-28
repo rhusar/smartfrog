@@ -33,6 +33,8 @@ LightweightJobTracker extends JobTracker {
   smartfrog.dump.conf DUMP_CONF;
   fs.default.name FS.DEFAULT.NAME;
   mapred.job.tracker.handler.count HandlerThreads;
+  //this is to fail faster when a namenode does not come up
+  ipc.client.connect.max.retries LIGHTWEIGHT_MAX_RETRIES;
 }
 
 LightweightTaskTracker extends TaskTracker {
