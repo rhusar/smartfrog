@@ -166,16 +166,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         }
     }*/
 
-    /**
-     * Reload the configuration. This rests our cache. {@inheritDoc}
-     */
-/*
-    @Override
-    public synchronized void reloadConfiguration() {
-        super.reloadConfiguration();
-    }
-*/
-
 
     /**
      * Return the source
