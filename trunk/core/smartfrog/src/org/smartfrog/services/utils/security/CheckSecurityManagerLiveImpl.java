@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.security.ExitTrappingSecurityManager;
+import org.smartfrog.sfcore.security.DummySecurityManager;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -32,7 +33,10 @@ import java.security.Policy;
 import java.security.CodeSource;
 import java.security.PermissionCollection;
 import java.security.Permission;
+import java.security.cert.Certificate;
 import java.util.PropertyPermission;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Created 10-Mar-2009 12:18:11
@@ -53,6 +57,8 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
     public static final String ERROR_NOT_EXIT_TRAPPING = "Security manager is not a SmartFrog exit-trapping manager";
     public static final String ERROR_NO_SECURITY_MANAGER = "No security manager installed";
     private boolean assertPolicyCanAddPermissions;
+    private CodeSource source;
+    public static final String ERROR_PERMISSION_ADD_FAILED = "Failed to add a new permission.";
 
     public CheckSecurityManagerLiveImpl() throws RemoteException {
     }
@@ -72,9 +78,9 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
         boolean testSystemExit = sfResolve(ATTR_TEST_SYSTEM_EXIT, true, true);
         boolean printPolicyInfo = sfResolve(ATTR_PRINT_POLICY_INFO, true, true);
         assertPolicyCanAddPermissions = sfResolve(ATTR_ASSERT_POLICY_CAN_ADD_PERMISSIONS, true, true);
-        SecurityManager current = System.getSecurityManager();
+        SecurityManager manager = System.getSecurityManager();
 
-        boolean hasManager = current != null;
+        boolean hasManager = manager != null;
         sfReplaceAttribute(ATTR_SECURITY_MANAGER_FOUND, hasManager);
 
         if (!hasManager) {
@@ -82,11 +88,14 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
                 throw new SmartFrogDeploymentException(ERROR_NO_SECURITY_MANAGER);
             }
         } else {
-            Class<? extends SecurityManager> classname = current.getClass();
-            String securityString = current.toString();
+            Class<? extends SecurityManager> classname = manager.getClass();
+            String securityString = manager.toString();
             sfReplaceAttribute(ATTR_SECURITY_MANAGER_CLASSNAME, classname);
             sfReplaceAttribute(ATTR_SECURITY_MANAGER_TO_STRING, securityString);
             String description = securityString + " classname " + classname;
+            if(manager instanceof DummySecurityManager) {
+                description = description + " (this is a dummy manager)";
+            }
             sfLog().info("Current security manager " + description);
             if (requireExitTrapping && !ExitTrappingSecurityManager.isSecurityManagerRunning()) {
                 throw new SmartFrogDeploymentException(
@@ -105,10 +114,15 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
             Policy policy = Policy.getPolicy();
             sfLog().info("Policy " + policy + " class " + policy.getClass());
         }
+        try {
+            source = new CodeSource(new URL("http://example.org"), (Certificate[]) null);
+        } catch (MalformedURLException e) {
+            throw new SmartFrogDeploymentException(e);
+        }
         if (assertPolicyCanAddPermissions) {
             checkPolicyPermissionAdd();
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal", "Security Manager is " + current,
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal", "Security Manager is " + manager,
                 sfCompleteNameSafe(),
                 null);
     }
@@ -140,12 +154,13 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
         if (assertPolicyCanAddPermissions) {
             Policy policy = Policy.getPolicy();
             try {
-                PermissionCollection permissions = policy.getPermissions((CodeSource) null);
+                
+                PermissionCollection permissions = policy.getPermissions(source);
                 Permission perm=new PropertyPermission("org.smartfrog","read");
                 permissions.add(perm);
             } catch (SecurityException e) {
-                throw new SmartFrogDeploymentException("Failed to add a new permission " 
-                        + "-this could be due to a subclassed policy : "+ policy +" - " + e,
+                throw new SmartFrogDeploymentException(ERROR_PERMISSION_ADD_FAILED 
+                        + " This could be due to a subclassed policy : "+ policy +" - " + e,
                         e);
             }
         }

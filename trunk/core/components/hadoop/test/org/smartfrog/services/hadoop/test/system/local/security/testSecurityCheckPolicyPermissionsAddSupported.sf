@@ -18,11 +18,9 @@
 
  */
 
-
-#include "/org/smartfrog/services/hadoop/test/system/local/cluster/components.sf"
-
+#include "/org/smartfrog/services/hadoop/test/system/local/security/components.sf"
 
 /**
  * Test case
  */
-sfConfig testSecurityForked ;
+sfConfig testSecurityCheckPolicyPermissionsAddSupported ;

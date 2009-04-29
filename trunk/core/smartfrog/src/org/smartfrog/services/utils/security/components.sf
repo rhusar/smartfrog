@@ -19,31 +19,93 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
 
+/**
+ * This component checks that the installed security manager meets the deployers needs.
+ * It can be used to debug problems, or to make explicit assertions about the required
+ * feature set of the deployment.
+ */
+  
 CheckSecurityManagerLive extends WorkflowPrim {
 
   sfClass "org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl";
+  sfShouldTerminate true;
+  
+  //indicates that a security manager must be present. Fails with ERROR_NO_SECURITY_MANAGER if not
   requireSecurityManager true;
+  
+  /*
+   If there is a security manager, assert that it implements SmartFrog's ExitTrapping interface.
+   If there is no security manager, then do nothing 
+    */
   requireExitTrapping true;
+  
+  
+  /*
+   If there is a security manager, call System.exit() to see that it gets blocked.
+   If there is no security manager, then do nothing 
+    */
+   
   testSystemExit false;
+    
+  /*
+  Print out the policy information if there is an installed policy (Policy.getPolicy()) 
+  */
+  
   printPolicyInfo false;
+  
+  /**
+   * if there is a policy, assert that permissions can be added to it. Some Policy subclasses have
+   * been burned by a change between Java5 and Java6 that made the base class return immutable collections. 
+   * 
+   * If set, this check is made on every liveness test, as well as start-up. This is to catch
+   * Policies that are set dynamically
+   */
   assertPolicyCanAddPermissions false;
 /*
-  set on startup
+  Attributes set on startup:
+  
   securityManagerFound  -boolean
   securityManagerToString -string value
   securityManagerClassname -string classname
   */
 
+/** 
+ * error straing if the security manager is not exit trapping
+ */
   ERROR_NOT_EXIT_TRAPPING CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_NOT_EXIT_TRAPPING;
+  
+  /**
+   * error if requireSecurityManager==true but there is no security manager
+   */
   ERROR_NO_SECURITY_MANAGER CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_NO_SECURITY_MANAGER;
+  
+  /**
+   * Part of the failure message if permissions cannot be added to a policy
+   */
+  ERROR_PERMISSION_ADD_FAILED CONSTANT org.smartfrog.services.utils.security.CheckSecurityManagerLiveImpl.ERROR_PERMISSION_ADD_FAILED;
 }
 
+/**
+ * Check that security blocks implements the ExitTrapping interface
+ */
 CheckSecurityBlocksSystemExit extends CheckSecurityManagerLive {
   requireExitTrapping true;
 }
 
+/**
+ * Check that security blocks system exit calls, but
+ * only when there is a security manager. If there is no manager, all is well
+ */
+CheckSecurityBlocksSystemExitWhenSMPresent extends CheckSecurityManagerLive {
+  requireSecurityManager false;
+  requireExitTrapping true;
+  testSystemExit true;
+}
 
-
+/**
+ * Try calling system exit to exit the machine, test the security manager blocks it
+ * If the Security Manager does not, this component will exit the JVM
+ */
 CheckSecurityBlocksRealSystemExit extends CheckSecurityBlocksSystemExit {
   testSystemExit true;
 }
@@ -56,7 +118,10 @@ CheckSecurityManagerDetails extends CheckSecurityManagerLive {
   requireExitTrapping false;
 }
 
-
+/**
+ * Check that if there is a policy, then it can be added to. 
+ * There is no failure if there is no security manager or policy
+ */
 CheckPolicyPermissionsAddSupported extends CheckSecurityManagerDetails {
   printPolicyInfo true;
   assertPolicyCanAddPermissions true;
