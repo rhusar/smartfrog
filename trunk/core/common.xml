@@ -89,7 +89,7 @@
     <property file="${core.dir}/common.properties"/>
     
     <!-- this is an extra set of properties you can use outside SVN trees -->
-    <property file="${user.dir}/.ant/smartfrog.properties"/>
+    <property file="${user.home}/.ant/smartfrog.properties"/>
 
     <!-- now read in environment settings -->
     <property environment="env" />
@@ -192,6 +192,12 @@
     <!--this is the version used in artifact dependences inside ivy.xml files-->
     <property name="smartfrog.artifact.version" value="latest.integration" />
 
+    <echo level="verbose">
+      sf.build.version=${sf.build.version}
+      smartfrog.version=${smartfrog.version}
+      smartfrog.artifact.version=${smartfrog.artifact.version}
+    </echo>
+    
     <tstamp>
       <format property="year" pattern="yyyy"/>
       <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
@@ -210,13 +216,14 @@
 
   </target>
 
-  <target name="print-proxy-settings" depends="init">
+  <target name="print-proxy-settings" depends="init-common-simpledefinitions">
     <echo>Proxy:
       http:  ${http.proxyHost}:${http.proxyPort}
       https: ${https.proxyHost}:${https.proxyPort}
     </echo>
   </target>
 
+  
 
 <!--
   This is a bit of a legacy; in a pure ivy build we should not need it.
@@ -282,6 +289,16 @@ java.class.path=
     <property name="smartfrog.version" value="${sf.build.version}" />
   </target>
 
+  
+  <!-- diagnostics: print out the SF versions -->
+  <target name="print-sf-version-settings" depends="init">
+    <echo>
+      sf.build.version=${sf.build.version}
+      smartfrog.version=${smartfrog.version}
+      smartfrog.artifact.version=${smartfrog.artifact.version}
+    </echo>
+  </target>
+  
   <target name="init-common" depends="bind-to-smartfrog">
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
