@@ -19,8 +19,9 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
 
+
 /**
- * name node tests
+ * Machine and JSP tests
  */
 
 
@@ -142,5 +143,4 @@ testHadoopSiteResources extends testJSPHealth {
     sfShouldTerminate true;
   }
 }
-
 

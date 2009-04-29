@@ -19,33 +19,9 @@
  */
 
 
-#include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
+#include "/org/smartfrog/services/hadoop/test/system/local/security/components.sf"
 
-
-testLocalCluster extends ExpectDeploy {
-  description "bring up a full cluster";
-
-  action extends LocalClusterCompound {
-
-  }
-
-  tests extends JobTrackerSequence {
-
-    namenode LAZY action:namenode;
-    datanode LAZY action:datanode;
-    jobtracker LAZY action:jobtracker;
-    tasktracker LAZY action:tasktracker;
-  }
-  
-
-}
-
-
-
-testLocalClusterForked extends testLocalCluster {
-  condition IsForkTestsSet;
-  action:namenode:sfProcessName "testLocalClusterForked-namenode";
-  action:datanode:sfProcessName "testLocalClusterForked-datanode";
-  action:tasktracker:sfProcessName "testLocalClusterForked-tasktracker";
-  action:jobtracker:sfProcessName "testLocalClusterForked-jobtracker";
-}
+/**
+ * Test case
+ */
+sfConfig testCheckSecurityBlocksSystemExitWhenSMPresentForked ;

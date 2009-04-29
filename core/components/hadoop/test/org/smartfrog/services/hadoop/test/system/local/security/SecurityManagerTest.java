@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.local.cluster;
+package org.smartfrog.services.hadoop.test.system.local.security;
 
 import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
@@ -25,19 +25,22 @@ import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
  * Created 10-Mar-2009 13:02:15
  */
 
-public class SecurityExitBlockingTest extends HadoopTestBase {
-    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/cluster/";
+public class SecurityManagerTest extends HadoopTestBase {
+    public static final String PACKAGE = "org/smartfrog/services/hadoop/test/system/local/security/";
 
-    public SecurityExitBlockingTest(String name) {
+    public SecurityManagerTest(String name) {
         super(name);
     }
 
-    public void testSecurityLive() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testSecurityLive");
+    public void testCheckSecurityBlocksSystemExitWhenSMPresent() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckSecurityBlocksSystemExitWhenSMPresent");
     }
 
-    public void testSecurityForked() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testSecurityForked");
+    public void testCheckSecurityBlocksSystemExitWhenSMPresentForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCheckSecurityBlocksSystemExitWhenSMPresentForked");
+    }
+    public void testSecurityCheckPolicyPermissionsAddSupported() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testSecurityCheckPolicyPermissionsAddSupported");
     }
 
 }
