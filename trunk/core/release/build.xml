@@ -1575,20 +1575,12 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
     <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>
     <echo message=" --------------------------------------------------------"/>
 
-    <presetdef name="junit-system-test-run">
+    <presetdef name="junit-remote-test-run">
 
       <sf-junit
         errorProperty="system.test.failed"
         failureProperty="system.test.failed"
         >
-        <sysproperty key="emma.coverage.out.file" file="${coverage.dir}/coverage.emma"/>
-        <sysproperty key="emma.coverage.out.merge" value="true"/>
-        <sysproperty key="emma.verbosity.level" value="verbose"/>
-        <!--
-                <syspropertyset>
-                  <propertyref prefix="emma."/>
-                </syspropertyset>
-        -->
         <syspropertyset>
           <propertyref prefix="runtime"/>
         </syspropertyset>
