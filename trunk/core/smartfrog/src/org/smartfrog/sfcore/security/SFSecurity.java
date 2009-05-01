@@ -59,7 +59,7 @@ public class SFSecurity {
 
     /**
      * Get a string containing interesting security information.
-     * @return
+     * @return a diagnostics string
      */
     public static String getSecurityInformation() {
         SecurityManager manager = System.getSecurityManager();
