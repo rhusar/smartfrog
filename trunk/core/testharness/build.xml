@@ -135,6 +135,30 @@ values as a cue -->
     </sf-rmic>
   </target>
 
+  <target name="list-tests"
+          depends="compile-tests,use-smartfrog-tasks">
+    <property name="test.listing.file"
+              location="${test.classes.dir}/org/smartfrog/test/testcases.csv" />
+    <!--
+          startFile='"tests:"&#10;'
+    -->
+    <sf-listresources
+      property="test.listing"
+      destFile="${test.listing.file}"
+      prefixtostrip="${test.classes.dir}/"
+      suffixtostrip=".class"
+      dirsplitter="."
+      startentry='"'
+      endentry='",&#10;'
+
+      endFile='""&#10;'>
+      <fileset dir="${test.classes.dir}" includes="**/*Test.class" />
+    </sf-listresources>
+    <echo>Tests=
+${test.listing}
+    </echo>
+  </target>
+
   <!-- ========================================================== -->
   <!-- conditionally start the daemon if one was not found already-->
   <!-- and do not complain if it could not start (or execution timed out) -->
