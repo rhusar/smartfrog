@@ -36,7 +36,7 @@ public class TextListFileImplImpl extends TextFileImpl {
     }
 
     /**
-     * {@inheritDoc
+     * {@inheritDoc}
      *
      * @throws SmartFrogException resolution problems
      * @throws RemoteException    networking
