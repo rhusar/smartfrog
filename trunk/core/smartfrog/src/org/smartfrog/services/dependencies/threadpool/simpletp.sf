@@ -22,6 +22,5 @@ For more information: www.smartfrog.org
 sfConfig extends Compound {
     threadpool extends SimpleThreadPool {
       sfProcessComponentName "threadpool";
-      root TBD;
     }
 }
