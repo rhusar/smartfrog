@@ -41,7 +41,7 @@ balancerHost       "localhost";
 
 // a vector of all of the hosts to be used for the Apache web server
 // they must all be x86, linux
-serverHosts ["16.25.168.155", "16.25.169.196"];
+serverHosts ["16.25.168.159", "16.25.168.155", "16.25.169.37"];
 //serverHosts ["192.168.1.67", "192.168.1.68", "192.168.1.69"];
 noServerHosts 2;
 
