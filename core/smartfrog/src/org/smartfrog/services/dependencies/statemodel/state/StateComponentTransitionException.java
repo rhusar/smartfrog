@@ -5,15 +5,21 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 public class StateComponentTransitionException extends SmartFrogException {
 	private int code;
 	
-	StateComponentTransitionException(int code){
+	public StateComponentTransitionException(int code){
 		this.code = code;
 	}
 	
-	StateComponentTransitionException(String msg, int code){
+	public StateComponentTransitionException(String msg, int code){
 		super(msg);
 		this.code = code;
 	}
 	
+	public StateComponentTransitionException(String msg){
+		this(msg, g_NOCODEAVAILABLE);
+	}
+	
+	//These codes are in drastic need of an update...
+	public static final int g_NOCODEAVAILABLE=0xFFFF;
 	public static final int g_NOTRANSITIONS=0x0;
 	public static final int g_NOSUCHAVAILABLETRANSITION=0x1;
 	public static final int g_NOTRANSITIONSELECTED=0x2;

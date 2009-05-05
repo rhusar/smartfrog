@@ -77,7 +77,7 @@ public class CoreSolver {
     private static final String CONSTRAINT_FUNCTION = "org.smartfrog.sfcore.languages.sf.functions.Constraint";
     private static final String ATTR_CONSTRAINT = "sfConstraint";
     private static final String ENV_SOLVERCLASS = "SOLVERCLASS";
-    private static final String ATTR_IS_GENERATOR = "sfIsArrayGenerator";
+    private static final String ATTR_IS_GENERATOR = "sfIsGenerator";
     public static final String ERROR = "ERROR: ";
     public static final String ERROR_COULD_NOT_INSTANTIATE_SOLVER = ERROR +"Could not instantiate solver ";
     public static final String ERROR_NO_CLASS = ERROR + "Class not found: ";

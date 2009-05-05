@@ -259,7 +259,7 @@ public class Array extends BaseFunction implements MessageKeys {
     	} else generator_cd.sfContext().put(ConstraintConstants.INDEX, el_idx);
     	
     	generator_cd.sfContext().put(ConstraintConstants.TAG, el);
-    	generator_cd.sfContext().remove("sfIsArrayGenerator");
+    	generator_cd.sfContext().remove("sfIsGenerator");
     	
     	if (dest instanceof ComponentDescription){
     		generator_cd.setParent((ComponentDescription) dest);

@@ -29,7 +29,7 @@ public class SynchedComposite extends Composite {
 	   //System.out.println("In SynchedComposite...");
 	   
 	   try {
-		   System.out.println("Replacing attribute in: "+this.sfCompleteName+": name:"+name+" : "+value);
+		   //System.out.println("Replacing attribute in: "+this.sfCompleteName+": name:"+name+" : "+value);
 		   if (name.equals("run") && (value instanceof Boolean) && ((Boolean)value).booleanValue()) {
 			   this.sfRun();
 			   super.sfReplaceAttribute("running", new Boolean(true));

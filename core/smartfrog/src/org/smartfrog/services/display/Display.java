@@ -19,20 +19,44 @@
  */
 package org.smartfrog.services.display;
 
-import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.JarUtil;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.ExitCodes;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.Reference;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -55,39 +79,34 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.text.Document;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.net.InetAddress;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.common.JarUtil;
+import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 
 /**
@@ -204,10 +223,10 @@ public class Display extends JFrame
     /**
      * Menu item - about.
      */
-    JMenuItem jMenuItemAbout = new JMenuItem();
+    JMenuItem jMenuItemAbout = new JMenuItem();   
     /**
      * File name.
-     */
+     */    
     String currFileName = null;
     /**
      * File chooser.
@@ -260,7 +279,13 @@ public class Display extends JFrame
     private Prim sfObj = null;
     private boolean systemExit = true;
     Display mngConsole = null;
+    /**
+     * 
+     */
+    private JMenu jMenuMngConsole = new JMenu();
     private JMenuItem jMenuItemMngConsole = new JMenuItem();
+    private JMenu[] jMenuItemCellVMs;
+    
     private int fontSize = 12;
 
     /**
@@ -1123,7 +1148,6 @@ public class Display extends JFrame
             return;
         }
         //End option dialog
-        int port = 3800;
         String hostName = null;
 
         try {
@@ -1142,6 +1166,11 @@ public class Display extends JFrame
             return;
         }
 
+        startMngConsole(hostName);
+    }
+    
+    void startMngConsole(String hostName) {
+    	int port = 3800;
         try {
             java.net.InetAddress.getByName(hostName);
             SFProcess.getRootLocator()
@@ -1159,7 +1188,7 @@ public class Display extends JFrame
             return;
         } catch (Exception e) {
             this.modalErrorDialog("startMngConsole",
-                    "Couldn't start SFMngConsole for resource " + hostName);
+                    "Couldn't start SFMngConsole for resource " + hostName + ". " + e);
             return;
         }
 
@@ -1397,16 +1426,132 @@ public class Display extends JFrame
     void jMenuItemProcessComp_actionPerformed(ActionEvent e) {
         this.infoProcessCompound();
     }
-
-
+    
+    private String cfcLocation = "org.smartfrog.services.display.supCfc1";
+    	
+    private String ipaddress;
+    private Class supWatcher;
+    private Class supHttp;
+    
+    private void loadSupWatcher(){    	
+    	try {
+    		    		
+    	Constructor con = supWatcher.getConstructor(String.class, int.class, String.class);
+    	if (ipaddress==null) {
+    		ipaddress = System.getProperty(cfcLocation);
+    		if (ipaddress==null) ipaddress=java.net.InetAddress.getLocalHost().getHostAddress();
+    	}
+		
+		String path="/cfc/cell1";
+		Object watcher = con.newInstance(ipaddress, 8100, path);
+		
+		//Get subcells...
+		Method scm = supWatcher.getMethod("getCfcSubcells");
+		List<String> subcells = (List<String>) scm.invoke(watcher);
+		
+		
+		DocumentBuilderFactory domFactory = 
+			DocumentBuilderFactory.newInstance();
+			          domFactory.setNamespaceAware(false); 
+			DocumentBuilder builder = domFactory.newDocumentBuilder();
+		
+			int numCells = subcells.size();
+			jMenuItemCellVMs = new JMenu[numCells];
+			
+			for (int i=0; i<subcells.size();i++){
+				String cell = subcells.get(i);
+				try {
+    			
+     			Method cwm = supWatcher.getMethod("subcellWatcher", String.class);
+    			Object cfcn_scwatcher = cwm.invoke(watcher, cell);
+    			Method chm = supWatcher.getMethod("getCfcHttp");
+    			Object cfcn_schttp = chm.invoke(cfcn_scwatcher);
+    			Method gmm = supHttp.getMethod("getModel", String.class);
+    			String modelString = (String) gmm.invoke(cfcn_schttp, ""); 
+    			    			
+    			org.w3c.dom.Document doc = builder.parse(new InputSource(new StringReader(modelString)));
+    			XPath xpath = XPathFactory.newInstance().newXPath();
+ 		        XPathExpression expr = xpath.compile("//cellIndex/text()");
+ 		        Node cfcn_index = (Node) expr.evaluate(doc, XPathConstants.NODE);
+ 		        String cfcn_path=("cell"+new StringTokenizer(cfcn_index.getNodeValue().toString()).nextToken()); 
+ 			    
+ 			    JMenu cellMenu = new JMenu();
+		        cellMenu.setText(cfcn_path);
+		        jMenuItemCellVMs[i]= cellMenu;
+ 			    
+    			xpath = XPathFactory.newInstance().newXPath();
+ 		        expr = xpath.compile("//vm[@def=\"vmcfc\"]/vif/IPAddress/text()");
+ 		        Node cfcn_ipa = (Node) expr.evaluate(doc, XPathConstants.NODE);
+ 			    String cfcn_ipaddress = new StringTokenizer(cfcn_ipa.getNodeValue().toString()).nextToken(); 
+ 			    
+ 			    Object cfcn_watcher = con.newInstance(cfcn_ipaddress, 8100, "/cfc/"+cfcn_path);
+ 			    Object cfcn_http = chm.invoke(cfcn_watcher);
+ 			    modelString = (String) gmm.invoke(cfcn_http, "");
+ 			    doc = builder.parse(new InputSource(new StringReader(modelString)));
+ 			   
+ 			    xpath = XPathFactory.newInstance().newXPath();
+		        expr = xpath.compile("//dnsName/text()");
+		        NodeList vms = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			    for (int j=0; j<vms.getLength();j++){
+			    	final String vm = new StringTokenizer(vms.item(j).getNodeValue().toString()).nextToken();
+			    	int idx = vm.indexOf(cfcn_path);
+			    	String vmPref = vm.substring(0,idx-1);  
+			    	
+			    	JMenuItem vmItem = new JMenuItem();
+	 			    vmItem.setText(vmPref);
+	 			    cellMenu.add(vmItem);
+	 			    vmItem.addActionListener(
+	 		                new ActionListener() {
+	 		                    public void actionPerformed(ActionEvent e) {
+	 		                         startMngConsole(vm);     
+	 		                    }
+	 		                });
+			    } 
+				} catch (Throwable t){System.out.println("Unable to get information for cell"+cell);}
+    		}		
+    	} catch(Throwable t){jMenuItemCellVMs=null;} 		
+    }
+    
+    private boolean supAvailable(){
+    	try {  
+    		    supWatcher = SFClassLoader.forName("com.hp.sup.http.CfcWatcher");    	
+    			supHttp = SFClassLoader.forName("com.hp.sup.http.CfcHttp");   
+    			loadSupWatcher();
+    	} catch (Exception e){/*Intentionally do nothing*/}
+    	return supWatcher!=null;
+    }
+    
+    private void updateMngConsoleMenuWkr(){
+    	if (supWatcher!=null && ipaddress!=null){      	  
+   		   removeVMMngConsoleMenuItems();
+   		   loadSupWatcher();
+   		   addVMMngConsoleMenuItems();
+       }
+    }
+    		   
+    private void removeVMMngConsoleMenuItems(){
+    	if (jMenuItemCellVMs==null) return;
+    	for (JMenu item : jMenuItemCellVMs){
+    		this.jMenuMngConsole.remove(item);
+    	}
+    }
+    
+    private void addVMMngConsoleMenuItems(){
+    	if (jMenuItemCellVMs==null) return;
+    	for (JMenu item : jMenuItemCellVMs){
+    		this.jMenuMngConsole.add(item);
+    	}
+    }
+    
+    MouseListener ml;
+    boolean ignore=false;
     /**
      * Widjets initialization
      *
      * @throws Exception If unable to initialize
      */
     private void jbInit() throws Exception {
-
-        String imagesPath = Display.class.getPackage().getName() + ".";
+    	String imagesPath = Display.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
         //imagesPath = imagesPath + "frog.gif";
         imagesPath = imagesPath + "SplodgeGreen32.ico";
@@ -1492,14 +1637,35 @@ public class Display extends JFrame
         jCheckBoxMenuItemAskSaveChanges.setText("Ask Save Changes?");
         jCheckBoxMenuItemAskSaveChanges.setSelected(true);
 
-
-        jMenuItemMngConsole.setText("SF Management Console");
+        
+        JMenuItem manMenuItem;
+        if (supAvailable()) {
+        	jMenuMngConsole.setText("SF Management Console");
+        	jMenuItemMngConsole.setText("Enter SF hostname");
+        	jMenuMngConsole.add(jMenuItemMngConsole);
+        	manMenuItem = jMenuMngConsole;
+        	
+        	if (jMenuItemCellVMs!=null){
+        		jMenuMngConsole.addSeparator();
+        		for (JMenu item : jMenuItemCellVMs) jMenuMngConsole.add(item);
+        	}
+        	
+        	
+        	
+        	
+        } else {
+        	jMenuItemMngConsole.setText("SF Management Console");
+        	manMenuItem = jMenuItemMngConsole;
+        }
+        
         jMenuItemMngConsole.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         jMenuItemMngConsole_actionPerformed(e);
                     }
                 });
+        
+        
         jMenuBarDisplay.add(jMenuDisplayOptions);
         jMenuBarDisplay.add(jMenuHelp);
         jMenuDisplayOptions.add(jCheckBoxMenuItemPause);
@@ -1517,9 +1683,26 @@ public class Display extends JFrame
         jMenuHelp.add(jMenuItemInfoProp);
         jMenuHelp.addSeparator();
         jMenuHelp.add(jMenuItemProcessComp);
-        jMenuHelp.add(jMenuItemMngConsole);
+        jMenuHelp.add(manMenuItem);
         jMenuHelp.addSeparator();
         jMenuHelp.add(jMenuItemAbout);
+        
+        jMenuHelp.addMenuListener(new MenuListener(){
+    		public void menuSelected(MenuEvent e) {
+    			//try{
+    			//Runtime.getRuntime().exec("echo \"COMPONENT SHOWN\" >> /tmp/menu");
+    			//} catch (Exception ex){}
+    			//if (!ignore) {
+    				updateMngConsoleMenuWkr();
+    			//	ignore=true;
+    			//}
+            }
+    		public void menuDeselected(MenuEvent e) {
+            }
+    		public void menuCanceled(MenuEvent e) {
+            }
+    	});
+        
         this.setJMenuBar(jMenuBarDisplay);
 
         //end Menus

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
@@ -21,6 +20,8 @@ import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.ApplyReference;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -42,7 +43,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    private Vector<ApplyReference> dpes=new Vector<ApplyReference>();
       
    private ThreadPool threadpool;
-   private Future<?> currentActionFuture = null;
+   private Object currentAction = null;
    protected boolean asyncResponse = false;
    private boolean m_running=false;
    private ReentrantLock transitionLock = new ReentrantLock();
@@ -57,7 +58,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	     
       threadpool = (ThreadPool) sfResolve("threadpool", false);
       Context cxt = sfContext();
-      asAndConnector = sfResolve("asAndConnector", asAndConnector, true);
+      asAndConnector = sfResolve("asAndConnector", asAndConnector, false);
       
       //transitions, dpes, state reflection...
       Enumeration keys = cxt.keys();
@@ -117,13 +118,17 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }
    
    public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException {
+	   
+	   if (currentAction!=null) return;  //temporary  NEED TO EXCEPT!!!
+	   
 	   //System.out.println("Hoping to acquire the lock...");
-	   acquireLock();
+	   if (!acquireLock()) return; //temporary  NEED TO EXCEPT!!!
 	   //System.out.println("Hoping to acquire the lock2...");
 	   resetPossibleTransitions();
 	   //System.out.println("Hoping to acquire the lock3...");
 	   iasc.actOn(this);
 	   //System.out.println("Hoping to acquire the lock4...");
+	   handleDPEs();
 	   clean();
 	   //System.out.println("Hoping to acquire the lock5...");
    }
@@ -160,7 +165,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		   try { go = trans.sfResolve(ConstraintConstants.GUARD, false, true); } catch (Exception e){
 			   enabled=null;
 			   /**Exception needs handling properly**/
-			   //System.out.println("We have excepted!!!");
+			   System.out.println("We have excepted!!!");
 			   throw new StateComponentTransitionException(StateComponentTransitionException.g_DEPENDENCYVALUEUNRESOLVABLE);
 			   
 		   }
@@ -184,11 +189,14 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").resetPossibleTransitions()");
    }
    
-   protected void acquireLock(){
+   protected boolean acquireLock(){
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").acquireLock(...)");
+	   if (sfLog().isDebugEnabled())  sfLog().debug("is locked?"+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
+	   if ((currentAction!=null && currentAction!=Thread.currentThread()) || //Allow locking only by scheduled action...
+			   (currentAction==null && transitionLock.isLocked() && !transitionLock.isHeldByCurrentThread())) return false;  //or by current owner thread
 	   transitionLock.lock();
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").acquireLock(...)");
-	   
+	   return true;
    }
    
    protected void cleanLock(){
@@ -196,6 +204,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   while (transitionLock.isHeldByCurrentThread()) {  //CHECK!
 		   transitionLock.unlock();
 	   }
+	   if (sfLog().isDebugEnabled())  sfLog().debug("is locked?"+transitionLock.isHeldByCurrentThread()+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").cleanLock(...)");
    }
        
@@ -229,12 +238,24 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    public void go(String transition) throws StateComponentTransitionException {
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").go()");
 	   
-	   ComponentDescription trans = (ComponentDescription) enabled.get(transition);
 	   try {
+		   if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition"+transition);
+		   ComponentDescription trans = null;
+		   try{trans = (ComponentDescription) enabled.get(transition);} catch (Throwable e){sfLog().debug("WHAT THE JC? "+e.getMessage());}
 		   trans.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));
-	   } catch (Exception e){throw new StateComponentTransitionException("Unable to apply effects in transition: "+trans, StateComponentTransitionException.g_UNABLETOAPPLYEFFECTS);}
+	   } catch (Exception e){throw new StateComponentTransitionException("Unable to apply effects in transition: "+transition, StateComponentTransitionException.g_UNABLETOAPPLYEFFECTS);}
 	   
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").go()");
+   }
+   
+   
+     
+   public void clean(){
+	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").clean(...)");
+	   currentAction=null;
+	   cleanLock();
+	   asyncResponse=false;
+	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").clean(...)");
    }
    
    boolean runDPEs(){
@@ -248,36 +269,42 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   }
 	   return ret;
    }
-     
-   public void clean(){
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").clean(...)");
-	   currentActionFuture=null;
-	   cleanLock();
-	   asyncResponse=false;
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").clean(...)");
+   
+   public boolean handleDPEs(){
+	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleDPEs()");
+	   boolean progress=false;
+		  
+		  //synchronized(CoreSolver.getInstance()){
+			  Constraint.lockUpdateContext();
+			  progress = runDPEs();	  
+			  Constraint.applyUpdateContext();
+		  //}
+		  
+		  if (sfLog().isDebugEnabled())  sfLog().debug("^^^^^^^^^^^^^^^^^^^Progress"+progress);
+		  
+		  if (progress) {
+			  System.out.println("Progress made");
+			  threadpool.runIdleAgain();
+		  }
+		  return progress;
    }
    
-   public void handleStateChange() { 
+   public String getStatusAsString() throws RemoteException {return "";}
+   public void handleStateChange() throws RemoteException { 
 	   
-	  //System.out.println("++++++++++++++++++++HANDLE STATE CHANGE!!! COMPONENT:"+name);
+	  
 	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleStateChange()");
 	  	   
-	  //System.out.println("To run DPEs..."+dpes.size());
+	  if (sfLog().isDebugEnabled())  sfLog().debug("To run DPEs..."+dpes.size()+": currentAction: "+currentAction);
+	
+	  if (currentAction!=null) return;  //temporary
 	  
-	  boolean progress=false;
+	  if (!acquireLock()) return; //need to except...
 	  
-	  synchronized(CoreSolver.getInstance()){
-		  Constraint.lockUpdateContext();
-		  progress = runDPEs();	  
-		  Constraint.applyUpdateContext();
-	  }
-	  //System.out.println("^^^^^^^^^^^^^^^^^^^Progress"+progress);System.out.flush();
-	  
-	  if (progress) {
-		  //System.out.println("Progress made");
-		  threadpool.runIdleAgain();
-		  //System.out.println("Other side!");System.out.flush();
-		  return; //skip now, as this will come round...
+	  if (handleDPEs()){
+		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange()");
+		  clean();
+		  return;
 	  }
 	  
 	  try {
@@ -287,12 +314,31 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  }
 	  
 	  if (enabled==null) {
-		  //System.out.println("no enabled transitions...");
+		  if (sfLog().isDebugEnabled())  sfLog().debug("no enabled transitions...");
 		  
 		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Nothing to do...");
+		  clean();
 		  return;  //nothing to do...
 	  }
 	   
+	  //Check if simple transition...
+	  try {
+	  if (enabled.size()==1){
+		  String key = enabled.keySet().iterator().next();
+		  ComponentDescription transition = (ComponentDescription) enabled.get(key);
+		  if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition"+key);
+		  if (!transition.sfResolve("requiresThread", false, true)){
+			  if (sfLog().isDebugEnabled())  sfLog().debug("State("+name+").handleStateChange() -- Script call...");
+			  transition.sfResolve("deploy");  //Apply script...
+			  go(key);
+			  clean();
+			  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
+			  return;
+		  }
+	  }
+	  } catch (SmartFrogException e){if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: in applying simple transition"+e.getMessage());}
+	  
+	  
 	  try {
 		  setState();
 	  } catch (StateComponentTransitionException stce) {/*Hardly acceptable handling*/}
@@ -332,29 +378,33 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    public synchronized Object sfReplaceAttribute(Object name, Object value)
 		throws SmartFrogRuntimeException, RemoteException {
   
-	   //System.out.println("*****************************************************************************************Replacing Attribute..."+name+":"+value);
-	  
 	   Object result = super.sfReplaceAttribute(name,value);
 	   
 	   if (!Constraint.isUpdateContextLocked() && threadpool!=null) threadpool.runIdle();
 	   return result;
    }
    
-   private Future<?> clearCurrentAction(){
-	   if (currentActionFuture ==null) return null;
-	   return (currentActionFuture = threadpool.removeFromQueue(currentActionFuture)); 
+   private Object clearCurrentAction(){
+	   return currentAction;
+	   //if (currentActionFuture ==null) return null;
+	   //return (currentActionFuture = threadpool.removeFromQueue(currentActionFuture)); 
    }
    
    public void setState() throws StateComponentTransitionException {
 	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateComponent.setState()");
       
-	  if (clearCurrentAction()!=null) return; //Not appropriate to allow further transition at this time...
+	  //handled above: if (clearCurrentAction()!=null) return; //Not appropriate to allow further transition at this time...
 	 
-	  //System.out.println("Adding to queue...");
+	  if (sfLog().isDebugEnabled())  sfLog().debug("Adding to queue...");
+	 
 	  
-      currentActionFuture= threadpool.addToQueue(new StateUpdateThread());
+      //currentActionFuture= threadpool.addToQueue(new StateUpdateThread());
       
-      //System.out.println("Adding to queue..."+currentActionFuture);
+      threadpool.addToQueue((StateUpdateThread)(currentAction=new StateUpdateThread()));
+      
+      cleanLock();
+      
+      System.out.println("Adding to queue..."+currentAction);
      
       if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateComponent.setState()");
    }
@@ -369,11 +419,11 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    public class StateUpdateThread implements Runnable {
       public void run() {
     	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateUpdateThread.run()");
-    	  acquireLock();
     	  try{
     	   if (threadBody()) {
     		   StateComponent.this.clean();
            } else {
+        	   //Should this clean now?
         	   StateComponent.this.cleanLock();
         	   StateComponent.this.asyncResponse=true;
            }
@@ -381,5 +431,4 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
           if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateUpdateThread.run()");
       }
    }
-   
 }

@@ -1,19 +1,17 @@
 package org.smartfrog.services.dependencies.threadpool;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
-import org.smartfrog.services.orchcomponent.model.OrchConstants;
+import org.smartfrog.services.dependencies.statemodel.state.Notifier;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
  * Implementation of the SmartFrog ThreadPool component
@@ -21,12 +19,12 @@ import org.smartfrog.sfcore.reference.ReferencePart;
  * Implements the ThreadPool Interface, and provides methods for
  * controlling the execution of a set of jobs by a thread pool
  */
-public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool {
+public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Notifier, Serializable {
    private int numThreads=5;
    private int busyThreads=0;
-   private ExecutorService es;
+   private transient ExecutorService es;
    private boolean suspended=false;
-   private Runnable idleRunnable;
+   private transient Runnable idleRunnable;
    private boolean runAgain=false;
   
    public SimpleThreadPoolImpl() throws RemoteException {
@@ -98,10 +96,12 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Thre
    }
    
    public void runIdle(){
+	   if (sfLog().isDebugEnabled()) sfLog().debug("IN: threadPool: runIdle()");
 	   if (busyThreads==0 && !suspended) {
 		   suspended=true;
 		   es.submit(idleRunnable);
 	   }
+	   if (sfLog().isDebugEnabled()) sfLog().debug("OUT: threadPool: runIdle()");
    }
    
    public void setIdleRunnable(Runnable idleRunnable){
@@ -114,9 +114,11 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Thre
     *
     */
    public Future<?> addToQueue(Runnable run){
+	  if (sfLog().isDebugEnabled()) sfLog().debug("IN: threadPool: addToQueue()");
 	  synchronized (this){
 		  busyThreads++;  //we should increase before it's run...
 	  }
+	  if (sfLog().isDebugEnabled()) sfLog().debug("OUT: threadPool: addToQueue()");
       return es.submit(new Runnable_(run));
    }  
  

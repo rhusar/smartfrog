@@ -20,21 +20,24 @@
 
 package org.smartfrog.sfcore.utils;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFClassLoader;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Enumeration;
-import java.util.Iterator;
 
 /**
  * This class provides a single static method - print - which takes a ComponentDescription
@@ -75,6 +78,7 @@ public class CDPrinter {
         String CDPEnd = "";
         String CDPSep = "";
 
+        
         try {
             CDPStart = cd.sfResolve(new Reference(ReferencePart.here("CDPStart")), CDPStart, false);
         } catch (SmartFrogResolutionException e) {
@@ -116,7 +120,22 @@ public class CDPrinter {
      * @throws FileNotFoundException
      */
     public static String printURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
+          return printURLSorted(url, params, false);  
+    }
+    
+    /**
+     * Method to take a URL, parse it, add the addtional key-value parameters to the top level, resolve and then create the
+     * print string on the resultant description. Option as to whether the final content is sorted lexicographically.
+     * @param url the file to parse
+     * @param params a context containing the parameter key-value pairs
+     * @param recursively sort final description lexicographically?
+     * @return the resultant print string
+     * @throws SmartFrogException
+     * @throws FileNotFoundException
+     */
+    public static String printURLSorted(String url, Context params, boolean sort) throws SmartFrogException, FileNotFoundException {
             Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
+    	    
             // add params
             if (params != null) {
                 for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
@@ -124,11 +143,44 @@ public class CDPrinter {
                     p.sfReplaceAttribute(k, params.get(k));
                 }
             }
+            
             p = p.sfResolvePhases();
-            return print(p.sfAsComponentDescription());
+            
+            ComponentDescription cd = p.sfAsComponentDescription();
+            try { if (sort) cd=sort(cd); } catch (Exception e){throw new SmartFrogException(e); }
+            
+            return print(cd);
     }
-
-
+    
+    
+    
+    //This should be moved...
+    /**
+     * Helper method for recursively lexicographically sorting attributes of a component description
+     * @param Component Description which is to have attributes sorted
+     * @return sorted component description
+     */
+	private static ComponentDescription sort(ComponentDescription comp) throws Exception {
+		//Simple link resolve...
+		ComponentDescription newcomp = new ComponentDescriptionImpl(comp.sfParent(), null, comp.getEager());
+		List<String> keys = new ArrayList<String>();
+		for (Iterator v = comp.sfAttributes(); v.hasNext();) keys.add(v.next().toString());
+		Collections.sort(keys);
+		
+		for (Iterator v = keys.iterator(); v.hasNext();) {
+            String nameS = v.next().toString();
+            Reference ref = new Reference(ReferencePart.here(nameS));
+            Object value=comp.sfResolve(ref);
+            if (value instanceof ComponentDescription) value=sort((ComponentDescription)value);           
+           
+            newcomp.sfAddAttribute(nameS, value);
+            newcomp.sfAddTags(nameS, comp.sfGetTags(nameS));     
+        }     
+		return newcomp;
+	}
+	
+   
+    
     /**
      * The main method takes a URL, parses it, resolves the structure and then displays the
      * print string on the resultant description of sfConfig. Used for debugging descriptions.
