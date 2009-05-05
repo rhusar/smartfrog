@@ -49,27 +49,36 @@ Dependency extends Prim {
      enabled false;
 }
 
+NilStateComponent extends StateComponent {
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
+}
+
 StateComponent extends Prim {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.StateComponent";
      sfUpdatable true;
      sfUniqueComponentID;
 	 [sfFinal] asAndConnector false;
-
-     threadpool LAZY PROCESS:threadpool; // default place for the threadpool
+	 
+     threadpool LAZY PARENT:ATTRIB threadpool; // default place for the threadpool
 }
+
+ThreadedCompositeBase extends {
+     threadpool extends SimpleThreadPool;
+}
+
+ThreadedComposite extends Composite, ThreadedCompositeBase;
+ThreadedCompositeWithSync extends CompositeWithSync, ThreadedCompositeBase;
 
 Composite extends Compound {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
      sfUpdatable true;
 
-     threadpool LAZY PROCESS:threadpool; // default place for the threadpool
-
-     inputConnectors extends Compound {
+     /*inputConnectors extends Compound {
         sfUpdatable true;
      }
      outputConnectors extends Compound {
         sfUpdatable true;     
-     }
+     }*/
 }
 
 CompositeWithSync extends Composite {
@@ -88,10 +97,7 @@ NWayComposite extends Composite {
 
 
 Model extends CompositeWithSync {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.Model";
-	 //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
-
-     threadpool LAZY PROCESS:threadpool; // default place for the threadpool
+     //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
      running true;  //note this has changed in meaning from legacy versions
 }
 
@@ -150,7 +156,19 @@ NXorConnector extends Prim {
 Transition extends {
     sfIsStateComponentTransition;
     guard true;
-    effects TBD;
+    requiresThread true;
+}
+
+SimpleTransition extends Transition {
+   requiresThread false;
+}
+
+ScriptWrapper extends Function {
+	sfFunctionClass "org.smartfrog.services.dependencies.scripting.ScriptWrapper";
+	sfLazyFunction true;
+    script TBD;
+    scriptPrim TBD;
+    notifier LAZY PARENT:ATTRIB threadpool;
 }
 
 VerificationRecord extends {
