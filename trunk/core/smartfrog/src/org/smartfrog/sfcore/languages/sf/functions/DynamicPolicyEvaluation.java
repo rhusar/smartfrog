@@ -50,9 +50,9 @@ public class DynamicPolicyEvaluation extends BaseFunction implements MessageKeys
      *  */
     protected Object doFunction() throws SmartFrogFunctionResolutionException {
      	Object retval=null;
-    	synchronized(CoreSolver.getInstance()){
+    	//synchronized(CoreSolver.getInstance()){
   		   retval=doFunctionWkr();
-    	}
+    	//}
     	return retval;
     }
   	  
@@ -61,6 +61,8 @@ public class DynamicPolicyEvaluation extends BaseFunction implements MessageKeys
     	//Need to ascertain whether we do this or not
     	ComponentDescription comp = context.getOriginatingDescr();
     	context = comp.sfContext();
+    	
+    	//System.out.println("DPE: Checking guard/s");
     	
     	//Check the guards on the policy evaluation...
     	//(1) Explicit guard
@@ -86,20 +88,28 @@ public class DynamicPolicyEvaluation extends BaseFunction implements MessageKeys
     	    	if (guard!=null && !guard.booleanValue()) return guard;
     	   }
     	}
+    	
+    	//System.out.println("DPE: Past guard/s");
+    	
     	    	    
     	//OK, so we are allowed to evaluate the DPE...
     	try {
 	    	Enumeration e = context.keys();
 	    	while (e.hasMoreElements()) {
 	    		Object key = e.nextElement();
+	    		//System.out.println("*********ATTRIBUTE********"+key);
 	    		Object val = comp.sfResolve(key.toString());
-	    		if (val!=null) context.put(key, val);
+	    		if (val!=null) {
+	    			context.put(key, val);
+	    			//System.out.println("DPE: Replacing: "+key+" with "+val);
+	    		}
 	    		
 	    	}
     	} catch (SmartFrogException e){/*Shouldn't happen*/}
     	
     	//Let's finish with a few effects...
     	
+    	//System.out.println("DPE: Applying Effects");
     	try { comp.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));}
     	catch (SmartFrogResolutionException sfre){/*Intentionally do nothing*/}
     	    	    	

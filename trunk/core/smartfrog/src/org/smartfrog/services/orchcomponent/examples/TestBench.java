@@ -100,7 +100,7 @@ public class TestBench extends PrimImpl implements Prim, DesiredEventRegistratio
 	
 	private void updateModel(){
 		model.runPrims();
-		model.runNotifier();
+		//model.runNotifier();  FIX NOTIFIER!!!
 	}
 	
 	public class TestBenchThread implements Runnable {

@@ -139,7 +139,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         comp.setParent(rrcd);
            	
         //Am I an array generator?, if so quit...
-        try { if (comp.sfContext().get("sfIsArrayGenerator")!=null) return this; } catch (Exception e){/*Do nothing!*/}
+        try { if (comp.sfContext().get("sfIsGenerator")!=null) return this; } catch (Exception e){/*Do nothing!*/}
     	
 		String functionClassStatus = (String) comp.sfContext().get("sfFunctionClassStatus");
         if (functionClassStatus!=null && functionClassStatus.equals("done")) return comp; //done already

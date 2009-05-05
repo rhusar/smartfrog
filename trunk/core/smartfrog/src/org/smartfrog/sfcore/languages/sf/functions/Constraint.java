@@ -767,7 +767,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	public Object getval(){return val;}
     	
     	ComponentResolution(){}
-    	ComponentResolution(Object pc, Object key, Object val){ this.pc=pc; this.key=key; this.val=val;}
+    	ComponentResolution(Object key, Object val,Object pc){ this.pc=pc; this.key=key; this.val=val;}
     }
     
     static public ComponentResolution getSourceKey(Reference ref, Object source) throws SmartFrogResolutionException {
@@ -860,7 +860,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
     static void replaceAttribute(Object k, Object v, Object c){
     	try {
     		if (v instanceof SFNull) v=null;
-    		if (g_updateContext!=null) g_updateContext.add(new ComponentResolution(c,k,v));
+    		//System.out.println("UPDATE CONTEXT..."+g_updateContext);
+    		if (g_updateContext!=null) g_updateContext.add(new ComponentResolution(k,v,c));
     		else replaceAttributeWkr(k, v, c);
     	} catch (Exception e){/*Shouldn't happen*/}
     }
@@ -872,14 +873,20 @@ public class Constraint extends BaseFunction implements MessageKeys {
     
     static void replaceAttributeWkrPrim(Object k, Object v, Prim p){    
     	try{
-    		if (v!=null) p.sfReplaceAttribute(k, v);
+    		//System.out.println("About to replace..."+k+":"+v+" in "+p.sfContext());
+    		if (v!=null) {
+    			Object oldValue = p.sfReplaceAttribute(k, v);
+    			//System.out.println("OLD VALUE!!!"+oldValue);
+    		}
     		else p.sfRemoveAttribute(k);
+    		
+    		//System.out.println("Have replaced..."+k+":"+v+" in "+p.sfContext());
     		
     		if (v instanceof ComponentDescription){
     			((ComponentDescription)v).setPrimParent(p);
     		}
     		
-    	}catch(Exception e){/**/}
+    	}catch(Exception e){System.out.println("Failed to replace:"+k+" with "+v+" in "+p);}
     }
     
     static void replaceAttributeWkrComp(Object k, Object v, ComponentDescription c){  
@@ -911,7 +918,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     		for (int i=0;i<g_updateContext.size();i++){
     			ComponentResolution cr = g_updateContext.get(i);
     			
-    			System.out.println("Replacing...1"+cr.key+":"+cr.val+":"+cr.pc);
+    			//System.out.println("IN APPLYUPDATECONTEXT::: Replacing...1"+cr.key+":"+cr.val+":"+cr.pc);
     			
     			replaceAttributeWkr(cr.key, cr.val, cr.pc);
     		}

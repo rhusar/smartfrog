@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.services.dependencies.statemodel.state.Composite;
-import org.smartfrog.services.dependencies.statemodel.state.Model;
 import org.smartfrog.services.orchcomponent.desiredstate.DesiredEvent;
 import org.smartfrog.services.orchcomponent.desiredstate.DesiredEventRecord;
 import org.smartfrog.services.orchcomponent.desiredstate.DesiredEventRegistration;
@@ -16,7 +15,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
-public class OrchComponentModel extends Model {
+public class OrchComponentModel extends Composite {
 
 	   DesiredEventRegistration der;
 	  
