@@ -217,7 +217,7 @@ Array extends Function {
 }
 
 ArrayGenerator extends {
-     sfIsArrayGenerator;
+     sfIsGenerator;
 }
 
 Aggregator extends Function, AggregateSpecifierArrayPath {
