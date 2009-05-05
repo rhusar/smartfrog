@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.smartfrog.services.dependencies.statemodel.state.Notifier;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -19,7 +18,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * Implements the ThreadPool Interface, and provides methods for
  * controlling the execution of a set of jobs by a thread pool
  */
-public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Notifier, Serializable {
+public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Serializable {
    private int numThreads=5;
    private int busyThreads=0;
    private transient ExecutorService es;
