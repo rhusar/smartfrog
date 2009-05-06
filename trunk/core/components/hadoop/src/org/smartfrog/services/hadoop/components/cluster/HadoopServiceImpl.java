@@ -157,7 +157,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-     * Get a list of ports that should be closed on startup and after termination. This list is built up on startup and
+     * Get a list of ports that should be closed on startup and after termination. 
+     * <p/>
+     * This list is built up on startup and
      * cached.
      *
      * @param conf the configuration to use

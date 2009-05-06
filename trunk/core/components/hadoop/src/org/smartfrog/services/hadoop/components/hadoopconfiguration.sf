@@ -92,7 +92,9 @@ HadoopConfiguration extends Prim {
     The address where the datanode server will listen to.
     If the port is 0 then the server will start on a free port.
   */
-  dfs.datanode.address  "0.0.0.0:50010";
+  DFS_DATANODE_ADDRESS_PORT "50010";
+  DFS_DATANODE_HOSTNAME "127.0.0.1";
+  dfs.datanode.address  (DFS_DATANODE_HOSTNAME ++ ":" ++ DFS_DATANODE_ADDRESS_PORT);
 
   /**
   The name of the Network Interface from which a data node should
@@ -125,16 +127,19 @@ HadoopConfiguration extends Prim {
     The datanode http server address and port.
     If the port is 0 then the server will start on a free port.
   */
-  dfs.datanode.http.address  "0.0.0.0:50075";
+  DFS_DATANODE_HTTP_ADDRESS_PORT "50075";
+  dfs.datanode.http.address  (DFS_DATANODE_HOSTNAME ++ ":" ++ DFS_DATANODE_HTTP_ADDRESS_PORT);
 
-
-  dfs.datanode.https.address "0.0.0.0:50475";
+  DFS_DATANODE_HTTPS_ADDRESS_PORT "50475";
+  dfs.datanode.https.address  (DFS_DATANODE_HOSTNAME ++ ":" ++ DFS_DATANODE_HTTPS_ADDRESS_PORT);
 
   /**
    The datanode ipc server address and port.
    If the port is 0 then the server will start on a free port.
   */
-  dfs.datanode.ipc.address "0.0.0.0:50020";
+  DFS_DATANODE_IPC_ADDRESS_PORT "50020";
+  
+  dfs.datanode.ipc.address (DFS_DATANODE_HOSTNAME ++ ":" ++ DFS_DATANODE_IPC_ADDRESS_PORT);
 
   /**The number of bytes to view for a file on the browser.
   */
@@ -165,9 +170,12 @@ HadoopConfiguration extends Prim {
     The address and the base port where the dfs namenode web ui will listen on.
     If the port is 0 then the server will start on a free port.
   */
-  dfs.http.address  "0.0.0.0:50070";
-
-  dfs.https.address "0.0.0.0:50470";
+  DFS_HTTP_ADDRESS_PORT "50070";
+  DFS_HTTPS_ADDRESS_PORT "50470";
+  DFS_HOSTNAME "127.0.0.1";
+  dfs.http.address  (DFS_HOSTNAME ++ ":" ++ DFS_HTTP_ADDRESS_PORT);
+  dfs.https.address  (DFS_HOSTNAME ++ ":" ++ DFS_HTTPS_ADDRESS_PORT);
+  
 
   /**
    The logging level for dfs namenode.
@@ -275,9 +283,9 @@ HadoopConfiguration extends Prim {
     The secondary namenode http server address and port.
     If the port is 0 then the server will start on a free port.
   */
-  dfs.secondary.http.address  "0.0.0.0:50090";
-
-
+  DFS_SECONDARY_HTTP_ADDRESS_PORT "50090";
+  DFS_SECONDARY_HOSTNAME "127.0.0.1";
+  dfs.secondary.http.address  (DFS_SECONDARY_HOSTNAME ++ ":" ++ DFS_SECONDARY_HTTP_ADDRESS_PORT);  
 
   /**
   The user account used by the web interface.
@@ -786,7 +794,10 @@ HadoopConfiguration extends Prim {
   at.  If "local", then jobs are run in-process as a single map
   and reduce task.
   */
-  mapred.job.tracker  "localhost:8012";
+  MAPRED_JOB_TRACKER_DEFAULT_PORT "8012";
+  //mapred.job.tracker  ("localhost:" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
+  MAPRED_JOB_TRACKER_HOSTNAME "127.0.0.1";
+  mapred.job.tracker  (MAPRED_JOB_TRACKER_HOSTNAME ++ ":" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
 
   /**
   The maximum number of complete jobs per user to keep around before delegating them
@@ -804,7 +815,9 @@ HadoopConfiguration extends Prim {
   The job tracker http server address and port the server will listen on.
   If the port is 0 then the server will start on a free port.
   */
-  mapred.job.tracker.http.address  "0.0.0.0:50030";
+  MAPRED_JOB_TRACKER_HTTP_PORT "50030";
+  //mapred.job.tracker  ("localhost:" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
+  mapred.job.tracker.http.address  (MAPRED_JOB_TRACKER_HOSTNAME ++ ":" ++ MAPRED_JOB_TRACKER_HTTP_PORT);
 
 
   /**

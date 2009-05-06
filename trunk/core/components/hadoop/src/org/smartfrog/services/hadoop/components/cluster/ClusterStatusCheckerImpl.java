@@ -37,6 +37,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractConditionPrim;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -47,7 +48,7 @@ import java.net.URI;
  */
 
 
-public class ClusterStatusCheckerImpl extends PrimImpl
+public class ClusterStatusCheckerImpl extends AbstractConditionPrim
         implements HadoopConfiguration, HadoopCluster, ClusterStatusChecker, Condition {
     private JobClient client;
     private boolean checkOnLiveness;
@@ -169,6 +170,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             if (supportedFileSystem) {
                 Path sysDir = cluster.getSystemDir();
                 URI uri = sysDir.toUri();
+                sfLog().info("Checking filesystem "+uri);
                 ManagedConfiguration conf = (ManagedConfiguration) cluster.getConf();
                 String impl = "fs." + uri.getScheme() + ".impl";
                 String classname = conf.get(impl);
@@ -207,6 +209,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
                 }
             }
             if (jobtrackerLive) {
+                sfLog().info("Checking jobTracker ");
                 JobTracker.State state = status.getJobTrackerState();
                 if (!state.equals(JobTracker.State.RUNNING)) {
                     throw new SFHadoopException("Job Tracker at " + jobtracker
@@ -268,9 +271,11 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             description = checkClusterStatus();
             live = true;
         } catch (SFHadoopException e) {
+            setFailureCause(e);
             description = e.toString();
             sfLog().debug(e);
             live = false;
+            
         }
         sfReplaceAttribute(IsHadoopServiceLive.ATTR_SERVICE_DESCRIPTION, description);
         return live;

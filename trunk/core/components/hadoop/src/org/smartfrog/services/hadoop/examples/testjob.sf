@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/hadoop/junitmr/healthtests/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/smallfile.sf"
 
 FileSystemLiveSequence extends Sequence {
     description "this is a base sequence that blocks until the filesystem is live"
@@ -32,33 +33,15 @@ FileSystemLiveSequence extends Sequence {
     startupSleep extends Sleep;
     startupSleep2 extends Sleep;
     
-    waitForNameNode extends WaitForNameNodeLive {
+    requireJobTrackerLive false;
+    //wait for the filesystem to come up, optionally check for the job tracker
+    waitForFilesystemLive extends WaitForFilesystemLive {
       service LAZY PARENT:namenode;
+      jobTrackerLive PARENT:requireJobTrackerLive;
     }
-
-    waitForDataNode extends WaitForDataNodeLive {
-      service LAZY PARENT:datanode;
-    }
-
-
+    
 }
 
-
-/**
- * A small file that can be created at the far end
- */
-
-SmallCountingFile extends TextFile {
-    filename TBD;
-    createParentDirs true;
-    sfShouldTerminate true;
-    text [
-    "1,one,un,ein",
-    "2,two,deux,zwei",
-    "3,three,trois,drei",
-    "4,four,quatre,vier",
-    "5,five,cinq,funf"];
-  }
 
 CopyFileInAndOutSequence extends FileSystemLiveSequence {
   LocalDataDir TBD;
@@ -204,16 +187,17 @@ Sleep extends Delay {
 
 JobTrackerLiveSequence extends FileSystemLiveSequence {
 
+    
   jobtracker TBD;
 
-  //do we really need this? Surely the wait would suffice
-  //sleep extends Sleep;
+  //add the check for the job tracker
+  requireJobTrackerLive true;
+ 
 
-
-  waitForJobTracker extends WaitForJobTrackerLive {
+ /* waitForJobTracker extends WaitForJobTrackerLive {
     service LAZY PARENT:jobtracker;
   }
-
+*/
 }
 
 
@@ -237,7 +221,7 @@ JobTrackerSourceFileSetupSequence extends JobTrackerLiveSequence {
   outputDirLocal (LocalDataDir  ++ "/out");
   outputFileLocal (outputDirLocal  ++ partName );
 
-  mapred.job.tracker jobtracker:mapred.job.tracker;
+  mapred.job.tracker LAZY jobtracker:live.mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
   hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
   jobTimeout JOB_EXECUTE_TIMEOUT;
@@ -287,7 +271,8 @@ TestJob extends BlockingJobSubmitter {
   cluster TBD;
   jobtracker TBD;
   fs.default.name cluster:fs.default.name;
-  mapred.job.tracker jobtracker:mapred.job.tracker;
+  //we get the live URL to the job tracker
+  mapred.job.tracker LAZY jobtracker:live.mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
 
   //mapred.system.dir "/tmp/hadoop/mapred/system";
@@ -320,10 +305,10 @@ MapReduceSequence extends JobTrackerSourceFileSetupSequence {
     fs.default.name PARENT:fs.default.name;
     mapred.input.dir PARENT:mapred.input.dir;
     mapred.output.dir PARENT:mapred.output.dir;
-    //mapred.working.dir PARENT:mapred.working.dir;
     //mapred.local.dir PARENT:mapred.local.dir;
     //mapred.job.split.file (testDir ++ "/split");
-    mapred.job.tracker jobtracker:mapred.job.tracker;
+  //we get the live URL to the job tracker
+    mapred.job.tracker LAZY jobtracker:live.mapred.job.tracker;
     mapred.working.dir (hadoop.tmp.URL ++ "/" ++ name ++ "/working");
     mapred.local.dir (hadoop.tmp.URL ++ "/" ++ name ++ "local");
   }

@@ -35,9 +35,9 @@ ClusterStatus extends WorkflowPrim {
   supportedFileSystem true;
 
   /**
-   * Declares that the job tracker is live
+   * include a test for the job tracker
    */
-  jobtrackerLive true;
+  jobtrackerLive false;
 
   /**
    For all the min/max values, <0 means 'dont check'
@@ -56,6 +56,7 @@ ClusterStatusCondition extends ClusterStatus {
 }
 
 JobTrackerRunning extends ClusterStatus {
+  jobtrackerLive true;
   supportedFileSystem false;
   minActiveMapTasks -1;
   minActiveReduceTasks -1;
@@ -68,6 +69,7 @@ JobTrackerRunning extends ClusterStatus {
  * actions until the job tracker is live
  */
 JobTrackerRunningCondition extends ClusterStatusCondition {
+  jobtrackerLive true;
   supportedFileSystem false;
   minActiveMapTasks -1;
   minActiveReduceTasks -1;
