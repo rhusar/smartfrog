@@ -40,6 +40,10 @@ public class SystemHealthTest extends DeployingTestBase {
     public void testHealth() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testHealth.sf");
     }
+    
+    public void testLiveHealth() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLiveHealth.sf");
+    }
 
     public void testHadoopSiteResources() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testHadoopSiteResources");

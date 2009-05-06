@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/extras/hadoop/cluster/bindings.sf"
 
+
 ClusterNameNodeCompound extends TransientNameNodeCompound {
 
   namenodeHost extends Localhost;
@@ -115,7 +116,7 @@ HadoopClusterSingleProcess extends HadoopFilesystemSingleProcess {
 HadoopClusterMultiProcess extends HadoopClusterSingleProcess {
   namenode:sfProcessName NAMENODE_PROCESS;
   datanode:sfProcessName DATANODE1_PROCESS;
-  jobtracker:fProcessName JOBTRACKER_PROCESS;
+  jobtracker:sfProcessName JOBTRACKER_PROCESS;
   tasktracker:sfProcessName TASKTRACKER1_PROCESS;
 }
 

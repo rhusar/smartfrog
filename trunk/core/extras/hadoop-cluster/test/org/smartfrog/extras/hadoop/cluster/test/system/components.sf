@@ -60,6 +60,7 @@ testFileSystemCopyFileInAndOut extends testCluster {
   description "copy a file in and out the file system";
 
   action HadoopFilesystem;
+  
   tests extends CopyFileInAndOut {
 
     namenode LAZY action:namenode:namenode;
@@ -94,6 +95,13 @@ testJasperHealth extends ExpectTerminate {
 
 testHealth extends ExpectTerminate {
   action HadoopJspClasses;
+}
+
+testLiveHealth extends ExpectDeploy {
+  action LiveHealthCheck;
+  tests extends Sequence {
+  
+  }
 }
 
 
