@@ -53,6 +53,7 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   dfs.permissions false;
   dfs.http.address namenodeURL;
   dfs.permissions false;
+  mapred.job.tracker.http.address (hostaddress ++ ":0");
 }
 
 /**

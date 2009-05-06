@@ -26,6 +26,8 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/hadoop/components/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/options.sf"
+#include "/org/smartfrog/services/utils/security/components.sf"
+
 
 
 
@@ -213,10 +215,21 @@ TransientTaskTrackerCompound extends HadoopCompoundBase  {
 
 
 HealthCheck extends Sequence {
+  description "a sequence to deploy on startup to check health of the system";
+  checkJava6PlusClassesPresent CheckJava6PlusClassesPresent;
   checkJspHelperClasses CheckJspHelperClasses;
   checkNamenodeJspClasses CheckNamenodeJspClasses;
   checkJobtrackerJspClasses CheckJobtrackerJspClasses;
   checkDatanodeJspClasses CheckDatanodeJspClasses;
-  checkJspClassesPresent  HadoopJspClasses ;
-  checkJava6PlusClassesPresent CheckJava6PlusClassesPresent;
+  checkJspClassesPresent  HadoopJspClasses;
+  checkPolicyPermissions extends CheckPolicyPermissionsAddSupported;
+}
+
+LiveHealthCheck extends Compound {
+  description "something to deploy to check the ongoing health of the system";
+  checkPolicyPermissions extends CheckPolicyPermissionsAddSupported {
+    sfShouldTerminate false;
+  }
+
+
 }

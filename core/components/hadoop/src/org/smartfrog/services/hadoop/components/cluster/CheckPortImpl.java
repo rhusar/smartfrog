@@ -26,8 +26,10 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -37,7 +39,8 @@ import java.rmi.RemoteException;
  * Created 28-May-2008 15:30:01
  */
 
-public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfiguration, CheckableCondition {
+public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfiguration, CheckableCondition,
+        ConditionWithFailureCause {
 
     /**
      * {@value}
@@ -68,12 +71,13 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      */
     public static final String ATTR_CHECK_PORT_OPEN = "checkPortOpen";
 
-    private InetSocketAddress address;
     private int connectTimeout;
     private boolean checkOnLiveness;
     private boolean checkOnStartup;
     private boolean checkPortOpen;
     private long livenessTimeout;
+    private Throwable failureCause;
+
 
     public CheckPortImpl() throws RemoteException {
     }
@@ -93,16 +97,8 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         if (timeout > 0) {
             livenessTimeout = System.currentTimeMillis() + timeout;
         }
-        String addressInline = sfResolve(ATTR_ADDRESS, "", true);
-        if (addressInline.length() > 0) {
-            address = NetUtils.createSocketAddr(addressInline);
-        } else {
-            ManagedConfiguration configuration = createClusterAttrConfiguration();
-            address = resolveAddressIndirectly(configuration, ATTR_ADDRESS_ATTRIBUTE);
-        }
+
         checkPortOpen = sfResolve(ATTR_CHECK_PORT_OPEN, true, true);
-        sfLog().info("Checking host:port " + address
-                + (checkPortOpen ? " is open" : " is closed"));
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         if (checkOnStartup) {
@@ -113,6 +109,18 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
             }
         }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, sfCompleteName(), null);
+    }
+
+    private InetSocketAddress resolveTargetAddress() throws RemoteException, SmartFrogException {
+        String addressInline = sfResolve(ATTR_ADDRESS, "", true);
+        InetSocketAddress addr;
+        if (addressInline.length() > 0) {
+            addr = NetUtils.createSocketAddr(addressInline);
+        } else {
+            ManagedConfiguration configuration = createClusterAttrConfiguration();
+            addr = resolveAddressIndirectly(configuration, ATTR_ADDRESS_ATTRIBUTE);
+        }
+        return addr;
     }
 
 
@@ -146,7 +154,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
     }
 
     /**
-     * Evaluate the condition.
+     * Evaluate the condition. Reasons for failure are cached for later
      *
      * @return true if it is successful, false if not
      * @throws RemoteException    for network problems
@@ -157,8 +165,33 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
             checkThePort();
             return true;
         } catch (IOException ignored) {
+            failureCause = ignored;
+            return false;
+        } catch (SmartFrogResolutionException sfe) {
+            //failure to resolve the entry
+            failureCause = sfe;
             return false;
         }
+    }
+
+    /**
+     * Get the explanation of failure
+     *
+     * @return text - may be null
+     * @throws RemoteException network problems
+     */
+    public String getFailureText() throws RemoteException {
+        return failureCause == null ? null : failureCause.toString();
+    }
+
+    /**
+     * Get the cause of failure
+     *
+     * @return an exception; may be null
+     * @throws RemoteException network problems
+     */
+    public Throwable getFailureCause() throws RemoteException {
+        return failureCause;
     }
 
     /**
@@ -168,7 +201,11 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      * @throws SmartFrogException smartfrog problems
      */
     private void checkThePort() throws IOException, SmartFrogException {
+        InetSocketAddress address;
+        address = resolveTargetAddress();
         try {
+            sfLog().info("Checking host:port " + address
+                    + (checkPortOpen ? " is open" : " is closed"));
             HadoopUtils.checkPort(address, connectTimeout);
         } catch (IOException e) {
             if (checkPortOpen) {

@@ -25,17 +25,18 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractTargetedCondition;
+import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 
 /**
- *
+ * This condition probes a hadoop service for being in the live state, using the SF RMI API
+ * <p/>
  * Created 11-Aug-2008 15:48:25
- *
  */
 
-public class IsHadoopServiceLive extends AbstractTargetedCondition implements Condition {
+public class IsHadoopServiceLive extends AbstractTargetedCondition implements ConditionWithFailureCause {
 
     public static final String ATTR_SERVICE = "service";
     public static final String ATTR_SERVICE_STATE = "serviceState";
@@ -49,6 +50,7 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
 
     /**
      * startup-time resolution
+     *
      * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException if the target does not resolve
      */
@@ -60,8 +62,9 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
 
     /**
      * Get the service
+     *
      * @return the service
-     * @throws RemoteException for network problems
+     * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException if the target does not resolven
      */
     public HadoopService getService() throws SmartFrogResolutionException, RemoteException {
@@ -96,6 +99,6 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
         sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());
         String description = service.getDescription();
         sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, description);
-        return evalOrFail(service.isServiceLive(),"service is not live "+description);
+        return evalOrFail(service.isServiceLive(), "service is not live " + description);
     }
 }
