@@ -22,5 +22,5 @@ For more information: www.smartfrog.org
 
 
 sfConfig extends HadoopClusterCompound {
-
+ liveHealthCheck LiveHealthCheck;
 };

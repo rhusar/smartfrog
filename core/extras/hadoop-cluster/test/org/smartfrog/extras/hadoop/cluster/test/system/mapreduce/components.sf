@@ -26,6 +26,8 @@ testJobSubmission extends testDistributedCluster {
   description "Submit a job to a cluster and copy out the result";
 
   tests extends MapReduceSequence {
+    //waitForJobTracker:timeout 60000 ;
+    
     LocalDataDir PROPERTY test.work.dir;
     jobtracker LAZY PARENT:action:jobtracker:jobtracker;
     namenode LAZY PARENT:action:namenode:namenode;

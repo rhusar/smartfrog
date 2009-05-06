@@ -67,10 +67,11 @@
     <sf-localhost property="localhost" />
     <sf-localhost property="localip" useAddress="true" />
     <echo>Local host = ${localhost} ${localip} </echo>
-    <property name="test.namenode" value="${localhost}" />
-    <property name="test.jobtracker" value="${localhost}" />
-    <property name="test.datanode1" value="${localhost}" />
-    <property name="test.tasktracker1" value="${localhost}" />
+    <property name="targethost" value="${localhost}" />
+    <property name="test.namenode" value="${targethost}" />
+    <property name="test.jobtracker" value="${targethost}" />
+    <property name="test.datanode1" value="${targethost}" />
+    <property name="test.tasktracker1" value="${targethost}" />
     
     <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
     <property name="cluster.sf" value="${cluster}/cluster.sf" />
@@ -79,6 +80,7 @@
     <property name="deploy.sf" value="${cluster.sf}" />
     <property name="deploy.host" value="${test.namenode}" />
     <property name="application.name" value="${project.name}"/>
+    <property name="deploy.timeout" value="60000" />
   </target>
 
 
@@ -90,6 +92,12 @@
   <target name="echo-deploy-settings" depends="common.ready-to-deploy">
     <echo>
       Deploying to ${deploy.host}
+      Echo deploy.timeout=${deploy.timeout}
+      targethost=${targethost}
+      test.namenode=${test.namenode}
+      test.jobtracker=${test.jobtracker}
+      test.datanode1=${test.datanode1}
+      test.tasktracker1=${test.tasktracker1}
     </echo>
   </target>
 
