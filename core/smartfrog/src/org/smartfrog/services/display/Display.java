@@ -1427,28 +1427,25 @@ public class Display extends JFrame
         this.infoProcessCompound();
     }
     
-    private String cfcLocation = "org.smartfrog.services.display.supCfc1";
-    	
-    private String ipaddress;
+    private static final String cfcLocation = "org.smartfrog.services.display.supCfc1";
+    private static String ipaddress;
+    static {
+    	ipaddress = System.getProperty(cfcLocation);
+    }
+    
     private Class supWatcher;
     private Class supHttp;
     
     private void loadSupWatcher(){    	
     	try {
-    		    		
-    	Constructor con = supWatcher.getConstructor(String.class, int.class, String.class);
-    	if (ipaddress==null) {
-    		ipaddress = System.getProperty(cfcLocation);
-    		if (ipaddress==null) ipaddress=java.net.InetAddress.getLocalHost().getHostAddress();
-    	}
-		
+    		
+    	Constructor con = supWatcher.getConstructor(String.class, int.class, String.class);	
 		String path="/cfc/cell1";
 		Object watcher = con.newInstance(ipaddress, 8100, path);
 		
 		//Get subcells...
 		Method scm = supWatcher.getMethod("getCfcSubcells");
 		List<String> subcells = (List<String>) scm.invoke(watcher);
-		
 		
 		DocumentBuilderFactory domFactory = 
 			DocumentBuilderFactory.newInstance();
@@ -1461,34 +1458,53 @@ public class Display extends JFrame
 			for (int i=0; i<subcells.size();i++){
 				String cell = subcells.get(i);
 				try {
-    			
-     			Method cwm = supWatcher.getMethod("subcellWatcher", String.class);
+				System.out.println("1");
+					
+				Method cwm = supWatcher.getMethod("subcellWatcher", String.class);
     			Object cfcn_scwatcher = cwm.invoke(watcher, cell);
     			Method chm = supWatcher.getMethod("getCfcHttp");
+    			
+    			System.out.println("2");
+				
+    			
     			Object cfcn_schttp = chm.invoke(cfcn_scwatcher);
     			Method gmm = supHttp.getMethod("getModel", String.class);
+    			
     			String modelString = (String) gmm.invoke(cfcn_schttp, ""); 
-    			    			
+    			   
+    			System.out.println("3");
+				
+    			
     			org.w3c.dom.Document doc = builder.parse(new InputSource(new StringReader(modelString)));
     			XPath xpath = XPathFactory.newInstance().newXPath();
  		        XPathExpression expr = xpath.compile("//cellIndex/text()");
  		        Node cfcn_index = (Node) expr.evaluate(doc, XPathConstants.NODE);
  		        String cfcn_path=("cell"+new StringTokenizer(cfcn_index.getNodeValue().toString()).nextToken()); 
  			    
+ 		       System.out.println("4");
+				
+ 		        
  			    JMenu cellMenu = new JMenu();
 		        cellMenu.setText(cfcn_path);
+		        
 		        jMenuItemCellVMs[i]= cellMenu;
- 			    
-    			xpath = XPathFactory.newInstance().newXPath();
- 		        expr = xpath.compile("//vm[@def=\"vmcfc\"]/vif/IPAddress/text()");
- 		        Node cfcn_ipa = (Node) expr.evaluate(doc, XPathConstants.NODE);
+		        xpath = XPathFactory.newInstance().newXPath();
+ 		        expr = xpath.compile("//vm[@def=\"cfc\"]/vif/IPAddress/text()");
+    			Node cfcn_ipa = (Node) expr.evaluate(doc, XPathConstants.NODE);
+ 		        
+    			System.out.println("5");
+				
+    			
  			    String cfcn_ipaddress = new StringTokenizer(cfcn_ipa.getNodeValue().toString()).nextToken(); 
  			    
  			    Object cfcn_watcher = con.newInstance(cfcn_ipaddress, 8100, "/cfc/"+cfcn_path);
  			    Object cfcn_http = chm.invoke(cfcn_watcher);
  			    modelString = (String) gmm.invoke(cfcn_http, "");
  			    doc = builder.parse(new InputSource(new StringReader(modelString)));
- 			   
+ 			    
+ 			   System.out.println("6");
+				
+ 			    
  			    xpath = XPathFactory.newInstance().newXPath();
 		        expr = xpath.compile("//dnsName/text()");
 		        NodeList vms = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
@@ -1514,6 +1530,7 @@ public class Display extends JFrame
     
     private boolean supAvailable(){
     	try {  
+    		    if (ipaddress==null) return false;
     		    supWatcher = SFClassLoader.forName("com.hp.sup.http.CfcWatcher");    	
     			supHttp = SFClassLoader.forName("com.hp.sup.http.CfcHttp");   
     			loadSupWatcher();
@@ -1649,9 +1666,6 @@ public class Display extends JFrame
         		jMenuMngConsole.addSeparator();
         		for (JMenu item : jMenuItemCellVMs) jMenuMngConsole.add(item);
         	}
-        	
-        	
-        	
         	
         } else {
         	jMenuItemMngConsole.setText("SF Management Console");
