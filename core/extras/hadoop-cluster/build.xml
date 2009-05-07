@@ -39,7 +39,13 @@
     cluster     full cluster
     simplejob simple data in/out test job
 
-    and run them. All will need the property namenode set
+    and run them. All will need the property namenode set,
+
+    targethost = single host for everything (default: localhost)
+    test.namenode = namenode host (default: targethost)
+    test.jobtracker = jobtracker host  (default: targethost)
+    test.datanode1 = datanode 1 host (default: targethost)
+    test.tasktracker1 = tasktracker 1 host (default: datanode1) 
 
   </description>
   <!--we are a component -->
@@ -71,7 +77,7 @@
     <property name="test.namenode" value="${targethost}" />
     <property name="test.jobtracker" value="${targethost}" />
     <property name="test.datanode1" value="${targethost}" />
-    <property name="test.tasktracker1" value="${targethost}" />
+    <property name="test.tasktracker1" value="${test.datanode1}" />
     
     <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
     <property name="cluster.sf" value="${cluster}/cluster.sf" />

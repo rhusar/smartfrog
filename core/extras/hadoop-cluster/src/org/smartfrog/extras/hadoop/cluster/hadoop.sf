@@ -39,7 +39,7 @@ ClusterDataNodeCompound extends TransientDataNodeCompound {
   threads WORKER_THREADS;
   fs.default.name  TBD;
   workerHost extends Localhost;
-  hostname "0.0.0.0";
+  hostname HadoopConfiguration:ALL_ZEROS;
 //  fs.default.name namenode.filesystem;
   //datanode:mapred.job.tracker.handler.count threads;
 }
