@@ -21,10 +21,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
+/**
+ *  This is a prim which implements the interface {@link ConditionWithFailureCause}
+ */
 public abstract class AbstractConditionPrim extends PrimImpl implements ConditionWithFailureCause {
     private Throwable failureCause;
     private String failureText;
@@ -74,12 +76,12 @@ public abstract class AbstractConditionPrim extends PrimImpl implements Conditio
     /**
      * Evaluate the variable and set the failure text to the given string if it is false
      * @param state result of the evaluation
-     * @param failureText the reason for a failure
+     * @param failureDetails the reason for a failure
      * @return the state that was passed in.
      */
-    protected final boolean evalOrFail(boolean state, String failureText) {
+    protected final boolean evalOrFail(boolean state, String failureDetails) {
         if(!state) {
-            setFailureText(failureText);
+            setFailureText(failureDetails);
         }
         return state;
     }

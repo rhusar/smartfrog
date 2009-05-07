@@ -67,7 +67,7 @@ WaitFor extends If {
  */
 
 FailingWaitFor extends WaitFor {
-  message "Timed out";
+  message LAZY failureText;
 
   else extends Terminator {
     description PARENT:message;
@@ -84,6 +84,7 @@ FailingWaitFor extends WaitFor {
  * lets the component be used to generate a LAZY binding attribute for
  * feeding in to components that take a simple boolean attribute instead
  * of a full condition.
+ * note that if the condition fails with an exception, that failure text is picked up
  */
 EvaluateCondition extends ConditionalEventCompound {
   evaluateConditionSchema extends Schema {
@@ -95,7 +96,7 @@ EvaluateCondition extends ConditionalEventCompound {
     };
   }
   sfClass "org.smartfrog.sfcore.workflow.conditional.EvaluateConditionImpl";
-  message failureText;
+  message LAZY failureText;
   failureText "Condition evaluated to false";
   failOnFalse true;
 }
