@@ -205,9 +205,9 @@ public class Display extends JFrame
      */
     JMenuItem jMenuItemExit = new JMenuItem();
     /**
-     * Menu help.
+     * Menu help -- protected as sub class may add menu items
      */
-    JMenu jMenuHelp = new JMenu();
+    protected JMenu jMenuHelp = new JMenu();
     /**
      * Menu item - info.
      */
@@ -282,10 +282,8 @@ public class Display extends JFrame
     /**
      * 
      */
-    private JMenu jMenuMngConsole = new JMenu();
     private JMenuItem jMenuItemMngConsole = new JMenuItem();
-    private JMenu[] jMenuItemCellVMs;
-    
+   
     private int fontSize = 12;
 
     /**
@@ -1427,147 +1425,16 @@ public class Display extends JFrame
         this.infoProcessCompound();
     }
     
-    private static final String cfcLocation = "org.smartfrog.services.display.supCfc1";
-    private static String ipaddress;
-    static {
-    	ipaddress = System.getProperty(cfcLocation);
-    }
     
-    private Class supWatcher;
-    private Class supHttp;
     
-    private void loadSupWatcher(){    	
-    	try {
-    		
-    	Constructor con = supWatcher.getConstructor(String.class, int.class, String.class);	
-		String path="/cfc/cell1";
-		Object watcher = con.newInstance(ipaddress, 8100, path);
-		
-		//Get subcells...
-		Method scm = supWatcher.getMethod("getCfcSubcells");
-		List<String> subcells = (List<String>) scm.invoke(watcher);
-		
-		DocumentBuilderFactory domFactory = 
-			DocumentBuilderFactory.newInstance();
-			          domFactory.setNamespaceAware(false); 
-			DocumentBuilder builder = domFactory.newDocumentBuilder();
-		
-			int numCells = subcells.size();
-			jMenuItemCellVMs = new JMenu[numCells];
-			
-			for (int i=0; i<subcells.size();i++){
-				String cell = subcells.get(i);
-				try {
-				System.out.println("1");
-					
-				Method cwm = supWatcher.getMethod("subcellWatcher", String.class);
-    			Object cfcn_scwatcher = cwm.invoke(watcher, cell);
-    			Method chm = supWatcher.getMethod("getCfcHttp");
-    			
-    			System.out.println("2");
-				
-    			
-    			Object cfcn_schttp = chm.invoke(cfcn_scwatcher);
-    			Method gmm = supHttp.getMethod("getModel", String.class);
-    			
-    			String modelString = (String) gmm.invoke(cfcn_schttp, ""); 
-    			   
-    			System.out.println("3");
-				
-    			
-    			org.w3c.dom.Document doc = builder.parse(new InputSource(new StringReader(modelString)));
-    			XPath xpath = XPathFactory.newInstance().newXPath();
- 		        XPathExpression expr = xpath.compile("//cellIndex/text()");
- 		        Node cfcn_index = (Node) expr.evaluate(doc, XPathConstants.NODE);
- 		        String cfcn_path=("cell"+new StringTokenizer(cfcn_index.getNodeValue().toString()).nextToken()); 
- 			    
- 		       System.out.println("4");
-				
- 		        
- 			    JMenu cellMenu = new JMenu();
-		        cellMenu.setText(cfcn_path);
-		        
-		        jMenuItemCellVMs[i]= cellMenu;
-		        xpath = XPathFactory.newInstance().newXPath();
- 		        expr = xpath.compile("//vm[@def=\"cfc\"]/vif/IPAddress/text()");
-    			Node cfcn_ipa = (Node) expr.evaluate(doc, XPathConstants.NODE);
- 		        
-    			System.out.println("5");
-				
-    			
- 			    String cfcn_ipaddress = new StringTokenizer(cfcn_ipa.getNodeValue().toString()).nextToken(); 
- 			    
- 			    Object cfcn_watcher = con.newInstance(cfcn_ipaddress, 8100, "/cfc/"+cfcn_path);
- 			    Object cfcn_http = chm.invoke(cfcn_watcher);
- 			    modelString = (String) gmm.invoke(cfcn_http, "");
- 			    doc = builder.parse(new InputSource(new StringReader(modelString)));
- 			    
- 			   System.out.println("6");
-				
- 			    
- 			    xpath = XPathFactory.newInstance().newXPath();
-		        expr = xpath.compile("//dnsName/text()");
-		        NodeList vms = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-			    for (int j=0; j<vms.getLength();j++){
-			    	final String vm = new StringTokenizer(vms.item(j).getNodeValue().toString()).nextToken();
-			    	int idx = vm.indexOf(cfcn_path);
-			    	String vmPref = vm.substring(0,idx-1);  
-			    	
-			    	JMenuItem vmItem = new JMenuItem();
-	 			    vmItem.setText(vmPref);
-	 			    cellMenu.add(vmItem);
-	 			    vmItem.addActionListener(
-	 		                new ActionListener() {
-	 		                    public void actionPerformed(ActionEvent e) {
-	 		                         startMngConsole(vm);     
-	 		                    }
-	 		                });
-			    } 
-				} catch (Throwable t){System.out.println("Unable to get information for cell"+cell);}
-    		}		
-    	} catch(Throwable t){jMenuItemCellVMs=null;} 		
-    }
     
-    private boolean supAvailable(){
-    	try {  
-    		    if (ipaddress==null) return false;
-    		    supWatcher = SFClassLoader.forName("com.hp.sup.http.CfcWatcher");    	
-    			supHttp = SFClassLoader.forName("com.hp.sup.http.CfcHttp");   
-    			loadSupWatcher();
-    	} catch (Exception e){/*Intentionally do nothing*/}
-    	return supWatcher!=null;
-    }
     
-    private void updateMngConsoleMenuWkr(){
-    	if (supWatcher!=null && ipaddress!=null){      	  
-   		   removeVMMngConsoleMenuItems();
-   		   loadSupWatcher();
-   		   addVMMngConsoleMenuItems();
-       }
-    }
-    		   
-    private void removeVMMngConsoleMenuItems(){
-    	if (jMenuItemCellVMs==null) return;
-    	for (JMenu item : jMenuItemCellVMs){
-    		this.jMenuMngConsole.remove(item);
-    	}
-    }
-    
-    private void addVMMngConsoleMenuItems(){
-    	if (jMenuItemCellVMs==null) return;
-    	for (JMenu item : jMenuItemCellVMs){
-    		this.jMenuMngConsole.add(item);
-    	}
-    }
-    
-    MouseListener ml;
-    boolean ignore=false;
     /**
      * Widjets initialization
      *
      * @throws Exception If unable to initialize
      */
-    private void jbInit() throws Exception {
+    protected void jbInit() throws Exception {
     	String imagesPath = Display.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
         //imagesPath = imagesPath + "frog.gif";
@@ -1655,23 +1522,9 @@ public class Display extends JFrame
         jCheckBoxMenuItemAskSaveChanges.setSelected(true);
 
         
-        JMenuItem manMenuItem;
-        if (supAvailable()) {
-        	jMenuMngConsole.setText("SF Management Console");
-        	jMenuItemMngConsole.setText("Enter SF hostname");
-        	jMenuMngConsole.add(jMenuItemMngConsole);
-        	manMenuItem = jMenuMngConsole;
-        	
-        	if (jMenuItemCellVMs!=null){
-        		jMenuMngConsole.addSeparator();
-        		for (JMenu item : jMenuItemCellVMs) jMenuMngConsole.add(item);
-        	}
-        	
-        } else {
-        	jMenuItemMngConsole.setText("SF Management Console");
-        	manMenuItem = jMenuItemMngConsole;
-        }
         
+        
+        jMenuItemMngConsole.setText("SF Management Console");
         jMenuItemMngConsole.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -1697,25 +1550,11 @@ public class Display extends JFrame
         jMenuHelp.add(jMenuItemInfoProp);
         jMenuHelp.addSeparator();
         jMenuHelp.add(jMenuItemProcessComp);
-        jMenuHelp.add(manMenuItem);
+        jMenuHelp.add(jMenuItemMngConsole);
         jMenuHelp.addSeparator();
         jMenuHelp.add(jMenuItemAbout);
         
-        jMenuHelp.addMenuListener(new MenuListener(){
-    		public void menuSelected(MenuEvent e) {
-    			//try{
-    			//Runtime.getRuntime().exec("echo \"COMPONENT SHOWN\" >> /tmp/menu");
-    			//} catch (Exception ex){}
-    			//if (!ignore) {
-    				updateMngConsoleMenuWkr();
-    			//	ignore=true;
-    			//}
-            }
-    		public void menuDeselected(MenuEvent e) {
-            }
-    		public void menuCanceled(MenuEvent e) {
-            }
-    	});
+        
         
         this.setJMenuBar(jMenuBarDisplay);
 
@@ -2284,4 +2123,5 @@ public class Display extends JFrame
         }
         return logStatic;
     }
+    
 }
