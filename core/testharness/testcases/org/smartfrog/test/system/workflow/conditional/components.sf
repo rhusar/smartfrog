@@ -176,3 +176,34 @@ sfConfig extends Compound {
 // -- extends False;
 // -- extends UnsetProperty;
 }
+
+
+testReferenceResolvesWorks extends BaseTestCompound {
+
+    action extends Sequence {
+
+        WaitForStaticReference extends BaseWait {
+
+          condition extends ReferenceResolves {
+            reference sfClass;
+          }
+
+        }
+
+        WaitForLazyReference extends BaseWait {
+
+          condition extends ReferenceResolves {
+            reference LAZY sfClass;
+          }
+        }
+
+       WaitForFailingReference extends BaseWait {
+          condition extends Not {
+            condition extends ReferenceResolves {
+              reference LAZY no-such-reference;
+            }
+          }
+        }
+
+    }
+}
