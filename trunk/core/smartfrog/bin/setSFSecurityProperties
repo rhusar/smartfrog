@@ -6,8 +6,16 @@
 
 
 # set default values if the user doesn't provide them
-if ! test $SFPRIVATE; then export SFPRIVATE="$SFHOME/private"; fi
-if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
+
+#location of private data
+if ! test $SFPRIVATE; then
+  export SFPRIVATE="$SFHOME/private"
+fi
+
+#the hostname to use when looking up private kays
+if ! test $SFHOSTNAME; then
+  export SFHOSTNAME=host1
+fi
 
 #------------------------------------------------------
 # SF SECURITY ENV PROPERTIES  - Please edit with your preferences

@@ -12,7 +12,11 @@
 export SERVER=http://localhost:8080
 export CODEBASE="$SERVER/sfExamples.jar"
 
-export SFCODEBASE="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager -Dorg.smartfrog.codebase=$CODEBASE"
+#the security manager
+if ! test $SFSECURITYMANAGER; then 
+  export SFSECURITYMANAGER=org.smartfrog.sfcore.security.ExitTrappingSecurityManager 
+fi
+export SFCODEBASE="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager=$SFSECURITYMANAGER -Dorg.smartfrog.codebase=$CODEBASE"
 
 # -------------------End user properties---------------
 
