@@ -160,6 +160,19 @@ Xor extends CompoundCondition {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.XorCompoundCondition";
 }
 
+/**
+ * try to resolve a reference. Failure returns false. LAZY References are re-resolved every
+ * time this is called
+ */
+ReferenceResolves extends ConditionPrim {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.ReferenceResolvesImpl"
+  reference TBD;
+  /*
+  set on success: value
+  */
+}
+
+
 
 
 
