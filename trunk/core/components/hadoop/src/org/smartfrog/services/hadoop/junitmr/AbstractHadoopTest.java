@@ -64,7 +64,6 @@ public class AbstractHadoopTest extends TestCase implements JUnitHadoopContext {
     /**
      * Create a DFS Instance and initialise it from the configuration
      *
-     * @param conf configuration
      * @return a DFS
      * @throws IOException if things go wrong
      */

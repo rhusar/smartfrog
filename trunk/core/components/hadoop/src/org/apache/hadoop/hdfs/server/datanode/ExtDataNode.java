@@ -198,7 +198,8 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
-        LOG.info("State change: DataNode is now " + newState);
+        String message = "State change: DataNode is now " + newState;
+        LOG.info(message);
         notifier.onStateChange(oldState,newState);
     }
 

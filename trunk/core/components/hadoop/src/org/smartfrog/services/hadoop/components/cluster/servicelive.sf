@@ -27,6 +27,9 @@ IsHadoopServiceLive extends TargetedConditionPrim {
   //define a service to look for
   service TBD;
   target service;
+  
+  //flag, which if false, implies that a started service is OK. 
+  requireServiceLive true;
   E_NOT_RESOLVED "reference is not resolved or the component is undefined";
   //gets changed after evaluation to the service description
   serviceDescription E_NOT_RESOLVED;

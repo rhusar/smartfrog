@@ -37,15 +37,13 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   namenodeURL      NAME_NODE_URL;
   datanodeURL      DATA_NODE_URL ;
   hostaddress LOCALHOST;
-  any_port  (hostaddress ++ ":0");
-  dfs.datanode.address any_port;
-  dfs.datanode.http.address any_port;
-  dfs.datanode.https.address any_port;
-  /**
-  The datanode ipc server address and port.
-  If the port is 0 then the server will start on a free port.
-  */
-  dfs.datanode.ipc.address any_port;
+  ANY_PORT "0";
+  //dfs.hostname hostaddress;
+  dfs.datanode.hostname hostaddress;
+  dfs.datanode.port ANY_PORT;
+  dfs.datanode.http.port ANY_PORT;
+  dfs.datanode.https.port ANY_PORT;
+  dfs.datanode.ipc.port ANY_PORT;
 
   dfs.blockreport.intervalMsec 10000;
   dfs.blockreport.initialDelay 0;
@@ -53,7 +51,11 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   dfs.permissions false;
   dfs.http.address namenodeURL;
   dfs.permissions false;
-  mapred.job.tracker.http.address (hostaddress ++ ":0");
+  mapred.job.tracker.hostname hostaddress;
+  mapred.job.tracker.http.hostname hostaddress;
+  mapred.job.tracker.http.port ANY_PORT;
+  mapred.task.tracker.hostname hostaddress;
+  mapred.task.tracker.http.port ANY_PORT;
 }
 
 /**

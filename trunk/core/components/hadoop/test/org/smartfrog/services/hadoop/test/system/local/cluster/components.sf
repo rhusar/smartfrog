@@ -46,6 +46,6 @@ testLocalClusterForked extends testLocalCluster {
   condition IsForkTestsSet;
   action:namenode:sfProcessName "testLocalClusterForked-namenode";
   action:datanode:sfProcessName "testLocalClusterForked-datanode";
-  action:tasktracker:sfProcessName "testLocalClusterForked-tasktracker";
   action:jobtracker:sfProcessName "testLocalClusterForked-jobtracker";
+  action:tasktrackerSequence:tasktracker:sfProcessName "testLocalClusterForked-tasktracker";
 }

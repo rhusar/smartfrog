@@ -118,7 +118,7 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
         }
         try {
             ManagedConfiguration conf = ManagedConfiguration.createConfiguration(this, false, false, true);
-            sfLog().info("Connecting to " + jobtracker);
+            sfLog().info("Connecting to Job Tracker at " + jobtracker);
             client = new JobClient(conf);
             return client;
         } catch (RemoteException e) {
@@ -170,7 +170,7 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
             if (supportedFileSystem) {
                 Path sysDir = cluster.getSystemDir();
                 URI uri = sysDir.toUri();
-                sfLog().info("Checking filesystem "+uri);
+                sfLog().info("Checking filesystem " + uri);
                 ManagedConfiguration conf = (ManagedConfiguration) cluster.getConf();
                 String impl = "fs." + uri.getScheme() + ".impl";
                 String classname = conf.get(impl);

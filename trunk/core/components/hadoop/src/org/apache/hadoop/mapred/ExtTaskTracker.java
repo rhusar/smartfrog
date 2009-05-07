@@ -61,7 +61,11 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
-        LOG.info("State change: TaskTracker is now " + newState);
+        String message = "State change: TaskTracker is now " + newState;
+        if (jobTrackAddr != null) {
+            message += " Job Tracker: " + jobTrackAddr;
+        }
+        LOG.info(message);
         notifier.onStateChange(oldState, newState);
     }
 
