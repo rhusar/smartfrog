@@ -106,3 +106,5 @@ testConditionSkipped extends testAbnormalRun {
   description "run this test expect a skip";
   condition NotConditionSet;
 }
+
+testReferenceResolves
