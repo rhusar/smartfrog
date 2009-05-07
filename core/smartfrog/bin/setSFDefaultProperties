@@ -35,8 +35,14 @@ fi
 if ! test "$SFDEFAULTSF";then     
    export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
 fi
+
+#the security manager
+if ! test $SFSECURITYMANAGER; then 
+  export SFSECURITYMANAGER=org.smartfrog.sfcore.security.ExitTrappingRealSecurityManager 
+fi
+
 if ! test "$SFDEFAULTSECURITY";then
-	export SFDEFAULTSECURITY="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager=org.smartfrog.sfcore.security.ExitTrappingRealSecurityManager"
+	export SFDEFAULTSECURITY="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager=$SFSECURITYMANAGER"
 fi
 
 if  test "$SFSERVERHOSTNAME";then
