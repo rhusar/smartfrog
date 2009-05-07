@@ -109,7 +109,7 @@ TwoDataNodeCluster extends LocalDataNodeCompound {
 
   datanode2 extends datanode {
     dataDirectories [LAZY localDataDir2];
-    dfs.datanode.https.address any_port;
+    dfs.datanode.https.port ANY_PORT;
   }
 }
 
@@ -140,13 +140,33 @@ LocalJobTrackerCompound extends LocalFileSystemCompound {
 
 
 
-
+/**
+ * A full tasktracker compound is slightly problematic as we have to block until
+ * the job tracker is started and it knows what its hostname is. This
+ * could be determined by looking at its state, but as we want to get the url from
+ * the live.mapred.job.tracker value, we just spin until that resolves. 
+ */
 LocalTaskTrackerCompound extends LocalJobTrackerCompound {
   description "A cluster with a task tracker";
 
-  tasktracker extends LightweightTaskTracker {
-    fs.default.name PARENT:ATTRIB fs.default.name;
-    mapred.job.tracker LAZY ATTRIB jobtracker:mapred.job.tracker;
+  /*
+   * to deal with this, we run a sequence
+   */
+  tasktrackerSequence extends Sequence {
+    
+    block extends FailingWaitFor {
+      sfShouldTerminate true;
+      timeout JOB_TRACKER_STARTUP_TIMEOUT;
+      interval CLUSTER_POLL_INTERVAL;
+      condition extends ReferenceResolves {
+        reference LAZY ATTRIB jobtracker:live.mapred.job.tracker;
+      }
+    }
+    
+    tasktracker extends LightweightTaskTracker {
+      fs.default.name PARENT:ATTRIB fs.default.name;
+      mapred.job.tracker LAZY ATTRIB jobtracker:live.mapred.job.tracker;
+    }
   }
 }
 

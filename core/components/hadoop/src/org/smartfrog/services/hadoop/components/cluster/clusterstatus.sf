@@ -22,6 +22,9 @@ For more information: www.smartfrog.org
 /**
  * This component checks up on cluster status; can be used to validate a deployment without shipping any work its way
  * using JobClient#getClusterStatus()
+ *
+ * This status checker checks the job tracker, not the filesystem directly. It only works against a live jobtracker
+ * And not a basic Hadoop FS. 
  */
 ClusterStatus extends WorkflowPrim {
   sfClass "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl";

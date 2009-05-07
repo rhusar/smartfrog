@@ -33,12 +33,14 @@ FileSystemLiveSequence extends Sequence {
     startupSleep extends Sleep;
     startupSleep2 extends Sleep;
     
-    requireJobTrackerLive false;
-    //wait for the filesystem to come up, optionally check for the job tracker
-    waitForFilesystemLive extends WaitForFilesystemLive {
+    waitForNameNode extends WaitForNameNodeLive {
       service LAZY PARENT:namenode;
-      jobTrackerLive PARENT:requireJobTrackerLive;
     }
+
+    waitForDataNode extends WaitForDataNodeLive {
+      service LAZY PARENT:datanode;
+    }
+
     
 }
 
@@ -193,11 +195,12 @@ JobTrackerLiveSequence extends FileSystemLiveSequence {
   //add the check for the job tracker
   requireJobTrackerLive true;
  
-
- /* waitForJobTracker extends WaitForJobTrackerLive {
+  //wait for the filesystem to come up, and check for the job tracker
+  waitForJobTracker extends WaitForFilesystemLive {
     service LAZY PARENT:jobtracker;
-  }
-*/
+    jobTrackerLive PARENT:requireJobTrackerLive;
+  } 
+
 }
 
 

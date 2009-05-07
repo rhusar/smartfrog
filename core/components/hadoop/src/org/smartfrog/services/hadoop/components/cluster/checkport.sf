@@ -64,7 +64,7 @@ CheckPortCondition extends CheckPort {
 }
 
 CheckJobTrackerPort extends CheckPort {
-  attribute "mapred.job.tracker";
+  attribute "live.mapred.job.tracker";
 }
 
 CheckJobTrackerCondition extends CheckPortCondition {
@@ -73,7 +73,7 @@ CheckJobTrackerCondition extends CheckPortCondition {
 
 
 CheckJobTrackerHttpPort extends CheckPort {
-  attribute "mapred.job.tracker.http.address";
+  attribute "live.mapred.job.tracker.http.address";
 }
 
 CheckJobTrackerHttpPortCondition extends CheckPortCondition {
@@ -81,7 +81,7 @@ CheckJobTrackerHttpPortCondition extends CheckPortCondition {
 }
 
 CheckTaskTrackerHttpPort extends CheckPort {
-  attribute "mapred.task.tracker.http.address";
+  attribute "live.mapred.task.tracker.http.address";
 }
 
 CheckTaskTrackerHttpPortCondition extends CheckPortCondition {
@@ -89,7 +89,7 @@ CheckTaskTrackerHttpPortCondition extends CheckPortCondition {
 }
 
 CheckDataNodePort extends CheckPort {
-  attribute "dfs.datanode.address";
+  attribute "live.dfs.datanode.address";
 }
 
 CheckDataNodePortCondition extends CheckPortCondition {
@@ -97,7 +97,7 @@ CheckDataNodePortCondition extends CheckPortCondition {
 }
 
 CheckDataNodeHttpPort extends CheckPort {
-  attribute "dfs.datanode.http.address";
+  attribute "live.dfs.datanode.http.address";
 }
 
 CheckDataNodeHttpPortCondition extends CheckPortCondition {
@@ -106,7 +106,7 @@ CheckDataNodeHttpPortCondition extends CheckPortCondition {
 
 
 CheckNameNodePort extends CheckPort {
-  attribute "dfs.http.address";
+  attribute "live.dfs.http.address";
 }
 
 CheckNameNodePortCondition extends CheckPortCondition {

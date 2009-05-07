@@ -134,7 +134,7 @@ TestJob extends Job {
   jobtracker TBD;
   fs.default.name cluster:fs.default.name;
   testURL (fs.default.name ++ testDir);
-  mapred.job.tracker jobtracker:mapred.job.tracker;
+  mapred.job.tracker LAZY jobtracker:live.mapred.job.tracker;
   hadoop.tmp.dir "/tmp";
   hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
   jobTimeout JOB_EXECUTE_TIMEOUT;

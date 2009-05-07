@@ -22,4 +22,7 @@ TaskTracker extends ClusterNode {
   sfClass "org.smartfrog.services.hadoop.components.tracker.TaskTrackerImpl"
   name "TaskTracker";
   expectNodeTermination false;
+  /** when deployed
+  mapred.task.tracker.http.address
+  */
 }

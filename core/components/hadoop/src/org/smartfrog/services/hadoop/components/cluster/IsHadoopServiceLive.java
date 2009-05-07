@@ -23,7 +23,6 @@ import org.apache.hadoop.util.Service;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractTargetedCondition;
 import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
 import org.smartfrog.sfcore.reference.Reference;
@@ -41,7 +40,9 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
     public static final String ATTR_SERVICE = "service";
     public static final String ATTR_SERVICE_STATE = "serviceState";
     public static final String ATTR_SERVICE_DESCRIPTION = "serviceDescription";
+    public static final String ATTR_REQUIRE_SERVICE_LIVE = "requireServiceLive";
     private static final Reference refTarget = new Reference(ATTR_TARGET);
+    private boolean requireServiceLive;
 
 
     public IsHadoopServiceLive() throws RemoteException {
@@ -57,6 +58,7 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
     @Override
     protected void resolveTargetOnStartup() throws SmartFrogResolutionException, RemoteException {
         super.resolveTargetOnStartup();
+        requireServiceLive = sfResolve(ATTR_REQUIRE_SERVICE_LIVE, true, true);
         getService();
     }
 
@@ -95,10 +97,18 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
             setFailureCause(e);
             return false;
         }
+        
         Service.ServiceState state = service.getServiceState();
         sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());
         String description = service.getDescription();
         sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, description);
-        return evalOrFail(service.isServiceLive(), "service is not live " + description);
+        if (requireServiceLive) {
+            return evalOrFail(service.isServiceLive(), "service is not live " + description
+                    + " (state = " + state + ")");
+        } else {
+            return evalOrFail(state.equals(Service.ServiceState.STARTED) ||
+                    state.equals(Service.ServiceState.LIVE), "service is in the wrong state " + state
+                    + " : " + description);
+        }
     }
 }

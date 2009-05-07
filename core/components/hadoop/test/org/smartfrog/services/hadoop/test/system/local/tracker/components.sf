@@ -35,6 +35,7 @@ testLocalJobTracker extends ExpectDeploy {
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
+    live extends Sleep;
   }
 
 }

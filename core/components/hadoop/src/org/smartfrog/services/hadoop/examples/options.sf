@@ -35,25 +35,27 @@ NameNodeHttpPort  "8021";
 NameNodeHttpsPort "8022";
 DataNodeHttpPort  "8030";
 DataNodeHttpsPort "8031";
-DataNodeIpcPort   "8042";
-
+DataNodeIpcPort   "8032";
+DataNodePort      "8033";
 
 DataNodeHttpPort2  "8040";
 DataNodeHttpsPort2 "8041";
 DataNodeIpcPort2   "8042";
-
+DataNodePort2      "8043";
 
 HandlerThreads 4;
 ClientHandlerThreads 2;
 LOCALHOST "localhost";
-ANY_HOST "0.0.0.0";
+ANY_HOST ALL_ZEROS;
 FS.DEFAULT.NAME    ("hdfs://" ++ LOCALHOST ++ ":" ++ NameNodeIpcPort );
 NAME_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ NameNodeHttpPort );
 DATA_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ DataNodeHttpPort );
 DATA_NODE_IPC_URL  ("http://" ++ LOCALHOST ++ ":" ++ DataNodeIpcPort );
 
 STARTUP_SLEEP_TIME 5000;
+LIVE_SLEEP_TIME 5000;
 IPC_CONNECT_TIMEOUT 10000;
+JOB_TRACKER_STARTUP_TIMEOUT IPC_CONNECT_TIMEOUT;
 //"ipc.client.connect.max.retries"
 LIGHTWEIGHT_MAX_RETRIES 1;
 ORPHAN_CONNECT_MAX_RETRIES 1;
