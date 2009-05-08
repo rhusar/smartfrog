@@ -37,6 +37,7 @@
     jobtracker
     filesystem  the filesystem
     cluster     full cluster
+    cluster2     full cluster forked
     simplejob simple data in/out test job
 
     and run them. All will need the property namenode set,
@@ -59,7 +60,7 @@
   </condition>
   <property name="junit.timeout" value="120000000"/>
   <!--time for a single test to execute-->
-  <property name="test.timeout.execute"    value="60000"/>
+  <property name="test.timeout.execute"    value="120000"/>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
@@ -84,6 +85,7 @@
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
 
     <property name="deploy.sf" value="${cluster.sf}" />
+    <!--this sets the name for the tests-->
     <property name="deploy.host" value="${test.namenode}" />
     <property name="application.name" value="${project.name}"/>
     <property name="deploy.timeout" value="60000" />

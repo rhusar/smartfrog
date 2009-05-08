@@ -1,0 +1,124 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+
+
+
+
+WaitForHadoopLive extends FailingWaitFor {
+  interval CLUSTER_POLL_INTERVAL;
+  timeout CLUSTER_STARTUP_TIMEOUT ;
+  name "service";
+  message ("Wait for " ++ name  ++ " failed, cause " ++ LAZY failureText ++ ". service state " ++ LAZY condition:serviceDescription);
+
+}
+
+WaitForHadoopLiveWorkflow extends WaitForHadoopLive {
+  sfShouldTerminate true;
+}
+
+/**
+ * wait for the FS to come up, but not the job tracker
+ */
+WaitForFilesystemLive extends WaitForHadoopLive  {
+  service TBD;
+  jobtrackerLive false;
+  name "WaitForFilesystemLive";
+  condition extends ClusterStatusCondition {
+    mapred.job.tracker PARENT:service:mapred.job.tracker;
+  }
+}
+
+
+/**
+ * wait for the FS to come up, and the job tracker
+ */
+WaitForJobTrackerLive extends WaitForFilesystemLive {
+  cluster service;
+  name "WaitForJobTrackerLive";
+  jobtrackerLive true;
+}
+
+
+WaitForServiceLive extends WaitForHadoopLive  {
+  service TBD;
+  name service:name;
+  condition extends IsHadoopServiceLive {
+    service LAZY PARENT:service;
+  }
+}
+
+WaitForWorkersLive extends WaitForHadoopLive  {
+  service TBD;
+  name service:name;
+  minCount 1;
+  condition extends IsWorkerCountGood {
+    service LAZY PARENT:service;
+    minCount PARENT:minCount;
+  }
+}
+
+WaitForPortFree extends FailingWaitFor {
+  interval CLUSTER_POLL_INTERVAL;
+  timeout CLUSTER_SHUTDOWN_TIMEOUT;
+  port NameNodeIpcPort;
+  message ("Port not free " ++ address)
+  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
+  condition extends Not {
+    condition extends CheckPortCondition {
+      address PARENT:PARENT:address;
+      cluster NULL;
+    }
+  }
+}
+
+AssertLocalPortClosed extends CheckPortCondition {
+  sfShouldTerminate true;
+  port TBD;
+  checkPortOpen false;
+  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
+}
+
+AssertNameNodeIPCClosed extends AssertLocalPortClosed {
+  port NameNodeIpcPort;
+}
+
+AssertNameNodeHttpClosed extends AssertLocalPortClosed {
+  port NameNodeHttpPort;
+}
+
+WaitForNameNodeLive extends WaitForServiceLive {
+  name "namenode";
+}
+
+WaitForNameNodeStarted extends WaitForServiceLive {
+  name "namenode";
+  requireServiceLive false;
+}
+
+WaitForDataNodeLive extends WaitForServiceLive {
+  name "datanode";
+}
+
+WaitForDataNodeStarted extends WaitForServiceLive {
+  name "datanode";
+  requireServiceLive false;
+}

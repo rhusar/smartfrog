@@ -17,13 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-/*
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/hadoop/components/components.sf"
-#include "/org/smartfrog/services/hadoop/components/options.sf"
-*/
 
+#include "/org/smartfrog/services/hadoop/examples/waitforservices.sf"
 
 LocalHadoopCompound extends Compound {
   //ordered startup/shutdown of child components
@@ -153,11 +148,16 @@ LocalTaskTrackerCompound extends LocalJobTrackerCompound {
    * to deal with this, we run a sequence
    */
   tasktrackerSequence extends Sequence {
-    
-    block extends FailingWaitFor {
-      sfShouldTerminate true;
-      timeout JOB_TRACKER_STARTUP_TIMEOUT;
-      interval CLUSTER_POLL_INTERVAL;
+
+    blockForNamenode extends WaitForNameNodeLive  {
+      service LAZY ATTRIB namenode;
+    }
+
+    blockForJobTrackerStarted extends WaitForNameNodeLive {
+      service LAZY ATTRIB jobtracker;
+    }
+
+    blockForJobTrackerReference extends WaitForHadoopLiveWorkflow  {
       condition extends ReferenceResolves {
         reference LAZY ATTRIB jobtracker:live.mapred.job.tracker;
       }
@@ -176,93 +176,6 @@ LocalClusterCompound extends LocalTaskTrackerCompound {
   description "a full cluster";
 
 
-}
-
-WaitForHadoopLive extends FailingWaitFor {
-  interval CLUSTER_POLL_INTERVAL;
-  timeout CLUSTER_STARTUP_TIMEOUT ;
-  name "service";
-  message ("Wait for " ++ name  ++ " failed, cause " ++ LAZY failureText ++ ". service state " ++ LAZY condition:serviceDescription);
-
-}
-
-
-/**
- * wait for the FS to come up, but not the job tracker
- */
-WaitForFilesystemLive extends WaitForHadoopLive  {
-  service TBD;
-  jobtrackerLive false;
-  name "WaitForFilesystemLive";
-  condition extends ClusterStatusCondition {
-    mapred.job.tracker PARENT:service:mapred.job.tracker;
-  }
-}
-
-
-/**
- * wait for the FS to come up, and the job tracker
- */
-WaitForJobTrackerLive extends WaitForFilesystemLive {
-  cluster service;
-  name "WaitForJobTrackerLive";
-  jobtrackerLive true;
-}
-
-
-WaitForServiceLive extends WaitForHadoopLive  {
-  service TBD;
-  name service:name;
-  condition extends IsHadoopServiceLive {
-    service LAZY PARENT:service;
-  }
-}
-
-WaitForWorkersLive extends WaitForHadoopLive  {
-  service TBD;
-  name service:name;
-  minCount 1;
-  condition extends IsWorkerCountGood {
-    service LAZY PARENT:service;
-    minCount PARENT:minCount;
-  }
-}
-
-WaitForPortFree extends FailingWaitFor {
-  interval CLUSTER_POLL_INTERVAL;
-  timeout CLUSTER_SHUTDOWN_TIMEOUT;
-  port NameNodeIpcPort;
-  message ("Port not free " ++ address)
-  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
-  condition extends Not {
-    condition extends CheckPortCondition {
-      address PARENT:PARENT:address;
-      cluster NULL;
-    }
-  }
-}
-
-AssertLocalPortClosed extends CheckPortCondition {
-  sfShouldTerminate true;
-  port TBD;
-  checkPortOpen false;
-  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
-}
-
-AssertNameNodeIPCClosed extends AssertLocalPortClosed {
-  port NameNodeIpcPort;
-}
-
-AssertNameNodeHttpClosed extends AssertLocalPortClosed {
-  port NameNodeHttpPort;
-}
-
-WaitForNameNodeLive extends WaitForServiceLive {
-  name "namenode";
-}
-
-WaitForDataNodeLive extends WaitForServiceLive {
-  name "datanode";
 }
 
 

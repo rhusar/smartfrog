@@ -99,8 +99,9 @@ testHealth extends ExpectTerminate {
 
 testLiveHealth extends ExpectDeploy {
   action LiveHealthCheck;
+
   tests extends Sequence {
-  
+    s extends Sleep;
   }
 }
 
