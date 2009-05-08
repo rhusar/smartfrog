@@ -97,6 +97,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -207,7 +208,7 @@ public class Display extends JFrame
     /**
      * Menu help -- protected as sub class may add menu items
      */
-    protected JMenu jMenuHelp = new JMenu();
+    JMenu jMenuHelp = new JMenu();
     /**
      * Menu item - info.
      */
@@ -284,8 +285,8 @@ public class Display extends JFrame
      */
     private JMenuItem jMenuItemMngConsole = new JMenuItem();
    
-    private int fontSize = 12;
-
+    private int fontSize = 12;   
+    
     /**
      * Constructs Display object with title.
      *
@@ -1167,7 +1168,7 @@ public class Display extends JFrame
         startMngConsole(hostName);
     }
     
-    void startMngConsole(String hostName) {
+    public void startMngConsole(String hostName) {
     	int port = 3800;
         try {
             java.net.InetAddress.getByName(hostName);
@@ -1175,16 +1176,19 @@ public class Display extends JFrame
                     .getRootProcessCompound(java.net.InetAddress.getByName(
                             hostName), port);
         } catch (java.net.UnknownHostException uex) {
+        	System.out.println("111"+uex.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName +
                             ". Unknown host.");
             return;
         } catch (java.rmi.ConnectException cex) {
+        	System.out.println("222"+cex.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName + ". " + cex
                             .getMessage());
             return;
         } catch (Exception e) {
+        	System.out.println("333"+e.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName + ". " + e);
             return;
@@ -1240,6 +1244,7 @@ public class Display extends JFrame
                 mngConsole.dispose();
                 mngConsole = null;
             }
+            System.out.println("444"+e.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName);
         }
@@ -1554,7 +1559,21 @@ public class Display extends JFrame
         jMenuHelp.addSeparator();
         jMenuHelp.add(jMenuItemAbout);
         
-        
+        //Custom menu items for display and help menus...
+        //Feature added if extra menu features are desirable in particular contexts...
+        Vector items=null;
+        try { items = (Vector) sfObj.sfResolve("extraMenuItems"); } catch (Exception e){/*Intentionally ZIP*/}
+        if (items!=null){
+        	DisplayMenus menus = new DisplayMenus(this);
+        	for (Object item: items){
+	        	Class itemClass = SFClassLoader.forName(item.toString());
+	        	if (itemClass==null) continue;
+	        	Object instance = itemClass.newInstance();
+                if (!(instance instanceof DisplayHelpMenuItem)) continue;
+                ((DisplayHelpMenuItem)instance).registerItem(menus);
+	        }
+        }
+        //
         
         this.setJMenuBar(jMenuBarDisplay);
 
@@ -1570,8 +1589,38 @@ public class Display extends JFrame
                         GridBagConstraints.NORTH, GridBagConstraints.BOTH,
                         new Insets(0, 8, 8, 8), 1, 1));
         mainToolBar.add(stopResume, null);
+        
+        
     }
-
+    
+    public interface DisplayHelpMenuItem {
+    	void registerItem(DisplayMenus menus);
+    }
+    
+    static public class DisplayMenus {
+    	private Display display;
+    	
+    	DisplayMenus(Display display){
+    		this.display=display;
+    	}
+    	
+    	public JMenu getMenuOtions(){
+        	return display.jMenuDisplayOptions;
+        }
+        
+        public JMenu getMenuHelp(){
+        	return display.jMenuHelp;
+        }
+        
+        public Prim getPrim(){
+        	return display.sfObj;
+        }
+        
+        public void startMngConsole(String hostName){
+        	display.startMngConsole(hostName);
+        }
+    }
+    
     public void setFontSize(int fontSize) {
         Object selected = getSelectedInTab();
         if (selected instanceof JTextArea) {
@@ -2122,6 +2171,10 @@ public class Display extends JFrame
         } catch (Exception ex) {
         }
         return logStatic;
+    }
+    
+    public Prim getDisplayPrim(){
+    	return sfObj;
     }
     
 }
