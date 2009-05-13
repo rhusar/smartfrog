@@ -58,6 +58,7 @@ public class DfsCreateDirImpl extends DfsPathOperationImpl {
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
+    @SuppressWarnings({"RefusedBequest"})
     @Override
     protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
