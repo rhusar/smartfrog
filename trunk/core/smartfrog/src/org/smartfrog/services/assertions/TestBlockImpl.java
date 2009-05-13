@@ -39,15 +39,14 @@ import java.rmi.RemoteException;
 /**
  * created 13-Oct-2006 16:46:44
  *
- * The testblock sends out lifecycle events to anyone interested; this can be used
- * by monitors to walk the testblock through a controlled state sequence, and to await test
- * results.
- * Test results are notified as a {@link TestCompletedEvent}
+ * The testblock sends out lifecycle events to anyone interested; this can be used by monitors to walk the testblock
+ * through a controlled state sequence, and to await test results. Test results are notified as a {@link
+ * TestCompletedEvent}
  */
 
 public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
-    private volatile boolean finished=false;
+    private volatile boolean finished = false;
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
     private volatile boolean forcedTimeout = false;
@@ -61,8 +60,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     }
 
     /**
-     * Return true iff the component is finished.
-     * Spin on this, with a (delay) between calls
+     * Return true iff the component is finished. Spin on this, with a (delay) between calls
      *
      * @return true if we are finished
      */
@@ -96,6 +94,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
     /**
      * return the current action
+     *
      * @return the child component. this will be null after termination.
      */
     public Prim getAction() {
@@ -104,6 +103,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
     /**
      * {@inheritDoc}
+     *
      * @return false always
      */
     public boolean isSkipped() {
@@ -114,9 +114,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * Registers components referenced in the SendTo sub-component registers itself with components referenced in the
      * RegisterWith sub-component.
      *
-     * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogException In case of any error while deploying the
-     * component
+     * @throws RemoteException    In case of network/rmi error
+     * @throws SmartFrogException In case of any error while deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -127,13 +126,13 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
 
     /**
-     * Starts the compound. This sends a synchronous sfStart to all managed
-     * components in the compound context. Any failure will cause the compound
-     * to terminate
+     * Starts the compound. This sends a synchronous sfStart to all managed components in the compound context. Any
+     * failure will cause the compound to terminate
      *
      * A TestStartedEvent will always be sent.
+     *
      * @throws SmartFrogException failed to start compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException    In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
@@ -145,20 +144,20 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     }
 
     /**
-     * Called in sfStart to start the child action.
-     * Can be overridden to disable that action, in which case some derived form of the
-     * logic must be repeated to start the action and (always) send a TestStartedEvent.
+     * Called in sfStart to start the child action. Can be overridden to disable that action, in which case some derived
+     * form of the logic must be repeated to start the action and (always) send a TestStartedEvent.
+     *
      * @throws SmartFrogException failed to start compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException    In case of Remote/nework error
      */
     protected void startChildAction() throws RemoteException, SmartFrogException {
-        long timeout = sfResolve(ATTR_TIMEOUT,0L,true);
-        boolean expectTimeout=sfResolve(ATTR_EXPECTTIMEOUT,false,true);
+        long timeout = sfResolve(ATTR_TIMEOUT, 0L, true);
+        boolean expectTimeout = sfResolve(ATTR_EXPECTTIMEOUT, false, true);
         sendEvent(new StartedEvent(this));
         try {
-            actionPrim =sfCreateNewChild(ACTION,action, null);
-            if(timeout>0) {
-                actionTerminator=new DelayedTerminator(actionPrim, timeout, sfLog(), ATTR_TIMEOUT,expectTimeout);
+            actionPrim = sfCreateNewChild(ACTION, action, null);
+            if (timeout > 0) {
+                actionTerminator = new DelayedTerminator(actionPrim, timeout, sfLog(), ATTR_TIMEOUT, expectTimeout);
                 actionTerminator.start();
             }
         } catch (RemoteException e) {
@@ -171,6 +170,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
     /**
      * Send out notifications of termination
+     *
      * @param record exit status
      */
     public void sfTerminateWith(TerminationRecord record) {
@@ -180,9 +180,10 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
     /**
      * turn a startup exception into a cleaner exit
+     *
      * @param e exception
      * @throws SmartFrogRuntimeException smartfrog problems
-     * @throws RemoteException RMI problems
+     * @throws RemoteException           RMI problems
      */
     private void startupException(Exception e)
             throws SmartFrogRuntimeException, RemoteException {
@@ -192,25 +193,25 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     }
 
     /**
-     * log the end of the event. This may trigger workflow termination.
-     * does nothing if finished==true.
+     * log the end of the event. This may trigger workflow termination. does nothing if finished==true.
+     *
      * @param record termination record
      * @throws SmartFrogRuntimeException smartfrog problems
-     * @throws RemoteException RMI problems
+     * @throws RemoteException           RMI problems
      */
     private synchronized void end(TerminationRecord record)
             throws SmartFrogRuntimeException, RemoteException {
-        if(finished) {
+        if (finished) {
             //non-reentrant
             return;
         }
-        finished=true;
+        finished = true;
         //guarantee that the cause is shareable
         record.setCause(SmartFrogExtractedException.convert(record.getCause()));
         status = record;
-        succeeded=record.isNormal();
-        failed=!succeeded;
-        if(actionTerminator!=null) {
+        succeeded = record.isNormal();
+        failed = !succeeded;
+        if (actionTerminator != null) {
             //test to see if the terminator caused the shutdown
             forcedTimeout = actionTerminator.isForcedShutdown();
             //and terminate it quietly too.
@@ -219,35 +220,31 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         }
         setTestBlockAttributes(record, forcedTimeout);
         //send out a completion event
-        sendEvent(new TestCompletedEvent(this,succeeded,forcedTimeout, false, record, description));
+        sendEvent(new TestCompletedEvent(this, succeeded, forcedTimeout, false, record, description));
         //this can trigger a shutdown if we want it
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
     }
 
 
     /**
-     * This is an override point; it is where subclasses get to change their workflow
-     * depending on what happens underneath.
-     * It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
-     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds.
-     * If the the method returns true, the event is forwarded up the object heirarchy, which
-     * will eventually trigger a component termination.
-     * <p/>
-     * Always return false if you start new components from this method!
-     * </p>
+     * This is an override point; it is where subclasses get to change their workflow depending on what happens
+     * underneath. It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
+     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds. If the the
+     * method returns true, the event is forwarded up the object heirarchy, which will eventually trigger a component
+     * termination. <p/> Always return false if you start new components from this method! </p>
      *
      * @param record exit record of the component
      * @param comp   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      * @throws SmartFrogRuntimeException for runtime exceptions
-     * @throws RemoteException for network problems
+     * @throws RemoteException           for network problems
      */
     protected boolean onChildTerminated(TerminationRecord record, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
-        if(comp == actionPrim) {
+        if (comp == actionPrim) {
             //this is the action terminating,
             //forget about our now-terminated child (it cannot be serialized any more)
-            actionPrim =null;
+            actionPrim = null;
             //log the closure and continue
             end(record);
             return false;
@@ -258,20 +255,20 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     }
 
     /**
-     * Set the various attributes of the component
-     * based on whether the test record was success or not
-     * @param record termination record
+     * Set the various attributes of the component based on whether the test record was success or not
+     *
+     * @param record  termination record
      * @param timeout did we time out
      * @throws SmartFrogRuntimeException SmartFrog errors
-     * @throws RemoteException network errors
+     * @throws RemoteException           network errors
      */
     public void setTestBlockAttributes(
             TerminationRecord record,
             boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
-        boolean success=record.isNormal();
-        sfLog().debug("Terminated Test with status "+record+" timeout="+timeout);
-        sfReplaceAttribute(ATTR_STATUS,record);
+        boolean success = record.isNormal();
+        sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        sfReplaceAttribute(ATTR_STATUS, record);
         sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
         sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
