@@ -47,10 +47,8 @@ import java.util.TimeZone;
 
 
 /**
- * This class listens to tests on a single host. The XML Listener forwards stuff
- * to it. It is not a component; it is a utility class that components use, so
- * as to log different test suites to different files.
- * <p/>
+ * This class listens to tests on a single host. The XML Listener forwards stuff to it. It is not a component; it is a
+ * utility class that components use, so as to log different test suites to different files. <p/>
  */
 public class AntXmlListener implements FileListener, XMLConstants {
 
@@ -114,7 +112,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * get the filename of this
      *
      * @return the filename used
-     *
      * @throws RemoteException network trouble
      */
     public String getFilename() throws RemoteException {
@@ -122,10 +119,9 @@ public class AntXmlListener implements FileListener, XMLConstants {
     }
 
     /**
-     * Open the listener. This can be a no-op, or it can open a file and throw
-     * An exception on demand
+     * Open the listener. This can be a no-op, or it can open a file and throw An exception on demand
      *
-     * @throws IOException for IO trouble
+     * @throws IOException     for IO trouble
      * @throws RemoteException network trouble
      */
     public synchronized void open() throws IOException {
@@ -141,13 +137,13 @@ public class AntXmlListener implements FileListener, XMLConstants {
         dateFormat.setLenient(true);
         String timestamp = dateFormat.format(startTime);
         maybeAddAttribute(root, TIMESTAMP, timestamp);
-        log.info("logging to "+destFile);
+        log.info("logging to " + destFile);
     }
 
     /**
      * close the file. This call must be harmless if the file is already closed
      *
-     * @throws IOException IO trouble
+     * @throws IOException     IO trouble
      * @throws RemoteException network trouble
      */
     public synchronized void close() throws IOException {
@@ -156,7 +152,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
         }
         //this is where we actually save the file to disk.
         try {
-            log.info("Creating the XML report file "+destFile);
+            log.info("Creating the XML report file " + destFile);
             buildRootAttributes();
             addLogEntries();
             save();
@@ -169,9 +165,16 @@ public class AntXmlListener implements FileListener, XMLConstants {
     }
 
     /**
-     * Add the statistics to the root node; replace any that existed testsuite
-     * errors="0" failures="0" hostname="k2" name="org.smartfrog.services.filesystem.csvfiles.test.system.CsvReaderTest"
-     * tests="6" time="20.077" timestamp="2008-04-15T09:05:50">
+     * Flush the output stream
+     */
+    private synchronized  void flush() {
+        
+    }
+
+    /**
+     * Add the statistics to the root node; replace any that existed testsuite errors="0" failures="0" hostname="k2"
+     * name="org.smartfrog.services.filesystem.csvfiles.test.system.CsvReaderTest" tests="6" time="20.077"
+     * timestamp="2008-04-15T09:05:50">
      */
     private synchronized void buildRootAttributes() {
         String fullname = hostname;
@@ -197,14 +200,13 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * under this element, to sneak them in to existing reports.
      */
     private void addPropertiesToRoot() {
-        addElement(root,"properties","");
+        addElement(root, "properties", "");
     }
 
     /**
      * test for the file being open
      *
      * @return true iff we are building up a document
-     *
      * @throws RemoteException network trouble
      */
     public boolean isOpen() throws RemoteException {
@@ -215,7 +217,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * Teased out into a class for overriding if need be
      *
      * @param out the output stream
-     *
      * @return a configured serializer
      */
     protected Serializer createSerializer(OutputStream out) {
@@ -248,11 +249,10 @@ public class AntXmlListener implements FileListener, XMLConstants {
 
 
     /**
-     * end this test suite. After calling this, caller should discard all
-     * references; they may no longer be valid. <i>No further methods may be
-     * called</i>
+     * end this test suite. After calling this, caller should discard all references; they may no longer be valid. <i>No
+     * further methods may be called</i>
      *
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
     public void endSuite() throws RemoteException, SmartFrogException {
@@ -263,8 +263,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * A test started.
      *
      * @param test test that started
-     *
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
     public void startTest(TestInfo test)
@@ -276,8 +275,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * An error occurred.
      *
      * @param test test that errored
-     *
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
     public void addError(TestInfo test)
@@ -290,8 +288,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * A failure occurred.
      *
      * @param test test that failed
-     *
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
     public void addFailure(TestInfo test)
@@ -304,8 +301,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * A test ended.
      *
      * @param test test that ended
-     *
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
     public void endTest(TestInfo test)
@@ -318,7 +314,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * Log an event
      *
      * @param event what happened
-     *
      * @throws RemoteException on network trouble
      */
     public void log(LogEntry event) throws RemoteException {
@@ -334,7 +329,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      *
      * @param name element name
      * @param text the text
-     *
      * @return the element
      */
     private Element addElement(String name, String text) {
@@ -347,7 +341,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @param parent parent element
      * @param name   element name
      * @param text   the text
-     *
      * @return the element
      */
     private Element addElement(Element parent, String name, String text) {
@@ -365,7 +358,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @param parent parent element
      * @param name   element name
      * @param text   text
-     *
      * @return the element or null
      */
     private Element maybeAddElement(Element parent, String name, String text) {
@@ -377,13 +369,11 @@ public class AntXmlListener implements FileListener, XMLConstants {
     }
 
     /**
-     * Add an attribute if the value is not null. If the attribute exists, it is
-     * replaced
+     * Add an attribute if the value is not null. If the attribute exists, it is replaced
      *
      * @param elt   element to use
      * @param name  attribute name
      * @param value attribute value (optional)
-     *
      * @return the attribute or null
      */
     private Attribute maybeAddAttribute(Element elt,
@@ -405,7 +395,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @param elt   element to use
      * @param name  attribute name
      * @param value attribute value (optional)
-     *
      * @return the attribute or null
      */
     private Attribute addAttribute(Element elt,
@@ -456,7 +445,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @param test test result info
      */
     private void recordResult(String type, TestInfo test) {
-
+        log.info("Adding test " + test.getDetails());
         Element testcase = addElement(TESTCASE, null);
         maybeAddAttribute(testcase,
                 ATTR_NAME,
