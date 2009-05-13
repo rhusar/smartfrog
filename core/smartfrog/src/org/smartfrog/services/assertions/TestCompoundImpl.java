@@ -161,6 +161,7 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException    In case of network/rmi error
      */
+    @SuppressWarnings({"RefusedBequest"})
     @Override
     protected void deployConditionAtStartup() throws SmartFrogException, RemoteException {
         //do nothing
@@ -171,6 +172,7 @@ public class TestCompoundImpl extends ConditionCompound
      *
      * @return false, always
      */
+    @SuppressWarnings({"RefusedBequest"})
     @Override
     protected boolean isConditionRequired() {
         return false;
@@ -205,7 +207,7 @@ public class TestCompoundImpl extends ConditionCompound
             throw e;
         }
 
-        //deploy and evaluate the condition.
+        //evaluate the condition.
         //then decide whether to run or not.
 
         if (getCondition() != null && !evaluate()) {
@@ -240,7 +242,7 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         if (thrown == null) {
-            assert actionPrim !=null : "actionPrim is null, yet we did not catch an exception";
+            assert actionPrim != null : "actionPrim is null, yet we did not catch an exception";
             //a null exception meant the action was deployed successfully
 
             //if we get here. then it is time to actually start the action.
@@ -347,7 +349,7 @@ public class TestCompoundImpl extends ConditionCompound
             throws SmartFrogRuntimeException, RemoteException {
         if (!success) {
             sfLog().warn(record.toString());
-            if(record.getCause() !=null) {
+            if (record.getCause() != null) {
                 sfLog().warn(record.getCause());
             }
         }
@@ -408,12 +410,11 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     * Ping the action. If we get a liveness failure (i.e. the child has terminated, we check to see if
-     * it was actually expected, in which case this is not a problem. We note and ignore it.
+     * Ping the action. If we get a liveness failure (i.e. the child has terminated, we check to see if it was actually
+     * expected, in which case this is not a problem. We note and ignore it.
      *
-     * The reason for this special handling is related to race conditions in termination...a ping could be
-     * received and processed while we are getting ready to deal with terminated children.
-     * This handler ignores such situations
+     * The reason for this special handling is related to race conditions in termination...a ping could be received and
+     * processed while we are getting ready to deal with terminated children. This handler ignores such situations
      */
     protected void sfPingActionAndHandleFailure() {
         try {
@@ -426,13 +427,14 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     *  Handle a liveness failure by maybe terminating the application, maybe just noting it is being ignored
+     * Handle a liveness failure by maybe terminating the application, maybe just noting it is being ignored
+     *
      * @param ex the exception that triggered this failure
      * @return true if termination was triggered
      */
     private synchronized boolean handleActionLivenessFailure(Exception ex) {
         sfLog().info("Liveness failure pinging the action", ex);
-        if(!expectTerminate) {
+        if (!expectTerminate) {
             sfLivenessFailure(this, actionPrim, ex);
             return true;
         } else {
@@ -576,7 +578,7 @@ public class TestCompoundImpl extends ConditionCompound
                             //error is good,
                             //The decision to terminate is based on the shouldTerminate flag
                             sfLog().debug(propagateTermination ?
-                                      "Terminating normally"
+                                    "Terminating normally"
                                     : "Not terminating as sfShouldTerminate is false");
                         }
 
@@ -645,7 +647,7 @@ public class TestCompoundImpl extends ConditionCompound
 
         //if the error record is non null, terminate ourselves with the new record
         if (exitRecord != null) {
-            
+
             sfTerminate(exitRecord);
             //don't forward, as we are terminating with an error
             propagateTermination = false;
