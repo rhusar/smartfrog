@@ -107,4 +107,3 @@ testConditionSkipped extends testAbnormalRun {
   condition NotConditionSet;
 }
 
-testReferenceResolves
