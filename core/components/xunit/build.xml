@@ -46,14 +46,6 @@
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
-
-<!--
- <target name="dist-tests" depends="package,package-tests"
-    description="create a distribution including SF tests">
-
-  </target>
--->
-
   
   <!-- ========================================================== -->
   <!-- parse the file -->

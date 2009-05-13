@@ -68,7 +68,7 @@ AssertFileExists extends FileMustExist {
 
 
 testRunnerAntXml extends TestRunner {
-  description "lots of tests";
+  description "push out as Ant XML";
 
   sfShouldTerminate true;
 
@@ -79,12 +79,14 @@ testRunnerAntXml extends TestRunner {
   tests1 extends SFUnitTestSuite {
     name "tests1";
     description "run some basic tests";
-    one extends SimpleTestCompound;
-    //two extends FailingTestCompound;
     sfShouldTerminate true;
+    
+    one extends SimpleTestCompound;
+    two extends FailingTestCompound;
 
   }
 }
+
 testSFUnitAntXml extends testRunnerAntXml {
 }
 
@@ -103,6 +105,9 @@ testAntXmlThroughJunit extends ExpectDeploy {
 
     testrun testRunnerAntXml;
 
+    /**
+     * assert the ant XML data got created
+     */
     assertDataGenerated extends AssertFileExists {
       dir test.data.dir;
       filename "tests1.xml"

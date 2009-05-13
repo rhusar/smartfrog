@@ -23,7 +23,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -32,30 +33,34 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.workflow.events.DeployedEvent;
+import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
+import org.smartfrog.sfcore.workflow.conditional.Conditional;
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
 import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.TestCompoundImpl;
+import org.smartfrog.services.assertions.events.TestStartedEvent;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 /**
- * This is the test runner. It runs multiple test suites; It keeps all its
- * public state in a configuration object that can be got/cloned and serialized
- * to suites created.
+ * This is the test runner. It runs multiple test suites; It keeps all its public state in a configuration object that
+ * can be got/cloned and serialized to suites created.
  *
- * This class implements (incompletely) the {@link TestBlock} interface
- * This lets the class be hosted inside junit test running code that
- * has been written for TestBlock instances. 
+ * This class implements (incompletely) the {@link TestBlock} interface This lets the class be hosted inside junit test
+ * running code that has been written for TestBlock instances.
  */
 
-public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
+public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         Runnable, TestBlock {
 
     private Log log;
     private ComponentHelper helper;
-    private Reference name;
+    private Reference self;
 
     /**
      * a cached exception that is thrown on a liveness failure
@@ -77,22 +82,25 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
     private int threadPriority = Thread.NORM_PRIORITY;
 
     /**
-     * Should we terminate after running our tests?
-     * {@link ShouldDetachOrTerminate#ATTR_SHOULD_TERMINATE}
+     * Should we terminate after running our tests? {@link ShouldDetachOrTerminate#ATTR_SHOULD_TERMINATE}
      */
     private boolean shouldTerminate = true;
 
     /**
-     * if terminating, should we detach?
-     * Should we terminate after running our tests?
-     * {@link ShouldDetachOrTerminate#ATTR_SHOULD_DETACH}
+     * if terminating, should we detach? Should we terminate after running our tests? {@link
+     * ShouldDetachOrTerminate#ATTR_SHOULD_DETACH}
      */
     private boolean shouldDetach = false;
 
     /**
+     *  Description attitude
+     */
+    private String description;
+
+    /**
      * String to set to the name of a single test component to run
      */
-    private String singleTest=null;
+    private String singleTest = null;
 
     /**
      * thread to run the tests
@@ -109,11 +117,17 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
      */
     private RunnerConfiguration configuration = new RunnerConfiguration();
 
-    /** Error text {@value} */
+    /**
+     * Error text {@value}
+     */
     public static final String ERROR_TESTS_IN_PROGRESS = "Component is already running tests";
-    /** Error text {@value} */
+    /**
+     * Error text {@value}
+     */
     public static final String TESTS_FAILED = "Tests Failed";
-    /** Error text {@value} */
+    /**
+     * Error text {@value}
+     */
     public static final String TEST_WAS_INTERRUPTED = "Test was interrupted";
     private Prim listenerPrim;
 
@@ -129,12 +143,38 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
 
     /**
      * {@inheritDoc}
+     *
      * @return false, always
      */
+    @SuppressWarnings({"RefusedBequest"})
     @Override
     protected boolean isOldNotationSupported() {
         return false;
     }
+
+
+    /**
+     * Override point: where the condition is deployed at startup. The default action is to call {@link
+     * #deployCondition()}
+     *
+     * @throws SmartFrogException in case of problems creating the child
+     * @throws RemoteException    In case of network/rmi error
+     */
+    @Override
+    protected void deployConditionAtStartup() throws SmartFrogException, RemoteException {
+        //do nothing
+    }
+
+    /**
+     * Override point: is the condition required. IF not, there is no attempt to deploy it at startup
+     *
+     * @return false, always
+     */
+    @Override
+    protected boolean isConditionRequired() {
+        return false;
+    }
+
     private synchronized SmartFrogThread getWorker() {
         return worker;
     }
@@ -158,89 +198,124 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
     }
 
     /**
-     * Deploy the compound. Deployment is defined as iterating over the context
-     * and deploying any parsed eager components.
+     * Deploy the compound. Deployment is defined as iterating over the context and deploying any parsed eager
+     * components.
      *
-     * @throws SmartFrogException     failure deploying compound or
-     *                                  sub-component
-     * @throws RemoteException In case of Remote/nework error
+     * @throws SmartFrogException failure deploying compound or sub-component
+     * @throws RemoteException    In case of Remote/nework error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
         log = helper.getLogger();
+        sendEvent(new DeployedEvent(this));
     }
 
     /**
-     * Starts the compound. This sends a synchronous sfStart to all managed
-     * components in the compound context. Any failure will cause the compound
-     * to terminate
+     * Starts the compound. This sends a synchronous sfStart to all managed components in the compound context. Any
+     * failure will cause the compound to terminate
      *
      * @throws SmartFrogException failed to start compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException    In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         //
-        super.sfStart();
-        //create and deploy all the children
-        synchCreateChildren();
-        //now start working with them
-        name = sfCompleteName();
-        listenerPrim = sfResolve(ATTR_LISTENER,
-                (Prim)configuration.getListenerFactory(),
-                true);
-        if (!(listenerPrim instanceof TestListenerFactory)) {
-            throw new SmartFrogException("The attribute " +
-                    ATTR_LISTENER
-                    + " must refer to an implementation of TestListenerFactory");
-        }
-        TestListenerFactory listenerFactory = (TestListenerFactory) listenerPrim;
-        String listenerName = ((Prim) listenerFactory).sfResolve(
-                TestListenerFactory.ATTR_NAME,
-                "",
-                true);
-        log.info("Test Listener is of type " + listenerName);
-        configuration.setListenerFactory(listenerFactory);
-        configuration.setKeepGoing(
-                sfResolve(ATTR_KEEPGOING, configuration.getKeepGoing(), false));
-        failOnError = sfResolve(ATTR_FAILONERROR, failOnError, false);
-        threadPriority = sfResolve(ATTR_THREAD_PRIORITY,
-                threadPriority,
-                false);
-        shouldTerminate = sfResolve(
-                ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, false);
-        shouldDetach = sfResolve(
-                ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, false);
-        singleTest = sfResolve(ATTR_SINGLE_TEST,singleTest,false);
-        TestListenerLog testLog = (TestListenerLog) sfResolve(ATTR_TESTLOG, (Prim) null, false);
-        configuration.setTestLog(testLog);
+        try {
+            super.sfStart();
+//create and deploy all the children
+            synchCreateChildren();
+            //now start working with them
+            self = sfCompleteName();
+            description = sfResolve(ATTR_DESCRIPTION, "", true);
+            failOnError = sfResolve(ATTR_FAILONERROR, failOnError, false);
+            threadPriority = sfResolve(ATTR_THREAD_PRIORITY,
+                    threadPriority,
+                    false);
+            shouldTerminate = sfResolve(
+                    ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, false);
+            listenerPrim = sfResolve(ATTR_LISTENER,
+                    (Prim) configuration.getListenerFactory(),
+                    true);
+            if (!(listenerPrim instanceof TestListenerFactory)) {
+                throw new SmartFrogException("The attribute " +
+                        ATTR_LISTENER
+                        + " must refer to an implementation of TestListenerFactory");
+            }
+            TestListenerFactory listenerFactory = (TestListenerFactory) listenerPrim;
+            String listenerName = ((Prim) listenerFactory).sfResolve(
+                    TestListenerFactory.ATTR_NAME,
+                    "",
+                    true);
+            log.info("Test Listener is of type " + listenerName);
+            configuration.setListenerFactory(listenerFactory);
+            configuration.setKeepGoing(
+                    sfResolve(ATTR_KEEPGOING, configuration.getKeepGoing(), false));
+            shouldDetach = sfResolve(
+                    ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, false);
+            singleTest = sfResolve(ATTR_SINGLE_TEST, singleTest, false);
+            TestListenerLog testLog = (TestListenerLog) sfResolve(ATTR_TESTLOG, (Prim) null, false);
+            configuration.setTestLog(testLog);
 
-        validate();
-        //execute the tests in all the suites attached to this class
-        boolean runTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, true, true);
-        if (runTests) {
-            startTests();
-        } else {
-            log.info("Tests will only start when directly invoked");
+            validate();
+            //execute the tests in all the suites attached to this class
+            boolean runTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, true, true);
+            //now deploy the condition. Failures are caught, noted and then passed up
+            try {
+                deployCondition();
+            } catch (SmartFrogResolutionException e) {
+                noteStartupFailure(TestCompoundImpl.FAILED_TO_START_CONDITION, e);
+                throw e;
+            } catch (RemoteException e) {
+                noteStartupFailure(TestCompoundImpl.FAILED_TO_START_CONDITION, e);
+                throw e;
+            } catch (SmartFrogDeploymentException e) {
+                noteStartupFailure(TestCompoundImpl.FAILED_TO_START_CONDITION, e);
+                throw e;
+            }
+            //evaluate the condition.
+            //then decide whether to run or not.
+
+            if (getCondition() != null && !evaluate()) {
+                sendEvent(new TestStartedEvent(this));
+                skipped = true;
+                updateFlags(false);
+                String message = "Skipping test run " + getName();
+                sfLog().info(message);
+                //send a test started event
+                //followed by a the closing results
+                endTestRun(TerminationRecord.normal(message, getName()));
+                //initiate cleanup
+                finish();
+                //end: do not deploy anything else
+                return;
+            }
+
+            if (runTests) {
+                startTests();
+            } else {
+                log.info("Tests will only start when directly invoked");
+            }
+        } finally {
+            sendEvent(new TestStartedEvent(this));
         }
     }
 
     /**
-     * Liveness tests first delegates to the parent, then considers itself live
-     * unless all of the following conditions are met <ol> <li>We are finished
-     * <li>There was an exception <li>failOnError is set </ol> In which case the
-     * cached exception gets thrown.
+     * Liveness tests first delegates to the parent, then considers itself live unless all of the following conditions
+     * are met <ol> <li>We are finished <li>There was an exception <li>failOnError is set </ol> In which case the cached
+     * exception gets thrown.
      *
      * @param source source of ping
      * @throws SmartFrogLivenessException liveness failed
      */
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         //check the substuff
         super.sfPing(source);
         //then look to see if we had a failure with our tests
-        synchronized(this) {
+        synchronized (this) {
             if (failOnError && isFinished() && getCachedException() != null) {
                 SmartFrogLivenessException.forward(getCachedException());
             }
@@ -249,13 +324,12 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
 
 
     /**
-     * Performs the compound termination behaviour. Based on sfSyncTerminate
-     * flag this gets forwarded to sfSyncTerminate or sfASyncTerminateWith
-     * method. Terminates children before self.
+     * send out a notification and kill the worker
      *
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
+        sendEvent(new TerminatedEvent(this, status));
         super.sfTerminateWith(status);
         Thread thread = getWorker();
         if (thread != null && thread.isAlive()) {
@@ -287,61 +361,125 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
      *
      * @see Thread#run()
      */
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void run() {
         setFinished(false);
         log.info("Beginning tests");
         try {
             if (!executeTests()) {
-                throw new SmartFrogException(TESTS_FAILED);
+                throw new TestsFailedException(TESTS_FAILED);
             }
-        } catch (InterruptedException e) {
-            catchException(e);
-        } catch (RemoteException e) {
-            catchException(e);
-        } catch (SmartFrogException e) {
+        } catch (Throwable e) {
             catchException(e);
         } finally {
             boolean testFailed = getCachedException() != null;
             log.info("Completed tests "
-                +(testFailed?"with errors ":"successfully"));
+                    + (testFailed ? "with errors " : "successfully"));
             //declare ourselves finished
             setFinished(true);
             //unset the worker field
             setWorker(null);
+            sendTestCompleteEvent();
+
 
             //now look at our termination actions
             if (shouldTerminate) {
                 TerminationRecord record;
                 if (!testFailed || !failOnError) {
-                    record = TerminationRecord.normal(name);
+                    record = TerminationRecord.normal(self);
                 } else {
-                    record = TerminationRecord.abnormal("Test failure", name, getCachedException());
+                    record = TerminationRecord.abnormal("Test failure", self, getCachedException());
                 }
-                log.info("terminating test component"+record.toString());
+                log.info("terminating test component" + record.toString());
                 helper.targetForTermination(record, shouldDetach, false);
             }
         }
     }
 
+    /**
+     * send out a completion event
+     */
+    private void sendTestCompleteEvent() {
+        TerminationRecord record;
+        boolean succeeded = getCachedException() == null;
+        if (succeeded) {
+            record = TerminationRecord.normal(description, self);
+        } else {
+            record = TerminationRecord.abnormal("Test failure in " + description,
+                    self,
+                    getCachedException());
+        }
+        sendEvent(new TestCompletedEvent(this, succeeded, false, false, record, description));
+    }
 
     /**
-     * run all the tests; this is the routine run in the worker thread. Break
-     * out (between suites) if we are interrupted. Sets the {@link
-     * TestResultAttributes#ATTR_FINISHED} attribute to true on completion.
+     * send out a skipping event
+     */
+    private void sendTestSkippedEvent() {
+        TerminationRecord record;
+        record = TerminationRecord.normal(description, self);
+        sendEvent(new TestCompletedEvent(this, false, false, true, record, description));
+    }
+
+    /**
+     * Create an abnormal TerminationRecord from the exception and the text, record the end of the test run in status
+     * attributes and workflow notifications
+     *
+     * @param text   message for the TR
+     * @param thrown the exception tht was thrown
+     * @throws SmartFrogRuntimeException SmartFrog errors
+     * @throws RemoteException           network errors
+     */
+    private void noteStartupFailure(String text, Throwable thrown) throws SmartFrogRuntimeException, RemoteException {
+        TerminationRecord record;
+        record = TerminationRecord.abnormal(text, getName(), thrown);
+        noteEndOfTestRun(record, false, false);
+    }
+
+    /**
+     * Record the end of the test run in status attributes and workflow notifications. If the test failed, the TR is
+     * also logged at error level.
+     *
+     * @param record  the TR of this test
+     * @param success flag set to true to indicate success
+     * @param skipped skipped flag
+     * @throws SmartFrogRuntimeException SmartFrog errors
+     * @throws RemoteException           network errors
+     */
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+    private void noteEndOfTestRun(TerminationRecord record, boolean success, boolean skipped)
+            throws SmartFrogRuntimeException, RemoteException {
+        if (!success) {
+            sfLog().warn(record.toString());
+            if (record.getCause() != null) {
+                sfLog().warn(record.getCause());
+            }
+        }
+/*        setStatus(record);
+        actionTerminationRecord = record;
+        updateFlags(success);*/
+        sendEvent(new TestCompletedEvent(this, success, false , skipped, record, description));
+    }
+    
+    /**
+     * run all the tests; this is the routine run in the worker thread. Break out (between suites) if we are
+     * interrupted. Sets the {@link TestResultAttributes#ATTR_FINISHED} attribute to true on completion.
      *
      * @return true if the tests worked
-     * @throws SmartFrogException for problems
-     * @throws RemoteException for network problems
+     * @throws SmartFrogException   for problems
+     * @throws RemoteException      for network problems
      * @throws InterruptedException if the tests get blocked
      */
     public boolean executeTests() throws SmartFrogException, RemoteException, InterruptedException {
 
+        boolean succeeded;
         try {
-            if(singleTest==null || singleTest.length()==0) {
-                return executeBatchTests();
+            if (singleTest == null || singleTest.length() == 0) {
+                succeeded = executeBatchTests();
             } else {
-                return executeSingleTest();
+                succeeded = executeSingleTest();
             }
+            return succeeded;
         } finally {
             //this is here as it can throw an exception
             sfReplaceAttribute(TestRunner.ATTR_FINISHED, Boolean.TRUE);
@@ -351,21 +489,21 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
 
     private boolean executeBatchTests() throws RemoteException, SmartFrogException, InterruptedException {
         boolean successful = true;
-        for (Prim child:sfChildList()) {
+        for (Prim child : sfChildList()) {
             if (child instanceof TestSuite) {
                 TestSuite suiteComponent = (TestSuite) child;
                 successful &= executeTestSuite(suiteComponent);
             }
             //break out if the thread is interrupted
             Thread thisThread = Thread.currentThread();
-            synchronized(thisThread) {
+            synchronized (thisThread) {
                 if (thisThread.isInterrupted()) {
                     thisThread.interrupt();
                     log.info(TEST_WAS_INTERRUPTED);
                     throw new InterruptedException(TEST_WAS_INTERRUPTED);
                 }
             }
-            if(!successful && !configuration.getKeepGoing()) {
+            if (!successful && !configuration.getKeepGoing()) {
                 //we have failed and asked to stop in this situation
                 log.info("Stopping tests after a failure");
                 return false;
@@ -376,17 +514,18 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
 
     /**
      * if a single test was asked for, run it.
+     *
      * @return true iff it worked
-     * @throws RemoteException network trouble
-     * @throws SmartFrogException other problems
+     * @throws RemoteException      network trouble
+     * @throws SmartFrogException   other problems
      * @throws InterruptedException if the test run is interrupted
      */
     private boolean executeSingleTest()
             throws SmartFrogException, RemoteException, InterruptedException {
-        Prim child=null;
-        child=sfResolve(singleTest,child,false);
-        if(child==null) {
-            log.info("No test suite called "+singleTest);
+        Prim child = null;
+        child = sfResolve(singleTest, child, false);
+        if (child == null) {
+            log.info("No test suite called " + singleTest);
             return false;
         }
         TestSuite suiteComponent = (TestSuite) child;
@@ -395,10 +534,11 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
 
     /**
      * Execute a single test
+     *
      * @param suiteComponent the suite to run
      * @return true if the tests were successful
-     * @throws RemoteException network trouble
-     * @throws SmartFrogException other problems
+     * @throws RemoteException      network trouble
+     * @throws SmartFrogException   other problems
      * @throws InterruptedException if the test run is interrupted
      */
     private boolean executeTestSuite(TestSuite suiteComponent)
@@ -421,7 +561,7 @@ public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
      * fetch the test results from the Test suite, then update our own values
      *
      * @param testSuite test suite to patch
-     * @throws RemoteException network trouble
+     * @throws RemoteException           network trouble
      * @throws SmartFrogRuntimeException other problems
      */
     private synchronized void updateResultAttributes(Prim testSuite)

@@ -26,20 +26,16 @@ import org.smartfrog.test.DeployingTestBase;
  *
  * @author slo
  */
-public class AntXmlTest extends DeployingTestBase {
+public class AntXmlWithJunitTest extends DeployingTestBase {
 
     private static final String PACKAGE="/org/smartfrog/services/sfunit/test/system/antxml/";
 
-    public AntXmlTest(String name) {
+    public AntXmlWithJunitTest(String name) {
         super(name);
     }
 
-    public void testSFUnitAntXml() throws Throwable {
-        expectSuccessfulTestRun(PACKAGE, "testSFUnitAntXml");
-    }
-
-    public void testSFUnitAntXmlNested() throws Throwable {
-        expectSuccessfulTestRun(PACKAGE, "testSFUnitAntXmlNested");
+    public void testAntXmlThroughJunit() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testAntXmlThroughJunit");
     }
 
 }
