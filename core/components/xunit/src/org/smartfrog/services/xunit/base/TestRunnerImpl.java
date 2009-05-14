@@ -54,7 +54,7 @@ import java.rmi.RemoteException;
  * This class implements (incompletely) the {@link TestBlock} interface This lets the class be hosted inside junit test
  * running code that has been written for TestBlock instances.
  */
-
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         Runnable, TestBlock {
 
@@ -130,6 +130,10 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      */
     public static final String TEST_WAS_INTERRUPTED = "Test was interrupted";
     private Prim listenerPrim;
+
+    private boolean skipped = false;
+    private boolean failed;
+    private boolean succeeded;
 
     /**
      * constructor
@@ -309,7 +313,6 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @param source source of ping
      * @throws SmartFrogLivenessException liveness failed
      */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         //check the substuff
@@ -340,7 +343,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     /**
      * run the test
      *
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException
      */
     public synchronized boolean startTests() throws RemoteException,
             SmartFrogException {
@@ -361,7 +364,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @see Thread#run()
      */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+
     public void run() {
         setFinished(false);
         log.info("Beginning tests");
@@ -390,7 +393,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
                 } else {
                     record = TerminationRecord.abnormal("Test failure", self, getCachedException());
                 }
-                log.info("terminating test component" + record.toString());
+                log.info("terminating test component" + record);
                 helper.targetForTermination(record, shouldDetach, false);
             }
         }
@@ -446,7 +449,6 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @throws SmartFrogRuntimeException SmartFrog errors
      * @throws RemoteException           network errors
      */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     private void noteEndOfTestRun(TerminationRecord record, boolean success, boolean skipped)
             throws SmartFrogRuntimeException, RemoteException {
         if (!success) {
@@ -459,6 +461,60 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         actionTerminationRecord = record;
         updateFlags(success);*/
         sendEvent(new TestCompletedEvent(this, success, false , skipped, record, description));
+    }
+
+        /**
+     * update finished and succeeded/failed flags when we finish
+     *
+     * @param success flag to indicated whether we considered the run a success
+     */
+    protected synchronized void updateFlags(boolean success) {
+        succeeded = success;
+        failed = !success;
+        finished = true;
+    }
+
+    /**
+     * Use results + internal state to decide if the test passed or not
+     *
+     * @param record termination record
+     * @throws SmartFrogRuntimeException SmartFrog errors
+     * @throws RemoteException           network errors
+     */
+    protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
+        //work out the forced timeout info from the terminators
+        //its only a forced timeout if the action was expected to terminate itself anyway
+/*        boolean actionForcedTimeout = expectTerminate && actionTerminator != null && actionTerminator
+                .isForcedShutdown();
+        //any timeout of the tests is an error
+        boolean testForcedTimeout = testsTerminator != null && testsTerminator.isForcedShutdown();
+        //a forced timeout of action or tests => forced timeout of components
+        boolean forcedTimeout = actionForcedTimeout || testForcedTimeout;
+        */
+        boolean forcedTimeout = false;
+        //send out a completion event
+        sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
+        setTestBlockAttributes(record, forcedTimeout);
+    }
+
+    /**
+     * Set the various attributes of the component based on whether the test record was success or not
+     *
+     * @param record  termination record
+     * @param timeout did we time out?
+     * @throws SmartFrogRuntimeException SmartFrog errors
+     * @throws RemoteException           network errors
+     */
+    public void setTestBlockAttributes(
+            TerminationRecord record,
+            boolean timeout)
+            throws SmartFrogRuntimeException, RemoteException {
+        boolean success = record.isNormal();
+        sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        sfReplaceAttribute(ATTR_STATUS, record);
+        sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
+        sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
+        sfReplaceAttribute(ATTR_FORCEDTIMEOUT, Boolean.valueOf(timeout));
     }
     
     /**
@@ -634,20 +690,16 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
 
     /**
      * @return true only if the test has finished and failed
-     * @throws RemoteException    on network trouble
-     * @throws SmartFrogException on other problems
      */
-    public boolean isFailed() throws RemoteException, SmartFrogException {
+    public boolean isFailed() {
         return !isSucceeded();
     }
 
     /**
      * @return true iff the test succeeded
-     * @throws RemoteException    on network trouble
-     * @throws SmartFrogException on other problems
      */
 
-    public boolean isSucceeded() throws RemoteException, SmartFrogException {
+    public boolean isSucceeded() {
         return statistics.isSuccessful();
     }
 
@@ -655,10 +707,8 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * Get the exit record
      *
      * @return the exit record, will be null for an unfinished child
-     * @throws RemoteException    on network trouble
-     * @throws SmartFrogException on other problems
      */
-    public TerminationRecord getStatus() throws RemoteException, SmartFrogException {
+    public TerminationRecord getStatus() {
         return null;
     }
 
@@ -666,10 +716,8 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * return the current action
      *
      * @return the child component. this will be null after termination.
-     * @throws RemoteException    on network trouble
-     * @throws SmartFrogException on other problems
      */
-    public Prim getAction() throws RemoteException, SmartFrogException {
+    public Prim getAction() {
         return null;
     }
 
@@ -678,7 +726,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @return whether or not the test block skipped deployment of children.
      */
-    public boolean isSkipped() throws RemoteException, SmartFrogException {
+    public boolean isSkipped()  {
         return false;
     }
 }
