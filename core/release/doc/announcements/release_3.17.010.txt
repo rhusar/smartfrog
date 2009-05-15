@@ -1,5 +1,5 @@
 SmartFrog 3.17.010
-======================
+==================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed
 distributed deployment framework developed by HP Laboratories. SmartFrog
