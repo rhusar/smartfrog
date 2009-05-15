@@ -142,6 +142,7 @@
   <target name="ready-to-izpack"
       depends="declare-izpack,prepare-resources,prepare-executables,packaged,expand-izpack"/>
 
+  <!-- run izpack and copy in the file-->
   <target name="izpack" depends="ready-to-izpack">
     <iz:izpack input="${build.dir}/smartfrog-install.xml"
         output="${izpack.jar}"
@@ -597,7 +598,7 @@
     </exec>
   </target>
 
-  <!--we've cut ,symlink-signed-lib from the depends list here-->
+  <!--we've cut symlink-signed-lib from the depends list here-->
   <target name="maybe-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security"
       xmlns:sec="http://security.smartfrog.org/">
   </target>
@@ -859,7 +860,7 @@
           <available file="${maven.zip}"/>
         </not>
       </condition>
-      No Maven artifacts found in ${maven.zip}
+      No Maven artifact zip file found at ${maven.zip}
     </fail>
     <ssh-remote command="mkdir -p ${ssh.maven.dir}"/>
     <property name="ssh.maven.path"
@@ -963,14 +964,13 @@
   <!--iniitialise the upload process by copying all the relevant artifacts and creating
   the upload fileset-->
   <target name="upload-init"
-      depends="init,ready-to-upload-rpms,check-scp,load-server-settings,check-ftp,locate-core-artifacts">
+      depends="init,init-rpm,check-scp,load-server-settings,locate-core-artifacts">
 
-    <copy todir="${upload.dir}" flatten="true">
-      <fileset file="${izpack.jar}"/>
-    </copy>
-    <copy todir="${upload.dir}">
-      <fileset dir="${release.dir}" includes="*.zip,*.gz"/>
-    </copy>
+    <copy todir="${upload.dir}" file="${izpack.jar}"/>
+    <copy todir="${upload.dir}" file="${release.dir}/smartfrog.${smartfrog.version}_all.tar.gz"/>
+    <copy todir="${upload.dir}" file="${release.dir}/smartfrog.${smartfrog.version}_all.zip"/>
+    <copy todir="${upload.dir}" file="${release.dir}/smartfrog.${smartfrog.version}_dist.tar.gz"/>
+    <copy todir="${upload.dir}" file="${release.dir}/smartfrog.${smartfrog.version}_dist.zip"/>
     <fileset id="upload.fileset" dir="${upload.dir}">
       <include name="*.jar"/>
       <include name="*.zip"/>
@@ -1048,9 +1048,9 @@
   </target>
 
   <target name="can-upload"
-      depends="load-server-settings,check-ftp,check-scp"/>
+      depends="load-server-settings,check-scp"/>
 
-  <target name="dist-upload" depends="can-upload,dist,ftp-upload"
+  <target name="dist-upload" depends="can-upload,dist,upload"
       description="create the release artifacts and then upload"/>
 
   <target name="upload" depends="upload-no-rebuild"
