@@ -1,0 +1,249 @@
+SmartFrog 3.17.010
+======================
+
+This is a new release of SmartFrog, the Java-based, LPGL-licensed
+distributed deployment framework developed by HP Laboratories. SmartFrog
+enables applications to be deployed across multiple machines,
+configuring different aspects of the system so that they are all
+consistently configured, and managing the life-cycle of the application
+as a whole. The project's home page is http://smartfrog.org/
+
+The release artifacts are available at
+
+http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
+
+This release is 3.17.010; built from revision 7598
+of the SVN repository.
+
+It was compiled with the Java version set to Java 6 -it will not work
+on Java1.5 JVMs.
+
+This release includes the following items:
+
+* The core SmartFrog daemon, including services to manage files, start and stop
+  Java and native programs.
+* Example components and applications.
+* Ant support: ant tasks to deploy and terminate applications from a build.
+* Ant components: the ability to execute ant tasks in a deployment.
+* Anubis: a partition aware tuple-space that can be used to implement fault
+  tolerant systems.
+* Database: components to issue database commands, and deploy HSLDB and 
+  MySQL databases.
+* Hadoop: a version of Apache Hadoop with SmartFrog management, and
+  support components to interact with Hadoop: filesystem operations and 
+  Job submission. This is still experimental and must be considered 
+  unstable.
+* JMX: the ability to configure and manage JMX components, and to manage
+  SmartFrog components over JMX.
+* Logging: integration with Apache commons-logging and Log4J, and the 
+  SLF4J framework.
+* Networking: email, FTP, SSH, DNS support.
+* Quartz: scheduled operations using Quartz libraries.
+* RpmTools: components for working with or deploying with RPMs
+* Scripting: support for BSF-hosted scripting languages
+* Testing: Distributed JUnit and component testing with SFUnit.
+* Velocity: generation/transformation of text files during deployment
+* WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+  is provided for all application servers that support it, and sample templates
+  are provided to start and stop Tomcat and JBoss. 
+* Jetty: The Jetty components can
+  configure and deploy individual servlets, eliminating much of the need for WAR
+  files and application servers.
+* XML: XML support with XOM.
+* XMPP: Presence and messaging over Jabber.
+
+
+Packaging
+=========
+
+This release is available as:
+
+* RPM files inside a .tar.gz file.
+* A JAR installer.
+* The original core smartfrog distribution as .zip and .tar.gz (deprecated).
+* A .tar.gz file containing everything needed to create a private set of RPM files
+  containing JAR files signed by a private Certification Authority.
+
+
+The RPM installation is for RPM-based Linux systems. The archive contains the
+following RPM files:
+
+smartfrog:        The core SmartFrog distribution.
+smartfrog-daemon: The shell scripts to add the smartfrog distribution to the
+                  path, and to run the daemon on start-up.
+smartfrog-demo:   Example code and documentation.
+smartfrog-javadocs: Javadocs for the project
+smartfrog-ant:    Ant task and build file execution
+smartfrog-anubis: Distributed partition-aware tuple space
+smartfrog-csvfiles: Support for reading/writing CSV Files.
+smartfrog-database: Database access
+smartfrog-jetty:   Jetty support
+smartfrog-jmx:    JMX integration though MX4J
+smartfrog-junit:  Junit 3.8.2 test execution
+smartfrog-hadoop: Hadoop support
+smartfrog-logging: Logging through Log4J and commons-logging
+smartfrog-networking: SSH, SCP, FTP and email
+smartfrog-quartz:  Scheduled operations
+smartfrog-rpmtools: RPM support tools  
+smartfrog-scripting: Scripted components
+smartfrog-velocity: Velocity template processing
+smartfrog-www:      Web support: Deployment and liveness pages
+smartfrog-xml:      XML Support
+smartfrog-xmpp:     XMPP/Jabber communications
+smartfrog-xunit:    Distributed testing and reporting
+
+All the JAR files are also published to a repository that is compatible with
+Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or 
+Maven- based build.
+
+There are also SmartFrog components to retrieve artifacts from such a repository
+(the Library components under /org/smartfrog/services/os/java/library.sf ),
+which can be used for dynamic download of SmartFrog and other artifacts.
+
+
+Security warning
+================
+
+Unless SmartFrog is configured with security, a running daemon will
+listen on its configured port for incoming deployment requests, and
+deploy the applications with the rights of the user running the daemon.
+When the smartfrog-daemon RPM is installed, that means that a process
+running as root will be listening on an open port for incoming
+deployment requests. Do not deploy SmartFrog this way on any untrusted
+network, not without turning security on.
+
+There is a special distribution .tar.gz file that can be used to generate
+a private set of secure RPM files.
+
+Building SmartFrog
+==================
+
+SmartFrog requires Java 1.6+ and Ant 1.7+ to build. The izpack and source .zip and
+.tar.gz distributions include a source tree adequate to build the
+entire system. To build a later release, please follow the instructions at
+  http://sourceforge.net/svn/?group_id=87384
+to check out smartfrog/trunk/core from our repository.
+
+This release was built with revision 7598 of the repository, which
+is available under the SVN branch
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.17.010
+
+We strongly encourage anyone interested in building or extending
+SmartFrog to get involved in the SmartFrog developer mailing list, which
+can be found from the sourceforge project page
+http://sourceforge.net/projects/smartfrog/
+
+Reporting Bugs
+==============
+
+Please file all bug reports at http://jira.smartfrog.org/
+
+Thank you!
+
+The SmartFrog Team        http://smartfrog.org/
+
+Changes since last release
+==========================
+
+
+Release Notes - SmartFrog - Version 3.17.010
+
+** Bug
+    * [SFOS-495] - for dynamic classloading, we need a way to set the security policy in the ant tasks, and a default one if none is provided
+    * [SFOS-994] - Hadoop tests failing with namenode locked. Assumption: we aren't terminating namenodes properly
+    * [SFOS-1013] - Test JobTracker isn't getting its file system URL right
+    * [SFOS-1031] - TaskTracker not shutting down
+    * [SFOS-1043] - CI tools are picking up the wrong version of the main distribution .zip file
+    * [SFOS-1051] - Ant <start> tests failing on Hudson
+    * [SFOS-1053] - the deploy target in common.xml should use the tests.run.classpath for its classpath
+    * [SFOS-1056] - Assert component doesnt report resolution failures that well
+    * [SFOS-1057] - Assert component reference resolution logic is wrong
+    * [SFOS-1060] - ManagedConfiguration effectively discards all values it is set() with
+    * [SFOS-1075] - Management console won't exit
+    * [SFOS-1076] - restlet JARs are in smartfrog lib under SVN
+    * [SFOS-1077] - Now that exits are being trapped, wherever in the code we call it intentionally, that operation now fails
+    * [SFOS-1086] - Possible deadlock in DelayedTerminator
+    * [SFOS-1098] - Add better classload failure details in SFClassLoader.forName()
+    * [SFOS-1101] - wrong termination semantics in the HadoopServices
+    * [SFOS-1106] - Hadoop JspHelper class does not load on Hadoop-under-smartfrog
+    * [SFOS-1107] - Intermittent Test  Failure in HadoopConfigurationTest. Race condition?
+    * [SFOS-1112] - hadoop components/extras tests should be disabled when running on java5; even if the components build, the tests will fail.
+    * [SFOS-1123] - move filesystem and job tests out of hadoop/test into src/examples so the same tests can be run on live clusters
+    * [SFOS-1124] - Add component to do directory copy between any two supported filesystems
+    * [SFOS-1137] - Hadoop can exit the JVM with a fatal error in the namenode
+    * [SFOS-1145] - Unowned RPMs found in $SFHOME/lib after upgrades -from older packages
+    * [SFOS-1150] - Have AbstractTargetedCondition attempt to resolve the target on demand
+    * [SFOS-1154] - security exception in management console
+    * [SFOS-1164] - Ant daemon tasks do not use the same security manager as the shell scripts
+    * [SFOS-1171] - RMI security problems on Java6 with Hadoop
+    * [SFOS-1178] - Ivy/Maven repository on sourceforge.net is not indexed any more
+    * [SFOS-1181] - ant print-proxy-settings only works if the proxy settings are correct
+    * [SFOS-1188] - 2 javadoc warnings in core/smartfrog
+
+
+** Improvement
+    * [SFOS-14] - Improve scripting component
+    * [SFOS-848] - make LoadClass a Condition, so it can be used to enable/disable tests
+    * [SFOS-855] - Hadoop client-side components should be able to pick up properties from a cluster CD
+    * [SFOS-1001] - have all hadoop services extract the port numbers from the configuration, and fail if they are in use before deployment, and not released at the end of the lifecycle
+    * [SFOS-1025] - Useful additional constraint functionality:
+    * [SFOS-1054] - improve testcase selection in common.xml
+    * [SFOS-1059] - assert equality tests should .toString() their parameters for testing
+    * [SFOS-1065] - Tweak to notification mechanism in SF Orchestration
+    * [SFOS-1069] - Modify orchestration selection of pertinent members from arrays for dependencies
+    * [SFOS-1070] - Orchestration to support new dependency types: on model state and "local" deps
+    * [SFOS-1074] - add hadoop bundle to the installer JAR
+    * [SFOS-1089] - Better diagnostics of why a Hadoop filesystem won't load
+    * [SFOS-1090] - Move Hadoop service lifecycle from "terminated" to close; update state diagrams
+    * [SFOS-1092] - hard code datanode ports into the datanode test templates, add checks that these ports are closed after the runs
+    * [SFOS-1093] - Hadoop nodes should push out live http and other port bindings to the components
+    * [SFOS-1096] - add test for dfshealth on the filesystem
+    * [SFOS-1097] - LoadClass to provide better diagnostics when a class is not found
+    * [SFOS-1102] - give components/machines the ability to override the default timeout (10 minutes) for <junit> runs
+    * [SFOS-1105] - add way to set JVM args (like -verbose:class) onto the daemon that is created for functional testing
+    * [SFOS-1111] - make LoadClass better at diagnostics by adding a resources[] list, and producing a list of all missing resources
+    * [SFOS-1113] - Move the port checking code of HadoopTestBase into a new test base class in testharness, so that other components can check that ports are closed after a test run
+    * [SFOS-1117] - Move DfsUtils use of DistributedFileSystem (i.e. HDFS only), to the FileSystem interface
+    * [SFOS-1119] - add more checks to DfsPathExists
+    * [SFOS-1120] - modify common.xml to run sfDaemon in the system tests from the build/test dir
+    * [SFOS-1121] - subclass Condition interface with one that provides a reason for a condition failing
+    * [SFOS-1134] - Datanodes and job tracker nodes to offer the ability to set their hostname dynamically, based on the machine doing the deployment
+    * [SFOS-1135] - move hadoop-cluster components to using dynamically determined hostnames
+    * [SFOS-1138] - Provide a better error message when a remote process isnt the right type
+    * [SFOS-1141] - Remove warnings about headless mode from all the daemon logs
+    * [SFOS-1168] - Switch to the exit trapping security manager
+    * [SFOS-1187] - Add an environment variable option to name the security manager for the scripts
+
+** New Feature
+    * [SFOS-875] - Write CheckPort component to extract hostname:port information from a hadoop component, and try connecting to that port
+    * [SFOS-967] - Implement workflow component to decomission a datanode, with tests
+    * [SFOS-1019] - Add smartfrog-hadoop RPM that contains all the artifacts needed to bring up Hadoop under SmartFrog
+    * [SFOS-1035] - Add   commons-pool and commons-dbcp JARs to sf-database component and RPM
+    * [SFOS-1049] - have common.xml read in a properties file from ~/.ant, outside the source tree, so that options as to which server to deploy to get retained when the directory tree gets deleted.
+    * [SFOS-1064] - add component to validate configuration values.
+    * [SFOS-1079] - entry points could report network connectivity problems better
+    * [SFOS-1126] - Add a configuration checker which checks the configuration of a cluster -or other component that provides a configuration- against a list of expected equality values.
+    * [SFOS-1131] - Ant task to determine the local hostname/address
+    * [SFOS-1133] - Add functions and components to work out the local hostname
+    * [SFOS-1139] - Provide a component to check that a security manager is installed, and that exits are blocked
+    * [SFOS-1147] - create new TextListFile component (extending TextFile), that creates the text for a file from an inline list; one line per list entry
+    * [SFOS-1167] - ant component to list nested resource collections and print them to a property or to a file
+    * [SFOS-1195] - add a ReferenceResolves condition that can be use to probe or poll for a reference
+
+
+** Task
+    * [SFOS-210] - Add java security debug properties to User manual
+    * [SFOS-1073] - Move up to ivy 2.0.0 release
+    * [SFOS-1085] - extend the job submission test, list input and output directories and have it do real work
+    * [SFOS-1103] - Move legacy dependencies from core to extras
+
+** Sub-task
+    * [SFOS-788] - write component to submit jobs to a Hadoop cluster
+    * [SFOS-859] - write components to perform filesystem create/delete/move operations, and copy data to/from the filesystem
+    * [SFOS-1055] - write component to load in settings from hadoop's XML files
+    * [SFOS-1151] - Update service to support TRACE level that is now supported in Log4J
+
+
+
+  
