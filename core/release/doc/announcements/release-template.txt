@@ -13,8 +13,12 @@ The release artifacts are available at
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
 This release is ${smartfrog.version}; built from revision ${svn.revision}
-of the SVN repository. This release has an extended language
-with the ability to tag attributes, and includes the following items:
+of the SVN repository.
+
+It was compiled with the Java version set to Java 6 -it will not work
+on Java1.5 JVMs.
+
+This release includes the following items:
 
 * The core SmartFrog daemon, including services to manage files, start and stop
   Java and native programs.
@@ -115,7 +119,7 @@ a private set of secure RPM files.
 Building SmartFrog
 ==================
 
-SmartFrog requires Java 1.5+ and Ant 1.7+ to build. The izpack and source .zip and
+SmartFrog requires Java 1.6+ and Ant 1.7+ to build. The izpack and source .zip and
 .tar.gz distributions include a source tree adequate to build the
 entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
