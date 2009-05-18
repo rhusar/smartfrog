@@ -333,8 +333,7 @@ public class SFProcess implements MessageKeys {
      * Deploys the local process compound, if not already there
      *
      * @param addShutdownHook flag to enable shutdown hook listening
-     *
-     * @param handlerName
+     * @param handlerName the classname of the interrupt handler
      * @return local process compound
      *
      * @throws SmartFrogException if failed to deploy process compound
@@ -548,7 +547,7 @@ public class SFProcess implements MessageKeys {
                     Object targetObj = target.sfResolve(subProcess);
                     try {
                         target = (ProcessCompound) targetObj;
-                    } catch (java.lang.ClassCastException thr) {
+                    } catch (ClassCastException thr) {
                         throw SmartFrogResolutionException.illegalClassType(
                                 Reference.fromString(subProcess),
                                 target.sfCompleteName(),
@@ -585,11 +584,7 @@ public class SFProcess implements MessageKeys {
     }
 
     /**
-     * Request the host to which this process is bound to
-     *
-     * @return the host InetAddress
-     * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogResolutionException if we cannot determine even our local host
+     * the host to which this process is bound to
      */
     private static InetAddress hostInetAddress = null;
 
