@@ -59,7 +59,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     public static ExtNameNode createAndDeploy(Prim owner, ManagedConfiguration conf)
             throws IOException {
         ExtNameNode nameNode = new ExtNameNode(owner, conf);
-        deploy(nameNode);
+        startService(nameNode);
         return nameNode;
     }
 
