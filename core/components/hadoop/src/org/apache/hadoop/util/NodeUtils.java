@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 package org.apache.hadoop.util;
 
 import org.smartfrog.services.hadoop.core.BindingTuple;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.net.NetUtils;
 
 import java.net.InetSocketAddress;
 
@@ -50,5 +52,21 @@ public class NodeUtils {
         buffer.append("/");
         String stringValue = buffer.toString();
         return stringValue;
+    }
+
+
+    /**
+     * Resolve an address from an attribute of a configuration
+     * @param conf the configuration
+     * @param attribute the attribute
+     * @return the socket address
+     * @throws IllegalArgumentException if the address attribute is missing
+     */
+    public static InetSocketAddress resolveAddress(Configuration conf, String attribute) {
+        String address = conf.get(attribute);
+        if (address == null) {
+            throw new IllegalArgumentException("No value for " + attribute);
+        }
+        return NetUtils.createSocketAddr(address);
     }
 }

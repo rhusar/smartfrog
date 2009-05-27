@@ -94,7 +94,14 @@
 
   </target>
 
-  <target name="copy-hadoop" depends="ivy-retrieve,ivy-report"
+  <target name="ready-to-copy-hadoop"  depends="ivy-retrieve,ivy-report">
+    <echo>
+      hadoop.dir=${hadoop.dir}
+      hadoop.version=${hadoop.version}
+    </echo>
+  </target>
+
+  <target name="copy-hadoop" depends="ready-to-copy-hadoop"
       description="copy the hadoop JAR where it needs to go to be kept under SCM">
     <fail>
       <condition><equals arg1="${hadoop.version}" arg2="latest.integration"/> </condition>

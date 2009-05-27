@@ -49,7 +49,7 @@ CheckJspClasses extends LoadClass {
   message "Failed to load a JSP class. These may not have been compiled in correctly";
   sfShouldTerminate true;
 
-  nn_jsphelper "org.apache.hadoop.hdfs.server.namenode.JspHelper";
+  nn_jsphelper "org.apache.hadoop.hdfs.server.common.JspHelper";
   nn_dfshealth "org.apache.hadoop.hdfs.server.namenode.dfshealth_jsp";
   nn_dfsnodelist"org.apache.hadoop.hdfs.server.namenode.dfsnodelist_jsp";
   dn_browseBlock   "org.apache.hadoop.hdfs.server.datanode.browseBlock_jsp";
@@ -150,7 +150,7 @@ CheckJspHelperClasses extends CheckJspClasses {
     "org.apache.hadoop.hdfs.protocol.FSConstants",
     "org.apache.hadoop.hdfs.protocol.LocatedBlock",
     "org.apache.hadoop.hdfs.protocol.LocatedBlocks",
-    "org.apache.hadoop.hdfs.protocol.UnregisteredDatanodeException",
+    "org.apache.hadoop.hdfs.protocol.UnregisteredNodeException",
     "org.apache.hadoop.hdfs.server.common.GenerationStamp",
     "org.apache.hadoop.hdfs.server.common.HdfsConstants$StartupOption",
     "org.apache.hadoop.hdfs.server.common.Storage",
@@ -204,7 +204,6 @@ CheckJspHelperClasses extends CheckJspClasses {
     "org.apache.hadoop.hdfs.protocol.DatanodeInfo",
     "org.apache.hadoop.hdfs.protocol.FSConstants",
     "org.apache.hadoop.hdfs.protocol.LocatedBlock",
-    "org.apache.hadoop.hdfs.protocol.UnregisteredDatanodeException",
     "org.apache.hadoop.hdfs.server.common.HdfsConstants",
     "org.apache.hadoop.hdfs.server.common.GenerationStamp",
     "org.apache.hadoop.hdfs.server.common.IncorrectVersionException",
