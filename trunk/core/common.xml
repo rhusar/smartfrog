@@ -115,7 +115,7 @@
     <property name="smartfrog.daemon.port" value="3800" />
     <!--use the forking compiler with tuned memory use and profiling diagnostics-->
     <property name="rmic.compiler" value="forking"/>
-    <property name="rmic.max.memory" value="192m" />
+    <property name="rmic.max.memory" value="512m" />
     <property name="rmic.forking.commandline.extras" value="" />
     <property name="rmic.forking.commandline" 
       value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
