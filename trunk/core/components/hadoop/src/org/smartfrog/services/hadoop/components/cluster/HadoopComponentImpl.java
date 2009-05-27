@@ -192,10 +192,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      */
     protected InetSocketAddress resolveAddress(ManagedConfiguration configuration, String addressAttribute)
             throws SmartFrogResolutionException, RemoteException {
-        InetSocketAddress socketAddress = configuration.bindToNetwork(addressAttribute,
-                "stubOldAddressNameShouldNotResolve",
-                "stubOldAddressPortShouldNotResolve");
-        return socketAddress;
+      return configuration.bindToNetwork(addressAttribute);
     }
 
     protected PortEntry resolvePortEntry(ManagedConfiguration configuration,String addressAttribute)
@@ -203,15 +200,4 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
         return new PortEntry(addressAttribute,
             resolveAddress(configuration, addressAttribute));
     }
-
-    protected PortEntry resolvePortEntry(ManagedConfiguration configuration, String addressAttribute,
-                                         String bindAddressName, String bindAddressPort)
-            throws SmartFrogResolutionException, RemoteException {
-        InetSocketAddress socketAddress = configuration.bindToNetwork(addressAttribute,
-                bindAddressName,
-                bindAddressPort);
-        return new PortEntry(addressAttribute,socketAddress);
-    }
-
-
 }

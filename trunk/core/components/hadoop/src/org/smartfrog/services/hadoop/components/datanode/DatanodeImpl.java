@@ -91,12 +91,8 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster, C
             throws SmartFrogResolutionException, RemoteException {
         List<PortEntry> ports = super.buildPortList(conf);
         ports.add(resolvePortEntry(conf, DFS_DATANODE_HTTPS_ADDRESS));
-        ports.add(resolvePortEntry(conf, DFS_DATANODE_ADDRESS,
-                DFS_DATANODE_BIND_ADDRESS,
-                DFS_DATANODE_PORT));
-        ports.add(resolvePortEntry(conf, DFS_DATANODE_HTTP_ADDRESS,
-                DFS_DATANODE_INFO_BIND_ADDRESS,
-                DFS_DATANODE_INFO_BIND_PORT));
+        ports.add(resolvePortEntry(conf, DFS_DATANODE_ADDRESS));
+        ports.add(resolvePortEntry(conf, DFS_DATANODE_HTTP_ADDRESS));
         ports.add(resolvePortEntry(conf, DFS_DATANODE_IPC_ADDRESS));
         return ports;
     }

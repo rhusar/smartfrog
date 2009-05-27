@@ -486,19 +486,13 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * Bind to a network address; something like  "0.0.0.0:50030" is expected.
      *
      * @param addressName     the property for the address
-     * @param bindAddressName old style hostname
-     * @param bindAddressPort old style host port
      * @return the host/port binding
      * @throws IllegalArgumentException     if the arguments are bad
-     * @throws SmartFrogResolutionException if the address does not resolve
+     * @throws SmartFrogResolutionException if the addressName is not in the configuration
      */
-    public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort)
+    public InetSocketAddress bindToNetwork(String addressName)
             throws SmartFrogResolutionException {
-        String infoAddr =
-                NetUtils.getServerAddress(this,
-                        bindAddressName,
-                        bindAddressPort,
-                        addressName);
+        String infoAddr = get(addressName, null);
         if (infoAddr == null) {
             throw new SmartFrogResolutionException("Failed to resolve " + addressName);
         }

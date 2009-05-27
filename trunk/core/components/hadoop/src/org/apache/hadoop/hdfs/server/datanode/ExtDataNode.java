@@ -101,21 +101,11 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     }
 
     public InetSocketAddress getHttpAddress(Configuration conf) {
-        String address =
-                NetUtils.getServerAddress(conf,
-                        DFS_DATANODE_INFO_BIND_ADDRESS,
-                        DFS_DATANODE_INFO_BIND_PORT,
-                        DFS_DATANODE_HTTP_ADDRESS);
-        return NetUtils.createSocketAddr(address);
+        return NodeUtils.resolveAddress(conf, DFS_DATANODE_INFO_BIND_ADDRESS);
     }
 
     public InetSocketAddress getIpcAddress(Configuration conf) {
-        String address =
-                NetUtils.getServerAddress(conf,
-                        DFS_DATANODE_BIND_ADDRESS,
-                        DFS_DATANODE_PORT,
-                        DFS_DATANODE_ADDRESS);
-        return NetUtils.createSocketAddr(address);
+        return NodeUtils.resolveAddress(conf, DFS_DATANODE_BIND_ADDRESS);
     }
 
     /**
