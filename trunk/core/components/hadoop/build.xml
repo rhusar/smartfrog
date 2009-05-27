@@ -43,6 +43,8 @@
 
   <!-- override point -->
   <property file="build.properties"/>
+  <property file="libraries.properties"/>
+  
   <!--this lets us pick up hadoop version markers from hadoop,
     overriding anything in components/libraries.properties-->
 
