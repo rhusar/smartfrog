@@ -27,6 +27,7 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
@@ -35,12 +36,24 @@ import java.rmi.RemoteException;
  * absent. It also has support for a worker thread (which get terminated during shutdown, if set)
  */
 public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
-
+    protected boolean closeFilesystem;
 
 
     protected DfsOperationImpl() throws RemoteException {
     }
 
+
+    /**
+     * start up, bind to the cluster
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    @Override
+    public void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        closeFilesystem = sfResolve(ATTR_CLOSE_FILESYSTEM, true, true);
+    }
 
     /**
      * For subclassing: this routine will be called by the default worker thread, if that thread gets started
@@ -62,13 +75,18 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
     protected void performDfsOperation() throws Exception {
         ManagedConfiguration conf = createConfiguration();
         FileSystem fileSystem = DfsUtils.createFileSystem(conf);
+        
         try {
             performDfsOperation(fileSystem, conf);
         } catch (Exception e) {
-            DfsUtils.closeQuietly(fileSystem);
+            if(closeFilesystem) {
+                DfsUtils.closeQuietly(fileSystem);
+            }
             throw e;
         }
-        DfsUtils.closeDfs(fileSystem);
+        if (closeFilesystem) {
+            DfsUtils.closeDfs(fileSystem);
+        }
     }
 
     /**

@@ -113,7 +113,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
                         this,
                         conf);
             }
-            fs.close();
+            //fs.close();
         } catch (IOException e) {
             throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " as the filesystem is not live",
                     e,

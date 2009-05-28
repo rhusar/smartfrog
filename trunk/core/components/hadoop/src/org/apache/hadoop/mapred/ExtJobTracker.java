@@ -78,7 +78,7 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
     protected void innerClose() throws IOException {
         super.innerClose();
         //also: shut down the filesystem
-        closeTheFilesystemQuietly();
+        //closeTheFilesystemQuietly();
     }
 
     /**
