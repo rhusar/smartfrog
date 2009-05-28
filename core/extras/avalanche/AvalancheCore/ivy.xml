@@ -130,12 +130,10 @@
         rev="latest.integration"
         conf="compile,runtime->default" />
     <!--include XML parser and related services-->
-<!--
     <dependency org="org.smartfrog"
         name="sf-xml"
         rev="latest.integration"
         conf="runtime->default"/>
--->
     <!--XMPP support -->
     <dependency org="org.smartfrog"
         name="sf-xmpp"
@@ -171,7 +169,7 @@
         name="jms"
         rev="${jms.version}"
         conf="compile->default"/>
-
+<!-- not needed if sf-xml is imported
     <dependency org="xerces"
         name="xercesImpl"
         rev="${xerces.version}"
@@ -179,7 +177,7 @@
     <dependency org="xerces"
         name="xmlParserAPIs"
         rev="${xerces.version}"
-        conf="compile,redist->default"/>
+        conf="compile,redist->default"/>-->
     <dependency org="xindice"
         name="xindice"
         rev="${xindice.version}"
