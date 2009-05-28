@@ -58,6 +58,10 @@ For more information: www.smartfrog.org
     permission_ug+rwx   "-rwxrwx---";
     permission_u+rw     "-rw-------";
     permission_u+rwx    "-rwx------";
+    //flag to set to true to close the filesystem. As filesystems are cached
+    //closing a filesystem prematurely can be bad news.
+    //only set to true if you think that the program is leaking DfsClient instances
+    closeFilesystem false;
   }
 
  /**

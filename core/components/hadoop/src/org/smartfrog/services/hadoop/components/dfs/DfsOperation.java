@@ -32,4 +32,6 @@ public interface DfsOperation extends ClusterBound {
      * {@value}
      */
     String ATTR_RECURSIVE = "recursive";
+  
+    String ATTR_CLOSE_FILESYSTEM = "closeFilesystem"; 
 }

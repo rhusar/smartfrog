@@ -129,7 +129,9 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         try {
-            DfsUtils.closeDfs(dfs);
+            if (closeFilesystem) {
+                DfsUtils.closeDfs(dfs);
+            }
         } catch (SmartFrogRuntimeException e) {
             sfLog().info("When closing the file system " + e, e);
         } finally {
