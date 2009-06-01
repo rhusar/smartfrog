@@ -24,6 +24,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
@@ -113,7 +114,14 @@ public class DfsUtils {
     }
 
     /**
-     * Create a DFS client instance from a given URL; initialize it from the configuration
+     * Create a DFS client instance from a given URL; initialize it from the configuration.
+     * 
+     * This method uses {@link FileSystem#newInstance(URI, Configuration)} to create a new
+     * instance, rather than return a cached one. This is to eliminate race conditions
+     * across threads of the kind that surfaced in 
+     * <a href="http://jira.smartfrog.org/jira/browse/SFOS-1208">SFOS-1208</a>.
+     * 
+     * Accordingly, filesystems should be closed unless you want to leak them
      * @param filesystemURL the URL of the filesystem
      * @param conf configuration used when constructing the FS
      * @return a filesystem client
@@ -132,7 +140,7 @@ public class DfsUtils {
             throw hadoopException;
         }
         try {
-            FileSystem dfs = FileSystem.get(uri, conf);
+            FileSystem dfs = FileSystem.newInstance(uri, conf);
             dfs.initialize(uri, conf);
             return dfs;
         } catch (IOException e) {
@@ -362,7 +370,7 @@ public class DfsUtils {
                 }
                 try {
                     dstFstatus = fileSystem.getFileStatus(dstPath);
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                     dstFstatus = null;
                 }
                 if ((srcFstatus != null) && (dstFstatus != null)) {

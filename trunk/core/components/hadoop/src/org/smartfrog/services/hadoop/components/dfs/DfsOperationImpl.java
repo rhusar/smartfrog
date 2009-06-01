@@ -129,6 +129,7 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
          *
          * @throws Throwable if anything went wrong
          */
+        @SuppressWarnings({"RefusedBequest"})
         public void execute() throws Throwable {
             performDfsOperation();
         }
