@@ -393,11 +393,15 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         goalThread = null;
         resetResolutionState();
         Calendar stop = new GregorianCalendar();
-        if (SFParse.isVerboseOptSet()){
+        if (isVerbose()){
         	System.out.println("Start:"+g_start);
         	System.out.println("Stop:"+stop);
         	System.out.println("Label counts:"+g_count);
         }
+    }
+
+    private boolean isVerbose() {
+        return false;
     }
 
     public void fail() throws Exception {
@@ -456,7 +460,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         String _values = mapValueJE(values);
         String _goal = mapValueJE(goal);
         String _autos = mapValueJE(autos);
-        String verbose = (SFParse.isVerboseOptSet() ? "true" : "false");
+        String verbose = (isVerbose() ? "true" : "false");
 
         String assign_s="[";
         boolean first=true;
@@ -474,7 +478,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
                 resolutionState.addConstraintEval(cc) + ", " + _goal + ", " + _autos + ", " + verbose + ", "+ assign_s 
                 + ")";
 
-        if (SFParse.isVerboseOptSet()) System.out.println(get_value);
+        if (isVerbose()) System.out.println(get_value);
         
         //Allocate new thread for goal and start it
         if (goalThread == null) {
