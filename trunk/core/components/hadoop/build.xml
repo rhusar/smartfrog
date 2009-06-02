@@ -53,9 +53,14 @@
   <property file="${hadoop.dir}/ivy/libraries.properties" />
 
   <!--System tests are only turned on if Java6 or later is in use-->
+<!--
+  <property  name="system.tests" value="true" />
+-->
+<!--
   <condition property="system.tests" >
     <available classname="java.net.CookieManager"/>
   </condition>
+-->
 
 
   <echo
