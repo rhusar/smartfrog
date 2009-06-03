@@ -85,7 +85,7 @@ public class DumperCDImpl implements Dumper {
             rootRef = from.sfCompleteName();
             init();
         } catch (RemoteException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e, e);
         }
     }
 
@@ -102,7 +102,7 @@ public class DumperCDImpl implements Dumper {
                sfKeysToBeRemoved = configuration.sfResolve(ATR_SF_KEYS_TO_BE_REMOVED, sfKeysToBeRemoved ,false);
             }
         } catch (Exception ex){
-            if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
         }
     }
 
@@ -148,11 +148,11 @@ public class DumperCDImpl implements Dumper {
                 ComponentDescription child = createCDWithKeysRemoved(stateCopy,true);
                 placeHolder.sfReplaceAttribute(name, child);
             } catch (SmartFrogException ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             }
 
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e, e);
             throw e;
         }
     }
@@ -367,7 +367,7 @@ public class DumperCDImpl implements Dumper {
          String cdStr = toString(timeout);
          return cdStr;
        } catch (Exception ex){
-           if (sfLog().isErrorEnabled()) sfLog().error(ex);
+           if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
            return (ex.toString());
        }
     }
@@ -386,14 +386,14 @@ public class DumperCDImpl implements Dumper {
                 out.write(e.getMessage());
             }
         } catch (IOException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e, e);
         } finally {
             try {
                 if( out != null ) {
                 	out.close();
                 }
             } catch (IOException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(e);
+                if (sfLog().isErrorEnabled()) sfLog().error(e, e);
             }
         }
     }

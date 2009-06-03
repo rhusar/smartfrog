@@ -105,7 +105,7 @@ public class ActionDump extends ConfigurationAction implements Serializable {
             message.append("\n*************** End state for " + name + "  *****************\n");
         } catch (Exception ex) {
             if (SFSystem.sfLog().isErrorEnabled()) {
-                SFSystem.sfLog().error(ex);
+                SFSystem.sfLog().error(ex, ex);
             }
             StringWriter sw = new StringWriter();
             PrintWriter pr = new PrintWriter(sw, true);

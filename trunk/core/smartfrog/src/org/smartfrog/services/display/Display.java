@@ -961,7 +961,7 @@ public class Display extends JFrame
                                             "User termination", null);
                                     sfObj.sfDetachAndTerminate(tr);
                                 } catch (Exception ex) {
-                                    sfLog().error(ex);
+                                    sfLog().error(ex, ex);
                                 }
                             }
                         }
@@ -982,7 +982,7 @@ public class Display extends JFrame
                         this.sfObj.sfDetachAndTerminate(tr);
                     } catch (Exception ex) {
                         if (sfLog().isErrorEnabled()) {
-                            sfLog().error(ex);
+                            sfLog().error(ex, ex);
                         }
                     }
                 }

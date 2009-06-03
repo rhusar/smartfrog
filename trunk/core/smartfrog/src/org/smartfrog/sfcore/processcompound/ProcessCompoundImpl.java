@@ -1016,7 +1016,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                                 ap,
                                 ap.getClass().getName(),
                                 "java.lang.Boolean");
-                sfLog().error(srex);
+                sfLog().error(srex,srex);
             }
         }
 
@@ -1072,8 +1072,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                     sfLog().debug("New ProcessCompound " + name + " created: " + newPc
                             .sfCompleteName());
                 } catch (Throwable thr) {
-                    sfLog().debug("New ProcessCompound " + name + " created.");
-                    sfLog().error(thr);
+                    sfLog().error("New ProcessCompound " + name + " create failed " +thr,thr);
                 }
             }
             return newPc;
@@ -1482,9 +1481,8 @@ public class ProcessCompoundImpl extends CompoundImpl
                     }
                 }
             } catch (Exception ex) {
-                //Logger.log(ex);
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error(ex);
+                    sfLog().error(ex, ex);
                 }
             }
         }

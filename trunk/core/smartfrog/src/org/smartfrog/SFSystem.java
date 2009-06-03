@@ -394,7 +394,7 @@ public class SFSystem implements MessageKeys {
         } catch (Exception ex) {
             try {
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error(ex);
+                    sfLog().error(ex, ex);
                 }
             } catch (Throwable ex1) {
                 ex.printStackTrace();
@@ -792,7 +792,7 @@ public class SFSystem implements MessageKeys {
             SFParser parser = new SFParser(language);
             return parser.sfParseAnyValue(textToParse);
         } catch (Throwable ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
         }
         return null;
     }

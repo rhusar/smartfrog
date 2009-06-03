@@ -115,7 +115,7 @@ public class NewAttributeDialog extends JDialog {
                 }
             }
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
         }
     }
 
@@ -208,7 +208,7 @@ public class NewAttributeDialog extends JDialog {
                 attribute[2] = null;
             }
         } catch (Exception e1) {
-             if (sfLog().isErrorEnabled()) sfLog().error (e1);
+             if (sfLog().isErrorEnabled()) sfLog().error (e1, e1);
              WindowUtilities.showError(this,"Failed to modify attribute '"+attribute.toString()+"'. \n"+e1.toString());
         }
 
@@ -235,7 +235,7 @@ public class NewAttributeDialog extends JDialog {
                 return top.sfAsComponentDescription();
             }
         } catch (Throwable ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
         }
 
         try {
@@ -285,7 +285,7 @@ public class NewAttributeDialog extends JDialog {
                 //3 Info
             }
         } catch (Throwable ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
+            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
         }
 
         return null;
@@ -323,7 +323,7 @@ public class NewAttributeDialog extends JDialog {
             attribute[1] = null;
             attribute[2] = null;
         } catch (Exception e1) {
-            if (sfLog().isErrorEnabled()) sfLog().error (e1);
+            if (sfLog().isErrorEnabled()) sfLog().error (e1, e1);
         }
         this.dispose();
     }

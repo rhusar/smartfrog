@@ -207,7 +207,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
           if (exception != null) cd.sfAddAttribute("exception", exception);
         }
         catch (SmartFrogRuntimeException ex) {
-          if (log.isErrorEnabled()) log.error(ex);
+          if (log.isErrorEnabled()) log.error(ex, ex);
         }
         return cd;
       }

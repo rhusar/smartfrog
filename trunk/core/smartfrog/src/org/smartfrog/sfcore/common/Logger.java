@@ -125,7 +125,7 @@ public class Logger implements MessageKeys {
                testJarRepeat = configuration.sfResolve(ATR_TEST_JAR_REPEAT,testJarRepeat,false);
             }
         } catch (Exception ex){
-            if (SFSystem.sfLog().isErrorEnabled()) { SFSystem.sfLog().error(ex); }
+            if (SFSystem.sfLog().isErrorEnabled()) { SFSystem.sfLog().error(ex, ex); }
         }
         
         initialized = true;

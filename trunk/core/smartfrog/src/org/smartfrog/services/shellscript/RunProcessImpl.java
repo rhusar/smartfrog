@@ -580,7 +580,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
                     processDos.flush();
                 } catch (IOException ex) {
                     if (sfLog.isErrorEnabled()) {
-                        sfLog.error(ex);
+                        sfLog.error(ex, ex);
                     }
                 }
             } else {

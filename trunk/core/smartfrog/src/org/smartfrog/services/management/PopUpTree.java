@@ -262,7 +262,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 try {
                     ((Prim)node).sfParentageChanged();
                 } catch (RemoteException ex1) {
-                    if (sfLog().isErrorEnabled()) sfLog().error (ex1);
+                    if (sfLog().isErrorEnabled()) sfLog().error (ex1, ex1);
                 }
             } else if (node instanceof ComponentDescription){
                 ((ComponentDescriptionImpl)node).sfParentageChanged();
@@ -313,7 +313,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             Object obj = (parent.getParent());
             SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
         } catch (Exception e1) {
-            if (sfLog().isErrorEnabled()) sfLog().error (e1);
+            if (sfLog().isErrorEnabled()) sfLog().error (e1, e1);
             WindowUtilities.showError(this,e1.toString());
         }
     }
@@ -377,7 +377,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 message.append (dumper.toString());
                 name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error (ex);
+                if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
                 StringWriter sw = new StringWriter();
                 PrintWriter pr = new PrintWriter(sw,true);
                 ex.printStackTrace(pr);
@@ -404,7 +404,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 if (fileName == null) return;
                 ((DumperCDImpl)dumper).getCDtoFile(fileName);
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error (ex);
+                if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
                 WindowUtilities.showError(this,ex.toString());
             }
         }
