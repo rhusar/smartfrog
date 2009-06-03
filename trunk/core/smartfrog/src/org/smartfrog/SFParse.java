@@ -1,28 +1,30 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.smartfrog.services.management.SFDeployDisplay;
@@ -41,38 +43,30 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 /**
- * SFParse provides the utility methods to parse file descriptions and generate
- * the parsing report. The main function looks for a filename(s) on the argument
- * line and parses locally.
+ * SFParse provides the utility methods to parse file descriptions and generate the parsing report. The main function
+ * looks for a filename(s) on the argument line and parses locally.
  *
- * <P>
- * The main loop of SFParse reads an optionset. It then parses the file(s)
- * and/or prints the status report depending on the options.
- * </P>
- * 
- * <b>Warning</b> This class is not thread safe; the static methods used shared static data structures.
- * It is intended to be executed in from Main() methods and not from Java code.
+ * <P> The main loop of SFParse reads an optionset. It then parses the file(s) and/or prints the status report depending
+ * on the options. </P>
+ *
+ * <b>Warning</b> This class is not thread safe; the static methods used shared static data structures. It is intended
+ * to be executed in from Main() methods and not from Java code.
  */
-public class SFParse implements MessageKeys {
+public final class SFParse implements MessageKeys {
 
-//    static String usageString = "Usage: sfParse [-v][-d] filename";
     private static ParseOptionSet opts = null;
 
     private static Vector<Vector<String>> errorReport = null;
-    
-    private static ComponentDescription cd = null;
-    
-    
-    private SFParse(){
+
+
+    private SFParse() {
     }
 
     /**
      * Gets language from the URL
      *
      * @param url URL passed to application
-     *
      * @return Language string
-     *
      * @throws SmartFrogException In case any error while getting the language string
      */
     private static String getLanguageFromUrl(String url) throws
@@ -82,7 +76,7 @@ public class SFParse implements MessageKeys {
         if (i <= 0) {
             // i.e. it cannot contain no "." or start with the only "."
             throw new SmartFrogException(
-                "unable to source locate language in URL '" + url+"'");
+                    "unable to source locate language in URL '" + url + "'");
         } else {
             return url.substring(i + 1);
         }
@@ -90,78 +84,132 @@ public class SFParse implements MessageKeys {
 
     /**
      * Ascertains whether a file is parseable
+     *
      * @param fileUrl the fileurl to be parsed
-     * @param rpm A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, 
-     * that is before any parsing phases are carried out, so we have the opportunity to modify it before the phases are carried out
+     * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                phases are carried out
      * @return success or not
      */
     public static boolean fileParses(String fileUrl, RawParseModifier rpm) {
-        if (opts == null) {
-            opts = new ParseOptionSet(new String[]{"sfParse"});
+        ParseResults results = parseFile(fileUrl, rpm, createOptions());
+        return extractErrors(results);
+    }
+
+
+    /**
+     * Ascertains whether a file is parseable
+     *
+     * @param fileUrl the fileurl to be parsed
+     * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                phases are carried out
+     * @return true if the file contained no errors
+     */
+    public static boolean parseSingleFile(String fileUrl, RawParseModifier rpm) {
+        ParseResults results = parseFile(fileUrl, rpm, createOptions());
+        return extractErrors(results);
+    }
+
+    /**
+     * Extract errors from the results, add it to the ongoing error report (which is created if needed)
+     *
+     * @param results parsing output
+     * @return true if the file contained no errors
+     */
+    private static boolean extractErrors(ParseResults results) {
+        if (results.errors.isEmpty()) {
+            return true;
         }
-        createErrorReport();
-        parseFile(fileUrl,rpm);
-    	return !errorReport.isEmpty();
+        if (errorReport == null) {
+            errorReport = new Vector<Vector<String>>();
+        }
+        errorReport.addAll(results.errors);
+        return false;
     }
 
     private static void createErrorReport() {
-        errorReport= new Vector<Vector<String>>();
+        errorReport = new Vector<Vector<String>>();
     }
 
     /**
      * Attempts to parse given file, returning resultant component description
+     *
      * @param fileUrl the fileurl to be parsed
      * @return ComponentDescription resulting from parse, if file successfully parses, else null
      */
-    public static ComponentDescription parseFileToDescription(String fileUrl) { 
-    	return parseFileToDescription(fileUrl, null);
+    public static ComponentDescription parseFileToDescription(String fileUrl) {
+        return parseFileToDescription(fileUrl, null);
     }
-    
-    
+
+
+    /**
+     * Attempts to parse given file, returning resultant component description. Saves errors to the static variable
+     * {@link #errorReport}
+     *
+     * @param fileUrl the fileurl to be parsed
+     * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                phases are carried out
+     * @return ComponentDescription resulting from parse, if file successfully parses, else null
+     */
+    public static ComponentDescription parseFileToDescription(String fileUrl, RawParseModifier rpm) {
+        ParseOptionSet options = createOptions();
+        ParseResults results = parseFile(fileUrl, rpm, options);
+        return results.hasErrors() ? null : results.cd;
+    }
+
+    /**
+     * Create the options, using the static {@link # opts} variable if present.
+     *
+     * @return an optionset
+     */
+    private static ParseOptionSet createOptions() {
+        ParseOptionSet options = opts;
+        if (options == null) {
+            options = new ParseOptionSet(new String[]{"sfParse"});
+        }
+        return options;
+    }
+
     /**
      * Attempts to parse given file, returning resultant component description
+     *
      * @param fileUrl the fileurl to be parsed
-     * @param rpm A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, 
-     * that is before any parsing phases are carried out, so we have the opportunity to modify it before the phases are carried out
-     * @return ComponentDescription resulting from parse, if file successfully parses, else null
+     * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                phases are carried out
+     * @param options the options for this parse
+     * @return the parse results
      */
-    public static ComponentDescription parseFileToDescription(String fileUrl, RawParseModifier rpm) { 
-    	boolean parses = fileParses(fileUrl, rpm);
-        return parses? cd: null;
+    public static ParseResults parseFileToResults(String fileUrl, RawParseModifier rpm, ParseOptionSet options) {
+        return parseFile(fileUrl, rpm, options);
     }
-    
+
     /**
      * Parses a file.
      *
      * @param fileUrl the fileurl to be parsed
-     * @return the parse report
+     * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                phases are carried out
+     * @param options the options for this parse
+     * @return the parse results
      */
-    private static Vector<String> parseFile(String fileUrl) {
-    	return parseFile(fileUrl, null);
-    }
-    
-    /**
-     * Parses a file.
-     *
-     * @param fileUrl the fileurl to be parsed
-     * @param rpm A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, 
-     * that is before any parsing phases are carried out, so we have the opportunity to modify it before the phases are carried out
-     * @return the parse report
-     */
-    private static Vector<String> parseFile(String fileUrl, RawParseModifier rpm) {
+    private static ParseResults parseFile(String fileUrl, RawParseModifier rpm, ParseOptionSet options) {
         //To calculate how long it takes to parse a description
-        Vector<String> report = new Vector<String>();
-        report.add("File: "+fileUrl+"\n");
-        long parseTime=System.currentTimeMillis();
+        ParseResults results = new ParseResults();
+        Vector<String> report = results.report;
+        report.add("File: " + fileUrl + "\n");
+        long parseTime = System.currentTimeMillis();
         try {
 
             String language = getLanguageFromUrl(fileUrl);
-            //report.add("language: "+language);
-
             Vector phaseList;
 
             Phases top;
-            InputStream is=null;
+            InputStream is = null;
+            boolean printPhases = options.verbose && !options.quiet;
             try {
                 is = SFClassLoader.getResourceAsStream(fileUrl);
                 if (is == null) {
@@ -170,12 +218,12 @@ public class SFParse implements MessageKeys {
                     throw new SmartFrogParseException(msg);
                 }
                 top = (new SFParser(language)).sfParse(is);
-                if (opts.verbose && !opts.quiet) {
+                if (printPhases) {
                     printPhase("raw", top.toString());
                 }
-                report.add("   "+"raw phase: OK");
+                report.add("   " + "raw phase: OK");
             } catch (Exception ex) {
-                report.add("   "+ "raw" +" phase: FAILED!");
+                report.add("   " + "raw" + " phase: FAILED!");
                 throw ex;
             } finally {
                 if (is != null) {
@@ -187,7 +235,7 @@ public class SFParse implements MessageKeys {
             }
 
             if (rpm != null) {
-                rpm.modify((top));
+                rpm.modify(top);
             }
 
             phaseList = top.sfGetPhases();
@@ -197,49 +245,67 @@ public class SFParse implements MessageKeys {
                 phase = (String) aPhaseList;
                 try {
                     top = top.sfResolvePhase(phase);
-                    if (opts.verbose && !opts.quiet) {
+                    if (printPhases) {
                         printPhase(phase, top.toString());
                     }
                     report.add("   " + phase + " phase: OK");
                 } catch (Exception ex) {
-                    //report.add("   "+ phase +" phase: "+ex.getMessage());
                     report.add("   " + phase + " phase: FAILED!");
                     throw ex;
                 }
             }
 
-            cd = top.sfAsComponentDescription();
+            results.cd = top.sfAsComponentDescription();
 
-            if ((opts.description) || (opts.verbose && !opts.quiet)) {
-                printPhase("sfAsComponentDescription", cd.toString());
+            if (options.description || printPhases) {
+                printPhase("sfAsComponentDescription", results.cd.toString());
             }
 
-            parseTime=System.currentTimeMillis()-parseTime;
-            report.add(", parsed in "+ (parseTime) + " millisecs.");
+            parseTime = System.currentTimeMillis() - parseTime;
+            report.add(", parsed in " + (parseTime) + " millisecs.");
+            results.parseDurationMillis = parseTime;
 
-            showConsole(cd);
+            showConsole(options, results.cd);
 
 
         } catch (Exception e) {
-            //report.add("Error: "+ e.getMessage());
-            //report.add("   "+ phase +" phase: FAILED!");
-            SFSystem.sfLog().err("'"+fileUrl+"': \n"+ e+"\n",e);
+            SFSystem.sfLog().err("'" + fileUrl + "': \n" + e + "\n", e);
             Vector<String> itemError = new Vector<String>();
             itemError.add(fileUrl);
+            boolean printStack;
             if (e instanceof SmartFrogException) {
-                itemError.add(((SmartFrogException)e).toString("<BR><BR>"));
-            }
-            else {
+                itemError.add(((SmartFrogException) e).toString("<BR><BR>"));
+                printStack = options.verbose; 
+            } else {
+                printStack = true;
                 itemError.add(e.toString());
             }
-            errorReport.add(itemError);
+            //print the stack if verbose is set, or it is a non-SF exception (i.e. internal problems)
+            if (printStack) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                pw.flush();
+                pw.close();
+                itemError.add(sw.toString());
+            }
+            results.errors.add(itemError);
         }
-        return report;
+        return results;
     }
 
-    private static void showConsole(ComponentDescription componentDescription) throws Exception {
-        if (opts.showConsole) {
-            SFDeployDisplay.starParserConsole("ParseConsole", 440, 600, "N", componentDescription, true);
+
+    /**
+     * Optionally show a console
+     *
+     * @param options              options to look at
+     * @param componentDescription the CD to display
+     * @throws Exception
+     */
+    private static void showConsole(ParseOptionSet options, ComponentDescription componentDescription)
+            throws Exception {
+        if (options.showConsole) {
+            SFDeployDisplay.startParserConsole("ParseConsole", 440, 600, "N", componentDescription, true);
             Thread.sleep(3600 * 100);
         }
     }
@@ -247,13 +313,16 @@ public class SFParse implements MessageKeys {
     /**
      * Parses a list of files.
      *
-     * @param list the list of files to be parsed
+     * @param filenames the list of files to be parsed
+     * @return the list of parse results
      */
-    private static void parseFiles(Vector<String> list) {
+    private static Vector<ParseResults> parseFiles(Vector<String> filenames, ParseOptionSet options) {
         StringBuffer strb;
         Vector<Vector<String>> report = new Vector<Vector<String>>();
+        Vector<ParseResults> parseResults = new Vector<ParseResults>(filenames.size());
+        Vector<Vector<String>> errors =  new Vector<Vector<String>>();;
         //Loop through the vector
-        for (String file : list) {
+        for (String file : filenames) {
             try {
                 strb = new StringBuffer();
                 //If it's not an empty line
@@ -263,8 +332,15 @@ public class SFParse implements MessageKeys {
                             .append(file)
                             .append("\n")
                             .append("-----------------------------------------------");
-                    if (!opts.quiet) SFSystem.sfLog().out(strb.toString());
-                    report.add(parseFile(file));
+                    if (!options.quiet) {
+                        SFSystem.sfLog().out(strb.toString());
+                    }
+                    ParseResults results = parseFile(file, null, options);
+                    parseResults.add(results);
+                    errors.addAll(results.errors);
+                    errors = results.errors;
+                    Vector<String> output = results.report;
+                    report.add(output);
                 }
             } catch (Throwable thr) {
                 strb = new StringBuffer();
@@ -276,17 +352,20 @@ public class SFParse implements MessageKeys {
                         .append(thr.getMessage())
                         .append("\n")
                         .append("-----------------------------------------------");
-                if (!opts.quiet) SFSystem.sfLog().err(strb.toString(), thr);
+                if (!options.quiet) {
+                    SFSystem.sfLog().err(strb.toString(), thr);
+                }
             }
         }
-        if (opts.statusReport) {
+        if (options.statusReport) {
             printTotalReport(report);
         }
-        if (opts.statusReportHTML) {
+        if (options.statusReportHTML) {
             printTotalReportHTML(report);
             FileWriter newFile = null;
             try {
-                newFile = new FileWriter(opts.fileName + "_report.html");
+                String destFile = options.fileName + "_report.html";
+                newFile = new FileWriter(destFile);
                 newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
                 newFile.write("<body>" + "\n");
                 newFile.write("<font color=\"BLUE\" size=\"5\">Status report<font/>" + "\n");
@@ -295,18 +374,18 @@ public class SFParse implements MessageKeys {
                 newFile.write("<table/>");
                 newFile.write("<font color=\"BLUE\" size=\"5\">Error report<font/>" + "\n");
                 newFile.write("<table border=\"1\">" + "\n");
-                newFile.write(printTotalReportHTML(errorReport));
+                newFile.write(printTotalReportHTML(errors));
                 newFile.write("<table/>");
                 newFile.write("<body/>" + "\n");
                 newFile.write("<html/>" + "\n");
                 newFile.flush();
                 newFile.close();
                 newFile = null;
-                SFSystem.sfLog().out("Report created: " + opts.fileName + "_report.html");
+                SFSystem.sfLog().out("Report created: " + destFile);
             } catch (IOException e) {
-                SFSystem.sfLog().error(e);
+                SFSystem.sfLog().error(e, e);
             } finally {
-                if (newFile!=null) {
+                if (newFile != null) {
                     try {
                         newFile.close();
                     } catch (IOException ignored) {
@@ -315,6 +394,8 @@ public class SFParse implements MessageKeys {
                 }
             }
         }
+        SFParse.errorReport = errors;
+        return parseResults;
     }
 
     /**
@@ -340,58 +421,54 @@ public class SFParse implements MessageKeys {
 
 
             showVersionInfo();
-            opts = new ParseOptionSet(args);
+            ParseOptionSet optionSet = new ParseOptionSet(args);
+            //stack trace flag comes from the verbose option
+            org.smartfrog.sfcore.common.Logger.logStackTrace = optionSet.verbose;
+
+            //reset the error report
             createErrorReport();
 
-            showDiagnostics(opts);
+            showDiagnostics(optionSet);
 
-            if (opts.errorString != null) {
-                if (opts.help) {
-                    SFSystem.sfLog().out("Help: \n" + opts.errorString);
+            if (optionSet.errorString != null) {
+                if (optionSet.help) {
+                    SFSystem.sfLog().out("Help: \n" + optionSet.errorString);
                     ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
                 } else {
-                    SFSystem.sfLog().out("Error: " + opts.errorString);
-                    ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
+                    SFSystem.sfLog().out("Error: " + optionSet.errorString);
+                    ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_BAD_ARGS);
                 }
-                exit();
             }
 
-            if (opts.loadDescriptionsFromFile) {
-                parseFiles(opts.filesList);
+            if (optionSet.loadDescriptionsFromFile) {
+                parseFiles(optionSet.filesList, optionSet);
             } else {
-                Vector<String> report = parseFile(opts.fileName);
-                if (opts.statusReport) {
-                    printItemReport(report);
+                ParseResults results = parseFile(optionSet.fileName, null, optionSet);
+                extractErrors(results);
+                if (optionSet.statusReport) {
+                    printItemReport(results.report);
                 }
             }
-            //Added so that ant task detects error during build process.
             // If we found errors during parsing we force exit.
             if (!errorReport.isEmpty()) {
                 SFSystem.sfLog().out("Error detected. Check report.");
-                exit();
+                SFSystem.sfLog().out("SFParse: FAILED");
+                ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
             } else {
                 SFSystem.sfLog().out("SFParse: SUCCESSFUL");
                 ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
             }
         } catch (Throwable thr) {
-            SFSystem.sfLog().error(thr);
+            SFSystem.sfLog().error("Exception "+ thr, thr);
         }
 
-    }
-
-    /**
-     * Exits SFParse.
-     */
-    private static void exit() {
-        SFSystem.sfLog().out( "SFParse: FAILED");
-        ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
     }
 
     /**
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo() {
-        SFSystem.sfLog().out("\nParser - " +Version.versionString());
+        SFSystem.sfLog().out("\nParser - " + Version.versionString());
         SFSystem.sfLog().out(Version.copyright());
         SFSystem.sfLog().out(" ");
     }
@@ -401,102 +478,96 @@ public class SFParse implements MessageKeys {
      * Prints the phase.
      *
      * @param phaseName the phase name
-     * @param result the result to be printed
+     * @param result    the result to be printed
      */
     private static void printPhase(String phaseName, String result) {
         SFSystem.sfLog().out(
-            "******************** PHASE " + phaseName +
-            " *********************");
+                "******************** PHASE " + phaseName +
+                        " *********************");
         SFSystem.sfLog().out(result);
         SFSystem.sfLog().out("\n\n\n\n\n");
     }
 
-   /**
-    *  Prints the total parsing report.
-    *
-    *  @param report the report to be printed
-    */
-    private static void printTotalReport(Vector<Vector<String>> report){
-       for (Vector<String> entry : report) {
-           printItemReport(entry);
-       }
+    /**
+     * Prints the total parsing report.
+     *
+     * @param report the report to be printed
+     */
+    private static void printTotalReport(Vector<Vector<String>> report) {
+        for (Vector<String> entry : report) {
+            printItemReport(entry);
+        }
     }
 
-   /**
-    *  Print the parsing report for an item.
-    *
-    *  @param report the report to be printed
-    */
+    /**
+     * Print the parsing report for an item.
+     *
+     * @param report the report to be printed
+     */
     private static void printItemReport(Vector<String> report) {
-       StringBuilder st = new StringBuilder("STATUS REPORT: ");
-       for (Object line : report) {
-           st.append(line.toString()).append("<td/>\n");
-       }
-       SFSystem.sfLog().out(st.toString());
-   }
-
-   /**
-    *  Prints the total parsing report in html format.
-    *
-    *  @param report the report to be printed
-    *  @return the string form of the parse report
-    */
-    private static String printTotalReportHTML(Vector<Vector<String>> report){
-      //StringBuffer reportHTML = new StringBuffer("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
-       StringBuilder reportHTML = new StringBuilder();
-//      reportHTML.append("<body>"+"\n");
-//            //Add table
-//      reportHTML.append("<table border=\"1\">"+"\n");
-       for(Vector<String> entry:report) {
-           reportHTML.append(printItemReportHTML(entry));
-       }
-//      reportHTML.append("<table/>");
-//      reportHTML.append("<body/>"+"\n");
-//      reportHTML.append("<html/>"+"\n");
-      return reportHTML.toString();
+        StringBuilder st = new StringBuilder("STATUS REPORT: ");
+        for (String line : report) {
+            st.append(line);
+        }
+        SFSystem.sfLog().out(st.toString());
     }
 
-   /**
-    *  Print the parsing report for an item in html format.
-    *
-    *  @param report the report to be printed
-    * @return the output as a table row
-    */
+    /**
+     * Prints the total parsing report in html format.
+     *
+     * @param reportList the report to be printed
+     * @return the string form of the parse report
+     */
+    private static String printTotalReportHTML(Vector<Vector<String>> reportList) {
+        StringBuilder reportHTML = new StringBuilder();
+        for (Vector<String> entry : reportList) {
+            reportHTML.append(printItemReportHTML(entry));
+        }
+        return reportHTML.toString();
+    }
+
+    /**
+     * Print the parsing report for an item in html format.
+     *
+     * @param report the report to be printed
+     * @return the output as a table row
+     */
     private static String printItemReportHTML(Vector<String> report) {
-       //SFSystem.sfLog().out("STATUS REPORT:\n");
-       StringBuilder st = new StringBuilder("<tr>" + "\n");
-       for (String line : report) {
-           st.append("<td>").append(line).append("<td/>\n");
-       }
-       st.append("<tr/>" + "\n");
-       return st.toString();
-   }
+        StringBuilder st = new StringBuilder("<tr>" + "\n");
+        for (String line : report) {
+            st.append("<td>").append(line).append("<td/>\n");
+        }
+        st.append("<tr/>\n");
+        return st.toString();
+    }
 
     /**
      * Shows diagnostics report
+     *
      * @param options OptionSet
      */
     private static void showDiagnostics(ParseOptionSet options) {
-      if (options.diagnostics){
-        StringBuffer report = new StringBuffer();
-        Diagnostics.doReport(report);
-        SFSystem.sfLog().out(report.toString());
-      }
-    }
-    
-    public static boolean isVerboseOptSet(){
-        return opts != null && opts.verbose;
-    }
-    
-    public interface RawParseModifier {
-    	public void modify(ComponentDescription cd);
+        if (options.diagnostics) {
+            StringBuffer report = new StringBuffer();
+            Diagnostics.doReport(report);
+            SFSystem.sfLog().out(report.toString());
+        }
     }
 
-    private static class ParseResults {
+    public interface RawParseModifier {
+        public void modify(ComponentDescription cd);
+    }
+
+    /**
+     * This is the class to use
+     */
+    public static class ParseResults {
         ComponentDescription cd;
         Vector<String> parsed;
         Vector<Vector<String>> errors = new Vector<Vector<String>>();
-        
+        Vector<String> report = new Vector<String>();
+        long parseDurationMillis;
+
         public boolean hasErrors() {
             return !errors.isEmpty();
         }
