@@ -131,12 +131,15 @@ public class ParseOptionSet {
                     case 'd':
                         description = true;
                         break;
+                    
                     case 'r':
                         statusReport = true;
                         break;
+                    
                     case 'R':
                         statusReportHTML = true;
                         break;
+                    
                     case 'D':
                         diagnostics = true;
                         break;
@@ -144,6 +147,7 @@ public class ParseOptionSet {
                     case 'f':
                         loadDescriptionsFromFile = true;
                         break;
+                    
                     case 'c':
                         showConsole = true;
                         break;
@@ -162,10 +166,7 @@ public class ParseOptionSet {
             } catch (Exception e) {
                 errorString = "illegal format for options ";
                 exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
-                //Logger.log(ex);
-                if (SFSystem.sfLog().isErrorEnabled()) {
-                    SFSystem.sfLog().error(e);
-                }
+                SFSystem.sfLog().error("Error " + e, e);
 
             }
         }
@@ -174,16 +175,12 @@ public class ParseOptionSet {
            filesList= loadListOfFiles(fileName);
         }
 
-        if ((errorString != null)||fileName==null) {
-            if ((fileName==null) &&(!help)) errorString="no file to parse";
-            errorString += usage;
-            //System.exit(1);
-        }
-       } catch (Exception ex){
-           //Logger.log(ex);
-           if (SFSystem.sfLog().isErrorEnabled()) {
-               SFSystem.sfLog().error(ex);
+           if ((errorString != null) || fileName == null) {
+               if ((fileName == null) && (!help)) errorString = "no file to parse";
+               errorString += usage;
            }
+       } catch (Throwable t) {
+           SFSystem.sfLog().error(t, t);
            exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
        }
     }
@@ -212,16 +209,13 @@ public class ParseOptionSet {
           }
       } catch (IOException ex) {
          errorString = ex.getMessage();
-         //Logger.log(ex);
-         if (SFSystem.sfLog().isErrorEnabled()) {
-             SFSystem.sfLog().error(ex);
-         }
+         SFSystem.sfLog().error(errorString, ex);
       } finally {
             if(file!=null) {
                 try {
                     file.close();
                 } catch (IOException e) {
-                    SFSystem.sfLog().error(e);
+                    SFSystem.sfLog().error(e, e);
                 }
             }
         }
