@@ -128,7 +128,7 @@ public class CDPrinter {
      * print string on the resultant description. Option as to whether the final content is sorted lexicographically.
      * @param url the file to parse
      * @param params a context containing the parameter key-value pairs
-     * @param recursively sort final description lexicographically?
+     * @param sort sort final description lexicographically?
      * @return the resultant print string
      * @throws SmartFrogException
      * @throws FileNotFoundException
