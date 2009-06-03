@@ -691,7 +691,7 @@ public class ConfigurationDescriptor implements MessageKeys {
                 if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
                 setName(field);
             } catch (Exception ex) {
-                SFSystem.sfLog().error(ex);
+                SFSystem.sfLog().error(ex, ex);
                 throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
             if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this+"]");}
@@ -760,21 +760,21 @@ public class ConfigurationDescriptor implements MessageKeys {
             try {
                 setName(cd.sfResolve(ATR_NAME, "", false));
             } catch (Exception ex) {
-                SFSystem.sfLog().error(ex);
+                SFSystem.sfLog().error(ex, ex);
                 throw new SmartFrogInitException("Error parsing NAME in: "+ cd +"("+ex.getMessage()+")", ex);
             }
 
             try {
                 setActionType(cd.sfResolve(ATR_ACTION, "", true));
             } catch (Exception ex) {
-                SFSystem.sfLog().error(ex);
+                SFSystem.sfLog().error(ex, ex);
                 throw new SmartFrogInitException("Error parsing ACTION_TYPE in: "+ cd +"("+ex.getMessage()+")", ex);
             }                       
 
             try {
                 setUrl(cd.sfResolve(ATR_DESC_URL, "", false));
             } catch (Exception ex) {
-                 SFSystem.sfLog().error(ex);
+                 SFSystem.sfLog().error(ex, ex);
                  throw new SmartFrogInitException( "Error parsing DESCRIPION_URL in: "+ cd +"("+ex.getMessage()+")", ex);
             }
 

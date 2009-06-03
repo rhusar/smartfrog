@@ -403,10 +403,12 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 // Append stack trace if not null
         if (t != null) {
             buf.append(" <");
-            if (t instanceof SmartFrogException)
+            if (t instanceof SmartFrogException) {
                 buf.append(((SmartFrogException) t).toString("\n    "));
-            else
+            }
+            else {
                 buf.append(t.toString());
+            }
             buf.append(">\n        ");
         }
 

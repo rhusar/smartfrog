@@ -792,7 +792,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
         } catch (Exception sfex) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(sfex);
+                sfLog().error(sfex, sfex);
             }
             //Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().start();
@@ -1978,7 +1978,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             }
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(e);
+                sfLog().error(e,e);
             }
             try {
                 if (sfLog().isTraceEnabled()) {

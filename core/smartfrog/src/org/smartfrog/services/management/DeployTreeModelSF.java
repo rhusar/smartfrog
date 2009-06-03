@@ -69,7 +69,7 @@ public class DeployTreeModelSF  implements TreeModel {
             initLog();
             //System.out.println("Model created");
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
         }
     }
 
@@ -225,7 +225,7 @@ public class DeployTreeModelSF  implements TreeModel {
                this.sfLog=LogFactory.getLog((String)entry.getEntry());
             }
         } catch (Exception e) {
-            sfLog.error(e);
+            sfLog.error(e, e);
         }
     }
     private LogSF sfLog(){

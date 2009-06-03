@@ -1147,7 +1147,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
             sfLog().debug("update with done");
         } catch (Exception e) {
-            sfLog().error(e);
+            sfLog().error(e, e);
             try {
                 sfLog().debug("abandoning");
                 sfAbandonUpdate();
@@ -1172,7 +1172,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 sfUpdateStart();
                 sfLog().debug("update start done");
             } catch (Exception e) {
-                sfLog().error(e);
+                sfLog().error(e, e);
                 try {
                     sfTerminate(TerminationRecord.abnormal("fatal error in update - terminated comopnents", sfCompleteNameSafe(), e));
                 } catch (Exception e1) {

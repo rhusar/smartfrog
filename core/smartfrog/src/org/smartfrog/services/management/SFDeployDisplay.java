@@ -190,7 +190,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                       newDisplay.cleanAddedPanels();
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                          LogFactory.getLog("SFManagementConsole").error(thr1);
+                          LogFactory.getLog("SFManagementConsole").error(thr1, thr1);
                         }
                      }
                      try {
@@ -200,7 +200,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                          if (scriptingTab!=null) newDisplay.tabPane.add(scriptingPanelName,scriptingTab);
                      } catch (Throwable ex) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                          LogFactory.getLog("SFManagementConsole").error(ex);
+                          LogFactory.getLog("SFManagementConsole").error(ex, ex);
                         }
                         //exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
                      }
@@ -222,7 +222,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         treePanel.refresh();
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                         LogFactory.getLog("SFManagementConsole").error(thr1);
+                         LogFactory.getLog("SFManagementConsole").error(thr1, thr1);
                         }
                      }
                   }
@@ -261,7 +261,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                    try {
                       addScriptingPanel (newDisplay.tabPane, null,null,hostname,port );
                    } catch (Exception e1) {
-                       if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1);}
+                       if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1, e1);}
                        WindowUtilities.showError(newDisplay,e1.toString());
                    }
                   //refreshButtonPanes.doClick();
@@ -295,7 +295,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
 
 
-   public static Display starParserConsole(String nameDisplay, int height, int width, String positionDisplay, ComponentDescription cd, boolean shouldSystemExit) throws Exception {
+   public static Display startParserConsole(String nameDisplay, int height, int width, String positionDisplay, ComponentDescription cd, boolean shouldSystemExit) throws Exception {
        final JButton refreshButtonPanes;
        final JButton refreshButtonNode;
        JMenu jMenuMng;
@@ -571,7 +571,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
            tabPane.setSelectedIndex(tabIndex);
         }
       } catch (Throwable thr){
-          if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(thr);}
+          if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(thr, thr);}
           if (thr instanceof ClassNotFoundException) {
             WindowUtilities.showError(tabPane, "For the scripting panel to work BeanShell ('bsh-1.3.0.jar') \nneeds to be in the console's classpath or lib directory");
           } else {
@@ -625,7 +625,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                     createManagementPane();
                 } catch (Exception e) {
                    if (sfLog().isErrorEnabled()) {
-                      sfLog().error(e);
+                      sfLog().error(e, e);
                     }  //if
                 } //catch
               } //run
@@ -711,7 +711,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                try {
                    addScriptingPanel (display.tabPane, "sfManagementConsole", this,"localhost",3800 );
                } catch (Exception e1) {
-                   if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1); }
+                   if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1, e1); }
                    WindowUtilities.showError(display,e1.toString());
                }
            }

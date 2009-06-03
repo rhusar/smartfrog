@@ -199,7 +199,7 @@ public class DeployEntry implements Entry {
             //return entry;
         } catch (Exception ex) {
             //System.out.println(ex.toString());
-            if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
         }
 
         return null;
@@ -260,7 +260,7 @@ public class DeployEntry implements Entry {
                 //unexported
                 if (sfLog().isIgnoreEnabled()) sfLog().ignore(nex);
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             }
         } else if (entry instanceof ComponentDescription) {
             //System.out.println("EntryCD: getting name");
@@ -273,7 +273,7 @@ public class DeployEntry implements Entry {
                     }
                 }
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             }
         }
         //System.out.println("getDN(): "+name);
@@ -299,7 +299,7 @@ public class DeployEntry implements Entry {
                 //unexported
                 if (sfLog().isIgnoreEnabled()) sfLog().ignore(nex);
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             }
         } else if (entry instanceof ComponentDescription) {
             //System.out.println("EntryCD: getting name");
@@ -307,7 +307,7 @@ public class DeployEntry implements Entry {
                 name = ((ComponentDescription) entry).sfCompleteName().toString();
             //    System.out.println("EntryCD: getting name - "+name);
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             }
         }
         //System.out.println("getDN(): "+name);
@@ -328,8 +328,7 @@ public class DeployEntry implements Entry {
             try {
                 return ((getChildren())[index][1]);
             } catch (Exception ex) {
-                //System.out.println(ex.toString());
-                if (sfLog().isErrorEnabled()) sfLog().error(ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             }
         }
 
@@ -421,7 +420,7 @@ public class DeployEntry implements Entry {
                         index++;
                     }
                 } catch (Exception ex1) {
-                    if (sfLog().isErrorEnabled()) sfLog().error(ex1);
+                    if (sfLog().isErrorEnabled()) sfLog().error(ex1, ex1);
                 }
             }
 
@@ -479,7 +478,7 @@ public class DeployEntry implements Entry {
                     index++;
                   }
                 } catch (Exception ex1) {
-                  if (sfLog().isErrorEnabled()) sfLog().error(ex1);
+                  if (sfLog().isErrorEnabled()) sfLog().error(ex1, ex1);
                   data[index][0] = name;
                   data[index][1] = "Error:"+ex1.toString();
                   index++;
@@ -487,7 +486,7 @@ public class DeployEntry implements Entry {
             }
             return data;
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
             return null;
         }
     }
@@ -687,7 +686,7 @@ public class DeployEntry implements Entry {
                     counter++;
                   }
                 } catch (Exception ex1) {
-                  if (sfLog().isErrorEnabled()) sfLog().error(ex1);
+                  if (sfLog().isErrorEnabled()) sfLog().error(ex1, ex1);
                 }
             }
             return counter;
@@ -788,7 +787,7 @@ public class DeployEntry implements Entry {
             }
 
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error(ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
         }
 
         return entryName;
@@ -955,7 +954,7 @@ public class DeployEntry implements Entry {
         try {
            this.sfLog=LogFactory.getLog("sfManagementConsole");
         } catch (Exception e) {
-            sfLog.error(e);
+            sfLog.error(e, e);
         }
     }
     private LogSF sfLog(){
