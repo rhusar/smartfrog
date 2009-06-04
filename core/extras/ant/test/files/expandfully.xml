@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<project name="parse" default="testNoop">
+
+  <description>
+ Tests for the parse. 
+ 
+ command line invocation
+
+ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar -lib ../../../../smartfrog/dist/lib/smartfrog-3.17.011dev.jar -f expandfully.xml testValid
+  </description>
+
+  <import file="test-common.xml"/>
+
+  <property name="destfile.sf" location="${java.io.tmpdir}/expanded.sf"/>
+
+  <target name="testNoop">
+    <sf-expandfully/>
+  </target>
+
+  <target name="testValid">
+    <sf-expandfully
+      source="valid.sf"
+      dest="${destfile.sf}"/>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+  <target name="testInvalid">
+    <sf-expandfully
+      source="invalid.sf"
+      dest="${destfile.sf}"/>
+  </target>
+
+  <target name="testMissingFile">
+    <sf-expandfully
+      source="nonexistent-file.sf"
+      dest="${destfile.sf}"/>
+  </target>
+
+  <target name="testSubdir">
+    <sf-expandfully
+      source="subdir/subfile.sf"
+      dest="${destfile.sf}"/>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+
+
+  <target name="testNoProperty">
+    <sf-expandfully
+      source="property.sf"
+        dest="${destfile.sf}"/>
+  </target>
+
+  <target name="testProperty">
+    <sf-expandfully 
+      source="property.sf"
+      dest="${destfile.sf}">
+      <sysproperty key="echo.text" value="sysproperty"/>
+    </sf-expandfully>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+
+  <target name="testValidPropertyFile">
+    <sf-expandfully 
+      source="property.sf"
+      dest="${destfile.sf}">
+
+      <propertyFile file="loaded.properties"/>
+    </sf-expandfully>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+  <target name="testPropertySet">
+    <property name="echo.text" value="text to echo"/>
+    <sf-expandfully 
+      source="property.sf"
+      dest="${destfile.sf}">
+      
+      <syspropertyset>
+        <propertyref prefix="echo"/>
+      </syspropertyset>
+    </sf-expandfully>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+</project>

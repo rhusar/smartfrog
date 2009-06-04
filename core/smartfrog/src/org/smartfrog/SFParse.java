@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -118,14 +118,28 @@ public final class SFParse implements MessageKeys {
      * @return true if the file contained no errors
      */
     private static boolean extractErrors(ParseResults results) {
-        if (results.errors.isEmpty()) {
+        Vector<Vector<String>> errors = results.errors;
+        return addErrorsToErrorReport(errors);
+    }
+
+    /**
+     * Add errors to an error report, demand-creating the error report if necessary
+     * @param errors the errors to add
+     * @return true if they were added
+     */
+    private static boolean addErrorsToErrorReport(Vector<Vector<String>> errors) {
+        demandCreateErrorReport();
+        if (errors.isEmpty()) {
             return true;
         }
-        if (errorReport == null) {
-            errorReport = new Vector<Vector<String>>();
-        }
-        errorReport.addAll(results.errors);
+        errorReport.addAll(errors);
         return false;
+    }
+
+    private static void demandCreateErrorReport() {
+        if (errorReport == null) {
+            createErrorReport();
+        }
     }
 
     private static void createErrorReport() {
@@ -322,6 +336,8 @@ public final class SFParse implements MessageKeys {
         StringBuffer strb;
         Vector<Vector<String>> report = new Vector<Vector<String>>();
         Vector<ParseResults> parseResults = new Vector<ParseResults>(filenames.size());
+         //reset the error report
+        createErrorReport();
         Vector<Vector<String>> errors =  new Vector<Vector<String>>();
         //Loop through the vector
         for (String file : filenames) {
@@ -395,7 +411,7 @@ public final class SFParse implements MessageKeys {
                 }
             }
         }
-        SFParse.errorReport.addAll(errors);
+        addErrorsToErrorReport(errors);
         return parseResults;
     }
 
@@ -426,8 +442,7 @@ public final class SFParse implements MessageKeys {
             //stack trace flag comes from the verbose option
             org.smartfrog.sfcore.common.Logger.logStackTrace = optionSet.verbose;
 
-            //reset the error report
-            createErrorReport();
+
 
             showDiagnostics(optionSet);
 
@@ -494,7 +509,7 @@ public final class SFParse implements MessageKeys {
      *
      * @param report the report to be printed
      */
-    private static void printTotalReport(Vector<Vector<String>> report) {
+    public static void printTotalReport(Vector<Vector<String>> report) {
         for (Vector<String> entry : report) {
             printItemReport(entry);
         }
@@ -505,7 +520,7 @@ public final class SFParse implements MessageKeys {
      *
      * @param report the report to be printed
      */
-    private static void printItemReport(Vector<String> report) {
+    public static void printItemReport(Vector<String> report) {
         StringBuilder st = new StringBuilder("STATUS REPORT: ");
         for (String line : report) {
             st.append(line);
@@ -519,7 +534,7 @@ public final class SFParse implements MessageKeys {
      * @param reportList the report to be printed
      * @return the string form of the parse report
      */
-    private static String printTotalReportHTML(Vector<Vector<String>> reportList) {
+    public static String printTotalReportHTML(Vector<Vector<String>> reportList) {
         StringBuilder reportHTML = new StringBuilder();
         for (Vector<String> entry : reportList) {
             reportHTML.append(printItemReportHTML(entry));
@@ -533,7 +548,7 @@ public final class SFParse implements MessageKeys {
      * @param report the report to be printed
      * @return the output as a table row
      */
-    private static String printItemReportHTML(Vector<String> report) {
+    public static String printItemReportHTML(Vector<String> report) {
         StringBuilder st = new StringBuilder("<tr>" + "\n");
         for (String line : report) {
             st.append("<td>").append(line).append("<td/>\n");
@@ -563,10 +578,10 @@ public final class SFParse implements MessageKeys {
      * This is the class to use
      */
     public static class ParseResults {
-        ComponentDescription cd;
-        Vector<String> parsed;
-        Vector<Vector<String>> errors = new Vector<Vector<String>>();
-        Vector<String> report = new Vector<String>();
+        public ComponentDescription cd;
+        public Vector<String> parsed;
+        public Vector<Vector<String>> errors = new Vector<Vector<String>>();
+        public Vector<String> report = new Vector<String>();
         long parseDurationMillis;
 
         public boolean hasErrors() {

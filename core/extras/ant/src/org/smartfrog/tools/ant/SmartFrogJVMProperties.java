@@ -171,4 +171,6 @@ public class SmartFrogJVMProperties {
      * {@value}
      */
     public static final String PARSER_OPTION_R = "-r";
+
+    public static final String EXPANDFULLY_ENTRY_POINT = "org.smartfrog.sfcore.utils.SFExpandFully";
 }
