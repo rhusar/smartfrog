@@ -311,16 +311,18 @@ public final class SFParse implements MessageKeys {
     }
 
     /**
-     * Parses a list of files.
-     *
+     * Parses a list of files, return the results.
+     * This also adds the errors to the error reports, which is not reset before the run begins (for backwards
+     * compatibility)
      * @param filenames the list of files to be parsed
+     * @param options parser options
      * @return the list of parse results
      */
     private static Vector<ParseResults> parseFiles(Vector<String> filenames, ParseOptionSet options) {
         StringBuffer strb;
         Vector<Vector<String>> report = new Vector<Vector<String>>();
         Vector<ParseResults> parseResults = new Vector<ParseResults>(filenames.size());
-        Vector<Vector<String>> errors =  new Vector<Vector<String>>();;
+        Vector<Vector<String>> errors =  new Vector<Vector<String>>();
         //Loop through the vector
         for (String file : filenames) {
             try {
@@ -338,7 +340,6 @@ public final class SFParse implements MessageKeys {
                     ParseResults results = parseFile(file, null, options);
                     parseResults.add(results);
                     errors.addAll(results.errors);
-                    errors = results.errors;
                     Vector<String> output = results.report;
                     report.add(output);
                 }
@@ -394,7 +395,7 @@ public final class SFParse implements MessageKeys {
                 }
             }
         }
-        SFParse.errorReport = errors;
+        SFParse.errorReport.addAll(errors);
         return parseResults;
     }
 
