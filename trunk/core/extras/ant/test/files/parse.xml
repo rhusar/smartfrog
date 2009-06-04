@@ -7,7 +7,7 @@
  command line invocation
  ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f parse.xml testNoop
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f parse.xml testNoop
+ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar -lib ../../../../smartfrog/dist/lib/smartfrog-3.17.011dev.jar -f parse.xml testNoop
   </description>
 
   <import file="test-common.xml"/>
