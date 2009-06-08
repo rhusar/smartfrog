@@ -19,26 +19,26 @@ ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar -lib ../../../../smartfrog/dist
 
   <target name="testValid">
     <sf-expandfully
-      source="valid.sf"
+      file="valid.sf"
       dest="${destfile.sf}"/>
     <sf-parse file="${destfile.sf}"/>
   </target>
 
   <target name="testInvalid">
     <sf-expandfully
-      source="invalid.sf"
+      file="invalid.sf"
       dest="${destfile.sf}"/>
   </target>
 
   <target name="testMissingFile">
     <sf-expandfully
-      source="nonexistent-file.sf"
+      file="nonexistent-file.sf"
       dest="${destfile.sf}"/>
   </target>
 
   <target name="testSubdir">
     <sf-expandfully
-      source="subdir/subfile.sf"
+      file="subdir/subfile.sf"
       dest="${destfile.sf}"/>
     <sf-parse file="${destfile.sf}"/>
   </target>
@@ -47,13 +47,13 @@ ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar -lib ../../../../smartfrog/dist
 
   <target name="testNoProperty">
     <sf-expandfully
-      source="property.sf"
-        dest="${destfile.sf}"/>
+      file="property.sf"
+      dest="${destfile.sf}"/>
   </target>
 
   <target name="testProperty">
     <sf-expandfully 
-      source="property.sf"
+      file="property.sf"
       dest="${destfile.sf}">
       <sysproperty key="echo.text" value="sysproperty"/>
     </sf-expandfully>
@@ -63,7 +63,7 @@ ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar -lib ../../../../smartfrog/dist
 
   <target name="testValidPropertyFile">
     <sf-expandfully 
-      source="property.sf"
+      file="property.sf"
       dest="${destfile.sf}">
 
       <propertyFile file="loaded.properties"/>
@@ -74,7 +74,7 @@ ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar -lib ../../../../smartfrog/dist
   <target name="testPropertySet">
     <property name="echo.text" value="text to echo"/>
     <sf-expandfully 
-      source="property.sf"
+      file="property.sf"
       dest="${destfile.sf}">
       
       <syspropertyset>

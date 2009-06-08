@@ -26,10 +26,17 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 
 import java.io.File;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Parses the source .sf file and creates a fully expanded version, one
  * that can be copied to remote systems for deployment.
+ * <p/>
+ * The initial implementation is weak in that it doesnt let you set up the classpath for the
+ * resource expansion, you have to declare the task with the full CP in.
+ * That needs to be fixed (somehow) in future.
+ *
  * @ant.task category="SmartFrog" name="sf-expandfully"
  * <p/>
  * created 04-Jun-2009
@@ -37,7 +44,10 @@ import java.io.File;
 
 public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
 
-    private File source, dest;
+    private File dest;
+    private File source;
+    private String resource;
+
 
     /**
      * parser subprocess
@@ -45,9 +55,10 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
     private Java parser;
     public static final String ERROR_NO_SOURCE = "no source attribute";
     public static final String ERROR_NO_TEST = "no dest attribute";
-    public static final String ERROR_NO_SOURCEFILE = "File not found :";
+    public static final String ERROR_FILE_NOT_FOUND = "File not found :";
     public static final String EXPAND_FAILURE = "Expand failure";
     public static final String FAILED_WITH_ERROR_CODE = "Operation failed with error code ";
+    public static final String ERROR_TWO_SOURCES = "Cannot have both a source and a resource";
 
     /**
      * Called by the project to let the task initialize properly. The default
@@ -64,12 +75,20 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
     }
 
     /**
+     * Set the resource URL
+     * @param resource the resource name
+     */
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    /**
      * name a single file for parsing. Exactly equivalent to a nested fileset
      * with a file attribute
      *
      * @param file file to parse
      */
-    public void setSource(File file) {
+    public void setFile(File file) {
         source = file;
     }
 
@@ -93,17 +112,27 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
         //now let's configure the parser
         setupClasspath(parser);
         parser.setFork(true);
-        if (source == null) {
-            throw new BuildException(ERROR_NO_SOURCE);
-        }
+        String action;
         if (dest == null) {
             throw new BuildException(ERROR_NO_TEST);
         }
-        if (!source.exists()) {
-            throw new BuildException(ERROR_NO_SOURCEFILE + source);
+        if (source !=null) {
+            if(resource!=null) {
+                 throw new BuildException(ERROR_TWO_SOURCES);
+            }
+            if(!source.exists()) {
+                throw new BuildException(ERROR_FILE_NOT_FOUND);
+            }
+            parser.createArg().setValue("file");
+            parser.createArg().setFile(source);
+        } else {
+            //no source, so it must be a resource
+            if (resource==null) {
+                throw new BuildException(ERROR_NO_SOURCE);
+            }
+            parser.createArg().setValue("resource");
+            parser.createArg().setValue(resource);
         }
-        //and add various options to it
-        parser.createArg().setFile(source);
         parser.createArg().setFile(dest);
         fullCommandLine = parser.getCommandLine().toString();
         log(fullCommandLine,Project.MSG_VERBOSE);
