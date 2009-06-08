@@ -109,11 +109,11 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
         try {
             engine.resolveAndEvaluate(ATTR_SF_TERMINATE_WITH_RESOURCE, ATTR_SF_TERMINATE_WITH_CODE);
         } catch (SmartFrogException e) {
-            sfLog().ignore(e);
+            sfLog().ignore(e, e);
         } catch (RemoteException e) {
-            sfLog().error(e);
+            sfLog().error(e, e);
         } catch (ScriptException e) {
-            sfLog().error(e);
+            sfLog().error(e, e);
         }
         super.sfTerminateWith(status);
     }

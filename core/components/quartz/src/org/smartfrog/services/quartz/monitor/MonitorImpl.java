@@ -261,7 +261,7 @@ public class MonitorImpl extends PrimImpl implements Prim, Runnable, Monitor, Da
                 }
             }
         } catch (Exception e) {
-            log.error(e);
+            log.error(e, e);
         } finally {
             FileSystem.close(pErr);
             FileSystem.close(pOut);

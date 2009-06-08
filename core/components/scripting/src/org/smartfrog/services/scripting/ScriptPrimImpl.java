@@ -211,7 +211,7 @@ public class ScriptPrimImpl
         catch (SmartFrogResolutionException rex) {
         }
         catch (Exception e) {
-            sfLog().error(e);
+            sfLog().error(e, e);
         }
         super.sfTerminateWith(status);
     }

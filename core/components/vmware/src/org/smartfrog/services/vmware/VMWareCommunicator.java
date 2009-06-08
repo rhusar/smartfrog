@@ -265,7 +265,7 @@ public class VMWareCommunicator {
                 try {
                     reconnect();
                 } catch (SmartFrogException e) {
-                    log.error(e);
+                    log.error(e, e);
                 }
             }
 
