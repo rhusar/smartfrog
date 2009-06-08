@@ -652,7 +652,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                 try {
                     ps.waitFor();
                 } catch (InterruptedException e) {
-                    sfLog().error(e);
+                    sfLog().error(e, e);
                 }
                 Runtime.getRuntime().exec("net.exe stop \"VMware Authorization Service\"");
             } else {
@@ -678,7 +678,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                 try {
                     ps.waitFor();
                 } catch (InterruptedException e) {
-                    sfLog().error(e);
+                    sfLog().error(e, e);
                 }
                 Runtime.getRuntime().exec("net.exe start \"VMware Registration Service\"");
             } else {
