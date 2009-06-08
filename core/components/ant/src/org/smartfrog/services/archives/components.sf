@@ -31,6 +31,7 @@ For more information: www.smartfrog.org
  */
 Unzip extends FileUsingWorkflowComponent {
   sfClass "org.smartfrog.services.archives.UnzipImpl";
+  sfShouldTerminate true;
   
   //destination directory
   destDir extends FilenameType;
