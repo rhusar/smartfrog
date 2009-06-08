@@ -73,7 +73,6 @@ testRunnerAntXml extends TestRunner {
   sfShouldTerminate true;
 
   listener extends antxml {
-    outputDirectory test.data.dir;
   }
 
   tests1 extends SFUnitTestSuite {

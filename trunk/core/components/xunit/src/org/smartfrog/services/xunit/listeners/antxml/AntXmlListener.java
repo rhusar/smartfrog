@@ -138,6 +138,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
         String timestamp = dateFormat.format(startTime);
         maybeAddAttribute(root, TIMESTAMP, timestamp);
         log.info("logging to " + destFile);
+        touchDestFile();
     }
 
     /**
@@ -164,12 +165,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
         }
     }
 
-    /**
-     * Flush the output stream
-     */
-    private synchronized  void flush() {
-        
-    }
 
     /**
      * Add the statistics to the root node; replace any that existed testsuite errors="0" failures="0" hostname="k2"
@@ -232,9 +227,6 @@ public class AntXmlListener implements FileListener, XMLConstants {
     protected void save() throws IOException {
         OutputStream out = null;
         try {
-
-            //create the parent directories on demand.
-            destFile.getParentFile().mkdirs();
             //now the workers
             out = new BufferedOutputStream(new FileOutputStream(destFile));
             Serializer ser = createSerializer(out);
@@ -245,6 +237,16 @@ public class AntXmlListener implements FileListener, XMLConstants {
         } finally {
             FileSystem.close(out);
         }
+    }
+
+    /**
+     * Create the empty destFile just to mark it as busy, and to find problems sooner rather than later
+     * @throws IOException if the destination file cannot be created
+     */
+    private void touchDestFile() throws IOException {
+        //create the parent directories on demand.
+        destFile.getParentFile().mkdirs();
+        destFile.createNewFile();
     }
 
 
