@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,31 +19,22 @@
  */
 package org.smartfrog.services.xunit.base;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.TestCompoundImpl;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
+import org.smartfrog.services.assertions.events.TestStartedEvent;
+import org.smartfrog.services.xunit.log.TestListenerLog;
+import org.smartfrog.services.xunit.serial.Statistics;
+import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.utils.*;
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.workflow.events.DeployedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
-import org.smartfrog.sfcore.workflow.conditional.Conditional;
-import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
-import org.smartfrog.services.xunit.serial.Statistics;
-import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
-import org.smartfrog.services.xunit.log.TestListenerLog;
-import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.services.assertions.TestCompoundImpl;
-import org.smartfrog.services.assertions.events.TestStartedEvent;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 import java.rmi.RemoteException;
 
@@ -56,7 +47,7 @@ import java.rmi.RemoteException;
  */
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class TestRunnerImpl extends ConditionCompound implements TestRunner,
-        Runnable, TestBlock {
+        TestBlock, Executable {
 
     private Log log;
     private ComponentHelper helper;
@@ -105,7 +96,8 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     /**
      * thread to run the tests
      */
-    private SmartFrogThread worker = null;
+
+    private TestRunnerThread worker = null;
 
     /**
      * keeper of statistics
@@ -179,11 +171,11 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         return false;
     }
 
-    private synchronized SmartFrogThread getWorker() {
+    private synchronized TestRunnerThread getWorker() {
         return worker;
     }
 
-    private synchronized void setWorker(SmartFrogThread worker) {
+    private synchronized void setWorker(TestRunnerThread worker) {
         this.worker = worker;
     }
 
@@ -227,7 +219,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         //
         try {
             super.sfStart();
-//create and deploy all the children
+            //create and deploy all the children
             synchCreateChildren();
             //now start working with them
             self = sfCompleteName();
@@ -236,8 +228,9 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
             threadPriority = sfResolve(ATTR_THREAD_PRIORITY,
                     threadPriority,
                     false);
-            shouldTerminate = sfResolve(
-                    ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, false);
+            shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,
+                    shouldTerminate,
+                    false);
             listenerPrim = sfResolve(ATTR_LISTENER,
                     (Prim) configuration.getListenerFactory(),
                     true);
@@ -334,10 +327,9 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     public synchronized void sfTerminateWith(TerminationRecord status) {
         sendEvent(new TerminatedEvent(this, status));
         super.sfTerminateWith(status);
-        Thread thread = getWorker();
-        if (thread != null && thread.isAlive()) {
-            thread.interrupt();
-        }
+        WorkflowThread thread = getWorker();
+        thread.requestTerminationWithInterrupt();
+        WorkflowThread.requestThreadTerminationWithInterrupt(thread);
     }
 
     /**
@@ -350,7 +342,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         if (getWorker() != null) {
             throw new SmartFrogException(ERROR_TESTS_IN_PROGRESS);
         }
-        SmartFrogThread thread = new SmartFrogThread(this);
+        TestRunnerThread thread = new TestRunnerThread();
         thread.setName("tester");
         thread.setPriority(threadPriority);
         log.info("Starting new tester at priority " + threadPriority);
@@ -360,12 +352,10 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     }
 
     /**
-     * this is the thread entry point; runs the tests in a new thread.
-     *
-     * @see Thread#run()
+     * Run the tests in a new thread
+     * @throws Throwable
      */
-
-    public void run() {
+    public void execute() throws Throwable {
         setFinished(false);
         log.info("Beginning tests");
         try {
@@ -386,7 +376,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
 
 
             //now look at our termination actions
-            if (shouldTerminate) {
+ /*           if (shouldTerminate) {
                 TerminationRecord record;
                 if (!testFailed || !failOnError) {
                     record = TerminationRecord.normal(self);
@@ -395,8 +385,20 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
                 }
                 log.info("terminating test component" + record);
                 helper.targetForTermination(record, shouldDetach, false);
-            }
+            }*/
         }
+    }
+
+  
+    /**
+     * Thread that runs the tests
+     */
+    private class TestRunnerThread extends WorkflowThread {
+        private TestRunnerThread() {
+            super(TestRunnerImpl.this, TestRunnerImpl.this, true);
+        }
+
+
     }
 
     /**
