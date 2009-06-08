@@ -187,8 +187,12 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
         Enumeration<?> keys = proplist.propertyNames();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
+            String expectedValue = proplist.getProperty(key);
             try {
-                unsetProperty(key);
+                String liveValue = System.getProperty(key);
+                if (expectedValue.equals(liveValue)) {
+                    unsetProperty(key);
+                }
             } catch (SmartFrogException e) {
                 sfLog().ignore(e);
             }
