@@ -21,7 +21,6 @@
 
 package org.smartfrog.tools.ant.test.unit;
 
-import org.smartfrog.tools.ant.PropertyFile;
 import org.smartfrog.tools.ant.ExpandFullyTask;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
@@ -64,7 +63,7 @@ public class ExpandFullyTest extends TaskTestBase {
     public void testMissingFile() {
         expectBuildExceptionContaining("testMissingFile",
                 "not found",
-                ExpandFullyTask.ERROR_NO_SOURCEFILE);
+                ExpandFullyTask.ERROR_FILE_NOT_FOUND);
     }
 
 

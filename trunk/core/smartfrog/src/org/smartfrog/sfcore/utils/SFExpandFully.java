@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
+
 /**
  * This class lets you expand out a complete .sf file to a new file; takes a source and a dest. It's really designed to
  * be used from Ant, but there are other uses.
@@ -77,19 +78,26 @@ public class SFExpandFully {
             org.smartfrog.sfcore.common.Logger.logStackTrace = true;
 
             File srcFile, destFile;
-            if (args.length != 2) {
+            if (args.length != 3) {
                 usage();
                 ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_BAD_ARGS);
             }
-            String source = args[0];
-            srcFile = new File(source);
-            if(!srcFile.exists()) {
-                SFSystem.sfLog().out("Source file \""+srcFile+ "\" not found");
-                SFSystem.sfLog().out(NAME + ": FAILED");
-                ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            String action = args[0];
+            String source = args[1];
+            destFile = new File(args[2]);
+            SFParse.ParseResults results;
+            if("file".equals(action)) {
+                srcFile = new File(source);
+                if(!srcFile.exists()) {
+                    SFSystem.sfLog().out("Source file \""+srcFile+ "\" not found");
+                    SFSystem.sfLog().out(NAME + ": FAILED");
+                    ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
+                }
+                results = SFParse.parseFileToResults(source, null, optionSet);
+            } else {
+                //TODO: fix up the action from parsing a resource
+                throw new SmartFrogException("Not implemented");
             }
-            destFile = new File(args[1]);
-            SFParse.ParseResults results = SFParse.parseFileToResults(source, null, optionSet);
 
             // If we found errors during parsing we force exit.
             if (results.hasErrors()) {
@@ -148,9 +156,10 @@ public class SFExpandFully {
      */
     private static void usage() {
         SFSystem.sfLog().out("\n" + NAME + " - " + Version.versionString());
-        SFSystem.sfLog().out("Usage: sourceFile destFile");
+        SFSystem.sfLog().out("Usage: (file|resource) source destFile");
         SFSystem.sfLog().out(" ");
-        SFSystem.sfLog().out("Parses the source file and saves the expanded configuration to a destination file");
+        SFSystem.sfLog().out("Parses the source file or resource " +
+                "and saves the expanded configuration to a destination file");
     }
 
 }

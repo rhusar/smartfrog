@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.Closeable;
 import java.util.Vector;
 
 import org.smartfrog.services.management.SFDeployDisplay;
@@ -200,6 +201,8 @@ public final class SFParse implements MessageKeys {
         return parseFile(fileUrl, rpm, options);
     }
 
+       
+
     /**
      * Parses a file.
      *
@@ -217,40 +220,11 @@ public final class SFParse implements MessageKeys {
         report.add("File: " + fileUrl + "\n");
         long parseTime = System.currentTimeMillis();
         try {
-
+            InputStream is = openFileUrl(fileUrl);
             String language = getLanguageFromUrl(fileUrl);
             Vector phaseList;
 
-            Phases top;
-            InputStream is = null;
-            boolean printPhases = options.verbose && !options.quiet;
-            try {
-                is = SFClassLoader.getResourceAsStream(fileUrl);
-                if (is == null) {
-                    String msg = MessageUtil.
-                            formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
-                    throw new SmartFrogParseException(msg);
-                }
-                top = (new SFParser(language)).sfParse(is);
-                if (printPhases) {
-                    printPhase("raw", top.toString());
-                }
-                report.add("   " + "raw phase: OK");
-            } catch (Exception ex) {
-                report.add("   " + "raw" + " phase: FAILED!");
-                throw ex;
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
-
-            if (rpm != null) {
-                rpm.modify(top);
-            }
+            Phases top = parseStreamToPhases(results, is, rpm, language, options);
 
             phaseList = top.sfGetPhases();
             String phase;
@@ -259,7 +233,7 @@ public final class SFParse implements MessageKeys {
                 phase = (String) aPhaseList;
                 try {
                     top = top.sfResolvePhase(phase);
-                    if (printPhases) {
+                    if (options.verbose && !options.quiet) {
                         printPhase(phase, top.toString());
                     }
                     report.add("   " + phase + " phase: OK");
@@ -271,7 +245,7 @@ public final class SFParse implements MessageKeys {
 
             results.cd = top.sfAsComponentDescription();
 
-            if (options.description || printPhases) {
+            if (options.description || options.verbose && !options.quiet) {
                 printPhase("sfAsComponentDescription", results.cd.toString());
             }
 
@@ -306,6 +280,50 @@ public final class SFParse implements MessageKeys {
             results.errors.add(itemError);
         }
         return results;
+    }
+
+    public static Phases parseStreamToPhases(ParseResults results,
+                                             InputStream is,
+                                             RawParseModifier rpm,
+                                             String language, ParseOptionSet options) throws Exception {
+        Phases top;
+        try {
+            top = (new SFParser(language)).sfParse(is);
+            if (options.verbose && !options.quiet) {
+                printPhase("raw", top.toString());
+            }
+            results.addReport("   " + "raw phase: OK");
+        } catch (Exception ex) {
+            results.addReport("   " + "raw phase: FAILED!");
+            throw ex;
+        } finally {
+            closeQuietly(is);
+        }
+
+        if (rpm != null) {
+            rpm.modify(top);
+        }
+        return top;
+    }
+
+    private static InputStream openFileUrl(String fileUrl) throws SmartFrogParseException {
+        InputStream is = null;
+        is = SFClassLoader.getResourceAsStream(fileUrl);
+        if (is == null) {
+            String msg = MessageUtil.
+                    formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+            throw new SmartFrogParseException(msg);
+        }
+        return is;
+    }
+
+    public static void closeQuietly(Closeable is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
+        }
     }
 
 
@@ -586,6 +604,10 @@ public final class SFParse implements MessageKeys {
 
         public boolean hasErrors() {
             return !errors.isEmpty();
+        }
+
+        public void addReport(String reportEntry) {
+            report.add(reportEntry);
         }
     }
 }
