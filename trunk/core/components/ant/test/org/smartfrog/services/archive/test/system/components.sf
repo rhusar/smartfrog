@@ -17,6 +17,81 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
 
+#include "/org/smartfrog/services/ant/test/system/components.sf"
+#include "/org/smartfrog/services/archives/components.sf"
+
+
+
+FileSetupSequence extends Sequence {
+  workDir PROPERTY test.work.dir;
+  zipfile (workDir ++ "/testzip.zip");
+  textfile (workDir ++ "/test-text-file.txt");
+  
+  createTextFile extends TextFile {
+    filename textfile;
+    text "example text";
+    sfShouldTerminate true;
+  }
+}
+
+CreateZipFileSequence extends FileSetupSequence {
+  
+  antRun extends AntWorkflowRun {
+    sfShouldTerminate true;
+    Zip extends zip {
+      
+      destfile zipfile;
+      files extends fileset {
+        file LAZY createTextFile:absolutePath;
+      }
+    }
+  }
+  
+  //add an assert here that the file exists
+  assertZipWorked extends AssertWorkflow {
+    fileExists zipfile;
+  }
+}
+
+
+
+testCreateZipFileSequence extends ExpectTerminate {
+  
+  action extends CreateZipFileSequence {
+    
+  
+  }
+}
+
+
+UnzipSequence extends CreateZipFileSequence {
+  
+  unzip extends Unzip {
+    filename LAZY zipfile;
+    destDir (LAZY PROPERTY workDir);
+  }
+}
+
+UnzipEmptySource extends FileSetupSequence {
+  
+  delZip extends SelfDeletingFile {
+    filename LAZY zipfile:absolutePath;
+  }
+}
+
+testUnzipSequence extends ExpectTerminate {
+  
+  action extends UnzipSequence;
+  
+   unzip extends Unzip {
+    filename LAZY zipfile;
+    destDir (LAZY PROPERTY workDir);
+  }
+}
+
+
+testUnzipEmptySource extends ExpectDeployFailure {
+  
+  action extends UnzipEmptySource;
+}

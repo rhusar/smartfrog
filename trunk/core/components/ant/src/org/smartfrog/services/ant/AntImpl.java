@@ -95,9 +95,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
                                 task.execute();
                             } else if (((ComponentDescription) value).sfContainsAttribute(ATTR_ANT_ELEMENT)) {
                                 Object element = antProject.getElement(attributeName, (ComponentDescription) value);
-                                sfLog().ignore("TODO: something with elements/datatypes"+ attributeName);
+                                sfLog().warn("Ignoring: something with elements/datatypes"+ attributeName);
                             } else {
-                                sfLog().debug("TODO: something with attribute: "+ attributeName+ " "+value+";");
+                                sfLog().debug("Ignoring: something with attribute: "+ attributeName+ " "+value+";");
                             }
                         } catch (SmartFrogResolutionException e) {
                             throw e;

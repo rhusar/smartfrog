@@ -192,7 +192,7 @@ public class AntProject {
                     getElement(newElement, attribute, (ComponentDescription) value);
                 }
             } else {
-                // add attribute but relsove first if it is a reference.
+                // add attribute but resolve first if it is a reference.
                 if ((value instanceof Reference) && (owner != null)) {
                     try {
                         value = owner.sfResolve((Reference) value);
