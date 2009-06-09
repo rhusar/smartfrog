@@ -42,7 +42,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * name of host
      */
-    private String host;
+    private String host = "localhost";
 
     /**
      * the name of the application
@@ -52,12 +52,18 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * SmartFrog daemon connection port. org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
      */
-    protected Integer port;
+    protected int port = 3800;
 
 
     private void validate() throws BuildException {
         if (application == null) {
             throw new BuildException("Application is undefined");
+        }
+        if (host == null) {
+            throw new BuildException("Host is undefined");
+        }
+        if (port <= 0) {
+            throw new BuildException("Port out of range: " + port);
         }
     }
 
@@ -65,10 +71,10 @@ public class IsDeployed extends ProjectComponent implements Condition {
      * Is the application deployed
      *
      * @return true if the condition is true
-     * @throws org.apache.tools.ant.BuildException
-     *          if an error occurs
+     * @throws BuildException if an error occurs
      */
     public boolean eval() throws BuildException {
+        validate();
         //TODO: implement
         //plan is to use sfResolve, once we have a reference to a remote daemon.
         //all network exceptions should be caught and turned into simple failures.
@@ -96,7 +102,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     }
 
     /**
-     * set the hostname to deploy to (optional, defaults to localhost) Some tasks do not allow this to be set at all.
+     * set the hostname to deploy to (optional, defaults to localhost)
      *
      * @param host hostname
      */
@@ -106,11 +112,10 @@ public class IsDeployed extends ProjectComponent implements Condition {
     }
 
     /**
-     * port of daemon; optional -default is 3800 Some tasks do not allow this to be set at all.
-     *
+     * port of daemon; optional -default is 3800 
      * @param port port to use
      */
-    public void setPort(Integer port) {
+    public void setPort(int port) {
         this.port = port;
     }
 

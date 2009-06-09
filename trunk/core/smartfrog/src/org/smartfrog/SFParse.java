@@ -201,85 +201,142 @@ public final class SFParse implements MessageKeys {
         return parseFile(fileUrl, rpm, options);
     }
 
-       
-
     /**
-     * Parses a file.
+     * Attempts to parse given file, returning resultant component description
      *
-     * @param fileUrl the fileurl to be parsed
+     * @param resource the fileurl to be parsed
      * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
      *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
      *                phases are carried out
      * @param options the options for this parse
      * @return the parse results
      */
-    private static ParseResults parseFile(String fileUrl, RawParseModifier rpm, ParseOptionSet options) {
-        //To calculate how long it takes to parse a description
+    public static ParseResults parseResourceToResults(String resource, RawParseModifier rpm, ParseOptionSet options) {
+        return parseResource(resource, rpm, options);
+    }
+
+
+    /**
+     * Parses a file.
+     *
+     * @param path the fileurl to be parsed
+     * @param rpm     A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                phases are carried out
+     * @param options the options for this parse
+     * @return the parse results
+     */
+    private static ParseResults parseFile(String path, RawParseModifier rpm, ParseOptionSet options) {
         ParseResults results = new ParseResults();
-        Vector<String> report = results.report;
-        report.add("File: " + fileUrl + "\n");
-        long parseTime = System.currentTimeMillis();
+        results.addReport("File: " + path + "\n");
         try {
-            InputStream is = openFileUrl(fileUrl);
-            String language = getLanguageFromUrl(fileUrl);
-            Vector phaseList;
-
-            Phases top = parseStreamToPhases(results, is, rpm, language, options);
-
-            phaseList = top.sfGetPhases();
-            String phase;
-
-            for (Object aPhaseList : phaseList) {
-                phase = (String) aPhaseList;
-                try {
-                    top = top.sfResolvePhase(phase);
-                    if (options.verbose && !options.quiet) {
-                        printPhase(phase, top.toString());
-                    }
-                    report.add("   " + phase + " phase: OK");
-                } catch (Exception ex) {
-                    report.add("   " + phase + " phase: FAILED!");
-                    throw ex;
-                }
-            }
-
-            results.cd = top.sfAsComponentDescription();
-
+            InputStream is = openFileUrl(path);
+            parseInputStream(path, is, results, rpm, options);
+            
             if (options.description || options.verbose && !options.quiet) {
                 printPhase("sfAsComponentDescription", results.cd.toString());
             }
 
-            parseTime = System.currentTimeMillis() - parseTime;
-            report.add(", parsed in " + (parseTime) + " millisecs.");
-            results.parseDurationMillis = parseTime;
+            results.addReport(", parsed in " + (results.parseDurationMillis) + " millisecs.");
 
             showConsole(options, results.cd);
 
 
         } catch (Exception e) {
-            SFSystem.sfLog().err("'" + fileUrl + "': \n" + e + "\n", e);
-            Vector<String> itemError = new Vector<String>();
-            itemError.add(fileUrl);
-            boolean printStack;
-            if (e instanceof SmartFrogException) {
-                itemError.add(((SmartFrogException) e).toString("<BR><BR>"));
-                printStack = options.verbose; 
-            } else {
-                printStack = true;
-                itemError.add(e.toString());
-            }
-            //print the stack if verbose is set, or it is a non-SF exception (i.e. internal problems)
-            if (printStack) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                pw.flush();
-                pw.close();
-                itemError.add(sw.toString());
-            }
-            results.errors.add(itemError);
+            handleParseErrors(e, results, path, options, "<BR><BR>"
+            );
         }
         return results;
+    }
+
+    /**
+     * Parses a resource on the classpath.
+     *
+     * @param resource the resource to be parsed
+     * @param rpm     A RawParseModifier , usually null
+     * @param options the options for this parse
+     * @return the parse results
+     */
+    private static ParseResults parseResource(String resource, RawParseModifier rpm, ParseOptionSet options) {
+        ParseResults results = new ParseResults();
+        try {
+            InputStream is = openResource(resource);
+            parseInputStream(resource, is, results, rpm, options);
+        } catch (Exception e) {
+            handleParseErrors(e, results, resource, options, "\n");
+        }
+        return results;
+    }
+
+    /**
+     * Parse an input stream (which is closed afterwards) and fill in the report
+     * @param path path of the stream, used to determine language
+     * @param is input stream
+     * @param results results to update
+     * @param rpm parse modifier, usually null
+     * @param options any options
+     * @throws Exception on failure
+     */
+    private static void parseInputStream(String path, InputStream is, ParseResults results,
+                                                   RawParseModifier rpm, ParseOptionSet options)
+            throws Exception {
+        String language = getLanguageFromUrl(path);
+        Vector phaseList;
+        long parseTime = System.currentTimeMillis();
+        Phases top = parseStreamToPhases(results, is, rpm, language, options);
+
+        phaseList = top.sfGetPhases();
+        String phase;
+        Vector<String> report = results.report;
+        for (Object aPhaseList : phaseList) {
+            phase = (String) aPhaseList;
+            try {
+                top = top.sfResolvePhase(phase);
+                if (options.verbose && !options.quiet) {
+                    printPhase(phase, top.toString());
+                }
+                report.add("   " + phase + " phase: OK");
+            } catch (Exception ex) {
+                report.add("   " + phase + " phase: FAILED!");
+                throw ex;
+            }
+        }
+
+        results.cd = top.sfAsComponentDescription();
+        results.parseDurationMillis = System.currentTimeMillis() - parseTime;
+    }
+
+    /**
+     * Handle parsing errors by adding more details to the report
+     * @param thrown what went wrong
+     * @param results the results to add to
+     * @param path path of the source
+     * @param options verbosity options.
+     * @param split
+     */
+    private static void handleParseErrors(Throwable thrown, ParseResults results, String path,
+                                          ParseOptionSet options, String split) {
+        SFSystem.sfLog().err("'" + path + "': \n" + thrown + "\n", thrown);
+        Vector<String> itemError = new Vector<String>();
+        itemError.add(path);
+        boolean printStack;
+        if (thrown instanceof SmartFrogException) {
+            itemError.add(((SmartFrogException) thrown).toString(split));
+            printStack = options.verbose; 
+        } else {
+            printStack = true;
+            itemError.add(thrown.toString());
+        }
+        //print the stack if verbose is set, or it is a non-SF exception (i.e. internal problems)
+        if (printStack) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            thrown.printStackTrace(pw);
+            pw.flush();
+            pw.close();
+            itemError.add(sw.toString());
+        }
+        results.errors.add(itemError);
     }
 
     public static Phases parseStreamToPhases(ParseResults results,
@@ -316,6 +373,18 @@ public final class SFParse implements MessageKeys {
         }
         return is;
     }
+
+    private static InputStream openResource(String resource) throws SmartFrogParseException {
+        InputStream is = null;
+        is = SFClassLoader.getResourceAsStream(resource);
+        if (is == null) {
+            String msg = MessageUtil.
+                    formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, resource);
+            throw new SmartFrogParseException(msg);
+        }
+        return is;
+    }
+
 
     public static void closeQuietly(Closeable is) {
         if (is != null) {

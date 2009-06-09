@@ -797,6 +797,8 @@
   <!-- sfParse parsertargets                                                -->
   <!-- =================================================================== -->
   <target name="sfParseTest" depends="build,jars" description="runs sfParser for 'parsertargets' file">
+    <!--change this for different verbosity-->
+    <property  name="sfParseQuietOption" value="-q" />
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
@@ -806,9 +808,9 @@
       </classpath>
       <arg value="-R"/>
       <!--<arg value="-r"/> -->
-      <arg value="-q"/>
+      <arg value="${sfParseQuietOption}"/>
       <arg value="-f"/>
-	  <arg value="-D"/>
+	    <arg value="-D"/>
       <arg file="parsertargets"/>
     </java>
   </target>

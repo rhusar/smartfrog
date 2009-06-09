@@ -39,6 +39,8 @@
   <property name="new.port" value="3805"/>
   <property name="shutdown.time.seconds" value="5"/>
 
+  <property name="test.work.dir" location="." />
+  
   <presetdef name="sf-waitfor">
     <waitfor maxwait="10" maxwaitunit="second"
         checkevery="1" checkeveryunit="second"
