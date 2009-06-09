@@ -75,6 +75,7 @@ public class SFExpandFully {
             ParseOptionSet optionSet = new ParseOptionSet(args);
             optionSet.verbose = false;
             optionSet.showConsole = false;
+            //enable stack trace logging
             org.smartfrog.sfcore.common.Logger.logStackTrace = true;
 
             File srcFile, destFile;
@@ -95,8 +96,8 @@ public class SFExpandFully {
                 }
                 results = SFParse.parseFileToResults(source, null, optionSet);
             } else {
-                //TODO: fix up the action from parsing a resource
-                throw new SmartFrogException("Not implemented");
+                //parse a resource
+                results = SFParse.parseResourceToResults(source, null, optionSet);
             }
 
             // If we found errors during parsing we force exit.
@@ -117,6 +118,7 @@ public class SFExpandFully {
             }
         } catch (Throwable thr) {
             SFSystem.sfLog().error("Exception " + thr, thr);
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
     }

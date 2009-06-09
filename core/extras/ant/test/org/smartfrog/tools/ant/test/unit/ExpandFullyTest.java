@@ -45,8 +45,8 @@ public class ExpandFullyTest extends TaskTestBase {
 
     public void testNoop() {
         expectBuildExceptionContaining("testNoop",
-                ExpandFullyTask.ERROR_NO_SOURCE,
-                ExpandFullyTask.ERROR_NO_SOURCE);
+                ExpandFullyTask.ERROR_NO_DEST,
+                ExpandFullyTask.ERROR_NO_DEST);
     }
 
 
@@ -58,6 +58,11 @@ public class ExpandFullyTest extends TaskTestBase {
         expectExceptionWithLogContaining("testInvalid",
                 "SmartFrogTypeResolutionException",
                 "Reference not found");
+    }
+    public void testBothAttributes() {
+        expectBuildExceptionContaining("testBothAttributes",
+                ExpandFullyTask.ERROR_TWO_SOURCES,
+                ExpandFullyTask.ERROR_TWO_SOURCES);
     }
 
     public void testMissingFile() {
@@ -84,4 +89,16 @@ public class ExpandFullyTest extends TaskTestBase {
     public void testPropertySet() {
         expectLogContaining("testPropertySet", SUCCESSFUL_PARSE);
     }
+
+    public void testValidResource() {
+        expectLogContaining("testValidResource", SUCCESSFUL_PARSE);
+    }
+
+    public void testMissingResource() {
+        expectBuildExceptionContaining("testMissingResource",
+                "undefined property in .SF file",
+                ExpandFullyTask.EXPAND_FAILURE);
+    }
+
 }
+
