@@ -1305,6 +1305,27 @@ smartfrog.tasks.classpath=
   </target>
 
 
+  <target name="ready-to-rmi-tests"  depends="compile-tests"/>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+  <!-- ========================================================== -->
+  <target name="rmi-tests" depends="ready-to-rmi-tests"
+      description="create the RMI classes"
+      if="test.dir.found">
+    <sf-rmic
+        base="${test.classes.dir}"
+        verify="true"
+        compiler="${rmic.compiler}"
+        includes="**/*.class">
+      <classpath refid="tests.compile.classpath"/>
+    </sf-rmic>
+  </target>
+
+
+
   <target name="ready-to-jar" depends="rmi"/>
 
   <!--
@@ -1369,6 +1390,9 @@ smartfrog.tasks.classpath=
     <unzip src="${target.jar}" dest="${target.exploded}"/>
   </target>
 
+
+  <target name="ready-to-package-tests" depends="rmi-tests" />
+  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the test jar ${test.jar}-->
