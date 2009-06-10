@@ -37,15 +37,21 @@ FileSetupSequence extends Sequence {
 
 CreateZipFileSequence extends FileSetupSequence {
   
+  
   antRun extends AntWorkflowRun {
     sfShouldTerminate true;
     Zip extends zip {
       
       destfile zipfile;
       files extends fileset {
-        file LAZY createTextFile:absolutePath;
+        //file LAZY createTextFile:absolutePath;
+        file LAZY textfile;
       }
     }
+    
+    Delete extends delete {
+        file LAZY textfile;
+   }
   }
   
   //add an assert here that the file exists
