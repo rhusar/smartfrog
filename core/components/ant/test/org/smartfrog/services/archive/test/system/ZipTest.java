@@ -25,12 +25,12 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 08-Jun-2009 17:05:19
  */
 
-public class UnzipTest
+public class ZipTest
         extends DeployingTestBase {
 
     private static final String FILES = "/org/smartfrog/services/archive/test/system/";
 
-    public UnzipTest(String name) {
+    public ZipTest(String name) {
         super(name);
     }
 
