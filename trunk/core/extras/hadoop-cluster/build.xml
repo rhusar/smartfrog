@@ -200,11 +200,18 @@
   </target>
 
    <target name="cluster2file" depends="ready-to-deploy"
-          description="deploy a forked cluster">
-    <sf-expandfully />
-    <deploy>
-      <application name="cluster2"
-                   descriptor="/${cluster2.sf}"/>
-    </deploy>
+          description="export the cluster2.sf resource to an expanded file">
+     <property name="build.sf.dir" location="${build.dir}/sf" />
+     <mkdir  dir="${build.sf.dir}"/>
+
+     <property name="build.default.sf" location="${build.sf.dir}/default.sf" />
+     <sf-expandfully
+        resource="/${cluster2.sf}"
+        dest="${build.default.sf}"
+        classpathRef="tests.run.classpath"
+        >
+
+       </sf-expandfully>
+     <echo> file is ${build.default.sf}</echo>
   </target>
 </project>
