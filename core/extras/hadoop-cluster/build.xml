@@ -199,4 +199,12 @@
     </deploy>
   </target>
 
+   <target name="cluster2file" depends="ready-to-deploy"
+          description="deploy a forked cluster">
+    <sf-expandfully />
+    <deploy>
+      <application name="cluster2"
+                   descriptor="/${cluster2.sf}"/>
+    </deploy>
+  </target>
 </project>
