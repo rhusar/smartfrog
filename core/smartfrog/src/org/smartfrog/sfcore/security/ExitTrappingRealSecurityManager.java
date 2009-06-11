@@ -61,7 +61,9 @@ public class ExitTrappingRealSecurityManager extends SecurityManager implements 
      */
     @Override
     public String toString() {
-        return "ExitTrappingRealSecurityManager, systemExitPermitted=" + isSystemExitPermitted();
+        return "ExitTrappingRealSecurityManager:\n" 
+                + " security is checked;"
+                + " systemExitPermitted=" + isSystemExitPermitted();
     }
 
     

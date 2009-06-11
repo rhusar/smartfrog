@@ -72,7 +72,9 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
      */
     @Override
     public String toString() {
-        return "ExitTrappingSecurityManager, systemExitPermitted=" + isSystemExitPermitted();
+        return "ExitTrappingSecurityManager:" 
+                + "\n no security checks; "
+                + "systemExitPermitted=" + isSystemExitPermitted();
     }
 
     /**

@@ -101,4 +101,13 @@ public class DummySecurityManager extends SecurityManager {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * @return a description of the security manager
+     */
+    @Override
+    public String toString() {
+        return "DummySecurityManager:\n allows everything";
+    }
 }
