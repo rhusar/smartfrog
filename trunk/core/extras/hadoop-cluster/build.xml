@@ -83,7 +83,7 @@
     <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
     <property name="cluster.sf" value="${cluster}/cluster.sf" />
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
-
+    <property name="default.sf" value="${cluster}/cluster3.sf" />
     <property name="deploy.sf" value="${cluster.sf}" />
     <!--this sets the name for the tests-->
     <property name="deploy.host" value="${test.namenode}" />
@@ -200,18 +200,75 @@
   </target>
 
    <target name="cluster2file" depends="ready-to-deploy"
-          description="export the cluster2.sf resource to an expanded file">
+          description="export the cluster resource to an expanded file">
      <property name="build.sf.dir" location="${build.dir}/sf" />
      <mkdir  dir="${build.sf.dir}"/>
 
      <property name="build.default.sf" location="${build.sf.dir}/default.sf" />
      <sf-expandfully
-        resource="/${cluster2.sf}"
+        resource="/${default.sf}"
         dest="${build.default.sf}"
         classpathRef="tests.run.classpath"
-        >
-
-       </sf-expandfully>
+        />
      <echo> file is ${build.default.sf}</echo>
   </target>
+
+  <!-- this target inits/prints -->
+  <target name="init-ssh" depends="ready-to-deploy">
+    <property name="ssh.host" value="localhost" />
+    <property name="ssh.user" value="${user.name}" />
+    <property name="ssh.pass" value="" />
+    <property name="ssh.trust" value="true" />
+    <property name="ssh.verbose" value="false" />
+    <property name="ssh.dest.dir" value="${env.SFHOME}/bin/" />
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.host}:${ssh.dest.dir}"/>
+    <echo>
+      ssh.host = ${ssh.host}
+      ssh.user = ${ssh.user}
+      ssh.dest = ${env.SFHOME}
+      ssh.path = ${ssh.path}
+    </echo>
+    <fail  unless="ssh.host" >Not set: ${ssh.host}</fail>
+    <fail  unless="ssh.user" >Not set: ${ssh.user}</fail>
+    <fail  unless="ssh.pass" >Not set: ${ssh.pass}</fail>
+    <property name="ssh.command.timeout" value="60000"/>
+    <!--
+        passphrase="${rpm.ssh.passphrase}"
+        keyfile="${rpm.ssh.keyfile}
+    -->
+    <presetdef name="sshcommand">
+      <sshexec host="${ssh.host}"
+          username="${ssh.user}"
+          password="${ssh.pass}"
+          trust="${ssh.trust}"
+          failonerror="true"
+
+          timeout="${ssh.command.timeout}"
+          />
+    </presetdef>
+   <presetdef name="scpfile">
+    <scp
+        password="${ssh.pass}"
+        trust="${ssh.trust}"
+        verbose="${ssh.verbose}"/>
+    </presetdef>
+
+  </target>
+
+  <target  name="ready-to-ssh" depends="init-ssh,cluster2file" >
+  </target>
+
+  <!-- issue a mkdir command. This is a good test for the parameters being
+  set up right.-->
+  <target  name="ssh-mkdir" depends="init-ssh">
+    <sshcommand command="mkdir -p ${ssh.dest.dir}" />
+  </target>
+
+  <target  name="ssh-cluster" depends="ready-to-ssh,ssh-mkdir" >
+    <scpfile remoteToDir="${ssh.path}">
+      <fileset  file="${build.default.sf}" />
+  </scpfile>
+  </target>
+  
 </project>
