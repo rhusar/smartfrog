@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<project name="loggingservices" default="default">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<description>
+    Build file for Log4J, JCL,... loggers.
+</description>
+
+
+  <!-- override point -->
+  <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
+  <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="false"/>
+
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/-->
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
+
+<!--    <property name="net.lib.dir" location="lib" description=
+                        "place to put third party libraries"/>
+        -->
+
+
+
+ <property name="Name.System" value="sfLoggingServices"/>
+
+
+
+  <target name="init" depends="common.init">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
+    <copy todir="${dist.lib.dir}">
+      <fileset dir="${lib.dir}"/>
+    </copy>
+    <copy todir="${dist.doc.dir}">
+      <fileset dir="${doc.dir}"/>
+    </copy>
+    <copy todir="${dist.src.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/examples/**"/>
+      </fileset>
+  </copy>
+   <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
+   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+  </target>
+
+</project>

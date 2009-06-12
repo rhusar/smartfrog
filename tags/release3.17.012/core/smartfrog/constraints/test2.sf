@@ -1,0 +1,16 @@
+#include "/org/smartfrog/sfcore/languages/sf/constraints/constraints.sf"
+
+
+sfConfig extends {
+  foo bar;
+  foo2 bar2;
+}
+bar extends Constraint {
+   [sfConstraint] pred2 "x=3, y=4";
+   x VAR;
+   y VAR;
+   z 2;
+}
+bar2 extends {
+   boolox1 2;
+}

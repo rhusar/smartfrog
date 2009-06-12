@@ -1,0 +1,64 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/examples/orchdws/monitor/components.sf"
+#include "/org/smartfrog/examples/orchdws/apache/components.sf"
+#include "/org/smartfrog/examples/orchdws/gui/graphpanel/components.sf"
+
+CoreWebServer extends Compound {
+    polling 5;
+
+    server extends Apache {
+        name           "web server";
+        interCheckTime 5;
+    }
+
+    threadMeter extends Meter {
+        dataSource          LAZY server;
+        pollingPeriod       polling;
+        dataDisplayed       "httpd threads";
+	    frameTitle          "apache web server";
+        maxY                50;
+        minY                0;
+        lowerThresholdValue 5;
+        gridStepY           5;
+    }
+
+    cpuMonitor extends CpuMonitor {
+        delay  polling;
+    }
+
+    graph extends Graph {
+        dataSource      LAZY cpuMonitor;
+        pollingPeriod   polling;
+        panelWidth      600;
+        panelHeight     200;
+        dataDisplayed   "cpu usage";
+	frameTitle      "apache web server";
+        maxY            100;
+        minY            0;
+        gridStepY       10;
+    }
+}
+
+WebServerTemplate extends Compound {
+    server extends CoreWebServer;
+    apache LAZY server:server;
+}

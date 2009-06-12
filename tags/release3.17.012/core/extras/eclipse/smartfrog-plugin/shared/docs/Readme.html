@@ -1,0 +1,262 @@
+<html>
+<head>
+<title>SmartFrog Plug-In ReadMe</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="images/relnotes.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<a name="top"></a>
+<h1>SmartFrog Plug-In Readme</h1>
+
+<hr color="#0066FF" size="9" />
+
+
+<a href="#system">System Requirements</a> |
+<a href="#installation">Installation</a> |
+<a href="#guide">Quick Start Guide</a>
+  
+<hr color="#000000">
+
+<h2><a href="#top"><img src="images/top.gif" width="15" height="20"></a>
+<a name="system"></a>System Requirements</h2>
+
+
+<p>The system requirements are the following:</p>
+
+
+<ol>
+ <li>     
+ <a href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=108447&amp;release_id=261959">
+ SmartFrog.3.04.004_beta</a>
+ </li> 
+ <li>
+ <a href="http://java.sun.com/j2se/1.4.2/download.html">
+ Java 1.4</a>
+ </li> 
+ <li>
+ <a href="http://download.eclipse.org/downloads/drops/R-3.0-200406251208/index.php">
+ Eclipse 3.0</a>
+ </li>
+ <li>The %SFHOME% environment variable must be set to <i>SmartFrog_Install_Dir</i>\<font face="Courier New">dist</font>.</li>
+ <li>Tested
+     on Windows system only</li>
+</ol>
+
+
+<h2><a href="#top"><img src="images/top.gif" width="15" height="20"></a>
+<a name="installation"></a>Installation</h2>
+
+<p>To install the Eclipse SmartFrog plug-in, do the following:</p>
+
+<ol>
+  <li>Download the test build from
+<a class="external" href="http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=132642">
+Sourceforge.net</a>.</li>
+
+  
+  
+<li>  
+
+For Unix Platform, 
+
+Untar SmartFrog_EplugIn_dist_1.0.2.Beta.tar to local drive file. It contains both the SmartFrog_EplugIn_1.0.2.Beta.tar file (the functionality plug-in) and the SmartFrog_EplugIn_doc_1.0.2.Beta.tar file (the online help plug-in). 
+Then, Untar these files (SmartFrog_EplugIn_1.0.2.Beta.tar and SmartFrog_EplugIn_doc_1.0.2.Beta.tar) in the <EclipseHome>\eclipse\plugins directory. 
+
+</li>
+<li>
+For Unix Platform,
+Unzip SmartFrog_EplugIn_dist_1.0.2.Beta.zip to local drive file. It contains both the SmartFrog_EplugIn_1.0.2.Beta.zip file (the functionality plug-in) and the SmartFrog_EplugIn_doc_1.0.2.Beta.zip file (the online help plug-in). 
+Then, Unzip the files (SmartFrog_EplugIn_1.0.2.Beta.zip and SmartFrog_EplugIn_doc_1.0.2.Beta.zip) in the <EclipseHome>\eclipse\plugins directory. 
+</li>
+</ol>
+
+<h2><a href="#top"><img src="images/top.gif" width="15" height="20"></a>
+<a name="guide"></a>Quick Start Guide</h2>
+
+<h3>How to Create a SmartFrog Project</h3>
+
+<ol>
+	<li>From the Eclipse menu bar, select <b>File</b> &gt; <b>New</b> &gt; <b>Project</b> &gt; <b>SmartFrog</b>. This opens 
+  the following dialog.<p>
+  <img src="images/project_name_wizard.gif" width="500" height="500"></p>
+  </li>
+  <li>
+  Expand <b>SmartFrog</b> and select <b>New SmartFrog Project</b>. Click <b>Next</b>. This brings up 
+  the following page where you can specify a project name:<p><img src="images/project_name.gif" width="500" height="520" ></p>  
+  </li>
+  <li>
+  In the <b>Project name:</b> field, specify the project name. Click <b>Next</b>. 
+  This brings up the following:
+  <p><img src="images/project_libs.gif" width="500" height="520"></p>
+  You can accept all the default values on the various tabs. As you can see from 
+  the above screen shot, the relevant libraries have been imported into your 
+  project.
+  </li>
+  <li>
+  Click <b>Finish</b>. You are automatically  placed in the SmartFrog 
+  perspective.
+  <p><img src="images/project_perspective.gif" width="580" height="444"></p>
+  </li>
+</ol>
+
+<h3>How to Create a SmartFrog Description File</h3>
+
+<ol>
+  <li>From the Eclipse menu bar, select <b>File</b> &gt; <b>New</b> &gt; <b>SmartFrog 
+  Description</b>. This opens the following dialog where you can specify a name 
+  for your description file:
+  <p><img src="images/desc_name.gif" width="438" height="562"></p>
+  </li>
+  <li>
+  In the <b>File name:</b> field, specify a name.
+  </li>
+  <li>Click <b>Finish</b>. This opens the empty SF file in the editor 
+  pane of the GUI. </p>
+  <p><img src="images/desc_editor_empty.gif" width="752" height="497"></p>
+  </li>
+  <li>
+  Cut and paste the following code into the editor pane:
+  <p>
+  <pre>#include &quot;org/smartfrog/components.sf&quot;
+#include &quot;org/smartfrog/examples/helloworld/printer.sf&quot;
+#include &quot;org/smartfrog/examples/helloworld/generator.sf&quot;
+
+sfConfig extends Compound {
+    /**
+     * Generator component
+     */
+    g extends Generator {
+    /**
+     * Message vector
+     */
+    messages [&quot;hello&quot;, &quot;world&quot;];
+    /**
+     * Link to the instance of the printer
+     */
+    printer LAZY ATTRIB p;
+    }
+    /**
+     * Printer component
+     */
+    p extends Printer {
+    name &quot;myPrinter&quot;;
+    }
+}</pre>
+</p>
+<p>
+<font size="2">Immediately, you will see the editor feature of syntax coloring.
+</font>
+</p>
+<p>
+<font size="2">Another useful editor feature is the ability to define a section of code that you want
+to expand and collapse. </font></p>
+<li>
+To define a code area that can
+</li>
+expand and collapse, also called a folding region, highlight the lines of code 
+you want in this region. Right-click in the editor, and select <b>Define Folding 
+Region</b> from its context menu.
+<p><img src="images/desc_folding_region.gif" width="585" height="479"></p>
+This creates a triangle icon to the left of the defined region that allows you
+to expand and collapse that portion of the code.
+
+</li>
+</ol>
+
+<h3>How to Create a Java Class File Using SmartFrog Interfaces</h3>
+
+<ol>
+  <li>From the Eclipse menu bar, select <b>File</b> &gt; <b>New</b> &gt; <b>
+  Class</b>. This opens the following dialog where you can specify a name 
+  for your Java class file: 
+  <p><img src="images/java_name.gif" width="515" height="557"></p>
+  </li>
+  <li>
+  In the <b>Package:</b> field, you can accept the default or specify a&nbsp; 
+  package name to avoid name clashes. In the <b>Name:</b> field specify a name 
+  for your Java class file. In our example, the file name is <b>MyPrim</b>.</li>
+  <li>
+  Click <b>Finish</b>. This opens a skeleton Java class file in the editor pane 
+  of the GUI.
+  <p><img src="images/java_editor_skeleton.gif" width="585" height="479"></p>
+  </li>
+  <li>
+  Highlight <font face="Courier New">public class MyPrim {}</font> in the editor 
+  and cut and paste the following code over it:
+  <p>
+  <pre>import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import java.rmi.RemoteException;
+
+public class MyPrim
+extends PrimImpl
+implements Prim
+{
+/* any component specific declarations */
+public MyPrim()
+throws RemoteException
+{
+}
+
+public synchronized void sfDeploy()
+throws RemoteException, SmartFrogException
+{
+super.sfDeploy();
+/* any component specific initialization code */
+}
+
+public synchronized void sfStart()
+throws RemoteException, SmartFrogException
+{
+super.sfStart();
+/* any component specific start-up code */
+}
+public void sfTerminate(TerminationRecord arg0) {
+// TODO Auto-generated method stub
+super.sfTerminate(arg0);
+}
+
+/* any component specific methods */
+}</pre>
+ <p><font size="2">The code has syntax coloring as does the description file.</font></p>
+ <p>
+<font size="2">Another useful editor feature is the ability to see the classes 
+ in an imported package.</font></p>
+ </li>
+ <li>
+ To see the classes contained in an imported package, highlight the import 
+ statement and click CTRL-Space.<p>
+ <img src="images/java_editor_classes.gif" width="585" height="594"></p>
+ A pop-up box appears containing the classes contained in the highlighted package.
+ </li>
+</ol>
+
+<h3>How to Change SmartFrog Installation Location</h3>
+
+<p>If you have more than one installation of SmartFrog on your system, you may 
+want to configure Eclipse to point to a different installation location. The 
+libraries in the specified location are the ones that Eclipse uses when 
+compiling your Java files.</p>
+
+<ol>
+  <li>From the Eclipse menu bar, select <b>Window</b> &gt; <b>Preferences</b>. 
+  This brings up the Preferences dialog.</li>
+  <li>Select <b>SmartFrog</b> in the left pane of the dialog page.
+  <img src="images/location_dialog.gif" width="639" height="532"></p>
+  In the <b>SmartFrog Home</b> text field, the current location specified in the <font face="Courier New">SF_HOME</font> environment variable 
+  is displayed.</li>
+  <li>
+  If you want to change the location, browse to the new location and click <b>
+  Apply</b>.
+  </li>
+</ol>
+
+<p>&nbsp;</p>
+
+</body>
+
+</html>

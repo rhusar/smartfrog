@@ -1,0 +1,192 @@
+## PAGE SPECIFIC DECORATOR
+## Here the context is the page. Modes are 'view', 'edit', 'edit-preview', 'view-information', and 'view-attachments'.
+
+#set ($helper = $params.get("helper"))
+#set ($mode = $params.get("mode"))
+#set ($confPage = $helper.page)
+#set ($infoPanelWidth = $params.get("infopanel-width"))
+
+## pwt: Set up variable to customize for viewing-only (not logged in) users
+#if ($permissionCheckDispatcher.isPermitted("/pages/editpage.action?pageId=$helper.page.id") == true)
+  #set($sfeditor = true)
+#else
+  #set($sfeditor = false)
+#end
+
+#infoPanelInitFromParams()
+## GENERAL PAGE DECORATING BEGINS
+
+#if ($action.showSillyMenus)
+
+#includeJavascript("/includes/js/yui/yahoo-dom-event/yahoo-dom-event.js")
+#includeJavascript("/includes/js/yui/container/container_core-min.js")
+#includeJavascript("/includes/js/yui/menu/menu-min.js")
+
+#end
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+#if ($action.isPrintableVersion() == false && $sfeditor == true)
+    <tr>
+        <td>
+            <ul class="tabnav">
+                <li class="tabs">
+                #foreach ($item in $action.webInterfaceManager.getDisplayableItems("system.page", $action.remoteUser, $helper))
+                    <a #if ($item.link.id) id="$item.link.id" #end href="$item.link.getDisplayableUrl($req, $helper)" #if ($mode == $item.key) class="current"#end #if ($mode == "edit") onClick="javascript:saveDraftOnPageChange(this); return false;" #end #if ($item.link.hasAccessKey()) accessKey="$item.link.getAccessKey($helper)"#end>$item.label.getDisplayableLabel($req, $helper)</a>
+                #end
+                </li>
+                <li class="spaceActionLinks">
+                    ## This is so bogus I don't even know where to start...
+                    #if ($action.showSillyMenus)
+                        #pageMenus()
+                    #else
+                        #spaceActionLinks("" false)
+                    #end
+                </li>
+                &nbsp;
+            </ul>
+            <!-- clears the floated elements above -->
+            <br class="after-tabnav">
+        </td>
+    </tr>
+#end    
+    <tr>
+        <td valign="top" class="pagebody">
+
+            ## MODE SPECIFIC DECORATING BEGINS
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="clear: both">
+                <tr>
+                    <td width='100%' class="pagecontent" valign="top">
+
+                    #parse ("/template/includes/actionerrors.vm")
+
+                    #*
+                        Display page based on mode: currently 'view', 'edit', 'preview-edit', 'info' and 'attachments.
+                        See the individual page templates (viewpage.vm, editpage.vm, etc.) for the setting of the mode parameter.
+                    *#
+                    ## VIEW
+
+                    #if ($mode == "view")
+                        <div class="viewContentIndent">
+
+                            #set ($labelable = $page)
+                            #permitSearchEngines()
+#if($sfeditor) 
+                           <table width="100%" cellspacing="0">
+                                <tr>
+
+                                    <td align="left" valign="top">
+                                        <span class="smalltext">
+                                            #editReport()
+                                            #parse ("/labels/labels-include.vm")
+                                        </span>
+                                    </td>
+                                    <td align="right" valign="top" nowrap>
+                                        #if(!$action.anonymousUser && !$action.isPrintableVersion())
+                                            <div style="padding: 5px; border: 1px solid #cccccc; margin: 0px; float:right;">
+                                                <center>
+                                                #foreach ($item in $action.webInterfaceManager.getDisplayableItems("system.page.actions", $action.remoteUser, $helper))
+                        							#set ($icon = $item.icon)
+                                                    #set ($itemLabel = $item.label.getDisplayableLabel($req, $helper))
+                                                    <a #if ($item.link.id) id="$item.link.id" #end href="$item.link.getDisplayableUrl($req, $helper)"><img src="$icon.url.getDisplayableUrl($req, $helper)" height="$icon.height" width="$icon.width" border="0" align="absmiddle" title="$itemLabel" alt="$itemLabel"></a>
+					                            #end
+                                                </center>
+                                            </div>
+                                        #end
+                                    </td>
+                                </tr>
+                            </table>
+#end
+
+                            #if ($helper.isHistoricalVersion())
+                                <content tag="suppressPdfLink">true</content>
+                            #end
+                            #if ($helper.isHistoricalVersion() || $helper.action.navigatingVersions)
+                                #versionInfo()
+                            #end
+
+## pwt: This section adds a left-hand navigation list that is displayed on every page
+## It relies on a page called "TreeNavigation" at the root of the space
+## End of the left-hand navigation section #########################
+
+#if ($action.isPrintableVersion() == false)
+<style>
+.spacetree * ul{
+padding-left:0px;
+margin-left: 0px;
+}
+.spacetree * li{
+margin-left: 5px;
+padding-left:5px;
+}
+
+</style>
+
+<table cellspacing="0" cellspacing="0">
+<tr>
+<td valign="top" align="left" width="22%" bgcolor="#F9F9F9" class="noprint">
+<div class="tabletitle">Contents</div>
+<div class="spacetree">
+<span class="smalltext">
+##includePage($helper.spaceKey "TreeNavigation")
+## Use the PageTree plugin instead
+$helper.renderConfluenceMacro("{pagetree:root=Home|sort=natural|excerpt=false|reverse=false|startDepth=2|expandCollapseAll=true|searchBox=false}")
+</span>
+</div>
+</td>
+<td valign="top" align="left" width="78%" class="pagecontent">
+<div class="wiki-content">
+$body
+</div>
+</td>
+</tr>
+</table>
+#else
+<div class="wiki-content">
+    $body
+</div>
+#end
+
+                            #trackbackRdf ($trackbackUtils.getContentIdentifier($page) $page.title $trackbackUtils.getPingUrl($page))
+#if($sfeditor)
+                            #renderChildren()
+                            #renderCommentsWithProfilePics($page $sitemeshPage)
+#end
+                        </div>
+                    ## EDIT || PREVIEW-EDIT
+                    #elseif ($mode == "edit" || $mode == "edit-preview")
+                        $body
+
+                    ## INFO
+                    #elseif ($mode == "view-information")
+                        $body
+
+                    ## ATTACHMENTS
+                    #elseif ($mode == "view-attachments" || $mode == "move-attachments")
+                        $body
+
+                    ## FOR CUSTOM WEB-ITEMS
+                    #else
+                        $body
+                                                
+                    #end
+                    </td>
+
+
+                    ## INFO PANEL FOR ANY PAGE
+                    #if ($infoPanelRequired == true)
+                        <td valign="top" id="helptd" style="display:block; width:$infoPanelWidth;">
+                            #infoPanel(true true true true)
+                        </td>
+                    #end
+            </tr>
+        </table>
+
+        ## MODE SPECIFIC DECORATING ENDS
+
+        </td>
+    </tr>
+</table>
+## GENERAL PAGE DECORATING ENDS
+
+#parse ("/pages/page-breadcrumbs.vm")

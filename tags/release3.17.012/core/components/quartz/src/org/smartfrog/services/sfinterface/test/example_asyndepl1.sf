@@ -1,0 +1,27 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/components.sf" 
+
+
+
+sfConfig extends Deployer {
+
+
+    newComponentDescription "D:\\cvs\\forge\\2005\\oct18\\core\\smartfrog\\src\\org\\smartfrog\\examples\\helloworld\\example4.sf";
+    
+    newComponentName  "ServiceSubProcess1";
+    newComponentParent  LAZY HOST localhost:sfDefault;
+	// codebase for parsing the description in newComponentDescription
+    newComponentCodebase  "http://15.76.97.201:8080/sfExamples.jar";
+	// attributes for replacement in description in newComponentDescription
+    newComponentExtraAtributes extends vector {
+       -- ["a","b"];
+       -- ["sfConfig:julio", "hola"];
+       -- ["sfCodeBase", "http://15.76.97.201:8080/sfExamples.jar"];
+       -- ["sfConfig:pair1:messages", ["ritu", "test"]];
+    }
+
+ 
+  asynchCreateChild true; 
+};
+
+

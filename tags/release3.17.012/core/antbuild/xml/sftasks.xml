@@ -1,0 +1,99 @@
+<?xml version="1.0" ?> 
+<project name="sftasks"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:ivy="antlib:org.apache.ivy.ant"
+  >
+
+  <import file="ivy-mixin.xml" />
+
+  <!-- Declare our libraries to smartfrog core and tasks (nothing else) -->
+  <target name="smartfrog-tasks-classpath" 
+    depends="ivy-retrieve">
+    <ivy:cachepath pathid="smartfrog.tasks.classpath" conf="build" />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- probe for tasks and use them if they are not loaded already -->
+  <!-- ========================================================== -->
+
+  <target name="find-sf-tasks" depends="sftasks.smartfrog-tasks-classpath" >
+    <property name="sf.antlib.uri" value="antlib:org.smartfrog.tools.ant"/>
+    <condition property="sf.tasks.found">
+      <typefound
+          uri="${sf.antlib.uri}"
+          name="startdaemon"/>
+    </condition>
+  </target>
+
+  <target name="smartfrog-tasks" depends="find-sf-tasks"
+    description="declare the classpath and imports for the smartfrog tasks"
+      unless="sf.tasks.found">
+     <typedef
+          uri="${sf.antlib.uri}"
+          classpathref="smartfrog.tasks.classpath"
+          onerror="failall"
+      />
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- declare presets and macrodefs to enhance the tasks better 
+    for our needs -->
+  <!-- ========================================================== -->
+  <target name="extended-smartfrog-tasks" 
+      depends="sftasks.smartfrog-tasks">
+   <property name="smartfrog.daemon.port" value="3800"/>
+   <presetdef name="daemonfound" uri="${sf.antlib.uri}">
+      <condition >
+        <socket port="${smartfrog.daemon.port}" server="localhost" />
+      </condition>
+    </presetdef>
+    
+    <!-- wait for 10 seconds for a daemon. Set maxwait to a different
+    value for more or less time, timeoutproperty to the name of a property
+    to set on failure -->
+    <presetdef name="waitfordaemon" uri="${sf.antlib.uri}">
+        <waitfor maxwait="10" maxwaitunit="second">
+            <socket server="localhost" port="${smartfrog.daemon.port}"/>
+        </waitfor>
+    </presetdef>
+      
+    <presetdef name="daemon-debug" uri="${sf.antlib.uri}">
+      <sf:startdaemon 
+        logStackTraces="true" spawn="true">
+          <!-- assertions are enabled -->
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+          <!-- load in a property file if it is present --> 
+        <propertyfile file="${runtime.properties}" optional="true"/>
+      </sf:startdaemon>
+    </presetdef>
+    
+    <presetdef name="gui-debug" uri="${sf.antlib.uri}">
+      <sf:gui 
+        logStackTraces="true" spawn="true">
+          <!-- assertions are enabled -->
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+         <sysproperty 
+          key="com.sun.management.jmxremote" value="true" />         
+          <!-- load in a property file if it is present --> 
+        <propertyfile file="${runtime.properties}" optional="true"/>
+      </sf:gui>
+    </presetdef>
+    
+    <presetdef name="console-debug" uri="${sf.antlib.uri}">
+      <sf:management-console 
+        logStackTraces="true" >
+          <!-- assertions are enabled -->
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+          <!-- load in a property file if it is present --> 
+        <propertyfile file="${runtime.properties}" optional="true"/>
+      </sf:management-console>
+    </presetdef>      
+
+  </target>
+</project>

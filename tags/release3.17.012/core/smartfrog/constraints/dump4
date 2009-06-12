@@ -1,0 +1,2420 @@
+DEFAULT /home/andrew/trunk/fresh/smartfrog/dist/lib/smartfrog-3.15.001dev.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/sfServices-3.15.001dev.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/sfExamples-3.15.001dev.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/org.restlet.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/eclipse-clp-5.10.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/com.noelios.restlet.jar:
+AFTER /home/andrew/trunk/fresh/smartfrog/dist/lib/smartfrog-3.15.001dev.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/sfServices-3.15.001dev.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/sfExamples-3.15.001dev.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/org.restlet.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/eclipse-clp-5.10.jar:/home/andrew/trunk/fresh/smartfrog/dist/lib/com.noelios.restlet.jar:
+key:Logger, value:extends {
+  logStackTrace false;
+  testJarRepeat [|"smartfrog-", "sfServices", "sfExamples", "sf-anubis"|];
+}
+key:logStackTrace, value:false
+key:testJarRepeat, value:[smartfrog-, sfServices, sfExamples, sf-anubis]
+key:Version, value:extends DATA {
+  jarVersion "3.15.001dev";
+  version APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+unique6 name;
+unique7 ".";
+unique8 jarVersion;
+unique9 " (";
+unique10 buildDate;
+unique11 ")";
+};
+  name "SmartFrog";
+  majorRelease "3";
+  minorRelease "15";
+  build "001";
+  status "dev";
+  copyright "(C) Copyright 1998-2009 Hewlett-Packard Development Company, LP";
+  buildDate "2009-01-21 11:34:33 GMT";
+  buildOSName "Linux";
+  buildOSVersion "2.6.24-23-generic";
+  buildOSArchitecture "i386";
+  buildJavaVersion "1.6.0_07";
+  buildJavaVendor "Sun Microsystems Inc.";
+  svnComment "SVN data is only valid for an official release because it tracks the revision for 'sf-build-version.properties'";
+  svnLastChangedDate "$LastChangedDate: 2008-10-28 15:40:50 +0000 (Tue, 28 Oct 2008) $";
+  svnRevision "$Revision: 7138 $";
+}
+key:jarVersion, value:3.15.001dev
+key:version, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+unique6 name;
+unique7 ".";
+unique8 jarVersion;
+unique9 " (";
+unique10 buildDate;
+unique11 ")";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Concatenate
+key:unique6, value:name
+Putting...unique6:SmartFrog
+key:unique7, value:.
+key:unique8, value:jarVersion
+Putting...unique8:3.15.001dev
+key:unique9, value: (
+key:unique10, value:buildDate
+Putting...unique10:2009-01-21 11:34:33 GMT
+key:unique11, value:)
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+  unique6 "SmartFrog";
+  unique7 ".";
+  unique8 "3.15.001dev";
+  unique9 " (";
+  unique10 "2009-01-21 11:34:33 GMT";
+  unique11 ")";
+}
+++++false
+Putting...version:SmartFrog.3.15.001dev (2009-01-21 11:34:33 GMT)
+key:name, value:SmartFrog
+key:majorRelease, value:3
+key:minorRelease, value:15
+key:build, value:001
+key:status, value:dev
+key:copyright, value:(C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
+key:buildDate, value:2009-01-21 11:34:33 GMT
+key:buildOSName, value:Linux
+key:buildOSVersion, value:2.6.24-23-generic
+key:buildOSArchitecture, value:i386
+key:buildJavaVersion, value:1.6.0_07
+key:buildJavaVendor, value:Sun Microsystems Inc.
+key:svnComment, value:SVN data is only valid for an official release because it tracks the revision for 'sf-build-version.properties'
+key:svnLastChangedDate, value:$LastChangedDate: 2008-10-28 15:40:50 +0000 (Tue, 28 Oct 2008) $
+key:svnRevision, value:$Revision: 7138 $
+key:LOG_LEVEL_IGNORE, value:0
+key:LOG_LEVEL_TRACE, value:1
+key:LOG_LEVEL_DEBUG, value:2
+key:LOG_LEVEL_INFO, value:3
+key:LOG_LEVEL_WARN, value:4
+key:LOG_LEVEL_ERROR, value:5
+key:LOG_LEVEL_FATAL, value:6
+key:LOG_LEVEL_ALL, value:0
+key:LOG_LEVEL_OFF, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+unique14 LOG_LEVEL_FATAL;
+unique15 1;
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Sum
+key:unique14, value:LOG_LEVEL_FATAL
+Putting...unique14:6
+key:unique15, value:1
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+  unique14 6;
+  unique15 1;
+}
+++++false
+Putting...LOG_LEVEL_OFF:7
+key:LogImpl, value:extends {
+  loggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl";
+  logLevel LOG_LEVEL_INFO;
+}
+key:loggerClass, value:org.smartfrog.sfcore.logging.LogToStreamsImpl
+key:logLevel, value:LOG_LEVEL_INFO
+Putting...logLevel:3
+key:LogToNothingImpl, value:extends {
+  errToOut true;
+  loggerClass "org.smartfrog.sfcore.logging.LogToNothingImpl";
+}
+key:errToOut, value:true
+key:loggerClass, value:org.smartfrog.sfcore.logging.LogToNothingImpl
+key:LogToStreamsImpl, value:extends {
+  errToOut true;
+  loggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl";
+  showLogName true;
+  showShortName false;
+  showDateTime true;
+  showThreadName true;
+  showMethodCall false;
+  dateFormat "yyyy/MM/dd HH:mm:ss:SSS zzz";
+}
+key:errToOut, value:true
+key:loggerClass, value:org.smartfrog.sfcore.logging.LogToStreamsImpl
+key:showLogName, value:true
+key:showShortName, value:false
+key:showDateTime, value:true
+key:showThreadName, value:true
+key:showMethodCall, value:false
+key:dateFormat, value:yyyy/MM/dd HH:mm:ss:SSS zzz
+
+Parser - SmartFrog 3.15.001dev (2009-01-21 11:34:33 GMT)
+(C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
+ 
+******************** PHASE raw *********************
+extends DATA {
+  Function extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "";
+  }
+  vector extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    };
+  System extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.SystemComponent";
+      system TBD;
+    };
+  append extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Append";
+    };
+  concat extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+    };
+  formatString extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
+    };
+  sum extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+    };
+  plus extends sum;
+  product extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Product";
+    };
+  minus extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Minus";
+    };
+  divide extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
+    };
+  mod extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Mod";
+    };
+  implies extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Implies";
+    };
+  xor extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Xor";
+    };
+  and extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
+    };
+  or extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Or";
+    };
+  not extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Not";
+    };
+  GE extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GE";
+    };
+  LE extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LE";
+    };
+  GT extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GT";
+    };
+  LT extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LT";
+    };
+  EQ extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+    };
+  NE extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NE";
+    };
+  ifThenElse extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+    };
+  next extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
+    };
+  random extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Random";
+    };
+  date extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
+    };
+  userinput extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+    };
+  ref extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+    };
+  Ref extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+    };
+  LazyRef extends Ref, {
+      lazy true;
+    };
+  Constraint extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+    };
+  Var extends {
+    IsConstraintVar NULL;
+  }
+  AutoVar extends {
+    IsConstraintVar NULL;
+    auto NULL;
+  }
+  UserVar extends {
+    IsConstraintVar NULL;
+    user NULL;
+  }
+  DefaultVar extends {
+    IsConstraintVar NULL;
+    default TBD;
+  }
+  LabellingPoint extends {
+    IsLabelling NULL;
+  }
+  LazyConstraint extends Constraint, {
+      sfFunctionLazy true;
+    };
+  Array extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+    };
+  ArrayGenerator extends {
+    sfIsArrayGenerator NULL;
+  }
+  Aggregator extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+    };
+  PrettyPrint extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.PrettyPrint";
+    };
+  nsum extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+      sfFunctionQual "sum";
+    };
+  nproduct extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+      sfFunctionQual "product";
+    };
+  alldifferent extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
+    };
+  ResourceAllocator extends Constraint, {
+      [ sfSource ] providers_array NULL;
+      [ sfPrefix ] providers_prefix NULL;
+      [ sfPath ] providers_attr NULL;
+      [ sfUpdate ] providers NULL;
+      [ sfSource ] providers_caps_array NULL;
+      [ sfPrefix ] providers_caps_prefix NULL;
+      [ sfPath ] providers_caps_attr NULL;
+      [ sfUpdate ] providers_caps NULL;
+      [ sfSource ] consumers_array NULL;
+      [ sfPrefix ] consumers_prefix NULL;
+      [ sfPath ] consumers_attr NULL;
+      [ sfUpdate ] consumers NULL;
+      [ sfSource ] consumers_reqs_array NULL;
+      [ sfPrefix ] consumers_reqs_prefix NULL;
+      [ sfPath ] consumers_reqs_attr NULL;
+      [ sfUpdate ] consumers_reqs NULL;
+      [ sfSource ] allocations_array NULL;
+      [ sfPrefix ] allocations_prefix NULL;
+      [ sfPath ] allocations_attr NULL;
+      [ sfUpdate ] allocations NULL;
+      colocations extends DATA {
+        phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+        sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+      }
+      nocolocations extends DATA {
+        phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+        sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+      }
+      hosted extends DATA {
+        phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+        sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+      }
+      [ sfConstraint ] unique16 "allocate(providers, providers_caps, consumers, consumers_reqs, allocations, colocations, nocolocations, hosted)";
+    };
+  PolicyEvaluation extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+    };
+  DynamicPolicyEvaluation extends Function, {
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+      sfFunctionLazy true;
+    };
+  Proposition extends {
+    sfIsProposition NULL;
+  }
+  AndProposition extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.And";
+    };
+  OrProposition extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Or";
+    };
+  NotProposition extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Not";
+    };
+  ImpliesProposition extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Implies";
+    };
+  IffProposition extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Iff";
+    };
+  ForAll extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.ForAll";
+    };
+  Exists extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Exists";
+    };
+  MoreThan extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+    };
+  FewerThan extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.FewerThan";
+    };
+  Atomic extends Proposition, {
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+    };
+  sfConfig extends {
+    boo0 extends MoreThan, {
+        [ sfTag ] unique17 "x";
+        [ sfSource ] unique18 LAZY boo1;
+        [ sfPrefix ] unique19 "foo";
+        [ sfCard ] unique20 1;
+        [ sfProp ] unique21 extends Atomic, {
+            [ sfProp ] unique22 extends DATA {
+              left LAZY x:help;
+              right 1;
+              phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+              sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+            }
+          };
+      };
+    boo1 extends Array, {
+        prefix "foo";
+        extent 3;
+        generator extends ArrayGenerator, Constraint, {
+            help extends AutoVar, {
+                range "[0..1]";
+              };
+          };
+      };
+  }
+}
+
+
+
+
+
+
+******************** PHASE type *********************
+extends DATA {
+  Function extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "";
+  }
+  vector extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+  }
+  System extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.SystemComponent";
+    system TBD;
+  }
+  append extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Append";
+  }
+  concat extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+  }
+  formatString extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
+  }
+  sum extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+  }
+  plus extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+  }
+  product extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Product";
+  }
+  minus extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Minus";
+  }
+  divide extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
+  }
+  mod extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Mod";
+  }
+  implies extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Implies";
+  }
+  xor extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Xor";
+  }
+  and extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
+  }
+  or extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Or";
+  }
+  not extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Not";
+  }
+  GE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GE";
+  }
+  LE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LE";
+  }
+  GT extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GT";
+  }
+  LT extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LT";
+  }
+  EQ extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+  }
+  NE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NE";
+  }
+  ifThenElse extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  }
+  next extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
+  }
+  random extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Random";
+  }
+  date extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
+  }
+  userinput extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+  }
+  ref extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+  }
+  Ref extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+  }
+  LazyRef extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+    lazy true;
+  }
+  Constraint extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  }
+  Var extends {
+    IsConstraintVar NULL;
+  }
+  AutoVar extends {
+    IsConstraintVar NULL;
+    auto NULL;
+  }
+  UserVar extends {
+    IsConstraintVar NULL;
+    user NULL;
+  }
+  DefaultVar extends {
+    IsConstraintVar NULL;
+    default TBD;
+  }
+  LabellingPoint extends {
+    IsLabelling NULL;
+  }
+  LazyConstraint extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+    sfFunctionLazy true;
+  }
+  Array extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+  }
+  ArrayGenerator extends {
+    sfIsArrayGenerator NULL;
+  }
+  Aggregator extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+  }
+  PrettyPrint extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.PrettyPrint";
+  }
+  nsum extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+    sfFunctionQual "sum";
+  }
+  nproduct extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+    sfFunctionQual "product";
+  }
+  alldifferent extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
+  }
+  ResourceAllocator extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+    [ sfSource ] providers_array NULL;
+    [ sfPrefix ] providers_prefix NULL;
+    [ sfPath ] providers_attr NULL;
+    [ sfUpdate ] providers NULL;
+    [ sfSource ] providers_caps_array NULL;
+    [ sfPrefix ] providers_caps_prefix NULL;
+    [ sfPath ] providers_caps_attr NULL;
+    [ sfUpdate ] providers_caps NULL;
+    [ sfSource ] consumers_array NULL;
+    [ sfPrefix ] consumers_prefix NULL;
+    [ sfPath ] consumers_attr NULL;
+    [ sfUpdate ] consumers NULL;
+    [ sfSource ] consumers_reqs_array NULL;
+    [ sfPrefix ] consumers_reqs_prefix NULL;
+    [ sfPath ] consumers_reqs_attr NULL;
+    [ sfUpdate ] consumers_reqs NULL;
+    [ sfSource ] allocations_array NULL;
+    [ sfPrefix ] allocations_prefix NULL;
+    [ sfPath ] allocations_attr NULL;
+    [ sfUpdate ] allocations NULL;
+    colocations extends DATA {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    }
+    nocolocations extends DATA {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    }
+    hosted extends DATA {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    }
+    [ sfConstraint ] unique16 "allocate(providers, providers_caps, consumers, consumers_reqs, allocations, colocations, nocolocations, hosted)";
+  }
+  PolicyEvaluation extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+  }
+  DynamicPolicyEvaluation extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+    sfFunctionLazy true;
+  }
+  Proposition extends {
+    sfIsProposition NULL;
+  }
+  AndProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.And";
+  }
+  OrProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Or";
+  }
+  NotProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Not";
+  }
+  ImpliesProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Implies";
+  }
+  IffProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Iff";
+  }
+  ForAll extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.ForAll";
+  }
+  Exists extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Exists";
+  }
+  MoreThan extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+  }
+  FewerThan extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.FewerThan";
+  }
+  Atomic extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  }
+  sfConfig extends {
+    boo0 extends {
+      sfIsProposition NULL;
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+      [ sfTag ] unique17 "x";
+      [ sfSource ] unique18 LAZY boo1;
+      [ sfPrefix ] unique19 "foo";
+      [ sfCard ] unique20 1;
+      [ sfProp ] unique21 extends {
+        sfIsProposition NULL;
+        sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+        [ sfProp ] unique22 extends DATA {
+          left LAZY x:help;
+          right 1;
+          phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+          sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+        }
+      }
+    }
+    boo1 extends {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+      prefix "foo";
+      extent 3;
+      generator extends {
+        sfIsArrayGenerator NULL;
+        phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+        sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+        help extends {
+          IsConstraintVar NULL;
+          auto NULL;
+          range "[0..1]";
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+******************** PHASE place *********************
+extends DATA {
+  Function extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "";
+  }
+  vector extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+  }
+  System extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.SystemComponent";
+    system TBD;
+  }
+  append extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Append";
+  }
+  concat extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+  }
+  formatString extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
+  }
+  sum extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+  }
+  plus extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+  }
+  product extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Product";
+  }
+  minus extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Minus";
+  }
+  divide extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
+  }
+  mod extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Mod";
+  }
+  implies extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Implies";
+  }
+  xor extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Xor";
+  }
+  and extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
+  }
+  or extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Or";
+  }
+  not extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Not";
+  }
+  GE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GE";
+  }
+  LE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LE";
+  }
+  GT extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GT";
+  }
+  LT extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LT";
+  }
+  EQ extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+  }
+  NE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NE";
+  }
+  ifThenElse extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  }
+  next extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
+  }
+  random extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Random";
+  }
+  date extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
+  }
+  userinput extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+  }
+  ref extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+  }
+  Ref extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+  }
+  LazyRef extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+    lazy true;
+  }
+  Constraint extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  }
+  Var extends {
+    IsConstraintVar NULL;
+  }
+  AutoVar extends {
+    IsConstraintVar NULL;
+    auto NULL;
+  }
+  UserVar extends {
+    IsConstraintVar NULL;
+    user NULL;
+  }
+  DefaultVar extends {
+    IsConstraintVar NULL;
+    default TBD;
+  }
+  LabellingPoint extends {
+    IsLabelling NULL;
+  }
+  LazyConstraint extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+    sfFunctionLazy true;
+  }
+  Array extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+  }
+  ArrayGenerator extends {
+    sfIsArrayGenerator NULL;
+  }
+  Aggregator extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+  }
+  PrettyPrint extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.PrettyPrint";
+  }
+  nsum extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+    sfFunctionQual "sum";
+  }
+  nproduct extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+    sfFunctionQual "product";
+  }
+  alldifferent extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
+  }
+  ResourceAllocator extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+    [ sfSource ] providers_array NULL;
+    [ sfPrefix ] providers_prefix NULL;
+    [ sfPath ] providers_attr NULL;
+    [ sfUpdate ] providers NULL;
+    [ sfSource ] providers_caps_array NULL;
+    [ sfPrefix ] providers_caps_prefix NULL;
+    [ sfPath ] providers_caps_attr NULL;
+    [ sfUpdate ] providers_caps NULL;
+    [ sfSource ] consumers_array NULL;
+    [ sfPrefix ] consumers_prefix NULL;
+    [ sfPath ] consumers_attr NULL;
+    [ sfUpdate ] consumers NULL;
+    [ sfSource ] consumers_reqs_array NULL;
+    [ sfPrefix ] consumers_reqs_prefix NULL;
+    [ sfPath ] consumers_reqs_attr NULL;
+    [ sfUpdate ] consumers_reqs NULL;
+    [ sfSource ] allocations_array NULL;
+    [ sfPrefix ] allocations_prefix NULL;
+    [ sfPath ] allocations_attr NULL;
+    [ sfUpdate ] allocations NULL;
+    colocations extends DATA {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    }
+    nocolocations extends DATA {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    }
+    hosted extends DATA {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+    }
+    [ sfConstraint ] unique16 "allocate(providers, providers_caps, consumers, consumers_reqs, allocations, colocations, nocolocations, hosted)";
+  }
+  PolicyEvaluation extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+  }
+  DynamicPolicyEvaluation extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+    sfFunctionLazy true;
+  }
+  Proposition extends {
+    sfIsProposition NULL;
+  }
+  AndProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.And";
+  }
+  OrProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Or";
+  }
+  NotProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Not";
+  }
+  ImpliesProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Implies";
+  }
+  IffProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Iff";
+  }
+  ForAll extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.ForAll";
+  }
+  Exists extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Exists";
+  }
+  MoreThan extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+  }
+  FewerThan extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.FewerThan";
+  }
+  Atomic extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  }
+  sfConfig extends {
+    boo0 extends {
+      sfIsProposition NULL;
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+      [ sfTag ] unique17 "x";
+      [ sfSource ] unique18 LAZY boo1;
+      [ sfPrefix ] unique19 "foo";
+      [ sfCard ] unique20 1;
+      [ sfProp ] unique21 extends {
+        sfIsProposition NULL;
+        sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+        [ sfProp ] unique22 extends DATA {
+          left LAZY x:help;
+          right 1;
+          phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+          sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+        }
+      }
+    }
+    boo1 extends {
+      phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+      prefix "foo";
+      extent 3;
+      generator extends {
+        sfIsArrayGenerator NULL;
+        phase.function "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+        sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+        help extends {
+          IsConstraintVar NULL;
+          auto NULL;
+          range "[0..1]";
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+******************** PHASE function *********************
+extends DATA {
+  Function APPLY {sfFunctionClass "";
+};
+  vector APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+};
+  System APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.SystemComponent";
+system TBD;
+};
+  append APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Append";
+};
+  concat APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+};
+  formatString APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
+};
+  sum APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+};
+  plus APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
+};
+  product APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Product";
+};
+  minus APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Minus";
+};
+  divide APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
+};
+  mod APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Mod";
+};
+  implies APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Implies";
+};
+  xor APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Xor";
+};
+  and APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
+};
+  or APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Or";
+};
+  not APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Not";
+};
+  GE APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GE";
+};
+  LE APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LE";
+};
+  GT APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.GT";
+};
+  LT APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.LT";
+};
+  EQ APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+};
+  NE APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NE";
+};
+  ifThenElse APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+};
+  next APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
+};
+  random APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Random";
+};
+  date APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
+};
+  userinput APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+};
+  ref APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+};
+  Ref APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+};
+  LazyRef APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
+lazy true;
+};
+  Constraint APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+};
+  Var extends {
+    IsConstraintVar NULL;
+  }
+  AutoVar extends {
+    IsConstraintVar NULL;
+    auto NULL;
+  }
+  UserVar extends {
+    IsConstraintVar NULL;
+    user NULL;
+  }
+  DefaultVar extends {
+    IsConstraintVar NULL;
+    default TBD;
+  }
+  LabellingPoint extends {
+    IsLabelling NULL;
+  }
+  LazyConstraint LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfFunctionLazy true;
+};
+  Array APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+};
+  ArrayGenerator extends {
+    sfIsArrayGenerator NULL;
+  }
+  Aggregator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+};
+  PrettyPrint APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.PrettyPrint";
+};
+  nsum APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+sfFunctionQual "sum";
+};
+  nproduct APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+sfFunctionQual "product";
+};
+  alldifferent APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
+};
+  ResourceAllocator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+[ sfSource ] providers_array NULL;
+[ sfPrefix ] providers_prefix NULL;
+[ sfPath ] providers_attr NULL;
+[ sfUpdate ] providers NULL;
+[ sfSource ] providers_caps_array NULL;
+[ sfPrefix ] providers_caps_prefix NULL;
+[ sfPath ] providers_caps_attr NULL;
+[ sfUpdate ] providers_caps NULL;
+[ sfSource ] consumers_array NULL;
+[ sfPrefix ] consumers_prefix NULL;
+[ sfPath ] consumers_attr NULL;
+[ sfUpdate ] consumers NULL;
+[ sfSource ] consumers_reqs_array NULL;
+[ sfPrefix ] consumers_reqs_prefix NULL;
+[ sfPath ] consumers_reqs_attr NULL;
+[ sfUpdate ] consumers_reqs NULL;
+[ sfSource ] allocations_array NULL;
+[ sfPrefix ] allocations_prefix NULL;
+[ sfPath ] allocations_attr NULL;
+[ sfUpdate ] allocations NULL;
+colocations APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+};
+nocolocations APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+};
+hosted APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Vector";
+};
+[ sfConstraint ] unique16 "allocate(providers, providers_caps, consumers, consumers_reqs, allocations, colocations, nocolocations, hosted)";
+};
+  PolicyEvaluation APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+};
+  DynamicPolicyEvaluation LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+sfFunctionLazy true;
+};
+  Proposition extends {
+    sfIsProposition NULL;
+  }
+  AndProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.And";
+  }
+  OrProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Or";
+  }
+  NotProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Not";
+  }
+  ImpliesProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Implies";
+  }
+  IffProposition extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Iff";
+  }
+  ForAll extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.ForAll";
+  }
+  Exists extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Exists";
+  }
+  MoreThan extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+  }
+  FewerThan extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.FewerThan";
+  }
+  Atomic extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  }
+  sfConfig extends {
+    boo0 extends {
+      sfIsProposition NULL;
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+      [ sfTag ] unique17 "x";
+      [ sfSource ] unique18 LAZY boo1;
+      [ sfPrefix ] unique19 "foo";
+      [ sfCard ] unique20 1;
+      [ sfProp ] unique21 extends {
+        sfIsProposition NULL;
+        sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+        [ sfProp ] unique22 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+      }
+    }
+    boo1 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+prefix "foo";
+extent 3;
+generator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+};
+};
+  }
+}
+
+
+
+
+
+
+******************** PHASE sfConfig *********************
+extends {
+  boo0 extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+    [ sfTag ] unique17 "x";
+    [ sfSource ] unique18 LAZY boo1;
+    [ sfPrefix ] unique19 "foo";
+    [ sfCard ] unique20 1;
+    [ sfProp ] unique21 extends {
+      sfIsProposition NULL;
+      sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+      [ sfProp ] unique22 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+    }
+  }
+  boo1 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+prefix "foo";
+extent 3;
+generator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+};
+};
+}
+
+
+
+
+
+
+key:boo0, value:extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+  [ sfTag ] unique17 "x";
+  [ sfSource ] unique18 LAZY boo1;
+  [ sfPrefix ] unique19 "foo";
+  [ sfCard ] unique20 1;
+  [ sfProp ] unique21 extends {
+    sfIsProposition NULL;
+    sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+    [ sfProp ] unique22 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+  }
+}
+key:sfIsProposition, value:NULL
+key:sfPropositionClass, value:org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan
+key:unique17, value:x
+key:unique18, value:LAZY boo1
+key:unique19, value:foo
+key:unique20, value:1
+key:unique21, value:extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+key:sfIsProposition, value:NULL
+key:sfPropositionClass, value:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic
+key:unique22, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.EQ
+key:left, value:LAZY x:help
+key:right, value:1
+*****trueextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+  left LAZY x:help;
+  right 1;
+}
+key:boo1, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+prefix "foo";
+extent 3;
+generator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+};
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Array
+key:prefix, value:foo
+key:extent, value:3
+key:generator, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+}
+Putting...generator:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+}
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+  prefix "foo";
+  extent 3;
+  generator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+};
+}
+++++false
+Putting...boo1:extends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+  prefix "foo";
+  extent 3;
+  generator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+};
+  foo0 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 0;
+sfTag "foo0";
+};
+  foo1 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 1;
+sfTag "foo1";
+};
+  foo2 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 2;
+sfTag "foo2";
+};
+  sfFunctionClassStatus "done";
+}
+key:boo1, value:extends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+  prefix "foo";
+  extent 3;
+  generator APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+};
+  foo0 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 0;
+sfTag "foo0";
+};
+  foo1 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 1;
+sfTag "foo1";
+};
+  foo2 APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 2;
+sfTag "foo2";
+};
+  sfFunctionClassStatus "done";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Array
+key:prefix, value:foo
+key:extent, value:3
+key:generator, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+}
+Putting...generator:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+sfIsArrayGenerator NULL;
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+}
+key:foo0, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+sfIndex 0;
+sfTag "foo0";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+key:IsConstraintVar, value:NULL
+key:auto, value:NULL
+key:range, value:[0..1]
+key:sfIndex, value:0
+key:sfTag, value:foo0
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help extends {
+    IsConstraintVar NULL;
+    auto NULL;
+    range "[0..1]";
+  }
+  sfIndex 0;
+  sfTag "foo0";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfvar([0..1]), 0, foo0], 0, [nil], [help], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: suspend(sfsolve_var_sync(hash(4, 5, [sf_evalcidx -> 0, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (Var, [], integer, first), sf_evalidx -> 0]), (0, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true, ic : indomain(Var)
+suspend(sfsolve_var_sync(hash(4, 5, [sf_evalcidx -> 0, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (Var, [], integer, first), sf_evalidx -> 0]), (0, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true, ic : indomain(Var)
+Setting help:0 in 0
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:0
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo0, foo1, foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo0
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo0;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed2
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5false0
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo1
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo1;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed1
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+key:IsConstraintVar, value:NULL
+key:auto, value:NULL
+key:range, value:[0..1]
+key:sfIndex, value:1
+key:sfTag, value:foo1
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help extends {
+    IsConstraintVar NULL;
+    auto NULL;
+    range "[0..1]";
+  }
+  sfIndex 1;
+  sfTag "foo1";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfvar([0..1]), 1, foo1], 1, [nil], [help], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: suspend(sfsolve_var_sync(hash(4, 8, [sf_evalcidx -> 1, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (0, [], integer, notfirst), sf_evalidx -> 1, (1, sfTag) -> (foo1, [], null, notfirst), (1, sfIndex) -> (1, [], null, notfirst), (1, help) -> (Var, [], integer, first)]), (1, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true, ic : indomain(Var)
+suspend(sfsolve_var_sync(hash(4, 8, [sf_evalcidx -> 1, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (0, [], integer, notfirst), sf_evalidx -> 1, (1, sfTag) -> (foo1, [], null, notfirst), (1, sfIndex) -> (1, [], null, notfirst), (1, help) -> (Var, [], integer, first)]), (1, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true, ic : indomain(Var)
+Setting help:0 in 1
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo2
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo2;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed0
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:extends {
+  IsConstraintVar NULL;
+  auto NULL;
+  range "[0..1]";
+}
+key:IsConstraintVar, value:NULL
+key:auto, value:NULL
+key:range, value:[0..1]
+key:sfIndex, value:2
+key:sfTag, value:foo2
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help extends {
+    IsConstraintVar NULL;
+    auto NULL;
+    range "[0..1]";
+  }
+  sfIndex 2;
+  sfTag "foo2";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfvar([0..1]), 2, foo2], 2, [nil], [help], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: suspend(sfsolve_var_sync(hash(4, 11, [sf_evalcidx -> 2, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (0, [], integer, notfirst), sf_evalidx -> 2, (1, sfTag) -> (foo1, [], null, notfirst), (1, sfIndex) -> (1, [], null, notfirst), (1, help) -> (0, [], integer, notfirst), (2, sfTag) -> (foo2, [], null, notfirst), (2, sfIndex) -> (2, [], null, notfirst), (2, help) -> (Var, [], integer, first)]), (2, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true, ic : indomain(Var)
+suspend(sfsolve_var_sync(hash(4, 11, [sf_evalcidx -> 2, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (0, [], integer, notfirst), sf_evalidx -> 2, (1, sfTag) -> (foo1, [], null, notfirst), (1, sfIndex) -> (1, [], null, notfirst), (1, help) -> (0, [], integer, notfirst), (2, sfTag) -> (foo2, [], null, notfirst), (2, sfIndex) -> (2, [], null, notfirst), (2, help) -> (Var, [], integer, first)]), (2, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true, ic : indomain(Var)
+Setting help:0 in 2
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[]
+Proposition: nextup...
+eh?
+5false0
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: false
+Setting help:1 in 2
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo0, foo1, foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo0
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo0;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed2
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5false0
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo1
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo1;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed1
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5false0
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: false
+Setting help:1 in 1
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo0, foo1, foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo0
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo0;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed2
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5false0
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo1
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo1;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed1
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5false1
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9true
+ATOMIC:true
+Result is: true
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo2
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo2;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed0
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:VAR2
+key:sfIndex, value:2
+key:sfTag, value:foo2
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help VAR2;
+  sfIndex 2;
+  sfTag "foo2";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfvar([0..1]), 2, foo2], 2, [nil], [], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: suspend(sfsolve_var_sync(hash(4, 11, [sf_evalcidx -> 2, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (0, [], integer, notfirst), sf_evalidx -> 2, (1, sfTag) -> (foo1, [], null, notfirst), (1, sfIndex) -> (1, [], null, notfirst), (1, help) -> (1, [], integer, notfirst), (2, sfTag) -> (foo2, [], null, notfirst), (2, sfIndex) -> (2, [], null, notfirst), (2, help) -> (Var, [], integer, first)]), (2, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true
+suspend(sfsolve_var_sync(hash(4, 11, [sf_evalcidx -> 2, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (0, [], integer, notfirst), sf_evalidx -> 2, (1, sfTag) -> (foo1, [], null, notfirst), (1, sfIndex) -> (1, [], null, notfirst), (1, help) -> (1, [], integer, notfirst), (2, sfTag) -> (foo2, [], null, notfirst), (2, sfIndex) -> (2, [], null, notfirst), (2, help) -> (Var, [], integer, first)]), (2, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[]
+Proposition: nextup...
+THROWSorg.smartfrog.sfcore.languages.sf.functions.Constraint$SmartFrogConstraintBacktrackError
+eh?
+5falsenull
+ATOMIC:null
+Result is: null
+THROWSorg.smartfrog.sfcore.languages.sf.functions.Constraint$SmartFrogConstraintBacktrackError
+eh?
+5falsenull
+ATOMIC:null
+Result is: null
+Putting...foo0:extends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help 0;
+  sfIndex 0;
+  sfTag "foo0";
+  sfFunctionClassStatus "done";
+}
+key:foo0, value:extends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help 0;
+  sfIndex 0;
+  sfTag "foo0";
+  sfFunctionClassStatus "done";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:0
+key:sfIndex, value:0
+key:sfTag, value:foo0
+key:sfFunctionClassStatus, value:done
+key:foo1, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help 1;
+sfIndex 1;
+sfTag "foo1";
+sfFunctionClassStatus "done";
+}
+Putting...foo1:extends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help 1;
+  sfIndex 1;
+  sfTag "foo1";
+  sfFunctionClassStatus "done";
+}
+key:foo1, value:extends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help 1;
+  sfIndex 1;
+  sfTag "foo1";
+  sfFunctionClassStatus "done";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:1
+key:sfIndex, value:1
+key:sfTag, value:foo1
+key:sfFunctionClassStatus, value:done
+key:foo2, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help VAR2;
+sfIndex 2;
+sfTag "foo2";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:VAR2
+key:sfIndex, value:2
+key:sfTag, value:foo2
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help VAR2;
+  sfIndex 2;
+  sfTag "foo2";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfref(2, help), 2, foo2], 3, [nil], [], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: true
+true
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo2, foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo2
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo2;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed1
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5falseVAR2
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo2
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo2;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed0
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5falseVAR2
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: false
+Setting help:1 in 0
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo0, foo1, foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo0
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo0;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed2
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5false1
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9true
+ATOMIC:true
+Result is: true
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo1
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo1;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed1
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5falseVAR1
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: null
+Proposition: nextup...
+Reference to try...LAZY boo1:foo2
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo2;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed0
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:VAR2
+key:sfIndex, value:2
+key:sfTag, value:foo2
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help VAR2;
+  sfIndex 2;
+  sfTag "foo2";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfvar([0..1]), 2, foo2], 1, [nil], [], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: suspend(sfsolve_var_sync(hash(4, 8, [sf_evalcidx -> 1, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (1, [], integer, notfirst), sf_evalidx -> 1, (1, sfTag) -> (foo2, [], null, notfirst), (1, sfIndex) -> (2, [], null, notfirst), (1, help) -> (Var, [], integer, first)]), (1, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true
+suspend(sfsolve_var_sync(hash(4, 8, [sf_evalcidx -> 1, (0, sfTag) -> (foo0, [], null, notfirst), (0, sfIndex) -> (0, [], null, notfirst), (0, help) -> (1, [], integer, notfirst), sf_evalidx -> 1, (1, sfTag) -> (foo2, [], null, notfirst), (1, sfIndex) -> (2, [], null, notfirst), (1, help) -> (Var, [], integer, first)]), (1, help), Var), 1, Var -> inst), Var #:: [0 .. 1], true
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[]
+Proposition: nextup...
+THROWSorg.smartfrog.sfcore.languages.sf.functions.Constraint$SmartFrogConstraintBacktrackError
+eh?
+5falsenull
+ATOMIC:null
+Result is: null
+key:foo2, value:APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+help VAR2;
+sfIndex 2;
+sfTag "foo2";
+}
+key:sfFunctionClass, value:org.smartfrog.sfcore.languages.sf.functions.Constraint
+key:help, value:VAR2
+key:sfIndex, value:2
+key:sfTag, value:foo2
+*****falseextends DATA {
+  sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+  help VAR2;
+  sfIndex 2;
+  sfTag "foo2";
+}
+++++false
+sfsolve([help, sfIndex, sfTag], [sfref(1, help), 2, foo2], 2, [nil], [], true, [])
+Solve Goal
+111b
+222b
+333b
+444
+555
+666
+Solving: true
+true
+Proposition: evaluate...org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan@10e3293
+toTryOrigSize:3
+To TryOrig:[foo0, foo1, foo2]
+To Try:[foo2]
+Proposition: nextup...
+Reference to try...LAZY boo1:foo2
+Proposition:nextup()sfIsProposition NULL;
+sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.MoreThan";
+[ sfTag ] unique17 "x";
+[ sfSource ] unique18 LAZY boo1;
+[ sfPrefix ] unique19 "foo";
+[ sfCard ] unique20 1;
+[ sfProp ] unique21 extends {
+  sfIsProposition NULL;
+  sfPropositionClass "org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic";
+  [ sfProp ] unique22 LAZY APPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+};
+}
+[ sfSource ] x LAZY boo1:foo2;
+
+To try:org.smartfrog.sfcore.languages.sf.constraints.propositions.Atomic@11a64ed0
+&&&&&evaluating referenceclass org.smartfrog.sfcore.reference.ApplyReferenceAPPLY {sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.EQ";
+left LAZY x:help;
+right 1;
+}
+1
+2
+3true
+2
+3false
+4false
+4bleft
+REFERENCE:HERE left
+eh?
+5falseVAR2
+2
+3false
+4false
+4bright
+REFERENCE:HERE right
+eh?
+5false1
+6
+7
+8
+9false
+ATOMIC:false
+Result is: false
+Deciding result
+Result is: false
+'ctn14b.sf': 
+SmartFrogResolutionException:: link, cause: org.smartfrog.sfcore.languages.sf.constraints.CoreSolver$CoreSolverFatalError: java.lang.RuntimeException: Unable to solve constraints. General failure.
+
+SmartFrogResolutionException:: link, cause: org.smartfrog.sfcore.languages.sf.constraints.CoreSolver$CoreSolverFatalError: java.lang.RuntimeException: Unable to solve constraints. General failure.
+	at org.smartfrog.sfcore.common.SmartFrogResolutionException.forward(SmartFrogResolutionException.java:326)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhases(SFComponentDescriptionImpl.java:1047)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhase(SFComponentDescriptionImpl.java:1001)
+	at org.smartfrog.SFParse.parseFile(SFParse.java:177)
+	at org.smartfrog.SFParse.parseFile(SFParse.java:126)
+	at org.smartfrog.SFParse.main(SFParse.java:336)
+Caused by: org.smartfrog.sfcore.languages.sf.constraints.CoreSolver$CoreSolverFatalError: java.lang.RuntimeException: Unable to solve constraints. General failure.
+	at org.smartfrog.sfcore.languages.sf.constraints.eclipse.EclipseSolver.doIt(EclipseSolver.java:433)
+	at org.smartfrog.sfcore.languages.sf.constraints.eclipse.EclipseSolver.fail(EclipseSolver.java:410)
+	at org.smartfrog.sfcore.languages.sf.functions.Constraint.doFunction(Constraint.java:463)
+	at org.smartfrog.sfcore.languages.sf.functions.BaseFunction.doit(BaseFunction.java:63)
+	at org.smartfrog.sfcore.languages.sf.functions.BaseFunction.doit(BaseFunction.java:83)
+	at org.smartfrog.sfcore.languages.sf.functions.BaseFunction.doit(BaseFunction.java:96)
+	at org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference.resolveWkr(SFApplyReference.java:248)
+	at org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference.resolve(SFApplyReference.java:165)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolve(SFComponentDescriptionImpl.java:227)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfResolve(ComponentDescriptionImpl.java:606)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.doLinkResolve(SFComponentDescriptionImpl.java:768)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.linkResolve(SFComponentDescriptionImpl.java:621)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhases(SFComponentDescriptionImpl.java:1037)
+	... 4 more
+Error detected. Check report.
+SFParse: FAILED

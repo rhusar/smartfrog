@@ -1,0 +1,186 @@
+SmartFrog 3.11.005beta
+======================
+
+This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
+deployment framework developed by HP Laboratories. SmartFrog enables
+applications to be deployed across multiple machines, configuring different
+aspects of the system so that they are all consistently configured, and managing
+the life-cycle of the application as a whole. The project's home page is
+http://smartfrog.org/
+
+The release artifacts are available at
+
+http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
+
+This release is 3.11.005beta; built from revision 4827
+of the SVN repository. This release has an extended language
+with the ability to tag attributes, and includes the following items:
+
+* Core smartfrog daemon, including services to manage files, start and stop
+  Java and native programs.
+* Example components and applications.  
+* Ant support: ant tasks to deploy and terminate applications from a build.
+* Ant components: the ability to execute ant tasks in a deployment.
+* Anubis: a partition aware tuple-space that can be used to implement fault 
+  tolerant systems.
+* JMX: the ability to configure and manage JMX components, and to manage
+  SmartFrog components over JMX.
+* Logging: integration with Apache commons-logging and Log4J
+* Networking: email, FTP, SSH, DNS support.
+* Quartz: scheduled operations using Quartz libraries.
+* Scripting: support for BSF-hosted scripting languages
+* WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+  is provided for all application servers that support, and a tomcat-specific
+  component can communicate with Apache Tomcat. The Jetty component can
+  configure and deploy individual servlets, eliminating much of the need for WAR
+  files themselves.
+  
+For Java 1.5 systems, there are some extra components:  
+* Database: components to issue database commands, and deploy HSLDB and MySQL.
+* Testing: Distributed JUnit and component testing with SFUnit.
+* XML: XML support with XOM.
+* XMPP: Presence and messaging over Jabber.
+
+Packaging
+=========
+
+This release is available as:
+
+* RPM files inside a .tar.gz file.
+* a JAR installer.
+* the original core smartfrog distribution as .zip and .tar.gz (deprecated)
+
+
+The RPM installation is for RPM-based Linux systems. It comprises three RPM
+files, smartfrog, smartfrog-daemon and smartfrog-demo:
+
+smartfrog:        the core SmartFrog distribution.
+smartfrog-daemon: the shell scripts to add the smartfrog distribution to the
+                  path, and to run the daemon on start-up.
+smartfrog-demo:   example code and documentation.
+
+All the JAR files are also published to a repository that is compatible with
+Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+
+There are also SmartFrog components to retrieve artifacts from such a repository
+(the Library components under /org/smartfrog/services/os/java/library.sf ),
+which can be used for dynamic download of SmartFrog and other artifacts.
+
+
+Security warning
+================
+
+Unless SmartFrog is configured with security, a running daemon
+will listen on its configured port for incoming deployment requests, and deploy
+the applications with the rights of the user running the daemon. When the
+smartfrog-daemon RPM is installed, that means that a process running as root
+will be listening on an open port for incoming deployment requests. Do not
+deploy SmartFrog this way on any untrusted network, not without turning security
+on and, ideally, recreating the RPMs with signed JAR files. 
+
+Building SmartFrog
+==================
+
+SmartFrog requires Java 1.4 and Ant 1.7 to build. For a complete release,
+Java1.5 or later is required.
+
+
+The distribution does not include a source tree adequate to build the entire
+system. Please follow the instructions at 
+  http://sourceforge.net/svn/?group_id=87384
+and check out smartfrog/trunk/core from our repository.
+
+This release was built with revision 4827 of the repository, which
+is available under the SVN branch
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.11.005beta
+
+We strongly encourage anyone interested in building or extending smartfrog to
+get involved in the smartfrog developer mailing list, which can be found from
+the sourceforge project page http://sourceforge.net/projects/smartfrog/
+
+Reporting Bugs
+==============
+
+Please file all bug reports at http://jira.smartfrog.org/
+
+Thank you!
+
+The SmartFrog Team        http://smartfrog.org/
+
+Changes since last release
+==========================
+
+Since the release 3.11.003beta, the primary changes have been in RPM
+packaging and distribution.
+
+* The smartfrog-install JAR is the cross-platform installer JAR,
+  recommended for all systems except where RPM installation is desired.
+
+* There are now RPM packages for Anubis and logging services (the latter
+  includes Apache Log4J and commons-logging)
+  
+* Uninstalling smartfrog-daemon RPM shuts down the /etc/init.d/smartfrogd
+  daemon
+
+* Uninstalling smartfrog RPM triggers an attempt to shut down any
+  running SmartFrog process
+  
+Removing component JARs, such as smartfrog-anubis or smartfrog-logging
+does not shut down SmartFrog; this is still something being considered.
+Please test and report on any problems with RPM install/uninstall, as
+this is an area we are actively trying to stabilise. All RPMs are tested
+by installing and removing them from an RHEL5 system, as part of the
+build process; behaviour on other RPM-based distributions is still
+something we are interested in.
+
+There have been improvements in how tests are run, but these do not
+involve significant changes to the core other than in test-related
+components.
+
+
+** Bug
+    * [SFOS-48]  - TestCompound, when set up to terminate gracefully 
+                   (sfShouldTerminate=true) terminates abnormally if 
+                   the actions threw an exception, even if they were 
+                   expected
+    * [SFOS-272] - Anubis Ping Heartbeat protocol not setting bits in heartbeats
+    * [SFOS-308] - smartfrog rpm should shut down sfDaemon in %preun pahse
+    * [SFOS-310] - the new installer JAR is  not uploading
+    * [SFOS-316] - daemon rpm doesnt stop the daemon; raises an error
+    * [SFOS-333] - TestCompound should retain termination record text 
+                   when converting from an abnormal to a normal termination
+    * [SFOS-337] - ConditionalTest is failing
+    * [SFOS-338] - SequenceTest is failing
+    * [SFOS-340] - error when uninstalling the daemons
+    * [SFOS-341] - org.smartfrog.test.system.functions.FunctionsSystemTest 
+                   failing in cruise control: race condition?
+    * [SFOS-343] - rpms aren't deleted in a remote-upload
+    * [SFOS-344] - redistributables are logging at debug
+
+
+** Improvement
+    * [SFOS-237] - Automate creation of PDF files from .sxw templates
+    * [SFOS-311] - Automate upload of maven artifacts
+    * [SFOS-315] - add an IsPropertySet condition to look for a system property
+    * [SFOS-327] - allow <sf-parse> task to take a parsertargets.txt file 
+                   containing the target list
+    * [SFOS-328] - Improve bulk loading of parsertargets
+    * [SFOS-334] - make testblock deployable out the box
+    * [SFOS-342] - Move TextFile output logic to FileSystem
+
+** New Feature
+    * [SFOS-330] - add a links directory with unversioned symlinks to the JARs
+
+
+** Task
+    * [SFOS-275] - Copy up new maven artifacts to sourceforge
+    * [SFOS-277] - Automate creation of template release annoucement
+    * [SFOS-313] - move OptionSet parsing from a switch on characters 
+                   to string comparision
+    * [SFOS-314] - add a -quietexit option to SfSystem
+    * [SFOS-331] - add anubis RPM
+
+** Sub-task
+    * [SFOS-318] - make org.smartfrog.test.system.workflow.conditional.ConditionalTest
+                   async

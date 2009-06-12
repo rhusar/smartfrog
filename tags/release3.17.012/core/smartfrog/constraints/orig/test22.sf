@@ -1,0 +1,7 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+   foo extends Constraint {
+	bar VAR "[1..3]" 3;
+   }
+}

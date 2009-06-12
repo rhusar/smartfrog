@@ -1,0 +1,120 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ Components for testing jetty
+ */
+
+
+#include "/org/smartfrog/services/filesystem/components.sf";
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/htmlpage.sf"
+
+
+
+
+ /*
+  * serves up the entire temp directory
+*/
+TempDirServletContext extends JettyServletContext {
+ contextPath "/";
+ resourceBase ROOT:test.tempdir;
+}
+
+
+
+FilesystemWar extends WebApplication {
+ contextPath "/";
+ filename ROOT:test.demo.webapp;
+}
+
+
+FilesystemWarAsServletContext extends JettyServletContext {
+ contextPath "/";
+ resourceBase ROOT:test.demo.webapp;
+}
+
+
+/*
+* A jetty server that serves up the temp directory jetty under java.io.tmpdir
+*/
+TempDirServer extends Compound {
+
+
+    sfSyncTerminate true;
+    port TBD;
+
+    //integrate logging with smartfrog
+    logging extends IntegrateJettyLogging;
+
+    server extends CoreJettyServer {
+        jettyhome ROOT:jetty_home;
+    }
+
+    listener extends JettySocketConnector {
+        port PARENT:port;
+        server LAZY PARENT:server;
+    }
+
+    tempDir extends TempDirWithCleanup {
+        prefix "jetty";
+    }
+
+
+    indexPage extends IndexPage {
+        dir LAZY tempDir;    
+        indexfile "index.html";
+        title "Index Page";
+    }
+
+
+    tempDirServletContext extends TempDirServletContext {
+        resourceBase LAZY tempDir:absolutePath;
+        server LAZY PARENT:server;
+    }
+}
+
+/**
+ * a component to wait for a page and fail if it is  not found
+ */
+
+
+
+waitForPage extends WaitForPage {
+    fetchErrorText true;
+    checkOnLiveness true;
+    checkFrequency waitForInterval;
+    timeout waitForTimeout;
+}
+
+waitForAnyHttpResponse extends waitForPage {
+    maximumResponseCode HttpCodes:NOT_FOUND;
+    minimumResponseCode HttpCodes:OK;
+}
+
+/**
+This is  the test compound for jetty; it pulls in test timeout from the properties in ports.sf
+*/
+JettyTestCompound extends TestCompound {
+
+    testTimeout test.timeout;
+
+}

@@ -1,0 +1,225 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/ant/test/system/components.sf"
+
+
+DELIBERATE_FAILURE "deliberate failure";
+BAD_TASK "Problem: failed to create task or type netrexxc";
+
+TestBuildFile extends TempBuildFile {
+
+  text ##
+   <project name="set-properties" default="default">
+
+    <target name="default" depends="inner">
+      <property name="p1" value="p1" />
+      <property name="p2" value="p2" />
+      <property name="pwd" location="." />
+    </target>
+
+    <target name="inner">
+      <property name="inner" value="true" />
+    </target>
+
+    <target name="echo" depends="inner">
+      <echo> Echoing
+      inner=${inner}
+      </echo>
+    </target>
+
+    <target name="fail">
+      <property name="failure.message" value="deliberate failure" />
+      <echo> about to fail</echo>
+      <fail status="-1"
+        message="${failure.message}"/>
+      <echo>We must never get here</echo>
+    </target>
+
+    <target name="sleep">
+      <property name="sleep.milliseconds" value="100" />
+      <sleep seconds="sleep.milliseconds" />
+    </target>
+
+    <!-- this is expected to fail -->
+    <target name="testBadTask">
+      <echo> about to fail</echo>
+      <netrexxc srcDir="."
+        includes="*"
+        destDir="build/test/netrexx"
+        />
+      <echo>We must never get here</echo>
+    </target>
+   </project>
+  #;
+
+}
+
+
+
+BuildFileTest extends TestCompound {
+
+  buildfile LAZY action:build:absolutePath;
+
+  action extends Compound {
+    build extends TestBuildFile;
+
+
+    results extends Compound {
+
+    }
+
+  }
+
+  tests extends Sequence {
+
+    //run the build
+    antbuild extends AntBuild {
+      propertyTarget LAZY action:results;
+      antfile LAZY action:build;
+      //basedir ".";
+    }
+
+    //override point
+    assertions extends Sequence {
+    }
+  }
+
+}
+
+
+testBuildFile extends BuildFileTest ;
+
+
+testEcho extends BuildFileTest  {
+  tests:antbuild:targets ["echo"];
+}
+
+testProperties extends BuildFileTest {
+
+  description "test that properties are set on the results afterwards";
+
+  tests:assertions extends Sequence {
+    java.version extends AssertPropertySet {
+      name "java.version";
+      propertyTarget LAZY action:results;
+    }
+
+    antHome extends java.version {
+      name "ant.home";
+    }
+
+    test.property extends java.version {
+      propertyTarget LAZY action:results;
+      name "p1";
+      value name;
+    }
+  }
+}
+
+
+testPropertyPassdown extends BuildFileTest {
+
+  description "test that properties can be passed down";
+
+  tests:antbuild:properties [
+      ["p1","overwrite"],
+      ["new.prop","new.value"]
+      ];
+
+   tests:assertions extends Sequence {
+
+
+    test.property extends AssertPropertySet{
+      propertyTarget LAZY action:results;
+      name "p1";
+      value "overwrite";
+    }
+
+    test.property2 extends test.property{
+      name "new.prop";
+      value "new.value";
+    }
+
+  }
+}
+
+testSkipUnimplementedTargets extends BuildFileTest {
+
+  description "test that unimplemented targets can be skipped";
+
+  tests:antbuild:skipUnimplementedTargets true;
+  tests:antbuild:targets ["undefined","inner"];
+
+  tests:assertions extends Sequence {
+    inner.property extends AssertPropertySet {
+      name "inner";
+      value "true";
+      propertyTarget LAZY action:results;
+    }
+
+  }
+}
+
+
+
+
+BuildFileFailingTest extends BuildFileTest {
+  expectTerminate true;
+  //exitType EXIT_TYPE_ABNORMAL;
+  action:targets [];
+
+  //inject a new compound
+  action:antbuild extends Sequence {
+   Sleep extends Delay {
+    time 2000;
+  }
+
+   antbuild extends AntBuild {
+    propertyTarget LAZY action:results;
+    antfile LAZY action:build;
+    targets action:targets;
+    logLevel LOG_DEBUG;
+    //basedir ".";
+   }
+  }
+
+  tests extends Sequence {
+  
+}
+
+}
+
+testFail extends BuildFileFailingTest {
+  description "test that the fail target fails";
+  exitText DELIBERATE_FAILURE;
+  action:targets
+  //tests:antbuild:targets
+    ["fail"];
+}
+
+
+
+
+testBadTask extends BuildFileFailingTest {
+  description "test that the bad task target fails";
+  exitText BAD_TASK;
+  action:targets
+    ["testBadTask"];
+}

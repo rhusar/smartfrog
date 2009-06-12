@@ -1,0 +1,936 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> Tree </title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<script language="JavaScript" type="text/javascript" src="js/treeManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+
+
+
+</head>
+
+<body style="margin:20px;">
+
+<h3>Navigation Tree</h3>
+
+
+
+<h4>Standard Navigation Tree</h4>
+
+
+
+<a href="javascript:ourTreeManager.openSpecificTreeNode('myTreeId3');">Open to a specific node by id.  In this case, id="myTreeId3"</a><br>
+<a href="javascript:ourTreeManager.makeSpecificTreeNodeHighlighted('myLinkId3');">Push a highlight state change INTO the component</a> (assumes a specific id exists on the leaf or treeTitle)<br>
+<a href="javascript:ourTreeManager.resizeTreeContainerTo('treeUniqueId3',200,200);">resize to 200,200</a><br>
+<a href="javascript:ourTreeManager.resizeTreeContainerTo('treeUniqueId3',300,400);">resize to 300,400</a><br>
+<a href="javascript:ourTreeManager.resizeTreeContainerBy('treeUniqueId3',20,20);">resize by +20,+20</a><br>
+<a href="javascript:ourTreeManager.resizeTreeContainerBy('treeUniqueId3',-20,-20);">resize by -20,-20</a><br>
+<br>
+
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId3');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId3');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<div class="treeWrapper" style="width:300px;height:400px;" id="treeUniqueId3">
+
+	<div class="treeOpen">
+		<div class="treeControl"><div class="treeDisclosure"></div></div>
+		<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem</a></div>
+		<div class="treeContents">
+			<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem Child 2</a></div>
+			<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 3</a></div>
+
+			<div class="treeOpenSelected">
+				<div class="treeControl"><div class="treeDisclosure"></div></div><div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem Child 4, call it ipsem</a></div>
+				<div class="treeContents">
+					<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 1</a></div>
+					<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 2</a></div>
+				</div>
+			</div>
+			
+
+		</div>
+	</div>
+	<div class="treeOpen">
+		<div class="treeControl"><div class="treeDisclosure"></div></div>
+		<div class="treeTitle">Dolor, sample non-navigable node</div>
+		<div class="treeContents">
+			<div class="leaf" id="myLinkId3"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 1</a></div>
+			<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 2</a></div>
+
+			<div class="treeOpen">
+				<div class="treeControl"><div class="treeDisclosure"></div></div>
+				<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 3, call it Adipiscing</a></div>
+				<div class="treeContents">
+					<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 1</a></div>
+					<div class="leaf"><a href="#" class="treeSelectableLink" target="sampleTargetFrame" id="myTreeId3">Adipiscing child 2, (id="myTreeId3")</a></div>
+					<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 3</a></div>
+					<div class="treeOpen">
+						<div class="treeControl"><div class="treeDisclosure"></div></div>
+						<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 4, call it Regina</a></div>
+						<div class="treeContents">
+							<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Regina atquam</a></div>
+							<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Regina volentere potens</a></div>
+							<div class="leaf"><a href="#" class="treeSelectableLink" target="sampleTargetFrame" diligent="yes" onclick="return false;">Regina Sample link showing diligent flag and return false</a></div>
+							<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Regina lorem ipsem</a></div>
+							<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Regina infandum</a></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+
+<h4>One-Level Navigation Tree using Identifier Icons</h4>
+
+
+
+
+
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId3_5');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId3_5');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<div class="treeWrapper treeIdentifierIconsAtDisclosurePosition" style="width:300px;height:400px;" id="treeUniqueId3_5">
+
+	<div class="treeClosed">
+		<div class="treeControl"><div class="treeDisclosure"></div></div>
+		<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem</a></div>
+		<div class="treeContents">
+
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Lorem child 1</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Lorem child 2</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Lorem child 3</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Lorem child 4</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Lorem child 5</a>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<div class="treeOpen">
+		<div class="treeControl"><div class="treeDisclosure"></div></div>
+		<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Ipsem</a></div>
+		<div class="treeContents">
+
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Ipsem child 1</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Ipsem child 2</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Ipsem child 3</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Ipsem child 4</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Ipsem child 5</a>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<div class="treeClosed">
+		<div class="treeControl"><div class="treeDisclosure"></div></div>
+		<div class="treeTitle">Dolor Sit, sample non-navigable node</div>
+		<div class="treeContents">
+
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Dolor Sit child 1</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Dolor Sit child 2</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Dolor Sit child 3</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Dolor Sit child 4</a>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="leaf">
+					<a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="" class="treeIdentifierIcon">
+					Dolor Sit child 5</a>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+
+
+
+<h4>Navigation Tree with Status Icons</h4>
+
+
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId5_5');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId5_5');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+
+
+<div class="treeWrapper treeHasOneIconSpacing" style="width:300px;height:400px;" id="treeUniqueId5_5">
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeStatusIcon"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		
+		<div class="treeTitle">Lorem, sample non-navigable node</div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_warning.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 2</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 3</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_minor.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 4</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_minor.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 5</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_critical.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 6</a></div>
+			</div>
+
+			<div class="treeOpen">
+				<div class="treeControl">
+				<div class="treeStatusIcon"><img src="images/icon_status_informational.gif" width="15" height="15" border="0" alt=""></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem Child 4, call it ipsem</a></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 1</a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 2</a></div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Dolor</a></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_unknown.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 1</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 2</a></div>
+			</div>
+
+			<div class="treeOpen">
+				<div class="treeControl">
+					<div class="treeStatusIcon"><img src="images/icon_status_warning.gif" width="15" height="15" border="0" alt=""></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 3, call it Adipiscing</a></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeStatusIcon"><img src="images/icon_status_informational.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 1</a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeStatusIcon"><img src="images/icon_status_unknown.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf" id="myTreeId5"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 2, (id="myTreeId5")</a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 3</a></div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl">
+							<div class="treeStatusIcon"><img src="images/icon_status_critical.gif" width="15" height="15" border="0" alt=""></div>
+							<div class="treeDisclosure"></div>
+						</div>
+						<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 4, call it Regina</a></div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Regina atquam</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">volentere potens</a></div>
+							</div>
+							<div class="treeOpen">
+								<div class="treeControl">
+									<div class="treeStatusIcon">&nbsp;</div>
+									<div class="treeDisclosure"></div>
+								</div>
+								<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Regina child 3, call it Myrmidon</a></div>
+								<div class="treeContents">
+									<div class="leafWrapper">
+										<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+										<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Myrmidon atquam</a></div>
+									</div>
+									<div class="leafWrapper">
+										<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+										<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Myrmidon potens</a></div>
+									</div>
+									<div class="leafWrapper">
+										<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+										<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Myrmidon conticuerunt</a></div>
+									</div>
+								</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">sed myrmidones conticuerunt</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">lorem ipsem</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">regina infandum</a></div>
+							</div>
+						</div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl"><div class="treeDisclosure"></div></div>
+						<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 5, call it Atquam</a></div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Atquam Regina</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Atquam volentere potens</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Atquam conticuerunt</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Atquam ipsem</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Atquam infandum</a></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 4</a></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle">Dolor</div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+			
+		</div>
+	</div>
+
+</div>
+
+<br>
+<br>
+<br>
+<br>
+
+<h4>Navigation Tree with Checkboxes</h4>
+
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId6');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId6');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+
+<div class="treeWrapper treeHasOneIconSpacing treeHasCheckboxes" style="width:300px;height:400px;" id="treeUniqueId6">
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		
+		<div class="treeTitle">Lorem, sample non-navigable node</div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 2</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 3</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		
+		<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem</a></div>
+		<div class="treeContents">
+			<div class="treeOpen">
+				<div class="treeControl">
+					<div class="treeCheckbox"><input type="checkbox"></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				
+				<div class="treeTitle"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Ipsem</a></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 1</a></div>
+					</div>
+					
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 2</a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 3</a></div>
+					</div>
+				</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 2</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="leaf"><a href="#" onclick="return false;" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 3</a></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+
+<h4>Navigation Tree with Checkboxes and Status Icons</h4>
+
+
+
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId7');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId7');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+
+<div class="treeWrapper treeHasTwoIconSpacing treeHasCheckboxes" style="width:300px;height:400px;" id="treeUniqueId7">
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox"></div>
+			<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		
+		<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem</a></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 1</a></div>
+			</div>
+			
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 2</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 3</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_minor.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 4</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_minor.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 5</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_critical.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem child 6</a></div>
+			</div>
+
+			<div class="treeOpen">
+				<div class="treeControl">
+					<div class="treeCheckbox"><input type="checkbox"></div>
+					<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem Child 4, call it ipsem</a></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 1</a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="treeStatusIcon"><img src="images/icon_status_warning.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Ipsem child 2</a></div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox"></div>
+			<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor</a></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 1</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 2</a></div>
+			</div>
+
+			<div class="treeOpen">
+				<div class="treeControl">
+					<div class="treeCheckbox"><input type="checkbox"></div>
+					<div class="treeStatusIcon"><img src="images/icon_status_informational.gif" width="15" height="15" border="0" alt=""></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 3, call it Adipiscing</a></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="treeStatusIcon"><img src="images/icon_status_warning.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 1</a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="treeStatusIcon"><img src="images/icon_status_normal.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf" id="myTreeId5"><a href="#" class="treeSelectableLink" target="sampleTargetFrame" id="myTreeId5">Adipiscing child 2, too long a name </a></div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox"></div>
+						<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+						<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 3</a></div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl">
+							<div class="treeCheckbox">&nbsp;</div>
+							<div class="treeStatusIcon"><img src="images/icon_status_critical.gif" width="15" height="15" border="0" alt=""></div>
+							<div class="treeDisclosure"></div>
+						</div>
+						<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 4, call it Regina</a></div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon">&nbsp;</div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Regina atquam</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">volentere potens</a></div>
+							</div>
+							<div class="treeOpen">
+								<div class="treeControl">
+									<div class="treeCheckbox"><input type="checkbox"></div>
+									<div class="treeStatusIcon">&nbsp;</div>
+									<div class="treeDisclosure"></div>
+								</div>
+								<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Regina child 3, call it Myrmidon</a></div>
+								<div class="treeContents">
+									<div class="leafWrapper">
+										<div class="treeCheckbox">&nbsp;</div>
+										<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+										<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Myrmidon atquam</a></div>
+									</div>
+									<div class="leafWrapper">
+										<div class="treeCheckbox"><input type="checkbox"></div>
+										<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+										<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Myrmidon potens</a></div>
+									</div>
+									<div class="leafWrapper">
+										<div class="treeCheckbox"><input type="checkbox"></div>
+										<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+										<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Myrmidon conticuerunt</a></div>
+									</div>
+								</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">sed myrmidones conticuerunt</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">lorem ipsem</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">regina infandum</a></div>
+							</div>
+						</div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl">
+							<div class="treeCheckbox">&nbsp;</div>
+							<div class="treeStatusIcon">&nbsp;</div>
+							<div class="treeDisclosure"></div></div>
+						<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Adipiscing child 5, call it Atquam</a></div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Atquam Regina</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Atquam volentere potens</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Atquam conticuerunt</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Atquam ipsem</a></div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox"></div>
+								<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+								<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Atquam infandum</a></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor child 4</a></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox"></div>
+			<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Dolor</a></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox"></div>
+				<div class="treeStatusIcon"><img src="images/icon_status_major.gif" width="15" height="15" border="0" alt=""></div>
+				<div class="leaf"><a href="blank.html" class="treeSelectableLink" target="sampleTargetFrame">Lorem ipsem dolor</a></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+
+<h4>CSS</h4>
+<ul>
+	<li>The CSS uses a great deal of contextual selectors to implement the spacing and interaction behaviours of the various trees, mostly through the presence or absence of certain flags on the outer div of class "TreeWrapper"  
+	<li>One note is that the Tree CSS currently supports only 5 levels of nesting. If applications require more than 5 levels of nesting, some lines will have to be added to your css. 
+	<li>Although further discussion of classnames can be found below in the HTML section, developers wishing to know more about the CSS implementation itself should refer to the css file.
+	
+</ul>
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<h4>HTML</h4>
+
+<ul>
+	<li>An instance of a tree control consists of	
+		<ul>
+			<li>On the outside, a div of class treeWrapper
+				This div can have additional class selectors in its class attribute, seperated by space characters. The additional class selectors possible are 
+				<ul>
+					<li>treeHasOneIconSpacing
+					<li>treeHasTwoIconSpacing
+					<li>treeHasCheckboxes
+					<li>treeHasCheckboxHighlighting 
+				</ul>
+				Notes:
+				<ol>
+					<li>the first two flags are always mutually exclusive
+					<li>Navigation trees are not permitted to have the treeHasCheckboxHighlighting flag, as the highlighting behaviour that this represents is reserved for set-selection trees.
+				</ol>
+
+			<li>Within the TreeWrapper, each block of expandable or collapsible items is within a div whose class can be either "treeClosed", "treeOpen", "treeClosedSelected" or "treeOpenSelected"
+			<li>Within this div (whether open or closed, selected or not) are three other divs.  
+				<ol>
+					<li>The first div is of class treeControl, 
+						<ul>
+							<li>If the treeHasStatusIcons flag is present, each TreeControl div will contain a div of class "treeStatusIcon" which can either contain a single status icon or be empty. 
+							<li>If the treeHasCheckboxes flag is present, each TreeControl div will then contain a div of class "treeCheckbox", which can either contain a single checkbox or be empty.
+							<li>each TreeControl div always contains an empty div of class "treeDisclosure". 
+						</ul>
+						
+					<li>The second div is of class "treeTitle", and contains the text label for the tree group. In navigation trees this may be linked.  This link can furthermore be associated with a highlight state change by giving the anchor tag a class of "treeSelectableLink".  Note that if other components besides your Tree can make changes to the navigation state, the use of highlighting would require some page-level javascript that can push such state changes back into the Tree.  For such a case, the relevant method on TreeManager is currently makeSpecificTreeNodeHighlighted(id).   Another note is that although in some cases there may also be secondary links present within the tree, in no case should these be given the "treeSelectableLink" class.  
+					<li>The third div is of class "treeContents", and contains the expandable/collapsible contents of the tree. The contents of these divs are described below
+				</ol>
+			<li>Within any div of class "treeContents", each row of the tree can be either 
+				<ul>
+					<li>another div of class "treeOpen", "treeClosed", "treeOpenSelected", "treeClosedSelected", or 
+					<li>a div of class "leafWrapper", whose contents are described below.
+				</ul>
+			<li>Within any div of class "leafWrapper", 
+				<ul>
+					<li>If the treeHasStatusIcons flag is present, each leafWrapper div will also contain a div of class "treeStatusIcon" which can either contain a single status icon or be empty. 
+					<li>If the treeHasCheckboxes flag is present, each leafWrapper div will also contain a div of class "treeCheckbox", which can either contain a single checkbox or be empty.
+					<li>Each "leafWrapper" div will always contain a div of class "leaf", which contains the text label and possibly the link for the tree item
+				</ul>
+		</ul>
+</ul>
+<h4>Javascript</h4>
+<ul>
+	<li>TreeManager.js contains a number of methods to both initialize the trees when loaded and to manage their state at runtime. 
+	<li>Most notably, a large init function whose execution is managed by the reconcileEventHandlers function within global.js, attaches all of the various event handlers	required to power the component. 
+	<li>Developers can refer to comments within the TreeManager code itself for further comments. 
+
+	<li>to run through the init function at a high level, when the page loads, the script picks out the treeClosed and treeOpen divs from the DOM, and attaches onclick handlers to the tree controls that they contain.
+	<li>If the tree has the flag "treeHasCheckboxHighlighting", additional onclick handlers are attached to tie the highlighting to the checkbox state of rows. 
+	<li>Currently there is some javascript to respect other onclick handlers that developers might want to hardcode into the html.  The code in these onclick handlers will be stitched in alongside the tree's own onclick handler (which is used for the expanding and contracting functionality). Combining hardcoded and dynamic event handlers like this seems to be fairly stable and it is likely that other places will be identified in this component and in others where it is a good idea to add this functionality as an extension. 
+	<li>Some methods are also made available for common application needs:
+		<ul>
+			<li>OpenSpecificTreeNode(id) will open all closed Tree Elements which are parents of the specified node. 
+			<li>makeSpecificTreeNodeHighlighted(id) will implement a navigation-type highlight in the given tree element
+			<li>resizeTreeContainerTo(id,w,h) and resizeTreeContainerBy(id,dx,dy) are straightforward methods to modify the size of the tree on the page. 
+			<li>openAllTrees(id) and closeAllTrees(id) will open and close all Tree element children
+			<li>Also, if your tree contains set-selection checkboxes, you can implement 'check all' and 'uncheck all' as follows. 
+				
+				<ol>
+					<li>create a div with class "treeMasterCheckbox" containing a checkbox element.
+					<li>put a "mastertreeselector" attribute with a value of "yes" into the input tag. 
+					<li>Also put a "treeid" attribute into the input tag that matches the unique id of your tree. 
+				</ol>
+			When the page loads,  the TreeManager will see this attach event handlers to it that automatically implement 'check all' and 'uncheck all' functionality. 
+		</ul>
+</ul>
+
+
+
+<iframe name="sampleTargetFrame" style="height:1px;border:0px;visibility:hidden;" src="blank.html"></iframe>
+
+<br><br><br>
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-jetty">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>SmartFrog Jetty components</description>
+  </info>
+<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+  <configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"
+        description="default configuration contains artifacts and runtime dependencies"/>
+    <conf name="build" visibility="private"
+        description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private"
+        description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default,compile,redist,jsp"
+        description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
+    <conf name="documentation"
+          description="all documentation artifacts"/>
+    <conf name="testwar"
+        description="the test WAR File" visibility="private"/>
+    <conf name="jsp"
+        description="JSP support" />
+  </configurations>
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+    <artifact name="sf-jetty-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-jetty-documentation" conf="documentation" ext="zip"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon->services;compile,runtime->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,redist,test,daemon->default,servletapi;testwar->testwar"/>
+
+
+    <!-- depend on logging services, to pick up commons-logging and bindings -->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        rev="latest.integration"
+        conf="jsp->default"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-tasks"
+        changing="true"
+        rev="latest.integration"
+        conf="build->default"/>
+    <!--testharness for test time-->
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
+
+    <!--
+    Core Jetty libraries
+     -we apply our own dependency logic to the components here
+     which is why the master is picked up. Everything else we need is asked for by hand 
+    -->
+    <dependency org="org.mortbay.jetty"
+        name="jetty"
+        rev="${jetty.version}"
+        conf="compile->master;redist->master"/>
+    <dependency org="org.mortbay.jetty"
+        name="jetty-util"
+        rev="${jetty.version}"
+        conf="compile->master;redist->master"/>
+
+    <!--JSP support -->
+    <dependency org="org.mortbay.jetty"
+        name="jsp-2.1"
+        rev="${jetty.version}"
+        conf="jsp->master"/>
+    <dependency org="org.mortbay.jetty"
+        name="jsp-api-2.1"
+        rev="${jetty.version}"
+        conf="jsp->master"/>
+    <dependency org="commons-el"
+      name="commons-el"
+      rev="${commons-el.version}"
+      conf="jsp->master"/>
+    <!--this is the compiler stage-->
+    <dependency org="org.smartfrog"
+        name="sf-ant"
+        rev="latest.integration"
+        conf="jsp->default"/>
+    <dependency org="org.eclipse.jdt"
+        name="core"
+        rev="${org.eclipse.jdt.core.version}"
+        conf="jsp->master"/>
+
+  </dependencies>
+</ivy-module>

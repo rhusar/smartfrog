@@ -1,0 +1,67 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/www/components.sf";
+
+WAIT_FOR_JSP_PAGE_TIMEOUT 5000;
+WAIT_FOR_JSP_PAGE_CHECK_FREQUENCY 50;
+
+WaitForLocalSomething extends  WaitForPage  {
+  timeout WAIT_FOR_JSP_PAGE_TIMEOUT;
+  checkFrequency WAIT_FOR_JSP_PAGE_CHECK_FREQUENCY;
+  fetchErrorText true;
+}
+
+WaitForLocalJSP extends  WaitForLocalSomething  {
+//  dfs.http.address TBD;
+  //hostname now needs to be set
+  webapp TBD;
+  page TBD;
+  url (dfs.http.address ++ webapp ++ page);
+}
+
+WaitForDatanodeJSP extends WaitForLocalJSP {
+  webapp "webapps/hdfs/";
+  dfshealth.jsp "dfshealth.jsp";
+  dfsnodelist.jsp "dfsnodelist.jsp";
+  nn_browsedfscontent.jsp "nn_browsedfscontent.jsp"
+}
+
+WaitForDfsHealth extends WaitForDatanodeJSP {
+ page dfshealth.jsp;
+}
+
+WaitForDfsNodeList extends WaitForDatanodeJSP {
+ page dfsnodelist.jsp;
+}
+
+WaitForBrowseDfsContent extends WaitForDatanodeJSP {
+ page nn_browsedfscontent.jsp;
+}
+
+/*
+ sequence to check out the dfs pages
+ */
+CheckDfsPagesSequence extends Sequence {
+  dfs.http.address TBD;
+  dfsHealth extends WaitForDfsHealth;
+  dfsNodeList extends WaitForDfsNodeList;
+  browseDfsContent extends WaitForBrowseDfsContent;
+}

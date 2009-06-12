@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema targetNamespace="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  
+  <!-- ============================================================= -->
+  <xsd:annotation>
+    <xsd:documentation>
+      
+    This is the XSD describing the types of XML-CDL Language
+    It is based on the revision 0.3 draft
+      
+      
+    History : 
+      
+    Aug 2004: 0.3
+    Update for the 0.3 version of the language specification.
+      
+    July 2004: 0.1.
+    This is an initial draft for the first demonstration-grade prototypes.
+    It may change completely in future.
+      
+      
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as described in
+    RFC 2119.
+    http://www.ietf.org/rfc/rfc2119.txt
+      
+    </xsd:documentation>
+  </xsd:annotation>
+  <!-- ============================================================= -->
+  
+  
+  <!-- ============================================================= -->
+  <!-- BEGIN SIMPLETYPES -->
+  <!-- ============================================================= -->
+  
+  
+  
+  
+  
+  <!-- ============================================================= -->
+  <!-- extendsType -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="extendsType">
+    <xsd:annotation>
+      <xsd:documentation>
+        type for extensions.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:QName">
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- ============================================================= -->
+  <!-- name of a component -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="namingType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the policy for the naming of components
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName"/>
+  </xsd:simpleType>
+  
+  <!-- ============================================================= -->
+  <!-- pathType -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="pathType">
+    <xsd:annotation>
+      <xsd:documentation>
+        this defines the path of a reference.
+        It must be a valid XPath1.0 expression.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="/|(/)?((\i\c*:)?(\i\c*)|\.|\.\.)(/((\i\c*:)?(\i\c*)|\.|\.\ .))*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  
+  <!-- ============================================================= -->
+  <!-- propertyUseType sets requirements on a configurable component-->
+  <!-- ============================================================= -->
+
+  <xsd:simpleType name="propertyUseType">
+    <xsd:annotation>
+      <xsd:documentation>
+        -required: The user of the configurable component
+          MUST assign values of this property.
+        -optional: The user of the configurable component
+          MAY assign values of this property.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="required"/>
+      <xsd:enumeration value="optional"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- ============================================================= -->
+  <!-- refrootType -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="refrootType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Root references for references
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:QName">
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  
+  <!-- ============================================================= -->
+  <!-- END SIMPLETYPES -->
+  <!-- ============================================================= -->
+  
+  <!-- ============================================================= -->
+  <!-- BEGIN ATTRIBUTES-->
+  <!-- Attributes can be attached to other XML elements, as well -->
+  <!--     as CDL elements -->
+  <!-- ============================================================= -->
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:extends attribute defines inheritance-->
+  <!-- ============================================================= -->
+  <xsd:attribute name="extends" type="cdl:extendsType">
+    <xsd:annotation>
+      <xsd:documentation>
+      The @cdl:extends attribute is used in a property list to inherit an
+      existing property list.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:refroot attribute-->
+  <!-- ============================================================= -->
+
+  <xsd:attribute name="lazy" type="xsd:boolean">
+    <xsd:annotation>
+      <xsd:documentation>
+        This flag indicates that evaluation of this property is 
+        to be done dynamically, during deployment, rather than when
+        statically expanding the documents.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:mode attribute-->
+  <!-- ============================================================= -->
+
+  <xsd:attribute name="mode" type="cdl:propertyUseType">
+    <xsd:annotation>
+      <xsd:documentation>
+      mode of assigment
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:name attribute-->
+  <!-- ============================================================= -->
+
+  <xsd:attribute name="name" type="cdl:namingType">
+    <xsd:annotation>
+      <xsd:documentation>
+      A unique name for the attribute
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:ref attribute-->
+  <!-- ============================================================= -->
+
+  <xsd:attribute name="ref" type="cdl:pathType">
+    <xsd:annotation>
+      <xsd:documentation>
+      A reference in the language specified by @cdl:pathlanguage
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:refroot attribute-->
+  <!-- ============================================================= -->
+
+  <xsd:attribute name="refroot" type="cdl:refrootType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This specifies the reference root for reference resolution.
+        The default value is the QName of the property list that includes
+        this node in its descendant.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  <!-- ============================================================= -->
+  <!-- The @cdl:type attribute-->
+  <!-- TODO: type properly -->
+  <!-- ============================================================= -->
+
+  <xsd:attribute name="type" type="xsd:QName">
+    <xsd:annotation>
+      <xsd:documentation>
+        This specifies the type of an element
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+  
+  
+  <!-- ============================================================= -->
+  <!-- END ATTRIBUTES-->
+  <!-- ============================================================= -->
+  
+  <!-- ============================================================= -->
+  <!-- BEGIN COMPLEX TYPES -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="anyAttr" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        base type for extending. Supports documentation inline, and
+        arbitrary attributes after the main declaration
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element ref="cdl:documentation" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other"/>
+  </xsd:complexType>
+  
+  <!-- ============================================================= -->
+  <!-- documentation -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="documentationType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        type for documentation -arbitrary XML
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax" namespace="##any"/>
+    </xsd:choice>
+  </xsd:complexType>
+  
+  
+  <!-- ============================================================= -->
+  <!-- define the variable element of an expression -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="expressionVariableElementType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the type of a variable declaration in an expression
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name"
+      type="xsd:NCName"
+      use="required"
+      />
+    <xsd:attribute name="refroot"
+      type="cdl:refrootType"
+      use="optional"
+      />
+    <xsd:attribute name="ref"
+      type="cdl:pathType"
+      use="required"
+      />
+    <xsd:attribute name="lazy"
+      type="xsd:boolean"
+      use="optional"
+      />
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  
+  <!-- ============================================================= -->
+  <!-- the type of an expression -->
+  <!-- TODO: for complex expressions we may want to make the value-of
+  element an attribute instead -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="expressionType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the type of an expression.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="cdl:anyAttr">
+        <xsd:sequence>
+          <xsd:element name="variable" type="cdl:expressionVariableElementType"
+            minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="value-of"
+          type="xsd:string"
+          use="required"
+          >
+          <xsd:annotation>
+            <xsd:documentation>
+          The input of this attribute must be an XPath expression,
+          the result which is one of: xsd:string, xsd:boolean or a number.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  <!-- ============================================================= -->
+  <!-- the property list type is lax wrt parsing; anything goes in this
+  section, even when the rest is strict -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="propertyListType">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element ref="documentation" minOccurs="0" maxOccurs="1"/>
+      <xsd:any namespace="##other" processContents="lax"
+        minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:choice>
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  
+  <!-- ============================================================= -->
+  <!-- define a reference element -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="referenceElementType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is an element that inserts a reference to other types
+        into the system.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="refroot"
+      type="cdl:refrootType"
+      use="optional"
+      />
+    <xsd:attribute name="ref"
+      type="cdl:pathType"
+      use="required"
+      />
+    <xsd:attribute name="lazy"
+      type="xsd:boolean"
+      use="optional"
+      />
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  
+  <!-- ============================================================= -->
+  <!-- These types define the elements under the documentType -->
+  <!-- ============================================================= -->
+  
+  
+  
+  <!-- ============================================================= -->
+  <!-- import external CDL -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="importType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The namespace and location of another CDL file to import.
+        If a namespace is omitted, it is included into the current
+        document's namespace
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="cdl:anyAttr">
+        <xsd:attribute name="namespace" type="xsd:anyURI" use="optional"/>
+        <xsd:attribute name="location" type="xsd:anyURI" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  
+  <!-- ============================================================= -->
+  <!-- types is XSD Declarations-->
+  <!-- TODO: find out how to declare xsd:schema in a schema document -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="typesType">
+    <xsd:annotation>
+      <xsd:documentation>
+        XML Schema type definitions.
+        the nested XML is scoped xsd:any, but it is not processContents=lax;
+        the XML parser is expected to validate this when in validating mode.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="cdl:anyAttr">
+        <xsd:sequence>
+          <xsd:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  <!-- ============================================================= -->
+  <!-- this is the document itself -->
+  <!-- ============================================================= -->
+
+  <xsd:complexType name="documentType">
+    <xsd:complexContent>
+      <xsd:extension base="cdl:anyAttr">
+        <xsd:sequence>
+
+          <xsd:element name="import" type="cdl:importType"
+            minOccurs="0" maxOccurs="unbounded"
+            />
+          <xsd:element name="types" type="cdl:typesType"
+            minOccurs="0" maxOccurs="1"/>
+
+          <xsd:element name="configuration" type="cdl:propertyListType"
+            minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+              <xsd:documentation>
+              The configuration declares components
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+
+          <xsd:element name="system" type="cdl:propertyListType"
+            minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+              <xsd:documentation>
+            The system is a component that describes what is to be deployed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          
+          <!-- extensibility element -->
+          <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="targetNamespace" type="xsd:anyURI" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>
+              This is the target namespace declaration for the document. 
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  
+  <!-- ============================================================= -->
+  <!-- END COMPLEX TYPES -->
+  <!-- ============================================================= -->
+  
+  
+  <!-- ============================================================= -->
+  <!-- BEGIN ELEMENTS -->
+  <!-- ============================================================= -->
+  
+  
+  <!-- ============================================================= -->
+  <!-- This is the base declaration; cdl -->
+  <!-- ============================================================= -->
+
+  <xsd:element name="cdl" type="documentType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the root element.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  
+  
+  <!-- ============================================================= -->
+  <!-- documentation elements can be used in many places-->
+  <!-- ============================================================= -->
+
+  <xsd:element name="documentation" type="documentationType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A documentation node
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  
+  <!-- ============================================================= -->
+  <!-- An expression -->
+  <!-- ============================================================= -->
+
+  <xsd:element name="expression" type="expressionType">
+    <xsd:annotation>
+      <xsd:documentation>
+      This is an expression.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  
+  <!-- ============================================================= -->
+  <!-- end schema-->
+  <!-- ============================================================= -->
+</xsd:schema>
