@@ -1144,7 +1144,7 @@
     <property name="rpm.base.list"
         value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant  smartfrog-logging "/>
     <property name="rpms.components.list"
-        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity"/>
+        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity smartfrog-rpmtools"/>
     <property name="rpms.www.list"
         value="smartfrog-www smartfrog-jetty smartfrog-xunit "/>
     <property name="rpms.testing.list"
@@ -1172,7 +1172,8 @@
     <echo>
       remote server is ${rpm.ssh.server}
       remote directory is ${rpm.full.ssh.dir}
-      rpms to install: ${rpms.list}
+      rpms to install: 
+      ${rpms.list}
     </echo>
 
   </target>
