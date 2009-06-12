@@ -270,6 +270,54 @@
 
 <h3>Changes since last release</h3>
 
+        Release Notes - SmartFrog - Version 3.17.012
+    
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1209'>SFOS-1209</a>] -         HadoopConfigurationTest failing in testFloatingPointValue
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1216'>SFOS-1216</a>] -         some code is using Log.error(Object) and passing in an exception, causing the stack trace to get lost
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1220'>SFOS-1220</a>] -         We don't rmic the test classes
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1231'>SFOS-1231</a>] -         release/build.xml is not uninstalling the smartfrog-rpmtools RPM in a forced uninstall
+</li>
+</ul>
+        
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-690'>SFOS-690</a>] -         SystemPropertiesImpl should not unset properties if they have a different value from that set in the deployment
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1207'>SFOS-1207</a>] -         Move to the updated HADOOP-3628 branch
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1227'>SFOS-1227</a>] -         move all templates from core/smartfrog/bin/default.sf into something in the smartfrog JAR, so that other default.sf files can reuse them
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1228'>SFOS-1228</a>] -         print out the security manager classname on startup.
+</li>
+</ul>
+    
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1215'>SFOS-1215</a>] -         Add new task expandfully, to expand the .sf file passed in
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1218'>SFOS-1218</a>] -         add unzip component
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1226'>SFOS-1226</a>] -         expand the cluster sf and then ssh it to a target system, for ssh deployment
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1229'>SFOS-1229</a>] -         add a setSFEnvVariables shell script that is marked as conf in the RPMs, so can be overwritten with custom env variables
+</li>
+</ul>
+        
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1223'>SFOS-1223</a>] -         Merge our hadoop branch with SVN_HEAD, create a 0.21-alpha-13 Hadoop JAR
+</li>
+</ul>
+    
 </body>
 </html>
 
