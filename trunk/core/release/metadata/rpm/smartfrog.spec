@@ -548,10 +548,12 @@ rm -rf $RPM_BUILD_ROOT
 #option
 %config(noreplace) %{bindir}/default.ini
 %config(noreplace) %{bindir}/default.sf
+%config(noreplace) %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFEnvVariables.sh
 
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/smartfrog
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDefaultProperties
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDynamicClassLoadingProperties
+
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFProperties
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFSecurityProperties
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDaemon
@@ -920,6 +922,10 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Fri Jun 12 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.011-1.el4
+- Include Hadoop 0.21-alpha-13
+- New configuration file, bin/setSFEnvVariables.sh, which can be used
+  to set the environment in which the JVM runs. 
 * Fri Feb 13 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.006-1.el4
 - Move up Xerces version, changing the xml-apis JAR name in the process
 * Wed Nov 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.15.001-1.el4
