@@ -18,34 +18,40 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/hadoop/examples/namenodepages.sf";
+#include "/org/smartfrog/services/www/components.sf";
 
+WAIT_FOR_JSP_PAGE_TIMEOUT 5000;
+WAIT_FOR_JSP_PAGE_CHECK_FREQUENCY 50;
 
-WaitForDatanodeJSP extends WaitForLocalJSP {
-  webapp "webapps/hdfs/";
-  dfshealth.jsp "dfshealth.jsp";
-  dfsnodelist.jsp "dfsnodelist.jsp";
-  nn_browsedfscontent.jsp "nn_browsedfscontent.jsp"
+WaitForLocalSomething extends  WaitForPage  {
+  timeout WAIT_FOR_JSP_PAGE_TIMEOUT;
+  checkFrequency WAIT_FOR_JSP_PAGE_CHECK_FREQUENCY;
+  fetchErrorText true;
 }
 
-WaitForDfsHealth extends WaitForDatanodeJSP {
- page dfshealth.jsp;
+WaitForLocalJSP extends  WaitForLocalSomething  {
+  webapp TBD;
+  page TBD;
+  url (dfs.http.address ++ webapp ++ page);
 }
 
-WaitForDfsNodeList extends WaitForDatanodeJSP {
- page dfsnodelist.jsp;
+WaitForPath extends  WaitForLocalSomething  {
+  serverpath TBD;
+  url (dfs.http.address ++ serverpath);
 }
 
-WaitForBrowseDfsContent extends WaitForDatanodeJSP {
- page nn_browsedfscontent.jsp;
+WaitForFsck extends  WaitForPath {
+  serverpath "fsck";
 }
 
-/*
- sequence to check out the dfs pages
- */
-CheckDfsPagesSequence extends Sequence {
-  dfs.http.address TBD;
-  dfsHealth extends WaitForDfsHealth;
-  dfsNodeList extends WaitForDfsNodeList;
-  browseDfsContent extends WaitForBrowseDfsContent;
+WaitForListPath extends WaitForPath {
+  pathToList TBD;
+  serverpath ("listPaths/" ++ pathToList);
 }
+
+
+WaitForChecksumPath extends WaitForPath {
+  pathToList TBD;
+  serverpath ("fileChecksum/" ++ pathToList);
+}
+
