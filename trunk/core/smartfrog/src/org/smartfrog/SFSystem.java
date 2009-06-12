@@ -694,11 +694,12 @@ public class SFSystem implements MessageKeys {
                 sfLog().warn(MessageUtil.formatMessage(WARN_SECURE_RESOURCES_OFF));
             }
         }
-        SecurityManager manager = System.getSecurityManager();
-        if (manager != null) {
-            sfLog().info("Security Manager is " + manager);
+        if (sfLog().isDebugEnabled()) {
+            SecurityManager manager = System.getSecurityManager();
+            if (manager != null) {
+                sfLog().debug("Security Manager is " + manager);
+            }
         }
-       
         // if this property is set then a security manager is created, here we provide debug information about it.
         String secPro = System.getProperty("java.security.policy");
         if (secPro != null) {
