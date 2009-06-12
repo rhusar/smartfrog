@@ -148,4 +148,37 @@ Changes since last release
 
 
 
+Release Notes - SmartFrog - Version 3.17.012
+
+** Bug
+* [SFOS-1209] - HadoopConfigurationTest failing in testFloatingPointValue
+* [SFOS-1216] - some code is using Log.error(Object) and passing in an 
+  exception, causing the stack trace to get lost
+* [SFOS-1220] - We don't rmic the test classes
+* [SFOS-1231] - release/build.xml is not uninstalling the smartfrog-rpmtools
+  RPM in a forced uninstall
+
+
+** Improvement
+* [SFOS-690] - SystemPropertiesImpl should not unset properties if they 
+  have a different value from that set in the deployment
+* [SFOS-1207] - Move to the updated HADOOP-3628 branch
+* [SFOS-1227] - move all templates from core/smartfrog/bin/default.sf 
+  into something in the smartfrog JAR, so that other default.sf files can reuse them
+* [SFOS-1228] - print out the security manager classname on startup.
+
+** New Feature
+* [SFOS-1215] - Add new task expandfully, to expand the .sf file passed in
+* [SFOS-1218] - add unzip component
+* [SFOS-1226] - expand the cluster sf and then ssh it to a target system,
+  for ssh deployment
+* [SFOS-1229] - add a setSFEnvVariables shell script that is marked as conf
+  in the RPMs, so can be overwritten with custom env variables
+
+
+** Task
+* [SFOS-1223] - Merge our hadoop branch with SVN_HEAD, create a 
+  0.21-alpha-13 Hadoop JAR
+
+
   
