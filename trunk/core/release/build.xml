@@ -393,6 +393,11 @@
         cleanBuildDir="true"
         failOnError="true"/>
   </target>
+  
+  <target name="dont-build-rpm" depends="package-private-rpm,ready-to-rpm"
+      unless="has.rpm.tools">
+    <echo>No rpm-build package installed here, or its a windows machine</echo>
+  </target>
 
   <target name="expand-core" depends="init-rpm,prepare-executables">
     <unzip src="${sf-core-install.zip}"
