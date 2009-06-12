@@ -1397,7 +1397,7 @@ smartfrog.tasks.classpath=
   <!-- this is an override point -->
   <!-- create the test jar ${test.jar}-->
   <!-- ========================================================== -->
-  <target name="package-tests" depends="compile-tests"
+  <target name="package-tests" depends="ready-to-package-tests"
       description="create the JAR file for the tests">
     <!-- the JAR is created, even when empty, as it may be used downstream as an empty artifact-->
       <sf-jar destfile="${test.jar}"
