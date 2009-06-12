@@ -66,9 +66,6 @@
   <import file="../../common.xml"/>
 
 
-
-
-
   <target name="init-deploy-properties" depends="declare-extended-smartfrog-tasks">
     <!-- work out our host address-->
     <sf-localhost property="localhost" />
@@ -205,6 +202,9 @@
      <mkdir  dir="${build.sf.dir}"/>
 
      <property name="build.default.sf" location="${build.sf.dir}/default.sf" />
+     <property name="src.scripts.dir" location="src/org/smartfrog/extras/hadoop/cluster/services/scripts" />
+     <property name="envVariables.sh" location="${src.scripts.dir}/setSFEnvVariables.sh" />
+     
      <sf-expandfully
         resource="/${default.sf}"
         dest="${build.default.sf}"
@@ -220,13 +220,15 @@
     <property name="ssh.pass" value="" />
     <property name="ssh.trust" value="true" />
     <property name="ssh.verbose" value="false" />
-    <property name="ssh.dest.dir" value="${env.SFHOME}/bin/" />
+    <property name="ssh.home.dir" value="${env.SFHOME}" />
+    <property name="ssh.bin.dir" value="${ssh.home.dir}/bin" />
+    <property name="ssh.lib.dir" value="${ssh.home.dir}/lib" />
     <property name="ssh.path"
-        value="${ssh.user}@${ssh.host}:${ssh.dest.dir}"/>
+        value="${ssh.user}@${ssh.host}:${ssh.bin.dir}"/>
     <echo>
       ssh.host = ${ssh.host}
       ssh.user = ${ssh.user}
-      ssh.dest = ${env.SFHOME}
+      ssh.bin.dir = ${ssh.bin.dir}
       ssh.path = ${ssh.path}
     </echo>
     <fail  unless="ssh.host" >Not set: ${ssh.host}</fail>
@@ -256,19 +258,49 @@
 
   </target>
 
-  <target  name="ready-to-ssh" depends="init-ssh,cluster2file" >
+  <target  name="ready-to-ssh" depends="init-ssh,cluster2file"
+      description="be ready to ssh">
   </target>
 
   <!-- issue a mkdir command. This is a good test for the parameters being
   set up right.-->
-  <target  name="ssh-mkdir" depends="init-ssh">
-    <sshcommand command="mkdir -p ${ssh.dest.dir}" />
+  <target  name="ssh-mkdir" depends="init-ssh"
+      description="create the remote destination directory">
+    <sshcommand command="mkdir -p ${ssh.bin.dir}" />
   </target>
 
-  <target  name="ssh-cluster" depends="ready-to-ssh,ssh-mkdir" >
+  <target  name="ssh-cluster" depends="ready-to-ssh,ssh-mkdir" 
+      description="ssh the configuration to a remote machine">
     <scpfile remoteToDir="${ssh.path}">
-      <fileset  file="${build.default.sf}" />
-  </scpfile>
+      <fileset file="${build.default.sf}" />
+      <fileset dir="${src.scripts.dir}" includes="*.sh"/>
+    </scpfile>
+    <sshcommand command="chmod a+x ${ssh.bin.dir}/*.sh" />
   </target>
+
+  <target  name="ssh-start" depends="init-ssh"
+      description="start the remote daemon">
+    <sshcommand command="${ssh.bin.dir}/remoteSfDaemon.sh" />
+  </target>
+
+  <target  name="ssh-start-blocking" depends="init-ssh"
+      description="start the remote daemon">
+    <sshcommand command="nohup ${ssh.bin.dir}/sfDaemon&amp;" />
+  </target>
+
   
+  <target  name="ssh-stop" depends="init-ssh"
+      description="stop the remote daemon">
+    <sshcommand command="nohup ${ssh.bin.dir}/sfStopDaemon&amp;" />
+  </target>
+
+  <target  name="ssh-ls-lib" depends="init-ssh"
+      description="list the remote lib dir">
+    <sshcommand command="ls -l ${ssh.lib.dir}" />
+  </target>
+  <target  name="ssh-ls-bin" depends="init-ssh"
+      description="list the remote bin dir">
+    <sshcommand command="ls -l ${ssh.bin.dir}" />
+  </target>
+    
 </project>
