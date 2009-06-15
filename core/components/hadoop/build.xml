@@ -52,7 +52,7 @@
   <property file="${hadoop.dir}/build.properties" />
   <property file="${hadoop.dir}/ivy/libraries.properties" />
 
-  <property  name="system.tests.enabled" value="false" />
+  <!--<property  name="system.tests.enabled" value="false" /> 
   <!--System tests are only turned on if Java6 or later is in use-->
   <!--
     <condition property="system.tests" >
