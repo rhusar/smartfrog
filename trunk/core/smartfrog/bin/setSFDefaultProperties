@@ -25,14 +25,16 @@
 #export SFSERVERHOSTNAME=127.0.0.1
 
 
-# -- default.ini and default.sf without security --
-if ! test "$SFLIBRARYPATH";then 
+
+if ! test "$SFLIBRARYPATH"; then 
    export SFLIBRARYPATH=-Djava.library.path="$SFHOME/lib/NuSMV"
 fi
-if ! test "$SFDEFAULTINI";then 
+
+# -- default.ini and default.sf without security --
+if ! test "$SFDEFAULTINI"; then 
    export SFDEFAULTINI=-Dorg.smartfrog.iniFile="$SFHOME/bin/default.ini"
 fi
-if ! test "$SFDEFAULTSF";then     
+if ! test "$SFDEFAULTSF"; then     
    export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
 fi
 
