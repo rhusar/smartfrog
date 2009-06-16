@@ -51,7 +51,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     }
 
     /**
-     * Override point - aethod called whenever there is a state change.
+     * Override point - method called whenever there is a state change.
      *
      * The base class logs the event.
      *
@@ -70,11 +70,24 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     }
 
     /**
+     * Ping: checks that a component considers itself live.
+     *
+     * This method makes the ping public
+     *
+     * @return the current service state.
+     * @throws IOException for any ping failure
+     */
+    @Override
+    public ServiceStatus ping() throws IOException {
+        return super.ping();
+    }
+
+    /**
      * Get the port used for IPC communications
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    //@Override
+    @Override
     public int getIPCPort() {
         return ServiceInfo.PORT_UNUSED;
     }
@@ -84,7 +97,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    //@Override
+    @Override
     public int getWebPort() {
         return httpPort;
     }
@@ -95,7 +108,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      * @return the worker count
      */
 
-    //@Override
+    @Override
     public int getLiveWorkerCount() {
         return workerThreads;
     }
@@ -105,7 +118,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      *
      * @return the binding information
      */
-    //@Override
+    @Override
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings = new ArrayList<BindingTuple>();
         bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_REPORT_ADDRESS, "http",
@@ -134,7 +147,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      */
     @Override
     public String toString() {
-        String address = ""+getTaskTrackerReportAddress();
-        return super.toString() + ". web port=" + getWebPort() + " reporting "+address;
+        String address = "" + getTaskTrackerReportAddress();
+        return super.toString() + ". web port=" + getWebPort() + " reporting " + address;
     }
 }

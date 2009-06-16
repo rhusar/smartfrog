@@ -41,7 +41,7 @@ import java.net.BindException;
 import java.net.InetSocketAddress;
 
 /**
- * This class is in the hadoop dfs package to get at package scoped operations and internal datastructures that are only
+ * This class is in the Apache hadoop packages to get at package scoped operations and internal datastructures that are only
  * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
  * will need to be signed by the same entities.
  */
@@ -68,7 +68,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     return "ExtDataNode";
   }
 
-  /**
+    /**
      * Start our parent and the worker thread
      *
      * @throws IOException if necessary
@@ -205,30 +205,20 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
         }
     }
 
-    /**
-     * Ping the node; report an error if we have stopped
-     *
-     * @throws IOException for any liveness problem
-     */
-/*    @Override
-    public void ping()
-            throws IOException {
-        super.ping();
-        if(getServiceState() == ServiceState.READY) {
-            if (isStopped()) {
-                throw new ServiceStateException("DataNode is stopped",
-                        getServiceState());
-            }
-            try {
-                SmartFrogThread.ping(worker);
-            } catch (SmartFrogLivenessException e) {
-                throw new ServiceStateException("", e,
-                        getServiceState());
-            }
-        }
-    }*/
 
-    
+    /**
+     * Ping: checks that a component considers itself live.
+     *
+     * This method makes the ping public
+     *
+     * @return the current service state.
+     * @throws IOException for any ping failure
+     */
+    @Override
+    public ServiceStatus ping() throws IOException {
+        return super.ping();
+    }
+
     /**
      * Start the worker thread
      */
@@ -266,7 +256,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
             ExtDataNode.this.run();
           } catch (Throwable e) {
               LOG.error("error while in state " + getState() + ": " + e, e);
-            throw e;
+              throw e;
           }
         }
 

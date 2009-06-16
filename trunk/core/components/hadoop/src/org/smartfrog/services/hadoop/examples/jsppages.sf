@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 
 
 WaitForDatanodeJSP extends WaitForLocalJSP {
-  webapp "webapps/hdfs/";
+  webapp "/";
   dfshealth.jsp "dfshealth.jsp";
   dfsnodelist.jsp "dfsnodelist.jsp";
   nn_browsedfscontent.jsp "nn_browsedfscontent.jsp"

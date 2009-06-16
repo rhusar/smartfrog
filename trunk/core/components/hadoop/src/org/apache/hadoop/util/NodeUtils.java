@@ -50,8 +50,7 @@ public class NodeUtils {
         buffer.append(":");
         buffer.append(Integer.toString(port));
         buffer.append("/");
-        String stringValue = buffer.toString();
-        return stringValue;
+        return buffer.toString();
     }
 
 
