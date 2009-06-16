@@ -28,7 +28,7 @@ import org.smartfrog.test.DeployingTestBase;
  * JUnit test class for test cases for "datareaders" example
  */
 public class DataReadersTest
-    extends DeployingTestBase {
+        extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/examples/datareaders/";
 
@@ -38,28 +38,41 @@ public class DataReadersTest
 
     /**
      * test case
+     * this test is turned off as the successor incorporates the provider and the consumer
      * @throws Throwable on failure
      */
-    public void testCaseTCP31() throws Throwable {
-        application = deployExpectingSuccess(FILES+"dataProvider.sf", "provider");
+    public void NotestCaseTCP31() throws Throwable {
+        application = deployProvider();
         assertNotNull(application);
+    } 
+
+    private Prim deployProvider() throws Throwable {
+        return deployExpectingSuccess(FILES + "dataProvider.sf", "provider");
     }
 
     /**
      * test case
+     *
      * @throws Throwable on failure
      */
     public void testCaseTCP32() throws Throwable {
-        application = deployExpectingSuccess(FILES + "dataConsumer.sf", "consumer");
-        assertNotNull(application);
-        Prim event = (Prim) application.sfResolveHere("event");
-        Prim event2 = (Prim) application.sfResolveHere("event2");
-        Prim event3 = (Prim) application.sfResolveHere("event3");
-        String message = event.sfResolve("message", (String) null, true);
-        String message2 = event2.sfResolve("message", (String) null, true);
-        String message3 = event3.sfResolve("message", (String) null, true);
-        assertEquals("hello world! (data attribute)", message);
-        assertEquals("PRIM hello world! (component attribute)", message2);
-        assertEquals("PRIM2 hello World!", message3);
+        Prim provider = deployProvider();
+        try {
+            application = deployExpectingSuccess(FILES + "dataConsumer.sf", "consumer");
+            assertNotNull(application);
+            Prim event = (Prim) application.sfResolveHere("event");
+            Prim event2 = (Prim) application.sfResolveHere("event2");
+            Prim event3 = (Prim) application.sfResolveHere("event3");
+            String message = event.sfResolve("message", (String) null, true);
+            String message2 = event2.sfResolve("message", (String) null, true);
+            String message3 = event3.sfResolve("message", (String) null, true);
+            assertEquals("hello world! (data attribute)", message);
+            assertEquals("PRIM hello world! (component attribute)", message2);
+            assertEquals("PRIM2 hello World!", message3);
+        } finally {
+            terminateApplication(provider);
+        }
     }
+
+ 
 }
