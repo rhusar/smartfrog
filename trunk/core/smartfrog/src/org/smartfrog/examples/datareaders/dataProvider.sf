@@ -35,13 +35,8 @@ For more information: www.smartfrog.org
  * sequentially.
  */
 sfConfig extends Sequence {
-   /**
-    * The basic configuration of the Sequence component is defined under
-    * "actions" component.
-    */
-//    actions extends LAZY {
         /**
-         * The Run component creates its only sub-component and then left it
+         * The Run component creates its only sub-component and then leaves it
          * parentless to fend for itself.
          */
     doit extends Run {
@@ -50,19 +45,19 @@ sfConfig extends Sequence {
             * "action" component.
             */
         action extends LAZY Compound {
-        /**
-                 * SmartFrog attribute for defining the name of first component
+            /**
+             * SmartFrog attribute for defining the name of first component
              * (of the application tree) to be deployed in the process.
-                 */
-                sfProcessComponentName "foo";
-        step1 extends Compound {
+             */
+          sfProcessComponentName "dataProvider";
+          step1 extends Compound {
             step2 extends Compound {
-                        /**
-                         * This component has a Lazy reference and so it is
-                         * resolved at run-time.
-                         */
+            /**
+             * This component has a Lazy reference and so it is
+             * resolved at run-time.
+             */
             step3 extends LAZY {
-                    //inside data structure
+                //inside data structure
                 value "hello world! (data attribute)";
             }
             step4 extends Compound {
@@ -70,19 +65,18 @@ sfConfig extends Sequence {
                 value "PRIM hello world! (component attribute)";
                             value2 "PRIM2 hello World!";
             }
-                        step5 extends Compound {
+            step5 extends Compound {
                //inside a compound
-                           /**
-                            * This attribute has a Lazy reference and so it is
-                            * resolved at run-time.
-                            */
+               /**
+                * This attribute has a Lazy reference and so it is
+                * resolved at run-time.
+                */
                 value LAZY PARENT:step4:value2;
             }
-            }
+          }
         }
-        }
+      }
     }
-//    } //end actions
 }
 
 
