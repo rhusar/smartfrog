@@ -115,10 +115,24 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     }
 
     /**
+     * Ping: checks that a component considers itself live.
+     *
+     * This method makes the ping public
+     *
+     * @return the current service state.
+     * @throws IOException for any ping failure
+     */
+    @Override
+    public ServiceStatus ping() throws IOException {
+        return super.ping();
+    }
+
+    /**
      * Ping the node
      *
      * @throws IOException if the node is unhappy @param status
      */
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     @Override
     public synchronized void innerPing(ServiceStatus status)
             throws IOException {
@@ -137,7 +151,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      * Get the current number of workers
      * @return the worker count
      */
-    //@Override
+    @Override
     public int getLiveWorkerCount() {
         return getNamesystem().heartbeats.size();
     }
@@ -147,7 +161,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      *
      * @return the binding information
      */
-    //@Override
+    @Override
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings = new ArrayList<BindingTuple>();
         bindings.add(NodeUtils.toBindingTuple(FS_DEFAULT_NAME, "hdfs", getNameNodeAddress()));
@@ -163,7 +177,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      * @param oldState existing state
      * @param newState new state.
      */
-    //@Override
+    @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: NameNode is now "+ newState);
@@ -178,7 +192,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    //@Override
+    @Override
     public int getIPCPort() {
         return getNameNodeAddress().getPort() ;
     }
@@ -188,7 +202,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    //@Override
+    @Override
     public int getWebPort() {
         return getHttpAddress().getPort();
     }

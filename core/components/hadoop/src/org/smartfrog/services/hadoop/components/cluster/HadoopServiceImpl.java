@@ -78,7 +78,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * Called after instantiation for deployment purposes. Heart monitor is started and if there is a parent the
      * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
-     * Attributees that require injection are handled during sfDeploy().
+     * Attributes that require injection are handled during sfDeploy().
      *
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
@@ -440,10 +440,11 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     public Service.ServiceStatus pingService() throws IOException {
         Service hadoop = getService();
-        if (hadoop == null) {
+        if (hadoop == null || !(hadoop instanceof ServiceInfo)) {
             return null;
         } else {
-            return hadoop.ping();
+            ServiceInfo si =(ServiceInfo) hadoop;
+            return si.ping();
         }
     }
 

@@ -81,11 +81,25 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
         //closeTheFilesystemQuietly();
     }
 
+
+    /**
+     * Ping: checks that a component considers itself live.
+     *
+     * This method makes the ping public
+     *
+     * @return the current service state.
+     * @throws IOException for any ping failure
+     */
+    @Override
+    public ServiceStatus ping() throws IOException {
+        return super.ping();
+    }
+
     /**
      * Get the port used for IPC communications
      * @return the port number; not valid if the service is not LIVE
      */
-    //@Override
+    @Override
     public int getIPCPort() {
         return getTrackerPort();
     }
@@ -94,7 +108,7 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      * Get the port used for HTTP communications
      * @return the port number; not valid if the service is not LIVE
      */
-    //@Override
+    @Override
     public int getWebPort() {
         return getInfoPort();
     }
@@ -104,7 +118,7 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      *
      * @return the worker count
      */
-    //@Override
+    @Override
     public int getLiveWorkerCount() {
         return getNumResolvedTaskTrackers();
     }
@@ -114,11 +128,10 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      *
      * @return the binding information
      */
-    //@Override
+    @Override
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings = new ArrayList<BindingTuple>();
-        bindings.add(
-                NodeUtils.toBindingTuple(MAPRED_JOB_TRACKER, "ipc",
+        bindings.add(NodeUtils.toBindingTuple(MAPRED_JOB_TRACKER, "ipc",
                         interTrackerServer.getListenerAddress() ));
         bindings.add(new BindingTuple(MAPRED_JOB_TRACKER_HTTP_ADDRESS,
                 NodeUtils.toURL("http", localMachine ,getInfoPort())));
