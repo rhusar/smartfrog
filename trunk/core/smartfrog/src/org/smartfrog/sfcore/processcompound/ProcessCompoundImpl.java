@@ -815,8 +815,12 @@ public class ProcessCompoundImpl extends CompoundImpl
     public synchronized Object sfRegister(Object name, Prim comp) throws SmartFrogException, RemoteException {
 
         if ((name != null) && (sfContext.containsKey(name))) {
-            throw SmartFrogResolutionException.generic(sfCompleteNameSafe(),
-                    "Name '" + name + "' already used");
+            throw new SmartFrogResolutionException(sfCompleteNameSafe(),
+                    (Reference) null,
+                    "Name '" + name + "' already used",
+                    (Object) null,
+                    (Throwable) null,
+                    comp);
         }
 
         Object compName = name;
