@@ -55,9 +55,11 @@
   <!-- override point -->
   <property file="build.properties"/>
   <!--System tests are only turned on if Java6 or later is in use-->
+  <!-- 
   <condition property="system.tests" >
     <available classname="java.net.CookieManager"/>
   </condition>
+    -->
   <property name="junit.timeout" value="120000000"/>
   <!--time for a single test to execute-->
   <property name="test.timeout.execute"    value="120000"/>
