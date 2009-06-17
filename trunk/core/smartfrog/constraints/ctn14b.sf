@@ -35,12 +35,12 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends {
   boo0 extends MoreThan {
-        [sfTag] -- "x";
-        [sfSource] -- LAZY boo1;
-        [sfPrefix] -- "foo";
-        [sfCard] -- 1;
-        [sfProp] -- extends Atomic {
-	   [sfProp] -- (LAZY x:help == 1); 
+        tag "x";
+        array LAZY boo1;
+        prefix "foo";
+        card 1;
+        pred extends Atomic {
+	   pred (LAZY x:help == 1); 
 	}
   }
 
