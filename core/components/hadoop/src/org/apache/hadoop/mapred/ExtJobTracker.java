@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.util.NodeUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
@@ -32,6 +33,7 @@ import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.net.InetSocketAddress;
 
 /**
  *
@@ -131,10 +133,13 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
     @Override
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings = new ArrayList<BindingTuple>();
+        InetSocketAddress ipcAddress = interTrackerServer.getListenerAddress();
         bindings.add(NodeUtils.toBindingTuple(MAPRED_JOB_TRACKER, "ipc",
-                        interTrackerServer.getListenerAddress() ));
-        bindings.add(new BindingTuple(MAPRED_JOB_TRACKER_HTTP_ADDRESS,
-                NodeUtils.toURL("http", localMachine ,getInfoPort())));
+                ipcAddress));
+        //try and work out the underlying bindings by going back to the configuration
+        InetSocketAddress httpAddr = NodeUtils.resolveAddress(getConf(), MAPRED_JOB_TRACKER_HTTP_ADDRESS);
+        InetSocketAddress realHttpAddr = new InetSocketAddress(httpAddr.getAddress(), getInfoPort());
+        bindings.add(NodeUtils.toBindingTuple(MAPRED_JOB_TRACKER_HTTP_ADDRESS, "http", realHttpAddr));
         return bindings;
     }
 
