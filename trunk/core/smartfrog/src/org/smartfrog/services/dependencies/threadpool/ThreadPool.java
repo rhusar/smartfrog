@@ -27,11 +27,6 @@ public interface ThreadPool {
      */
     public Future<?> addToQueue(Runnable run);
     
-    public Future<?> removeFromQueue(Future<?> task);
+    //public Future<?> removeFromQueue(Future<?> task);
     
-    public void setIdleRunnable(Runnable idle);
-    
-    public void runIdle();
-    
-    public void runIdleAgain();
 }

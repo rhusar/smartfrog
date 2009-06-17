@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
@@ -57,6 +58,7 @@ import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
  * Defines the context class used by Components. Context implementations
@@ -809,6 +811,33 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        } //while
    }   
 
+   /**
+    * Link resolution is exclusively an SFComponentDescription phenomenon.  But it is possible that we 
+    * would like to do simple link resolution dynamically on deployed cds which at run-time are plain 
+    * ComponentDescriptions. Hence this method which does a "simple" link resolution. 
+    * @param comp  input cd
+    * @return  link resolved cd
+    * @throws SmartFrogException
+    */
+    public static ComponentDescription simpleLinkResolve(ComponentDescription comp) throws SmartFrogException {
+		//Simple link resolve...
+		ComponentDescription newcomp = new SFComponentDescriptionImpl();
+		newcomp.setParent(comp.sfParent());
+		newcomp.setEager(comp.getEager());
+		
+		for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+			Object name = v.next();
+           String nameS = name.toString();
+           Reference ref = new Reference(ReferencePart.here(name));
+           Object value=comp.sfResolve(ref);
+           if (value instanceof ComponentDescription) value=simpleLinkResolve((ComponentDescription)value);           
+          
+           newcomp.sfAddAttribute(name, value);
+           newcomp.sfAddTags(name, comp.sfGetTags(name));     
+       }     
+		return newcomp;
+	}
+   
    /**
     *  Returns a string representation of the component. This will give a
     *  description of the component which is parseable, and deployable again...

@@ -3,12 +3,12 @@ package org.smartfrog.services.dependencies.statemodel.state;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 
-import org.smartfrog.services.dependencies.threadpool.ThreadPool;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  *
@@ -16,35 +16,37 @@ import org.smartfrog.sfcore.prim.Prim;
 public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation {
 
    private String name="";
-
-   //Threads on tap...
-   private ThreadPool threadpool;
+   private boolean terminating=false;
    
    public Composite() throws RemoteException {
 	   super();
    }
 
-   public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
-	      super.sfDeploy();
-	            
-	      //My name...
-	      Object name_o = sfContext().get("name");
-	      if (name_o!=null && name_o instanceof String) name = (String) name_o;
-	      else {
-	    	  Prim p = sfParent();
-	    	  if (p!=null) name = (String) sfParent().sfAttributeKeyFor(this);
-	    	  else name="sfConfig";
-	      }
+   public synchronized void sfDeploy() throws RemoteException, SmartFrogException {      
+      //My name...
+      Object name_o = sfContext().get("name");
+      if (name_o!=null && name_o instanceof String) name = (String) name_o;
+      else {
+    	  Prim p = sfParent();
+    	  if (p!=null) name = (String) sfParent().sfAttributeKeyFor(this);
+    	  else name="sfConfig";
+      }
 
-      threadpool = (ThreadPool) sfResolve("threadpool", false);
+      super.sfDeploy();
    }
 
    public synchronized void sfStart() throws RemoteException, SmartFrogException {
-	   //System.out.println("&&&&& IN MODEL START &&&&&");  
-	   super.sfStart();
-	   if (threadpool!=null) threadpool.setIdleRunnable(new Notifier());
+	   try { 
+			sfResolve("sfIsOrchModel"); 
+		    new Thread(new Notifier()).start();
+		} catch(Exception e){/*Intentionally ok!*/}
+	   super.sfStart();   
    }
    
+   public synchronized void sfTerminateWith(TerminationRecord tr) {
+	   terminating=true;      
+	   super.sfTerminateWith(tr);
+   }
    
    public synchronized void sfRun() throws SmartFrogException{
 	   //System.out.println("IN: sfRun"+this);
@@ -89,11 +91,13 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
    /* *************************************************
 	   * Update class
 	   */
-	   protected class Notifier implements Runnable {
+	   class Notifier implements Runnable {
 	      public void run() {
 	    	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Composite.Notifier.run()");    
 	    	  //System.out.println("++++++++++++++++++++HANDLE STATE CHANGE!!!");
-	          try{handleStateChange();} catch (RemoteException re){throw new RuntimeException(re);}
+	          while (!Composite.this.terminating){
+	        	  try{handleStateChange();} catch (RemoteException re){throw new RuntimeException(re);}
+	          }
 	          if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Composite.Notifier.run()");    
 	      }
 	   }

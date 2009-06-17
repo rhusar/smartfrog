@@ -17,15 +17,13 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * <p/>
  * Implements the ThreadPool Interface, and provides methods for
  * controlling the execution of a set of jobs by a thread pool
+ * 
  */
-public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Serializable {
+public class SimpleThreadPoolImpl extends PrimImpl implements ThreadPool, Remote, Prim, Serializable {
    private int numThreads=5;
    private int busyThreads=0;
    private transient ExecutorService es;
-   private boolean suspended=false;
-   private transient Runnable idleRunnable;
-   private boolean runAgain=false;
-  
+   
    public SimpleThreadPoolImpl() throws RemoteException {
    }
 
@@ -33,10 +31,6 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Seri
       super.sfDeploy();
       numThreads = sfResolve("numThreads", numThreads, false);
       es = Executors.newFixedThreadPool(numThreads);
-   }
-
-   public synchronized void sfStart() throws RemoteException, SmartFrogException {
-      super.sfStart();
    }
 
    public synchronized void sfTerminateWith(TerminationRecord tr) {
@@ -50,62 +44,11 @@ public class SimpleThreadPoolImpl extends PrimImpl implements Remote, Prim, Seri
 		   toRun=run;
 	   }
 	   public void run(){
-		   synchronized (SimpleThreadPoolImpl.this) {
-			   while (suspended) {
-				   try {SimpleThreadPoolImpl.this.wait();} catch (InterruptedException ie){/**/}
-			   }
-		   }
 		   toRun.run();
 		   synchronized(SimpleThreadPoolImpl.this){
 		       busyThreads--;
-		       runIdle();
 		   }
 	   }
-   }
-   
-   private class IdleRunnable implements Runnable {
-	   Runnable toRun;
-	   IdleRunnable(Runnable run){
-		   toRun=run;
-	   }
-	   public void run(){
-		   runAgain=true;
-		   while(runAgain){
-		       runAgain=false;
-			   toRun.run();
-		   }
-		   synchronized(SimpleThreadPoolImpl.this){ 
-			   suspended=false;
-			   SimpleThreadPoolImpl.this.notifyAll(); 
-		   }
-	   }
-   }
-
-   /**
-    * Remove a runnable from the registered Runnable jobs
-    */
-   public Future<?> removeFromQueue(Future<?> task){
-      boolean cancelled= task.cancel(false);
-      if (cancelled) synchronized(this) { busyThreads--; }
-      return (cancelled?null:task);
-   }
-   
-   public void runIdleAgain(){
-	  runAgain=true;
-   }
-   
-   public void runIdle(){
-	   if (sfLog().isDebugEnabled()) sfLog().debug("IN: threadPool: runIdle()");
-	   if (busyThreads==0 && !suspended) {
-		   suspended=true;
-		   es.submit(idleRunnable);
-	   }
-	   if (sfLog().isDebugEnabled()) sfLog().debug("OUT: threadPool: runIdle()");
-   }
-   
-   public void setIdleRunnable(Runnable idleRunnable){
-	   this.idleRunnable=new IdleRunnable(idleRunnable);
-	   runIdle();
    }
    
    /**

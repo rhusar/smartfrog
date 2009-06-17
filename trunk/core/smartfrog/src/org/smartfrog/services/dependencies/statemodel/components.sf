@@ -49,17 +49,13 @@ Dependency extends Prim {
      enabled false;
 }
 
-NilStateComponent extends StateComponent {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
-}
-
 StateComponent extends Prim {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.StateComponent";
-     sfUpdatable true;
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
+     //sfUpdatable true;
      sfUniqueComponentID;
 	 [sfFinal] asAndConnector false;
-	 
-     threadpool LAZY PARENT:ATTRIB threadpool; // default place for the threadpool
+
+	 threadpool LAZY PARENT:ATTRIB threadpool; 
 }
 
 ThreadedCompositeBase extends {
@@ -72,6 +68,7 @@ ThreadedCompositeWithSync extends CompositeWithSync, ThreadedCompositeBase;
 Composite extends Compound {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
      sfUpdatable true;
+     sfSyncTerminate true;
 
      /*inputConnectors extends Compound {
         sfUpdatable true;
@@ -99,6 +96,7 @@ NWayComposite extends Composite {
 Model extends CompositeWithSync {
      //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
      running true;  //note this has changed in meaning from legacy versions
+     sfIsOrchModel;
 }
 
 CompositeTerminator extends StateComponent {
@@ -159,8 +157,26 @@ Transition extends {
     requiresThread true;
 }
 
-SimpleTransition extends Transition {
+SimpleTransitionNoScriptingAgent extends Transition {
    requiresThread false;
+   lag 0;
+}
+
+SimpleTransition extends SimpleTransitionNoScriptingAgent {
+   scriptAttributes [];
+   doScript extends ScriptWrapper {
+        script LAZY PARENT:ATTRIB script;
+        scriptPrim LAZY PARENT:ATTRIB scriptingAgent;
+        scriptAttributes LAZY PARENT:scriptAttributes;
+   }
+}
+
+PrepareTransition extends SimpleTransition {
+   sfIsStateComponentTransition "prepare";
+}
+
+FinalizeTransition extends SimpleTransition {
+   sfIsStateComponentTransition "finalize";
 }
 
 ScriptWrapper extends Function {
@@ -168,7 +184,7 @@ ScriptWrapper extends Function {
 	sfLazyFunction true;
     script TBD;
     scriptPrim TBD;
-    notifier LAZY PARENT:ATTRIB threadpool;
+    scriptAttributes [];
 }
 
 VerificationRecord extends {
