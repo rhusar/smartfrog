@@ -1,5 +1,7 @@
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -8,10 +10,13 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.swing.Timer;
+
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
 import org.smartfrog.services.dependencies.threadpool.ThreadPool;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -19,6 +24,7 @@ import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.ApplyReference;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -48,6 +54,20 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    public StateComponent() throws RemoteException {
    }
 
+   public synchronized void sfTerminateWith(TerminationRecord t) {
+		if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: (IN) sfTerminateWith(t)");
+		
+		ComponentDescription tTermination = transitions.get("tOnTermination");
+		try{
+			if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: Applying termination script");	
+			tTermination.sfResolve("doScript");}
+		catch(Exception e){/*Ok for now*/}
+		
+		super.sfTerminateWith(t);
+       if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: "+name+" terminated");
+       if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: (OUT) sfTerminateWith(t)");
+   }
+   
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
       super.sfDeploy();
             
@@ -67,7 +87,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     	  
     	  if (val instanceof ComponentDescription){
     		  ComponentDescription cd = (ComponentDescription) val;
-    		  if (cd.sfContext().get("sfIsStateComponentTransition")!=null) transitions.put(key, cd);
+    		  if (cd.sfContext().get("sfIsStateComponentTransition")==SFNull.get()) transitions.put(key, cd);
     	  } else if (val instanceof ApplyReference){
     		  ApplyReference ar = (ApplyReference) val;
     		  ComponentDescription cd = ar.getComponentDescription();
@@ -154,6 +174,11 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   Iterator keys = ((HashMap<String,ComponentDescription>)enabled.clone()).keySet().iterator();
 	   while (keys.hasNext()){
 		   Object key = keys.next();
+		   if (key.toString().equals("tOnTermination")) {
+			   enabled.remove(key);
+			   continue;  //ignore
+		   }
+		   
 		   ComponentDescription trans = (ComponentDescription) enabled.get(key);
 		   boolean go=false; 
 		   
@@ -232,6 +257,33 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   return result;
    }
    
+   public void preparefinalize(boolean prepare, String transition) throws StateComponentTransitionException {
+		 //Is there a prepare/finalizetransition script?
+	      String actualName = (prepare?"tPrepare"+transition.substring(1):"tFinalize"+transition.substring(1));
+	      if (sfLog().isDebugEnabled())  sfLog().debug("Prepare transition..."+actualName);
+	      ComponentDescription action = (ComponentDescription) sfContext().get(actualName);
+		  if (action!=null) {
+			  if (sfLog().isDebugEnabled())  sfLog().debug("Prepare/Finalize transition...");
+              			  
+			  Object qual = action.sfContext().get("sfIsStateComponentTransition");
+			  if (sfLog().isDebugEnabled())  sfLog().debug("Prepare/Finalize transition..."+qual.toString());
+			  
+			  try{if (qual!=null && qual.toString().equals((prepare?"prepare":"finalize"))) action.sfResolve("doScript");}
+			  catch(Exception e){/*Ok for now*/if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: Prepare/Finalize transition..."+e.getMessage());
+			  }
+		  }
+   }
+   
+   public void doPrepare(String transition) throws StateComponentTransitionException {
+	   if (sfLog().isDebugEnabled())  sfLog().debug("Prepare transition...");
+	   preparefinalize(true, transition);
+   }
+   
+   public void doFinalize(String transition) throws StateComponentTransitionException {
+	   if (sfLog().isDebugEnabled())  sfLog().debug("Finalize transition...");
+	   preparefinalize(false, transition);
+   }
+   
    public void go(String transition) throws StateComponentTransitionException {
 	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").go()");
 	   
@@ -252,6 +304,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   currentAction=null;
 	   cleanLock();
 	   asyncResponse=false;
+	   scriptTimer=null;
 	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").clean(...)");
    }
    
@@ -279,14 +332,12 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		  
 		  if (sfLog().isDebugEnabled())  sfLog().debug("^^^^^^^^^^^^^^^^^^^Progress"+progress);
 		  
-		  if (progress) {
-			  System.out.println("Progress made");
-			  threadpool.runIdleAgain();
-		  }
 		  return progress;
    }
    
    public String getStatusAsString() throws RemoteException {return "";}
+   
+   Timer scriptTimer;
    public void handleStateChange() throws RemoteException { 
 	   
 	  
@@ -294,7 +345,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  	   
 	  if (sfLog().isDebugEnabled())  sfLog().debug("To run DPEs..."+dpes.size()+": currentAction: "+currentAction);
 	
-	  if (currentAction!=null) return;  //temporary
+	  if (currentAction!=null || scriptTimer!=null) return;  //temporary
 	  
 	  if (!acquireLock()) return; //need to except...
 	  
@@ -321,15 +372,27 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  //Check if simple transition...
 	  try {
 	  if (enabled.size()==1){
-		  String key = enabled.keySet().iterator().next();
-		  ComponentDescription transition = (ComponentDescription) enabled.get(key);
-		  if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition"+key);
+		  final String key = enabled.keySet().iterator().next();
+		  final ComponentDescription transition = (ComponentDescription) enabled.get(key);
+		  if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition: "+key);
+		  
 		  if (!transition.sfResolve("requiresThread", false, true)){
-			  if (sfLog().isDebugEnabled())  sfLog().debug("State("+name+").handleStateChange() -- Script call...");
-			  transition.sfResolve("deploy");  //Apply script...
-			  go(key);
-			  clean();
-			  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
+			
+			  if (sfLog().isDebugEnabled())  sfLog().debug("Does not require thread");
+			  
+			  //Is there a preparetransition script?
+			  doPrepare(key);
+			  
+			  int lag = transition.sfResolve("lag", 0, true);
+			  if (lag>0) {
+				  ActionListener taskPerformer = new ActionListener() {
+				      public void actionPerformed(ActionEvent evt) {
+				          transitionScript(transition, key);
+				      }
+				  };
+				  (scriptTimer=new Timer(lag, taskPerformer)).start();
+				  
+			  } else transitionScript(transition, key);
 			  return;
 		  }
 	  }
@@ -343,6 +406,21 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange()");
    }     
 
+   void transitionScript(ComponentDescription transition, String key)  {
+	   //Need to handle properly...
+	   try {
+	   	  if (sfLog().isDebugEnabled())  sfLog().debug("State("+name+").handleStateChange() -- Script call...");
+		  try{transition.sfResolve("doScript");} catch (Exception e){if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: in applying simple script "+e.getMessage());}//Apply script...
+		  
+		  //Is there a finalizetransition script?
+		  doFinalize(key);
+		  
+		  go(key);
+		  clean();
+		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
+	   } catch (SmartFrogException e){if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: in applying simple transition"+e.getMessage());}
+   }
+   
    public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
 	  //System.out.println("Dependency Registration. Component: "+name+", d: "+d.toString());
       dependencies.add(d);
@@ -377,7 +455,6 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
   
 	   Object result = super.sfReplaceAttribute(name,value);
 	   
-	   if (!Constraint.isUpdateContextLocked() && threadpool!=null) threadpool.runIdle();
 	   return result;
    }
    
@@ -399,6 +476,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
       
       threadpool.addToQueue((StateUpdateThread)(currentAction=new StateUpdateThread()));
       
+      if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateComponent.setState() Added to Queue");
+      
       cleanLock();
       
       System.out.println("Adding to queue..."+currentAction);
@@ -417,8 +496,15 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
       public void run() {
     	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateUpdateThread.run()");
     	  try{
+    	   String key=null;
+    	   if (enabled.size()==1){
+    		   key = enabled.keySet().iterator().next();
+    		   doPrepare(key);
+    	   }
+    		  
     	   if (threadBody()) {
     		   StateComponent.this.clean();
+    		   if (key!=null) doFinalize(key);
            } else {
         	   //Should this clean now?
         	   StateComponent.this.cleanLock();

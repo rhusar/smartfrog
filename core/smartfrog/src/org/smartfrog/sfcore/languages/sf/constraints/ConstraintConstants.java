@@ -52,6 +52,7 @@ public class ConstraintConstants {
 	public static final String KEY_TAG="sfKey";
 	
 	public final static String DEPLOY = "deployComponent";
+	public final static String TERMINATE = "terminateComponent";
 	
 	public static final String CONTEXT="context";
 	public static final String CONTEXT_TAG="sfContext";

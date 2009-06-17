@@ -33,10 +33,10 @@ import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
@@ -77,13 +77,17 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     }
         
     public static void applyEffects(ComponentDescription effects) throws SmartFrogFunctionResolutionException {
-    	    System.out.println("IN applyEffects");
+    	    //NOTE: This code is lacking a jolly good tidy- ADHF
+    	
+    		System.out.println("IN applyEffects");
     
     	    //Array/path/pred?
     	    Reference array = null;
     	    String prefix = null;
     	    Reference pred = null;
     	    ComponentDescription pcontext = null;
+    	    Object toTerminate=null;
+    	    
     	    try { array = (Reference) effects.sfContext().get(ConstraintConstants.ARRAY); }
     	    catch(Exception e){/**/}
     	    System.out.println("ARRAY: "+array);
@@ -115,9 +119,12 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    ComponentDescription deploy = null;
     	    if (update==null){
 	    	    try { deploy= (ComponentDescription) effects.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.DEPLOY)));}catch(Exception e){}
+	    	    if (deploy==null){
+	    	    	try { toTerminate=effects.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.TERMINATE)));}catch(Exception e){}
+	    	    }
     	    }
     	    System.out.println("DEPLOY: "+deploy);
-    	    if (deploy==null && update==null) return;
+    	    if (deploy==null && update==null && toTerminate==null) return;
     	    
     	    Reference path = null;
     	    try { path = (Reference) effects.sfContext().get(ConstraintConstants.PATH); }
@@ -166,8 +173,17 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    			if (added!=null && added instanceof SynchedComposite) model.addToRun(added); 
     	    		}
     	    	}
-    	    }
-    	    else {
+    	    } else if (toTerminate!=null){
+    	    	if (source instanceof Compound) {
+    	    		Compound source_nd = (Compound) source;
+    	    		try {
+    	    			Prim primTerm = (Prim) source_nd.sfResolve(key.toString());
+    	    			primTerm.sfDetachAndTerminate(TerminationRecord.normal(null));
+    	    		} catch (Exception e){
+    	    			throw new SmartFrogFunctionResolutionException("Unable to terminate prim with key: "+key+" in: "+source_nd);
+    	    		}
+    	    	}
+    	    } else {
     	    	
     	    	//Replace in array?
     	    	if (array!=null && prefix!=null){
@@ -178,7 +194,6 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
 	        	    catch(Exception e){
 	        	    	throw new SmartFrogFunctionResolutionException("path in effects will not resolve: "+effects); }    
     	    		
-	        	    System.out.println("000");
 	        	    
 	        	    Context src_context = null;
 	        	    try {src_context = (source instanceof Prim?((Prim)source).sfContext():((ComponentDescription)source).sfContext());}
@@ -187,7 +202,6 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    		Enumeration en = src_context.keys();	
     	        	while (en.hasMoreElements()){
     	        		
-    	        		System.out.println("222");
     	        		
     	        		String akey = en.nextElement().toString();
     	            	
@@ -195,8 +209,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	        			System.out.println("In with the prefix..."+akey);
     	        			
     	        			Object member = src_context.get(akey);
-    	        	    	System.out.println("333");
-    	            		
+    	        	    	
     	        	    	Prim p = (member instanceof Prim?(Prim)member:null); 
     	        	    	ComponentDescription c=(member instanceof ComponentDescription?(ComponentDescription)member:null); 
     	        	    	

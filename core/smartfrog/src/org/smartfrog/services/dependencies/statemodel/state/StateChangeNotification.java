@@ -3,6 +3,8 @@ package org.smartfrog.services.dependencies.statemodel.state;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import org.smartfrog.services.dependencies.statemodel.state.Composite.Notifier;
+
 /**
  */
 public interface StateChangeNotification extends Remote {
