@@ -509,7 +509,6 @@ public final class Diagnostics {
     public static void doReportThreadDump(StringBuffer out) {
       try {
         ThreadDump td = new ThreadDump();
-        StringBuffer reportTD = new StringBuffer();
         out.append("+++ Threads - [nane (id), state, priority, isDaemon, thread group]\n");
         for (Thread thread : td.getThreads()){
            out.append( thread.getName()+" ("+thread.getId()+")"+
