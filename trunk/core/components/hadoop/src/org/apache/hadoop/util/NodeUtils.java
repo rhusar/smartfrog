@@ -22,14 +22,22 @@ package org.apache.hadoop.util;
 import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.net.NetUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.net.InetSocketAddress;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 
 /**
  * Created 03-Feb-2009 13:46:19
  */
 
 public class NodeUtils {
+    
+    static final Log LOG = LogFactory.getLog(NodeUtils.class);
+    
     public static BindingTuple toBindingTuple(String name, String protocol, InetSocketAddress addr) {
         String stringValue = toURL(protocol, addr);
         BindingTuple bindingTuple = new BindingTuple(name, stringValue);
@@ -37,7 +45,7 @@ public class NodeUtils {
     }
 
     public static String toURL(String protocol, InetSocketAddress addr) {
-        String address = addr.getAddress().getHostAddress();
+        String address = addressToString(addr);
         int port = addr.getPort();
         return toURL(protocol, address, port);
     }
@@ -67,5 +75,41 @@ public class NodeUtils {
             throw new IllegalArgumentException("No value for " + attribute);
         }
         return NetUtils.createSocketAddr(address);
+    }
+    
+    public static String addressToString(InetSocketAddress addr) {
+        InetAddress address = addr.getAddress();
+        if (address.isAnyLocalAddress()) {
+            //it's local, so patch it to whatever we think we are
+            return cachedHostAddress;
+        } else {
+            return addr.getAddress().getHostAddress();
+        }
+    }
+
+
+    /**
+     * This may look like code in Hadoop DNS, but that's because I wrote both.
+     */
+    private static final String cachedHostAddress = resolveLocalHostIPAddress();
+
+    private static String resolveLocalHostIPAddress() {
+        String address;
+        try {
+            address = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            LOG.info("Unable to determine address of the host"
+                    + "-falling back to localhost address", e);
+            try {
+                address = InetAddress.getByName("localhost").getHostAddress();
+            } catch (UnknownHostException noLocalHostAddressException) {
+                //at this point, deep trouble
+                LOG.error("Unable to determine local loopback address "
+                        + "of \"" + "localhost" + "\" " +
+                        "-this system's network configuration is unsupported", e);
+                address = "127.0.0.1";
+            }
+        }
+        return address;
     }
 }

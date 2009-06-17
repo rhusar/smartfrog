@@ -29,6 +29,12 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/utils/security/components.sf"
 
 
+Hostnames extends {
+  ALL_ZEROS JobTracker:ALL_ZEROS;
+  dfs.datanode.hostname ALL_ZEROS;
+  mapred.job.tracker.hostname ALL_ZEROS;
+  mapred.task.tracker.hostname ALL_ZEROS;
+}
 
 
 LightweightJobTracker extends JobTracker {
@@ -37,6 +43,7 @@ LightweightJobTracker extends JobTracker {
   mapred.job.tracker.handler.count HandlerThreads;
   //this is to fail faster when a namenode does not come up
   ipc.client.connect.max.retries LIGHTWEIGHT_MAX_RETRIES;
+  mapred.job.tracker.hostname Hostnames:mapred.job.tracker.hostname;
 }
 
 LightweightTaskTracker extends TaskTracker {
@@ -44,6 +51,7 @@ LightweightTaskTracker extends TaskTracker {
   smartfrog.dump.conf DUMP_CONF;
   tasktracker.http.threads ClientHandlerThreads;
   mapred.task.tracker.connect.timeout IPC_CONNECT_TIMEOUT;
+  mapred.task.tracker.hostname Hostnames:mapred.task.tracker.hostname;
 }
 
 LightweightNameNode extends NameNode {
@@ -68,7 +76,7 @@ LightweightDataNode extends DataNode {
   dfs.datanode.hostname hostname;
   //IPC port
   dfs.datanode.port DataNodePort;
-  dfs.datanode.ipc.port  DataNodeIpcPort;
+  dfs.datanode.ipc.port DataNodeIpcPort;
 
 
   dfs.blockreport.intervalMsec 10000;

@@ -31,6 +31,7 @@ import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.net.InetSocketAddress;
 
 /**
  * Task tracker with some lifecycle support and state information
@@ -121,12 +122,13 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     @Override
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings = new ArrayList<BindingTuple>();
+        //try and work out the underlying bindings by going back to the configuration
+        InetSocketAddress httpAddr = NodeUtils.resolveAddress(getConf(), MAPRED_TASK_TRACKER_HTTP_ADDRESS);
+        InetSocketAddress realHttpAddr = new InetSocketAddress(httpAddr.getAddress(), getWebPort());
+        bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_HTTP_ADDRESS, "http", realHttpAddr));
+
         bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_REPORT_ADDRESS, "http",
                 getTaskTrackerReportAddress()));
-        bindings.add(new BindingTuple(MAPRED_TASK_TRACKER_HTTP_ADDRESS,
-                NodeUtils.toURL("http",
-                        getTaskTrackerReportAddress().getHostName(), 
-                        getWebPort())));
         return bindings;
     }
 
@@ -135,6 +137,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      * @return the exit state
      * @throws Exception if something went wrong
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public State offerService() throws Exception {
         LOG.info("Task Tracker Service is being offered: " + toString());

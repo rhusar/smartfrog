@@ -23,6 +23,6 @@ TaskTracker extends ClusterNode {
   name "TaskTracker";
   expectNodeTermination false;
   /** when deployed
-  mapred.task.tracker.http.address
+  live.mapred.task.tracker.http.address
   */
 }

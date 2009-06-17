@@ -51,10 +51,12 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     private ExtDataNodeThread worker;
     private Prim owner;
     private ServiceStateChangeNotifier notifier;
+    ManagedConfiguration conf;
 
     public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
+        this.conf = conf;
         this.owner = owner;
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
@@ -63,6 +65,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
    * Return an extended service name
    * @return new service name
    */
+  @SuppressWarnings({"RefusedBequest"})
   @Override
   public String getServiceName() {
     return "ExtDataNode";
@@ -161,7 +164,8 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
      */
     public List<BindingTuple> getBindingInformation() {
         List<BindingTuple> bindings=new ArrayList<BindingTuple>();
-        bindings.add(NodeUtils.toBindingTuple(DFS_DATANODE_ADDRESS, "http", getSelfAddr()));
+        InetSocketAddress dfsAddress = getSelfAddr();
+        bindings.add(NodeUtils.toBindingTuple(DFS_DATANODE_ADDRESS, "http", dfsAddress));
         bindings.add(new BindingTuple(DFS_DATANODE_HTTP_ADDRESS, 
                 NodeUtils.toURL("http", dnRegistration.getHost(), dnRegistration.getInfoPort() )));
         return bindings;
