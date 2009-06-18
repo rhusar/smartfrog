@@ -117,6 +117,7 @@ testSetOnSequence extends ExpectDeploy {
   }
 
   tests extends Sequence{
+  
     -- extends workflowprops {
       unsetOnTerminate false;
     }
@@ -132,13 +133,13 @@ testSetOnSequence extends ExpectDeploy {
 
     checkKey1 extends workflowAssert {
       equalsString1 value1;
-      equalsString2 LAZY PROPERTY key.1;
+      equalsString2  LAZY OPTIONAL("") PROPERTY key.1;
 
     }
 
     checkKey2 extends workflowAssert {
       equalsString1 value2;
-      equalsString2 LAZY PROPERTY key.2;
+      equalsString2  LAZY OPTIONAL("")  PROPERTY key.2;
     }
 
   }
