@@ -25,8 +25,12 @@ fi
 #java -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess "$SFCMDPARAMETERS" org.smartfrog.SFSystem "$@"
 
 #JVMARGS are passed as args to the java exec
-#JVMARGS="$SFDEFAULTINI $SFDEFAULTSF"
-JVMARGS=""
+# First the environmant variable SF_OPTS is looked for; it is used as the foundation for the Java options.
+if ! test "$SF_OPTS"; then
+  JVMARGS=""
+else
+  JVMARGS="$SF_OPTS"
+fi
 
 #CLASSARGS are appended to java cmd line as class args
 CLASSARGS=""
@@ -52,6 +56,7 @@ while [ $# -ge 1 ]; do
     esac
     shift
 done
+
 #if test "$SFCODEBASE"; then
 #    JVMARGS="$JVMARGS $SFCODEBASE" 
 #fi
