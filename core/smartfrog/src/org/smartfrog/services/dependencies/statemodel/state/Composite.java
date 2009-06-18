@@ -2,26 +2,56 @@ package org.smartfrog.services.dependencies.statemodel.state;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
+import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
  *
  */
 public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation {
-
+	
    private String name="";
    private boolean terminating=false;
+   private HashMap<String, Prim> toTerminate = new HashMap<String, Prim>();
+   private HashMap<String, ComponentDescription>  toDeploy = new HashMap<String, ComponentDescription>();
    
    public Composite() throws RemoteException {
 	   super();
    }
-
+   
+   public void addToDeploy(String name, ComponentDescription cd){
+	   toDeploy.put(name, cd);
+	   
+	   /*CODE LEFT HERE FOR CONVENIENCE.  Need to accommodate, but not now.
+	   OrchComponentModel model = null;
+		try {
+			model = (OrchComponentModel) effects.sfResolve(new Reference(ReferencePart.attrib("orchModel")));
+		} catch (Exception e){ /*Intentionally leave* }
+		if (model!=null){
+			Prim added = null;
+			try{
+				added = (Prim) source_nd.sfResolve(key.toString());
+			} catch (Exception e){/*System.out.println("EXCEPTION2:"+e);*}
+			if (added!=null && added instanceof SynchedComposite) model.addToRun(added); 
+		}*/
+   }
+   
+   public void addToTerminate(String name, Prim p){
+	   toTerminate.put(name, p);
+   }
+   
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {      
       //My name...
       Object name_o = sfContext().get("name");
@@ -85,7 +115,32 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
         	 ((StateChangeNotification)c).handleStateChange();
          }
       }
-	  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Composite.hsc()"+name); 
+	  
+	  if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +"Deploying/terminating if any ");
+	  
+	  if (toDeploy.size()>0){
+		  Iterator<String> keys = toDeploy.keySet().iterator();
+		  while (keys.hasNext()){
+			  String key = keys.next();
+			  if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +"Deploying "+key);
+			  try {sfCreateNewChild(key, toDeploy.get(key), null);}
+	    	  catch(Exception e){if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +" Exception in Deploying "+key+" : "+e.getMessage());}			  
+		  }
+		  toDeploy = new HashMap<String, ComponentDescription>();
+	  }
+
+	  if (toTerminate.size()>0){
+		  Iterator<String> keys = toTerminate.keySet().iterator();
+		  while (keys.hasNext()){
+			  String key = keys.next();
+			  Prim p = toTerminate.get(key);
+			  if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +"Terminating "+key);
+			  p.sfDetachAndTerminate(TerminationRecord.normal(null));
+		  }
+		  toTerminate = new HashMap<String, Prim>();
+	  }
+	  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Composite.hsc()"+name);
+	  
    }
 
    /* *************************************************
@@ -101,4 +156,5 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	          if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Composite.Notifier.run()");    
 	      }
 	   }
+	   
 }

@@ -120,6 +120,9 @@
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
+        <fileset dir="lib">
+        <include name="**/*.jar"/>
+        </fileset>
 	<pathelement path="./lib/eclipse-clp-5.10.jar"/>
     <!-- <pathelement path="./lib/ProActive.jar"/>-->
   </path>
@@ -687,7 +690,7 @@
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
     <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
-      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
+      includes="**/smartfrog/**,**/thor/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
