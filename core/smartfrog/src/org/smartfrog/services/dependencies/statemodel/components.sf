@@ -179,13 +179,13 @@ FinalizeTransition extends SimpleTransition {
    sfIsStateComponentTransition "finalize";
 }
 
-ScriptWrapper extends Function {
+/*ScriptWrapper extends Function {
 	sfFunctionClass "org.smartfrog.services.dependencies.scripting.ScriptWrapper";
 	sfLazyFunction true;
     script TBD;
     scriptPrim TBD;
     scriptAttributes [];
-}
+}*/
 
 VerificationRecord extends {
     sfIsVerificationRecord;
