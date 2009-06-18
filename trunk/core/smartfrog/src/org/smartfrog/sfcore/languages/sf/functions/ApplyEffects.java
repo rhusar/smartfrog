@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import java.util.Enumeration;
 
+import org.smartfrog.services.dependencies.statemodel.state.Composite;
 import org.smartfrog.services.dependencies.statemodel.state.SynchedComposite;
 import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
 import org.smartfrog.sfcore.common.Context;
@@ -154,35 +155,30 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    if (array==null && source==null) return;
  
     	    if (deploy!=null) {
+    	    	
     	    	System.out.println("DEPLOYING..."+key);
-    	    	if (source instanceof Compound) {
-    	    		Compound source_nd = (Compound) source;
-    	    		ComponentDescription deploy_cd = (ComponentDescription) deploy.copy();
-    	    		try {source_nd.sfCreateNewChild(key, deploy_cd, null);}
-    	    		catch(Exception e){/*System.out.println("EXCEPTION1:"+e);*/}
-    	    		
-    	    		OrchComponentModel model = null;
-    	    		try {
-    	    			model = (OrchComponentModel) effects.sfResolve(new Reference(ReferencePart.attrib("orchModel")));
-    	    		} catch (Exception e){ /*Intentionally leave*/ }
-    	    		if (model!=null){
-    	    			Prim added = null;
-    	    			try{
-    	    				added = (Prim) source_nd.sfResolve(key.toString());
-    	    			} catch (Exception e){/*System.out.println("EXCEPTION2:"+e);*/}
-    	    			if (added!=null && added instanceof SynchedComposite) model.addToRun(added); 
-    	    		}
+    	    	
+    	    	
+    	    	if (source instanceof Composite) {
+    	    		Composite source_nd = (Composite) source;
+    	    		ComponentDescription deploy_cd = (ComponentDescription) deploy.copy();	
+    	    		((Composite) source).addToDeploy(key.toString(), deploy_cd);
     	    	}
+    	  
+    	    	
     	    } else if (toTerminate!=null){
-    	    	if (source instanceof Compound) {
-    	    		Compound source_nd = (Compound) source;
+    	    	
+    	    	if (source instanceof Composite) {
+    	    		Composite source_nd = (Composite) source;
     	    		try {
     	    			Prim primTerm = (Prim) source_nd.sfResolve(key.toString());
-    	    			primTerm.sfDetachAndTerminate(TerminationRecord.normal(null));
+    	    			((Composite) source).addToTerminate(key.toString(), primTerm);
     	    		} catch (Exception e){
-    	    			throw new SmartFrogFunctionResolutionException("Unable to terminate prim with key: "+key+" in: "+source_nd);
+    	    			throw new SmartFrogFunctionResolutionException("Unable to get prim for termination with key: "+key+" in: "+source_nd);
     	    		}
+    	
     	    	}
+    	    	
     	    } else {
     	    	
     	    	//Replace in array?
