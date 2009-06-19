@@ -21,7 +21,15 @@ For more information: www.smartfrog.org
 
 */
 -->
-
+  <fail>
+    <condition>
+      <available classname="javax.lang.model"/>
+    </condition>
+    This build requires Java1.6 or later, but the current JVM is not recognised as
+    such.
+    Please upgrade to Java1.6+, or correct any paths/symbolic links that are pointing
+    to an older version of Java.
+  </fail>
 
   <target name="help" description="help information">
     <echo>
@@ -37,15 +45,18 @@ For more information: www.smartfrog.org
   <target name="init">
     <property file="build.properties" />
     <property environment="env" />
-	<property name="core.dir" location="."/>
-    <!-- look for a feature that only came in in ant 1.7alpha -->
+	  <property name="core.dir" location="."/>
+    <tstamp>
+      <format property="build.timestamp" pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ" />
+    </tstamp>
+
 	
-	<!-- where the ivy/maven artifacts are stored -->
+  	<!-- where the ivy/maven artifacts are stored -->
     
     <!--<property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>-->
     <property name="artifactsCache.dir" location="${user.home}"/>
 	
-	<property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
+    <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
 	
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
@@ -79,6 +90,7 @@ For more information: www.smartfrog.org
 	<echo message="   ArtifactsCache dir: ${artifactsCache.dir}"/>
     <echo message="   Ant: ${ant.version}"/>		
     <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
+    <echo message="   Build started: ${build.timestamp}" />
     <echo message=" ======================================================="/>
     <echo message="  "/>
 
