@@ -1265,12 +1265,20 @@ smartfrog.tasks.classpath=
   <!-- =================================================================== -->
     
   <target name="rmi" depends="ready-to-rmi" description="create the RMI classes">
-	 <echo>RMIC for project: ${ant.project.name}"
+      <!-- to get the classpath in a printable form -->
+	  <pathconvert pathsep="${line.separator}|   |-- "  
+	               property="echo.compile.classpath" 
+	               refid="compile.classpath">
+	  </pathconvert> 
+	 <echo> ---------------------------------------
+	    RMIC for project: ${ant.project.name}"
         base="${build.classes.dir}"
         verify="true"
         compiler="${rmic.compiler}"
         compilerarg line="${rmic.forking.commandline}"
-        compiler="forking"	
+        compiler="forking"
+        Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}
+ ---------------------------------------
       </echo> 
       <sf-rmic
           base="${build.classes.dir}"
@@ -1330,6 +1338,21 @@ smartfrog.tasks.classpath=
   <target name="rmi-tests" depends="ready-to-rmi-tests"
       description="create the RMI classes"
       if="test.dir.found">
+	    <!-- to get the classpath in a printable form -->
+	  <pathconvert pathsep="${line.separator}|   |-- "  
+	               property="echo.test.compile.classpath" 
+	               refid="tests.compile.classpath">
+	  </pathconvert>
+	 <echo> ---------------------------------------
+	    RMIC TESTS for project: ${ant.project.name}"
+        base="${test.classes.dir}"
+        verify="true"
+        compiler="${rmic.compiler}"
+        compilerarg line="${rmic.forking.commandline}"
+        compiler="forking"
+        Compile Class Path= ${line.separator}|   |-- ${echo.test.compile.classpath}		
+ ---------------------------------------
+      </echo> 	  
     <sf-rmic
         base="${test.classes.dir}"
         verify="true"
