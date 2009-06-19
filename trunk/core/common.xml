@@ -1233,8 +1233,11 @@ smartfrog.tasks.classpath=
       <echo message=" --------------------------------------------------------"/>
 	    <echo message=" Project: ${ant.project.name}"/>
 	    <echo message=" Ant file: ${ant.file}"/>
-      <echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
-      <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>
+		<echo message=" IvySettings.xml: ${ivysettings.xml}"/>		
+		<echo message=" core.dir: ${core.dir}"/>		
+		<echo message=" root.dir: ${root.dir}"/>		
+        <echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
+        <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>
 	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
@@ -1255,8 +1258,20 @@ smartfrog.tasks.classpath=
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
   <!-- ========================================================== -->
-  <target name="rmi" depends="ready-to-rmi"
-      description="create the RMI classes">
+  
+    <!-- =================================================================== -->
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+  <!-- =================================================================== -->
+    
+  <target name="rmi" depends="ready-to-rmi" description="create the RMI classes">
+	 <echo>RMIC for project: ${ant.project.name}"
+        base="${build.classes.dir}"
+        verify="true"
+        compiler="${rmic.compiler}"
+        compilerarg line="${rmic.forking.commandline}"
+        compiler="forking"	
+      </echo> 
       <sf-rmic
           base="${build.classes.dir}"
           verify="true"
