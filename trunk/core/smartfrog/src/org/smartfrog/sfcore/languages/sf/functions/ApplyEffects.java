@@ -22,9 +22,6 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import java.util.Enumeration;
 
-import org.smartfrog.services.dependencies.statemodel.state.Composite;
-import org.smartfrog.services.dependencies.statemodel.state.SynchedComposite;
-import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SFNull;
@@ -32,12 +29,10 @@ import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
@@ -159,16 +154,16 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    	System.out.println("DEPLOYING..."+key);
     	    	
     	    	
-    	    	if (source instanceof Composite) {
+    	    	/*if (source instanceof Composite) {
     	    		Composite source_nd = (Composite) source;
     	    		ComponentDescription deploy_cd = (ComponentDescription) deploy.copy();	
     	    		((Composite) source).addToDeploy(key.toString(), deploy_cd);
-    	    	}
+    	    	}*/
     	  
     	    	
     	    } else if (toTerminate!=null){
     	    	
-    	    	if (source instanceof Composite) {
+    	    	/*if (source instanceof Composite) {
     	    		Composite source_nd = (Composite) source;
     	    		try {
     	    			Prim primTerm = (Prim) source_nd.sfResolve(key.toString());
@@ -177,7 +172,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    			throw new SmartFrogFunctionResolutionException("Unable to get prim for termination with key: "+key+" in: "+source_nd);
     	    		}
     	
-    	    	}
+    	    	}*/
     	    	
     	    } else {
     	    	
