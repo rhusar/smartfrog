@@ -107,9 +107,7 @@ public abstract class CiteRankTool extends Configured implements Tool {
 
     protected JobConf createInputOutputConfiguration(String[] args) throws IOException {
         Path inpath = new Path(args[0]);
-        Path outpath = new Path(args[1]);
-        FileSystem.get(getConf()).delete(outpath, true);
-
+        Path outpath = buildOutputPath(args[1]);
         JobConf conf = createConfiguration();
         FileInputFormat.addInputPath(conf, inpath);
         FileOutputFormat.setOutputPath(conf, outpath);
