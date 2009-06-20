@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.Context;
@@ -29,6 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
@@ -154,25 +157,29 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    	System.out.println("DEPLOYING..."+key);
     	    	
     	    	
-    	    	/*if (source instanceof Composite) {
-    	    		Composite source_nd = (Composite) source;
+    	    	if (source instanceof DeployingAgent) {
+    	    		DeployingAgent source_nd = (DeployingAgent) source;
     	    		ComponentDescription deploy_cd = (ComponentDescription) deploy.copy();	
-    	    		((Composite) source).addToDeploy(key.toString(), deploy_cd);
-    	    	}*/
+    	    		try {
+    	    			((DeployingAgent) source).addToDeploy(key.toString(), deploy_cd);
+    	    		} catch (Exception e){
+      	    		  /*Leave for now*/	
+      	    		}
+    	    	}
     	  
     	    	
     	    } else if (toTerminate!=null){
     	    	
-    	    	/*if (source instanceof Composite) {
-    	    		Composite source_nd = (Composite) source;
+    	    	if (source instanceof DeployingAgent) {
+    	    		DeployingAgent source_nd = (DeployingAgent) source;
     	    		try {
     	    			Prim primTerm = (Prim) source_nd.sfResolve(key.toString());
-    	    			((Composite) source).addToTerminate(key.toString(), primTerm);
+    	    			((DeployingAgent) source).addToTerminate(key.toString(), primTerm);
     	    		} catch (Exception e){
-    	    			throw new SmartFrogFunctionResolutionException("Unable to get prim for termination with key: "+key+" in: "+source_nd);
+    	    		  /*Leave for now*/	
     	    		}
     	
-    	    	}*/
+    	    	}
     	    	
     	    } else {
     	    	
@@ -289,5 +296,10 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	//System.out.println("Replacing: "+key+" with: "+update+ " in: "+fullname);
     	
     	Constraint.replaceAttribute(key, update, source);
+    }
+    
+    public interface DeployingAgent extends Remote, Compound {
+    	public void addToDeploy(String name, ComponentDescription cd) throws RemoteException;
+    	public void addToTerminate(String name, Prim p) throws RemoteException;
     }
 }
