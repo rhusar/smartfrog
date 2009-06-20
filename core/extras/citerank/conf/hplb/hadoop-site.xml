@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- This is the hplb stable cluster-->
+<configuration>
+
+	<property>
+		<name>fs.default.name</name>
+		<value>hdfs://hadoop-prj-1:54310/</value>
+	</property>
+
+	<property>
+		<name>mapred.job.tracker</name>
+		<value>hadoop-prj-1:54311</value>
+	</property>
+
+	<property>
+		<name>hadoop.tmp.dir</name>
+		<value>/home/hadoop/tmp/hadoop-hadoop</value>
+	</property>
+
+	<property>
+		<name>mapred.child.java.opts</name>
+		<value>-Xmx512m</value>
+	</property>
+
+	<property>
+		<name>mapred.tasktracker.map.tasks.maximum</name>
+		<value>5</value>
+	</property>
+
+	<property>
+		<name>mapred.tasktracker.reduce.tasks.maximum</name>
+		<value>1</value>
+	</property>
+
+</configuration>

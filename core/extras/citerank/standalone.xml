@@ -1,0 +1,109 @@
+<project name="citerank" default="package" basedir=".">
+
+  <description >
+  This is the original standalone build file, which depends on the JARs in lib/ for Hadoop binding.
+  </description>
+  <target name="init">
+    <tstamp/>
+    <property name="name" value="${ant.project.name}" />
+    <property file="${user.home}/${name}.build.properties"/>
+    <property file="local.build.properties"/>
+    <property file="build.properties"/>
+
+
+    <property name="version" value="0.1" />
+    <property name="dir.src" location="src" />
+    <property name="build.dir" location="build" />
+    <property name="dir.lib" location="lib" />
+    <property name="compile.debug" value="true" />
+    <property name="compile.optimize" value="true" />
+    <property name="compile.deprecation" value="false" />
+    <property name="jar.name" value="${name}.jar" />
+    <property name="jar.compress" value="true" />
+    <property name="main.class" value="org.smartfrog.services.hadoop.benchmark.citerank.CiteRank" />
+    <property name="jvm.memory" value="512m" />
+
+    <property  name="remote.hadoop.site.xml" location="conf/hplb/hadoop-site.xml" />
+
+    <mkdir  dir="${build.dir}" />
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <mkdir  dir="${build.classes.dir}" />
+    <path id="classpath">
+      <fileset dir="${dir.lib}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+
+  </target>
+
+  <target name="compile" depends="init" description="Compiles the source code">
+    <mkdir dir="${build.dir}/classes"/>
+
+    <javac srcdir="${dir.src}"
+           destdir="${build.classes.dir}"
+           debug="${compile.debug}"
+           optimize="${compile.optimize}"
+           deprecation="${compile.deprecation}"
+           target="1.6" source="1.6"
+           classpathref="classpath">
+      <include name="**/*.java"/>
+    </javac>
+  </target>
+
+  <target name="package" depends="compile" description="Generates the jar">
+    <jar jarfile="${build.dir}/${jar.name}" compress="${jar.compress}">
+      <fileset dir="${build.classes.dir}"/>
+      <zipgroupfileset dir="${dir.lib}">
+        <exclude name="**/hadoop-*/**"/>
+        <include name="**/*.jar"/>
+      </zipgroupfileset>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Main-Class" value="${main.class}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="run-local" depends="package"
+          description="Run locally">
+    <java classname="${main.class}" fork="true" maxmemory="${jvm.memory}"
+        failonerror="true">
+      <arg value="-conf"/>
+      <arg value="conf/local/hadoop-site.xml"/>
+      <arg value="dfs/datasets/citeseer"/>
+      <arg value="dfs/playground/citeseer"/>
+      <arg value="10"/>
+      <arg value="0.01"/>
+      <classpath>
+        <pathelement path="${build.classes.dir}"/>
+        <path refid="classpath"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="run" depends="package" description="Submit Hadoop job to a known site">
+    <!--
+    requires you to have copied up the data first, incidentally.
+    -->
+
+    <java classname="${main.class}" fork="true" maxmemory="${jvm.memory}"
+        failonerror="true">
+      <arg value="-conf"/>
+      <arg value="${remote.hadoop.site.xml}"/>
+      <arg value="/datasets/citeseer"/>
+      <arg value="/playground/citeseer"/>
+      <arg value="100"/>
+      <arg value="0.0000001"/>
+      <classpath>
+        <pathelement path="${build.classes.dir}"/>
+        <path refid="classpath"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="clean" depends="init" description="Cleans up the project">
+    <delete dir="${build.dir}"/>
+  </target>
+
+</project>
+
