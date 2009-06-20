@@ -74,7 +74,7 @@ Localhost extends WorkflowPrim {
 /**
  * A condition that checks for the hostname beginning with the specific string
  */
-HostnameIs extends Condition {
+HostnameIs extends Prim {
   sfClass "org.smartfrog.services.hostnames.HostnameIsImpl";
 
   //A list of hostnames; the actual hostname string must start with one of these values
