@@ -4,23 +4,20 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
 
-import org.smartfrog.services.orchcomponent.model.OrchComponentModel;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.languages.sf.functions.ApplyEffects.DeployingAgent;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
  *
  */
-public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation {
+public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation, DeployingAgent {
 	
    private String name="";
    private boolean terminating=false;
