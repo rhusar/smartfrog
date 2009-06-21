@@ -72,8 +72,10 @@
     <!-- work out our host address-->
     <sf-localhost property="localhost" />
     <sf-localhost property="localip" useAddress="true" />
-    <echo>Local host = ${localhost} ${localip} </echo>
+    <echo>localhost = "${localhost}" localip=${localip} </echo>
     <property name="targethost" value="${localhost}" />
+    <property name="test.targethost" value="${targethost}" />
+    <property name="test.ipaddress" value="${localip}" />
     <property name="test.namenode" value="${targethost}" />
     <property name="test.jobtracker" value="${targethost}" />
     <property name="test.datanode1" value="${targethost}" />
@@ -88,6 +90,14 @@
     <property name="deploy.host" value="${test.namenode}" />
     <property name="application.name" value="${project.name}"/>
     <property name="deploy.timeout" value="60000" />
+    <echo>
+      test.targethost=${test.targethost}
+      test.ipaddress=${test.ipaddress}
+      deploy.host=${deploy.host}
+      application.name=${application.name}
+      deploy.sf=${deploy.sf}
+
+    </echo>
   </target>
 
 

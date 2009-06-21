@@ -1,0 +1,91 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/hadoop/components/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/components.sf"
+/**
+ * all the filenames
+ */
+Citeseer extends {
+  datasets.dir   "/datasets/";
+  citeseer.dir   (datasets.dir ++ "citeseer/");
+  playground.dir "/playground/"
+  //input
+  citeseer.dat   (citeseer.dir ++ "citeseer.dat");
+  testing.dat    (datasets.dir ++ "testing/testing.dat");
+  //output
+  output.dir     (playground.dir ++ "citeseer");
+
+  local.dfs.dir PROPERTY test.dfs.dir;
+  local.citeseer.dat (local.dfs.dir ++ citeseer.dat);
+
+}
+
+TestCluster extends DefaultHadoopConfiguration {
+  	fs.default.name PROPERTY test.fs.default.name;
+    mapred.job.tracker PROPERTY test.mapred.job.tracker;
+}
+
+
+ClusterActions extends Parallel {
+  terminateOnEmptyDeploy true;
+  oldNotation false;
+
+  cluster extends TestCluster;
+
+  operations extends Sequence {
+
+  }
+}
+
+
+
+UploadCiteseerData extends DfsCopyFileInWorkflow {
+  source Citeseer:local.citeseer.dat;
+  dest Citeseer:citeseer.dat;
+  overwrite false;
+}
+
+lsCiteseerDir extends DfsListDir {
+    path Citeseer:citeseer.dir;
+    minFileCount 1;
+    minTotalFileSize 16000000;
+    maxTotalFileSize -1;
+}
+
+Upload extends ClusterActions {
+  operations extends Sequence {
+    upload extends UploadCiteseerData {
+      cluster LAZY PARENT:ATTRIB cluster;
+    }
+
+    ls extends lsCiteseerDir {
+      cluster LAZY PARENT:ATTRIB cluster
+    }
+  }
+}
+
+LsCluster extends ClusterActions {
+  operations extends Sequence {
+    upload extends UploadCiteseerData {
+      cluster LAZY PARENT:ATTRIB cluster;
+    }
+  }
+}
