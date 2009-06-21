@@ -36,6 +36,7 @@ import org.apache.tools.ant.BuildException;
  */
 
 public class StartDaemon extends DeployingTaskBase {
+    /** {@value} */
     public static final String ERROR_FAILED_TO_START_DAEMON = "Failed to start the smartfrog daemon";
 
     /**
