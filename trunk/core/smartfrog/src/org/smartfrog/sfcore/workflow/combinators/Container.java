@@ -35,7 +35,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * or fails it simply removes the child and continues to run.
  * <p>
  * The file parallel.sf contains the SmartFrog configuration file for the base
- * Parallel combinator. This file conatins the details of the attributes which
+ * Parallel combinator. This file contains the details of the attributes which
  * may be passed to Parallel.
  * </p>
  */
@@ -57,6 +57,7 @@ public class Container extends Parallel implements Compound {
      * @param status termination status of sender
      * @param comp sender of termination
      */
+
     /**
      * If normal termination, Parallel behaviour is to terminate
      * that component but leave the others running if it is the last -
