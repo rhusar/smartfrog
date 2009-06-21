@@ -318,15 +318,19 @@ java.class.path=
     <property name="test.jar"
         location="${dist.lib.dir}/${test.jar.name}" />
 
-   <!--name of javadocs zip file-->
-   <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${smartfrog.version}.zip"/>
-   <property name="javadocs.zip"
+    <!--set some properties that are passed down to daemons automatically-->
+    <property name="test.component.jar.path" location="${target.jar}" />
+    <property name="test.test.jar.path" location="${test.jar}" />
+
+    <!--name of javadocs zip file-->
+    <property name="javadocs.zip.name" value="${artifact.name}-javadocs-${smartfrog.version}.zip"/>
+    <property name="javadocs.zip"
      location="${dist.lib.dir}/${javadocs.zip.name}" />
 
-   <!--info about the documentation zip-->
-   <property name="documentation.zip.name"
+    <!--info about the documentation zip-->
+    <property name="documentation.zip.name"
      value="${artifact.name}-documentation-${smartfrog.version}.zip"/>
-   <property name="documentation.zip"
+    <property name="documentation.zip"
      location="${dist.lib.dir}/${documentation.zip.name}" />
 
 
@@ -370,7 +374,9 @@ java.class.path=
      sun
      full.classname.
     -->
-   <property name="security.manager" value="none" />
+    <property name="security.manager" value="none" />
+
+    <property name="daemon.jvmargs"  value=""/> 
     
    <!--preset to copy with ant property expansion (and always overwrite)-->
    <presetdef name="expandingcopy">
@@ -986,16 +992,23 @@ smartfrog.tasks.classpath=
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
+        <jvmarg line="${daemon.jvmargs}" />
+        <!-- load in a property file if it is present -->
         <!--copy all proxy settings from the running JVM-->
-        <syspropertyset refid="proxy.settings"/>
-          <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <!--copy all properties beginning with test. or run.-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+          <propertyref prefix="run."/>
+        </syspropertyset>
       </sf-startdaemon>
     </presetdef>
 
+    <property name="sf.gui.spawn" value="false" />
     <presetdef name="sf-gui-debug">
       <sf-gui classpathref="tests.run.classpath"
-        logStackTraces="true" spawn="true">
+        logStackTraces="true" spawn="${sf.gui.spawn}">
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
@@ -1017,6 +1030,24 @@ smartfrog.tasks.classpath=
       </sf-management-console>
     </presetdef>
 
+    <presetdef name="sf-run-locally">
+      <sf-run logStackTraces="true">
+        <!-- assertions are enabled -->
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+        <jvmarg line="${daemon.jvmargs}" />
+        <!-- load in a property file if it is present -->
+        <!--copy all proxy settings from the running JVM-->
+        <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <!--copy all properties beginning with test. or run.-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+          <propertyref prefix="run."/>
+        </syspropertyset>
+      </sf-run>
+    </presetdef>
   </target>
 
   <!-- ========================================================== -->
@@ -1141,6 +1172,18 @@ smartfrog.tasks.classpath=
     <sf-stopdaemon timeout="60000" failonerror="false" />
   </target>
 
+  <!-- ========================================================== -->
+  <!-- targets with the name of the command line command -->
+  <!-- ========================================================== -->
+
+  <target  name="sfDaemon" depends="ready-to-deploy, startup"
+           description="Start the daemon with a GUI console"/>
+
+  <target  name="sfStopDaemon" depends="shutdown"
+           description="shut down a local smartfrog daemon"/>
+
+  <target  name="sfManagementConsole" depends="start-console"
+           description="shut down a local smartfrog daemon"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -1230,25 +1273,25 @@ smartfrog.tasks.classpath=
 	               property="echo.compile.classpath" 
 	               refid="compile.classpath">
 	  </pathconvert>
-      <echo message=" --------------------------------------------------------"/>
-	    <echo message=" Project: ${ant.project.name}"/>
-	    <echo message=" Ant file: ${ant.file}"/>
-		<echo message=" IvySettings.xml: ${ivysettings.xml}"/>		
-		<echo message=" core.dir: ${core.dir}"/>		
-		<echo message=" root.dir: ${root.dir}"/>		
-        <echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
-        <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>
-	    <echo message=" --------------------------------------------------------"/>
-      <depend srcdir="${src.dir}"
-          destdir="${build.classes.dir}"
-          cache="${build.dir}/depends"
-          closure="yes"/>
-      <sf-javac
-          classpathref="compile.classpath"
-          srcdir="${src.dir}"
-          destdir="${build.classes.dir}"
-          />
-      <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+    <echo message=" --------------------------------------------------------"/>
+    <echo message=" Project: ${ant.project.name}"/>
+    <echo message=" Ant file: ${ant.file}"/>
+    <echo message=" IvySettings.xml: ${ivysettings.xml}"/>
+    <echo message=" core.dir: ${core.dir}"/>
+    <echo message=" root.dir: ${root.dir}"/>
+    <echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
+    <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>
+    <echo message=" --------------------------------------------------------"/>
+    <depend srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        cache="${build.dir}/depends"
+        closure="yes"/>
+    <sf-javac
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        />
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
   <target name="ready-to-rmi" depends="compile" />
@@ -1269,16 +1312,16 @@ smartfrog.tasks.classpath=
 	  <pathconvert pathsep="${line.separator}|   |-- "  
 	               property="echo.compile.classpath" 
 	               refid="compile.classpath">
-	  </pathconvert> 
-	 <echo> ---------------------------------------
-	    RMIC for project: ${ant.project.name}"
-        base="${build.classes.dir}"
-        verify="true"
-        compiler="${rmic.compiler}"
-        compilerarg line="${rmic.forking.commandline}"
-        compiler="forking"
-        Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}
- ---------------------------------------
+	  </pathconvert>
+    <echo>---------------------------------------
+     RMIC for project: ${ant.project.name}"
+      base="${build.classes.dir}"
+      verify="true"
+      compiler="${rmic.compiler}"
+      compilerarg line="${rmic.forking.commandline}"
+      compiler="forking"
+      Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}
+    ---------------------------------------
       </echo> 
       <sf-rmic
           base="${build.classes.dir}"
@@ -1343,16 +1386,16 @@ smartfrog.tasks.classpath=
 	               property="echo.test.compile.classpath" 
 	               refid="tests.compile.classpath">
 	  </pathconvert>
-	 <echo> ---------------------------------------
-	    RMIC TESTS for project: ${ant.project.name}"
-        base="${test.classes.dir}"
-        verify="true"
-        compiler="${rmic.compiler}"
-        compilerarg line="${rmic.forking.commandline}"
-        compiler="forking"
-        Compile Class Path= ${line.separator}|   |-- ${echo.test.compile.classpath}		
- ---------------------------------------
-      </echo> 	  
+    <echo> ---------------------------------------
+     RMIC TESTS for project: ${ant.project.name}"
+      base="${test.classes.dir}"
+      verify="true"
+      compiler="${rmic.compiler}"
+      compilerarg line="${rmic.forking.commandline}"
+      compiler="forking"
+      Compile Class Path= ${line.separator}|   |-- ${echo.test.compile.classpath}
+    ---------------------------------------
+    </echo>
     <sf-rmic
         base="${test.classes.dir}"
         verify="true"
@@ -1599,7 +1642,7 @@ smartfrog.tasks.classpath=
   The classpath of the daemon is set to tests.run.classpath;
   -->
   <target name="declare-system-test-tasks" depends="declare-extended-smartfrog-tasks,init-codebase" >
-    <property name="daemon.jvmargs"  value=""/>
+
     <presetdef name="sf-system-test">
       <sf-functionaltest testTimeout="600" shutdownTime="10">
         <application>
@@ -1610,12 +1653,7 @@ smartfrog.tasks.classpath=
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
               classpathref="tests.run.classpath">
-            <jvmarg line="${daemon.jvmargs}" />
-            <!--all properties beginning with test. or run.-->
-            <syspropertyset>
-              <propertyref prefix="test."/>
-              <propertyref prefix="run."/>
-            </syspropertyset>
+
           </sf-startdaemon-debug>
           </sf-conditional>
         </application>
