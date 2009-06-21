@@ -46,10 +46,11 @@ public class CiteRank extends CiteRankTool {
     }
 
     private static String read(FileSystem fs, String path) throws IOException {
-        BufferedReader in =
-                new BufferedReader(new InputStreamReader(fs.open(new Path(path + File.separator + "part-00000"))));
+        BufferedReader in = null;
         String result;
         try {
+            Path part_0 = new Path(path + File.separator + "part-00000");
+            in = new BufferedReader(new InputStreamReader(fs.open(part_0)));
             StringTokenizer st = new StringTokenizer(in.readLine());
             st.nextToken();
             result = st.nextToken();
@@ -78,25 +79,25 @@ public class CiteRank extends CiteRankTool {
         int iterationLimit = Integer.parseInt(args[2]);
         final double toleranceArg = Double.parseDouble(args[3]);
         //clean the data up
-        exec(new CheckingData(), inpath, output);
+        exec("Data cleanup", new CheckingData(), inpath, output);
         //count the data
         String countFile = outpath + File.separator + CiteRankTool.COUNT;
-        exec(new CountPages(), output, countFile);
+        exec("Page count", new CountPages(), output, countFile);
         String count = read(fs, countFile);
-        exec(new InitializeRanks(), output, input, count);
+        exec("InitializeRanks", new InitializeRanks(), output, input, count);
         int iterations = 0;
         String sortedRanksDir = outpath + File.separator +
                 CiteRankTool.SORTED_RANKS;
         while (iterations < iterationLimit) {
             String danglingFile = outpath + File.separator + CiteRankTool.DANGLING;
-            exec(new DanglingPages(), input, danglingFile);
+            exec("DanglingPages", new DanglingPages(), input, danglingFile);
             String dangling = read(fs, danglingFile);
-            exec(new UpdateRanks(), input, output, count, dangling);
+            exec("UpdateRanks", new UpdateRanks(), input, output, count, dangling);
             overwrite(fs, new Path(output), new Path(input));
             if ((iterations > CiteRankTool.CHECK_CONVERGENCE_FREQUENCY)
                     && (iterations % CiteRankTool.CHECK_CONVERGENCE_FREQUENCY == 0)) {
                 String convergenceFile = outpath + File.separator + CiteRankTool.CONVERGENCE;
-                exec(new CheckConvergence(),
+                exec("CheckConvergence", new CheckConvergence(),
                         input,
                         convergenceFile);
                 double tolerance = Double.parseDouble(read(fs, convergenceFile));
@@ -108,12 +109,14 @@ public class CiteRank extends CiteRankTool {
             }
 
             if (HTML_TABLE) {
-                exec(new SortRanks(), input, sortedRanksDir);
+                exec("SortRanks", new SortRanks(), input, sortedRanksDir);
                 Path htmlsource = new Path(sortedRanksDir + File.separator + "part-00000");
-                BufferedReader in = new BufferedReader(new InputStreamReader(fs.open(htmlsource)));
-                PrintWriter out = new PrintWriter(fs.create(new Path(
-                        sortedRanksDir + "-" + iterations + ".dat")).getWrappedStream());
+                BufferedReader in = null;
+                PrintWriter out = null;
+                Path outfile = new Path(sortedRanksDir + "-" + iterations + ".dat");
                 try {
+                    in = new BufferedReader(new InputStreamReader(fs.open(htmlsource)));
+                    out = new PrintWriter(fs.create(outfile).getWrappedStream());
                     for (int j = 0; j < HTML_TABLE_ROWS; j++) {
                         StringTokenizer st = new StringTokenizer(in.readLine());
                         out.write(st.nextToken() + "\n");
@@ -127,10 +130,10 @@ public class CiteRank extends CiteRankTool {
             iterations++;
         }
 
-        exec(new SortRanks(), input, sortedRanksDir);
+        exec("SortRanks", new SortRanks(), input, sortedRanksDir);
 
         if (HTML_TABLE) {
-            exec(new HTMLTable(), outpath, Integer.toString(HTML_TABLE_ROWS), Integer.toString(iterations));
+            exec("HTMLTable", new HTMLTable(), outpath, Integer.toString(HTML_TABLE_ROWS), Integer.toString(iterations));
         }
         return 0;
     }

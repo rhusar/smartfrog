@@ -109,7 +109,7 @@ HadoopClusterSingleProcess extends HadoopFilesystemSingleProcess {
 
   tasktracker extends ClusterTaskTrackerCompound {
     fs.default.name fs.name;
-    tasktracker:mapred.tasktracker.map.tasks.maximum 3;
+    tasktracker:mapred.tasktracker.map.tasks.maximum 6;
   }
 
 }

@@ -23,8 +23,15 @@
     <property name="main.class" value="org.smartfrog.services.hadoop.benchmark.citerank.CiteRank" />
     <property name="jvm.memory" value="512m" />
 
-    <property  name="remote.hadoop.site.xml" location="conf/hplb/hadoop-site.xml" />
+    <property  name="test.sitename" value="hplb" />
+    <property  name="remote.hadoop.site.xml" location="conf/${test.sitename}/hadoop-site.xml" />
 
+    <fail>
+      <condition >
+      <not><available file="${remote.hadoop.site.xml}" /></not></condition>
+      Not found: ${remote.hadoop.site.xml}
+      Is the value of test.sitename correct: "${test.sitename}"
+    </fail>
     <mkdir  dir="${build.dir}" />
     <property name="build.classes.dir" location="${build.dir}/classes"/>
     <mkdir  dir="${build.classes.dir}" />
