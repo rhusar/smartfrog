@@ -23,9 +23,9 @@ import org.apache.hadoop.util.Service;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractTargetedCondition;
 import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 

@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.junitmr.healthtests;
 
-import org.smartfrog.services.hadoop.junitmr.AbstractHadoopTest;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.smartfrog.services.hadoop.junitmr.AbstractHadoopTest;
 
 /**
  * this set of tests checks that the FS is accessible

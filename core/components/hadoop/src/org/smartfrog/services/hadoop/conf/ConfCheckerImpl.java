@@ -19,23 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.hadoop.components.dfs.DfsClusterBoundImpl;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.Vector;
 
 /**

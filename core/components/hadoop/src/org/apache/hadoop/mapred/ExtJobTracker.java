@@ -23,17 +23,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.util.NodeUtils;
-import org.apache.hadoop.conf.Configuration;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
-import org.smartfrog.services.hadoop.core.BindingTuple;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

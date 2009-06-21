@@ -21,7 +21,6 @@ package org.smartfrog.services.hadoop.components.datanode;
 
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
 import org.apache.hadoop.util.Service;
-import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
@@ -36,7 +35,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Vector;
-import java.net.InetSocketAddress;
 
 /**
  * Created 06-May-2008 16:31:49

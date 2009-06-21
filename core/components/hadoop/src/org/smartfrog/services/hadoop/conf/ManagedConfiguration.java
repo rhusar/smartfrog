@@ -43,12 +43,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)

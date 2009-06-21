@@ -20,23 +20,39 @@ For more information: www.smartfrog.org
 
 
 /**
- * This package contains components that work with the filesystem
- * CopyToDFS (source,dest)     -copy a file into DFS
- * CopyFromDFS (source,dest)   -copy a file from DFS
- * CopyInDFS (source, dest)  - copy in DNS
- * MoveInDFS (source, dest)  - move in DNS
- * DfsDeleteFile : delete a file
- * DfsCreateDir  : Create a directory
- * DfsDeleteDir  : delete a directory
- * DfsListDir : list a directory
- * DfsChmod : Change file or dir permissions
+  This package contains components that work with the filesystem
+  DfsCopyFileIn  copy a file in
+  DfsCopyFileOut copy a file out
+  DfsCopyFile copy one file in the remote FS
+  DfsCopyFiles copy all files matching a regular expression
+  Copy operations go via the local machine, even if both files are remote and on the same node.
+  Deploy the operation close to one of the files.
 
- * One test function
- * DfsFileExists : make assertions/condition about the state of a file
 
- * All of these operations take a Cluster attribute, a LAZY reference to a Component declaring
- * the settings of the cluster, including login settings. We don't declare it as mandatory in
- * the schema, so you can pick it up from a parent
+  MoveInDFS (source, dest)  - move in DNS
+  DfsDeleteFile : delete a file
+  DfsCreateDir  : Create a directory
+  DfsDeleteDir  : delete a directory
+  DfsListDir : list a directory
+  DfsChmod : Change file or dir permissions
+
+
+  DfsCreateFile : create a file with the given text
+
+  Tests:
+  DfsPathExists : assert that a path is present and that it is the right type (file or dir)
+  DfsFileExists : make assertions/condition about the state of a file
+   these can be used in conditions, or in workflows (terminate after the test), as well
+   as standalone components, in which case they check every liveness
+
+  FileSystem operations
+
+  DfsFormatFileSystem  : don't do this on a long-lived cluster
+  DfsFsck check the filesystem
+  
+  All of these operations take a Cluster attribute, a LAZY reference to a Component declaring
+  the settings of the cluster, including login settings. We don't declare it as mandatory in
+  the schema, so you can pick it up from a parent
  */
 
 

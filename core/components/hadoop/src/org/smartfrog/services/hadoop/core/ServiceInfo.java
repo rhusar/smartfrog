@@ -21,8 +21,8 @@ package org.smartfrog.services.hadoop.core;
 
 import org.apache.hadoop.util.Service;
 
-import java.util.List;
 import java.io.IOException;
+import java.util.List;
 
 
 /**
