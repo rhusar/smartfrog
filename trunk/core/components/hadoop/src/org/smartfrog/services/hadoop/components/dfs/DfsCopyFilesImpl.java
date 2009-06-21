@@ -19,24 +19,22 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.Path;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.regex.Matcher;
-import java.io.IOException;
 
 /**
  * Component to copy a file within DFS Created 17-Jun-2008 15:06:23

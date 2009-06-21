@@ -19,7 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.services.assertions.AssertComponent;
 import org.smartfrog.services.assertions.Assert;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 

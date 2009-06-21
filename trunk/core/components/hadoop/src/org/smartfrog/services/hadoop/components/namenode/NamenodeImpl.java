@@ -28,7 +28,6 @@ import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.components.cluster.PortEntry;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
@@ -36,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.net.URI;
 
 /**
  * Created 06-May-2008 16:31:49

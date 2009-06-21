@@ -21,19 +21,19 @@
 
 package org.apache.hadoop.hdfs.server.namenode;
 
+import org.apache.hadoop.util.NodeUtils;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
-import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.sfcore.prim.Prim;
-import org.apache.hadoop.util.NodeUtils;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

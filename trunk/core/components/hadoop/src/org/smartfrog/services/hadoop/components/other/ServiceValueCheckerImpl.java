@@ -19,15 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.other;
 
-import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
+import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
 import java.util.Vector;

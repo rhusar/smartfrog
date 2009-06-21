@@ -32,7 +32,6 @@ import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -40,8 +39,8 @@ import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractConditionPrim;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.net.URI;
+import java.rmi.RemoteException;
 
 /**
  * Created 30-Apr-2008 14:20:50

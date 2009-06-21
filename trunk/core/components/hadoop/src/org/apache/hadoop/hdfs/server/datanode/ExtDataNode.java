@@ -21,24 +21,24 @@
 
 package org.apache.hadoop.hdfs.server.datanode;
 
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.net.NetUtils;
+import org.apache.hadoop.util.NodeUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
-import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
-import org.apache.hadoop.net.NetUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.NodeUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.AbstractList;
-import java.util.List;
-import java.util.ArrayList;
 import java.net.BindException;
 import java.net.InetSocketAddress;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is in the Apache hadoop packages to get at package scoped operations and internal datastructures that are only

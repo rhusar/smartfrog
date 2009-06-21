@@ -63,6 +63,7 @@ LightweightNameNode extends NameNode {
   dfs.hostname hostname;
   dfs.http.port NameNodeHttpPort;
   dfs.https.port NameNodeHttpPort;
+  dfs.replication DFS.REPLICATION;
   //mapred.system.dir TBD;
 }
 

@@ -19,14 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.apache.hadoop.util;
 
-import org.smartfrog.services.hadoop.core.BindingTuple;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.net.NetUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.net.NetUtils;
+import org.smartfrog.services.hadoop.core.BindingTuple;
 
-import java.net.InetSocketAddress;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 
