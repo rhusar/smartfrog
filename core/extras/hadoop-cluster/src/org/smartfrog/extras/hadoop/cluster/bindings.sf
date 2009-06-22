@@ -24,6 +24,8 @@ For more information: www.smartfrog.org
 
 
 WORKER_THREADS 8;
+CLUSTER_LIVENESS_DELAY 0 ; 
+
 
 namenode.host PROPERTY test.namenode;
 jobtracker.host PROPERTY test.jobtracker;
