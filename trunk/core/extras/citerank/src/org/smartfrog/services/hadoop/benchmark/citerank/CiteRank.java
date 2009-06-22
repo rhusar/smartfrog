@@ -109,7 +109,7 @@ public class CiteRank extends CiteRankTool {
             }
 
             if (HTML_TABLE) {
-                exec("SortRanks", new SortRanks(), input, sortedRanksDir);
+                exec("SortRanks #"+(iterations+1), new SortRanks(), input, sortedRanksDir);
                 Path htmlsource = new Path(sortedRanksDir + File.separator + "part-00000");
                 BufferedReader in = null;
                 PrintWriter out = null;
@@ -133,7 +133,8 @@ public class CiteRank extends CiteRankTool {
         exec("SortRanks", new SortRanks(), input, sortedRanksDir);
 
         if (HTML_TABLE) {
-            exec("HTMLTable", new HTMLTable(), outpath, Integer.toString(HTML_TABLE_ROWS), Integer.toString(iterations));
+            exec("HTMLTable", new HTMLTable(),
+                    outpath, Integer.toString(HTML_TABLE_ROWS), Integer.toString(iterations));
         }
         return 0;
     }

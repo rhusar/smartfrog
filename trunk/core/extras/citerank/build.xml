@@ -109,7 +109,7 @@
     </deploy>
   </target>
 
-  <target  name="upload" depends="ready-to-deploy"
+  <target  name="upload2" depends="ready-to-deploy"
       description="copy the datasets to the target cluster">
     <!-- timeout="${timeout}" -->
     <sf-run-locally classpathref="tests.run.classpath">
@@ -122,7 +122,7 @@
   </target>
 
   <!--variant that does the upload via a local daemon-->
-  <target  name="upload2" depends="ready-to-deploy"
+  <target  name="upload" depends="ready-to-deploy"
            description="copy the datasets to the target cluster">
     <deploy host="localhost">
       <application name="upload">

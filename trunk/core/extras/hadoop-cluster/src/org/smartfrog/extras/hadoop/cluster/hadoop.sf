@@ -101,6 +101,8 @@ HadoopFilesystem extends HadoopFilesystemSingleProcess {
 
 HadoopClusterSingleProcess extends HadoopFilesystemSingleProcess {
 
+  sfLivenessDelay CLUSTER_LIVENESS_DELAY;
+
 
   jobtracker extends ClusterJobTrackerCompound {
     fs.default.name fs.name;
@@ -121,7 +123,8 @@ HadoopClusterMultiProcess extends HadoopClusterSingleProcess {
   tasktracker:sfProcessName TASKTRACKER1_PROCESS;
 }
 
-HadoopCluster extends HadoopClusterSingleProcess;
+HadoopCluster extends HadoopClusterSingleProcess {
+}
 
 ForkedCluster extends HadoopClusterMultiProcess;
 

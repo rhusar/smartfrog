@@ -152,7 +152,7 @@ public abstract class CiteRankTool extends Configured implements Tool {
      * @throws Exception anything that went wrong
      */
     protected void exec(String description, CiteRankTool instance, String... args) throws Exception {
-        LOG.info("Running "+description);
+        LOG.info("Running " + description);
         ToolRunner.run(getConf(), instance, args);
     }
 }
