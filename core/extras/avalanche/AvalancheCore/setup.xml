@@ -45,7 +45,7 @@
   <property name="avalanche.root" location=".."/>
   <property name="root.dir" location="../../.."/>
   <property name="smartfrog.home" location="${root.dir}/smartfrog/"/>  
-  <property name="avalanche.home" location="${avalanche.root}/server"/>
+  <property name="avalanche.home" location="${env.AVALANCHE_HOME}"/>
   <property name="build.classes.dir" location="build/classes"/>
   <property name="dist.dependencies.dir" location="dist/dependencies"/>
 
@@ -321,17 +321,18 @@
 	<fileset dir="dist/lib/client" includes="*.jar"/>
     </copy>
 		
-		<copy file="security.xml" todir="${smartfrog.home}"/>
+		<!--copy file="security.xml" todir="${smartfrog.home}"/>
 		<exec dir="bin" executable="cmd" os="Windows XP, Windows NT">
 			<arg value="/c"/>
 			<arg line="security.bat"/>
 			<env key="SFHOME" value="${avalanche.home}\smartfrog\dist"/>
 			<env key="SFHOME_BASE" value="${smartfrog.home}"/>
-		</exec>
+		</exec-->
 
-		<exec dir="bin" executable="sh" os="Linux">
-			<arg line="security"/>
-		</exec>
+		<exec dir="bin" executable="ant" os="Linux">
+       		 <arg line="-f avalanchesecurity.xml build"/>
+		 <env key="AVALANCHE_HOME" value="${avalanche.home}"/>
+   	        </exec>
 
 		<copy todir="${avalanche.home}/temp/smartfrog/dist/signedLib" >
 			<fileset dir="${smartfrog.home}/dist/signedLib" >
