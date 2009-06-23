@@ -76,7 +76,7 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
                 throw new SmartFrogLivenessException("Path not found in the remote filesystem: " + path, this);
             }
             StringBuilder builder = new StringBuilder();
-            builder.append("Listing of ").append(path);
+            builder.append("Listing of ").append(path).append("/\n");
             for (FileStatus file : stats) {
                 size += file.getLen();
                 builder.append(file.getPath().getName());
