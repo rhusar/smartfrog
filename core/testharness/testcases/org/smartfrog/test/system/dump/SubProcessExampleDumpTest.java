@@ -83,6 +83,36 @@ public class SubProcessExampleDumpTest
 
     }
 
+	    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testCaseSubProcessExDump02() throws Throwable {
+
+        application = deployExpectingSuccess(FILES + "subprocessSimple.sf", "tcSPEDump02");
+        assertNotNull(application);
+
+        //Testing Dump now
+        log.info(dumpState(application));
+    }
+	
+	    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testCaseSubProcessExDump03() throws Throwable {
+
+        application = deployExpectingSuccess(FILES + "subprocessNo.sf", "tcSPEDump03");
+        assertNotNull(application);
+
+        //Testing Dump now
+        log.info(dumpState(application));
+
+
+    }
+	
 
     /**
      * Cast the parameter toa prim and dump it
@@ -92,6 +122,7 @@ public class SubProcessExampleDumpTest
     public String dumpState(Object node) {
         StringBuffer message = new StringBuffer();
         String name = "error";
+		long timeout = (1*30*1000L); //(2*60*1000L);
         //Only works for Prims.
         if (node instanceof Prim) {
             try {
@@ -99,8 +130,8 @@ public class SubProcessExampleDumpTest
                 message.append("\n*************** State *****************\n");
                 Dumper dumper = new DumperCDImpl(objPrim);
                 objPrim.sfDumpState(dumper.getDumpVisitor());
+				name = (objPrim).sfCompleteName().toString();
                 message.append(dumper.toString());
-                name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
                 log.error(ex);
                 StringWriter sw = new StringWriter();
