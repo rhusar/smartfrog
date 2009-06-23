@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!--
+  /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  For more information: www.smartfrog.org
+  */
+-->
+
+<project name="avalanchesecurity" >
+  <description>
+    Introduction
+    ============
+    The build script security for Avalanche framework.
+  	   1. runs initCA,signJars and newDaemon
+  	   2. Change host1 directory
+  	   3. Rename jar files in singLib and lib/avalanche
+  	   4. signExtraJars
+    
+
+    Installing the build tools
+    ==========================
+    Please go though the installation guide and install ant 1.6.5 or later.
+    Reference URL:http://ant.apache.org
+
+    For JavaCC, download it from https://javacc.dev.java.net/ and install the
+    relevant JAR files into the javacc subdirectory
+</description>
+
+<import file="../setup.xml"/>
+
+	<target name="secure" >  <!--add initCA, signJars newdaemo-->
+		<property name="SFCORE" location="../../../.."/>
+		<property name="avalanche.sf.home" location="${env.AVALANCHE_HOME}/smartfrog/dist"/>
+		<property name="sf.home.base" location="${SFCORE}/smartfrog"/>
+		<property name="signedLib.dir" location="${sf.home.base}/dist/signedLib"/>
+		<property name="lib.avalanche" location="${sf.home.base}/dist/lib/avalanche"/>
+		
+		
+		
+		<exec dir="${sf.home.base}" executable="ant" os="Linux">
+			<arg value="initCA" />
+			<arg value="signJars" />
+			<arg value="newDaemon" />
+		</exec>
+
+	</target>
+	
+	<target name="setupFiles">
+		<copy todir="${avalanche.sf.home}/private/host1">
+	   		<fileset dir="${sf.home.base}/dist/private/host1"/>
+		</copy>
+	
+	</target>
+	
+	
+	
+	<target name="renameFiles" >
+		
+		<exec executable="cmd" os="Windows XP, Windows NT">
+			<arg value="/c"/>
+			<arg line="movefiles.bat"/>
+			<env key="SLIB" path="${signedLib.dir}"/>
+			<env key="SFHOME_BASE" path="${lib.avalanche}"/>
+		</exec>
+		
+				
+		<exec executable="sh" os="Linux">
+			<arg value="movefiles"/>
+			<env key="SLIB" path="${signedLib.dir}"/>
+			<env key="SFHOME_BASE" value="${lib.avalanche}"/>
+			<env key="SFHOME" value="${avalanche.home}/smartfrog/dist"/>
+		</exec>
+		
+	</target>
+		
+	
+	<target name="buildExtraJars">
+		<exec dir="${sf.home.base}" executable="ant">
+			<env key="SFHOME" path="${avalanche.sf.home}"/>
+			<env key="SFHOME_BASE" value="${lib.avalanche}"/>
+			<arg value="-v"/>
+			<arg value="-f"/>
+			<arg value="security.xml" />
+			<arg value="signExtraJars" />
+		</exec>
+
+	</target>
+
+	<target name="build" depends="secure,setupFiles,renameFiles,buildExtraJars">
+		
+	</target>
+
+	
+</project>
