@@ -108,6 +108,7 @@ public class DumperCDImpl implements Dumper {
 
     public Dump getDumpVisitor(){
         Dump dumpVisitor = new DumpVisitorImpl(this);
+        if (sfLog().isInfoEnabled()) sfLog().info("Returning dumpVisitor: "+dumpVisitor);
         return dumpVisitor;
     }
 
@@ -247,9 +248,13 @@ public class DumperCDImpl implements Dumper {
                              message.append("Description creation has timedout ( Timeout:"+ (waitTimeout/1000) +" sec)");
                              message.append ("\n");
                              message.append ("CD in progress:\n");
-                             message.append (cd.toString());
-                             message.append ("\n");
-                             Diagnostics.doReportThreadDump(message);
+                             if (cd!=null) {
+                                message.append (cd.toString());
+                             } else {
+                                message.append ("null cd."); 
+                             }
+//                             message.append ("\n");
+//                             Diagnostics.doReportThreadDump(message);
                              message.append ("\n+-.End.-"); 
                              if (sfLog().isWarnEnabled()) sfLog().warn(message);
                              throw new SmartFrogException(message.toString());
@@ -275,10 +280,11 @@ public class DumperCDImpl implements Dumper {
       */
      public void visiting(String name, Integer numberOfChildren) throws RemoteException {
          // Notify any waiting threads that an attribute was added
+         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitING notitification received#"+visiting+ " from "+name +" lock:"+ visitingLock);
          synchronized (visitingLock) {
              visiting = new Long (visiting.longValue() + numberOfChildren.longValue());
          }
-         //if (sfLog().isInfoEnabled()) sfLog().info("Visiting #"+visiting+ " "+name);
+         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitING notitification received and counted#"+visiting+ " from "+name);
      }
 
      /**
@@ -290,6 +296,7 @@ public class DumperCDImpl implements Dumper {
       */
      public void visited(String name) throws RemoteException {
          // Notify any waiting threads that an attribute was added
+         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitED notitification received#"+visiting+ " from "+name);
          synchronized (visitingLock) {
              visiting = new Long (visiting.longValue()-1);
              if (visiting.longValue()==0) {
@@ -298,7 +305,7 @@ public class DumperCDImpl implements Dumper {
                 visitingLock.notify();
              }
          }
-         //if (sfLog().isInfoEnabled()) sfLog().info("Visited #"+visiting+ " "+name);
+         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitED notitification received and counted #"+visiting+ " from "+name);
      }
 
     /** Get the resulting Component Description in a String format
