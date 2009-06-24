@@ -36,13 +36,14 @@ import java.util.Enumeration;
  */
 public class DumpVisitorImpl implements Dump, Serializable {
 
-    static final long serialVersionUID = -812223322957783371L;
+    //static final long serialVersionUID = -812223322957783371L;
 
     //Reference to the class collecting results from visits
     private transient Dumper dumper = null;
 
     public DumpVisitorImpl (Dumper dumper){
         this.dumper = dumper;
+        System.out.println(" - Visitor ("+this+"): created");
     }
     /**
       * Components use this method to dump their state to when requested (using
@@ -66,20 +67,20 @@ public class DumpVisitorImpl implements Dump, Serializable {
            numberOfChildren = new Integer (numberC);
         }
         
-        System.out.println(" - DumpState from1 ("+numberOfChildren+"): "+name);
+        System.out.println(" - Visitor 1 ("+this+") ("+numberOfChildren+"): "+name);
 
         dumper.visiting(from.sfCompleteName().toString(),numberOfChildren);
-        System.out.println(" - DumpState from1 to clone context ("+numberOfChildren+"): "+name);
-        System.out.println(" - DumpState from1 context "+ state.toString());
+        System.out.println(" - Visitor 2 ("+this+") to clone context ("+numberOfChildren+"): "+name);
+        //System.out.println(" - Visitor 3 ("+this+")  context "+ state.toString());
         Context stateCopy =  (Context)((Context)state).clone();
         try {
-            System.out.println(" - DumpState from1 to modifyCD ("+numberOfChildren+"): "+name);
+            System.out.println(" - Visitor 4 ("+this+")  to modifyCD ("+numberOfChildren+"): "+name);
             dumper.modifyCD(searchRef, stateCopy);
-            System.out.println(" - DumpState from1 modified CD ("+numberOfChildren+"): "+name);
+            System.out.println(" - Visitor 5 ("+this+")  modified CD ("+numberOfChildren+"): "+name);
         } catch (Exception e) {
-            throw new RemoteException("Failed to modifyCD from "+name,e);
+            throw new RemoteException(" Visitor Failed to modifyCD from "+name,e);
         }
-
+        System.out.println(" - Visitor 6 ("+this+") visited: "+name);
         dumper.visited(name);
     }
 
