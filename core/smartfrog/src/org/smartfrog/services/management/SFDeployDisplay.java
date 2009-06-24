@@ -168,7 +168,11 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
          newDisplay = new Display(nameDisplay, null);
 
-         addFrogIcon(newDisplay);
+        if (nameDisplay.startsWith("[rootProcess")) {
+          addFrogIcon(newDisplay, true);
+        } else {
+          addFrogIcon(newDisplay, false);
+        }
 
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
@@ -323,7 +327,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
          newDisplay = new Display(nameDisplay, null);
 
-         addFrogIcon(newDisplay);
+//          if (nameDisplay.startsWith("[rootProcess")) {
+//            addFrogIcon(newDisplay, true);
+//          } else {
+//            addFrogIcon(newDisplay, false);
+//          }
+
 
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
@@ -358,16 +367,22 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
      * @param newDisplay Display Object -can be null
      * @return true if the icon was found and added to the display
      */
-    private static boolean addFrogIcon(Display newDisplay) {
+    private static boolean addFrogIcon(Display newDisplay, boolean root) {
         if (newDisplay == null) {
             return false;
         }
         String imagesPath = SFDeployDisplay.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
         // imagesPath = imagesPath + "frogb.gif";
-        imagesPath = imagesPath + "SplodgeLightBlue32.gif";
-        Image image = Display.createImage(imagesPath);
-        if(image!=null) {
+        Image image = null;
+        if (root){
+                imagesPath = imagesPath + "SplodgeLightBlue32.gif";
+                image = Display.createImage(imagesPath);
+        } else {
+                imagesPath = imagesPath + "SplodgeBlue32.gif";
+                image = Display.createImage(imagesPath);
+        }
+        if(image!=null) {            
             newDisplay.setIconImage(image);
             return true;
         } else {
@@ -677,7 +692,11 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         panelTree = new DeployTreePanel(root, isObjCopy, isPC,true);
         ((DeployTreePanel)panelTree).setFontSize(sfResolve(SFDisplay.FONTSIZE_DISPLAY,12,false));
         panelTree.setEnabled(true);
-        addFrogIcon(display);
+        if (display.getTitle().startsWith("[rootProcess")) {
+          addFrogIcon(display, true);
+        } else {
+          addFrogIcon(display, false);  
+        }
         display.tabPane.add(panelTree, name, 0);
 
         // Button to Refresh view ...
