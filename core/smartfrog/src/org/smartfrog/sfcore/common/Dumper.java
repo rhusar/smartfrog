@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.prim.Dump;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 import java.rmi.Remote;
@@ -47,4 +48,9 @@ public interface Dumper extends Remote {
     public Reference getRootRef() throws RemoteException;
 
     public Dump getDumpVisitor() throws RemoteException;
+
+    public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException;
+
+    public String toString ( long waitTimeout) throws RemoteException;     
+
 }
