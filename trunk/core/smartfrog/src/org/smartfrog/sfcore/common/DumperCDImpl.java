@@ -226,7 +226,7 @@ public class DumperCDImpl implements Dumper {
       * @throws SmartFrogException if there is any network or remote error
      *
       */
-     public ComponentDescription getComponentDescription ( long waitTimeout) throws SmartFrogException {
+     public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException {
          long endTime = (new Date()).getTime()+waitTimeout;
          synchronized (visitingLock) {
              while (visiting.longValue()!=0L) {
