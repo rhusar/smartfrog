@@ -1176,7 +1176,7 @@ smartfrog.tasks.classpath=
   <!-- targets with the name of the command line command -->
   <!-- ========================================================== -->
 
-  <target  name="sfDaemon" depends="ready-to-deploy, startup"
+  <target  name="sfDaemon" depends="ready-to-deploy, start-daemon-fg"
            description="Start the daemon with a GUI console"/>
 
   <target  name="sfStopDaemon" depends="shutdown"
@@ -1726,7 +1726,12 @@ ${test.reports.dir}/index.html
   </target>
 
   <target name="ready-to-test" depends="init,package,dist,package-tests,declare-system-test-tasks">
-
+  <echo level="verbose">
+    unit.tests=           ${unit.tests}
+    system.tests=         ${system.tests}
+    unit.tests.enabled=   ${unit.tests.enabled}
+    system.tests.enabled= ${system.tests.enabled}
+  </echo>
   </target>
 
   <!-- ========================================================== -->

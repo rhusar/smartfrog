@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/hadoop/components/components.sf"
 #include "/org/smartfrog/sfcore/workflow/combinators/components.sf"
+#include "/org/smartfrog/extras/hadoop/cluster/components.sf"
+
 /**
  * all the filenames
  */
@@ -43,19 +45,17 @@ TestCluster extends DefaultHadoopConfiguration {
     mapred.job.tracker PROPERTY test.mapred.job.tracker;
 }
 
+/**
+ * Deploy a cluster with actions
+ */
+ClusterActions extends Compound {
 
-ClusterActions extends Parallel {
-  terminateOnEmptyDeploy true;
-  oldNotation false;
-
-  cluster extends TestCluster;
+  testcluster extends TestCluster;
 
   operations extends Sequence {
 
   }
 }
-
-
 
 UploadCiteseerData extends DfsCopyFileInWorkflow {
   source Citeseer:local.citeseer.dat;
@@ -73,19 +73,53 @@ lsCiteseerDir extends DfsListDir {
 Upload extends ClusterActions {
   operations extends Sequence {
     upload extends UploadCiteseerData {
-      cluster LAZY PARENT:ATTRIB cluster;
+      cluster LAZY PARENT:ATTRIB testcluster;
     }
 
     ls extends lsCiteseerDir {
-      cluster LAZY PARENT:ATTRIB cluster
+      cluster LAZY PARENT:ATTRIB testcluster
     }
   }
 }
 
 LsCluster extends ClusterActions {
   operations extends Sequence {
-    upload extends UploadCiteseerData {
-      cluster LAZY PARENT:ATTRIB cluster;
+    ls extends lsCiteseerDir {
+      cluster LAZY PARENT:ATTRIB testcluster;
     }
   }
 }
+
+/**
+ Full test cluster
+ */
+/*
+
+LocalHadoopCluster extends HadoopCluster {
+ IP_V4_LOCALHOST "127.0.0.1";
+ namenodeHostname IP_V4_LOCALHOST;
+ jobTracker:hostname IP_V4_LOCALHOST;
+ mapred.job.tracker jobTracker:mapred.job.tracker
+
+}
+*/
+
+/*
+
+ClusterWithUpload extends Parallel {
+  terminateOnEmptyDeploy true;
+  oldNotation false;
+  
+  //this is the cluster
+  cluster extends HadoopCluster;
+
+
+
+  //now the upload. It gets its settings off the Job Tracker, as that matters the most.
+  //race condition here; may need to sleep a bit or poll for availability
+  upload extends Upload {
+    cluster LAZY PARENT:cluster:jobTracker;
+  }
+
+
+}*/

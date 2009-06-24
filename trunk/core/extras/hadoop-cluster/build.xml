@@ -136,6 +136,7 @@
                    descriptor="/${cluster2.sf}"/>
     </deploy>
   </target>
+
   <target name="filesystem" depends="ready-to-deploy"
       description="deploy a filesystem">
     <deploy>

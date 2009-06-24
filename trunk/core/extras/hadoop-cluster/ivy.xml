@@ -80,7 +80,7 @@
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
-        conf="runtime->runtime;server->server;compile->default"/>
+        conf="runtime->default;server->default,server;compile->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-rpmtools" changing="true"
