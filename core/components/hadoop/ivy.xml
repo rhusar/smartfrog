@@ -14,7 +14,7 @@
   </configurations>
   -->
   <configurations defaultconfmapping="default">
-    <conf name="default" extends="master,runtime"/>
+    <conf name="default" extends="master,runtime, redist"/>
     <conf name="documentation"
       description="all documentation artifacts"/>
     <conf name="build" visibility="private"

@@ -63,5 +63,10 @@
                 conf="runtime->runtime;server->server;compile->default"/>
 
 
+    <dependency org="org.smartfrog"
+                name="sf-hadoop-cluster"
+                changing="true"
+                rev="latest.integration"
+                conf="runtime->runtime;server->server;compile->default"/>
   </dependencies>
 </ivy-module>

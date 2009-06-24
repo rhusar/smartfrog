@@ -29,8 +29,7 @@ ClusterNameNodeCompound extends TransientNameNodeCompound {
   //localhost.name APPLY lookupLocalhost;
   namenodeHostname LAZY namenodeHost:hostname;
   hostname namenodeHostname;
-  fs.default.name ("hdfs://" ++ (namenodeHostname) ++ ":" ++ NameNodeIpcPort ++ "/");
-// WAS  namenode.filesystem;
+  fs.default.name ("hdfs://" ++ (hostname) ++ ":" ++ NameNodeIpcPort ++ "/");
   namenode:dfs.datanode.handler.count threads;
   namenode:checkRunning false;
 }
@@ -40,8 +39,6 @@ ClusterDataNodeCompound extends TransientDataNodeCompound {
   fs.default.name  TBD;
   workerHost extends Localhost;
   hostname HadoopConfiguration:ALL_ZEROS;
-//  fs.default.name namenode.filesystem;
-  //datanode:mapred.job.tracker.handler.count threads;
 }
 
 ClusterJobTrackerCompound extends TransientJobTrackerCompound  {
@@ -49,15 +46,12 @@ ClusterJobTrackerCompound extends TransientJobTrackerCompound  {
   fs.default.name  TBD;
 
   jobtrackerHost extends Localhost;
-
-//  fs.default.name namenode.filesystem;
   jobtracker:mapred.job.tracker.handler.count threads;
 }
 
 
 ClusterTaskTrackerCompound extends TransientTaskTrackerCompound  {
   threads WORKER_THREADS;
-//  fs.default.name namenode.filesystem;
   tasktracker.http.threads threads;
   workerHost extends Localhost;
 }
@@ -75,7 +69,6 @@ HadoopClusterCompound extends Compound {
 
 HadoopFilesystemSingleProcess extends HadoopClusterCompound {
 
-//fs.name LAZY namenode:namenode:live.fs.default.name;
   fs.name LAZY namenode:namenode:fs.default.name;
 
   namenode extends ClusterNameNodeCompound {

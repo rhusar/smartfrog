@@ -44,6 +44,7 @@ LightweightJobTracker extends JobTracker {
   //this is to fail faster when a namenode does not come up
   ipc.client.connect.max.retries LIGHTWEIGHT_MAX_RETRIES;
   mapred.job.tracker.hostname Hostnames:mapred.job.tracker.hostname;
+  mapred.job.reuse.jvm.num.tasks JVM_REUSE_COUNT;
 }
 
 LightweightTaskTracker extends TaskTracker {

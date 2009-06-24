@@ -34,11 +34,16 @@ import java.util.StringTokenizer;
 public class HTMLTable extends CiteRankTool {
 
     private static final boolean PIXELS_ONLY = false;
-    private static final String NAME = "HTMLTable";
+    /** {@value} */
+    private static final String COL_BAD = "#cc0000";
+    /** {@value} */
+    private static final String COL_IN_FINAL_POSITION = "#00cc00";
+    /** {@value} */
+    private static final String COL_IN_FINAL_RANKING_BUT_WRONG_PLACE = "#cccc00";
 
     @Override
     protected String getName() {
-        return NAME;
+        return "HTMLTable";
     }
 
     @Override
@@ -53,10 +58,15 @@ public class HTMLTable extends CiteRankTool {
         String[][] ranks = new String[rows][columns];
         ArrayList<String> correct = new ArrayList<String>();
 
-        FileSystem fs = FileSystem.get(getConf());
+        Configuration job = getConf();
+        FileSystem fs = FileSystem.get(job);
         String inputDir = args[0];
         PrintWriter out = new PrintWriter(fs.create(new Path(inputDir + File.separator
                 + CiteRankTool.RANKS_HTML)).getWrappedStream());
+
+        boolean pixelsOnly = job.getBoolean(OPTION_PIXELS_ONLY,PIXELS_ONLY);
+        String citationURL = job.get(OPTION_REPORT_CITESEER_URL,Utils.HTTP_CITESEER);
+
         BufferedReader in;
 
         try {
@@ -88,15 +98,15 @@ public class HTMLTable extends CiteRankTool {
 
             out.println("<table cellspacing=\"2\" cellpadding=\"2\">");
 
-            if (PIXELS_ONLY) {
+            if (pixelsOnly) {
                 for (int i = 0; i < rows; i++) {
                     out.print("<tr>");
                     for (int j = 0; j < columns; j++) {
-                        String color = "#cc0000";
+                        String color = COL_BAD;
                         if (correct.get(i).equals(ranks[i][j])) {
-                            color = "#00cc00";
+                            color = COL_IN_FINAL_POSITION;
                         } else if (correct.contains(ranks[i][j])) {
-                            color = "#cccc00";
+                            color = COL_IN_FINAL_RANKING_BUT_WRONG_PLACE;
                         }
                         out.print("<td bgcolor=\"" + color + "\"><img src=\"pixel.gif\" width=4 height=4 /></td>");
                     }
@@ -112,14 +122,17 @@ public class HTMLTable extends CiteRankTool {
                 for (int i = 0; i < rows; i++) {
                     out.print("<tr><td>" + (i + 1) + "</td>");
                     for (int j = 0; j < columns; j++) {
-                        String color = "#cc0000";
-                        if (correct.get(i).equals(ranks[i][j])) {
-                            color = "#00cc00";
-                        } else if (correct.contains(ranks[i][j])) {
-                            color = "#cccc00";
+                        String color = COL_BAD;
+                        String entry = ranks[i][j];
+                        if (correct.get(i).equals(entry)) {
+                            color = COL_IN_FINAL_POSITION;
+                        } else if (correct.contains(entry)) {
+                            color = COL_IN_FINAL_RANKING_BUT_WRONG_PLACE;
                         }
-
-                        out.print("<td bgcolor=\"" + color + "\">" + ranks[i][j] + "</td>");
+                        String td;
+                        String url = Utils.createCitationURL(citationURL, entry);
+                        td = url.isEmpty() ? entry : Utils.anchor(url, entry);
+                        out.print("<td bgcolor=\"" + color + "\">" + td + "</td>");
                     }
                     out.println("</tr>");
                 }
@@ -127,12 +140,14 @@ public class HTMLTable extends CiteRankTool {
 
             out.println("</table>");
         } finally {
-            out.close();
+            close(out);
         }
 
 
         return 0;
     }
+
+
 
     public static void main(String[] args) throws Exception {
         int exitCode = ToolRunner.run(new Configuration(), new HTMLTable(), args);

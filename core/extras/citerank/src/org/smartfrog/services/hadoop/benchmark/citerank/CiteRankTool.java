@@ -74,6 +74,8 @@ public abstract class CiteRankTool extends Configured implements Tool {
     protected static final String TEST_JAR_PATH = "test.component.jar.path";
 
     protected static final Log LOG = LogFactory.getLog(CiteRankTool.class);
+    public static final String OPTION_PIXELS_ONLY = "pixels.only";
+    public static final String OPTION_REPORT_CITESEER_URL = "report.citeseer.url";
 
     /**
      * Get the name of this tool

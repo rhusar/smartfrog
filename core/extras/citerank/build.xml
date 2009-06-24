@@ -32,7 +32,10 @@
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
   <!-- override point -->
+
   <property file="build.properties"/>
+  <!--unit tests are on-->
+  <property name="system.tests" value="true"/>
 
   <property name="junit.timeout" value="120000000"/>
   <!--time for a single test to execute-->
@@ -55,6 +58,11 @@
     <property name="deploy.host" value="${targethost}" />
     <property name="application.name" value="${project.name}"/>
     <property name="deploy.timeout" value="60000" />
+    <property name="localcluster.sf" value="org/smartfrog/services/hadoop/benchmark/citerank/localcluster.sf" />
+    <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
+    <property name="cluster.sf" value="${cluster}/cluster.sf" />
+    <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
+    <property name="deploy.sf" value="${localcluster.sf}" />
   </target>
 
 
@@ -134,6 +142,25 @@
   </target>
 
 
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="cluster" depends="ready-to-deploy"
+      description="deploy a cluster">
+    <deploy>
+      <application name="cluster"
+              descriptor="/${localcluster.sf}"/>
+    </deploy>
+  </target>
+
+  <target name="cluster2" depends="ready-to-deploy"
+          description="deploy a forked cluster">
+    <deploy>
+      <application name="cluster2"
+                   descriptor="/${cluster2.sf}"/>
+    </deploy>
+  </target>
+
   
   <target name="submit" depends="ready-to-deploy"
           description="Submit Hadoop job to a known site">
@@ -150,6 +177,11 @@
       <arg value="/playground/citeseer"/>
       <arg value="100"/>
       <arg value="0.0000001"/>
+      <propertyset >
+        <propertyref prefix="test."/>
+        <propertyref prefix="runtime."/>
+      </propertyset>
+
     </java>
   </target>
 
