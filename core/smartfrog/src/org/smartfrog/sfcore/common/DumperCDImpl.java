@@ -226,7 +226,7 @@ public class DumperCDImpl implements Dumper {
       * @throws SmartFrogException if there is any network or remote error
      *
       */
-     public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException {
+     public ComponentDescription getComponentDescription ( long waitTimeout) throws SmartFrogException {
          long endTime = (new Date()).getTime()+waitTimeout;
          synchronized (visitingLock) {
              while (visiting.longValue()!=0L) {
@@ -252,7 +252,6 @@ public class DumperCDImpl implements Dumper {
                              Diagnostics.doReportThreadDump(message);
                              message.append ("\n+-.End.-"); 
                              if (sfLog().isWarnEnabled()) sfLog().warn(message);
-
                              throw new SmartFrogException(message.toString());
                           }
                         }
@@ -329,7 +328,7 @@ public class DumperCDImpl implements Dumper {
       * @throws RemoteException if there is any network or remote error
      *
       */
-     public String toString ( long waitTimeout) throws Exception {
+     public String toString ( long waitTimeout) throws RemoteException {
         return getCDAsString(waitTimeout);
     }
 
