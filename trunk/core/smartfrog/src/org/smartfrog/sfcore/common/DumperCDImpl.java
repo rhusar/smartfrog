@@ -85,7 +85,7 @@ public class DumperCDImpl implements Dumper {
             rootRef = from.sfCompleteName();
             init();
         } catch (RemoteException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e, e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(),e);
         }
     }
 
@@ -102,7 +102,7 @@ public class DumperCDImpl implements Dumper {
                sfKeysToBeRemoved = configuration.sfResolve(ATR_SF_KEYS_TO_BE_REMOVED, sfKeysToBeRemoved ,false);
             }
         } catch (Exception ex){
-            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(),ex);
         }
     }
 
@@ -148,11 +148,11 @@ public class DumperCDImpl implements Dumper {
                 ComponentDescription child = createCDWithKeysRemoved(stateCopy,true);
                 placeHolder.sfReplaceAttribute(name, child);
             } catch (SmartFrogException ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(),ex);
             }
 
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e, e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(),e);
             throw e;
         }
     }
@@ -171,7 +171,7 @@ public class DumperCDImpl implements Dumper {
                     stateCopy.sfRemoveAttribute(aSfKeysToBeRemoved);
                 } catch (SmartFrogContextException e) {
                     if (sfLog().isWarnEnabled()) {
-                        sfLog().warn(e);
+                        sfLog().warn(e.getMessage(),e);
                     }
                 }
             }
@@ -203,7 +203,7 @@ public class DumperCDImpl implements Dumper {
                     stateCopy.sfReplaceAttribute(key, createCDWithKeysRemoved((Context)context.clone(), false) );
                 } catch (SmartFrogRuntimeException e) {
                     if (sfLog().isWarnEnabled()) {
-                           sfLog().warn(e);
+                           sfLog().warn(e.getMessage(),e);
                        }
                 }
             }
@@ -240,10 +240,20 @@ public class DumperCDImpl implements Dumper {
                         if (now>=endTime) {
                           if (sfLog().isInfoEnabled()) sfLog().info("Timeout ("+completed+")");
                           if (completed) {
-                              if (sfLog().isWarnEnabled()) sfLog().warn("Description creation Timeout (\"+ (timeout/1000) +\"sec)");
+                              if (sfLog().isWarnEnabled()) sfLog().warn("Description creation Timeout ("+ (timeout/1000) +" sec) and completed.");
                               return cd;
                           } else {
-                             throw new SmartFrogException("Description creation Timeout ("+ (waitTimeout/1000) +"sec)");
+                             StringBuffer message = new StringBuffer ();
+                             message.append("Description creation has timedout ( Timeout:"+ (waitTimeout/1000) +" sec)");
+                             message.append ("\n");
+                             message.append ("CD in progress:\n");
+                             message.append (cd.toString());
+                             message.append ("\n");
+                             Diagnostics.doReportThreadDump(message);
+                             message.append ("\n+-.End.-"); 
+                             if (sfLog().isWarnEnabled()) sfLog().warn(message);
+
+                             throw new SmartFrogException(message.toString());
                           }
                         }
                          try {
@@ -367,7 +377,7 @@ public class DumperCDImpl implements Dumper {
          String cdStr = toString(timeout);
          return cdStr;
        } catch (Exception ex){
-           if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+           if (sfLog().isErrorEnabled()) sfLog().error("",ex);
            return (ex.toString());
        }
     }
@@ -386,14 +396,14 @@ public class DumperCDImpl implements Dumper {
                 out.write(e.getMessage());
             }
         } catch (IOException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e, e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
         } finally {
             try {
                 if( out != null ) {
                 	out.close();
                 }
             } catch (IOException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(e, e);
+                if (sfLog().isErrorEnabled()) sfLog().error(e);
             }
         }
     }

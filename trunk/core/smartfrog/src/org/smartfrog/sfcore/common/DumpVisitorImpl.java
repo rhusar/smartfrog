@@ -54,8 +54,9 @@ public class DumpVisitorImpl implements Dump, Serializable {
       * @throws RemoteException In case of Remote/nework error
       */
      public void dumpState(Object state, Prim from) throws RemoteException {
-        //System.out.println(" - DumpState from1: "+from.sfCompleteName());
         Integer numberOfChildren = new Integer(0);
+        Reference searchRef =  (Reference)from.sfCompleteName().copy();
+        String name = searchRef.toString();
         if (from instanceof Compound) {
            int numberC = 0;
            for (Enumeration<Liveness> e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
@@ -64,20 +65,22 @@ public class DumpVisitorImpl implements Dump, Serializable {
            }
            numberOfChildren = new Integer (numberC);
         }
+        
+        System.out.println(" - DumpState from1 ("+numberOfChildren+"): "+name);
 
         dumper.visiting(from.sfCompleteName().toString(),numberOfChildren);
-
+        System.out.println(" - DumpState from1 to clone context ("+numberOfChildren+"): "+name);
+        System.out.println(" - DumpState from1 context "+ state.toString());
         Context stateCopy =  (Context)((Context)state).clone();
-
-        Reference searchRef =  (Reference)from.sfCompleteName().copy();
-
         try {
+            System.out.println(" - DumpState from1 to modifyCD ("+numberOfChildren+"): "+name);
             dumper.modifyCD(searchRef, stateCopy);
+            System.out.println(" - DumpState from1 modified CD ("+numberOfChildren+"): "+name);
         } catch (Exception e) {
-            throw new RemoteException("Failed to modifyCD from "+from.sfCompleteName().toString(),e);
+            throw new RemoteException("Failed to modifyCD from "+name,e);
         }
 
-        dumper.visited(from.sfCompleteName().toString());
+        dumper.visited(name);
     }
 
 }
