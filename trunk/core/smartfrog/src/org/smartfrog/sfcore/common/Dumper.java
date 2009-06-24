@@ -49,7 +49,7 @@ public interface Dumper extends Remote {
 
     public Dump getDumpVisitor() throws RemoteException;
 
-    public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException;
+    public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException, SmartFrogException;
 
     public String toString ( long waitTimeout) throws RemoteException;     
 
