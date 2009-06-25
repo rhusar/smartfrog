@@ -23,7 +23,9 @@ For more information: www.smartfrog.org
 -->
   <fail>
     <condition>
-      <available classname="javax.lang.model"/>
+      <not>
+        <available classname="java.util.ServiceLoader"/>
+      </not>
     </condition>
     This build requires Java1.6 or later, but the current JVM is not recognised as
     such.
@@ -46,6 +48,7 @@ For more information: www.smartfrog.org
     <property file="build.properties" />
     <property environment="env" />
 	  <property name="core.dir" location="."/>
+    <property name="root.dir" location="."/>
     <tstamp>
       <format property="build.timestamp" pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ" />
     </tstamp>
@@ -53,7 +56,6 @@ For more information: www.smartfrog.org
 	
   	<!-- where the ivy/maven artifacts are stored -->
     
-    <!--<property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>-->
     <property name="artifactsCache.dir" location="${user.home}"/>
 	
     <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
@@ -84,23 +86,15 @@ For more information: www.smartfrog.org
     <echo message="         ${java.home} "/>
     <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message="   Build dir: ${basedir}"/>
-	<echo message="   Core dir: ${core.dir}"/>
-	<echo message="   Root dir: ${root.dir}"/>		
-	<echo message="   IvySettings.xml: ${ivysettings.xml}"/>	
-	<echo message="   ArtifactsCache dir: ${artifactsCache.dir}"/>
+    <echo message="   Core dir: ${core.dir}"/>
+    <echo message="   Root dir: ${root.dir}"/>		
+    <echo message="   ArtifactsCache dir: ${artifactsCache.dir}"/>
     <echo message="   Ant: ${ant.version}"/>		
     <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
     <echo message="   Build started: ${build.timestamp}" />
     <echo message=" ======================================================="/>
     <echo message="  "/>
 
-    <!-- work out our java version by introspection -->
-    <condition property="java1.5+">
-      <available classname="java.lang.Readable"/>
-    </condition>
-    <condition property="java1.6+">
-      <available classname="javax.lang.model"/>
-    </condition>
     <macrodef name="forward2">
       <attribute name="dir"/>
       <attribute name="target"/>
@@ -407,7 +401,7 @@ For more information: www.smartfrog.org
   <target name="gump-test" depends="test" />
 
 
-  <target name="ivy-properties">
+  <target name="ivy-properties" depends="init">
     <property name="ivy.user.dir" location="${artifactsCache.dir}/.ivy" />
     <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
     <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
@@ -419,6 +413,10 @@ For more information: www.smartfrog.org
     <property name="ivy2.user.dir" location="${artifactsCache.dir}/.ivy2" />
     <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
     <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
+    <echo level="verbose">
+      ivy.user.dir  = ${ivy.user.dir}
+      ivy2.user.dir = ${ivy2.user.dir}
+    </echo>
   </target>
 
   <target name="ivy-dirs" depends="ivy-properties">
@@ -431,7 +429,7 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <target name="ivy-probe-antlib" depends="init,ivy-dirs">
+  <target name="ivy-probe-antlib" depends="ivy-dirs">
     <condition property="ivy.found">
       <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
     </condition>
@@ -460,7 +458,6 @@ For more information: www.smartfrog.org
     <!--create the external dir if it is missing-->
     <mkdir dir="external" />
     <property name="ivysettings.xml" location="antbuild/ivy/ivysettings.xml" />
-    <property name="root.dir" location="." />
     <ivy:configure file="${ivysettings.xml}" override="true"/>
   </target>
 
@@ -501,10 +498,6 @@ For more information: www.smartfrog.org
           <!-- temporarily excluded -->
           <exclude name="persistence/build.xml"/>
           
-          <!--Java 1.6+ code-->
-          <exclude name="vmware/build.xml" unless="java1.6+"/>
-          <exclude name="ec2/build.xml" unless="java1.6+"/>
-          <exclude name="groovy/build.xml" unless="java1.6+"/>
 
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
@@ -593,12 +586,22 @@ ${child.projects.list}
 
   <target name="ivy-purge-published" depends="ivy-dirs"
     description="purge all locally published artifacts from the local repository">
+    <echo level="verbose">
+      Deleting files under
+    ${ivy.local.dir}/${ivy.package.name}
+    ${ivy2.local.dir}/${ivy.package.name}
+    </echo>
     <delete dir="${ivy.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
     <delete dir="${ivy2.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
   </target>
 
   <target name="ivy-purge-cache" depends="ivy-dirs"
     description="purge all smartfrog artifacts from the cache">
+    <echo  level="verbose">
+      Deleting files under
+      ${ivy.cache.dir}/${ivy.package.name}
+      ${ivy2.cache.dir}/${ivy.package.name}
+    </echo>
     <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
