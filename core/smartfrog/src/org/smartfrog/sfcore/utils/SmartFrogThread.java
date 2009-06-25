@@ -439,14 +439,28 @@ public class SmartFrogThread extends Thread implements Executable {
             thread.requestTermination();
         }
     }
+
     /**
      * Request the thread to terminate -interrupting the thread if need be
      *
-     * @param thread  thread to terminate, can be null
+     * @param thread thread to terminate, can be null
      */
     public static void requestThreadTerminationWithInterrupt(SmartFrogThread thread) {
         if (thread != null) {
             thread.requestTerminationWithInterrupt();
+        }
+    }
+
+    /**
+     * Request the thread to terminate -interrupting the thread if need be
+     *
+     * @param thread  thread to terminate, can be null
+     * @param timeout time to wait
+     */
+    public static void requestAndWaitForThreadTerminationWithInterrupt(SmartFrogThread thread, long timeout) {
+        if (thread != null) {
+            thread.requestTerminationWithInterrupt();
+            thread.waitForThreadTermination(timeout);
         }
     }
 
