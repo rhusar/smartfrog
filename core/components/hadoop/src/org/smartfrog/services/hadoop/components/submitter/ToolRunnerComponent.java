@@ -24,5 +24,15 @@ import java.rmi.Remote;
 
 public interface ToolRunnerComponent extends Remote {
 
+    /** {@value} */
     String ATTR_TOOLCLASS = "toolClass";
+    
+    /** {@value} */
+    String ATTR_ARGUMENTS = "arguments";
+    
+    String ATTR_RETURNCODE = "returnCode";
+    
+    String ATTR_FAIL_ON_NON_ZERO_RETURN_CODE = "failOnNonZeroReturnCode";
+    
+    
 }
