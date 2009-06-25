@@ -177,10 +177,10 @@
       <arg value="/playground/citeseer"/>
       <arg value="100"/>
       <arg value="0.0000001"/>
-      <propertyset >
+      <syspropertyset  >
         <propertyref prefix="test."/>
         <propertyref prefix="runtime."/>
-      </propertyset>
+      </syspropertyset>
 
     </java>
   </target>

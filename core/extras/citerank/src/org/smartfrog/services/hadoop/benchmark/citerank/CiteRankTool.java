@@ -28,6 +28,8 @@ import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.RunningJob;
+import org.apache.hadoop.mapred.Counters;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
@@ -77,6 +79,9 @@ public abstract class CiteRankTool extends Configured implements Tool {
     public static final String OPTION_PIXELS_ONLY = "pixels.only";
     public static final String OPTION_REPORT_CITESEER_URL = "report.citeseer.url";
 
+    private static Counters counters;
+    
+    
     /**
      * Get the name of this tool
      *
@@ -119,8 +124,26 @@ public abstract class CiteRankTool extends Configured implements Tool {
         return -1;
     }
 
+    
+    public static synchronized void resetCounters() {
+        counters = null;
+    } 
+    
+    public static synchronized void addCounters(Counters values) {
+        if (counters==null) {
+            counters = values;
+        } else {
+            counters.incrAllCounters(values);
+        }
+    }
+    
+    public static synchronized Counters getCounters() {
+        return counters;
+    }
+    
     protected static int runJob(JobConf conf) throws IOException {
-        JobClient.runJob(conf);
+        RunningJob job = JobClient.runJob(conf);
+        addCounters(job.getCounters());
         return 0;
     }
 
@@ -157,4 +180,26 @@ public abstract class CiteRankTool extends Configured implements Tool {
         LOG.info("Running " + description);
         ToolRunner.run(getConf(), instance, args);
     }
+    /*
+         [java] 09/06/25 16:47:03 INFO mapred.JobClient: Job complete: job_local_0002
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient: Counters: 11
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:   File Systems
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Local bytes read=423569384
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Local bytes written=390279157
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:   Map-Reduce Framework
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Reduce input groups=1
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Combine output records=4
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Map input records=717172
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Reduce output records=1
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Map output bytes=10040408
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Map input bytes=17258927
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Combine input records=717175
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Map output records=717172
+     [java] 09/06/25 16:47:03 INFO mapred.JobClient:     Reduce input records=1
+     [java] 09/06/25 16:47:03 INFO citerank.CiteRankTool: Running InitializeRanks
+
+     */
+    
+    
+    
 }

@@ -24,6 +24,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.mapred.Counters;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -78,6 +79,10 @@ public class CiteRank extends CiteRankTool {
         String output = outpath + File.separator + CiteRankTool.CURRENT_RANKS;
         int iterationLimit = Integer.parseInt(args[2]);
         final double toleranceArg = Double.parseDouble(args[3]);
+        
+        //reset the counters. This is an abuse of a singleton and should be replaced
+        //with instance values as soon as possible
+        resetCounters();
         //clean the data up
         exec("Data cleanup", new CheckingData(), inpath, output);
         //count the data
@@ -136,10 +141,16 @@ public class CiteRank extends CiteRankTool {
             exec("HTMLTable", new HTMLTable(),
                     outpath, Integer.toString(HTML_TABLE_ROWS), Integer.toString(iterations));
         }
+
+        Counters totals = getCounters();
+        totals.log(LOG);
         return 0;
     }
 
     public static void main(String[] args) throws Exception {
         System.exit(ToolRunner.run(new Configuration(), new CiteRank(), args));
     }
+    
+    
+    
 }
