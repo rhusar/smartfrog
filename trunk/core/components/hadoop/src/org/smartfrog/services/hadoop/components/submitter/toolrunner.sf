@@ -22,10 +22,13 @@ For more information: www.smartfrog.org
 /**
  * A component that takes a tool entry point and runs it in the current process,
  * passing down the cluster configuration file or options selected.
+ *
+ * Warning: we can't stop the working code reliably, so you have to run this in a new JVM if you really
+ * want to be able to terminate this
  */
 
-ToolRunner extends WorkflowPrim  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
+ToolRunner extends HadoopJobRunner  {
+  sfClass "org.smartfrog.services.hadoop.components.submitter.ToolRunnerComponentImpl";
 
 
   //the cluster reference is optional
@@ -35,79 +38,12 @@ ToolRunner extends WorkflowPrim  {
   toolClass TBD;
 
   //set to the name of the file
-  toolFile "";
-  //set to true to mandate that a file is required, false for an empty reference to be Ok
-  fileRequired true;
+  //toolFile "";
 
-  /**
-  terminate on shutdown
-  */
-  terminateJob false;
-  /**
-   ping the job on liveness by checking its status
-   */
-  pingJob true;
+  //a string list
+  arguments [];
 
-  /**
-   only relevant when pingJob==true ; should we terminate when the job has finished?
-   */
-  terminateWhenJobFinishes false;
-
-  /**
-   * should we delete the output directory on startup?
-   */
-  deleteOutputDirOnStartup true;
-
-  /**
-   * Job timeout in seconds; used when tracking jobs and measured from
-   * start of submission.
-   * Warning: unstable; may be split in future to time to wait for submission,
-   * and time to wait for completion once a job is submitted
-   */
-  jobTimeout 0;
-
-  /**
-   * ask for the job configuration to be dumped on a complete failure.
-   * useful when you get odd configuration errors
-   */
-  dumpOnFailure false;
-
-  /**
-   * A LAZY reference to a component that is to get all the results as they happen: jobID, test results, etc
-   * this is intended to outlast the workflow job runs
-   */
- //results
-
- /**
-  * turn off complaints about parsing
-  */
-  mapred.used.genericoptionsparser true;
-
-  /**
-   * use the new API
-   */
-  mapred.mapper.new-api true;
-
+  //should a return code !=  0 be a failure?
+  failOnNonZeroReturnCode false;
 }
 
-/**
- this job submitter blocks until the job is complete
- */
-BlockingJobSubmitter extends JobSubmitter {
-  terminateJob true;
-  terminateWhenJobFinishes true;
-  //this disables an auto terminate after submitting
-  sfShouldTerminate false;
-}
-
-
-
-Job extends BlockingJobSubmitter {
-  //do we need a filename attribute?
-  fileRequired true;
-
-}
-
-JobWithoutJARFile extends Job {
-  fileRequired false;
-}

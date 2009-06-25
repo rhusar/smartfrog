@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-
-//#include "/org/smartfrog/services/hadoop/components/submitter/job.sf"
+//submits jobs
 #include "/org/smartfrog/services/hadoop/components/submitter/submitter.sf"
+//load and runs tool classes in the current JVM (set up the classpath first)
+#include "/org/smartfrog/services/hadoop/components/submitter/toolrunner.sf"
