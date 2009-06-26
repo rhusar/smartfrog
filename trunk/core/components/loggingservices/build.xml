@@ -35,25 +35,12 @@ For more information: www.smartfrog.org
   <property name="system.tests" value="false"/>
 
   <!-- Import common stuff -->
-  <!--available file="../../common.xml" property="root.dir" value="../.."/-->
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"  />
 
-<!--    <property name="net.lib.dir" location="lib" description=
-                        "place to put third party libraries"/>
-        -->
-
-
-
- <property name="Name.System" value="sfLoggingServices"/>
-
-
-
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
   <!-- ========================================================== -->
   <!-- create the jar -->
@@ -69,9 +56,9 @@ For more information: www.smartfrog.org
       <fileset dir="${src.dir}">
         <include name="**/examples/**"/>
       </fileset>
-  </copy>
-   <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
-   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+    </copy>
+    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
+    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
   </target>
 
 </project>
