@@ -17,28 +17,25 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.longhaul.server;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+ /*
+  This contains the servlet for JAXRS
+  see:
+   http://wikis.sun.com/display/Jersey/Overview+of+JAX-RS+1.0+Features
 
-@Path("/applications/{application}")
-public class AppEndpoint extends EndpointBase {
+ */
 
 
-    public AppEndpoint() {
+JaxRSServlet extends Servlet {
+    //order of initialisation; -1 means on demand.
+    className JERSEY_JAXRS_SERVLET;
+    initOrder -1;
+    ApplicationClassname TBD;
+    pathSpec "/";
 
-    }
-
-    @GET
-    @Produces("text/smartfrog")
-    @Path("/applications/{application}")
-    public String getSystem(@PathParam("application") String application) {
-
-        return "";
-
-    }
-
+    JAVAX_WS_RS_APPLICATION "javax.ws.rs.Application";
+    JERSEY_JAXRS_SERVLET "com.sun.jersey.spi.container.servlet.ServletContainer";
+    initParams [
+      [JAVAX_WS_RS_APPLICATION,ApplicationClassname ]
+    ];
 }

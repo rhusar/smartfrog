@@ -17,28 +17,15 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.longhaul.server;
+package org.smartfrog.services.longhaul.common;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-
-@Path("/applications/{application}")
-public class AppEndpoint extends EndpointBase {
-
-
-    public AppEndpoint() {
-
-    }
-
-    @GET
-    @Produces("text/smartfrog")
-    @Path("/applications/{application}")
-    public String getSystem(@PathParam("application") String application) {
-
-        return "";
-
-    }
-
+/**
+ *
+ */
+public enum LifecycleStates {
+    undefined,
+    instantiated,
+    initialized,
+    failed,
+    terminated
 }

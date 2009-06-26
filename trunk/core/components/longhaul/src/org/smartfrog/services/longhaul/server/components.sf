@@ -17,28 +17,40 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.longhaul.server;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+#include "/org/smartfrog/services/jetty/jetty-core.sf"
+#include "/org/smartfrog/services/longhaul/server/jaxrs.sf"
 
-@Path("/applications/{application}")
-public class AppEndpoint extends EndpointBase {
+ /**
+  * you need to deploy this to jetty or another servlet context to run it
+  */
+LonghaulRestServer extends JaxRSServlet {
+  name "LongHaul";
+  ApplicationClassname "org.smartfrog.services.longhaul.server.LonghaulRestServer";
+}
 
+/**
+ * test with http://localhost:8080/applications/
+ */
+RestServer extends CoreJettyHttpServer {
+  home ".";
 
-    public AppEndpoint() {
+  server:jettyhome home;
 
-    }
+  servlets extends ServletContext {
+    server LAZY PARENT:server;
+    resourceBase "/";
+    contextPath "/";
+  }
 
-    @GET
-    @Produces("text/smartfrog")
-    @Path("/applications/{application}")
-    public String getSystem(@PathParam("application") String application) {
+  longhaulServer extends LonghaulRestServer {
+    context LAZY servlets;
+  }
 
-        return "";
-
-    }
 
 }
+
+sfConfig extends RestServer {
+
+}
+ 
