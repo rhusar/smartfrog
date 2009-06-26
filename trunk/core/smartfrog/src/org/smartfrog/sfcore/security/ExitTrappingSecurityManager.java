@@ -59,11 +59,8 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
      */
     @Override
     public void checkExit(int status) {
-        if (isSystemExitPermitted()) {
-            super.checkExit(status);
-        } else {
-            throw new SystemExitException(status);
-        }
+        rejectDisallowedExitCalls(status);
+        super.checkExit(status);
     }
 
     /**
@@ -75,6 +72,25 @@ public class ExitTrappingSecurityManager extends DummySecurityManager implements
         return "ExitTrappingSecurityManager:" 
                 + "\n no security checks; "
                 + "systemExitPermitted=" + isSystemExitPermitted();
+    }
+
+    /**
+     * Reject disallowed exit calls. This is the one-stop method for all such checking.
+     * @param status exit code
+     * @throws SystemExitException if it is not allowed
+     */
+    public static void rejectDisallowedExitCalls(int status) {
+          if (!isSystemExitPermitted()) {
+              SystemExitException exitException = new SystemExitException(status);
+              for(StackTraceElement method:exitException.getStackTrace()) {
+                  if(method.getClassName().startsWith("com.apple.eawt.Application$6") &&
+                          method.getMethodName().equals("run")) {
+                      //this is ok: bail out early.
+                      return;
+                  }
+              }
+              throw exitException;
+        }
     }
 
     /**
