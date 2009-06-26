@@ -490,7 +490,7 @@ For more information: www.smartfrog.org
           <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
           <!--not really that useful-->
           <exclude name="releasetest/build.xml"/>
-          <!--cargo support is on hold until 3.12-->
+          <!--cargo support is on hold -->
           <exclude name="cargo/build.xml" unless="cargo.enabled"/>
           <!--lacks the artifacts to compile-->
           <exclude name="constraints/build.xml" unless="constraints.enabled"/>
