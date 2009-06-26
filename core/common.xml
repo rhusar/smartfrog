@@ -873,9 +873,13 @@ java.class.path=
     <ivy:cachepath pathid="redist.classpath" conf="redist"/>
     <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
   </target>
+  <target name="ivy.runtime.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
+    <ivy:cachepath pathid="runtime.classpath" conf="redist"/>
+    <echo level="verbose">runtime.classpath=${toString:runtime.classpath}</echo>
+  </target>
 
   <target name="ivy-classpaths"
-      depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath,ivy.redist.classpath"/>
+      depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath,ivy.redist.classpath,ivy.runtime.classpath"/>
 
 
   <!-- ========================================================== -->
@@ -1513,11 +1517,17 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
   <target name="install-dependencies" depends="package,declare-classpaths">
     <mkdir dir="${smartfrog.dist.lib.dir}"/>
+    <property name="install.path.refid" value="runtime.classpath" />
     <!--pull in all runtime dependencies-->
-    <copypath destdir="${smartfrog.dist.lib.dir}"
-      pathref="redist.classpath">
+    <copy todir="${smartfrog.dist.lib.dir}">
+      <path refid="${install.path.refid}"/>
       <flattenmapper/>
-    </copypath>
+    </copy>
+<!--
+    <copypath destdir="${smartfrog.dist.lib.dir}"
+      pathref="${install.path.refid}">
+      <flattenmapper/>
+    </copypath>-->
   </target>
 
   <!-- ========================================================== -->
