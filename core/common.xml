@@ -874,7 +874,7 @@ java.class.path=
     <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
   </target>
   <target name="ivy.runtime.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
-    <ivy:cachepath pathid="runtime.classpath" conf="redist"/>
+    <ivy:cachepath pathid="runtime.classpath" conf="runtime"/>
     <echo level="verbose">runtime.classpath=${toString:runtime.classpath}</echo>
   </target>
 
