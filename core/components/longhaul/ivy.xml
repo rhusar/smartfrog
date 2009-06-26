@@ -26,24 +26,19 @@
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"
-      extends="log4j,commons-logging,slf4j"/>
+      />
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
     <conf name="documentation"
         description="all documentation artifacts"/>
-    <conf name="slf4j"
-      description="Simple Logging Framework for Java" extends="commons-logging"/>
-    <conf name="commons-logging"
-      description="Commongs Logging front end" />
-    <conf name="log4j"
-      description="Log4J" />
+
 </configurations>
 
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-loggingservices-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-loggingservices-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-longhaul-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-longhaul-documentation" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
@@ -67,18 +62,6 @@
         rev="${jersey.version}"
         conf="compile,runtime,daemon->default"
         />
-
-    <!--it is essential that only the master JAR of commons logging
-    is pulled in, as its dependencies are usually a mess, including things
-    like out of date servlet APIs, bits of Avalon, etc.
-    -->
-    <dependency org="commons-logging"
-        name="commons-logging"
-        rev="${commons-logging.version}"
-        conf="commons-logging->master"/>
-
-
-
 
   </dependencies>
 </ivy-module>
