@@ -75,8 +75,9 @@
 
     <property name="test.sitename" value="localhost"/>
     <property name="test.site.dir" location="conf/${test.sitename}/"/>
+    <property name="cluster.properties" location="${test.site.dir}/cluster.properties" />
     <property name="test.dfs.dir" location="dfs" />
-    <loadproperties srcfile="${test.site.dir}/cluster.properties" />
+    <loadproperties srcfile="${cluster.properties}" />
     <property name="test.fs.default.name" value="${fs.default.name}" />
     <property name="test.mapred.job.tracker" value="${mapred.job.tracker}" />
 
@@ -98,12 +99,13 @@
 
   <target name="echo-deploy-settings" depends="common.ready-to-deploy, bind-to-hadoop-cluster">
     <echo>
-      Deploying to ${deploy.host}
-      Echo deploy.timeout=${deploy.timeout}
-      targethost=${targethost}
-      test JAR = ${test.component.jar.path}
-      test.fs.default.name = ${test.fs.default.name}
-      test.mapred.job.tracker = ${test.mapred.job.tracker}
+      Deploying to               ${deploy.host}
+      deploy.timeout             ${deploy.timeout}
+      targethost                 ${targethost}
+      cluster.properties         ${cluster.properties}
+      test JAR                   ${test.component.jar.path}
+      test.fs.default.name =     ${test.fs.default.name}
+      test.mapred.job.tracker =  ${test.mapred.job.tracker}
     </echo>
   </target>
 
