@@ -217,7 +217,7 @@ JettySelectChannelConnector extends AbstractConnector {
 }
 
 
-JettyHttpServer extends Compound {
+CoreJettyHttpServer extends Compound {
 
   port AbstractConnector:port;
   host AbstractConnector:host;
@@ -234,3 +234,8 @@ JettyHttpServer extends Compound {
 
 
 }
+
+/**
+ * this name gest stamped on in jetty-complete
+ */
+JettyHttpServer extends CoreJettyHttpServer;

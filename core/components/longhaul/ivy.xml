@@ -51,6 +51,7 @@
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
+
     <dependency org="org.smartfrog"
         name="sf-testharness"
         changing="true"
@@ -60,8 +61,19 @@
     <dependency org="com.sun.jersey"
         name="jersey-server"
         rev="${jersey.version}"
-        conf="compile,runtime,daemon->default"
+        conf="redist->default"
         />
+    <dependency org="org.smartfrog"
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon,test->default"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="runtime,daemon->default"/>
 
   </dependencies>
 </ivy-module>

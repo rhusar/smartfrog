@@ -33,6 +33,7 @@ For more information: www.smartfrog.org
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="false"/>
+  <property name="deploy.sf" value="org/smartfrog/services/longhaul/server/components.sf" />
 
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/-->
