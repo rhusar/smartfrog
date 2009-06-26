@@ -43,11 +43,7 @@ public class ExitTrappingRealSecurityManager extends SecurityManager implements 
      */
     @Override
     public void checkExit(int status) {
-        if (isSystemExitPermitted()) {
-            super.checkExit(status);
-        } else {
-            throw new ExitTrappingSecurityManager.SystemExitException(status);
-        }
+        ExitTrappingSecurityManager.rejectDisallowedExitCalls(status);
     }
 
     public boolean isSystemExitPermitted() {
