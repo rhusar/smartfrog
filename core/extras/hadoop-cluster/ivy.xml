@@ -17,7 +17,7 @@
   <conf name="default" extends="master,runtime"/>
   <conf name="build" visibility="private"
       description="artifacts needed to build the application"/>
-  <conf name="compile" visibility="private"
+  <conf name="compile" visibility="private" extends="runtime"
       description="artifacts needed to compile the application"/>
   <conf name="daemon" visibility="private" extends="test"
       description="the classpath needed to run smartfrog daemons"/>
@@ -62,15 +62,15 @@
     <dependency org="org.smartfrog"
         name="sf-scripting" changing="true"
         rev="latest.integration"
-        conf="runtime->runtime;server->default"/>
+        conf="redist->default"/>
     <dependency org="org.smartfrog"
         name="sf-csvfiles" changing="true"
         rev="latest.integration"
-        conf="runtime->runtime;server->default"/>
+        conf="redist->default"/>
     <dependency org="org.smartfrog"
-      name="sf-xml" changing="true"
-      rev="latest.integration"
-      conf="runtime->runtime;server->default"/>
+        name="sf-xml" changing="true"
+        rev="latest.integration"
+        conf="redist->default"/>
     <dependency org="org.smartfrog"
         name="sf-anubis" changing="true"
         rev="latest.integration"
@@ -80,7 +80,7 @@
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
-        conf="runtime->default;server->default,server;compile->default"/>
+        conf="redist->default,server"/>
 
     <dependency org="org.smartfrog"
         name="sf-rpmtools" changing="true"
