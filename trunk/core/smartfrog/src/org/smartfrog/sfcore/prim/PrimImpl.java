@@ -1156,10 +1156,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      */
     public void sfDumpState(Dump target) {
         try {
+            if (sfLog().isDebugEnabled()) { sfLog().debug("Dumping state to: " + target); };
             target.dumpState(sfContext, this);
         } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()) {
-                sfLog().ignore(ex);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(ex.getMessage(),ex);
             }
         }
     }

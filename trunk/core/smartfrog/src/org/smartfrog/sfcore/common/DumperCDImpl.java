@@ -108,7 +108,7 @@ public class DumperCDImpl implements Dumper {
 
     public Dump getDumpVisitor(){
         Dump dumpVisitor = new DumpVisitorImpl(this);
-        if (sfLog().isInfoEnabled()) sfLog().info("Returning dumpVisitor: "+dumpVisitor);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Returning dumpVisitor: "+ dumpVisitor);
         return dumpVisitor;
     }
 
@@ -239,9 +239,9 @@ public class DumperCDImpl implements Dumper {
                          // not found, wait for leftover timeout
                         long now = (new Date()).getTime();
                         if (now>=endTime) {
-                          if (sfLog().isInfoEnabled()) sfLog().info("Timeout ("+completed+")");
+                          if (sfLog().isTraceEnabled()) sfLog().trace("Timeout ("+completed+")");
                           if (completed) {
-                              if (sfLog().isWarnEnabled()) sfLog().warn("Description creation Timeout ("+ (timeout/1000) +" sec) and completed.");
+                              if (sfLog().isDebugEnabled()) sfLog().debug("Description creation Timeout ("+ (timeout/1000) +" sec) and completed.");
                               return cd;
                           } else {
                              StringBuffer message = new StringBuffer ();
@@ -256,7 +256,7 @@ public class DumperCDImpl implements Dumper {
 //                             message.append ("\n");
 //                             Diagnostics.doReportThreadDump(message);
                              message.append ("\n+-.End.-"); 
-                             if (sfLog().isWarnEnabled()) sfLog().warn(message);
+                             if (sfLog().isDebugEnabled()) sfLog().debug(message);
                              throw new SmartFrogException(message.toString());
                           }
                         }
@@ -280,11 +280,13 @@ public class DumperCDImpl implements Dumper {
       */
      public void visiting(String name, Integer numberOfChildren) throws RemoteException {
          // Notify any waiting threads that an attribute was added
-         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitING notitification received#"+visiting+ " from "+name +" lock:"+ visitingLock);
+
          synchronized (visitingLock) {
+             if (sfLog().isDebugEnabled()) sfLog().debug(" - Dumper: VisitING notitification received#"+visiting+ " from "+name +" lock:"+ visitingLock);
              visiting = new Long (visiting.longValue() + numberOfChildren.longValue());
+             if (sfLog().isDebugEnabled()) sfLog().debug(" - Dumper: VisitING notitification received and counted#"+visiting+ " from "+name);
          }
-         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitING notitification received and counted#"+visiting+ " from "+name);
+
      }
 
      /**
@@ -296,16 +298,18 @@ public class DumperCDImpl implements Dumper {
       */
      public void visited(String name) throws RemoteException {
          // Notify any waiting threads that an attribute was added
-         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitED notitification received#"+visiting+ " from "+name);
+
          synchronized (visitingLock) {
+             if (sfLog().isDebugEnabled()) sfLog().debug(" - Dumper: VisitED notitification received#"+visiting+ " from "+name);
              visiting = new Long (visiting.longValue()-1);
              if (visiting.longValue()==0) {
                 //done with all visits
                 completed = true;
                 visitingLock.notify();
              }
+             if (sfLog().isDebugEnabled()) sfLog().debug(" - Dumper: VisitED notitification received and counted #"+visiting+ " from "+name);
          }
-         if (sfLog().isInfoEnabled()) sfLog().info(" - Dumper: VisitED notitification received and counted #"+visiting+ " from "+name);
+
      }
 
     /** Get the resulting Component Description in a String format
@@ -317,7 +321,7 @@ public class DumperCDImpl implements Dumper {
         try {
             return "sfConfig extends {\n" + getComponentDescription(waitTimeout).toString() + "}";
         } catch (Exception e) {
-            if (sfLog().isWarnEnabled()) sfLog().warn(e);
+            if (sfLog().isWarnEnabled()) sfLog().warn(e.getMessage(),e);
             return e.getMessage();
         }
     }
@@ -383,8 +387,8 @@ public class DumperCDImpl implements Dumper {
          String cdStr = toString(timeout);
          return cdStr;
        } catch (Exception ex){
-           if (sfLog().isErrorEnabled()) sfLog().error("",ex);
-           return (ex.toString());
+           if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(),ex);
+           return ( "NULL , error: " + ex.toString());
        }
     }
 
@@ -399,17 +403,17 @@ public class DumperCDImpl implements Dumper {
                 componentDescription.setEager(true);
                 componentDescription.writeOn(out, 1);
             } catch (SmartFrogException e) {
-                out.write(e.getMessage());
+                out.write(e.toString());
             }
         } catch (IOException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(),e);
         } finally {
             try {
                 if( out != null ) {
                 	out.close();
                 }
             } catch (IOException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(e);
+                if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(),e);
             }
         }
     }
