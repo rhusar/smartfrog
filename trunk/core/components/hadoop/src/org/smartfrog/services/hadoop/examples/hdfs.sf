@@ -160,6 +160,7 @@ LocalTaskTrackerCompound extends LocalJobTrackerCompound {
     blockForJobTrackerReference extends WaitForHadoopLiveWorkflow  {
       condition extends ReferenceResolves {
         reference LAZY ATTRIB jobtracker:live.mapred.job.tracker;
+        serviceDescription "waiting for jobtracker:live.mapred.job.tracker";
       }
     }
     
