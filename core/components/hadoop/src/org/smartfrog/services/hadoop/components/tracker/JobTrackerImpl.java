@@ -53,6 +53,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * {@inheritDoc}
      * @return the name of the Hadoop service deployed
      */
+    @SuppressWarnings({"RefusedBequest"})
     @Override
     protected String getServiceName() {
         return NAME;

@@ -32,9 +32,8 @@ FSActions extends {
 
 }
 
-FileSystemNode extends ClusterNode, FSActions {
-
-  dfs.block.size (64 * 1024 * 1024);
+ClusteredFileSystemNode extends ClusteredNode, FSActions  {
+  //dfs.block.size (64 * 1024 * 1024);
 
   //if this is set to a number >0, it specifies the minimum disk space
   //in megabytes that this fs node should deploy on. If it is less, no deployment
@@ -48,9 +47,9 @@ FileSystemNode extends ClusterNode, FSActions {
   expectNodeTermination false;
 }
 
-FileSystemNodeWithCluster extends ClusterNodeWithCluster {
-  minDiskSpaceMB FileSystemNode:minDiskSpaceMB;
-  testModeDeleteDirectories FileSystemNode:testModeDeleteDirectories;
-  //don't expect nodes to die on us
-  expectNodeTermination false;
+
+FileSystemNode extends ClusterNode, ClusteredFileSystemNode {
+
+
 }
+

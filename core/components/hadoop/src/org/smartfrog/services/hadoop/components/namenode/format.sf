@@ -22,19 +22,15 @@ For more information: www.smartfrog.org
  * Format a file system. This is a workflow component
  */
 
-FormatFileSystem extends  NameDirNode {
 
-  sfClass "org.smartfrog.services.hadoop.components.namenode.FormatImpl";
-  //name directory: a List of directories
-  nameDirectories TBD;
-  sfShouldTerminate true;
-}
-
- FormatFileSystemWithCluster extends  NameDirNodeWithCluster {
-
-   sfClass FormatFileSystem:sfClass;
+ FormatFileSystemWithCluster extends  ClusteredNameDirNode {
+   sfClass "org.smartfrog.services.hadoop.components.namenode.FormatImpl";
    //name directory: a List of directories
    nameDirectories TBD;
    sfShouldTerminate true;
  }
+
+FormatFileSystem extends  FormatFileSystemWithCluster, FileSystemNode {
+
+}
 
