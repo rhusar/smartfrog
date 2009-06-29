@@ -43,6 +43,8 @@ public class SubProcessExampleDumpTest
     private static final String FILES = "org/smartfrog/test/system/deploy/";
     private static final Log log = LogFactory.getLog(SubProcessExampleDumpTest.class);
 
+    static long timeout = 1 * 30 * 1000L;
+
     /**
      * Constructor
      * @param s name
@@ -119,7 +121,7 @@ public class SubProcessExampleDumpTest
      * @param node node to dump
      * @return the dup
      */
-    public String dumpState(Object node) {
+    public String dumpState(Object node) throws Exception {
         StringBuffer message = new StringBuffer();
         String name = "error";
 		long timeout = (1*30*1000L); //(2*60*1000L);
@@ -131,16 +133,16 @@ public class SubProcessExampleDumpTest
                 Dumper dumper = new DumperCDImpl(objPrim);
                 objPrim.sfDumpState(dumper.getDumpVisitor());
 				name = (objPrim).sfCompleteName().toString();
-                message.append(dumper.toString());
+                message.append(dumper.toString(timeout));
             } catch (Exception ex) {
                 log.error(ex);
                 StringWriter sw = new StringWriter();
                 PrintWriter pr = new PrintWriter(sw, true);
                 ex.printStackTrace(pr);
                 pr.close();
-                message.append("\n Error: " + ex.toString() + "\n" + sw.toString());
+                message.append("\n **** Error: \n" + ex.toString() + "\n StackTrace: \n" + sw.toString());
                 fail(message.toString());
-                return null;
+                throw ex;
             }
         }
         return ("State for " + name + "\n" + message.toString());
