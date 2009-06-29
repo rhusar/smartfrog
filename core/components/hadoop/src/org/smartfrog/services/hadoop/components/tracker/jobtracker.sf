@@ -30,6 +30,6 @@ ClusteredJobTracker extends ClusteredNode {
    */
 }
 
-JobTracker extends ClusterNode, ClusteredJobTracker {
+JobTracker extends InlineConfiguredNode, ClusteredJobTracker {
 
 }

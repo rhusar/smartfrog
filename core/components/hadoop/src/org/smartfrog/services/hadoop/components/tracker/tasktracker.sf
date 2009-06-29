@@ -25,7 +25,7 @@ ClusteredTaskTracker extends ClusteredNode {
 
 }
 
-TaskTracker extends ClusterNode, ClusteredNode {
+TaskTracker extends ClusteredTaskTracker, InlineConfiguredNode {
   /** when deployed
   live.mapred.task.tracker.http.address
   */

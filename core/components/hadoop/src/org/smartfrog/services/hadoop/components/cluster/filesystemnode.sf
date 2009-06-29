@@ -48,7 +48,7 @@ ClusteredFileSystemNode extends ClusteredNode, FSActions  {
 }
 
 
-FileSystemNode extends ClusterNode, ClusteredFileSystemNode {
+FileSystemNode extends InlineConfiguredNode, ClusteredFileSystemNode {
 
 
 }
