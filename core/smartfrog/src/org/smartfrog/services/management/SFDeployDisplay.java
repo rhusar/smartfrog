@@ -168,7 +168,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
          newDisplay = new Display(nameDisplay, null);
 
-        if (nameDisplay.startsWith("[rootProcess")) {
+        if (nameDisplay.startsWith("[rootProcess")||nameDisplay.startsWith("sfManagementConsole")) {
           addFrogIcon(newDisplay, true);
         } else {
           addFrogIcon(newDisplay, false);
