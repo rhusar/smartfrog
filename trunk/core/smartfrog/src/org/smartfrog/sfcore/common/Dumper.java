@@ -51,6 +51,6 @@ public interface Dumper extends Remote {
 
     public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException, SmartFrogException;
 
-    public String toString ( long waitTimeout) throws RemoteException;     
+    public String toString ( long waitTimeout) throws Exception, RemoteException;     
 
 }

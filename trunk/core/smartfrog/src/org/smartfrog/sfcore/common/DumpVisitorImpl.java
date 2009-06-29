@@ -39,7 +39,7 @@ public class DumpVisitorImpl implements Dump, Serializable {
     static final long serialVersionUID = -812223322957783371L;
 
     //Reference to the class collecting results from visits
-    private transient Dumper dumper = null;
+    private Dumper dumper = null;
 
     public DumpVisitorImpl (Dumper dumper){
         this.dumper = dumper;
