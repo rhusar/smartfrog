@@ -35,7 +35,7 @@ ManagerNode extends ClusterNode {
  * This is a cluster node where the configuration comes from
  * referenced attribute "cluster"; there are no other defaults
  */
-ClusterNodeWithCluster extends Prim {
+ClusteredNode extends Prim {
   name "ClusterNode";
-  cluster TBD;
+  //cluster TBD;
 }

@@ -21,21 +21,20 @@ For more information: www.smartfrog.org
 /**
  * A Filesystem node with nameDirectories declared as a required attribute
  */
-NameDirNode extends  FileSystemNode {
 
+ClusteredNameDirNode extends ClusteredFileSystemNode {
  //name directory: a List of directories
   nameDirectories TBD;
 }
 
-NameDirNodeWithCluster extends FileSystemNodeWithCluster {
- //name directory: a List of directories
-  nameDirectories TBD;
+NameDirNode extends ClusteredNameDirNode, FileSystemNode {
+
 }
 
 /**
  * Extend NameDirNode with dataDirectories and a log directory
  */
-NameDataLogNode extends NameDirNode {
+ClusteredNameDataLogNode extends ClusteredNameDirNode {
 
   //the data directories, again a list of directories
   dataDirectories TBD;
@@ -44,20 +43,16 @@ NameDataLogNode extends NameDirNode {
   logDir TBD;
 
 }
-
-
 /**
  * Extend NameDirNode with dataDirectories and a log directory
  */
-NameDataLogNodeWithCluster extends NameDirNodeWithCluster {
+NameDataLogNode extends ClusteredNameDataLogNode, FileSystemNode {
 
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //log directory
-  logDir TBD;
 
 }
+
+
+
 
 
 #include "/org/smartfrog/services/hadoop/components/namenode/format.sf"

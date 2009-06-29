@@ -89,7 +89,7 @@ NameNode extends NameDataLogNode {
   sfShouldTerminate false;
 }
 
-NameNodeWithCluster extends NameDataLogNodeWithCluster {
+NameNodeWithCluster extends ClusteredNameDataLogNode {
    name NameNode:name;
    sfClass NameNode:sfClass;
    checkRunning NameNode:checkRunning;

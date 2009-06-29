@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-JobTracker extends ClusterNode {
+ClusteredJobTracker extends ClusteredNode {
   sfClass "org.smartfrog.services.hadoop.components.tracker.JobTrackerImpl";
   name "JobTracker";
   expectNodeTermination false;
@@ -28,4 +28,8 @@ JobTracker extends ClusterNode {
    * live.mapred.job.tracker.http.address HTTP address (assuming it was set to listen on the same host as the IPC port)
    * live.mapred.job.tracker IPC address of the job tracker
    */
+}
+
+JobTracker extends ClusterNode, ClusteredJobTracker {
+
 }
