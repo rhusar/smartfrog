@@ -59,6 +59,9 @@ public class SubProcessExampleDumpTest
      */
 
     public void testCaseSubProcessExDump01() throws Throwable {
+        System.out.println("\n*********************************************************" +
+                           "\n    Testing: testCaseSubProcessExDump01."+
+                           "\n*********************************************************");
 
         application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
         assertNotNull(application);
@@ -80,7 +83,17 @@ public class SubProcessExampleDumpTest
         assertNotNull("No Diagnostics report", cd);
         log.info("Diagnostics report: \n" + cd);
         //Testing Dump now
-        log.info(dumpState(application));
+        try {
+          StringBuffer message = new StringBuffer();
+          message.append ( application.sfCompleteName().toString() );
+          message.append ("\n");
+          message.append ( dumpState(application));
+          System.out.println(message);
+          log.info(message);
+        } catch (Exception ex){
+            System.err.println("Error: "+ex.getMessage());
+            ex.printStackTrace();
+        }
         System.out.println("testCaseSubProcessExDump01 Success.");
 
 
@@ -92,12 +105,26 @@ public class SubProcessExampleDumpTest
      */
 
     public void testCaseSubProcessExDump02() throws Throwable {
-
+            System.out.println("\n*********************************************************" +
+                               "\n    Testing: testCaseSubProcessExDump02."+
+                               "\n*********************************************************");
+        application =null;
         application = deployExpectingSuccess(FILES + "subprocessSimple.sf", "tcSPEDump02");
         assertNotNull(application);
 
         //Testing Dump now
-        log.info(dumpState(application));
+        try {
+          StringBuffer message = new StringBuffer();
+          message.append ( application.sfCompleteName().toString() );
+          message.append ("\n");
+          message.append ( dumpState(application));
+
+          System.out.println(message);
+          log.info(message);
+        } catch (Exception ex){
+            System.err.println("Error: "+ex.getMessage());
+            ex.printStackTrace();
+        }
         System.out.println("testCaseSubProcessExDump02 Success.");
     }
 	
@@ -107,12 +134,25 @@ public class SubProcessExampleDumpTest
      */
 
     public void testCaseSubProcessExDump03() throws Throwable {
+            System.out.println("\n*********************************************************" +
+                               "\n    Testing: testCaseSubProcessExDump03."+
+                               "\n*********************************************************");
 
         application = deployExpectingSuccess(FILES + "subprocessNo.sf", "tcSPEDump03");
         assertNotNull(application);
 
         //Testing Dump now
-        log.info(dumpState(application));
+        try {
+          StringBuffer message = new StringBuffer();
+          message.append ( application.sfCompleteName().toString() );
+          message.append ("\n");
+          message.append ( dumpState(application));
+          System.out.println(message);
+          log.info(message);
+        } catch (Exception ex){
+            System.err.println("Error: "+ex.getMessage());
+            ex.printStackTrace();
+        }
         System.out.println("testCaseSubProcessExDump03 Success.");
     }
 
@@ -123,6 +163,10 @@ public class SubProcessExampleDumpTest
      */
 
     public void testCaseSubProcessExDump04() throws Throwable {
+
+        System.out.println("\n*********************************************************" +
+                           "\n    Testing: testCaseSubProcessExDump04."+
+                            "\n*********************************************************");
 
         application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
         assertNotNull(application);
@@ -146,8 +190,14 @@ public class SubProcessExampleDumpTest
         System.out.println("Diagnostics report: \n" + cd);
         //Testing Dump now with rootProcess (This will fail until loop references are solved)
         Prim root = (Prim) application.sfResolveWithParser("HOST localhost");
+        application = root;Lo
         try {
-        log.info(dumpState(application));
+          StringBuffer message = new StringBuffer();
+          message.append ( application.sfCompleteName().toString() );
+          message.append ("\n");
+          message.append ( dumpState(application));
+          System.out.println(message);
+          log.info(message);
         } catch (Exception ex){
             System.err.println("Error: "+ex.getMessage());
             ex.printStackTrace();
