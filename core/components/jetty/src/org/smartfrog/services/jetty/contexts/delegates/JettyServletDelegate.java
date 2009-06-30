@@ -5,10 +5,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletMapping;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.www.ServletComponent;
-import org.smartfrog.services.www.ServletContextComponentDelegate;
-import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.www.WebApplicationHelper;
+import org.smartfrog.services.www.*;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -95,7 +92,7 @@ public class JettyServletDelegate
             }
 
             holder = new ServletHolder();
-            holder.setName(className);
+            holder.setName(name);
             holder.setClassName(className);
 
             //get and apply init order
@@ -118,10 +115,27 @@ public class JettyServletDelegate
             absolutePath = WebApplicationHelper.deregexpPath(JettyHelper.concatPaths(
                     ancestorPath,
                     pathSpec));
-            prim.sfReplaceAttribute(ServletContextIntf.ATTR_ABSOLUTE_PATH,
+            prim.sfReplaceAttribute(ApplicationServerContext.ATTR_ABSOLUTE_PATH,
                     absolutePath);
 
-            //extract mappings
+            //add the servlet
+            servletContext.addServlet(holder, pathSpec);
+            ServletHandler servletHandler = servletContext.getServletHandler();
+            ServletHolder resolvedHolder = servletHandler.getServlet(name);
+            if (resolvedHolder == null) {
+                //oops. no servlets, make a list
+                StringBuilder message = new StringBuilder("Failed to register the servlet with jetty.");
+                ServletHolder[] holders = servletHandler.getServlets();
+                for (ServletHolder entry:holders) {
+                    message.append("\n\"");
+                    message.append(entry.getDisplayName());
+                    message.append("\" ");
+                    message.append(entry.getClassName());
+                }
+                throw new SmartFrogDeploymentException(message.toString());
+            }
+
+            //you can only add mappings after registering the servlet
             Vector<String> mappings = ListUtils.resolveStringList(prim, mappingsRef, false);
             if (mappings != null) {
                 String[] pathSpecs = new String[mappings.size()];
@@ -129,15 +143,12 @@ public class JettyServletDelegate
                 for (String mapping : mappings) {
                     pathSpecs[counter++] = mapping;
                 }
-                ServletHandler servletHandler = servletContext.getServletHandler();
                 ServletMapping servletMapping = new ServletMapping();
                 servletMapping.setPathSpecs(pathSpecs);
                 servletMapping.setServletName(name);
                 servletHandler.addServletMapping(servletMapping);
             }
 
-            //add the servlet
-            servletContext.addServlet(holder, pathSpec);
 
             //now start it up if the context is already live.
             if(servletContext.isStarted()) {
