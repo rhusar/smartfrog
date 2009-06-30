@@ -245,8 +245,19 @@ public class DfsUtils {
      * @throws SmartFrogRuntimeException failure to create the directories
      */
     public static void mkParentDirs(FileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
+        mkdirs(fileSystem, dest.getParent());
+    }
+
+      /**
+     * Create the parent directories of a given path
+     *
+     * @param fileSystem filesystem to work with
+     * @param dest       file
+     * @throws SmartFrogRuntimeException failure to create the directories
+     */
+    public static void mkdirs(FileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
         try {
-            if (!fileSystem.mkdirs(dest.getParent())) {
+            if (!fileSystem.mkdirs(dest)) {
                 throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest);
             }
         } catch (IOException e) {
