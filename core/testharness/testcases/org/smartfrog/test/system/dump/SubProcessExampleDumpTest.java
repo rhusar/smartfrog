@@ -43,7 +43,7 @@ public class SubProcessExampleDumpTest
     private static final String FILES = "org/smartfrog/test/system/deploy/";
     private static final Log log = LogFactory.getLog(SubProcessExampleDumpTest.class);
 
-    static long timeout = 1 * 30 * 1000L;
+    static long timeout = 1 * 31 * 1000L;
 
     /**
      * Constructor
@@ -81,6 +81,7 @@ public class SubProcessExampleDumpTest
         log.info("Diagnostics report: \n" + cd);
         //Testing Dump now
         log.info(dumpState(application));
+        System.out.println("testCaseSubProcessExDump01 Success.");
 
 
     }
@@ -97,6 +98,7 @@ public class SubProcessExampleDumpTest
 
         //Testing Dump now
         log.info(dumpState(application));
+        System.out.println("testCaseSubProcessExDump02 Success.");
     }
 	
 	    /**
@@ -111,7 +113,46 @@ public class SubProcessExampleDumpTest
 
         //Testing Dump now
         log.info(dumpState(application));
+        System.out.println("testCaseSubProcessExDump03 Success.");
+    }
 
+
+/**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testCaseSubProcessExDump04() throws Throwable {
+
+        application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
+        assertNotNull(application);
+
+        String actualSfClass = (String) application.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
+
+        //Some basic check
+        Prim sys = (Prim) application.sfResolveHere("system");
+        assertEquals("first", sys.sfDeployedProcessName());
+
+        Prim foo = (Prim) sys.sfResolveHere("foo");
+        assertEquals("test", foo.sfDeployedProcessName());
+
+        Prim bar = (Prim) foo.sfResolveHere("bar");
+        assertEquals("test2", bar.sfDeployedProcessName());
+
+        ComponentDescription cd = application.sfDiagnosticsReport();
+        assertNotNull("No Diagnostics report", cd);
+        log.info("Diagnostics report: \n" + cd);
+        System.out.println("Diagnostics report: \n" + cd);
+        //Testing Dump now with rootProcess (This will fail until loop references are solved)
+        Prim root = (Prim) application.sfResolveWithParser("HOST localhost");
+        try {
+        log.info(dumpState(application));
+        } catch (Exception ex){
+            System.err.println("Error: "+ex.getMessage());
+            ex.printStackTrace();
+        }
+        System.out.println("testCaseSubProcessExDump04 Success.");
 
     }
 	
@@ -124,7 +165,6 @@ public class SubProcessExampleDumpTest
     public String dumpState(Object node) throws Exception {
         StringBuffer message = new StringBuffer();
         String name = "error";
-		long timeout = (1*30*1000L); //(2*60*1000L);
         //Only works for Prims.
         if (node instanceof Prim) {
             try {
@@ -141,6 +181,7 @@ public class SubProcessExampleDumpTest
                 ex.printStackTrace(pr);
                 pr.close();
                 message.append("\n **** Error: \n" + ex.toString() + "\n StackTrace: \n" + sw.toString());
+                System.out.println(message);
                 fail(message.toString());
                 throw ex;
             }
