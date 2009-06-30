@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class TestCompletedEvent extends LifecycleEvent {
 
-    private String description=null;
+    private String description = null;
     private boolean succeeded = false;
     private boolean forcedTimeout = false;
     private boolean skipped = false;

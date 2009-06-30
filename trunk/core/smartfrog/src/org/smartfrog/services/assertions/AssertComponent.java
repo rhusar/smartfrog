@@ -349,7 +349,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
     private String createAssertionMessage(String test) {
         String message = test;
         try {
-            message = sfResolve(ATTR_MESSAGE, message, false);
+            message = sfResolve(ATTR_MESSAGE + " ("+ test + ")", message, false);
         } catch (SmartFrogResolutionException ignore) {
 
         } catch (RemoteException ignore) {
