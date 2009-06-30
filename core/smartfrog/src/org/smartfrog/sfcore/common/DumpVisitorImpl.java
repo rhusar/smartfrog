@@ -66,21 +66,18 @@ public class DumpVisitorImpl implements Dump, Serializable {
            }
            numberOfChildren = new Integer (numberC);
         }
-        
-        //System.out.println(" - Visitor 1 ("+this+") ("+numberOfChildren+"): "+name);
 
-        dumper.visiting(from.sfCompleteName().toString(),numberOfChildren);
-        //System.out.println(" - Visitor 2 ("+this+") to clone context ("+numberOfChildren+"): "+name);
-        //System.out.println(" - Visitor 3 ("+this+")  context "+ state.toString());
+        //Notify beginning of visit and number of sub-nodes (children) that we still need to visit
+        dumper.visiting(name,numberOfChildren);
+
         Context stateCopy =  (Context)((Context)state).clone();
         try {
-            //System.out.println(" - Visitor 4 ("+this+")  to modifyCD ("+numberOfChildren+"): "+name);
             dumper.modifyCD(searchRef, stateCopy);
-            //System.out.println(" - Visitor 5 ("+this+")  modified CD ("+numberOfChildren+"): "+name);
         } catch (Exception e) {
             throw new RemoteException(" Visitor Failed to modifyCD from "+name,e);
         }
-        //System.out.println(" - Visitor 6 ("+this+") visited: "+name);
+
+        // Notify end of visit
         dumper.visited(name);
     }
 
