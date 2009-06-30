@@ -20,7 +20,6 @@
 
 package org.smartfrog.services.longhaul.server;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
@@ -63,6 +62,7 @@ public abstract class EndpointBase {
 
     /**
      * Get the root process, assuming we are bound
+     *
      * @return the process
      */
     public static ProcessCompound getRootProcess() {
@@ -71,7 +71,9 @@ public abstract class EndpointBase {
 
     /**
      * Get a list of child applications and keys
+     *
      * @return a list of child applications and keys
+     *
      * @throws RemoteException on network trouble
      */
     public List<ChildApplication> getApplications() throws RemoteException {
@@ -103,6 +105,7 @@ public abstract class EndpointBase {
 
     /**
      * Add the attachment in the attachments table
+     *
      * @param entry new file entry
      */
 /*     public synchronized void addAttachment(FileEntry entry) {

@@ -25,7 +25,6 @@
   * you need to deploy this to jetty or another servlet context to run it
   */
 LonghaulRestServer extends JaxRSServlet {
-  name "LongHaul";
   ApplicationClassname "org.smartfrog.services.longhaul.server.LonghaulRestServer";
 }
 
@@ -33,7 +32,7 @@ LonghaulRestServer extends JaxRSServlet {
  * test with http://localhost:8080/applications/
  */
 RestServer extends CoreJettyHttpServer {
-  home ".";
+  home LAZY PROPERTY java.io.tmpdir;
 
   server:jettyhome home;
 
@@ -46,7 +45,6 @@ RestServer extends CoreJettyHttpServer {
   longhaulServer extends LonghaulRestServer {
     context LAZY servlets;
   }
-
 
 }
 
