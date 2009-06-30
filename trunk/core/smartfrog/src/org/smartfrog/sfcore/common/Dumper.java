@@ -37,7 +37,7 @@ public interface Dumper extends Remote {
 
     void visited(String name) throws RemoteException;
 
-    void modifyCD(Reference from, Context stateCopy) throws Exception, RemoteException;
+    void modifyCD(Reference from, Context stateCopy) throws Exception;
 
     public void setTimeout(long timeout) throws RemoteException;
 
@@ -51,6 +51,6 @@ public interface Dumper extends Remote {
 
     public ComponentDescription getComponentDescription ( long waitTimeout) throws RemoteException, SmartFrogException;
 
-    public String toString ( long waitTimeout) throws Exception, RemoteException;     
+    public String toString ( long waitTimeout) throws Exception;     
 
 }
