@@ -1,8 +1,4 @@
-<?xml version="1.0"?>
-<project name="longhaul" default="default">
-
-<!--
-/** (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,23 +17,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
--->
 
-<description>
-    Jersey based logging services
-</description>
+package org.smartfrog.services.longhaul.server;
 
-
-  <!-- override point -->
-  <property file="build.properties" />
-  <property name="root.dir" location="../../"  />
-  <property name="ivy.enabled" value="true"/>
-  <property name="system.tests" value="true"/>
-  <property name="deploy.sf" value="org/smartfrog/services/longhaul/server/components.sf" />
-
-  <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
-
-
-
-</project>
+/** This is only for testing */
+public class LonghaulMain {
+}

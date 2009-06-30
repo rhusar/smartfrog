@@ -21,14 +21,12 @@ package org.smartfrog.services.longhaul.server;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import java.rmi.RemoteException;
 import java.util.List;
 
-/**
- * List the applications that are running
- */
+/** List the applications that are running */
 @Path("/applications/")
 public class Applications extends EndpointBase {
 
@@ -36,8 +34,8 @@ public class Applications extends EndpointBase {
     @Produces("text/plain")
     public String doGetAsText() throws RemoteException {
         List<ChildApplication> children = getApplications();
-        StringBuilder builder=new StringBuilder();
-        for(ChildApplication child:children) {
+        StringBuilder builder = new StringBuilder();
+        for (ChildApplication child : children) {
             builder.append(child.key).append("\n");
         }
         return builder.toString();
@@ -47,9 +45,9 @@ public class Applications extends EndpointBase {
     @Produces("text/json")
     public String doGetAsJSON() throws RemoteException {
         List<ChildApplication> children = getApplications();
-        StringBuilder builder=new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         builder.append("applications {\n");
-        for(ChildApplication child:children) {
+        for (ChildApplication child : children) {
             builder.append("  ")
                     .append(child.key)
                     .append(" ; ")
@@ -64,11 +62,11 @@ public class Applications extends EndpointBase {
     @Produces("text/html")
     public String doGetAsHtml() throws RemoteException {
         List<ChildApplication> children = getApplications();
-        StringBuilder builder=new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         builder.append("<html><head><title>Applications</title></head>\n");
         builder.append("<body>");
         builder.append("<span>Applications</span>");
-        for(ChildApplication child:children) {
+        for (ChildApplication child : children) {
             builder.append("<span>")
                     .append("<a href=\"").append(child.getSafename()).append("\"/>")
                     .append(child.key)

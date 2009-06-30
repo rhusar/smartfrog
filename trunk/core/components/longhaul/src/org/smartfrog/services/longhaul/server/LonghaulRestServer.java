@@ -4,19 +4,14 @@ import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * This application defines the rest server
- */
+/** This application defines the rest server */
 public class LonghaulRestServer extends Application {
 
     /** {@inheritDoc */
     @Override
     public Set<Class<?>> getClasses() {
-        return null;
-        /*
         Set<Class<?>> classes = new HashSet<Class<?>>();
-        classes.add(Applications.class);
-        return classes;*/
+        return classes;
     }
 
 
