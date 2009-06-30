@@ -190,13 +190,12 @@ public class SubProcessExampleDumpTest
 //        System.out.println("Diagnostics report: \n" + cd);
         //Testing Dump now with rootProcess (This will fail until loop references are solved)
         Prim root = (Prim) application.sfResolveWithParser("HOST localhost");
-        application = root;
         StringBuffer message = new StringBuffer();
-        assertNotNull(application);
+        assertNotNull(root);
         try {
-          message.append ( application.sfCompleteName().toString() );
+          message.append ( root.sfCompleteName().toString() );
           message.append ("\n");
-          message.append ( dumpState(application));
+          message.append ( dumpState(root));
           System.out.println(message);
           log.info(message);
         } catch (Exception ex){
