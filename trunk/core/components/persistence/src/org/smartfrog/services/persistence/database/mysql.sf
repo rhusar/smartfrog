@@ -1,0 +1,64 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "org/smartfrog/services/persistence/database/sqldialect.sf"
+
+MySQLDialect extends SQLDialect {
+    /**
+     * dialect version
+     */
+    version "MySQL";
+    /**
+     * data types
+     */
+    dataTypes:LARGE_BINARY     "LONGBLOB";
+    dataTypes:LARGE_CHARACTER  "LONGTEXT";
+    dataTypes:TEXT             "TEXT";
+	/**
+	 * Validation query and response
+	 */
+    connectionValidation:query  "/* ping */";
+    connectionValidation:result "1";
+	/**
+	 * Error codes
+	 */    
+    errorCodes:BROKEN_CONNECTION:bad_host_error           1042; 
+    errorCodes:BROKEN_CONNECTION:bad_handshake_error      1043; 
+    errorCodes:BROKEN_CONNECTION:server_shutdown          1053; 
+    errorCodes:BROKEN_CONNECTION:forcing_close            1080; 
+    errorCodes:BROKEN_CONNECTION:IP_socket_error          1081; 
+    errorCodes:BROKEN_CONNECTION:aborting_connection      1152; 
+    errorCodes:BROKEN_CONNECTION:net_packet_too_large     1153; 
+    errorCodes:BROKEN_CONNECTION:net_read_error_from_pipe 1154; 
+    errorCodes:BROKEN_CONNECTION:net_fcntl_error          1155; 
+    errorCodes:BROKEN_CONNECTION:net_packets_out_of_order 1156; 
+    errorCodes:BROKEN_CONNECTION:net_uncompress_error     1157; 
+    errorCodes:BROKEN_CONNECTION:net_read_error           1158; 
+    errorCodes:BROKEN_CONNECTION:net_read_interrupted     1159; 
+    errorCodes:BROKEN_CONNECTION:net_error_on_write       1160; 
+    errorCodes:BROKEN_CONNECTION:net_write_interrupted    1161; 
+    errorCodes:BROKEN_CONNECTION:new_aborting_connection  1184; 
+    errorCodes:BROKEN_CONNECTION:master_net_read          1189;
+    errorCodes:BROKEN_CONNECTION:master_net_write         1190; 
+    errorCodes:BROKEN_CONNECTION:connect_to_master        1218; 
+    errorCodes:READ_ONLY:read_only_transaction            1207; 
+    errorCodes:NO_SUCH_TABLE:no_such_table                1146; 
+    errorCodes:TABLE_ALREADY_EXISTS:table_exists          1050; 
+}

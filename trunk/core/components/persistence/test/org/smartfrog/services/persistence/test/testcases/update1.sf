@@ -1,0 +1,27 @@
+
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+TestComponent extends RComponent {
+  sfUpdatable true;
+  sfStorageData extends DATA JDBCRComponentStorage;
+}
+
+
+
+sfConfig extends TestComponent {
+
+    sfStorageData:name "root";
+    
+    child1 extends TestComponent {
+        sfStorageData:name "child1";
+        attr1 "hello";
+    }
+    
+    child2 extends TestComponent {
+        sfStorageData:name "child2";
+        attr1 "hello";
+    }
+
+}
+
