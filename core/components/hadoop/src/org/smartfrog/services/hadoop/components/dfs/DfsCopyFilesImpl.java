@@ -97,7 +97,7 @@ public class DfsCopyFilesImpl extends DfsOperationImpl implements DfsCopyOperati
             sourceFS = DfsUtils.createFileSystem(sourceFSURL, conf);
             destFS = DfsUtils.createFileSystem(destFSURL, conf);
             DfsUtils.assertNotDependent(sourceFS, source, destFS, dest);
-            DfsUtils.mkParentDirs(destFS, dest);
+            DfsUtils.mkdirs(destFS, dest);
 
             //build a list of sourcefiles
             List<Path> sourceFiles = listFiles(sourceFS, source, matchPattern);
