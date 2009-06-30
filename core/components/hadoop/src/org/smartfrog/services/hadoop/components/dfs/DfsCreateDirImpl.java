@@ -23,6 +23,7 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileStatus;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -33,6 +34,7 @@ import java.rmi.RemoteException;
  * Create a directory
  */
 public class DfsCreateDirImpl extends DfsPathOperationImpl {
+    public static final String E_CANNOT_CREATE = "Cannot create ";
 
 
     public DfsCreateDirImpl() throws RemoteException {
@@ -65,7 +67,13 @@ public class DfsCreateDirImpl extends DfsPathOperationImpl {
         if (!fileSystem.exists(path)) {
             fileSystem.mkdirs(path);
         } else if (!isIdempotent()) {
-            throw new SmartFrogDeploymentException("Cannot create " + path.toString() + " as it already exists");
+            throw new SmartFrogDeploymentException(E_CANNOT_CREATE + path.toString() + " as it already exists");
+        } else {
+            FileStatus fileStatus = fileSystem.getFileStatus(path);
+            if (!fileStatus.isDir()) {
+                throw new SmartFrogDeploymentException(
+                        E_CANNOT_CREATE + path.toString() + " as there is a file of that name");
+            }
         }
     }
 }
