@@ -366,6 +366,7 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     private void dumpState (Object node, Object source) {
         StringBuffer message=new StringBuffer();
+        Long timeout = 32 * 1000L;      //32 secs to test the timeout as well
         String name = "error";
         //Only works for Prims.
         if (node instanceof Prim) {
@@ -374,10 +375,10 @@ public class PopUpTree extends JComponent implements ActionListener {
                 message.append ("\n*************** State *****************\n");
                 Dumper dumper = new DumperCDImpl(objPrim);
                 objPrim.sfDumpState(dumper.getDumpVisitor());
-                message.append (dumper.toString());
+                message.append (dumper.toString(timeout));
                 name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
+                if (sfLog().isErrorEnabled()) sfLog().error (ex.getMessage(), ex);
                 StringWriter sw = new StringWriter();
                 PrintWriter pr = new PrintWriter(sw,true);
                 ex.printStackTrace(pr);
