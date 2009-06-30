@@ -165,7 +165,7 @@ public class SubProcessExampleDumpTest
     public void testCaseSubProcessExDump04() throws Throwable {
 
         System.out.println("\n*********************************************************" +
-                           "\n    Testing: testCaseSubProcessExDump04."+
+                           "\n    Testing: testCaseSubProcessExDump04. (Should fail, you cannot dump root daemon)"+
                             "\n*********************************************************");
 
         application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
@@ -186,23 +186,27 @@ public class SubProcessExampleDumpTest
 
         ComponentDescription cd = application.sfDiagnosticsReport();
         assertNotNull("No Diagnostics report", cd);
-        log.info("Diagnostics report: \n" + cd);
-        System.out.println("Diagnostics report: \n" + cd);
+//        log.info("Diagnostics report: \n" + cd);
+//        System.out.println("Diagnostics report: \n" + cd);
         //Testing Dump now with rootProcess (This will fail until loop references are solved)
         Prim root = (Prim) application.sfResolveWithParser("HOST localhost");
         application = root;
+        StringBuffer message = new StringBuffer();
+        assertNotNull(application);
         try {
-          StringBuffer message = new StringBuffer();
           message.append ( application.sfCompleteName().toString() );
           message.append ("\n");
           message.append ( dumpState(application));
           System.out.println(message);
           log.info(message);
         } catch (Exception ex){
-            System.err.println("Error: "+ex.getMessage());
+            String messageS =  "Error: "+message+"\n"+ex.getMessage();
+            log.info(messageS);
+            System.err.println(messageS);
             ex.printStackTrace();
+            System.out.println("\n **** testCaseSubProcessExDump04 Success. (It failed) ****");
         }
-        System.out.println("testCaseSubProcessExDump04 Success.");
+        throw new Exception ("It should have failed to dump description of root daemon when circular having references");
 
     }
 	
