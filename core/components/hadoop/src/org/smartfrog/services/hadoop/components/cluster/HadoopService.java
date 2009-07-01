@@ -33,6 +33,17 @@ import java.rmi.RemoteException;
 
 public interface HadoopService extends Remote, ClusterBound {
 
+    /** {@value} */
+    String ATTR_ENABLED = "service.enabled";
+
+    /**
+     * Test for the service being enabled
+     *
+     * @return true if the service is not enabled
+     * @throws RemoteException for RMI problems
+     */
+    boolean isServiceEnabled() throws RemoteException;
+    
     /**
      * Test for the service being live
      * @return true if the service is live
