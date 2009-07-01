@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.workflow.conditional.ConditionalHelper;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -50,6 +51,7 @@ import java.util.List;
 public abstract class HadoopServiceImpl extends HadoopComponentImpl
         implements HadoopService, ServiceStateChangeHandler, ConfigurationAttributes {
 
+    private boolean serviceEnabled = true;
     private Service service;
     private ServiceDeployerThread deployerThread;
     private static final int SHUTDOWN_DELAY = 5000;
@@ -83,6 +85,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         expectNodeTermination = sfResolve(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true, true);
+        serviceEnabled = ConditionalHelper.resolveConditionAttribute(this, ATTR_ENABLED, false, true);
         completeName = sfCompleteName();
     }
 
@@ -217,6 +220,15 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         pingHadoopService();
     }
 
+    /**
+     * Test for the service being enabled
+     *
+     * @return true if the service is not enabled
+     */
+    @Override
+    public boolean isServiceEnabled()  {
+        return serviceEnabled;
+    }
 
     /**
      * Test for the service being live
@@ -224,7 +236,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @return true if the service is live
      * @throws RemoteException for RMI problems
      */
-    //@Override
+    @Override
     public boolean isServiceLive() throws RemoteException {
         Service s = getService();
         return s != null && s.getServiceState() == Service.ServiceState.LIVE;
@@ -261,7 +273,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * When the namenode is terminated, and we are not shutting down ourself, then we notify {@inheritDoc}
      */
-    //@Override
+    @Override
     public void onStateChange(Service hadoopService, Service.ServiceState oldState,
                               Service.ServiceState newState) {
         if (newState == Service.ServiceState.CLOSED && !terminationInitiated) {
@@ -715,7 +727,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         public ServiceDeployerThread(Service hadoopService, ManagedConfiguration conf,
                                      boolean useWorkflowTermination) {
             super(HadoopServiceImpl.this, useWorkflowTermination);
-            setName(HadoopServiceImpl.this.getServiceName());
+            setName(getServiceName());
             this.useWorkflowTermination = useWorkflowTermination;
             this.hadoopService = hadoopService;
             this.conf = conf;
