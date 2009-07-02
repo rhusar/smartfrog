@@ -27,14 +27,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/components/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/options.sf"
 #include "/org/smartfrog/services/utils/security/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/healthchecks.sf"
 
-
-Hostnames extends {
-  ALL_ZEROS JobTracker:ALL_ZEROS;
-  dfs.datanode.hostname ALL_ZEROS;
-  mapred.job.tracker.hostname ALL_ZEROS;
-  mapred.task.tracker.hostname ALL_ZEROS;
-}
 
 
 LightweightJobTracker extends JobTracker {
@@ -80,9 +74,8 @@ LightweightDataNode extends DataNode {
   dfs.datanode.port DataNodePort;
   dfs.datanode.ipc.port DataNodeIpcPort;
 
-
-  dfs.blockreport.intervalMsec 10000;
-  dfs.blockreport.initialDelay 0;
+  dfs.blockreport.intervalMsec DFS_BLOCKREPORT_INTERVALMSEC;
+  dfs.blockreport.initialDelay DFS_BLOCKREPORT_INITIALDELAY;
   testModeDeleteDirectories TEST_MODE;
 }
 
@@ -213,36 +206,8 @@ TransientTaskTrackerCompound extends HadoopCompoundBase  {
   tasktracker extends LightweightTaskTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
-    //yes, this is milliseconds. But there is a sleep involved too
-   // mapred.task.tracker.connect.timeout ORPHAN_CONNECT_TIMEOUT;
-
-    //"ipc.client.connect.max.retries"
-    //ipc.client.connect.max.retries ORPHAN_CONNECT_MAX_RETRIES;
 
   }
 }
 
-/**
- * This is a sequence to check the system is well
- */
 
-
-HealthCheck extends Sequence {
-  description "a sequence to deploy on startup to check health of the system";
-  checkJava6PlusClassesPresent CheckJava6PlusClassesPresent;
-  checkJspHelperClasses CheckJspHelperClasses;
-  checkNamenodeJspClasses CheckNamenodeJspClasses;
-  checkJobtrackerJspClasses CheckJobtrackerJspClasses;
-  checkDatanodeJspClasses CheckDatanodeJspClasses;
-  checkJspClassesPresent  HadoopJspClasses;
-  checkPolicyPermissions extends CheckPolicyPermissionsAddSupported;
-}
-
-LiveHealthCheck extends Compound {
-  description "something to deploy to check the ongoing health of the system";
-  checkPolicyPermissions extends CheckPolicyPermissionsAddSupported {
-    sfShouldTerminate false;
-  }
-
-
-}

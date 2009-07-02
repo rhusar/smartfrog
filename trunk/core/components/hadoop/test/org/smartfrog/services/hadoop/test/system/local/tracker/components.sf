@@ -60,7 +60,6 @@ testJobSubmission extends ExpectDeploy {
   }
 
   tests extends MapReduceTestSequence {
-    //s extends Sleep;
     jobtracker LAZY PARENT:action:jobtracker;
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
@@ -78,7 +77,6 @@ testJobSetup extends ExpectDeploy {
   }
 
   tests extends JobTrackerSequence {
-    //s extends Sleep;
     jobtracker LAZY PARENT:action:jobtracker;
     cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;

@@ -48,6 +48,8 @@ ClientHandlerThreads 2;
 LOCALHOST "localhost";
 IP_V4_LOCALHOST "127.0.0.1";
 ANY_HOST ALL_ZEROS;
+ANY_PORT "0";
+
 FS.DEFAULT.NAME    ("hdfs://" ++ LOCALHOST ++ ":" ++ NameNodeIpcPort );
 NAME_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ NameNodeHttpPort );
 DATA_NODE_URL      ("http://" ++ LOCALHOST ++ ":" ++ DataNodeHttpPort );
@@ -67,7 +69,18 @@ JOB_TRACKER_STARTUP_TIMEOUT CLUSTER_STARTUP_TIMEOUT;
 CLUSTER_POLL_INTERVAL 200;
 CLUSTER_SHUTDOWN_TIMEOUT 10000;
 
+
+DFS_BLOCKREPORT_INTERVALMSEC 10000;
+DFS_BLOCKREPORT_INITIALDELAY 10000;
+
 JOB_EXECUTE_TIMEOUT 60000;
 DFS.REPLICATION 1;
 //for mapred.job.reuse.jvm.num.tasks
 JVM_REUSE_COUNT -1;
+
+Hostnames extends {
+  ALL_ZEROS JobTracker:ALL_ZEROS;
+  dfs.datanode.hostname ALL_ZEROS;
+  mapred.job.tracker.hostname ALL_ZEROS;
+  mapred.task.tracker.hostname ALL_ZEROS;
+}

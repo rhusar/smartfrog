@@ -214,14 +214,14 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
                     throw new SFHadoopException("Job Tracker at " + jobtracker
                             + " is not running. It is in the state " + state, this);
                 }
-                result.append("Job tracker is in state " + status);
+                result.append("Job tracker is in state ").append(status);
             }
             checkRange(minActiveMapTasks, maxActiveMapTasks, status.getMapTasks(), "map task");
             checkRange(minActiveReduceTasks, maxActiveReduceTasks, status.getReduceTasks(), "reduce task");
             checkMax(maxSupportedMapTasks, status.getMaxMapTasks(), "supported max map task");
             checkMax(maxSupportedReduceTasks, status.getMaxReduceTasks(), "supported max reduce task");
-            result.append(" Map Tasks = "+ status.getMapTasks());
-            result.append(" Reduce Tasks = " + status.getReduceTasks());
+            result.append(" Map Tasks = ").append(status.getMapTasks());
+            result.append(" Reduce Tasks = ").append(status.getReduceTasks());
             return result.toString();
         } catch (IOException e) {
             throw new SFHadoopException("Cannot connect to" + jobtracker, e, this);
@@ -262,7 +262,7 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
-    //@Override
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         boolean live;
         String description;

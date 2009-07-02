@@ -135,7 +135,7 @@ testManagedConfTest extends ExpectTerminate {
 
 
 testFloatingPointValue extends testDefaultConf {
-  description "test that values are read and attributes set from them";
+  description "test that floating point values can be read";
 
   action:conf.required ["io.sort.record.percent"];
 

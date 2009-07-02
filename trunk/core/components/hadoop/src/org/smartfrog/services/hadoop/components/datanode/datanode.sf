@@ -22,14 +22,13 @@ For more information: www.smartfrog.org
  * A datanode represents a worker in the farm
  */
 
-DataNodeWithCluster extends ClusteredFileSystemNode {
-  name DataNode:name;
-  sfClass DataNode:sfClass;
-}
-
-DataNode extends FileSystemNode {
+ClusteredDataNode extends ClusteredFileSystemNode {
   name "DataNode"
   sfClass "org.smartfrog.services.hadoop.components.datanode.DatanodeImpl";
+}
+
+DataNode extends ClusteredDataNode, FileSystemNode {
+
 
   //hadoop configuration values below
   

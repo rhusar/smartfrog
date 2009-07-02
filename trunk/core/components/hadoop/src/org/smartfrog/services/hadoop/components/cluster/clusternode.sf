@@ -35,10 +35,10 @@ ManagerNode extends InlineConfiguredNode {
 
 /**
  * This is a cluster node where the configuration comes from
- * referenced attribute "cluster"; there are no other defaults
+ * referenced attribute "cluster"; there are no defaults
  */
 ClusteredNode extends Prim {
   name "ClusteredNode";
+  clusterRequired false;
   node.enabled true;
-  //cluster TBD;
 }

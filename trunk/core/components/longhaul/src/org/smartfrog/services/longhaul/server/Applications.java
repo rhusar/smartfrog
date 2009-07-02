@@ -19,6 +19,9 @@
  */
 package org.smartfrog.services.longhaul.server;
 
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -80,12 +83,34 @@ public class Applications extends EndpointBase {
 
 
     @GET
-    @Produces("text/smartfrog")
+    @Produces("text/plain")
     @Path("/{application}/")
-    public String getSystem(@PathParam("application") String application) {
-
-        return "";
-
+    public String getApplicationAsText(@PathParam("application") String application)
+            throws SmartFrogException, RemoteException {
+        Prim child = lookupApplication(application);
+        StringBuilder response = new StringBuilder();
+        response.append(child.sfDiagnosticsReport().toString());
+        return response.toString();
     }
 
+    @GET
+    @Produces("text/smartfrog")
+    @Path("/{application}/")
+    public String getApplicationAsSF(@PathParam("application") String application)
+            throws SmartFrogException, RemoteException {
+        Prim child = lookupApplication(application);
+        StringBuilder response = new StringBuilder();
+        response.append(child.sfDiagnosticsReport().toString());
+        return response.toString();
+    }
+
+    @GET
+    @Produces("text/json")
+    @Path("/{application}/")
+    public String getApplicationAsJSON(@PathParam("application") String application)
+            throws SmartFrogException, RemoteException {
+        Prim child = lookupApplication(application);
+        StringBuilder response = new StringBuilder();
+        return response.toString();
+    }
 }
