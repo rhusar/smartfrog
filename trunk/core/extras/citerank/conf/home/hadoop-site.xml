@@ -4,12 +4,12 @@
 
 	<property>
 		<name>fs.default.name</name>
-		<value>hdfs://192.168.1.2:8020/</value>
+		<value>hdfs://192.168.1.88:8020/</value>
 	</property>
 
 	<property>
 		<name>mapred.job.tracker</name>
-		<value>ipc://192.168.1.2:8012/</value>
+		<value>ipc://192.168.1.88:8012/</value>
 	</property>
 
 </configuration>

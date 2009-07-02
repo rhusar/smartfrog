@@ -34,7 +34,7 @@
   <!-- override point -->
 
   <property file="build.properties"/>
-  <!--unit tests are on-->
+  <!-- tests are on-->
   <property name="system.tests" value="true"/>
 
   <property name="junit.timeout" value="120000000"/>
@@ -187,6 +187,19 @@
     </java>
   </target>
 
+  <target name="submit2file" depends="ready-to-deploy"
+          description="export the cluster resource to an expanded file">
+    <property name="build.sf.dir" location="${build.dir}/sf"/>
+    <mkdir dir="${build.sf.dir}"/>
+
+    <property name="build.default.sf" location="${build.sf.dir}/default.sf"/>
+     <sf-expandfully
+        resource="/${default.sf}"
+        dest="${build.default.sf}"
+        classpathRef="tests.run.classpath"
+        />
+    <echo>file is ${build.default.sf}</echo>
+  </target>
 
 
 </project>

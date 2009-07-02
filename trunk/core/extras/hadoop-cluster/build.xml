@@ -54,12 +54,8 @@
   <property name="ivy.enabled" value="true"/>
   <!-- override point -->
   <property file="build.properties"/>
-  <!--System tests are only turned on if Java6 or later is in use-->
-  <!-- 
-  <condition property="system.tests" >
-    <available classname="java.net.CookieManager"/>
-  </condition>
-    -->
+    <!-- tests are on-->
+  <property name="system.tests" value="true"/>
   <property name="junit.timeout" value="120000000"/>
   <!--time for a single test to execute-->
   <property name="test.timeout.execute"    value="120000"/>
@@ -84,7 +80,9 @@
     <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
     <property name="cluster.sf" value="${cluster}/cluster.sf" />
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
-    <property name="default.sf" value="${cluster}/cluster3.sf" />
+    <property name="cluster3.sf" value="${cluster}/cluster3.sf" />
+    <property name="cluster4.sf" value="${cluster}/cluster4.sf" />
+    <property name="default.sf" value="${cluster3.sf}" />
     <property name="deploy.sf" value="${cluster.sf}" />
     <!--this sets the name for the tests-->
     <property name="deploy.host" value="${test.namenode}" />
@@ -98,6 +96,13 @@
       deploy.sf=${deploy.sf}
 
     </echo>
+    <property name="build.sf.dir" location="${build.dir}/sf" />
+    <mkdir  dir="${build.sf.dir}"/>
+
+    <property name="build.default.sf" location="${build.sf.dir}/default.sf" />
+    <property name="src.scripts.dir" location="src/org/smartfrog/extras/hadoop/cluster/services/scripts" />
+    <property name="envVariables.sh" location="${src.scripts.dir}/setSFEnvVariables.sh" />
+
   </target>
 
 
@@ -115,6 +120,7 @@
       test.jobtracker=${test.jobtracker}
       test.datanode1=${test.datanode1}
       test.tasktracker1=${test.tasktracker1}
+      daemon.jvmargs ="${daemon.jvmargs}"
     </echo>
   </target>
 
@@ -136,6 +142,15 @@
                    descriptor="/${cluster2.sf}"/>
     </deploy>
   </target>
+
+  <target name="cluster4" depends="ready-to-deploy"
+          description="deploy a full cluster">
+    <deploy>
+      <application name="cluster4"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/cluster4.sf"/>
+    </deploy>
+  </target>
+
 
   <target name="filesystem" depends="ready-to-deploy"
       description="deploy a filesystem">
@@ -211,13 +226,18 @@
 
    <target name="cluster2file" depends="ready-to-deploy"
           description="export the cluster resource to an expanded file">
-     <property name="build.sf.dir" location="${build.dir}/sf" />
-     <mkdir  dir="${build.sf.dir}"/>
 
-     <property name="build.default.sf" location="${build.sf.dir}/default.sf" />
-     <property name="src.scripts.dir" location="src/org/smartfrog/extras/hadoop/cluster/services/scripts" />
-     <property name="envVariables.sh" location="${src.scripts.dir}/setSFEnvVariables.sh" />
-     
+     <sf-expandfully
+        resource="/${default.sf}"
+        dest="${build.default.sf}"
+        classpathRef="tests.run.classpath"
+        />
+     <echo> file is ${build.default.sf}</echo>
+  </target>
+
+   <target name="cluster4file" depends="ready-to-deploy"
+          description="export the cluster resource to an expanded file">
+
      <sf-expandfully
         resource="/${default.sf}"
         dest="${build.default.sf}"

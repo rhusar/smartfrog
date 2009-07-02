@@ -17,21 +17,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/extras/hadoop/cluster/test/system/components.sf"
+package org.smartfrog.extras.hadoop.cluster.test.system.fullcluster;
 
+import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
 
+/**
+ * Created 05-Jan-2009 16:12:47
+ */
 
+public class FullClusterJobSubmissionTest extends HadoopTestBase {
 
-testJobSubmission extends testDistributedCluster {
-  description "Submit a job to a cluster and copy out the result";
+     String PACKAGE =
+            "/org/smartfrog/extras/hadoop/cluster/test/system/fullcluster/";
 
-  tests extends MapReduceSequence {
-    
-    LocalDataDir PROPERTY test.work.dir;
-    jobtracker LAZY PARENT:action:jobtracker:jobtracker;
-    namenode LAZY PARENT:action:namenode:namenode;
-    datanode LAZY PARENT:action:datanode:datanode;
+    public FullClusterJobSubmissionTest(String name) {
+        super(name);
+    }
 
-  }
+    public void testJobSubmission() throws Throwable {
+        checkMapRedCluster();
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission.sf");
+        enableFailOnPortCheck();
+    }
 
 }

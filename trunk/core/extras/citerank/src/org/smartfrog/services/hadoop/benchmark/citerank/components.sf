@@ -81,15 +81,15 @@ lsCiteseerDir extends DfsListDir {
 
 
 
-  UploadTestData extends Sequence {
-    upload extends UploadCiteseerData {
-      cluster LAZY PARENT:ATTRIB testcluster;
-    }
-
-    ls extends lsCiteseerDir {
-      cluster LAZY PARENT:ATTRIB testcluster
-    }
+UploadTestData extends Sequence {
+  upload extends UploadCiteseerData {
+    cluster LAZY PARENT:ATTRIB testcluster;
   }
+
+  ls extends lsCiteseerDir {
+    cluster LAZY PARENT:ATTRIB testcluster
+  }
+}
 
 
 Upload extends ClusterActions {
@@ -149,9 +149,6 @@ ClusterWithUpload extends Parallel {
     citerank extends CiteRankToolRunner {
       cluster LAZY PARENT:ATTRIB testcluster;
     }
-    
-    
-    
     
     
  }

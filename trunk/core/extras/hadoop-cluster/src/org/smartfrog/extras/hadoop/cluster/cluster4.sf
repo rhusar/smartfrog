@@ -17,21 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/extras/hadoop/cluster/test/system/components.sf"
+#include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 
 
 
-
-testJobSubmission extends testDistributedCluster {
-  description "Submit a job to a cluster and copy out the result";
-
-  tests extends MapReduceSequence {
-    
-    LocalDataDir PROPERTY test.work.dir;
-    jobtracker LAZY PARENT:action:jobtracker:jobtracker;
-    namenode LAZY PARENT:action:namenode:namenode;
-    datanode LAZY PARENT:action:datanode:datanode;
-
-  }
-
-}
+sfConfig extends FullClusterWithBindings;

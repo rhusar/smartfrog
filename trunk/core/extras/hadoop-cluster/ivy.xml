@@ -74,7 +74,7 @@
     <dependency org="org.smartfrog"
         name="sf-anubis" changing="true"
         rev="latest.integration"
-        conf="server->default"/>    
+        conf="redist->default"/>    
     
     <dependency org="org.smartfrog"
         name="sf-hadoop"
