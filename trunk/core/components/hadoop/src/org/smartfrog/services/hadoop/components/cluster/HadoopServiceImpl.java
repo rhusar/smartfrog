@@ -67,6 +67,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     private static final int CONNECT_TIMEOUT = 2000;
     private boolean serviceStartupInProgress;
     protected static final String LIVE_ATTRIBUTE_PREFIX = "live.";
+    public static final String SKIPPING_DISABLED_SERVICE = "Skipping disabled service ";
 
 
     protected HadoopServiceImpl() throws RemoteException {
@@ -594,29 +595,38 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-    * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)} to create the service, then {@link
-    * #deployService(Service, ManagedConfiguration)}. This usually starts an asynchronous thread to deploy the service
-    * via {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)}
-    *
-    * @throws SmartFrogException wrapping any other exception thrown
-    * @throws RemoteException    network problems
-    */
+     * Create and deploy the service.
+     *
+     * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)} to create the service, then {@link
+     * #deployService(Service, ManagedConfiguration)}. This usually starts an asynchronous thread to deploy the service
+     * via {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)}
+     *
+     * If {@link #isServiceEnabled()} returns false, the service is not run and a message to say so is logged
+     *  (so as to reduce confusion)
+     * @throws SmartFrogException wrapping any other exception thrown
+     * @throws RemoteException    network problems
+     */
     protected void createAndDeployService() throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = createConfiguration();
         configuration = conf;
         validateConfiguration(conf);
-        portList = buildPortList(conf);
-        //now check the known ports are closed. This will bail out early
-        checkPortsAreClosed("startup");
-        try {
-            Service createdService = createTheService(conf);
-            deployService(createdService, conf);
-        } catch (Throwable thrown) {
-            throw SFHadoopException.forward(ERROR_NO_START + getServiceName(),
-                    thrown,
-                    this,
-                    conf);
+        if(isServiceEnabled()) {
+            portList = buildPortList(conf);
+            //now check the known ports are closed. This will bail out early
+            checkPortsAreClosed("startup");
+            try {
+                Service createdService = createTheService(conf);
+                deployService(createdService, conf);
+            } catch (Throwable thrown) {
+                throw SFHadoopException.forward(ERROR_NO_START + getServiceName(),
+                        thrown,
+                        this,
+                        conf);
+            }
+        } else {
+            sfLog().info(SKIPPING_DISABLED_SERVICE + getServiceName());
         }
+
     }
 
     /**
@@ -650,11 +660,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     protected String getFilesystemName(ManagedConfiguration conf) throws SFHadoopException {
         String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
         if (fsName == null) {
-            throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -undefined attribute "
-                    + ConfigurationAttributes.FS_DEFAULT_NAME,
-                    null,
-                    this,
-                    conf);
+            String text = ERROR_NO_START + getServiceName() + " -undefined attribute "
+                    + ConfigurationAttributes.FS_DEFAULT_NAME;
+            throw new SFHadoopException(text, null, this, conf);
         }
         return fsName;
     }
