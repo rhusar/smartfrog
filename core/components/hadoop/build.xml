@@ -36,6 +36,8 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
+    <!-- tests are on-->
+  <!--<property name="system.tests" value="true"/>-->
   <property name="junit.timeout" value="12000000"/>
   <!--time for a single test to execute-->
   <property name="test.timeout.execute"  value="120000"/>

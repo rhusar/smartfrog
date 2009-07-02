@@ -124,8 +124,6 @@ CopyFileInAndOutSequence extends FileSystemLiveSequence {
  * A sequence of operations on a cluster */
 FileSystemTestSequence extends FileSystemLiveSequence {
 
-
-
     rootDirExists extends DfsDirExistsWorkflow {
       cluster LAZY PARENT:cluster;
       path "/";
@@ -145,9 +143,10 @@ FileSystemTestSequence extends FileSystemLiveSequence {
       verbose true;
     }
 
-    rootDirHasOneEntry extends rootDirExists {
+    /** this used to check for exactly 1 file, but as some workers create a tmp dir, this doesnt work
+     all the time */
+    rootDirHasAtLeastOneEntry extends rootDirExists {
       minFileCount 1;
-      maxFileCount minFileCount;
       minTotalFileSize assertFileExists:minSize;
     }
 

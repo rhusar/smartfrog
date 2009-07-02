@@ -89,6 +89,7 @@ public class SFHadoopException extends SmartFrogException {
      *
      * @param message  exception message
      * @param sfObject The Component that has encountered the exception
+     * @param conf the configuration at the time
      */
     public SFHadoopException(String message, Prim sfObject, ManagedConfiguration conf) {
         super(message, sfObject);
@@ -124,6 +125,7 @@ public class SFHadoopException extends SmartFrogException {
      * @param message  message
      * @param cause    exception causing this exception
      * @param sfObject The Component that has encountered the exception
+     * @param conf the configuration at the time
      */
     public SFHadoopException(String message, Throwable cause, Prim sfObject, ManagedConfiguration conf) {
         super(message, cause, sfObject);
@@ -166,6 +168,10 @@ public class SFHadoopException extends SmartFrogException {
     @SuppressWarnings("unchecked")
     public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject,
                                             ManagedConfiguration conf) {
+        if(multiExcept == null) {
+            //no value, hand off to the other handler
+            return forward(message,(Throwable)null, sfObject, conf);
+        }
         List<Throwable> exceptions = (List < Throwable >) multiExcept.getThrowables();
         int exCount = exceptions.size();
         if (exCount == 1) {

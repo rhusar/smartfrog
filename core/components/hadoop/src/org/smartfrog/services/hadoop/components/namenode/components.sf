@@ -25,31 +25,13 @@ For more information: www.smartfrog.org
 ClusteredNameDirNode extends ClusteredFileSystemNode {
  //name directory: a List of directories
   nameDirectories TBD;
+
 }
 
 NameDirNode extends ClusteredNameDirNode, FileSystemNode {
 
 }
 
-/**
- * Extend NameDirNode with dataDirectories and a log directory
- */
-ClusteredNameDataLogNode extends ClusteredNameDirNode {
-
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //log directory
-  logDir TBD;
-
-}
-/**
- * Extend NameDirNode with dataDirectories and a log directory
- */
-NameDataLogNode extends ClusteredNameDataLogNode, FileSystemNode {
-
-
-}
 
 
 

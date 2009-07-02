@@ -38,13 +38,15 @@ For more information: www.smartfrog.org
  */
 
 #include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/hadoop/conf/hostnames.sf"
+
 
 /**
  * This is a hadoop configuration
  * Its values come from the hadoop source, and the file hadoop-default.xml, which is inside
  * hadoop-core.jar
  */
-HadoopConfiguration extends Prim {
+HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
 
   //Smartfrog custom properties
   smartfrog.dump.conf false;
@@ -87,44 +89,7 @@ HadoopConfiguration extends Prim {
   */
   dfs.data.dir  (hadoop.tmp.dir ++ "/dfs/data");
 
-  /**
-   * hostnames
-   */
-  LOCALHOST "127.0.0.1";
-  ALL_ZEROS "0.0.0.0";
-  ANY_HOST ALL_ZEROS;
-  ANY_PORT "0";
-  DEFAULT_HOSTNAME LOCALHOST;
-  /**
-    The address where the datanode server will listen to.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_DATANODE_ADDRESS_DEFAULT_PORT "50010";
-  DFS_DATANODE_DEFAULT_HOSTNAME DEFAULT_HOSTNAME;
-  dfs.datanode.hostname DFS_DATANODE_DEFAULT_HOSTNAME;
-  dfs.datanode.port  DFS_DATANODE_ADDRESS_DEFAULT_PORT;
-  dfs.datanode.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.port);
 
-
-  /**
-    The datanode http server address and port.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_DATANODE_HTTP_DEFAULT_PORT "50075";
-  dfs.datanode.http.port DFS_DATANODE_HTTP_DEFAULT_PORT;
-  dfs.datanode.http.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.http.port);
-
-  DFS_DATANODE_HTTPS_PORT "50475";
-  dfs.datanode.https.port DFS_DATANODE_HTTPS_PORT;
-  dfs.datanode.https.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.https.port);
-
-  /**
-   The datanode ipc server address and port.
-   If the port is 0 then the server will start on a free port.
-  */
-  DFS_DATANODE_IPC_DEFAULT_PORT "50020";
-  dfs.datanode.ipc.port DFS_DATANODE_IPC_DEFAULT_PORT;
-  dfs.datanode.ipc.address (dfs.datanode.hostname ++ ":" ++ dfs.datanode.ipc.port);
   
   /**
   The name of the Network Interface from which a data node should
@@ -178,19 +143,7 @@ HadoopConfiguration extends Prim {
   dfs.hosts.exclude  "";
 
 
-  /**
-    The address and the base port where the dfs namenode web ui will listen on.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_HTTP_DEFAULT_PORT "50070";
-  DFS_HTTPS_DEFAULT_PORT "50470";
-  DFS_HOSTNAME DEFAULT_HOSTNAME;
-  dfs.hostname DFS_HOSTNAME;
-  dfs.http.port DFS_HTTP_DEFAULT_PORT;
-  dfs.https.port DFS_HTTPS_DEFAULT_PORT;
-  
-  dfs.http.address  (dfs.hostname ++ ":" ++ dfs.http.port);
-  dfs.https.address  (dfs.hostname ++ ":" ++ dfs.https.port);
+
   
 
   /**
@@ -294,16 +247,6 @@ HadoopConfiguration extends Prim {
   dfs.safemode.extension  30000;
 
 
-
-  /**
-    The secondary namenode http server address and port.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_SECONDARY_HTTP_DEFAULT_PORT "50090";
-  DFS_SECONDARY_HOSTNAME DEFAULT_HOSTNAME;
-  dfs.secondary.hostname DFS_SECONDARY_HOSTNAME; 
-  dfs.secondary.http.port DFS_SECONDARY_HTTP_DEFAULT_PORT;
-  dfs.secondary.http.address  (dfs.secondary.hostname ++ ":" ++ dfs.secondary.http.port);  
 
   /**
   The user account used by the web interface.
@@ -808,18 +751,6 @@ HadoopConfiguration extends Prim {
 
 
   /**
-  The host and port that the MapReduce job tracker runs
-  at.  If "local", then jobs are run in-process as a single map
-  and reduce task.
-  */
-  MAPRED_JOB_TRACKER_DEFAULT_PORT "8012";
-  //mapred.job.tracker  ("localhost:" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
-  MAPRED_JOB_TRACKER_HOSTNAME DEFAULT_HOSTNAME;
-  mapred.job.tracker.hostname MAPRED_JOB_TRACKER_HOSTNAME;
-  mapred.job.tracker.port MAPRED_JOB_TRACKER_DEFAULT_PORT;
-  mapred.job.tracker  (mapred.job.tracker.hostname ++ ":" ++ mapred.job.tracker.port);
-
-  /**
   The maximum number of complete jobs per user to keep around before delegating them
   to the job history.
   */
@@ -831,14 +762,8 @@ HadoopConfiguration extends Prim {
   */
   mapred.job.tracker.handler.count  10;
 
-  /**
-  The job tracker http server address and port the server will listen on.
-  If the port is 0 then the server will start on a free port.
-  */
-  MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT "50030";
-  mapred.job.tracker.http.port MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT; 
   //mapred.job.tracker  ("localhost:" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
-  mapred.job.tracker.http.address  (mapred.job.tracker.hostname ++ ":" ++ mapred.job.tracker.http.port);
+
 
 
   /**
@@ -1072,30 +997,13 @@ HadoopConfiguration extends Prim {
   */
   mapred.tasktracker.reduce.tasks.minimum  2;
 
- /**
-  The interface and port that task tracker server listens on.
-  Since it is only connected to by the tasks, it uses the local interface.
-  EXPERT ONLY. Should only be changed if your host does not have the loopback
-  interface.*/
-  mapred.task.tracker.report.hostname  LOCALHOST;
-  mapred.task.tracker.report.port  ANY_PORT;
-  mapred.task.tracker.report.address  (mapred.task.tracker.report.hostname  ++ ":" ++ mapred.task.tracker.report.port);
-  
+
   /**
   The number of worker threads that for the http server. This is
  used for map output fetching
   */
   tasktracker.http.threads  40;
 
-  /**
-  The task tracker http server address and port.
-  If the port is 0 then the server will start on a free port.
-  */
-  MAPRED_TASK_TRACKER_HOSTNAME DEFAULT_HOSTNAME;
-  mapred.task.tracker.hostname MAPRED_TASK_TRACKER_HOSTNAME;
-  MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT "50060";
-  mapred.task.tracker.http.port MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT;
-  mapred.task.tracker.http.address (mapred.task.tracker.hostname  ++ ":" ++ mapred.task.tracker.http.port);
 
 
   /**
@@ -1187,7 +1095,7 @@ TaskStatus extends  NULL {
   * Used to describe the priority of the running job.
   *
   */
-JobPriority  extends  NULL{
+JobPriority  extends  NULL {
   VeryHigh "VERY_HIGH";
   High     "HIGH";
   Normal   "NORMAL";

@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/hadoop/conf/hostnames.sf"
 
 /**
  * This file defines SF components to work with Hadoop configuration files
@@ -54,6 +55,9 @@ DefaultHadoopConfiguration extends EmptyHadoopConfiguration {
   conf.load.defaults true;
 }
 
+HadoopConfigurationWithHostnameSetup extends DefaultHadoopConfiguration, HadoopHostnameConfiguration {
+
+}
 /**
  * A component to verify that expected components match what is expected
  */

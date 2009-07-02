@@ -18,6 +18,30 @@ For more information: www.smartfrog.org
 
 */
 
+
+
+/**
+ * Extend NameDirNode with dataDirectories and a log directory
+ */
+ClusteredNameNode extends ClusteredNameDirNode {
+  sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
+  name "NameNode";
+
+  //the data directories, again a list of directories
+  dataDirectories TBD;
+
+  //log directory
+  logDir TBD;
+
+  //check the name node is live when we ping the component
+  checkRunning true;
+  //should we expect the node to terminate itself
+  expectNodeTermination false;
+  sfShouldTerminate false;
+
+}
+
+
 /**
  * A name node is one of the most critical part of an HDFS cluster; it is
  * the directory server.
@@ -35,10 +59,8 @@ For more information: www.smartfrog.org
  */
 
 
-NameNode extends NameDataLogNode {
-  sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
-  name "NameNode";
 
+NameNode extends ClusteredNameNode, FileSystemNode {
 
   //startup mode
   dfs.namenode.startup ACTION_REGULAR;
@@ -80,19 +102,5 @@ NameNode extends NameDataLogNode {
   dfs.safemode.extension 0;
 
 
-
-
-  //check the name node is live when we ping the component
-  checkRunning true;
-  //should we expect the node to terminate itself
-  expectNodeTermination false;
-  sfShouldTerminate false;
 }
 
-NameNodeWithCluster extends ClusteredNameDataLogNode {
-   name NameNode:name;
-   sfClass NameNode:sfClass;
-   checkRunning NameNode:checkRunning;
-   expectNodeTermination NameNode:expectNodeTermination ;
-   sfShouldTerminate NameNode:sfShouldTerminate;
-}

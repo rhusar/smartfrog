@@ -23,48 +23,71 @@ For more information: www.smartfrog.org
  * the hadoop XML files
  */
 
-#include "/org/smartfrog/services/hadoop/components/components.sf"
-#include "/org/smartfrog/services/hadoop/examples/options.sf"
+//#include "/org/smartfrog/services/hadoop/components/components.sf"
+//#include "/org/smartfrog/services/hadoop/examples/options.sf"
 
 
-LightweightClusterConf extends DefaultHadoopConfiguration {
+LightweightCluster extends Hostnames, HadoopConfigurationWithHostnameSetup {
   fs.default.name FS.DEFAULT.NAME;
-  mapred.job.tracker.handler.count HandlerThreads;
-  tasktracker.http.threads ClientHandlerThreads;
-  mapred.task.tracker.connect.timeout IPC_CONNECT_TIMEOUT;
-  dfs.heartbeat.interval 1;
-  dfs.datanode.handler.count ClientHandlerThreads;
   namenodeURL      NAME_NODE_URL;
   datanodeURL      DATA_NODE_URL ;
   hostaddress LOCALHOST;
-  ANY_PORT "0";
+
   //dfs.hostname hostaddress;
-  dfs.datanode.hostname hostaddress;
-  dfs.datanode.port ANY_PORT;
+  dfs.blockreport.intervalMsec DFS_BLOCKREPORT_INTERVALMSEC;
+  dfs.blockreport.initialDelay DFS_BLOCKREPORT_INITIALDELAY;
+  dfs.datanode.hostname Hostnames:dfs.datanode.hostname;
+  dfs.datanode.handler.count ClientHandlerThreads;
   dfs.datanode.http.port ANY_PORT;
   dfs.datanode.https.port ANY_PORT;
   dfs.datanode.ipc.port ANY_PORT;
 
-  dfs.blockreport.intervalMsec 10000;
-  dfs.blockreport.initialDelay 0;
+  dfs.heartbeat.interval 1;
+  //these properties set the HTTP ports. The NN gets its IPC port from the fs.default.name URL
+  //dfs.hostname hostname;
+  dfs.http.address namenodeURL;
+  dfs.http.port NameNodeHttpPort;
+  dfs.https.port NameNodeHttpPort;
+  dfs.replication DFS.REPLICATION;
+
+  dfs.namenode.handler.count HandlerThreads;
   dfs.namenode.startup NameNode:ACTION_FORMAT;
   dfs.permissions false;
-  dfs.http.address namenodeURL;
-  dfs.permissions false;
-  mapred.job.tracker.hostname hostaddress;
+
+  ipc.client.connect.max.retries LIGHTWEIGHT_MAX_RETRIES;
+
+  mapred.job.reuse.jvm.num.tasks JVM_REUSE_COUNT;
+  mapred.job.tracker.handler.count HandlerThreads;
+  mapred.job.tracker.hostname Hostnames:mapred.job.tracker.hostname;
   mapred.job.tracker.http.hostname hostaddress;
   mapred.job.tracker.http.port ANY_PORT;
   mapred.task.tracker.hostname hostaddress;
   mapred.task.tracker.http.port ANY_PORT;
+  mapred.task.tracker.connect.timeout IPC_CONNECT_TIMEOUT;
+  tasktracker.http.threads ClientHandlerThreads;
+
+  smartfrog.dump.conf DUMP_CONF;
+}
+
+
+
+LogDirCompound extends Compound {
+
+  enabled true;
+
+
+  logDir extends TempDir {
+
+  }
+
 }
 
 /**
  * The cluster compound takes the conf and adds some temp directories
  */
 
-ClusterCompound extends Compound {
+DataDirCompound extends LogDirCompound {
 
-  conf extends LightweightClusterConf;
 
   logDir extends TempDir {
 
@@ -80,18 +103,21 @@ ClusterCompound extends Compound {
 }
 
 
-NameNodeClusterCompound extends ClusterCompound {
+NameNodeClusterCompound extends DataDirCompound {
   description "A name node";
 
 
 
-  namenode extends NameNodeWithCluster {
-    cluster LAZY PARENT:conf;
+  service extends ClusteredNameNode {
+    clusterRequired true;
+    service.enabled PARENT:enabled;
+    cluster LAZY PARENT:cluster;
     dataDir LAZY PARENT:dataDir;
     dataDirectories [dataDir];
     nameDirectory LAZY PARENT:nameDir;
     nameDirectories [nameDirectory];
     logDir LAZY PARENT:logDir;
+    testModeDeleteDirectories TEST_MODE;
     minWorkerCount 0;
   }
 }
@@ -99,17 +125,91 @@ NameNodeClusterCompound extends ClusterCompound {
 /**
  * Creates a namenode
  */
-DataNodeClusterCompound extends NameNodeClusterCompound {
+DataNodeClusterCompound extends DataDirCompound {
   description "A data node bound to a temporary directory";
 
   localDataDir extends TempDir {
 
   }
 
-  datanode extends DataNodeWithCluster {
-    cluster LAZY PARENT:conf;
+  service extends ClusteredDataNode {
+    clusterRequired true;
+    cluster LAZY PARENT:cluster;
+    service.enabled PARENT:enabled;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
   }
 
 }
+
+JobTrackerClusterCompound extends DataDirCompound {
+  service extends ClusteredJobTracker {
+    clusterRequired true;
+    cluster LAZY PARENT:cluster;
+    service.enabled PARENT:enabled;
+    dataDir LAZY PARENT:ATTRIB dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:ATTRIB nameDir;
+    nameDirectories [nameDir];
+    logDir LAZY PARENT:ATTRIB logDir;
+  }
+}
+
+
+/**
+ * This is a task tracker
+ */
+
+
+TaskTrackerClusterCompound extends LogDirCompound {
+
+  description "A compound with a task tracker";
+
+  service extends ClusteredTaskTracker {
+    clusterRequired true;
+    cluster LAZY PARENT:cluster;
+    service.enabled PARENT:enabled;
+  }
+}
+
+/**
+ * This is a configured cluster. What's interesting about it is how
+ * the services run in master or slave mode (both on by default);
+ * these can be tuned to switch nodes between master or slave
+ * based on run-time decisions
+ */
+ConfiguredHdfsCluster extends Compound {
+
+  //two flags which control whether or not the node is live or not
+  master true;
+  slave true;
+
+  //this defines the cluster for everything
+
+  cluster extends LightweightCluster;
+
+  namenode extends NameNodeClusterCompound {
+    enabled master;
+    cluster LAZY PARENT:cluster;
+  }
+  datanode extends DataNodeClusterCompound {
+    enabled slave;
+    cluster LAZY PARENT:cluster;
+  }
+
+
+}
+
+ConfiguredCluster extends ConfiguredHdfsCluster {
+
+  jobtracker extends JobTrackerClusterCompound {
+    enabled master;
+    cluster LAZY PARENT:cluster;
+  }
+  tasktracker extends TaskTrackerClusterCompound {
+    enabled slave;
+    cluster LAZY PARENT:cluster;
+  }
+
+}
+

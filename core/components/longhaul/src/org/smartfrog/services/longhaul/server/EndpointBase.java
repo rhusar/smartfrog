@@ -20,6 +20,8 @@
 
 package org.smartfrog.services.longhaul.server;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
@@ -89,6 +91,17 @@ public abstract class EndpointBase {
         return apps;
     }
 
+
+    public Prim lookupApplication(String name)  throws RemoteException, SmartFrogException {
+        ProcessCompound root = getRootProcess();
+        Object resolved = root.sfResolveHere(name);
+        if(!(resolved instanceof Prim)) {
+            throw new SmartFrogResolutionException("The attribute "+name+" does not refer to an application"
+            + " but to " + resolved);
+        }
+        Prim child = (Prim) resolved;
+        return child;
+    }
 
     /**
      * Create a temporary file and register the file as an attachment

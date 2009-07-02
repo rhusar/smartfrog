@@ -17,19 +17,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.conf;
-
-/**
- * This interface declares that component is bound to a cluster. It still has the right to override those settings; the
- * cluster is the initial template that may be dynamically built up from the core Hadoop XML files
- */
 
 
-public interface ClusterBound {
+HealthCheck extends Sequence {
+  description "a sequence to deploy on startup to check health of the system";
+  checkJava6PlusClassesPresent CheckJava6PlusClassesPresent;
+  checkJspHelperClasses CheckJspHelperClasses;
+  checkNamenodeJspClasses CheckNamenodeJspClasses;
+  checkJobtrackerJspClasses CheckJobtrackerJspClasses;
+  checkDatanodeJspClasses CheckDatanodeJspClasses;
+  checkJspClassesPresent  HadoopJspClasses;
+  checkPolicyPermissions extends CheckPolicyPermissionsAddSupported;
+}
 
-    /**
-     * {@value}
-     */
-    String ATTR_CLUSTER = "cluster";
-    String ATTR_CLUSTER_REQUIRED = "clusterRequired" ; 
+LiveHealthCheck extends Compound {
+  description "something to deploy to check the ongoing health of the system";
+  checkPolicyPermissions extends CheckPolicyPermissionsAddSupported {
+    sfShouldTerminate false;
+  }
+
+
 }

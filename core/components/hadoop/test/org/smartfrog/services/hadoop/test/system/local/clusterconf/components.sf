@@ -24,7 +24,7 @@
 
 testFilesystemOverride extends TestCompound {
 
-  action extends LightweightClusterConf  {
+  action extends LightweightCluster  {
 
   }
 
@@ -40,7 +40,7 @@ testFilesystemOverride extends TestCompound {
 testFilesystemOverrideValue extends TestCompound {
 
   action extends Compound {
-    cluster extends LightweightClusterConf  {
+    cluster extends LightweightCluster  {
 
     }
     checker extends ServiceValueChecker {
@@ -68,16 +68,55 @@ testClusteredFilesystem extends ExpectDeploy {
 
 
 
-  action extends DataNodeClusterCompound {
+  action extends ConfiguredHdfsCluster {
 
   }
 
 
   tests extends FileSystemTestSequence {
-    namenode LAZY action:namenode;
-    datanode LAZY action:datanode;
+    namenode LAZY action:namenode:service;
+    datanode LAZY action:datanode:service;
   }
   
+
+}
+testClusteredJobTracker extends ExpectDeploy {
+  description "bring up a filesystem";
+
+
+
+  action extends ConfiguredCluster {
+
+  }
+
+
+  tests extends FileSystemTestSequence {
+    namenode LAZY action:namenode:service;
+    datanode LAZY action:datanode:service;
+    jobtracker LAZY action:jobtracker:service;
+  }
+
+
+}
+
+testClusteredJobSubmit extends ExpectDeploy {
+  description "bring up a filesystem and submit work";
+
+
+
+  action extends ConfiguredCluster {
+
+  }
+
+
+  tests extends MapReduceTestSequence {
+    cluster namenode;
+    namenode LAZY action:namenode:service;
+    datanode LAZY action:datanode:service;
+    jobtracker LAZY action:jobtracker:service;
+  }
+
+
 
 }
 

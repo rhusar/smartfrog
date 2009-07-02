@@ -43,6 +43,7 @@ WaitForFilesystemLive extends WaitForHadoopLive  {
   jobtrackerLive false;
   name "WaitForFilesystemLive";
   condition extends ClusterStatusCondition {
+    serviceDescription ("waiting for " ++ mapred.job.tracker);
     mapred.job.tracker PARENT:service:mapred.job.tracker;
   }
 }
