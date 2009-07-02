@@ -19,18 +19,23 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/extras/hadoop/cluster/test/system/components.sf"
 
+testFullCluster extends ExpectLive {
+  action FullClusterWithBindings;
+
+
+}
 
 
 
-testJobSubmission extends testDistributedCluster {
+testJobSubmission extends testFullCluster {
   description "Submit a job to a cluster and copy out the result";
 
   tests extends MapReduceSequence {
-    
+
     LocalDataDir PROPERTY test.work.dir;
-    jobtracker LAZY PARENT:action:jobtracker:jobtracker;
-    namenode LAZY PARENT:action:namenode:namenode;
-    datanode LAZY PARENT:action:datanode:datanode;
+    jobtracker LAZY PARENT:action:jobtracker:service;
+    namenode LAZY PARENT:action:namenode:service;
+    datanode LAZY PARENT:action:datanode:service;
 
   }
 
