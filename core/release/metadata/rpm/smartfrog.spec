@@ -77,10 +77,8 @@
 %{!?_private_rpm:%define security_text This is an unsigned distribution}
 %{?_private_rpm:%define security_text This is a signed distribution with private information in the smartfrog-private rpm}
 
-%{?_private_rpm:%{error: this is a private rpm}}
-%{!?_private_rpm:%{error: this is not a private rpm}}
-
-
+%{echo: %{security_text}}
+%{echo: }
 
 # -----------------------------------------------------------------------------
 
@@ -466,37 +464,37 @@ make a privately generated key package publicly available.
 # -----------------------------------------------------------------------------
 
 %prep
-#First, create a user or a group (see SFOS-180) 
+#First, create a user or a group (see SFOS-180 and SFOS-1255 for why this code is off) 
 USERNAME="${rpm.username}"
 GROUPNAME="${rpm.groupname}"
 
-# Mabye create a new group
-getent group $${GROUPNAME} > /dev/null
-if [ $$? -ne 0 ]; then
-  groupadd $${GROUPNAME}> /dev/null 2>&1
-  if [ $$? -ne 0 ]; then
-    logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
-    exit 1
-  fi
-else
-  logger -p auth.info -t %{name} $${GROUPNAME} group already exists
-fi
+# Maybe create a new group
+# getent group $${GROUPNAME} > /dev/null
+#  if [ $$? -ne 0 ]; then
+#   groupadd $${GROUPNAME}> /dev/null 2>&1
+#   if [ $$? -ne 0 ]; then
+#     logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
+#     exit 1
+#   fi
+# else
+#   logger -p auth.info -t %{name} $${GROUPNAME} group already exists
+# fi
 
 # Maybe create a new user
 # Creation of smartfrog user account
 # UID value will be fetched from the system
 # Any free least numeric number will get assigned to UID
 # User deletion is left to the System Administartor
-getent passwd $${USERNAME} > /dev/null 2>&1
-if [ $$? -ne 0 ]; then
-  useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
-  if [ $$? -ne 0 ]; then
-    logger -p auth.err -t %{name} $${USERNAME} user could not be created
-    exit 2
-  fi
-else
-  logger -p auth.info -t %{name} $${USERNAME} user already exists
-fi
+# getent passwd $${USERNAME} > /dev/null 2>&1
+# if [ $$? -ne 0 ]; then
+#   useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
+#   if [ $$? -ne 0 ]; then
+#     logger -p auth.err -t %{name} $${USERNAME} user could not be created
+#     exit 2
+#   fi
+# else
+#   logger -p auth.info -t %{name} $${USERNAME} user already exists
+# fi
 
 #Now run the big setup
 %setup -q -c
@@ -511,7 +509,7 @@ fi
 %build
 rm -rf $RPM_BUILD_ROOT
 pwd
-cp -dpr . $RPM_BUILD_ROOT
+cp -PpR . $RPM_BUILD_ROOT
 
 
 # -----------------------------------------------------------------------------
