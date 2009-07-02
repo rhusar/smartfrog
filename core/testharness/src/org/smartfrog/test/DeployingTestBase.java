@@ -306,13 +306,15 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                 "Test run interrupted without completing the tests", event);
         conditionalFail(event instanceof TerminatedEvent,
                 "Test run terminated without completing the tests", event);
+        conditionalFail(!(event instanceof TestCompletedEvent),
+                "Test run terminated with an unexpected event", event);
         //if not a terminated event, its test results
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(results.isForcedTimeout(),
                 "Forced timeout", event);
         if (results.isFailed() && !results.isSkipped()) {
-            String message = "Test failed" + '\n' + results;
-            throw new TerminationRecordException(message,results.getStatus());
+            String message = "Test failed: " + '\n' + results;
+            throw new TerminationRecordException(message, results.getStatus());
         }
         return results;
     }
