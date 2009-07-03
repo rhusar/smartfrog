@@ -90,7 +90,7 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
             if(!resources.isEmpty() || !files.isEmpty()) {
                 throw new SmartFrogResolutionException(ERROR_NO_CLUSTER_AND_XML);
             }
-            managedConf = ManagedConfiguration.createConfiguration(this,true,false,loadDefaults);
+            managedConf = ManagedConfiguration.createConfiguration(this, true, false, loadDefaults);
             managedConf.copyPropertiesToPrim(this);
 
         } else {
@@ -114,7 +114,7 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
 
             managedConf = new ManagedConfiguration(this);
             managedConf.copyProperties(this, baseConf);
-            }
+        }
 
         //dump it to the log at debug level or if the dump attribute is true, in which
         //case it comes out at INFO level

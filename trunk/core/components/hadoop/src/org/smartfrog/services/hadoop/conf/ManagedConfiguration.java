@@ -505,14 +505,26 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws RemoteException           network problems
      */
     public void copyProperties(Prim target, Configuration conf) throws SmartFrogRuntimeException, RemoteException {
+        //sanity check
         assert conf != this;
+
+        //sort the keys
+        TreeMap<String, String> sortedKeys = new TreeMap<String, String>();
         for (Map.Entry<String, String> entry : conf) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            sortedKeys.put(key, value);
+        }
+
+        //now iterate through the sorted set
+        for (Map.Entry<String, String> entry : sortedKeys.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             setIfUnset(key, value);
             value = get(key);
             addSFAttributeIfNeeded(target, key, value);
         }
+        //trigger a configuration reload
         reloadConfiguration();
     }
 

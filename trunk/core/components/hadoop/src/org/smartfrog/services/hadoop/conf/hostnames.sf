@@ -30,7 +30,7 @@ HadoopHostnameConfiguration extends {
   ALL_ZEROS "0.0.0.0";
   ANY_HOST ALL_ZEROS;
   ANY_PORT "0";
-  DEFAULT_HOSTNAME LOCALHOST;
+  DEFAULT_HOSTNAME ALL_ZEROS;
   /**
     The address where the datanode server will listen to.
     If the port is 0 then the server will start on a free port.
