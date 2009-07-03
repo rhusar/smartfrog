@@ -242,7 +242,15 @@
         resource="/${default.sf}"
         dest="${build.default.sf}"
         classpathRef="tests.run.classpath"
-        />
+        >
+        <jvmarg line="${daemon.jvmargs}" />
+        <syspropertyset refid="proxy.settings"/>
+        <!--copy all properties beginning with test. or run.-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+          <propertyref prefix="run."/>
+        </syspropertyset>
+       </sf-expandfully>
      <echo> file is ${build.default.sf}</echo>
   </target>
 
