@@ -1056,6 +1056,24 @@ smartfrog.tasks.classpath=
         </syspropertyset>
       </sf-run>
     </presetdef>
+
+
+    <presetdef name="sf-extended-expand">
+      <sf-expandfully classpathref="run.classpath"
+        dir="${build.test.dir}"
+          >
+        <jvmarg line="${daemon.jvmargs}" />
+        <!-- load in a property file if it is present -->
+        <!--copy all proxy settings from the running JVM-->
+        <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <!--copy all properties beginning with test. or run.-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+          <propertyref prefix="run."/>
+        </syspropertyset>
+      </sf-expandfully>
+    </presetdef>
   </target>
 
   <!-- ========================================================== -->
@@ -1609,8 +1627,12 @@ smartfrog.tasks.classpath=
           timeout="${deploy.timeout}"
           >
         <codebase url="${codebase}"/>
+        <jvmarg line="${daemon.jvmargs}" />
+        <syspropertyset refid="proxy.settings"/>
+        <!--copy all properties beginning with test. or run.-->
         <syspropertyset>
           <propertyref prefix="test."/>
+          <propertyref prefix="run."/>
         </syspropertyset>
       </sf-deploy>
     </presetdef>
