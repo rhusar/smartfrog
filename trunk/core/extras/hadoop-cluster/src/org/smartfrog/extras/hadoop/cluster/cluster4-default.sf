@@ -18,7 +18,15 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/extras/hadoop/cluster/components.sf"
+#include "/org/smartfrog/default.sf"
+
+/**
+ * This a cluster with a management compound, intended for use as the default.sf file
+ * of an installation
+ */
+
+sfConfig extends DefaultManagementCompound {
+  cluster FullClusterWithBindings;
+}
 
 
-
-sfConfig extends FullClusterWithBindings;

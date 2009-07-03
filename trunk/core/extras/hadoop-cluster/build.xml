@@ -57,6 +57,8 @@
     <!-- tests are on-->
   <property name="system.tests" value="true"/>
   <property name="junit.timeout" value="120000000"/>
+  <!--ask for more memory-->
+  <property name="daemon.jvmargs" value="-Xmx256m" />
   <!--time for a single test to execute-->
   <property name="test.timeout.execute"    value="120000"/>
 
@@ -82,19 +84,18 @@
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
     <property name="cluster3.sf" value="${cluster}/cluster3.sf" />
     <property name="cluster4.sf" value="${cluster}/cluster4.sf" />
-    <property name="default.sf" value="${cluster3.sf}" />
-    <property name="deploy.sf" value="${cluster.sf}" />
+    <property name="default.sf" value="/org/smartfrog/extras/hadoop/cluster/cluster4-default.sf" />
+    <property name="deploy.sf" value="${cluster4.sf}" />
     <!--this sets the name for the tests-->
     <property name="deploy.host" value="${test.namenode}" />
     <property name="application.name" value="${project.name}"/>
-    <property name="deploy.timeout" value="60000" />
+    <property name="deploy.timeout" value="600000" />
     <echo>
       test.targethost=${test.targethost}
       test.ipaddress=${test.ipaddress}
       deploy.host=${deploy.host}
       application.name=${application.name}
       deploy.sf=${deploy.sf}
-
     </echo>
     <property name="build.sf.dir" location="${build.dir}/sf" />
     <mkdir  dir="${build.sf.dir}"/>
@@ -269,6 +270,7 @@
     <echo>
       ssh.host = ${ssh.host}
       ssh.user = ${ssh.user}
+      ssh.home.dir = ${ssh.home.dir}
       ssh.bin.dir = ${ssh.bin.dir}
       ssh.path = ${ssh.path}
     </echo>
@@ -339,6 +341,7 @@
       description="list the remote lib dir">
     <sshcommand command="ls -l ${ssh.lib.dir}" />
   </target>
+
   <target  name="ssh-ls-bin" depends="init-ssh"
       description="list the remote bin dir">
     <sshcommand command="ls -l ${ssh.bin.dir}" />

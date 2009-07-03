@@ -40,7 +40,8 @@
   <property name="junit.timeout" value="120000000"/>
   <!--time for a single test to execute-->
   <property name="test.timeout.execute"    value="120000"/>
-
+  <!--ask for more memory-->
+  <property name="daemon.jvmargs" value="-Xmx256m" />
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
@@ -186,20 +187,5 @@
 
     </java>
   </target>
-
-  <target name="submit2file" depends="ready-to-deploy"
-          description="export the cluster resource to an expanded file">
-    <property name="build.sf.dir" location="${build.dir}/sf"/>
-    <mkdir dir="${build.sf.dir}"/>
-
-    <property name="build.default.sf" location="${build.sf.dir}/default.sf"/>
-     <sf-expandfully
-        resource="/${default.sf}"
-        dest="${build.default.sf}"
-        classpathRef="tests.run.classpath"
-        />
-    <echo>file is ${build.default.sf}</echo>
-  </target>
-
 
 </project>
