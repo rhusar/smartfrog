@@ -24,6 +24,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
+import org.apache.tools.ant.types.Commandline;
 
 import java.io.File;
 
@@ -180,4 +181,34 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
         propFile.addPropertiesToJvm(this);
     }
 
+        /**
+     * set a sys property on the smartfrog JVM
+     *
+     * @param name  property name
+     * @param value value
+     */
+    public void addJVMProperty(String name, String value) {
+        Environment.Variable property = new Environment.Variable();
+        property.setKey(name);
+        property.setValue(value);
+        addSysproperty(property);
+    }
+
+    /**
+     * this is a convenience method for things that work with the task -it defines a new JVM arg with the string value.
+     *
+     * @param argument JVM argument
+     */
+    public void defineJVMArg(String argument) {
+        createJVMarg().setValue(argument);
+    }
+
+    /**
+     * part of the ANT interface; this method creates a JVM argument for manipulation
+     *
+     * @return create a nested JVM arg
+     */
+    public Commandline.Argument createJVMarg() {
+        return parser.createJvmarg();
+    }
 }
