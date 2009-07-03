@@ -129,10 +129,10 @@ DistributedFilesystem extends HadoopFilesystem {
   datanode:sfProcessHost datanode1.host;
 }
 
-/*DistributedCluster extends HadoopClusterSingleProcess {
+DistributedCluster extends HadoopClusterSingleProcess {
   namenode:sfProcessHost namenode.host;
   datanode:sfProcessHost datanode1.host;
   jobtracker:sfProcessHost jobtracker.host;
   tasktracker:sfProcessHost tasktracker1.host;
-}*/
+}
 
