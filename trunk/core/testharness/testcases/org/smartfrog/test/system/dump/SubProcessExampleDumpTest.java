@@ -168,7 +168,7 @@ public class SubProcessExampleDumpTest
                            "\n    Testing: testCaseSubProcessExDump04. (Should fail, you cannot dump root daemon)"+
                             "\n*********************************************************");
 
-        application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
+        application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump04");
         assertNotNull(application);
 
         String actualSfClass = (String) application.sfResolveHere("sfClass");
@@ -192,6 +192,7 @@ public class SubProcessExampleDumpTest
         Prim root = (Prim) application.sfResolveWithParser("HOST localhost");
         StringBuffer message = new StringBuffer();
         assertNotNull(root);
+        boolean success = false;
         try {
           message.append ( root.sfCompleteName().toString() );
           message.append ("\n");
@@ -204,8 +205,9 @@ public class SubProcessExampleDumpTest
             System.err.println(messageS);
             ex.printStackTrace();
             System.out.println("\n **** testCaseSubProcessExDump04 Success. (It failed) ****");
+            success = true;
         }
-        throw new Exception ("It should have failed to dump description of root daemon when circular having references");
+        if (success!=true) throw new Exception ("It should have failed to dump description of root daemon when circular having references");
 
     }
 	
