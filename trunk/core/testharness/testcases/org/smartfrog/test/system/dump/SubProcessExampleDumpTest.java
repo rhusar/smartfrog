@@ -199,7 +199,7 @@ public class SubProcessExampleDumpTest
           message.append ( dumpState(root));
           System.out.println(message);
           log.info(message);
-        } catch (Exception ex){
+        } catch (Throwable ex){
             String messageS =  "Error: "+message+"\n"+ex.getMessage();
             //log.info(messageS);
             //System.out.println(messageS);
