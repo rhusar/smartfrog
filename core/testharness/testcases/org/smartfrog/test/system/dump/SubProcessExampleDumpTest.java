@@ -201,10 +201,10 @@ public class SubProcessExampleDumpTest
           log.info(message);
         } catch (Exception ex){
             String messageS =  "Error: "+message+"\n"+ex.getMessage();
-            log.info(messageS);
-            System.err.println(messageS);
-            ex.printStackTrace();
-            System.out.println("\n **** testCaseSubProcessExDump04 Success. (It failed) ****");
+            //log.info(messageS);
+            //System.out.println(messageS);
+            //ex.printStackTrace();
+            System.out.println("\n **** testCaseSubProcessExDump04 Success. (It failed) **** "+ message+"\n"+ex.getMessage());
             success = true;
         }
         if (success!=true) throw new Exception ("It should have failed to dump description of root daemon when circular having references");
