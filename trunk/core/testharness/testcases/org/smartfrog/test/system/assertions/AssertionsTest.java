@@ -39,9 +39,9 @@ public class AssertionsTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "testBasicAssertions.sf", "testBasicAssertions");
     }
 
-    public void testTrueIsFalse() throws Throwable {
-        deployExpectingAssertionFailure(FILES + "testTrueIsFalse.sf", "testTrueIsFalse");
-    }
+//    public void testTrueIsFalse() throws Throwable {
+//        deployExpectingAssertionFailure(FILES + "testTrueIsFalse.sf", "testTrueIsFalse");
+//    }
 
     public void testFalseIsTrue() throws Throwable {
         Throwable t = deployExpectingAssertionFailure(FILES + "testFalseIsTrue.sf", "testFalseIsTrue");
