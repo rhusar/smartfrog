@@ -193,21 +193,28 @@ public class SubProcessExampleDumpTest
         StringBuffer message = new StringBuffer();
         assertNotNull(root);
         boolean success = false;
+        String messageEx = null;
         try {
           message.append ( root.sfCompleteName().toString() );
           message.append ("\n");
           message.append ( dumpState(root));
           System.out.println(message);
           log.info(message);
+
         } catch (Throwable ex){
-            String messageS =  "Error: "+message+"\n"+ex.getMessage();
+            messageEx =  ex.getMessage().toString();
+            //String messageS =  "Error: "+message+"\n"+messageEx;
+            String messageS = " Test successful: It failed to dump description of root daemon when circular having references" + "; "+ messageEx+"\n"+ message;
             //log.info(messageS);
-            //System.out.println(messageS);
             //ex.printStackTrace();
-            System.out.println("\n **** testCaseSubProcessExDump04 Success. (It failed) **** "+ message+"\n"+ex.getMessage());
+            System.out.println("\n **** testCaseSubProcessExDump04: Success. **** "+ messageS);
             success = true;
         }
-        if (success!=true) throw new Exception ("It should have failed to dump description of root daemon when circular having references");
+        if (success!=true) {
+            String messageS = " Test unsuccessful: It should failed to dump description of root daemon when circular having references" + "; "+ messageEx;
+            log.info(messageS);
+            throw new Exception (messageS);
+        }
 
     }
 	
