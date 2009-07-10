@@ -39,14 +39,15 @@ public class AssertionsTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "testBasicAssertions.sf", "testBasicAssertions");
     }
 
-//    public void testTrueIsFalse() throws Throwable {
-//        deployExpectingAssertionFailure(FILES + "testTrueIsFalse.sf", "testTrueIsFalse");
-//    }
+    public void testTrueIsFalse() throws Throwable {
+        deployExpectingAssertionFailure(FILES + "testTrueIsFalse.sf", "testTrueIsFalse");
+    }
 
     public void testFalseIsTrue() throws Throwable {
         Throwable t = deployExpectingAssertionFailure(FILES + "testFalseIsTrue.sf", "testFalseIsTrue");
         SmartFrogAssertionException sfe = extractAssertionException(t);
-        assertContains(sfe.getMessage(), "truth and falsehood");
+        //assertContains(sfe.getMessage(), "truth and falsehood");
+        assertContains(sfe.getMessage(), "isFalse evaluates to true");
     }
 
 
