@@ -920,6 +920,8 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Fri Jul 24 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.013-1.el5
+- Move up to the RHEL5 RPMs. 
 * Fri Jun 12 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.011-1.el4
 - Include Hadoop 0.21-alpha-13
 - New configuration file, bin/setSFEnvVariables.sh, which can be used
