@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.languages.sf.sfcomponentdescription;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -56,9 +57,11 @@ import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.ReferencePhases;
+import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 /**
  * Defines the context class used by Components. Context implementations
@@ -961,7 +964,34 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
        return res;
    }
-
+   
+   
+   /**
+    * Method to take a URL, parse it, add the addtional key-value parameters to the top level, and then resolve it.
+    * @param url the file to parse
+    * @param params a context containing the parameter key-value pairs
+    * @return the resultant component description
+    * @throws SmartFrogException
+    * @throws FileNotFoundException
+    */
+   public static ComponentDescription getDescriptionURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
+	       System.out.println("SFCDImpl1:"+url);
+	   
+	   	   Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
+	   	   
+	   	   System.out.println("SFCDImpl2:"+p);
+           // add params
+           if (params != null) {
+               for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
+                   Object k = keys.nextElement();
+                   p.sfReplaceAttribute(k, params.get(k));
+               }
+           }
+           
+           System.out.println("SFCDImpl3"+p);
+           
+           return p.sfResolvePhases().sfAsComponentDescription();
+   }
 
     protected Object copyValue(Object v) throws SmartFrogCompilationException {
         if (v instanceof Number) return v;

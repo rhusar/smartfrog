@@ -1,3 +1,23 @@
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
 package org.smartfrog.services.dependencies.statemodel.state;
 
 import java.rmi.RemoteException;
@@ -15,7 +35,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
- *
+ * Composite pattern for orchestration components
  */
 public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation, DeployingAgent {
 	
@@ -76,15 +96,12 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
    }
    
    public synchronized void sfRun() throws SmartFrogException{
-	   //System.out.println("IN: sfRun"+this);
-	   
 	   for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
 	         Object c = e.nextElement();
 	         if (c instanceof RunSynchronisation) {
 	        	 ((RunSynchronisation)c).sfRun();
 	         }
 	      }
-	   //System.out.println("OUT: sfRun"+this);
    }
    
    public String getName(){

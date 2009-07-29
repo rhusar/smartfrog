@@ -1,3 +1,23 @@
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
 package org.smartfrog.services.dependencies.statemodel.state;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -18,7 +38,6 @@ public class StateComponentTransitionException extends SmartFrogException {
 		this(msg, g_NOCODEAVAILABLE);
 	}
 	
-	//These codes are in drastic need of an update...
 	public static final int g_NOCODEAVAILABLE=0xFFFF;
 	public static final int g_NOTRANSITIONS=0x0;
 	public static final int g_NOSUCHAVAILABLETRANSITION=0x1;
@@ -30,10 +49,10 @@ public class StateComponentTransitionException extends SmartFrogException {
 	public static final int g_INVALIDSUPPLIEDVALUE=0x7;
 	public static final int g_VALUESLEFTTOSET=0x8;
 	public static final int g_VALUEALREADYSET=0x9;
-	public static final int g_NOTPERMITTED=0x10;
-	public static final int g_DEPENDENCYVALUEUNRESOLVABLE=0x4;
-	public static final int g_UNABLETOAPPLYEFFECTS=0x4;
-	public static final int g_COMPONENTNOTENABLED=0x10;
+	public static final int g_NOTPERMITTED=0xA;
+	public static final int g_DEPENDENCYVALUEUNRESOLVABLE=0xB;
+	public static final int g_UNABLETOAPPLYEFFECTS=0xC;
+	public static final int g_COMPONENTNOTENABLED=0xD;
 	
 	public int getExceptionCode(){ return code; }	
 }
