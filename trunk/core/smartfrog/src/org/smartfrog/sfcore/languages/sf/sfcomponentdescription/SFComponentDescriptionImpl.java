@@ -975,21 +975,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     * @throws FileNotFoundException
     */
    public static ComponentDescription getDescriptionURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-	       System.out.println("SFCDImpl1:"+url);
-	   
-	   	   Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
+	       Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
 	   	   
-	   	   System.out.println("SFCDImpl2:"+p);
-           // add params
+	   	   // add params
            if (params != null) {
                for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
                    Object k = keys.nextElement();
                    p.sfReplaceAttribute(k, params.get(k));
                }
            }
-           
-           System.out.println("SFCDImpl3"+p);
-           
            return p.sfResolvePhases().sfAsComponentDescription();
    }
 
