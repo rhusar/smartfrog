@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.utils;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,11 +32,9 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 /**
  * This class provides a single static method - print - which takes a ComponentDescription
@@ -134,19 +131,8 @@ public class CDPrinter {
      * @throws FileNotFoundException
      */
     public static String printURLSorted(String url, Context params, boolean sort) throws SmartFrogException, FileNotFoundException {
-            Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
-    	    
-            // add params
-            if (params != null) {
-                for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
-                    Object k = keys.nextElement();
-                    p.sfReplaceAttribute(k, params.get(k));
-                }
-            }
             
-            p = p.sfResolvePhases();
-            
-            ComponentDescription cd = p.sfAsComponentDescription();
+            ComponentDescription cd = SFComponentDescriptionImpl.getDescriptionURL(url, params);
             try { if (sort) cd=sort(cd); } catch (Exception e){throw new SmartFrogException(e); }
             
             return print(cd);

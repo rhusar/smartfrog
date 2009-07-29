@@ -1,3 +1,23 @@
+/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
 package org.smartfrog.services.dependencies.statemodel.state;
 
 import java.awt.event.ActionEvent;
@@ -35,6 +55,9 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
  */
+
+///TIME FOR A CODE REVIEW FOR THIS CLASS
+
 public abstract class StateComponent extends PrimImpl implements Prim, StateDependencies, StateChangeNotification, DependencyValidation {
 
    private HashSet dependencies = new HashSet();
@@ -51,8 +74,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    private boolean m_running=false;
    private ReentrantLock transitionLock = new ReentrantLock();
    
-   public StateComponent() throws RemoteException {
-   }
+   public StateComponent() throws RemoteException {super();}
 
    public synchronized void sfTerminateWith(TerminationRecord t) {
 		if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: (IN) sfTerminateWith(t)");
@@ -70,9 +92,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
       super.sfDeploy();
-            
-      //System.out.println("&&&&& IN STATECOMPONENT DEPLOY &&&&&");
-	     
+               
       threadpool = (ThreadPool) sfResolve("threadpool", false);
       Context cxt = sfContext();
       asAndConnector = sfResolve("asAndConnector", asAndConnector, false);
