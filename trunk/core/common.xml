@@ -580,7 +580,7 @@ java.class.path=
     <property name="javadoc.version" value="true"/>
     <property name="javadoc.use" value="true"/>
     <property name="javadoc.windowtitle" value="${Name.System}"/>
-    <property name="javadoc.packages" value="org.smartfrog.*, com.hp.*"/>
+    <property name="javadoc.packages" value="org.smartfrog.*,com.hp.*"/>
     <property name="javadoc.package.name" value="SmartFrog Packages"/>
     <property name="javadoc.package.title" value="SmartFrog Packages"/>
     <property name="javadoc.package.title" value="SmartFrog Packages"/>
