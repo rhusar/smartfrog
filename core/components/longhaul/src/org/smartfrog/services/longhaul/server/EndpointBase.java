@@ -96,7 +96,7 @@ public abstract class EndpointBase {
         ProcessCompound root = getRootProcess();
         Object resolved = root.sfResolveHere(name);
         if(!(resolved instanceof Prim)) {
-            throw new SmartFrogResolutionException("The attribute "+name+" does not refer to an application"
+            throw new SmartFrogResolutionException("The attribute " + name + " does not refer to an application"
             + " but to " + resolved);
         }
         Prim child = (Prim) resolved;

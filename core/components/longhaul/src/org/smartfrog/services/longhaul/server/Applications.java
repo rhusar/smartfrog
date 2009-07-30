@@ -21,6 +21,7 @@ package org.smartfrog.services.longhaul.server;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Iterator;
 
 /** List the applications that are running */
 @Path("/applications/")
@@ -87,10 +89,7 @@ public class Applications extends EndpointBase {
     @Path("/{application}/")
     public String getApplicationAsText(@PathParam("application") String application)
             throws SmartFrogException, RemoteException {
-        Prim child = lookupApplication(application);
-        StringBuilder response = new StringBuilder();
-        response.append(child.sfDiagnosticsReport().toString());
-        return response.toString();
+        return getApplicationAsSF(application);
     }
 
     @GET
@@ -98,10 +97,17 @@ public class Applications extends EndpointBase {
     @Path("/{application}/")
     public String getApplicationAsSF(@PathParam("application") String application)
             throws SmartFrogException, RemoteException {
-        Prim child = lookupApplication(application);
+        ComponentDescription diagnostics = extractDiagnosticsReport(application);
         StringBuilder response = new StringBuilder();
-        response.append(child.sfDiagnosticsReport().toString());
+        response.append(diagnostics.toString());
         return response.toString();
+    }
+
+    private ComponentDescription extractDiagnosticsReport(String application)
+            throws RemoteException, SmartFrogException {
+        Prim child = lookupApplication(application);
+        ComponentDescription diagnostics = child.sfDiagnosticsReport();
+        return diagnostics;
     }
 
     @GET
@@ -109,8 +115,20 @@ public class Applications extends EndpointBase {
     @Path("/{application}/")
     public String getApplicationAsJSON(@PathParam("application") String application)
             throws SmartFrogException, RemoteException {
-        Prim child = lookupApplication(application);
+        ComponentDescription diagnostics = extractDiagnosticsReport(application);
         StringBuilder response = new StringBuilder();
+        response.append("applications {\n");
+        Iterator attrs = diagnostics.sfAttributes();
+        while (attrs.hasNext()) {
+            Object key = attrs.next();
+            Object value = diagnostics.sfResolveHere(key);
+            response.append("  ")
+                    .append(key.toString())
+                    .append(" ")
+                    .append(value.toString())
+                    .append("\n");
+        }
+        response.append("}");
         return response.toString();
     }
 }
