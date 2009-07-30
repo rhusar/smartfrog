@@ -972,18 +972,3 @@ fi
 - fixing permissions of the log directory; creating a new user on demand
 * Tue May 22 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.000-1
 - Built from contributions and the JPackage template
-
-
-# install statements
-#%install
-#mkdir -p ${RPM_BUILD_ROOT}/%{prefix}
-#cd SmartFrog.${smartfrog.version}
-#cd ..
-#cp -R SmartFrog.${smartfrog.version} ${RPM_BUILD_ROOT}/%{prefix}
-
-#%clean
-#rm -rf ${RPM_BUILD_ROOT}
-
-
-
-
