@@ -157,36 +157,6 @@ Transition extends {
     requiresThread true;
 }
 
-SimpleTransitionNoScriptingAgent extends Transition {
-   requiresThread false;
-   lag 0;
-}
-
-SimpleTransition extends SimpleTransitionNoScriptingAgent {
-   scriptAttributes [];
-   doScript extends ScriptWrapper {
-        script LAZY PARENT:ATTRIB script;
-        scriptPrim LAZY PARENT:ATTRIB scriptingAgent;
-        scriptAttributes LAZY PARENT:scriptAttributes;
-   }
-}
-
-PrepareTransition extends SimpleTransition {
-   sfIsStateComponentTransition "prepare";
-}
-
-FinalizeTransition extends SimpleTransition {
-   sfIsStateComponentTransition "finalize";
-}
-
-/*ScriptWrapper extends Function {
-	sfFunctionClass "org.smartfrog.services.dependencies.scripting.ScriptWrapper";
-	sfLazyFunction true;
-    script TBD;
-    scriptPrim TBD;
-    scriptAttributes [];
-}*/
-
 VerificationRecord extends {
     sfIsVerificationRecord;
     proposition TBD;
