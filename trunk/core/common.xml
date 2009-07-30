@@ -209,6 +209,7 @@
 
     <!--copy all proxy settings from the running JVM-->
     <propertyset id="proxy.settings">
+      <propertyref prefix="java.net.useSystemProxies"/>
       <propertyref prefix="http."/>
       <propertyref prefix="https."/>
       <propertyref prefix="socks."/>
@@ -2151,10 +2152,15 @@ Exist.
     <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
+    <property name="antbuild.dir" location="${core.dir}/antbuild/" />
+    <property name="ivysettings.dir" location="${antbuild.dir}/ivy/" />
+    <property name="ivy.repository.dir" location="${antbuild.dir}/repository/" />
+    <property name="ivysettings.xml" location="${ivysettings.dir}/ivysettings.xml" />
+
     <property name="ivy.jar"
-        location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
- <!--    <property name="ivy.ibiblio.root"
-        value="http://www.ibiblio.org/maven2/"/> -->
+        location="${ivy.repository.dir}/org.apache.ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"/>
+        
+    <!-- look for the jar or the resource on the classpath -->
     <available property="ivy.jar.found" file="${ivy.jar}" />
     <available property="ivy.resource.found" resource="${ivy.resource}" />
     <condition property="ivy.found" >
@@ -2176,7 +2182,6 @@ Exist.
     <mkdir dir="${ivy.cache.smartfrog.dir}" />
     <mkdir dir="${ivy.cache.project.dir}" />
 
-    <property name="ivysettings.xml" location="${core.dir}/antbuild/ivy/ivysettings.xml" />
 
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
@@ -2194,6 +2199,11 @@ Exist.
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
+    <echo level = "verbose">
+    Ivy version     = ${ivy.version}
+    ivysettings.xml = ${ivysettings.xml}
+    ivy.repository.dir = ${ivy.repository.dir}
+    </echo>
   </target>
 
   <!--
