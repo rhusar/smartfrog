@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.io.Closeable;
+import java.io.StringBufferInputStream;
 import java.util.Vector;
 
 import org.smartfrog.services.management.SFDeployDisplay;
@@ -215,6 +216,46 @@ public final class SFParse implements MessageKeys {
         return parseResource(resource, rpm, options);
     }
 
+    /**
+     * Parses the supplied text.
+     * 
+     * The code uses the (deprecated) {@link StringBufferInputStream}, which is only uses the low-byte of every
+     * character in the process. As long as the input is all ASCII, all will be well, but results for high-unicode is
+     * "undefined".
+     *
+     * @param text inline text
+     * @param rpm      A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                 is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                 phases are carried out
+     * @param options  the options for this parse
+     * @return the parse results
+     */
+    public static ParseResults parseTextToResults(String text, RawParseModifier rpm, ParseOptionSet options) {
+        
+        StringBufferInputStream is = new StringBufferInputStream(text);
+        return parseInputStreamToResults("inline.sf", is, rpm, options);
+    }
+
+    /**
+     * Parse any open input stream to results
+     * @param path real or pretend path of the source -the filetype is picked up from the extension
+     * @param is input stream
+     * @param rpm      A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, that
+     *                 is before any parsing phases are carried out, so we have the opportunity to modify it before the
+     *                 phases are carried out
+     * @param options  the options for this parse
+     * @return the parse results
+     */
+    public static ParseResults parseInputStreamToResults(String path, InputStream is,
+                                                         RawParseModifier rpm, ParseOptionSet options) {
+        ParseResults results = new ParseResults();
+        try {
+            parseInputStream(path, is, results, rpm, options);
+        } catch (Exception e) {
+            handleParseErrors(e, results, path, options, "\n");
+        }
+        return results;
+    }
 
     /**
      * Parses a file.
@@ -277,6 +318,7 @@ public final class SFParse implements MessageKeys {
      * @param options any options
      * @throws Exception on failure
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     private static void parseInputStream(String path, InputStream is, ParseResults results,
                                                    RawParseModifier rpm, ParseOptionSet options)
             throws Exception {
@@ -312,7 +354,7 @@ public final class SFParse implements MessageKeys {
      * @param results the results to add to
      * @param path path of the source
      * @param options verbosity options.
-     * @param split
+     * @param split Message separator (ex. "\n");
      */
     private static void handleParseErrors(Throwable thrown, ParseResults results, String path,
                                           ParseOptionSet options, String split) {
@@ -669,7 +711,7 @@ public final class SFParse implements MessageKeys {
         public Vector<String> parsed;
         public Vector<Vector<String>> errors = new Vector<Vector<String>>();
         public Vector<String> report = new Vector<String>();
-        long parseDurationMillis;
+        public long parseDurationMillis;
 
         public boolean hasErrors() {
             return !errors.isEmpty();
