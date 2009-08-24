@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.net.URI;
 
 /**
  * Utility methods that need to be in the right package
@@ -43,8 +44,12 @@ public class ExtDfsUtils {
      * @throws IOException for formatting problems
      */
     public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
-        Collection<File> editDirs = new ArrayList<File>();
-        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat, editDirs), conf);
+        Collection<URI> editDirs = new ArrayList<URI>(0);
+        ArrayList<URI> dirs = new ArrayList<URI>(dirsToFormat.size());
+        for (File file:dirsToFormat) {
+            dirs.add(file.toURI());
+        }
+        FSNamesystem nsys = new FSNamesystem(new FSImage(dirs, editDirs), conf);
         nsys.dir.fsImage.format();
     }
 }

@@ -112,7 +112,21 @@
     where it only complicates things. 
     -->
     <dependency org="org.apache.hadoop"
-        name="hadoop-core"
+        name="hadoop-common"
+        rev="${hadoop.version}"
+        changing="true"
+        conf="hadoop-core->default">
+      <exclude org="org.mortbay.jetty" />
+    </dependency>
+    <dependency org="org.apache.hadoop"
+        name="hadoop-hdfs"
+        rev="${hadoop.version}"
+        changing="true"
+        conf="hadoop-core->default">
+      <exclude org="org.mortbay.jetty" />
+    </dependency>
+   <dependency org="org.apache.hadoop"
+        name="hadoop-mapred"
         rev="${hadoop.version}"
         changing="true"
         conf="hadoop-core->default">
@@ -150,15 +164,6 @@
         name="jets3t"
         rev="${jets3t.version}"
         conf="s3-client->master"/>
-
-    <!--Configuration: kfs -->
-
-    <!-- This is not in the repository
-  <dependency org="org.kosmix"
-    name="kfs"
-    rev="${kfs.version}"
-    conf="kfs->default"/>-->
-
 
     <!--to work with ftp:// fileystems, commons-net is needed -->
     <dependency org="commons-net"
