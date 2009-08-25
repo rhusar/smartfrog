@@ -127,4 +127,24 @@
     <loadclass class="org.apache.hadoop.hdfs.server.namenode.JspHelper" />
   </target>
 
+  <!--create the JAR manifest-->
+  <target name="manifest" depends="pre-compile">
+    <property name="manifest.mf" location="${build.dir}/MANIFEST.MF" />
+    <manifest file="${manifest.mf}">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Premain-Class"
+         value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
+    </manifest>
+  </target>
+
+
+  <target name="sizeof" depends="ready-to-test" >
+   <property name="sizeof" value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
+   <sf-java
+     classpathref="tests.run.classpath"
+     classname="${sizeof}">
+     <jvmarg value="-javaagent:${target.jar}"/>
+   </sf-java>
+  </target>
+
 </project>
