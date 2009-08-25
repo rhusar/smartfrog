@@ -424,7 +424,6 @@ java.class.path=
     the ant runtime by default, and fails on any error -->
     <presetdef name="sf-java">
       <java
-          includeantruntime="false"
           fork="true"
           failonerror="true"
           >
@@ -1433,8 +1432,15 @@ smartfrog.tasks.classpath=
   </target>
 
 
+  <!--create the JAR manifest-->
+  <target name="manifest" depends="pre-compile">
+    <property name="manifest.mf" location="${build.dir}/MANIFEST.MF" />
+    <manifest file="${manifest.mf}">
+      <attribute name="Built-By" value="${user.name}"/>
+    </manifest>
+  </target>
 
-  <target name="ready-to-jar" depends="rmi"/>
+  <target name="ready-to-jar" depends="rmi,manifest"/>
 
   <!--
   component only logic to create a versioned jar name.
@@ -1448,6 +1454,7 @@ smartfrog.tasks.classpath=
     <property name="target.jar"
         location="${dist.lib.dir}/${jar.name}"/>
     <sf-jar destfile="${target.jar}"
+        manifest="${manifest.mf}"
         basedir="${build.classes.dir}"
         includes="**/*"/>
     <echo level="verbose">created package ${target.jar}</echo>
@@ -1459,7 +1466,7 @@ smartfrog.tasks.classpath=
         file="${sf.version.file}"
         comment="This is machine generated. Do Not Edit!">
       <entry key="sf.build.date" type="date" value="now"/>
-      <entry  key="sf.build.version" value = "${sf.build.version}"/>
+      <entry key="sf.build.version" value = "${sf.build.version}"/>
       <entry key="sf.majorRelease" value="${sf.majorRelease}"/>
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
