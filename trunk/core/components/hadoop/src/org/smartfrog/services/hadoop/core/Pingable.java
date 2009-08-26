@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.local.tracker;
+package org.smartfrog.services.hadoop.core;
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+import java.io.IOException;
 
 /**
- *
- * Created 20-May-2008 17:35:13
- *
+ * Created 26-Aug-2009 16:52:55
  */
 
-public class JobTrackerTest extends HadoopTestBase {
-    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
 
-    public JobTrackerTest(String name) {
-        super(name);
-    }
+public interface Pingable {
 
-    public void testLocalJobTracker() throws Throwable {
-        checkMapRedCluster();
-        enableFailOnPortCheck();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTracker");
-    }
-
+    /**
+     * Ping: checks that a component considers itself live.
+     *
+     * This interface makes a protected method in Service public; there are no guarantees of stability
+     *
+     * @return the current service state.
+     * @throws IOException for any ping failure
+     */
+    ServicePingStatus ping() throws IOException;
 }

@@ -23,12 +23,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.util.NodeUtils;
+import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.ServicePingStatus;
+import org.smartfrog.services.hadoop.core.InnerPing;
+import org.smartfrog.services.hadoop.core.PingHelper;
 
+import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -40,16 +45,20 @@ import java.util.List;
  *
  */
 
-public class ExtJobTracker extends JobTracker implements ServiceInfo, ConfigurationAttributes {
+public class ExtJobTracker extends JobTracker implements ServiceInfo, ConfigurationAttributes, InnerPing {
 
     private static final Log LOG= LogFactory.getLog(ExtJobTracker.class);
     private ServiceStateChangeNotifier notifier;
+    private final PingHelper pingHelper = new PingHelper(this);
 
-    public ExtJobTracker(JobConf conf) throws IOException, InterruptedException {
+
+    public ExtJobTracker(JobConf conf)
+            throws IOException, InterruptedException, LoginException {
         this(null, conf);
     }
 
-    public ExtJobTracker(ServiceStateChangeHandler owner, JobConf conf) throws IOException, InterruptedException {
+    public ExtJobTracker(ServiceStateChangeHandler owner, JobConf conf) 
+            throws IOException, InterruptedException, LoginException {
         super(conf);
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
@@ -75,12 +84,14 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      *
      * @throws IOException exceptions which will be logged
      */
+/*
     @Override
     protected void innerClose() throws IOException {
         super.innerClose();
         //also: shut down the filesystem
         //closeTheFilesystemQuietly();
     }
+*/
 
 
     /**
@@ -92,8 +103,28 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      * @throws IOException for any ping failure
      */
     @Override
-    public ServiceStatus ping() throws IOException {
-        return super.ping();
+    public ServicePingStatus ping() throws IOException {
+        return pingHelper.ping();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param status a status that can be updated with problems
+     * @throws IOException for any problem
+     */
+    @Override
+    public void innerPing(ServicePingStatus status) throws IOException {
+        if (infoServer == null || !infoServer.isAlive()) {
+            status.addThrowable(
+                    new IOException("TaskTracker HttpServer is not running on port "
+                            + infoPort));
+        }
+        if (interTrackerServer == null) {
+            status.addThrowable(
+                    new IOException("InterTrackerServer is not running on port "
+                            + port));
+        }
     }
 
     /**
@@ -119,10 +150,12 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      *
      * @return the worker count
      */
+/*
     @Override
     public int getLiveWorkerCount() {
         return getNumResolvedTaskTrackers();
     }
+*/
 
     /**
      * {@inheritDoc}
@@ -147,6 +180,6 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
      * @return the filesystem or null
      */
     public FileSystem getFileSystem() {
-        return fs;
+        return super.getFileSystem();
     }
 }

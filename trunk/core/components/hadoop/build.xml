@@ -138,13 +138,25 @@
   </target>
 
 
-  <target name="sizeof" depends="ready-to-test" >
+  <target name="sizeof" depends="sizeof32, sizeof64" />
+
+  <target name="sizeof32" depends="ready-to-test" >
    <property name="sizeof" value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
    <sf-java
      classpathref="tests.run.classpath"
      classname="${sizeof}">
      <jvmarg value="-javaagent:${target.jar}"/>
    </sf-java>
+  </target>
+
+  <target name="sizeof64" depends="ready-to-test" >
+    <property name="sizeof" value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
+    <sf-java failonerror="false"
+      classpathref="tests.run.classpath"
+      classname="${sizeof}">
+      <jvmarg value="-XX:+UseCompressedOops"/>
+      <jvmarg value="-javaagent:${target.jar}"/>
+    </sf-java>
   </target>
 
 </project>

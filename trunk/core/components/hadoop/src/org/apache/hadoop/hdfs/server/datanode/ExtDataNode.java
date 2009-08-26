@@ -29,6 +29,10 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.PingHelper;
+import org.smartfrog.services.hadoop.core.InnerPing;
+import org.smartfrog.services.hadoop.core.ServicePingStatus;
+import org.smartfrog.services.hadoop.core.LivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
@@ -45,14 +49,15 @@ import java.util.List;
  * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
  * will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationAttributes {
+public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationAttributes, InnerPing {
 
     private volatile boolean stopped;
     private ExtDataNodeThread worker;
     private Prim owner;
     private ServiceStateChangeNotifier notifier;
     ManagedConfiguration conf;
-
+    private final PingHelper pingHelper = new PingHelper(this);
+    
     public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
@@ -219,9 +224,29 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
      * @throws IOException for any ping failure
      */
     @Override
-    public ServiceStatus ping() throws IOException {
-        return super.ping();
+    public ServicePingStatus ping() throws IOException {
+        return pingHelper.ping();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * This implementation checks for the IPC server running and the DataNode being registered to a namenode.
+     *
+     * @param status the initial status
+     * @throws IOException       for any ping failure
+     * @throws LivenessException if the IPC server is not defined
+     */
+    @Override
+    public void innerPing(ServicePingStatus status) throws IOException {
+        if (ipcServer == null) {
+            status.addThrowable(new LivenessException("No IPC Server running"));
+        }
+        if (dnRegistration == null) {
+            status.addThrowable(
+                    new LivenessException("Not registered to a namenode"));
+        }
+    }    
 
     /**
      * Start the worker thread

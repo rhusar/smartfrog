@@ -36,7 +36,7 @@ import java.net.UnknownHostException;
 
 public class NodeUtils {
     
-    static final Log LOG = LogFactory.getLog(NodeUtils.class);
+    private static final Log LOG = LogFactory.getLog(NodeUtils.class);
     
     public static BindingTuple toBindingTuple(String name, String protocol, InetSocketAddress addr) {
         String stringValue = toURL(protocol, addr);
