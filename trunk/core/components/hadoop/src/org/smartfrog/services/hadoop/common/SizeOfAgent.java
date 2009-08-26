@@ -16,8 +16,8 @@ import java.lang.instrument.Instrumentation;
 public class SizeOfAgent {
 
     /** This is the interface we only get if started as an agent */
-    static Instrumentation instrumentation;
-    static final Log LOG = LogFactory.getLog(SizeOfAgent.class);
+    private static Instrumentation instrumentation;
+    private static final Log LOG = LogFactory.getLog(SizeOfAgent.class);
 
 
     /**
@@ -101,11 +101,19 @@ public class SizeOfAgent {
      * @throws Throwable on a failure
      */
     public static void main(String[] args) throws Throwable {
+        printSizeof("Object", new Object());
+        for (int i = 0; i <= (3*8); i++) {
+            printSizeof("Object[" + i + "]", new Object[i]);
+        }
+        printSizeof("String", "");
         printSizeof("BlockInfo", SizeofNamenode.sizeOfBlockInfo());
         printSizeof("INode", SizeofNamenode.sizeOfINodeFile());
         printSizeof("INodeDirectory", SizeofNamenode.sizeOfINodeDirectory());
         printSizeof("INodeDirectorywithQuota", SizeofNamenode.sizeOfINodeDirectoryWithQuota());
         printSizeof("DatanodeDescriptor", new DatanodeDescriptor());
+        for (int i=0; i<8 ; i++) {
+            printSizeof("BlockInfo replicas="+i, SizeofNamenode.sizeOfBlockInfo(i));
+        }
     }
 
 }
