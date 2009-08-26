@@ -27,6 +27,9 @@ import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.ServicePingStatus;
+import org.smartfrog.services.hadoop.core.PingHelper;
+import org.smartfrog.services.hadoop.core.InnerPing;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -37,11 +40,12 @@ import java.util.List;
  * Task tracker with some lifecycle support and state information
  */
 
-public class ExtTaskTracker extends TaskTracker implements ServiceInfo, ConfigurationAttributes {
+public class ExtTaskTracker extends TaskTracker implements ServiceInfo, ConfigurationAttributes, InnerPing {
 
     private static final Log LOG = LogFactory.getLog(ExtTaskTracker.class);
     private ServiceStateChangeNotifier notifier;
-
+    private final PingHelper pingHelper = new PingHelper(this);
+    
     public ExtTaskTracker(JobConf conf) throws IOException {
         this(null, conf);
     }
@@ -79,9 +83,31 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      * @throws IOException for any ping failure
      */
     @Override
-    public ServiceStatus ping() throws IOException {
-        return super.ping();
+    public ServicePingStatus ping() throws IOException {
+        return pingHelper.ping();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param status a status that can be updated with problems
+     * @throws IOException for any problem
+     */
+    public void innerPing(ServicePingStatus status) throws IOException {
+/*
+        if (server == null || !server.isAlive()) {
+            status.addThrowable(
+                    new IOException("TaskTracker HttpServer is not running on port "
+                            + httpPort));
+        }
+*/
+        if (taskReportServer == null) {
+            status.addThrowable(
+                    new IOException("TaskTracker Report Server is not running on "
+                            + taskReportAddress));
+        }
+    }
+
 
     /**
      * Get the port used for IPC communications

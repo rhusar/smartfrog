@@ -45,7 +45,10 @@ public class SizeofNamenode {
         return SizeOfAgent.sizeOf(new BlockInfo(new Block(),0));
     }
 
-
+      public static long sizeOfBlockInfo(int replicas) {
+          BlockInfo instance = new BlockInfo(new Block(), replicas);
+          return SizeOfAgent.sizeOf(instance);
+      }
 
 
 }

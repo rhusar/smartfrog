@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
+import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -131,6 +132,9 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             return service;
         } catch (InterruptedException e) {
             throw new SmartFrogLifecycleException(ERROR_NO_START + getServiceName() + ": " + e, e, this);
+        } catch (LoginException e) {
+          throw new SmartFrogLifecycleException(
+                  "Login Failure " + getServiceName() + ": " + e, e, this);
         }
     }
 

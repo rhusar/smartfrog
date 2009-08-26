@@ -19,9 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
-import org.apache.hadoop.util.Service;
-
-import java.io.IOException;
 import java.util.List;
 
 
@@ -30,7 +27,7 @@ import java.util.List;
  */
 
 
-public interface ServiceInfo {
+public interface ServiceInfo  extends Pingable {
 
     /** {@value} */
     int PORT_UNUSED = -1;
@@ -68,12 +65,5 @@ public interface ServiceInfo {
      */
     List<BindingTuple> getBindingInformation();
 
-    /**
-     * Ping: checks that a component considers itself live.
-     *
-     * This interface makes a protected method in Service public; there are no guarantees of stability
-     * @return the current service state.
-     * @throws IOException           for any ping failure
-     */
-    Service.ServiceStatus ping() throws IOException;
+
 }

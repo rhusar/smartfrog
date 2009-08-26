@@ -29,6 +29,10 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.PingHelper;
+import org.smartfrog.services.hadoop.core.InnerPing;
+import org.smartfrog.services.hadoop.core.ServicePingStatus;
+import org.smartfrog.services.hadoop.core.LivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
@@ -38,7 +42,7 @@ import java.util.List;
 /**
  *
  */
-public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationAttributes {
+public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationAttributes, InnerPing {
 
     private boolean checkRunning;
     private Prim owner;
@@ -47,6 +51,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     public static final String NO_FILESYSTEM = "Filesystem is not running";
     private int minWorkerCount;
     private ServiceStateChangeNotifier notifier;
+    private final PingHelper pingHelper = new PingHelper(this);
 
     /**
      * Create a new name node and deploy it.
@@ -90,7 +95,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
         this.owner = owner;
         //any other config here.
         checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
-        minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT,0);
+        minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT, 0);
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
@@ -123,8 +128,8 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      * @throws IOException for any ping failure
      */
     @Override
-    public ServiceStatus ping() throws IOException {
-        return super.ping();
+    public ServicePingStatus ping() throws IOException {
+        return pingHelper.ping();
     }
 
     /**
@@ -134,15 +139,26 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      */
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     @Override
-    public synchronized void innerPing(ServiceStatus status)
-            throws IOException {
-        super.innerPing(status);
+    public void innerPing(ServicePingStatus status) throws IOException {
+        if (namesystem == null) {
+            status.addThrowable(new LivenessException("No name system"));
+        } else {
+            try {
+                namesystem.ping();
+            } catch (IOException e) {
+                status.addThrowable(e);
+            }
+        }
+        if (httpServer == null || !httpServer.isAlive()) {
+            status.addThrowable(
+                    new LivenessException("NameNode HttpServer is not running"));
+        }
         if (checkRunning) {
             int workers = getLiveWorkerCount();
-            if(workers < minWorkerCount ){
+            if (workers < minWorkerCount) {
                 status.addThrowable(new LivenessException("The number of worker nodes is only "
-                      + workers
-                      +"\n - less than the minimum of " + minWorkerCount));
+                        + workers
+                        + "\n - less than the minimum of " + minWorkerCount));
             }
         }
     }
@@ -151,10 +167,10 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      * Get the current number of workers
      * @return the worker count
      */
-    @Override
+    /* @Override
     public int getLiveWorkerCount() {
         return getNamesystem().heartbeats.size();
-    }
+    }*/
 
     /**
      * {@inheritDoc}
@@ -180,7 +196,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
-        LOG.info("State change: NameNode is now "+ newState);
+        LOG.info("State change: NameNode is now " + newState);
         //when we go live, we also push out our new URL
 
         //tell anyone listening
@@ -194,7 +210,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
      */
     @Override
     public int getIPCPort() {
-        return getNameNodeAddress().getPort() ;
+        return getNameNodeAddress().getPort();
     }
 
     /**
