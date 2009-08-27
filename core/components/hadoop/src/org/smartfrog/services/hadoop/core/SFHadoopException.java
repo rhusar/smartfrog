@@ -137,7 +137,7 @@ public class SFHadoopException extends SmartFrogException {
      * @param status the status object
      * @param owner the owning Prim (can be null)
      */
-    public SFHadoopException(Service.ServiceStatus status, Prim owner) {
+    public SFHadoopException(ServicePingStatus status, Prim owner) {
       super(status.toString(), owner);
         List<Throwable> causes = status.getThrowables();
         if (!causes.isEmpty()) {

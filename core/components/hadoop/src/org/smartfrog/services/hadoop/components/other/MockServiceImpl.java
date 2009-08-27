@@ -21,6 +21,7 @@ package org.smartfrog.services.hadoop.components.other;
 
 import org.apache.hadoop.util.MockService;
 import org.apache.hadoop.util.Service;
+import org.apache.hadoop.PingableMockService;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -72,7 +73,7 @@ public class MockServiceImpl extends HadoopServiceImpl implements HadoopCluster 
      * @throws SmartFrogException
      */
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
-        MockService service = new MockService();
+        PingableMockService service = new PingableMockService();
         service.setFailOnStart(configuration.getBoolean(ATTR_FAIL_ON_START,false));
         service.setFailOnPing(configuration.getBoolean(ATTR_FAIL_ON_PING, false));
         service.setFailOnClose(configuration.getBoolean(ATTR_FAIL_ON_CLOSE, false));

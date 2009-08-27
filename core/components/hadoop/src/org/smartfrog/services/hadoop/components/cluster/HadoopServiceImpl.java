@@ -27,6 +27,8 @@ import org.smartfrog.services.hadoop.core.BindingTuple;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
+import org.smartfrog.services.hadoop.core.ServicePingStatus;
+import org.smartfrog.services.hadoop.core.Pingable;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
@@ -306,8 +308,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                 deployer.ping(true);
             }
             Service hadoopService = getService();
-            Service.ServiceStatus serviceStatus = pingService();
-            if (hadoopService != null) {
+            ServicePingStatus serviceStatus = pingService();
+            if (hadoopService != null && serviceStatus != null) {
                 List<Throwable> throwables = serviceStatus.getThrowables();
                 //look for failure exceptions first
                 if (!throwables.isEmpty()) {
@@ -447,13 +449,17 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * {@inheritDoc}
      */
-    public Service.ServiceStatus pingService() throws IOException {
+    public ServicePingStatus pingService() throws IOException {
         Service hadoop = getService();
-        if (hadoop == null || !(hadoop instanceof ServiceInfo)) {
+        if (hadoop == null ){
             return null;
+        } 
+        if (!(hadoop instanceof Pingable)) {
+            ServicePingStatus status = new ServicePingStatus(hadoop);
+            return status;
         } else {
-            ServiceInfo si =(ServiceInfo) hadoop;
-            return si.ping();
+            Pingable pingable =(Pingable) hadoop;
+            return pingable.ping();
         }
     }
 
@@ -758,6 +764,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         /**
          * Terminate if we are abnormal
          */
+        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
         protected void terminateIFFAbnormal() {
             boolean isNormal = getThrown() == null;
             if (!isNormal) {
