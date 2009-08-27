@@ -57,7 +57,7 @@ public final class TestPingableMockService extends TestCase {
     super.tearDown();
   }
 
-  private void start() throws IOException {
+  private void start() throws IOException, InterruptedException {
     service.start();
   }
 

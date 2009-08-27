@@ -80,9 +80,10 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
      * Start our parent and the worker thread
      *
      * @throws IOException if necessary
+     * @throws InterruptedException if the thread was interrupted on startup
      */
     @Override
-    public void innerStart() throws IOException {
+    public void innerStart() throws IOException, InterruptedException {
       try {
           super.innerStart();
       } catch (BindException e) {

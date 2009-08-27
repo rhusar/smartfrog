@@ -21,6 +21,7 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.conf.ClusterBound;
+import org.smartfrog.services.hadoop.core.ServicePingStatus;
 
 import java.io.IOException;
 import java.rmi.Remote;
@@ -64,7 +65,7 @@ public interface HadoopService extends Remote, ClusterBound {
      * @throws RemoteException for RMI problems
      * @throws IOException for pinging problems
      */
-    Service.ServiceStatus pingService() throws IOException;
+    ServicePingStatus pingService() throws IOException;
 
     /**
      * Gets the description of a service
