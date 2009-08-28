@@ -107,12 +107,14 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
         return pingHelper.ping();
     }
 
+
     /**
      * {@inheritDoc}
      *
      * @param status a status that can be updated with problems
      * @throws IOException for any problem
      */
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     @Override
     public void innerPing(ServicePingStatus status) throws IOException {
         if (infoServer == null || !infoServer.isAlive()) {
@@ -145,7 +147,10 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo, Configurat
         return getInfoPort();
     }
 
-    /**
+
+
+
+  /**
      * Get the current number of workers
      *
      * @return the worker count
