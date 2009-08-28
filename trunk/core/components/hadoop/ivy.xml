@@ -133,15 +133,38 @@
       <exclude org="org.mortbay.jetty" />
     </dependency>
 
+    <!-- client CLI. May also be used on the server to pass stuff to forked processes-->
     <dependency org="commons-cli"
         name="commons-cli"
         rev="${commons-cli.version}"
-        conf="client->default"/>
+        conf="redist->default"/>
 
     <dependency org="xmlenc"
         name="xmlenc"
         rev="${xmlenc.version}"
         conf="server->default"/>
+
+    <!--
+    Avro is the RPC mechanism,
+    -->
+
+    <dependency org="org.apache.hadoop"
+      name="avro"
+      rev="${avro.version}"
+      conf="redist->default"/>
+    <!-- used in Configuration now-->
+    <dependency org="org.codehaus.jackson"
+      name="jackson-mapper-asl"
+      rev="${jackson-asl.version}"
+      conf="redist->default"/>
+    <dependency org="org.codehaus.jackson"
+      name="jackson-core-asl"
+      rev="${jackson-asl.version}"
+      conf="redist->default"/>
+    <dependency org="com.thoughtworks.paranamer"
+      name="paranamer"
+      rev="${paranamer.version}"
+      conf="redist->default"/>
 
     <!--Jetty 6 is pulled in from sf-jetty, along with JSP support
         and implicitly, sf-ant
