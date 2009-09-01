@@ -75,6 +75,10 @@ public class PortCheckingTestBase extends DeployingTestBase {
         ports.add(new PortPair(name, port));
     }
 
+
+    /**
+     * Block until the ports are closed or the shutdown timeout is met
+     */
     protected void blockUntilPortsAreClosed() {
         TimeoutInterval ti = new TimeoutInterval(shutdownTimeout);
         StringBuilder portsAtFault = new StringBuilder();
@@ -138,6 +142,9 @@ public class PortCheckingTestBase extends DeployingTestBase {
         this.shutdownTimeout = shutdownTimeout;
     }
 
+    /**
+     * A name/port pair
+     */
     protected class PortPair {
 
         private PortPair(String name, int port) {
