@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 
 
 simpleJob extends MapReduceSequence {
-  localcluster LAZY PROCESS:cluster2;
+  localcluster LAZY PROCESS:cluster;
   LocalDataDir ".";
   jobtracker LAZY localcluster:jobtracker:jobtracker;
   namenode LAZY localcluster:namenode:namenode;
