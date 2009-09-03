@@ -1038,7 +1038,11 @@
   <target name="sftp-upload" depends="upload-init" if="sftp.enabled">
     <property name="sftp.server" value="frs.sourceforge.net"/>
     <property name="sftp.user" value="${ssh.user}"/>
-    <property name="sftp.dir" value="uploads"/>
+    <property name="sftp.group" value="smartfrog"/>
+    <property name="sftp.project.dir" value="/home/frs/project/s/sm/smartfrog/"/>
+    <property name="sftp.branch.dir" value="development/"/>
+    <property name="sftp.release.dir" value="smartfrog-${smartfrog.version}"/>
+    <property name="sftp.dir" value="${sftp.project.dir}${sftp.branch.dir}${sftp.release.dir}"/>
     <property name="sftp.path"
         value="${sftp.user}@${sftp.server}:${sftp.dir}"/>
     <echo>SFTP target is ${sftp.server}</echo>
