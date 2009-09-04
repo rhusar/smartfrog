@@ -170,26 +170,29 @@ TaskTrackerClusterCompound extends LogDirCompound {
 
 /**
  * This is a configured cluster. What's interesting about it is how
- * the services run in master or slave mode (both on by default);
- * these can be tuned to switch nodes between master or slave
+ * the services run in master or worker mode (both on by default);
+ * these can be tuned to switch nodes between master or worker
  * based on run-time decisions
  */
 ConfiguredHdfsCluster extends Compound {
 
   //two flags which control whether or not the node is live or not
   master true;
-  slave true;
+  worker true;
+
+  namenode.enabled master;
+  datanode.enabled worker;
 
   //this defines the cluster for everything
 
   cluster extends LightweightCluster;
 
   namenode extends NameNodeClusterCompound {
-    enabled master;
+    enabled namenode.enabled;
     cluster LAZY PARENT:cluster;
   }
   datanode extends DataNodeClusterCompound {
-    enabled slave;
+    enabled datanode.enabled;
     cluster LAZY PARENT:cluster;
   }
 
@@ -198,12 +201,16 @@ ConfiguredHdfsCluster extends Compound {
 
 ConfiguredCluster extends ConfiguredHdfsCluster {
 
+
+  jobtracker.enabled master;
+  tasktracker.enabled worker;
+
   jobtracker extends JobTrackerClusterCompound {
-    enabled master;
+    enabled jobtracker.enabled;
     cluster LAZY PARENT:cluster;
   }
   tasktracker extends TaskTrackerClusterCompound {
-    enabled slave;
+    enabled tasktracker.enabled;
     cluster LAZY PARENT:cluster;
   }
 

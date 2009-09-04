@@ -39,7 +39,6 @@ FullCluster extends ConfiguredCluster {
   threads WORKER_THREADS;
   max_tasks 6;
   sfLivenessDelay CLUSTER_LIVENESS_DELAY;
-  fs.default.name  TBD;
 
   namenodeHostname TBD;
   jobtrackerHostname namenodeHostname;
