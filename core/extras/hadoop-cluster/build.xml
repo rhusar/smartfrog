@@ -346,5 +346,14 @@
       description="list the remote bin dir">
     <sshcommand command="ls -l ${ssh.bin.dir}" />
   </target>
-    
+
+
+  <target name="master">
+    <property name="binding.master.hostname" value="localhost"/>
+    <echo>binding.master.hostname = ${binding.master.hostname}</echo>
+    <deploy>
+      <application name="master"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/bondable/master.sf"/>
+    </deploy>
+  </target>
 </project>
