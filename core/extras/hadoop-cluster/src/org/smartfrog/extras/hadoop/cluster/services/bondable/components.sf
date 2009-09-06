@@ -99,10 +99,15 @@ binding.jobtracker.hostname binding.master.hostname;
  */
 binding.tasktracker.slots IPROPERTY binding.tasktracker.slots;
 
+
+
+
 /**
  by default this will deploy nothing; you
  have to opt for either a master or a worker
  */
+
+
 
 BindableCluster extends FullCluster {
 
@@ -117,6 +122,14 @@ BindableCluster extends FullCluster {
   max_tasks binding.tasktracker.slots ;
 
 }
+
+/**
+ * Deploys nothing, but is a preflight check of all the bindings
+ */
+CheckMasterWorkerConfig extends BindableCluster {
+
+}
+
 
 /**
  * the master node
