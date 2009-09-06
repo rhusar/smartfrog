@@ -347,13 +347,39 @@
     <sshcommand command="ls -l ${ssh.bin.dir}" />
   </target>
 
-
-  <target name="master">
+  <target name="ready-to-deploy-master"
+      depends="ready-to-deploy">
     <property name="binding.master.hostname" value="localhost"/>
+    <property name="binding.tasktracker.slots" value="4"/>
+
+
     <echo>binding.master.hostname = ${binding.master.hostname}</echo>
+
+
+  </target>
+
+  <target name="master"
+      description="Deploy the master node"
+      depends="ready-to-deploy-master">
     <deploy>
+      <syspropertyset>
+          <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="master"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/bondable/master.sf"/>
     </deploy>
   </target>
+
+  <target name="worker"
+      description="Deploy a worker node"
+      depends="ready-to-deploy-master">
+    <deploy>
+      <syspropertyset>
+          <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="worker"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/bondable/worker.sf"/>
+    </deploy>
+  </target>
+
 </project>

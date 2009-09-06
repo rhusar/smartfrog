@@ -176,6 +176,7 @@ TaskTrackerClusterCompound extends LogDirCompound {
  */
 ConfiguredHdfsCluster extends Compound {
 
+  description "A compound with a cluster, a namenode and a datanode ";
   //two flags which control whether or not the node is live or not
   master true;
   worker true;
@@ -201,6 +202,7 @@ ConfiguredHdfsCluster extends Compound {
 
 ConfiguredCluster extends ConfiguredHdfsCluster {
 
+  description (ConfiguredHdfsCluster:description ++ " and a jobtracker and tasktracker ");
 
   jobtracker.enabled master;
   tasktracker.enabled worker;
