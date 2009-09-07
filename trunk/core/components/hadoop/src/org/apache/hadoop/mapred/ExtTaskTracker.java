@@ -131,7 +131,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
 
     /**
      * Get the job tracker IPC address
-     * @return
+     * @return the job tracker address, which may be null
      */
     public InetSocketAddress getJobTrackerAddress() {
         return jobTrackAddr;
