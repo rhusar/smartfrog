@@ -74,7 +74,7 @@ Demo plan
 
 Test plan
 - deploy a master and worker to same box, wait for cluster to go live
--
+- deploy a REST endpoint (mock?) and handle a deploy request
 
 */
 
