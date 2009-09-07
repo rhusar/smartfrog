@@ -49,7 +49,14 @@ ClusterJobTrackerCompound extends TransientJobTrackerCompound  {
   fs.default.name  TBD;
 
   jobtrackerHost extends Localhost;
+  jobtrackerHostname LAZY jobtrackerHost:hostname;
+  jobtrackerPort HadoopHostnameConfiguration:MAPRED_JOB_TRACKER_DEFAULT_PORT;
+  job.tracker.binding (jobtrackerHostname ++ ":" ++ jobtrackerPort );
+  jobtracker:mapred.job.tracker job.tracker.binding;
+  mapred.job.tracker jobtracker:mapred.job.tracker;
+
   jobtracker:mapred.job.tracker.handler.count threads;
+
 }
 
 
@@ -108,6 +115,7 @@ HadoopClusterSingleProcess extends HadoopFilesystemSingleProcess {
   tasktracker extends ClusterTaskTrackerCompound {
     fs.default.name fs.name;
     tasktracker:mapred.tasktracker.map.tasks.maximum 6;
+    tasktracker:mapred.job.tracker jobtracker:mapred.job.tracker;
   }
 
 }

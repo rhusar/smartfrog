@@ -57,7 +57,7 @@ public class DfsUtils {
   public static final String FAILED_TO_COPY = "Failed to copy ";
 
   private DfsUtils() {
-    }
+  }
 
     /**
      * Close the DFS quietly
@@ -84,10 +84,18 @@ public class DfsUtils {
         try {
             dfs.close();
         } catch (IOException e) {
-            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
-                    .forward(ERROR_FAILED_TO_CLOSE + dfs.getUri(),
-                            e);
+            if(isFilesystemClosedException(e)) {
+                LogFactory.getLog(DfsUtils.class).info("DFS has already closed", e);
+            } else {
+                throw (SmartFrogRuntimeException) SmartFrogRuntimeException
+                                    .forward(ERROR_FAILED_TO_CLOSE + dfs.getUri(),
+                                            e);
+            }
         }
+    }
+
+    private static boolean isFilesystemClosedException(IOException e) {
+        return "Filesystem closed".equals(e.getMessage());
     }
 
     /**

@@ -85,20 +85,6 @@ Test plan
   * Failure to set the bindings is an error.
   */
 
-/**
- * This is the hostname of the master, which hosts both the NN and
- */
-binding.master.hostname PROPERTY binding.master.hostname;
-
-/* to allow for future tweaking, this is split up */
-binding.namenode.hostname binding.master.hostname;
-binding.jobtracker.hostname binding.master.hostname;
-
-/**
- * The number of slots for a tasktracker
- */
-binding.tasktracker.slots IPROPERTY binding.tasktracker.slots;
-
 
 
 
@@ -113,6 +99,20 @@ BindableCluster extends FullCluster {
 
   master false;
   worker false;
+  /**
+   * This is the hostname of the master, which hosts both the NN and
+   */
+  binding.master.hostname PROPERTY binding.master.hostname;
+
+  /* to allow for future tweaking, this is split up */
+  binding.namenode.hostname binding.master.hostname;
+  binding.jobtracker.hostname binding.master.hostname;
+
+  /**
+   * The number of slots for a tasktracker
+   */
+  binding.tasktracker.slots IPROPERTY binding.tasktracker.slots;
+
 
   //fix the namenode hostname
   namenodeHostname binding.namenode.hostname;
@@ -136,6 +136,8 @@ CheckMasterWorkerConfig extends BindableCluster {
  */
 MasterNode extends BindableCluster {
   master true;
+  namenode:sfProcessName NAMENODE_PROCESS;
+  jobtracker:sfProcessName JOBTRACKER_PROCESS;
 }
 
 /**
@@ -143,6 +145,8 @@ MasterNode extends BindableCluster {
  */
 WorkerNode extends BindableCluster {
   worker true;
+  namenode:sfProcessName NAMENODE_PROCESS;
+  tasktracker:sfProcessName TASKTRACKER1_PROCESS;
 }
 
 MasterAndWorker extends Compound {
