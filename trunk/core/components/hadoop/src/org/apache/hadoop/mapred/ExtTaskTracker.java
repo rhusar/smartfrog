@@ -130,6 +130,13 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     }
 
     /**
+     * Get the job tracker IPC address
+     * @return
+     */
+    public InetSocketAddress getJobTrackerAddress() {
+        return jobTrackAddr;
+    }
+    /**
      * Get the current number of workers
      *
      * @return the worker count
@@ -151,6 +158,8 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
         //try and work out the underlying bindings by going back to the configuration
         InetSocketAddress httpAddr = NodeUtils.resolveAddress(getConf(), MAPRED_TASK_TRACKER_HTTP_ADDRESS);
         InetSocketAddress realHttpAddr = new InetSocketAddress(httpAddr.getAddress(), getWebPort());
+        InetSocketAddress jobTrackerIPCAddress = jobTrackAddr;
+        bindings.add(NodeUtils.toBindingTuple(MAPRED_JOB_TRACKER, "ipc", jobTrackerIPCAddress));
         bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_HTTP_ADDRESS, "http", realHttpAddr));
 
         bindings.add(NodeUtils.toBindingTuple(MAPRED_TASK_TRACKER_REPORT_ADDRESS, "http",
@@ -178,5 +187,16 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     public String toString() {
         String address = "" + getTaskTrackerReportAddress();
         return super.toString() + ". web port=" + getWebPort() + " reporting " + address;
+    }
+
+
+    @Override
+    void initialize() throws IOException {
+        super.initialize();
+        //now check that the JT address is/was valid, if not, bail out
+        if(getJobTrackerAddress().getAddress().isAnyLocalAddress()) {
+            throw new IOException("Cannot start the Task Tracker as it has been started with "
+            +MAPRED_JOB_TRACKER + " set to icp://"+getJobTrackerAddress()+"/");
+        }
     }
 }

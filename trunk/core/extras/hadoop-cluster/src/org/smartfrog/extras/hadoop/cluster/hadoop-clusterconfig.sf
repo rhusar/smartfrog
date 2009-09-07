@@ -43,7 +43,11 @@ FullCluster extends ConfiguredCluster {
   namenodeHostname TBD;
   jobtrackerHostname namenodeHostname;
   filesystemURL ("hdfs://" ++ (namenodeHostname) ++ ":" ++ NameNodeIpcPort ++ "/");
+
   fs.default.name filesystemURL;
+
+  jobtrackerPort HadoopHostnameConfiguration:MAPRED_JOB_TRACKER_DEFAULT_PORT;
+  job.tracker.binding (jobtrackerHostname ++ ":" ++ jobtrackerPort );
 
   namenode:checkRunning false;
 
@@ -52,6 +56,7 @@ FullCluster extends ConfiguredCluster {
   cluster:dfs.datanode.handler.count threads;
   cluster:mapred.job.tracker.handler.count threads;
   cluster:mapred.tasktracker.map.tasks.maximum max_tasks;
+  cluster:mapred.job.tracker job.tracker.binding;
 
   localhost extends Localhost;
 

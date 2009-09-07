@@ -18,8 +18,9 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/extras/hadoop/cluster/test/system/components.sf"
-
+#include "/org/smartfrog/extras/hadoop/cluster/services/bondable/components.sf"
 testFullCluster extends ExpectLive {
+  description "Test we can bring up a full cluster master and worker";
   action FullClusterWithBindings;
 
 
@@ -40,3 +41,30 @@ testJobSubmission extends testFullCluster {
   }
 
 }
+
+
+testMasterAndWorker extends   ExpectLive {
+  description "Test we can bring up a master and worker";
+  action extends MasterAndWorker {
+    master:binding.master.hostname "localhost";
+    master:binding.tasktracker.slots;
+    worker:binding.master.hostname "localhost";
+    worker:binding.tasktracker.slots;
+  }
+}
+
+
+testMasterAndWorkerSubmission extends testMasterAndWorker {
+  description "Submit a job to a master and worker cluster";
+
+  tests extends MapReduceSequence {
+
+    LocalDataDir PROPERTY test.work.dir;
+    jobtracker LAZY PARENT:action:master:jobtracker:service;
+    namenode LAZY PARENT:action:master:namenode:service;
+    datanode LAZY PARENT:action:worker:datanode:service;
+
+  }
+
+}
+
