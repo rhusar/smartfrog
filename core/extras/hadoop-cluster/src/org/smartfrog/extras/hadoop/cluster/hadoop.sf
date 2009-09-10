@@ -17,7 +17,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/extras/hadoop/cluster/bindings.sf"
 #include "/org/smartfrog/services/hadoop/examples/cluster-driven.sf"
+#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
+
+#include "/org/smartfrog/extras/hadoop/cluster/bindings.sf"
 #include "/org/smartfrog/extras/hadoop/cluster/hadoop-inlineconfig.sf"
 #include "/org/smartfrog/extras/hadoop/cluster/hadoop-clusterconfig.sf"

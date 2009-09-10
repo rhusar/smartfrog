@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/anubis/components.sf"
-
+#include "/org/smartfrog/extras/hadoop/cluster/anubis.sf"
 /**
  * This defines an anubis service that runs on a port of our choosing, and registers
  * with the process host.

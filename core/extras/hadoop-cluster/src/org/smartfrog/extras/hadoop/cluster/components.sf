@@ -17,16 +17,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+//from sfservices
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
-#include "/org/smartfrog/services/hadoop/components/components.sf"
-#include "/org/smartfrog/services/anubis/components.sf"
 #include "/org/smartfrog/services/hostnames/components.sf"
-#include "/org/smartfrog/services/deploydir/components.sf"
-#include "/org/smartfrog/extras/hadoop/cluster/anubis.sf"
-#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
-#include "/org/smartfrog/extras/hadoop/cluster/hadoop.sf"
 #include "/org/smartfrog/services/utils/security/components.sf"
+#include "/org/smartfrog/services/deploydir/components.sf"
 
-#include "/org/smartfrog/services/hadoop/examples/testjob.sf"
+//from sf-hadoop
+#include "/org/smartfrog/services/hadoop/components/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
+//#include "/org/smartfrog/services/hadoop/examples/testjob.sf"
+
+//in our own jar
+#include "/org/smartfrog/extras/hadoop/cluster/hadoop.sf"

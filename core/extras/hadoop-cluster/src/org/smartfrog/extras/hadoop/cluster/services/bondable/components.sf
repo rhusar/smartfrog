@@ -145,7 +145,7 @@ MasterNode extends BindableCluster {
  */
 WorkerNode extends BindableCluster {
   worker true;
-  namenode:sfProcessName NAMENODE_PROCESS;
+  datanode:sfProcessName DATANODE1_PROCESS;
   tasktracker:sfProcessName TASKTRACKER1_PROCESS;
 }
 

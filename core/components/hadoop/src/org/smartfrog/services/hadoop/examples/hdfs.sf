@@ -223,52 +223,6 @@ FileSystemLiveSequence extends Sequence {
 }
 
 
-/**
- * A sequence of operations on a cluster */
-FileSystemTestSequence extends FileSystemLiveSequence {
-
-
-
-    rootDirExists extends DfsPathExistsWorkflow {
-      cluster LAZY PARENT:cluster;
-      path "/";
-    }
-
-    touch extends DfsCreateFile {
-      cluster LAZY PARENT:cluster;
-      path "/test-filename";
-      text "this is a very small file for Hadoop";
-    }
-
-    assertFileExists extends DfsPathExistsWorkflow {
-      cluster LAZY PARENT:cluster;
-      path touch:path;
-    }
-
-  }
-
-  FileCreation extends Compound  {
-    cluster TBD;
-    dest TBD;
-
-    sfShouldTerminate true;
-
-    sourceFile extends InlineTupleSource {
-      data [
-        ["one",43],
-        ["two", "43"],
-        ["one",12]
-      ]
-
-    }
-
-    UploadHadoopCsvFile extends TuplesToHadoop {
-      cluster LAZY PARENT:cluster;
-      source LAZY sourceFile;
-      dest testFile;
-
-    }
-  }
 
 
 

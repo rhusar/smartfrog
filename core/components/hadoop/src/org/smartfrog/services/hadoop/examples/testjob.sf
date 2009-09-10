@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/hadoop/junitmr/healthtests/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/smallfile.sf"
+#include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
 
 FileSystemLiveSequence extends Sequence {
     description "this is a base sequence that blocks until the filesystem is live"
@@ -118,6 +119,53 @@ CopyFileInAndOutSequence extends FileSystemLiveSequence {
 }
 
 
+
+/**
+ * A sequence of operations on a cluster */
+FileSystemTestSequence1 extends FileSystemLiveSequence {
+
+
+
+    rootDirExists extends DfsPathExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path "/";
+    }
+
+    touch extends DfsCreateFile {
+      cluster LAZY PARENT:cluster;
+      path "/test-filename";
+      text "this is a very small file for Hadoop";
+    }
+
+    assertFileExists extends DfsPathExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path touch:path;
+    }
+
+  }
+
+  FileCreation extends Compound  {
+    cluster TBD;
+    dest TBD;
+
+    sfShouldTerminate true;
+
+    sourceFile extends InlineTupleSource {
+      data [
+        ["one",43],
+        ["two", "43"],
+        ["one",12]
+      ]
+
+    }
+
+    UploadHadoopCsvFile extends TuplesToHadoop {
+      cluster LAZY PARENT:cluster;
+      source LAZY sourceFile;
+      dest testFile;
+
+    }
+  }
 
 
 /**
