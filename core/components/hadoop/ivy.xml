@@ -108,28 +108,27 @@
         conf="test->default"/>
 
     <!--
-    The exclusion keeps bits of Jetty (such as the servlet API) off the classpath,
-    where it only complicates things. 
+    We declare dependencies only on the hadoop masters
     -->
     <dependency org="org.apache.hadoop"
         name="hadoop-common"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->default">
+        conf="hadoop-core->master">
       <exclude org="org.mortbay.jetty" />
     </dependency>
     <dependency org="org.apache.hadoop"
         name="hadoop-hdfs"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->default">
+        conf="hadoop-core->master">
       <exclude org="org.mortbay.jetty" />
     </dependency>
    <dependency org="org.apache.hadoop"
         name="hadoop-mapred"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->default">
+        conf="hadoop-core->master">
       <exclude org="org.mortbay.jetty" />
     </dependency>
 

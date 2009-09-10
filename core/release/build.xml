@@ -491,9 +491,15 @@
     <!-- hadoop -->
     <rpmpackage package="hadoop"/>
     <ln artifact="sf-hadoop" version="${smartfrog.version}"/>
-    <ln artifact="hadoop-core" version="${hadoop.version}"/>
+    <ln artifact="hadoop-common" version="${hadoop.version}"/>
+    <ln artifact="hadoop-hdfs" version="${hadoop.version}"/>
+    <ln artifact="hadoop-mapred" version="${hadoop.version}"/>
+    <ln artifact="avro" version="${avro.version}"/>
     <ln artifact="commons-cli" version="${commons-cli.version}"/>
+    <ln artifact="jackson-core-asl" version="${jackson-asl.version}"/>
+    <ln artifact="jackson-mapper-asl" version="${jackson-asl.version}"/>
     <ln artifact="jets3t" version="${jets3t.version}"/>
+    <ln artifact="paranamer" version="${paranamer.version}"/>
     <ln artifact="xmlenc" version="${xmlenc.version}"/>
 
     <!-- jmx -->
