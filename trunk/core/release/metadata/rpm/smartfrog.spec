@@ -751,13 +751,25 @@ fi
 %files hadoop
 %{linkdir}/sf-hadoop.jar
 %{libdir}/sf-hadoop-${smartfrog.version}.jar
-%{libdir}/hadoop-core-${hadoop.version}.jar
-%{linkdir}/hadoop-core.jar
+%{libdir}/hadoop-common-${hadoop.version}.jar
+%{linkdir}/hadoop-common.jar
+%{libdir}/hadoop-hdfs-${hadoop.version}.jar
+%{linkdir}/hadoop-hdfs.jar
+%{libdir}/hadoop-mapred-${hadoop.version}.jar
+%{linkdir}/hadoop-mapred.jar
 
+%{libdir}/avro-${avro.version}.jar
+%{linkdir}/avro.jar
 %{libdir}/commons-cli-${commons-cli.version}.jar
 %{linkdir}/commons-cli.jar
+%{libdir}/jackson-core-asl-${jackson-asl.version}.jar
+%{linkdir}/jackson-core-asl.jar
+%{libdir}/jackson-mapper-asl-${jackson-asl.version}.jar
+%{linkdir}/jackson-mapper-asl.jar
 %{libdir}/jets3t-${jets3t.version}.jar
 %{linkdir}/jets3t.jar
+%{libdir}/paranamer-${paranamer.version}.jar
+%{linkdir}/paranamer.jar
 %{libdir}/xmlenc-${xmlenc.version}.jar
 %{linkdir}/xmlenc.jar
 
