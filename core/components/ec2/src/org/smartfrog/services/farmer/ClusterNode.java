@@ -22,13 +22,13 @@ package org.smartfrog.services.farmer;
 
 import java.io.Serializable;
 
-public final class ClusterInstance implements Serializable {
+public final class ClusterNode implements Serializable {
 
-    String id;
-    String hostname;
-    boolean externallyVisible;
-    String externalHostname;
-    String role;
+    private String id;
+    private String hostname;
+    private boolean externallyVisible;
+    private String externalHostname;
+    private String role;
 
     public String getId() {
         return id;
@@ -75,7 +75,7 @@ public final class ClusterInstance implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ClusterInstance that = (ClusterInstance) o;
+        ClusterNode that = (ClusterNode) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
 
@@ -101,5 +101,16 @@ public final class ClusterInstance implements Serializable {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    @Override
+    public String toString() {
+        return "ClusterInstance{" +
+                "id='" + id + '\'' +
+                ", hostname='" + hostname + '\'' +
+                ", externallyVisible=" + externallyVisible +
+                ", externalHostname='" + externalHostname + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }
