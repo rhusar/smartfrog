@@ -22,8 +22,8 @@ package org.smartfrog.services.farmer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.Remote;
 import java.io.IOException;
+import java.rmi.Remote;
 
 public interface ClusterFarmer extends Remote {
 
@@ -38,7 +38,7 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public ClusterInstance[] create(String role, int min, int max)
+    public ClusterNode[] create(String role, int min, int max)
             throws IOException, SmartFrogException;
 
     /**
@@ -68,16 +68,17 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public void delete(ClusterInstance[] nodes)
+    public void delete(ClusterNode[] nodes)
             throws IOException, SmartFrogException;
     /**
      * Delete all nodes in a specific role.
      * This is an async operation.
      * @param role role of the nodes
+     * @return the number deleted
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public void deleteAllInRole(String role)
+    public int deleteAllInRole(String role)
             throws IOException, SmartFrogException;
 
     /**
@@ -86,7 +87,7 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public ClusterInstance[] list()
+    public ClusterNode[] list()
             throws IOException, SmartFrogException;
 
     /**
@@ -96,7 +97,7 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public ClusterInstance[] list(String role)
+    public ClusterNode[] list(String role)
             throws IOException, SmartFrogException;
 
     /**
@@ -106,7 +107,7 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public ClusterInstance lookup(String id)
+    public ClusterNode lookup(String id)
             throws IOException, SmartFrogException;
 
 
@@ -117,7 +118,7 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
-    public ClusterInstance lookupByHostname(String hostname)
+    public ClusterNode lookupByHostname(String hostname)
             throws IOException, SmartFrogException;
 
 }

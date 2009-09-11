@@ -35,3 +35,11 @@ That is out of scope for the farmer, which just creates and destroys machines.
 There will an EC2 impl that, for each machine role, takes an AMI, machine size and network option.
 
 */
+
+/**
+ * A mock cluster farmer has a limited set of allowed roles, and a maximum cluster size.
+ */
+MockClusterFarmer extends Prim {
+  sfClass "org.smartfrog.services.farmer.MockClusterFarmerImpl"
+  
+}

@@ -21,21 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.farmer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 
-import java.rmi.RemoteException;
-
-/**
- * Base class for cluster farmer implementations
- */
-public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterFarmer {
-
-    protected AbstractClusterFarmer() throws RemoteException {
-    }
-
-    protected void validateClusterRange(int min, int max) throws SmartFrogException {
-        if (max < min) {
-            throw new SmartFrogException("The maximum number of machines requested was less than the minimum");
-        }
-    }
+public class UnsupportedClusterRoleException extends SmartFrogException {
 }
