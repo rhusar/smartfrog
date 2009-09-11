@@ -1,0 +1,37 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+The farmer components aim to provide a standard way to remotely work with a farm.
+
+A client application can talk to a (configured) farm and ask for more machines, get a list of
+allocated machines. The API is meant to be infrastructure neutral, and it does that by
+hiding most of the things you can ask for.
+
+You can ask for a machine by "name", its up to the deployed component how that name is interpreted
+and what you get. The client doesn't need to know the details, only that it can get
+a "master" or "worker".
+
+Once the machine is up, the client has to talk to it using SmartFrog, longhaul SF, SSH, whatever.
+That is out of scope for the farmer, which just creates and destroys machines.
+
+There will an EC2 impl that, for each machine role, takes an AMI, machine size and network option.
+
+*/
