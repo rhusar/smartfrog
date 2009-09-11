@@ -22,8 +22,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/amazon/workflow/components.sf"
 
 bucket "smartfrogtest";
-login PROPERTY test.awsid;
-password PROPERTY test.awskey;
+login OPTIONAL("") PROPERTY test.awsid;
+password  OPTIONAL("") PROPERTY test.awskey;
 timeout 10;
 
 bucketHost (bucket ++ ".s3.amazonaws.com");

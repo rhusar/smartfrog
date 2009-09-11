@@ -35,8 +35,9 @@ public class TestwarTest extends DeployingTestBase {
     }
 
     public void testWarDeployed() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE,"testWarDeployed");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testWarDeployed");
     }
+    
     public void testErrorPage() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testErrorPage");
     }

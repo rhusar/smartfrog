@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.restlet.overrides;
 
-import org.restlet.data.Request;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
 import org.restlet.resource.Representation;
 import org.smartfrog.services.restlet.client.RestletUtils;
 

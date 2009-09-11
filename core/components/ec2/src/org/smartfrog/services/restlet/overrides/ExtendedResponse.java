@@ -19,10 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.restlet.overrides;
 
-import org.restlet.data.Response;
-import org.restlet.data.Request;
-import org.restlet.data.Status;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * This is an extended response code. One thing we can do is detect forbidden response codes and fail early, not late
