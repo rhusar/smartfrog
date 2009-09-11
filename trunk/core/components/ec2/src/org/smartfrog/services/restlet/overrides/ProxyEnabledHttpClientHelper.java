@@ -26,9 +26,9 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.restlet.Client;
 import org.restlet.data.Request;
+import org.smartfrog.services.www.HttpProxyProperties;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.services.www.HttpProxyProperties;
 
 /**
  *

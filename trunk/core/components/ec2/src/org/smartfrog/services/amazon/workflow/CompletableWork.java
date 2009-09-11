@@ -20,8 +20,6 @@
 
 package org.smartfrog.services.amazon.workflow;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
 /**
  * <p/>
  * Created: 09-Apr-2008

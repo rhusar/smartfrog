@@ -21,16 +21,16 @@
 
 package org.smartfrog.services.restlet.client;
 
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Form;
 import org.restlet.resource.Representation;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *

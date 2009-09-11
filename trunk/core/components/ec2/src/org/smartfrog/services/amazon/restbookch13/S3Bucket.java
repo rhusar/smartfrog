@@ -18,13 +18,13 @@
 
 package org.smartfrog.services.amazon.restbookch13;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Amazon S3 bucket.
