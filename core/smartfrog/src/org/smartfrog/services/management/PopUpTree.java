@@ -119,7 +119,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDumpContext.setText("Diagnostics Report");
         menuItemParentageChanged.setText("sfParentageChanged()");
         menuItemAddScriptingPanel.setText("Add Scripting Panel");
-        menuItemIntrospector.setText("Instrospector");
+        menuItemIntrospector.setText("Introspector");
         menuItemDumpState.setText("Dump State");
         menuItemDumpStateToFile.setText("Dump State to File");
         menuItemEditTags.setText("Edit Tags");
@@ -272,7 +272,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             diagnosticsReport(node, source);
         } else if (source == menuItemIntrospector) {
 
-            instrospect(node, source);
+            introspect(node, source);
         }  else if (source == menuItemAddScriptingPanel) {
             addScriptingPanel(node);
 
@@ -318,7 +318,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         }
     }
 
-    private void instrospect(Object node, Object source) {
+    private void introspect(Object node, Object source) {
         StringBuffer message=new StringBuffer();
         String name = "error";
         if (node instanceof Prim) {
