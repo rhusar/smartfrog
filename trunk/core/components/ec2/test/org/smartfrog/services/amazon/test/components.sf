@@ -50,8 +50,8 @@ IsEC2EnabledSet extends IsPropertySet {
 }
 
 IsEC2Enabled extends And {
-  aws IsAwsEnabled;
   ec2 IsEC2EnabledSet;
+  aws IsAwsEnabled;
 }
 
 

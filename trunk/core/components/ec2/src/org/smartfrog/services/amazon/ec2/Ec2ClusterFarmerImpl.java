@@ -58,4 +58,9 @@ public class Ec2ClusterFarmerImpl extends AbstractClusterFarmer implements Clust
     public ClusterNode lookupByHostname(String hostname) throws IOException, SmartFrogException {
         return null;
     }
+
+    @Override
+    public int deleteAll() throws IOException, SmartFrogException {
+        return 0;
+    }
 }

@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,29 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
 package org.smartfrog.services.farmer;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
-
-import java.rmi.RemoteException;
+import java.rmi.Remote;
 
 /**
- * Base class for cluster farmer implementations
+ * Created 14-Sep-2009 13:44:19
  */
-public class AbstractClusterFarmer extends PrimImpl {
-    
-    /** {@value} */
-    public static final String WRONG_MACHINE_COUNT
-            = "The maximum number of machines requested was less than the minimum";
 
-    protected AbstractClusterFarmer() throws RemoteException {
-    }
-
-    protected void validateClusterRange(int min, int max) throws SmartFrogException {
-        if (max < min) {
-            throw new SmartFrogException(WRONG_MACHINE_COUNT);
-        }
-    }
+public interface FarmCustomer extends Remote {
+    String ATTR_ROLE = "role";
+    String ATTR_DELETE_ON_TERMINATE = "deleteOnTerminate";
+    String ATTR_FARMER = "farmer";
+    String ATTR_MIN = "min";
+    String ATTR_MAX = "max";
 }

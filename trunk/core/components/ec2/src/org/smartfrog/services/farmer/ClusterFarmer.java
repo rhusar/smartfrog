@@ -70,15 +70,32 @@ public interface ClusterFarmer extends Remote {
      */
     public void delete(ClusterNode[] nodes)
             throws IOException, SmartFrogException;
+    
     /**
      * Delete all nodes in a specific role.
      * This is an async operation.
      * @param role role of the nodes
-     * @return the number deleted
+     * @return the number scheduled for deletion
      * @throws IOException IO/network problems
      * @throws SmartFrogException other problems
      */
     public int deleteAllInRole(String role)
+            throws IOException, SmartFrogException;
+
+
+    /**
+     * Shut down everything. 
+     * All nodes are shut down, regardless of role. 
+     * 
+     * You can get into trouble here if the farm controller is on a node manageable in the same list. 
+     * Safer to delete by role
+     * 
+     * @return the number scheduled for deletion
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+
+    public int deleteAll()
             throws IOException, SmartFrogException;
 
     /**
