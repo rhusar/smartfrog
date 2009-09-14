@@ -282,7 +282,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                 tempfile.deleteOnExit();
             }
             owner.log("Saving to temporary file " + tempfile, Project.MSG_VERBOSE);
-            owner.log(unexpandedText, Project.MSG_VERBOSE);
+            owner.log(text, Project.MSG_VERBOSE);
             OutputStream out = null;
             OutputStreamWriter writer = null;
             PrintWriter printer = null;
