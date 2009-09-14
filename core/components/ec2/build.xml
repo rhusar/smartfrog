@@ -41,9 +41,11 @@
   <!--very long test timeout to allow for startup delays-->
   <property name="test.timeout.execute" value="120000" />
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
-  <property name="application.name" value="ec2-demo" />
-  <property name="deploy.sf" value="org/smartfrog/services/amazon/demo.sf" />
+  <!--<property name="application.name" value="ec2" />-->
+  <property name="mockfarmer.sf" value="org/smartfrog/services/farmer/example.sf" />
   
+  <property name="deploy.sf" value="${mockfarmer.sf}" />
+
 
   <echo
       message="==================================================================="/>
@@ -80,5 +82,13 @@
       </condition>
       Not found: ${test.testwar.war}
     </fail>
+  </target>
+  
+  <target  name="farmer" depends="ready-to-deploy"
+       description="Deploy a mock farm manager" >
+      <deploy>
+        <application name="farmer"
+            descriptor="/${mockfarmer.sf}"/>
+      </deploy>
   </target>
 </project>

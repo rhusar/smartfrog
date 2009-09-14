@@ -22,6 +22,9 @@ package org.smartfrog.services.farmer;
 
 import java.io.Serializable;
 
+/**
+ * Serializable representation of a cluster node
+ */
 public final class ClusterNode implements Serializable {
 
     private String id;
@@ -84,7 +87,7 @@ public final class ClusterNode implements Serializable {
 
     /**
      * Hash code comes from the ID
-     * @return
+     * @return the hash code's ID
      */
     @Override
     public int hashCode() {

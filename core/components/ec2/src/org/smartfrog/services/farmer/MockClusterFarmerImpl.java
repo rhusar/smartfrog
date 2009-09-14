@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.farmer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -29,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * This is a mock cluster, very inefficent, but as it is only for testing, there is no point adding any form of speedup,
@@ -44,6 +47,10 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     private Map<String, String> roles = new HashMap<String, String>();
 
     private List<ClusterNode> nodes = new LinkedList<ClusterNode>();
+    public static final String ATTR_ROLES = "roles";
+    public static final String ATTR_CLUSTER_LIMIT = "clusterLimit";
+    public static final String ATTR_DOMAIN = "domain";
+    public static final String ATTR_EXTERNAL_DOMAIN = "externalDomain";
 
 
     public MockClusterFarmerImpl() throws RemoteException {
@@ -55,6 +62,23 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
 
     public void setClusterLimit(int clusterLimit) {
         this.clusterLimit = clusterLimit;
+    }
+
+    @Override
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        Vector<String> roleList = ListUtils.resolveStringList(this, new Reference(ATTR_ROLES), false);
+        StringBuilder rolenames= new StringBuilder();
+        for (String role : roleList) {
+            roles.put(role, role);
+            rolenames.append(role);
+            rolenames.append(" ");
+        }
+        clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
+        domain = sfResolve(ATTR_DOMAIN, "", true);
+        externalDomain = sfResolve(ATTR_EXTERNAL_DOMAIN, "", true);
+        sfLog().info("Creating Mock farmer with a limit of " + clusterLimit 
+                + " and roles: " + rolenames);
     }
 
     /**
@@ -73,6 +97,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         for (int i = 0; i < max; i++) {
             ClusterNode clusterInstance = createOneInstance(role);
             if (clusterInstance == null) {
+                //we have run out of space, but as it is in range, the overall operation will succeed
                 break;
             }
             newnodes.add(clusterInstance);
@@ -214,6 +239,18 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public synchronized int deleteAll() throws IOException, SmartFrogException {
+        int deleted = nodes.size();
+        nodes = new ArrayList<ClusterNode>();
+        return deleted;
+    }
 
     /**
      * {@inheritDoc}

@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
+#include "/org/smartfrog/components.sf"
 /*
 The farmer components aim to provide a standard way to remotely work with a farm.
 
@@ -39,7 +39,32 @@ There will an EC2 impl that, for each machine role, takes an AMI, machine size a
 /**
  * A mock cluster farmer has a limited set of allowed roles, and a maximum cluster size.
  */
-MockClusterFarmer extends Prim {
+MockClusterFarmer extends WorkflowPrim {
   sfClass "org.smartfrog.services.farmer.MockClusterFarmerImpl"
   
+  clusterLimit 1000;
+  //list of roles, empty list means all roles are allowed
+  roles [];
+  //name of the internal domain
+  domain "internal";
+  //name of the external domain
+  externalDomain "external";
+  
+}
+
+FarmCustomer extends WorkflowPrim {
+  sfClass "org.smartfrog.services.farmer.FarmCustomerImpl";
+  farmer TBD;
+  role "";
+  deleteOnTerminate true;
+  min 1;
+  max min;
+  //this is updated with the real count of how many were created
+  created 0;
+  //if >=0, declare exactly how many you expect
+  expected -1;
+}
+
+WorkflowFarmCustomer extends FarmCustomer {
+  sfShouldTerminate true;
 }
