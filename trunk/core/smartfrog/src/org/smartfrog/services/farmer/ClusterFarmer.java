@@ -25,58 +25,61 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.IOException;
 import java.rmi.Remote;
 
+/**
+ * This interface is an (unstable) interface for a cluster farmer, a component that provides cluster management of
+ * virtual clusters.
+ */
 public interface ClusterFarmer extends Remote {
 
     /**
-     * Create a number of instances.
-     * The operation will return when the instance is created, but it may not be
-     * live.
+     * Create a number of instances. The operation will return when the instance is created, but it may not be live.
+     *
      * @param role instance role
-     * @param min min# to create
-     * @param max max# to create; must be equal to or greater than the min value
+     * @param min  min# to create
+     * @param max  max# to create; must be equal to or greater than the min value
      * @return an array of created nodes, size between the min and max values
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public ClusterNode[] create(String role, int min, int max)
             throws IOException, SmartFrogException;
 
     /**
-     * Delete a node by ID
-     * This is an async operation.
+     * Delete a node by ID This is an async operation.
+     *
      * @param id node ID
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public void delete(String id)
             throws IOException, SmartFrogException;
 
     /**
-     * Delete a list of nodes
-     * This is an async operation.
-     * @param nodes  node IDs
-     * @throws IOException IO/network problems
+     * Delete a list of nodes This is an async operation.
+     *
+     * @param nodes node IDs
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public void delete(String[] nodes)
             throws IOException, SmartFrogException;
 
     /**
-     * Delete a list of nodes
-     * This is an async operation.
+     * Delete a list of nodes This is an async operation.
+     *
      * @param nodes nodes by instance
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public void delete(ClusterNode[] nodes)
             throws IOException, SmartFrogException;
-    
+
     /**
-     * Delete all nodes in a specific role.
-     * This is an async operation.
+     * Delete all nodes in a specific role. This is an async operation.
+     *
      * @param role role of the nodes
      * @return the number scheduled for deletion
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public int deleteAllInRole(String role)
@@ -84,12 +87,11 @@ public interface ClusterFarmer extends Remote {
 
 
     /**
-     * Shut down everything. 
-     * All nodes are shut down, regardless of role. 
-     * 
-     * You can get into trouble here if the farm controller is on a node manageable in the same list. 
-     * Safer to delete by role
-     * 
+     * Shut down everything. All nodes are shut down, regardless of role.
+     *
+     * You can get into trouble here if the farm controller is on a node manageable in the same list. Safer to delete by
+     * role
+     *
      * @return the number scheduled for deletion
      * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
@@ -100,8 +102,9 @@ public interface ClusterFarmer extends Remote {
 
     /**
      * Get a list of nodes
+     *
      * @return a possibly empty list of nodes
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public ClusterNode[] list()
@@ -109,9 +112,10 @@ public interface ClusterFarmer extends Remote {
 
     /**
      * Get a list of nodes in a role
-     * @param role  role of the nodes
+     *
+     * @param role role of the nodes
      * @return a possibly empty list of nodes
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public ClusterNode[] list(String role)
@@ -119,9 +123,10 @@ public interface ClusterFarmer extends Remote {
 
     /**
      * Get a node by ID
+     *
      * @param id ID to search on
      * @return an instance or null
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public ClusterNode lookup(String id)
@@ -130,9 +135,10 @@ public interface ClusterFarmer extends Remote {
 
     /**
      * Get a node by hostname
+     *
      * @param hostname hostname to search on
      * @return an instance or null
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     public ClusterNode lookupByHostname(String hostname)

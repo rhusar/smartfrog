@@ -21,21 +21,22 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.farmer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Vector;
 
 /**
- * This is a mock cluster, very inefficent, but as it is only for testing, there is no point adding any form of speedup,
- * not even a little bit. Simpler is best.
+ * This is a mock cluster, very simple. A counter tracks the number of machines allocated, and whenever you ask for new
+ * machines, it gets incremented. The system tracks the number of machines currently allocated, and rejects requests to
+ * get more
  */
 public class MockClusterFarmerImpl extends AbstractClusterFarmer implements ClusterFarmer {
 
@@ -47,9 +48,22 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     private Map<String, String> roles = new HashMap<String, String>();
 
     private List<ClusterNode> nodes = new LinkedList<ClusterNode>();
+
+    /**
+     * {@value}
+     */
     public static final String ATTR_ROLES = "roles";
+    /**
+     * {@value}
+     */
     public static final String ATTR_CLUSTER_LIMIT = "clusterLimit";
+    /**
+     * {@value}
+     */
     public static final String ATTR_DOMAIN = "domain";
+    /**
+     * {@value}
+     */
     public static final String ATTR_EXTERNAL_DOMAIN = "externalDomain";
 
 
@@ -68,7 +82,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         Vector<String> roleList = ListUtils.resolveStringList(this, new Reference(ATTR_ROLES), false);
-        StringBuilder rolenames= new StringBuilder();
+        StringBuilder rolenames = new StringBuilder();
         for (String role : roleList) {
             roles.put(role, role);
             rolenames.append(role);
@@ -77,14 +91,14 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
         domain = sfResolve(ATTR_DOMAIN, "", true);
         externalDomain = sfResolve(ATTR_EXTERNAL_DOMAIN, "", true);
-        sfLog().info("Creating Mock farmer with a limit of " + clusterLimit 
+        sfLog().info("Creating Mock farmer with a limit of " + clusterLimit
                 + " and roles: " + rolenames);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -103,7 +117,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
             }
             newnodes.add(clusterInstance);
         }
-        sfLog().info("Created " + newnodes.size()+ " nodes of role " + role );
+        sfLog().info("Created " + newnodes.size() + " nodes of role " + role);
         return newnodes.toArray(new ClusterNode[newnodes.size()]);
     }
 
@@ -131,6 +145,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
 
     /**
      * Add a role to the list of allowed roles. No way to remove them.
+     *
      * @param role role to add
      */
     public void addRole(String role) {
@@ -139,11 +154,12 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
 
     /**
      * Is the role allowed
+     *
      * @param role to ask for
      * @return true iff the role is supported
      */
     public boolean roleAllowed(String role) {
-        return roles.size()==0 || roles.containsKey(role);
+        return roles.size() == 0 || roles.containsKey(role);
     }
 
     /**
@@ -159,7 +175,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -175,7 +191,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -206,7 +222,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -218,7 +234,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -231,7 +247,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -244,7 +260,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -257,7 +273,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -274,7 +290,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -285,13 +301,13 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * {@inheritDoc}
      *
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
     public ClusterNode[] list(String role) throws IOException, SmartFrogException {
         List<ClusterNode> result = new ArrayList<ClusterNode>(nodes.size());
-        for (ClusterNode node: nodes) {
+        for (ClusterNode node : nodes) {
             if (role.equals(node.getRole())) {
                 result.add(node);
             }
