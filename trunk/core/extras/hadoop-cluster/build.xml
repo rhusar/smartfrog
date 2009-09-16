@@ -46,7 +46,10 @@
     test.namenode = namenode host (default: targethost)
     test.jobtracker = jobtracker host  (default: targethost)
     test.datanode1 = datanode 1 host (default: targethost)
-    test.tasktracker1 = tasktracker 1 host (default: datanode1) 
+    test.tasktracker1 = tasktracker 1 host (default: datanode1)
+    
+    for farm support
+    mockfarmer - create a mockfarmer
 
   </description>
   <!--we are a component -->
@@ -382,4 +385,13 @@
     </deploy>
   </target>
 
+
+  <target  name="mockfarmer" depends="ready-to-deploy"
+      description="Deploy a mock farm manager" >
+    <property name="mockfarmer.sf" value="org/smartfrog/services/farmer/example.sf" />
+    <deploy>
+      <application name="farmer"
+          descriptor="/${mockfarmer.sf}"/>
+    </deploy>
+  </target>
 </project>

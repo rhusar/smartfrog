@@ -43,9 +43,9 @@
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
   <!--<property name="application.name" value="ec2" />-->
   <property name="mockfarmer.sf" value="org/smartfrog/services/farmer/example.sf" />
-  
-  <property name="deploy.sf" value="${mockfarmer.sf}" />
 
+
+<!--  <property name="deploy.sf" value="${mockfarmer.sf}" />-->
 
   <echo
       message="==================================================================="/>
@@ -86,6 +86,7 @@
   
   <target  name="farmer" depends="ready-to-deploy"
        description="Deploy a mock farm manager" >
+    <property name="mockfarmer.sf" value="org/smartfrog/services/farmer/example.sf" />
       <deploy>
         <application name="farmer"
             descriptor="/${mockfarmer.sf}"/>
