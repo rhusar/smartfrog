@@ -1603,6 +1603,11 @@ smartfrog.tasks.classpath=
     <property name="deploy.host" value="localhost"/>
     <property name="deploy.timeout" value="30000"/>
     <property name="application.name" value="${project.name}"/>
+    <echo level="verbose">
+      deploy.host =  "${deploy.host}"
+      application = "${application.name}"
+      deploy.sf = "${deploy.sf}"
+    </echo>
   </target>
 
   <!-- ========================================================== -->
@@ -1614,7 +1619,6 @@ smartfrog.tasks.classpath=
       <path refid="tests.run.classpath"/>
     </makeurl>
     <echo level="verbose">
-      deploying to ${deploy.host}
       codebase=${codebase}</echo>
   </target>
 
@@ -1624,7 +1628,6 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
 
   <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test,define-deploy-preset">
-
   </target>
 
   <target name="define-deploy-preset" depends="ready-to-test,init-codebase,init-deploy-properties">
