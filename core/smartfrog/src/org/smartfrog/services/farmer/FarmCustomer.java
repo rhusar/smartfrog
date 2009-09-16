@@ -22,7 +22,9 @@ package org.smartfrog.services.farmer;
 import java.rmi.Remote;
 
 /**
- * Created 14-Sep-2009 13:44:19
+ * This component can ask a farmer for instances.
+ *
+ * Although written for testing, it could be extended to be more useful
  */
 
 public interface FarmCustomer extends Remote {

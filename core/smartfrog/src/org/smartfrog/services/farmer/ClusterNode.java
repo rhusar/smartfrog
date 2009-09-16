@@ -25,12 +25,32 @@ import java.io.Serializable;
 /**
  * Serializable representation of a cluster node
  */
-public final class ClusterNode implements Serializable {
+public final class ClusterNode implements Serializable, Cloneable {
 
+    /**
+     * The Id of this node. This should be treated as opaque, and is only of interest to the Farmer
+     */
     private String id;
+
+    /**
+     * The internal hostname
+     */
     private String hostname;
+
+
+    /**
+     * Is this node externally visible
+     */
     private boolean externallyVisible;
+
+    /**
+     * The external hostname
+     */
     private String externalHostname;
+
+    /**
+     * The role of the node
+     */
     private String role;
 
     public String getId() {
@@ -73,6 +93,12 @@ public final class ClusterNode implements Serializable {
         this.role = role;
     }
 
+    /**
+     * The equality test compares node ID only
+     *
+     * @param o other object
+     * @return true iff the other object is a ClusterNode with the same ID
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,6 +113,7 @@ public final class ClusterNode implements Serializable {
 
     /**
      * Hash code comes from the ID
+     *
      * @return the hash code's ID
      */
     @Override
@@ -96,9 +123,9 @@ public final class ClusterNode implements Serializable {
 
     /**
      * {@inheritDoc}
-     * @return a clone of this instance.
      *
-     * @throws CloneNotSupportedException as the signature demands it. 
+     * @return a clone of this instance.
+     * @throws CloneNotSupportedException as the signature demands it.
      * @see Cloneable
      */
     @Override
@@ -106,6 +133,11 @@ public final class ClusterNode implements Serializable {
         return super.clone();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return a string listing
+     */
     @Override
     public String toString() {
         return "ClusterInstance{" +

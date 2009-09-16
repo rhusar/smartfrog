@@ -26,20 +26,36 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
 
 /**
- * Base class for cluster farmer implementations
+ * Intermediate class for cluster farmer implementations -contains any helper methods that they should be sharing
  */
-public class AbstractClusterFarmer extends PrimImpl {
-    
-    /** {@value} */
+public abstract class AbstractClusterFarmer extends PrimImpl {
+
+    /**
+     * {@value}
+     */
     public static final String WRONG_MACHINE_COUNT
             = "The maximum number of machines requested was less than the minimum";
+    /**
+     * {@value}
+     */
+    public static final String NEGATIVE_VALUES_NOT_SUPPORTED = "Negative values not supported";
 
     protected AbstractClusterFarmer() throws RemoteException {
     }
 
+    /**
+     * check the min and max arguments
+     *
+     * @param min minimum number of nodes desired
+     * @param max maximumum number  desired
+     * @throws SmartFrogException
+     */
     protected void validateClusterRange(int min, int max) throws SmartFrogException {
         if (max < min) {
             throw new SmartFrogException(WRONG_MACHINE_COUNT);
+        }
+        if (min < 0) {
+            throw new SmartFrogException(NEGATIVE_VALUES_NOT_SUPPORTED);
         }
     }
 }

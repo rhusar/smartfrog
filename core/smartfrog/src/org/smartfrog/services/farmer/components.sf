@@ -18,8 +18,10 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/components.sf"
+
 /*
-The farmer components aim to provide a standard way to remotely work with a farm.
+The farmer components aim to provide a standard way to remotely work with a farm of API-allocated
+machines, real or virtual. 
 
 A client application can talk to a (configured) farm and ask for more machines, get a list of
 allocated machines. The API is meant to be infrastructure neutral, and it does that by
@@ -29,10 +31,9 @@ You can ask for a machine by "name", its up to the deployed component how that n
 and what you get. The client doesn't need to know the details, only that it can get
 a "master" or "worker".
 
-Once the machine is up, the client has to talk to it using SmartFrog, longhaul SF, SSH, whatever.
+Once the machine is up, the client has to talk to it.
+ 
 That is out of scope for the farmer, which just creates and destroys machines.
-
-There will an EC2 impl that, for each machine role, takes an AMI, machine size and network option.
 
 */
 
@@ -42,6 +43,7 @@ There will an EC2 impl that, for each machine role, takes an AMI, machine size a
 MockClusterFarmer extends WorkflowPrim {
   sfClass "org.smartfrog.services.farmer.MockClusterFarmerImpl"
   
+  //limit on the size of this cluster
   clusterLimit 1000;
   //list of roles, empty list means all roles are allowed
   roles [];

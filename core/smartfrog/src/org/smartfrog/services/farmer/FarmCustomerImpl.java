@@ -19,24 +19,24 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.farmer;
 
-import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
-import java.util.Map;
+import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a workflow component that is bound to a farmer, and which creates/destroys nodes through its lifecycle.
  *
- * It is primarily for testing, but it can be used in production
+ * It is primarily for testing, but it can be used in production. A key weakness is that it is synchronous -it relies on
+ * the operation to complete rapidly
  */
 
 public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
@@ -51,6 +51,12 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     }
 
 
+    /**
+     * Create the nodes on startup
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -87,6 +93,14 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                 null);
     }
 
+
+    /**
+     * Check the nodes are there on a liveness call
+     *
+     * @param source source of call
+     * @throws SmartFrogLivenessException
+     * @throws RemoteException
+     */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -101,26 +115,23 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                     throw new SmartFrogLivenessException("Cannot find entry for " + node);
                 }
             }
-        } catch (RemoteException e) {
-            throw e;
-        } catch (SmartFrogLivenessException e) {
-            throw e;
-        } catch (IOException e) {
-            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
-        } catch (SmartFrogException e) {
+        } catch (Exception e) {
             throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
         }
     }
 
+    /**
+     * Terminate nodes on shutdown
+     *
+     * @param status termination status
+     */
     @Override
     public void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if (deleteOnTerminate) {
             try {
                 farmer.delete(nodes);
-            } catch (IOException e) {
-                sfLog().info(e);
-            } catch (SmartFrogException e) {
+            } catch (Exception e) {
                 sfLog().info(e);
             }
         }

@@ -21,6 +21,37 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.farmer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 
+/**
+ * Exception raised when there is no space in the cluster for the requested number of machines
+ */
 public class NoClusterSpaceException extends SmartFrogException {
+
+    public NoClusterSpaceException() {
+    }
+
+    public NoClusterSpaceException(String message) {
+        super(message);
+    }
+
+    public NoClusterSpaceException(Throwable cause) {
+        super(cause);
+    }
+
+    public NoClusterSpaceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public NoClusterSpaceException(String message, Prim sfObject) {
+        super(message, sfObject);
+    }
+
+    public NoClusterSpaceException(Throwable cause, Prim sfObject) {
+        super(cause, sfObject);
+    }
+
+    public NoClusterSpaceException(String message, Throwable cause, Prim sfObject) {
+        super(message, cause, sfObject);
+    }
 }
