@@ -91,6 +91,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     public synchronized ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
         validateClusterRange(min, max);
         if (clusterSpace() < min) {
+            sfLog().info("Rejecting request for " + min + " nodes of role " + role + " : no space in cluster");
             throw new NoClusterSpaceException();
         }
         List<ClusterNode> newnodes = new ArrayList<ClusterNode>(max);
@@ -102,6 +103,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
             }
             newnodes.add(clusterInstance);
         }
+        sfLog().info("Created " + newnodes.size()+ " nodes of role " + role );
         return newnodes.toArray(new ClusterNode[newnodes.size()]);
     }
 
