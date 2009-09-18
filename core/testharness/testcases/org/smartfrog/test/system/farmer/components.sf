@@ -31,6 +31,27 @@ ExpectFarmerDeploy extends ExpectDeploy {
 
 }
 
+testFarmHasRoles extends ExpectFarmerDeploy {
+
+  tests extends Sequence {
+
+
+    master extends FarmSupportsRoleWorkflow {
+    //this is the farmer
+      farmer LAZY action;
+      role "master";
+    }
+
+    worker extends FarmSupportsRoleWorkflow {
+    //this is the farmer
+      farmer LAZY action;
+      role "worker";
+    }
+
+
+ }
+}
+
 
 testFarmCreate extends ExpectFarmerDeploy {
   
@@ -98,6 +119,23 @@ testFarmCreateNoRoom extends ExpectDeployFailure {
 }
 
 
+testFarmCreateNoRole extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a farm customer that tries to create something of an unknown role"
+
+    action extends Parallel {
+     farmer MockCluster;
+
+     master extends WorkflowFarmCustomer {
+      farmer LAZY action:farmer;
+      role "server";
+      min 1;
+      max 10;
+     }
+   }
+}
+
+
 testFarmCreateNegativeNumber extends ExpectDeployFailure {
 
     description "create a mock cluster, and, in parallel, a farm customer that demands less than 0 nodes"
@@ -110,6 +148,20 @@ testFarmCreateNegativeNumber extends ExpectDeployFailure {
       role "master";
       min -10;
       max 10;
+     }
+   }
+}
+
+testFarmLacksRole extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a test for a role that isn't supported"
+
+    action extends Parallel {
+     farmer MockCluster;
+
+     master extends FarmSupportsRole {
+      farmer LAZY action:farmer;
+      role "server";
      }
    }
 }

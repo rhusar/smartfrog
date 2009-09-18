@@ -22,14 +22,12 @@ package org.smartfrog.test.system.farmer;
 import org.smartfrog.test.DeployingTestBase;
 
 /**
- *
  * Created 30-Nov-2007 16:46:45
- *
  */
 
 public class FarmerTest extends DeployingTestBase {
     public static final String FILES = "/org/smartfrog/test/system/farmer/";
-    
+
     public FarmerTest(String name) {
         super(name);
     }
@@ -42,7 +40,19 @@ public class FarmerTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmCreateBounded");
     }
 
+    public void testFarmCreateNoRole() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testFarmCreateNoRole");
+    }
+
     public void testFarmCreateNoRoom() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmCreateNoRoom");
+    }
+
+    public void testFarmHasRoles() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testFarmHasRoles");
+    }
+
+    public void testFarmLacksRole() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testFarmLacksRole");
     }
 }
