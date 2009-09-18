@@ -55,8 +55,8 @@ public class ListInstancesImpl extends EC2ComponentImpl
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
@@ -81,8 +81,8 @@ public class ListInstancesImpl extends EC2ComponentImpl
 
 
     /**
-     * Process the list of instances enumerated The base class lists the
-     * instances at info level then checks the number of instances found.
+     * Process the list of instances enumerated The base class lists the instances at info level then checks the number
+     * of instances found.
      *
      * @param instanceList instances
      * @throws SmartFrogException for any SF exception
@@ -115,6 +115,7 @@ public class ListInstancesImpl extends EC2ComponentImpl
 
     /**
      * Do whatever is needed to delay for the next poll
+     *
      * @return true if the delay should finish
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException network problems
@@ -133,37 +134,35 @@ public class ListInstancesImpl extends EC2ComponentImpl
 
 
         /**
-         * Create a basic thread. Notification is bound to a local notification
-         * object.
+         * Create a basic thread. Notification is bound to a local notification object.
          */
         private Ec2InstanceThread() {
             super(ListInstancesImpl.this, true);
         }
 
         /**
-         * If this thread was constructed using a separate {@link Runnable} run
-         * object, then that <code>Runnable</code> object's <code>run</code>
-         * method is called; otherwise, this method does nothing and returns.
-         * <p> Subclasses of <code>Thread</code> should override this method.
+         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
+         * of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */
         @Override
         public void execute() throws Throwable {
             Jec2 binding = getEc2binding();
-            TimeoutTracker tracker=new TimeoutTracker(timeout);
-            InstanceList instanceList=null;
-            boolean finished=false;
-            while(!finished) {
+            TimeoutTracker tracker = new TimeoutTracker(timeout);
+            InstanceList instanceList = null;
+            boolean finished = false;
+            while (!finished) {
                 instanceList = InstanceList.describeInstances(binding,
-                    instances,
-                    imageID,
-                    state);
-                boolean overMinimum=instanceList.size()>minCount;
+                        instances,
+                        imageID,
+                        state);
+                boolean overMinimum = instanceList.size() > minCount;
                 finished = overMinimum || tracker.isTimedOut();
-                if(!finished) {
+                if (!finished) {
                     //not finished, so let's poll
-                    if(delayForNextPoll()) {
+                    if (delayForNextPoll()) {
                         //the delay process said it is time to exit, but not
                         //bail out with an interrupted thread
                         break;

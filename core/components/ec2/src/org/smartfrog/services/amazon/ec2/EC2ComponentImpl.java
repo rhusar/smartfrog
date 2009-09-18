@@ -58,7 +58,7 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component, Completa
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     @Override
     public synchronized void sfStart()
@@ -70,12 +70,11 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component, Completa
     }
 
     /**
-     * Liveness call in to check if this component is still alive.
-     * Any work exception gets forwarded up here.
+     * Liveness call in to check if this component is still alive. Any work exception gets forwarded up here.
+     *
      * @param source source of call
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException for consistency with the {@link Liveness}
-     * interface
+     * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
@@ -111,8 +110,8 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component, Completa
     }
 
     /**
-     * record that the work has completed. If an exception
-     * is passed in, assume the work failed
+     * record that the work has completed. If an exception is passed in, assume the work failed
+     *
      * @param exception an optional exception.
      */
     protected synchronized void workCompleted(Throwable exception) {
@@ -137,18 +136,16 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component, Completa
     }
 
     /**
-     * Poll for the work being successful.
-     * This is defined as the exception being null
+     * Poll for the work being successful. This is defined as the exception being null
      *
      * @return true if nothing went wrong and we have completed
      */
     public synchronized boolean isWorkSuccessful() {
-        return workCompleted && workException==null;
+        return workCompleted && workException == null;
     }
 
     /**
-     * Return any exception raised when the work failed.
-     * If this is non-null, then isWorkSuccessful() must be false
+     * Return any exception raised when the work failed. If this is non-null, then isWorkSuccessful() must be false
      *
      * @return an exception or null
      */
@@ -205,6 +202,7 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component, Completa
 
     /**
      * Log any termination records
+     *
      * @param terminating list of terminating entries
      */
     protected void logTerminationInfo(List<TerminatingInstanceDescription> terminating) {
