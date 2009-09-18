@@ -26,8 +26,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
 
 /**
- * A password provider that gets the password from an attribute.
- * The attribute is re-evaluated whenever the password is resolved
+ * A password provider that gets the password from an attribute. The attribute is re-evaluated whenever the password is
+ * resolved
  */
 public class InlinePasswordProviderImpl extends PrimImpl implements PasswordProvider {
 
@@ -38,15 +38,16 @@ public class InlinePasswordProviderImpl extends PrimImpl implements PasswordProv
     /**
      * {@value}
      */
-    public static final String ATTR_PASSWORD="password";
+    public static final String ATTR_PASSWORD = "password";
 
     /**
      * {@inheritDoc}
+     *
+     * @return a password
      * @throws SmartFrogException If unable to get the password
      * @throws RemoteException in case of network or RMI error
-     * @return a password
      */
     public String getPassword() throws SmartFrogException, RemoteException {
-        return sfResolve(ATTR_PASSWORD,(String)null,true);
+        return sfResolve(ATTR_PASSWORD, (String) null, true);
     }
 }
