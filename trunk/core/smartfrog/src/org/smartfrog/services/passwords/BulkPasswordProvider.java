@@ -25,8 +25,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This interface is for components that provide bulk access to passwords.
- * Created 20-Feb-2008 13:46:38
+ * This interface is for components that provide bulk access to passwords. Created 20-Feb-2008 13:46:38
  */
 
 
@@ -39,7 +38,7 @@ public interface BulkPasswordProvider extends Remote {
      * @param domain a domain (can be null, in which case it is ignored)
      * @return a password
      * @throws SmartFrogException If unable to get the password
-     * @throws RemoteException    in case of network or RMI error
+     * @throws RemoteException in case of network or RMI error
      */
-    public String getPassword(String user,String domain) throws SmartFrogException, RemoteException;
+    public String getPassword(String user, String domain) throws SmartFrogException, RemoteException;
 }

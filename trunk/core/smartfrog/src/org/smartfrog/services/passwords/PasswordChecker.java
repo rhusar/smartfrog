@@ -35,30 +35,44 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * This component is here mainly to test password providers, but you can also
- * use it to verify that a password meets min/max length values
+ * This component is here mainly to test password providers, but you can also use it to verify that a password meets
+ * min/max length values
  */
 public class PasswordChecker extends PrimImpl implements Remote {
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_PROVIDER = "passwordProvider";
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_MIN_SIZE = "minSize";
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_MAX_SIZE = "maxSize";
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_VALUE = "password";
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_EXPECTED = "expected";
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_PUBLISH = "publish";
 
-    /** component attribute {@value} */
+    /**
+     * component attribute {@value}
+     */
     public static final String ATTR_PATTERN = "pattern";
     public static final String ERROR_TOO_SHORT = "Password is shorter than minimum size";
     public static final String ERROR_TOO_LONG = "Password is longer than maximum size";
@@ -71,18 +85,18 @@ public class PasswordChecker extends PrimImpl implements Remote {
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
-        throws SmartFrogException, RemoteException {
+            throws SmartFrogException, RemoteException {
         super.sfStart();
 
         PasswordProvider provider =
-            (PasswordProvider) sfResolve(ATTR_PROVIDER, (Prim) null, true);
+                (PasswordProvider) sfResolve(ATTR_PROVIDER, (Prim) null, true);
         int minSize = sfResolve(ATTR_MIN_SIZE, -1, false);
         int maxSize = sfResolve(ATTR_MAX_SIZE, -1, false);
         String expected = sfResolve(ATTR_EXPECTED, (String) null, false);
@@ -106,7 +120,7 @@ public class PasswordChecker extends PrimImpl implements Remote {
             throw new SmartFrogException(
                     ERROR_WRONG_VALUE);
         }
-        if(regexp.length()>0) {
+        if (regexp.length() > 0) {
             try {
                 Pattern pattern = Pattern.compile(regexp);
                 Matcher matcher = pattern.matcher(password);
