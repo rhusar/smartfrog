@@ -24,11 +24,12 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  * Intermediate class for cluster farmer implementations -contains any helper methods that they should be sharing
  */
-public abstract class AbstractClusterFarmer extends PrimImpl {
+public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterFarmer{
 
     /**
      * {@value}
@@ -48,14 +49,26 @@ public abstract class AbstractClusterFarmer extends PrimImpl {
      *
      * @param min minimum number of nodes desired
      * @param max maximumum number  desired
-     * @throws SmartFrogException
+     * @throws SmartFrogException if the parameters are somehow invalid
      */
-    protected void validateClusterRange(int min, int max) throws SmartFrogException {
+    public static void validateClusterRange(int min, int max) throws SmartFrogException {
         if (max < min) {
             throw new SmartFrogException(WRONG_MACHINE_COUNT);
         }
         if (min < 0) {
             throw new SmartFrogException(NEGATIVE_VALUES_NOT_SUPPORTED);
         }
+    }
+
+    /**
+     * Stub method to stop breaking the build; once all subclasses have the method, it can be deleted
+     *
+     * @return an empty list of role names
+     * @throws IOException IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public String[] listAvailableRoles() throws IOException, SmartFrogException {
+        return new String[0];
     }
 }

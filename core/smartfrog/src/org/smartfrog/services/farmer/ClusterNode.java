@@ -106,9 +106,8 @@ public final class ClusterNode implements Serializable, Cloneable {
 
         ClusterNode that = (ClusterNode) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
 
-        return true;
     }
 
     /**
