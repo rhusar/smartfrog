@@ -114,21 +114,21 @@
         name="hadoop-common"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->master">
+        conf="hadoop-core->default">
       <exclude org="org.mortbay.jetty" />
     </dependency>
     <dependency org="org.apache.hadoop"
         name="hadoop-hdfs"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->master">
+        conf="hadoop-core->default">
       <exclude org="org.mortbay.jetty" />
     </dependency>
    <dependency org="org.apache.hadoop"
         name="hadoop-mapred"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->master">
+        conf="hadoop-core->default">
       <exclude org="org.mortbay.jetty" />
     </dependency>
 
