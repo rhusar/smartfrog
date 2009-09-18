@@ -18,8 +18,16 @@
 
  */
 
+/**
+ * options for image size
+ */
+EC2ImageSizes extends DATA {
+  SIZE_SMALL "m1.small";
+  SIZE_LARGE "m1.large";
+  SIZE_XL    "m1.xlarge";
+}
 
-ImageInstance extends AwsAuthorizedWorkflowService {
+ImageInstance extends AwsAuthorizedWorkflowService, EC2ImageSizes {
   sfClass "org.smartfrog.services.amazon.ec2.EC2InstanceImpl";
   //this is the AMI of an image
   imageID TBD;
@@ -30,9 +38,6 @@ ImageInstance extends AwsAuthorizedWorkflowService {
 
   //instance types
   instanceType SIZE_SMALL;
-  SIZE_SMALL "m1.small";
-  SIZE_LARGE "m1.large";
-  SIZE_XL    "m1.xlarge";
 
   //user data
   userData "";

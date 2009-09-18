@@ -72,8 +72,8 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
@@ -95,8 +95,8 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
@@ -115,7 +115,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         InstanceList list = instances;
         if (list != null) {
             try {
-                sfLog().info("About to terminate "+list.size()+" instances");
+                sfLog().info("About to terminate " + list.size() + " instances");
                 List<TerminatingInstanceDescription> tid = list.terminate();
                 logTerminationInfo(tid);
             } catch (EC2Exception e) {
@@ -123,7 +123,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
             }
         } else {
             sfLog().info("No instances to terminate");
-            if(getWorker()!=null) {
+            if (getWorker() != null) {
                 sfLog().warn(WARNING_THE_WORKER_IS_STILL_BUSY);
             }
         }
@@ -158,18 +158,16 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
 
 
         /**
-         * Create a basic thread. Notification is bound to a local notification
-         * object.
+         * Create a basic thread. Notification is bound to a local notification object.
          */
         private Ec2InstanceThread() {
             super(EC2InstanceImpl.this, true);
         }
 
         /**
-         * If this thread was constructed using a separate {@link Runnable} run
-         * object, then that <code>Runnable</code> object's <code>run</code>
-         * method is called; otherwise, this method does nothing and returns.
-         * <p> Subclasses of <code>Thread</code> should override this method.
+         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
+         * of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */
@@ -219,17 +217,16 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         }
     }
 
-        private class Ec2ConsoleThread extends WorkflowThread {
+    private class Ec2ConsoleThread extends WorkflowThread {
 
-            /**
-             * Create a basic thread. Notification is bound to a local notification
-             * object.
-             *
-             * @param workflowTermination is workflow termination expected
-             */
-            private Ec2ConsoleThread(boolean workflowTermination) {
-                super(EC2InstanceImpl.this, workflowTermination);
-            }
+        /**
+         * Create a basic thread. Notification is bound to a local notification object.
+         *
+         * @param workflowTermination is workflow termination expected
+         */
+        private Ec2ConsoleThread(boolean workflowTermination) {
+            super(EC2InstanceImpl.this, workflowTermination);
         }
-
     }
+
+}

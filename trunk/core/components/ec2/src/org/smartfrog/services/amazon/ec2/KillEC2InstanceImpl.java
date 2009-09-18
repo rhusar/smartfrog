@@ -42,7 +42,7 @@ public class KillEC2InstanceImpl extends ListInstancesImpl implements EC2Instanc
      *
      * @param instanceList instances
      * @throws SmartFrogException for any SF exception
-     * @throws RemoteException    for networking problems
+     * @throws RemoteException for networking problems
      */
     @Override
     protected void processInstanceList(InstanceList instanceList) throws SmartFrogException, RemoteException {

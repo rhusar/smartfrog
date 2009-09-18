@@ -21,7 +21,6 @@ package org.smartfrog.services.amazon.ec2;
 
 import com.xerox.amazonws.ec2.EC2Exception;
 import com.xerox.amazonws.ec2.ImageDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -73,7 +72,7 @@ public class ListEc2Images extends EC2ComponentImpl implements EC2Component {
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -152,7 +151,7 @@ public class ListEc2Images extends EC2ComponentImpl implements EC2Component {
                     target.sfReplaceAttribute(targetAttribute, result.get(0));
                 }
             } catch (EC2Exception e) {
-                throw new SmartFrogDeploymentException(
+                throw new SmartFrogEC2Exception(
                         "Failed to talk to EC2 as " + getId(),
                         e);
             }

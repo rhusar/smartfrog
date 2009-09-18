@@ -52,7 +52,7 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      * Constructs a SmartFrogDeploymentException with specified cause. Also initializes the exception context with
      * component details.
      *
-     * @param cause    exception causing this exception
+     * @param cause exception causing this exception
      * @param sfObject The Component that has encountered the exception
      */
     public SmartFrogEC2Exception(EC2Exception cause, Prim sfObject) {
@@ -64,7 +64,7 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      * Constructs a SmartFrogDeploymentException with specified message and cause.
      *
      * @param message exception message
-     * @param cause   exception causing this exception
+     * @param cause exception causing this exception
      */
     public SmartFrogEC2Exception(String message, EC2Exception cause) {
         super(message, cause);
@@ -75,8 +75,8 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      * Constructs a SmartFrogDeploymentException with specified message and cause. Also initializes  the exception
      * context with component details.
      *
-     * @param message  exception message
-     * @param cause    exception causing this exception
+     * @param message exception message
+     * @param cause exception causing this exception
      * @param sfObject The Component that has encountered the exception
      */
     public SmartFrogEC2Exception(String message, EC2Exception cause, Prim sfObject) {

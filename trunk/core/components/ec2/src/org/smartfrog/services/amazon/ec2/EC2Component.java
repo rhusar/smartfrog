@@ -19,15 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.amazon.ec2;
 
-import java.rmi.Remote;
+import org.smartfrog.services.amazon.aws.AwsAuthorizedService;
 
 /**
  * Created 25-Mar-2008 13:35:47
  */
 
-public interface EC2Component extends Remote {
+public interface EC2Component extends AwsAuthorizedService {
 
-    String ATTR_ID = "id";
-    String ATTR_KEY = "key";
 
 }

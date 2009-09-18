@@ -39,16 +39,26 @@ public interface EC2Instance extends EC2Component {
     //max number
     String ATTR_MAX_COUNT = "maxCount";
 
-    /** machine state attribute {@value} */
+    /**
+     * machine state attribute {@value}
+     */
     String ATTR_STATE = "state";
 
-    /** machine state {@value} */
+    /**
+     * machine state {@value}
+     */
     String STATE_RUNNING = "running";
-    /** machine state {@value} */
+    /**
+     * machine state {@value}
+     */
     String STATE_PENDING = "pending";
-    /** machine state {@value} */
+    /**
+     * machine state {@value}
+     */
     String STATE_SHUTTING_DOWN = "shutting-down";
-    /** machine state {@value} */
+    /**
+     * machine state {@value}
+     */
     String STATE_TERMINATED = "terminated";
 
 }
