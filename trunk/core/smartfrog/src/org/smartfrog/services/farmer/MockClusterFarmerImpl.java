@@ -108,6 +108,10 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
             sfLog().info("Rejecting request for " + min + " nodes of role " + role + " : no space in cluster");
             throw new NoClusterSpaceException();
         }
+        //now check the role is allowed
+        if (!roleAllowed(role)) {
+            throw new UnsupportedClusterRoleException(role, this);
+        }
         List<ClusterNode> newnodes = new ArrayList<ClusterNode>(max);
         for (int i = 0; i < max; i++) {
             ClusterNode clusterInstance = createOneInstance(role);
@@ -313,5 +317,16 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
             }
         }
         return result.toArray(new ClusterNode[result.size()]);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return a possibly empty list of role names
+     * @throws IOException IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public String[] listAvailableRoles() throws IOException, SmartFrogException {
+        return roles.values().toArray(new String[roles.size()]);
     }
 }

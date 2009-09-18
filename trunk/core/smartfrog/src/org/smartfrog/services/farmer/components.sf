@@ -54,6 +54,7 @@ MockClusterFarmer extends WorkflowPrim {
   
 }
 
+
 FarmCustomer extends WorkflowPrim {
   sfClass "org.smartfrog.services.farmer.FarmCustomerImpl";
   farmer TBD;
@@ -68,5 +69,20 @@ FarmCustomer extends WorkflowPrim {
 }
 
 WorkflowFarmCustomer extends FarmCustomer {
+  sfShouldTerminate true;
+}
+
+FarmSupportsRole extends WorkflowPrim {
+  sfClass "org.smartfrog.services.farmer.FarmSupportsRoleImpl";
+  farmer TBD;
+  role TBD;
+  checkOnStartup true;
+}
+
+FarmSupportsRoleCondition extends FarmSupportsRole {
+  checkOnStartup false;
+}
+
+FarmSupportsRoleWorkflow extends FarmSupportsRole {
   sfShouldTerminate true;
 }

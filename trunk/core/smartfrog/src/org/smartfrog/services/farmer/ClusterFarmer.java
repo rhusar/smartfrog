@@ -144,4 +144,12 @@ public interface ClusterFarmer extends Remote {
     public ClusterNode lookupByHostname(String hostname)
             throws IOException, SmartFrogException;
 
+    /**
+     * Create a list of available roles. 
+     * The list may vary during the life of a farmer.
+     * @return a possibly empty list of role names
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    public String[] listAvailableRoles() throws IOException, SmartFrogException;
 }
