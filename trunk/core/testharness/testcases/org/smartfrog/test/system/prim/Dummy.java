@@ -26,8 +26,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 /**
- * Makes JVM exit during deployment, consequently kills smartfrog daemon 
- * as well.
+ * no-op Prim
  */
 public class Dummy extends PrimImpl implements Prim {
     
