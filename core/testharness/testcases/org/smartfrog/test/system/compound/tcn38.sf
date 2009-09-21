@@ -18,20 +18,21 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/test/system/prim/hostbindings.sf"
 
 sfConfig extends Compound {
     sfClass "org.smartfrog.test.system.prim.Dummy";
     bar1 extends Compound {
             sfProcessComponentName "Bar1";
-            sfProcessHost "ebnt171";
+            sfProcessHost remoteHost;
     }
     bar2 extends Compound {
             sfProcessComponentName "Bar2";
-            sfProcessHost "ebnt171";
+            sfProcessHost remoteHost;
     }
     foo extends Compound {
-        sfProcessHost "eb96121";
+        sfProcessHost localHost;
         sfProcessComponentName "Foo";
     }
 }
