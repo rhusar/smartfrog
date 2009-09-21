@@ -41,6 +41,7 @@ import java.util.List;
 public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
 
     private String instanceType;
+    protected InstanceType size;
     private String imageID;
     private boolean shutdown;
     private String userData;
@@ -91,6 +92,13 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         if (imageID.length() == 0) {
             throw new SmartFrogLifecycleException(ERROR_NO_IMAGE);
         }
+        size = InstanceType.getTypeFromString(instanceType);
+        if (size == null) {
+            throw new SmartFrogLifecycleException(
+                    ERROR_UNRECOGNISED_IMAGE_TYPE + instanceType);
+        }
+        sfLog().info("Deploying a " + instanceType + " image ID " + imageID);
+
         deployWorker(new Ec2InstanceThread());
     }
 
@@ -173,12 +181,6 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
          */
         @Override
         public void execute() throws Throwable {
-            InstanceType size = InstanceType.getTypeFromString(instanceType);
-            if (size == null) {
-                throw new SmartFrogDeploymentException(
-                        ERROR_UNRECOGNISED_IMAGE_TYPE + instanceType);
-            }
-            sfLog().info("Deploying a " + instanceType + " image ID " + imageID);
             if (EC2_ENABLED) {
                 try {
                     reservation = getEc2binding().runInstances(
