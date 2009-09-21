@@ -1,14 +1,17 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletMapping;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.www.*;
+import org.smartfrog.services.www.ApplicationServerContext;
+import org.smartfrog.services.www.ServletComponent;
+import org.smartfrog.services.www.ServletContextComponentDelegate;
+import org.smartfrog.services.www.WebApplicationHelper;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
@@ -52,14 +55,13 @@ public class JettyServletDelegate
     private static final Reference mappingsRef = new Reference(ATTR_MAPPINGS);
 
     /**
-     * Create the delegate and configure the {@link org.mortbay.jetty.servlet.Context} of Jetty
-     * that is the real context
+     * Create the delegate and configure the {@link org.mortbay.jetty.servlet.Context} of Jetty that is the real
+     * context
      *
      * @param context sevlet context
-     * @param owner owner component
-     *
+     * @param owner   owner component
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public JettyServletDelegate(DelegateServletContext context, Prim owner)
             throws SmartFrogException, RemoteException {
@@ -71,15 +73,15 @@ public class JettyServletDelegate
 
     /**
      * Read in state, bind to the owner
-     * @param ctx sevlet context
-     * @param prim owner component
      *
+     * @param ctx  sevlet context
+     * @param prim owner component
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     private void bind(Prim prim, DelegateServletContext ctx) throws RemoteException, SmartFrogException {
         try {
-            assert prim!=null:"no prim parameter";
+            assert prim != null : "no prim parameter";
             assert ctx != null : "no DelegateServletContext parameter";
             name = prim.sfResolve(nameRef, name, true);
             pathSpec = prim.sfResolve(pathSpecRef, pathSpec, true);
@@ -126,7 +128,7 @@ public class JettyServletDelegate
                 //oops. no servlets, make a list
                 StringBuilder message = new StringBuilder("Failed to register the servlet with jetty.");
                 ServletHolder[] holders = servletHandler.getServlets();
-                for (ServletHolder entry:holders) {
+                for (ServletHolder entry : holders) {
                     message.append("\n\"");
                     message.append(entry.getDisplayName());
                     message.append("\" ");
@@ -151,7 +153,7 @@ public class JettyServletDelegate
 
 
             //now start it up if the context is already live.
-            if(servletContext.isStarted()) {
+            if (servletContext.isStarted()) {
                 holder.doStart();
             }
 
@@ -180,8 +182,9 @@ public class JettyServletDelegate
 
     /**
      * noop
+     *
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public void deploy() throws SmartFrogException, RemoteException {
 
@@ -190,9 +193,8 @@ public class JettyServletDelegate
     /**
      * start the component
      *
-     *
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public void start() throws SmartFrogException, RemoteException {
         try {
@@ -208,7 +210,7 @@ public class JettyServletDelegate
      * this method is here for server-specific implementation classes,
      *
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public void terminate() throws RemoteException, SmartFrogException {
         try {
@@ -225,7 +227,7 @@ public class JettyServletDelegate
      * liveness check
      *
      * @throws SmartFrogLivenessException smartfrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException            network problems
      */
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (holder == null || !holder.isStarted()) {
