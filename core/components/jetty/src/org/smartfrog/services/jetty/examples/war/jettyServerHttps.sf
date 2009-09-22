@@ -18,10 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
+#include "/org/smartfrog/services/jetty/examples/war/components.sf"
 
-
-
-
-
-sfConfig JettyServerOnChannels;
+sfConfig JettyServerOverHttps;
