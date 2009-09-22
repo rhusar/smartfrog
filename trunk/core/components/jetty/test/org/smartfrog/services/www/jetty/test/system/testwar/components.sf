@@ -30,14 +30,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
+#include "/org/smartfrog/services/jetty/examples/war/components.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
-
-#include "/org/smartfrog/services/filesystem/file.sf"
-
-//the war file must be present
-  TestWar extends FileMustExist {
-    filename PROPERTY test.testwar.war;
-  }
 
 
   RunFailingTests extends IsPropertySet {
@@ -45,22 +39,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
   }
 
 
-
  
-  TestWarServer extends LocalJettyServer {
-    description ("A jetty server with the war deployed to " ++ contextPath);
-    
-    contextPath "/testwar";
+  TestWarServer extends JettyWarServer ;
 
-    testwar extends TestWar;
-
-    deployedWar extends WebApplication {
-        server LAZY PARENT:server;
-        filename LAZY testwar:absolutePath;
-        contextPath PARENT:contextPath;
-    }
-  }
-
+  
+  
+  
+  tcp27 extends JettyServerFilesystemWar;
 
   WarTest extends JettyTestCompound {
 
@@ -193,35 +178,6 @@ testRealmUnauth extends TestRealm {
 }
 
 
-
-/**
- * deploy into a new process
- */
-
-JettyServerWithWar extends Compound {
-
-    server LocalJettyServer;
-
-
-    context extends FilesystemWar {
-       contextPath "/filesystemwar";
-       server LAZY PARENT:server:server;
-    }
-
-}
-
-tcp27 extends JettyServerWithWar;
-
-
-JettyServerOnChannels extends JettyServerWithWar {
-  server JettyOnNIO;
-}
-
-JettyServerOverHttps extends JettyServerWithWar {
-  //use a bigger port than normal
-  port 1443;
-  server JettyHTTPS;
-}
 
 
 tcp27testFilesystemWar extends JettyTestCompound {

@@ -18,9 +18,15 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/services/filesystem/file.sf"
 #include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
+#include "/org/smartfrog/services/jetty/examples/ports.sf"
 
+//the war file must be present
+  TestWar extends FileMustExist {
+    filename PROPERTY test.testwar.war;
+  }
+  
 LocalJettyServer extends JettySocketHttpServerCompound {
 
     sfSyncTerminate true;
@@ -36,10 +42,6 @@ LocalJettyServer extends JettySocketHttpServerCompound {
     server:jettyhome PARENT:jettyhome;
 
 
-/*    listener extends JettySocketConnector {
-      server LAZY PARENT:server;
-      port PARENT:port;
-    }*/
 
 }
 

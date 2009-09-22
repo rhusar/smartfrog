@@ -25,10 +25,9 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/filesystem/components.sf";
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/jetty/examples/war/waitforpages.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/htmlpage.sf"
-
-
 
 
  /*
@@ -90,29 +89,6 @@ TempDirServer extends Compound {
         resourceBase LAZY tempDir:absolutePath;
         server LAZY PARENT:server;
     }
-}
-
-/**
- * a component to wait for a page and fail if it is  not found
- */
-
-
-
-waitForPage extends WaitForPage {
-    fetchErrorText true;
-    checkOnLiveness true;
-    checkFrequency waitForInterval;
-    timeout waitForTimeout;
-}
-
-waitForPageOK extends WaitForPage {
-    maximumResponseCode HttpCodes:OK;
-    minimumResponseCode HttpCodes:OK;
-}
-
-waitForAnyHttpResponse extends waitForPage {
-    maximumResponseCode HttpCodes:NOT_FOUND;
-    minimumResponseCode HttpCodes:OK;
 }
 
 /**

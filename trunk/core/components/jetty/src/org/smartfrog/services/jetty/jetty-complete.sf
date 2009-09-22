@@ -38,7 +38,7 @@
  * the http listener
  */
 
-JettyHttpServer extends Compound {
+CompleteJettyHttpServer extends Compound {
 
    jettyhome TBD;
 
@@ -57,7 +57,7 @@ JettyHttpServer extends Compound {
   /**
    * this listens on a direct port
    */
-  directPortListener extends JettySocketConnector {
+  connector extends JettySocketConnector {
     server LAZY PARENT:server;
     port PARENT:port;
   }
@@ -67,7 +67,7 @@ JettyHttpServer extends Compound {
 /**
  * add the example contexts
  */
-FullJettyServer extends JettyHttpServer {
+CompleteJettyHttpServerWithContexts extends JettyHttpServer {
    contexts extends Compound {
      server LAZY PARENT:server;
    }
