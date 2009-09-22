@@ -39,13 +39,6 @@ TempDirServletContext extends JettyServletContext {
 }
 
 
-
-FilesystemWar extends WebApplication {
- contextPath "/";
- filename ROOT:test.demo.webapp;
-}
-
-
 FilesystemWarAsServletContext extends JettyServletContext {
  contextPath "/";
  resourceBase ROOT:test.demo.webapp;

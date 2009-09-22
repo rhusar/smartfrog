@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/filesystem/file.sf"
+#include "/org/smartfrog/services/jetty/examples/war/components.sf"
 #include "/org/smartfrog/services/restlet/test/system/testwar/ports.sf"
 #include "/org/smartfrog/services/restlet/test/system/components.sf"
 
@@ -29,6 +29,7 @@ For more information: www.smartfrog.org
  */
 
 
+/*
 LocalJettyServer extends Compound {
 
     sfSyncTerminate true;
@@ -38,9 +39,6 @@ LocalJettyServer extends Compound {
     //integrate logging with smartfrog
     logging extends IntegrateJettyLogging;
 
-   /*
-    this is the jetty server itself
-    */
     server extends CoreJettyServer {
 
       jettyhome PARENT:jettyhome;
@@ -93,30 +91,16 @@ JettyHTTPS extends LocalJettyServer {
     }
   }
 
-  waitForPage extends WaitForPage {
-      fetchErrorText true;
-      checkOnLiveness true;
-      checkFrequency waitForInterval;
-      timeout waitForTimeout;
-  }
 
-  waitForAnyHttpResponse extends waitForPage {
-      maximumResponseCode 404;
-      minimumResponseCode 200;
-  }
 
-  waitForOK extends waitForPage {
-      maximumResponseCode HttpCodes:OK;
-      minimumResponseCode maximumResponseCode;
-  }
-
+*/
 
   WarTest extends TestCompound {
       testTimeout test.timeout;
-      contextPath TestWarServer:contextPath;
-      port TestWarServer:port;
+      contextPath JettyWarServer:contextPath;
+      port JettyWarServer:port;
 
-      action extends TestWarServer {
+      action extends JettyWarServer {
           contextPath PARENT:contextPath;
           port PARENT:port;
       }
@@ -124,7 +108,7 @@ JettyHTTPS extends LocalJettyServer {
 
       tests extends Sequence {
         //this is the base liveness check
-        wait extends waitForOK {
+        wait extends waitForPageOK {
             port PARENT:PARENT:action:port;
             page PARENT:PARENT:action:contextPath;
         }
