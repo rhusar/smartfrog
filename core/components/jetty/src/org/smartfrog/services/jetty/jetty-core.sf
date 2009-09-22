@@ -77,11 +77,38 @@ CoreJettySchema extends Schema {
 }
 
 /**
+ * These are the thread pooling options shared by the Core Jetty Sever, and by connectors -anything 
+ * that needs to create a jetty thread pool
+ */
+
+ThreadPoolOptions extends  {
+    //name of the pool
+    name "pooledthread";
+    //if >0, sets the absolute number of threads
+    threads 0;
+    
+    
+    //otherwise, dynamic thread pools are used
+    //minimum number to keep around
+    minThreads 4;
+    //maximum number
+    maxThreads 200;
+    //how many to have free/unused to trigger pool resize
+    spawnOrShrinkAt 0;
+    
+    priority THREAD_NORMAL_PRIORITY;
+    THREAD_MIN_PRIORITY  1;
+    THREAD_NORMAL_PRIORITY 5;
+    THREAD_MAX_PRIORITY 10;
+}
+
+
+/**
  * this is jetty with no running listeners or contexts.
  * It is implemented as a compound; you can add anything underneath it and they
  * will be deployed.
  */
-CoreJettyServer extends ApplicationServer {
+CoreJettyServer extends ApplicationServer , ThreadPoolOptions{
    sfClass "org.smartfrog.services.jetty.JettyImpl";
    coreJettySchema extends CoreJettySchema;
    host "localhost";
@@ -103,9 +130,10 @@ CoreJettyServer extends ApplicationServer {
    logPattern "yyyy_mm_dd.request.log";
 
    //thread pool policy.
-   maxIdleTime 100;
-   maxThreads 32;
+   name "JettyServer";
    minThreads 4;
+   maxThreads 32;
+   maxIdleTime 1000;
 
    //should the date header be sent in a response?
    sendDateHeader true;
@@ -146,20 +174,20 @@ AbstractConnector extends ApplicationServerContext {
     host CoreJettyServer:host;
 }
 
+AbstractThreadPooledConnector extends AbstractConnector, ThreadPoolOptions {
+
+    //number of threads to accept requests
+    acceptors 4;
+    
+}
+
 /**
  * a connector that opens a socket and listens to it. Each open socket consumes one thread.
  */
 
-JettySocketConnector extends AbstractConnector {
+JettySocketConnector extends AbstractThreadPooledConnector {
     sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
-    jettySocketConnectorSchema extends Schema {
-          /**
-           * number of threads to accept requests
-           */
-      threads extends Integer;
-
-    }
-    threads 2;
+    name "JettySocketThread";
 }
 
 
@@ -179,6 +207,7 @@ JettyListener extends JettySocketConnector {
 JettySSLSocketConnector extends JettySocketConnector {
     sfClass "org.smartfrog.services.jetty.listeners.SSLJettySocketConnectorImpl";
     port 443;
+    name "JettySSLSocketThread";
     jettySSLSocketConnectorSchema extends Schema {
        //path/reference to a keystore
       keystore extends FilenameType;
@@ -197,10 +226,10 @@ JettySSLSocketConnector extends JettySocketConnector {
  * This connector uses Java's NIO APIs to handle incoming requests more efficently
  */
 
-JettySelectChannelConnector extends AbstractConnector {
+JettySelectChannelConnector extends AbstractThreadPooledConnector {
     sfClass "org.smartfrog.services.jetty.listeners.SelectChannelConnectorImpl";
-    minThreads 2;
-    maxThreads 4;
+    name "JettySelectChannelThread";
+
     /**
      If True (the default), the connector can use NIO direct buffers.
      Some JVMs have memory management issues (bugs) with direct buffers.
@@ -216,24 +245,53 @@ JettySelectChannelConnector extends AbstractConnector {
 
 }
 
-
-CoreJettyHttpServer extends Compound {
+JettyHttpServerCompound extends Compound {
 
   port AbstractConnector:port;
   host AbstractConnector:host;
-
-  connector extends JettySelectChannelConnector {
-    server LAZY PARENT:server;
-    port PARENT:port;
-    host PARENT:host;
-  }
 
   server extends CoreJettyServer {
     host PARENT:host;
   }
 
+}
+
+
+JettySocketHttpServerCompound extends JettyHttpServerCompound {
+
+  connector extends JettySocketConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+  }
 
 }
+
+
+JettySocketHttpsServerCompound extends JettyHttpServerCompound {
+
+  port JettySSLSocketConnector:port;
+  
+  connector extends JettySSLSocketConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+  }
+  
+}
+
+JettySelectChannelHttpServerCompound extends JettyHttpServerCompound {
+
+  connector extends JettySelectChannelConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+  }  
+}
+
+CoreJettyHttpServer JettySocketHttpServerCompound;
+ 
+
 
 /**
  * this name gest stamped on in jetty-complete

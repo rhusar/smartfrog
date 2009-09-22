@@ -31,6 +31,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
+
 #include "/org/smartfrog/services/filesystem/file.sf"
 
 //the war file must be present
@@ -45,8 +46,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 
 
+ 
   TestWarServer extends LocalJettyServer {
-
+    description ("A jetty server with the war deployed to " ++ contextPath);
+    
     contextPath "/testwar";
 
     testwar extends TestWar;
@@ -59,32 +62,32 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
   }
 
 
-    WarTest extends JettyTestCompound {
+  WarTest extends JettyTestCompound {
 
-    
-        action extends TestWarServer;
-
-
-    }
+  
+      action extends TestWarServer;
 
 
-    TestWarDeployed extends WarTest  {
+  }
 
-        contextPath TestWarServer:contextPath;
 
-        action extends TestWarServer {
-            contextPath PARENT:contextPath;
-        }
+  TestWarDeployed extends WarTest  {
 
-        tests extends Sequence {
-            wait extends waitForPage {
-                port PARENT:PARENT:action:port;
-                path PARENT:PARENT:action:contextPath;
-                maximumResponseCode HttpCodes:OK;
-                minimumResponseCode HttpCodes:OK;
-            }
-        }
-    }
+      contextPath TestWarServer:contextPath;
+
+      action extends TestWarServer {
+          contextPath PARENT:contextPath;
+      }
+
+      tests extends Sequence {
+          wait extends waitForPage {
+              port PARENT:PARENT:action:port;
+              path PARENT:PARENT:action:contextPath;
+              maximumResponseCode HttpCodes:OK;
+              minimumResponseCode HttpCodes:OK;
+          }
+      }
+  }
 
 TestSecurity extends TestWarDeployed {
   contextPath "/testwar";
@@ -93,11 +96,11 @@ TestSecurity extends TestWarDeployed {
   action extends TestWarServer {
       contextPath PARENT:contextPath;
 
-	    security extends AdminSecurityRealm {
+      security extends AdminSecurityRealm {
         server LAZY PARENT:server;
         adminPassword PARENT:ATTRIB password;
         name "testRealm";
-      	contextPath PARENT:contextPath;
+        contextPath PARENT:contextPath;
     }
   }
 
@@ -119,7 +122,7 @@ TestSecurity extends TestWarDeployed {
 }
 
 testSecurityUnauth extends TestSecurity {
-  if extends RunFailingTests;
+  condition extends RunFailingTests;
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
   //patch the wait operation
@@ -157,7 +160,7 @@ TestRealm extends TestWarDeployed {
   tests extends Sequence {
 
     sleep extends Delay {
-      time 10000;
+      time 5000;
     }
 
     wait extends waitForPage  {
@@ -180,11 +183,91 @@ testRealmUnauth extends TestRealm {
 
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
-  if extends RunFailingTests;
+  condition extends RunFailingTests;
   
   //patch the wait operation
   tests:wait:password "wrong-password";
   tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
   tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
 
+}
+
+
+
+/**
+ * deploy into a new process
+ */
+
+JettyServerWithWar extends Compound {
+
+    server LocalJettyServer;
+
+
+    context extends FilesystemWar {
+       contextPath "/filesystemwar";
+       server LAZY PARENT:server:server;
+    }
+
+}
+
+tcp27 extends JettyServerWithWar;
+
+
+JettyServerOnChannels extends JettyServerWithWar {
+  server JettyOnNIO;
+}
+
+JettyServerOverHttps extends JettyServerWithWar {
+  //use a bigger port than normal
+  port 1443;
+  server JettyHTTPS;
+}
+
+
+tcp27testFilesystemWar extends JettyTestCompound {
+
+	action extends tcp27;
+
+
+
+  tests extends Sequence {
+      wait extends waitForPage {
+          port action:server:port;
+          page action:context:contextPath;
+      }
+  }
+
+}
+
+
+
+testErrorPage extends TestWarDeployed  {
+
+    contextPath tests:wait:contextPath;
+
+    tests extends Sequence {
+        wait extends waitForPage {
+            port PARENT:PARENT:action:port;
+            contextPath "/errors";
+            page (  contextPath ++ "/error");
+            checkFrequency 1;
+            errorCode 419;
+            queries [["status",errorCode]];
+            maximumResponseCode errorCode;
+            minimumResponseCode errorCode;
+        }
+    }
+
+}
+
+testWarAtRoot extends TestWarDeployed  {
+
+	contextPath "/";
+
+}
+
+
+
+testContextPathFixup extends TestWarDeployed {
+    contextPath "missingForwardSlash";
 }

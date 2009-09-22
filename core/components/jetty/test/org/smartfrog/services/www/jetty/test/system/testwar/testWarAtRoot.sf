@@ -20,10 +20,4 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
-testWarAtRoot extends TestWarDeployed  {
-
-	contextPath "/";
-
-}
-
 sfConfig extends testWarAtRoot;

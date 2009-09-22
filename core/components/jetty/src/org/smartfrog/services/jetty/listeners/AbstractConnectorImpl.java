@@ -1,27 +1,28 @@
 /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 package org.smartfrog.services.jetty.listeners;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.thread.QueuedThreadPool;
 import org.smartfrog.services.jetty.JettyHelper;
+import org.smartfrog.services.jetty.internal.ThreadPoolFactory;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -32,9 +33,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.rmi.RemoteException;
 
 /**
- *
  * Created 11-Oct-2007 12:18:34
- *
  */
 
 public abstract class AbstractConnectorImpl extends PrimImpl implements JettyConnector {
@@ -47,6 +46,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
 
     /**
      * protected constructor for subclasses
+     *
      * @throws RemoteException if the superclass raises it.
      */
     protected AbstractConnectorImpl() throws RemoteException {
@@ -54,6 +54,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
 
     /**
      * Get the connector
+     *
      * @return the connector
      */
     public Connector getConnector() {
@@ -64,7 +65,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      * sfStart: adds the SocketListener to the jetty server
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -78,11 +79,12 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
 
     /**
      * Termination phase. Any connector is terminated
+     *
      * @param status exit record.
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         jettyHelper.terminateConnector(connector);
-        connector=null;
+        connector = null;
         super.sfTerminateWith(status);
     }
 
@@ -90,7 +92,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      * Create and configure the connector, then bind it to the http server
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     protected void bindConnector() throws
             SmartFrogException, RemoteException {
@@ -105,9 +107,10 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
 
     /**
      * This method reads the port and host attributes, and sets the connector to it
+     *
      * @param conn the connector
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     protected void bindConnectorToPortAndHost(Connector conn) throws SmartFrogException, RemoteException {
         //now bind to the host and port
@@ -124,9 +127,10 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
 
     /**
      * Set the max idle time of this connector to that of {@link JettySocketConnector#ATTR_MAX_IDLE_TIME}
+     *
      * @param connector connector to adjust
      * @throws SmartFrogResolutionException failure to resolve the value
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException              In case of network/rmi error
      */
     protected void setMaxIdleTime(Connector connector) throws SmartFrogResolutionException, RemoteException {
         connector.setMaxIdleTime(sfResolve(ATTR_MAX_IDLE_TIME, 0, true));
@@ -135,25 +139,12 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
 
     /**
      * Create a bounded thread pool from the various thread options.
+     *
      * @return a thread pool with min/max threads set up
      * @throws SmartFrogResolutionException problems resolving things
-     * @throws RemoteException network trouble
+     * @throws RemoteException              network trouble
      */
     protected QueuedThreadPool createBoundedThreadPool() throws SmartFrogResolutionException, RemoteException {
-        int threads = sfResolve(ATTR_THREADS, 0, false);
-        int minT;
-        int maxT;
-        if (threads> 0) {
-            minT = threads;
-            maxT = threads;
-        } else {
-            minT = sfResolve(ATTR_MIN_THREADS, 1, true);
-            maxT = sfResolve(ATTR_MAX_THREADS, 1, true);
-        }
-        sfLog().debug("Thread pool min=" + minT + " max=" + maxT);
-        QueuedThreadPool pool = new QueuedThreadPool();
-        pool.setMinThreads(minT);
-        pool.setMaxThreads(maxT);
-        return pool;
+        return ThreadPoolFactory.createThreadPool(this);
     }
 }

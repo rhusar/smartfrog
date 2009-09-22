@@ -46,17 +46,8 @@ public class JettyWarTest extends JettyTestBase {
     }
 
 
-    public void testWarDeployed() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testWarDeployed");
-    }
-
-
     public void testContextPathFixup() throws Throwable {
         expectSuccessfulTestRun(FILES, "testContextPathFixup");
-    }
-
-    public void testWarAtRoot() throws Throwable {
-        expectSuccessfulTestRun(FILES,"testWarAtRoot");
     }
 
     public void testErrorPage() throws Throwable {
@@ -66,5 +57,14 @@ public class JettyWarTest extends JettyTestBase {
 
     public void testTcp27testFilesystemWar() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "tcp27testFilesystemWar");
+    }
+
+    public void testWarAtRoot() throws Throwable {
+        expectSuccessfulTestRun(FILES,"testWarAtRoot");
+    }
+
+
+    public void testWarDeployed() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testWarDeployed");
     }
 }

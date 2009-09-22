@@ -55,7 +55,7 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
      * and port.
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     protected void configureConnector() throws SmartFrogException, RemoteException {
 
@@ -63,7 +63,7 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
         // set up all the threads;
         QueuedThreadPool pool = createBoundedThreadPool();
         SocketConnector socketConnector = getSocketConnector();
-        socketConnector.setAcceptors(pool.getMaxThreads());
+        socketConnector.setAcceptors(sfResolve(ATTR_ACCEPTORS, 2, true));
         //bind to the thread pool
         socketConnector.setThreadPool(pool);
         setMaxIdleTime(connector);
@@ -76,7 +76,7 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
      *
      * @return a new connector (or subclass), with any config other than that done by the parent
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     @Override
     protected Connector createConnector() throws SmartFrogException, RemoteException {

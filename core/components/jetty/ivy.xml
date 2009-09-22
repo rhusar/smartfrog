@@ -85,6 +85,13 @@
         rev="${jetty.version}"
         conf="compile->master;redist->master"/>
 
+    <!-- logging-->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime->default;redist->redist"/>    
+    
     <!--JSP support -->
     <dependency org="org.mortbay.jetty"
         name="jsp-2.1"
@@ -108,5 +115,7 @@
         rev="${org.eclipse.jdt.core.version}"
         conf="jsp->master"/>
 
+    
+    
   </dependencies>
 </ivy-module>

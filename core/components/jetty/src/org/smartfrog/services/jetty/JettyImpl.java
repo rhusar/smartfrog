@@ -30,6 +30,7 @@ import org.mortbay.thread.QueuedThreadPool;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateWebApplicationContext;
+import org.smartfrog.services.jetty.internal.ThreadPoolFactory;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
@@ -111,11 +112,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
         server.setStopAtShutdown(sfResolve(ATTR_STOP_AT_SHUTDOWN, false, true));
 
         //create the pool
-        QueuedThreadPool pool = new QueuedThreadPool();
-        pool.setMaxThreads(sfResolve(ATTR_MAXTHREADS, 0, true));
-        pool.setMinThreads(sfResolve(ATTR_MINTHREADS, 0, true));
-        pool.setMaxIdleTimeMs(sfResolve(ATTR_MAXIDLETIME, 0, true));
-        server.setThreadPool(pool);
+        server.setThreadPool(ThreadPoolFactory.createThreadPool(this));
 
         //tune the response policy
         server.setSendServerVersion(sfResolve(ATTR_SEND_SERVER_VERSION, false, true));

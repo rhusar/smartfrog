@@ -27,7 +27,7 @@ public class JettyServletDelegate
         implements ServletContextComponentDelegate, ServletComponent {
 
     /**
-     * default inititialisaion order {@value}
+     * default inititialisation order {@value}
      */
     public static final int DEFAULT_INIT_ORDER = -1;
     /**
@@ -80,88 +80,82 @@ public class JettyServletDelegate
      * @throws RemoteException    network problems
      */
     private void bind(Prim prim, DelegateServletContext ctx) throws RemoteException, SmartFrogException {
-        try {
-            assert prim != null : "no prim parameter";
-            assert ctx != null : "no DelegateServletContext parameter";
-            name = prim.sfResolve(nameRef, name, true);
-            pathSpec = prim.sfResolve(pathSpecRef, pathSpec, true);
-            className = prim.sfResolve(classNameRef, className, true);
+        assert prim != null : "no prim parameter";
+        assert ctx != null : "no DelegateServletContext parameter";
+        name = prim.sfResolve(nameRef, name, true);
+        pathSpec = prim.sfResolve(pathSpecRef, pathSpec, true);
+        className = prim.sfResolve(classNameRef, className, true);
 
-            Context servletContext;
-            servletContext = ctx.getServletContext();
-            if (servletContext == null) {
-                throw new SmartFrogDeploymentException("No servlet context is currently live");
-            }
-
-            holder = new ServletHolder();
-            holder.setName(name);
-            holder.setClassName(className);
-
-            //get and apply init order
-            int initOrder = prim.sfResolve(ATTR_INIT_ORDER,
-                    DEFAULT_INIT_ORDER,
-                    false);
-            if (initOrder > 0) {
-                //the init order is only set if positive, because of SFOS-906.
-                holder.setInitOrder(initOrder);
-            }
-
-            //apply initialisation params
-            Vector<Vector<String>> paramTuples = ListUtils.resolveStringTupleList(prim, initParamsRef, true);
-            for (Vector<String> tuple : paramTuples) {
-                holder.setInitParameter(tuple.firstElement(), tuple.get(1));
-            }
-
-            //update our path attribute
-            String ancestorPath = ctx.getAbsolutePath();
-            absolutePath = WebApplicationHelper.deregexpPath(JettyHelper.concatPaths(
-                    ancestorPath,
-                    pathSpec));
-            prim.sfReplaceAttribute(ApplicationServerContext.ATTR_ABSOLUTE_PATH,
-                    absolutePath);
-
-            //add the servlet
-            servletContext.addServlet(holder, pathSpec);
-            ServletHandler servletHandler = servletContext.getServletHandler();
-            ServletHolder resolvedHolder = servletHandler.getServlet(name);
-            if (resolvedHolder == null) {
-                //oops. no servlets, make a list
-                StringBuilder message = new StringBuilder("Failed to register the servlet with jetty.");
-                ServletHolder[] holders = servletHandler.getServlets();
-                for (ServletHolder entry : holders) {
-                    message.append("\n\"");
-                    message.append(entry.getDisplayName());
-                    message.append("\" ");
-                    message.append(entry.getClassName());
-                }
-                throw new SmartFrogDeploymentException(message.toString());
-            }
-
-            //you can only add mappings after registering the servlet
-            Vector<String> mappings = ListUtils.resolveStringList(prim, mappingsRef, false);
-            if (mappings != null) {
-                String[] pathSpecs = new String[mappings.size()];
-                int counter = 0;
-                for (String mapping : mappings) {
-                    pathSpecs[counter++] = mapping;
-                }
-                ServletMapping servletMapping = new ServletMapping();
-                servletMapping.setPathSpecs(pathSpecs);
-                servletMapping.setServletName(name);
-                servletHandler.addServletMapping(servletMapping);
-            }
-
-
-            //now start it up if the context is already live.
-            if (servletContext.isStarted()) {
-                holder.doStart();
-            }
-
-        } catch (RemoteException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
+        Context servletContext;
+        servletContext = ctx.getServletContext();
+        if (servletContext == null) {
+            throw new SmartFrogDeploymentException("No servlet context is currently live");
         }
+
+        holder = new ServletHolder();
+        holder.setName(name);
+        holder.setClassName(className);
+
+        //get and apply init order
+        int initOrder = prim.sfResolve(ATTR_INIT_ORDER,
+                DEFAULT_INIT_ORDER,
+                false);
+        if (initOrder > 0) {
+            //the init order is only set if positive, because of SFOS-906.
+            holder.setInitOrder(initOrder);
+        }
+
+        //apply initialisation params
+        Vector<Vector<String>> paramTuples = ListUtils.resolveStringTupleList(prim, initParamsRef, true);
+        for (Vector<String> tuple : paramTuples) {
+            holder.setInitParameter(tuple.firstElement(), tuple.get(1));
+        }
+
+        //update our path attribute
+        String ancestorPath = ctx.getAbsolutePath();
+        absolutePath = WebApplicationHelper.deregexpPath(JettyHelper.concatPaths(
+                ancestorPath,
+                pathSpec));
+        prim.sfReplaceAttribute(ApplicationServerContext.ATTR_ABSOLUTE_PATH,
+                absolutePath);
+
+        //add the servlet
+        servletContext.addServlet(holder, pathSpec);
+        ServletHandler servletHandler = servletContext.getServletHandler();
+        ServletHolder resolvedHolder = servletHandler.getServlet(name);
+        if (resolvedHolder == null) {
+            //oops. no servlets, make a list
+            StringBuilder message = new StringBuilder("Failed to register the servlet with jetty.");
+            ServletHolder[] holders = servletHandler.getServlets();
+            for (ServletHolder entry : holders) {
+                message.append("\n\"");
+                message.append(entry.getDisplayName());
+                message.append("\" ");
+                message.append(entry.getClassName());
+            }
+            throw new SmartFrogDeploymentException(message.toString());
+        }
+
+        //you can only add mappings after registering the servlet
+        Vector<String> mappings = ListUtils.resolveStringList(prim, mappingsRef, false);
+        if (mappings != null) {
+            String[] pathSpecs = new String[mappings.size()];
+            int counter = 0;
+            for (String mapping : mappings) {
+                pathSpecs[counter++] = mapping;
+            }
+            ServletMapping servletMapping = new ServletMapping();
+            servletMapping.setPathSpecs(pathSpecs);
+            servletMapping.setServletName(name);
+            servletHandler.addServletMapping(servletMapping);
+        }
+
+
+        //now start it up if the context is already live.
+        if (servletContext.isStarted()) {
+            start();
+        }
+
     }
 
     public String getAbsolutePath() {

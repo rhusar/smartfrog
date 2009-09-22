@@ -105,6 +105,11 @@ waitForPage extends WaitForPage {
     timeout waitForTimeout;
 }
 
+waitForPageOK extends WaitForPage {
+    maximumResponseCode HttpCodes:OK;
+    minimumResponseCode HttpCodes:OK;
+}
+
 waitForAnyHttpResponse extends waitForPage {
     maximumResponseCode HttpCodes:NOT_FOUND;
     minimumResponseCode HttpCodes:OK;
