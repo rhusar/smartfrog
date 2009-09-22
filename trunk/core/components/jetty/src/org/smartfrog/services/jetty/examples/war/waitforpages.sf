@@ -35,6 +35,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * a component to wait for a page and fail if it is  not found
  */
 
+#include "/org/smartfrog/services/jetty/examples/ports.sf"
 
 
 waitForPage extends WaitForPage {
@@ -44,7 +45,7 @@ waitForPage extends WaitForPage {
     timeout waitForTimeout;
 }
 
-waitForPageOK extends WaitForPage {
+waitForPageOK extends waitForPage {
     maximumResponseCode HttpCodes:OK;
     minimumResponseCode HttpCodes:OK;
 }

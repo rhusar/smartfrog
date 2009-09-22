@@ -42,8 +42,34 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  
   TestWarServer extends JettyWarServer ;
 
+
+  
+  FilesystemWar extends WebApplication {
+   contextPath "/";
+   filename ROOT:test.demo.webapp;
+  }
   
   
+
+
+  
+    /**
+     * deploy into a new process
+     */
+    
+    JettyServerFilesystemWar extends Compound {
+        description ("A jetty server with the war deployed to " ++ context:contextPath ++ " as a filesystem");
+        
+        server LocalJettyServer;
+    
+    
+        context extends FilesystemWar {
+           contextPath "/filesystemwar";
+           server LAZY PARENT:server:server;
+        }
+    
+    }
+      
   
   tcp27 extends JettyServerFilesystemWar;
 

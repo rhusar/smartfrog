@@ -42,12 +42,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
   }
 
 
-  RunFailingTests extends IsPropertySet {
-    property "run.failing.tests";
-  }
-
-
-
  
   JettyWarServer extends LocalJettyServer {
     description ("A jetty server with the war deployed to " ++ contextPath);
@@ -66,23 +60,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 
 
-  /**
-   * deploy into a new process
-   */
-  
-  JettyServerFilesystemWar extends Compound {
-      description ("A jetty server with the war deployed to " ++ context:contextPath ++ " as a filesystem");
-      
-      server LocalJettyServer;
-  
-  
-      context extends FilesystemWar {
-         contextPath "/filesystemwar";
-         server LAZY PARENT:server:server;
-      }
-  
-  }
-  
+
   
   
   JettyServerOnChannels extends JettyWarServer {
