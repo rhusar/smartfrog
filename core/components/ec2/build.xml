@@ -63,6 +63,8 @@
         location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
     <echo level="verbose">
       test.ec2.enabled=${test.ec2.enabled}
+      test.s3.enabled=${test.s3.enabled}
+      
       test.jetty.home=${test.jetty.home}
       test.demo.webapp=${test.demo.webapp}
       test.testwar.war=${test.testwar.war}

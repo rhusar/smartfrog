@@ -127,13 +127,15 @@ ProbeForFile extends WaitForPage {
   logResponse true;
 }
 
-
+ExpectDeployOnS3 extends ExpectDeployOnAWS {
+  condition extends IsS3Enabled ;
+}
 
 /**
  A test using a bucket
  */
 
-BucketTest extends ExpectDeployOnAWS {
+BucketTest extends ExpectDeployOnS3 {
 
   description "test against the S3 servers; requires test.awsid to be set with a login, (and test.awskey with its secret key)"
  
@@ -194,7 +196,7 @@ testDeleteBucket extends BucketTest {
 
 }
 
-testDeleteNonexistentBucket extends ExpectDeployOnAWS {
+testDeleteNonexistentBucket extends ExpectDeployOnS3 {
 
   description "try to delete a bucket that may or may not exist";
 
@@ -238,6 +240,7 @@ testGetFileFromBucket extends testPutFileToBucket {
 
 testGetWaitForFileFromBucket extends testPutFileToBucket {
    description "add an HTML page and wait for it";
+   jira ["SFOS-703"];
    links ["http://jira.smartfrog.org/jira/browse/SFOS-703"];
 
    tests:followon extends Sequence {

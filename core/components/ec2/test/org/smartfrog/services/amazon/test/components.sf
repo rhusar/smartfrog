@@ -45,12 +45,24 @@ IsAwsEnabled extends IsPropertySet {
 }
 
 
+
 IsEC2EnabledSet extends IsPropertySet {
     property "test.ec2.enabled";
 }
 
+
+IsS3EnabledSet extends IsPropertySet {
+    property "test.s3.enabled";
+}
+
 IsEC2Enabled extends And {
   ec2 IsEC2EnabledSet;
+  aws IsAwsEnabled;
+}
+
+
+IsS3Enabled extends And {
+  ec2 IsS3EnabledSet;
   aws IsAwsEnabled;
 }
 
