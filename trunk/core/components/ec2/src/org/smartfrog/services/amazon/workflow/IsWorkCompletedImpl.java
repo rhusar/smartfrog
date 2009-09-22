@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 public class IsWorkCompletedImpl
         extends PrimImpl implements Condition {
     private CompletableWork work;
+    public static final String TARGET = "target";
 
     public IsWorkCompletedImpl() throws RemoteException {
     }
@@ -48,7 +49,7 @@ public class IsWorkCompletedImpl
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim target = sfResolve("target", (Prim) null, true);
+        Prim target = sfResolve(TARGET, (Prim) null, true);
         work = (CompletableWork) target;
     }
 
