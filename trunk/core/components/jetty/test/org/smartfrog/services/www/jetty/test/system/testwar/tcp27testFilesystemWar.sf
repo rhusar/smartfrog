@@ -18,23 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/testwar/tcp27filesystemWar.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
 
 
-sfConfig extends JettyTestCompound {
 
-  condition extends IsPropertySet { property "run.failing.builds" ;}
-
-	action extends tcp27;
-
-
-
-    tests extends Sequence {
-        wait extends waitForPage {
-            port tcp27:server:port;
-            page tcp27:context:contextPath;
-        }
-    }
-
-}
+sfConfig tcp27testFilesystemWar;

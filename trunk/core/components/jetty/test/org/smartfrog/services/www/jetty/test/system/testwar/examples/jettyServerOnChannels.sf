@@ -18,30 +18,10 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
-
-
-/**
- * deploy into a new process
- */
-
-tcp27 extends Compound {
-
-   //sfProcessHost ROOT:hostname;
-
-  //deploy the server
-    server extends LocalJettyServer {
-        
-    }
-
-
-    context extends FilesystemWarAsServletContext {
-       contextPath "/filesystemwar";
-       server LAZY PARENT:server:server;
-    }
-
-}
+#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
 
 
-sfConfig extends  tcp27;
+
+
+sfConfig JettyServerOnChannels;

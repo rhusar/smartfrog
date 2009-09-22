@@ -99,24 +99,6 @@ public interface JettyIntf extends JavaWebApplicationServer {
 
     String ATTR_LOG_EXTENDED = "logExtended";
 
-    /**
-     * max# of threads in the pool.
-     * {@value}
-     */
-    String ATTR_MAXTHREADS="maxThreads";
-
-    /**
-     * min# of threads in the pool.
-     * {@value}
-     */
-    String ATTR_MINTHREADS = "minThreads";
-
-    /**
-     * max idle time for a thread before it is closed
-     * {@value}
-     */
-
-    String ATTR_MAXIDLETIME = "maxIdleTime";
 
 
     /**

@@ -21,7 +21,4 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
 
-sfConfig extends TestWarDeployed {
-    contextPath "missingForwardSlash";
-}
-
+sfConfig testContextPathFixup;

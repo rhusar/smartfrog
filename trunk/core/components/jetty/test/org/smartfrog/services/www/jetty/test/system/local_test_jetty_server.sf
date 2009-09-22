@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
-LocalJettyServer extends Compound {
+LocalJettyServer extends JettySocketHttpServerCompound {
 
     sfSyncTerminate true;
     port test.jetty.port.1;
@@ -33,25 +33,23 @@ LocalJettyServer extends Compound {
    /*
     this is the jetty server itself
     */
-    server extends CoreJettyServer {
+    server:jettyhome PARENT:jettyhome;
 
-      jettyhome PARENT:jettyhome;
 
-      port PARENT:port;
-
-    }
-
-    listener extends JettySocketConnector {
+/*    listener extends JettySocketConnector {
       server LAZY PARENT:server;
       port PARENT:port;
-    }
+    }*/
 
 }
 
 JettyOnNIO extends LocalJettyServer {
-  listener extends JettySelectChannelConnector {
+
+  connector extends JettySelectChannelConnector {
     server LAZY PARENT:server;
-  }
+    port PARENT:port;
+    host PARENT:host;
+  }  
 }
 
 
