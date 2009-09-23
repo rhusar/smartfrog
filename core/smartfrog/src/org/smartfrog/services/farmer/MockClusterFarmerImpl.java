@@ -134,13 +134,14 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     private synchronized ClusterNode createOneInstance(String role) {
         if (clusterSpace() > 0) {
             ClusterNode node = new ClusterNode();
-            nodes.add(node);
-            counter++;
             String machinename = "host" + counter;
             node.setId(machinename);
             node.setHostname(machinename + "." + domain);
             node.setExternalHostname(machinename + "." + externalDomain);
             node.setRole(role);
+            nodes.add(node);
+            sfLog().info("added "+node);
+            counter++;
             return node;
         } else {
             return null;
@@ -256,6 +257,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public void delete(ClusterNode[] nodesToDelete) throws IOException, SmartFrogException {
+        //this is very inefficient, O(nodes)*O(nodesToDelete)
         for (ClusterNode node : nodesToDelete) {
             nodes.remove(node);
         }
@@ -299,6 +301,8 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public ClusterNode[] list() throws IOException, SmartFrogException {
+        sfLog().info("list() returning "+nodes.size() +" nodes");
+
         return nodes.toArray(new ClusterNode[nodes.size()]);
     }
 
@@ -316,6 +320,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
                 result.add(node);
             }
         }
+        sfLog().info("list("+role+") returning "+nodes.size() +"nodes");
         return result.toArray(new ClusterNode[result.size()]);
     }
 

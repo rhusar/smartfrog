@@ -77,11 +77,11 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
             }
         }
         int created = nodes.length;
-        sfReplaceAttribute("created", created);
+        sfReplaceAttribute(ATTR_DEPLOYED, created);
         String info = "Created " + created + " nodes of role " + role;
         sfLog().info(info);
         //check the expected value
-        int expected = sfResolve("expected", -1, true);
+        int expected = sfResolve(ATTR_EXPECTED, -1, true);
         if (expected >= 0 && expected != created) {
             throw new SmartFrogDeploymentException(info
                     + " - instead of the expected number " + expected);

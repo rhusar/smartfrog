@@ -51,8 +51,10 @@ public class FarmerTest extends DeployingTestBase {
     public void testFarmHasRoles() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmHasRoles");
     }
-
     public void testFarmLacksRole() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmLacksRole");
+    }
+    public void testFarmRemembersDeployments() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testFarmRemembersDeployments");
     }
 }
