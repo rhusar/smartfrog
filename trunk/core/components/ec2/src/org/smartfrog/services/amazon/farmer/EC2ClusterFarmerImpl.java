@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.amazon.ec2farmer;
+package org.smartfrog.services.amazon.farmer;
 
 import org.smartfrog.services.amazon.ec2.EC2ComponentImpl;
 import org.smartfrog.services.farmer.AbstractClusterFarmer;
