@@ -25,7 +25,7 @@ import org.smartfrog.sfcore.workflow.conditional.Condition;
 import java.rmi.RemoteException;
 
 /**
- * Created 20-Feb-2009 13:19:56
+ * A condition with accessors for the script to read/write the value
  */
 
 
@@ -37,7 +37,21 @@ public interface JavaxScriptingCondition extends Condition {
     String ATTR_CONDITION = "condition";
 
 
+    /**
+     * Evaluate the condition status
+     *
+     * @return true iff the condition is set
+     * @throws RemoteException network problems
+     * @throws SmartFrogException SF problems
+     */
     boolean isCondition() throws RemoteException, SmartFrogException;
 
+    /**
+     * Set the condition attribute
+     *
+     * @param condition new value
+     * @throws RemoteException network problems
+     * @throws SmartFrogException SF problems
+     */
     void setCondition(boolean condition) throws RemoteException, SmartFrogException;
 }

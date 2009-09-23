@@ -57,6 +57,13 @@ public class ScriptHelper {
     }
 
 
+    /**
+     * Create an engine in the given language
+     *
+     * @param language language to use
+     * @return the engine
+     * @throws SmartFrogLifecycleException if the engine could not be created
+     */
     public LoadedEngine createEngine(String language) throws SmartFrogLifecycleException {
         ScriptEngine engine = manager.getEngineByName(language);
         if (engine == null) {
@@ -72,7 +79,7 @@ public class ScriptHelper {
      * @param resource resource to load
      * @return a reader for that resource
      * @throws SmartFrogException if the resource can not be found
-     * @throws RemoteException    for network problems
+     * @throws RemoteException for network problems
      */
     public Reader loadResource(String resource) throws SmartFrogException, RemoteException {
         InputStream inputStream = compHelper.loadResource(resource);
@@ -130,16 +137,32 @@ public class ScriptHelper {
         public String language;
         private boolean isJavaFX;
 
+        /**
+         * Bind to a loaded engine
+         *
+         * @param language language name
+         * @param engine engine
+         */
         public LoadedEngine(String language, ScriptEngine engine) {
             this.engine = engine;
             this.language = language;
             isJavaFX = "FX".equalsIgnoreCase(language);
         }
 
+        /**
+         * Get the engine
+         *
+         * @return the engine
+         */
         public ScriptEngine getEngine() {
             return engine;
         }
 
+        /**
+         * Get the language
+         *
+         * @return the language
+         */
         public String getLanguage() {
             return language;
         }
@@ -148,7 +171,7 @@ public class ScriptHelper {
          * Put a name value pair into the context of the engine. This extends {@link ScriptEngine#put(String,Object)} by
          * special support for JavaFX naming policy, copying Ant's example
          *
-         * @param name  name to use
+         * @param name name to use
          * @param value value to put
          */
         public void set(String name, Object value) {
@@ -168,14 +191,37 @@ public class ScriptHelper {
             engine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
         }
 
+        /**
+         * Evaluate a script held in a string
+         *
+         * @param script script to evaluate
+         * @return the result
+         * @throws ScriptException failure to evaluate
+         */
         public Object eval(String script) throws ScriptException {
             return engine.eval(script);
         }
 
+        /**
+         * Evaluate an input stream
+         *
+         * @param reader input
+         * @return the result
+         * @throws ScriptException failure to evaluate
+         */
         public Object eval(Reader reader) throws ScriptException {
             return engine.eval(reader);
         }
 
+        /**
+         * Load a resource and evaluate it
+         *
+         * @param resource resource to load
+         * @return the result
+         * @throws ScriptException failure to evaluate
+         * @throws SmartFrogException problems loading the resource
+         * @throws RemoteException network probems
+         */
         public Object evalResource(String resource) throws ScriptException, SmartFrogException, RemoteException {
             set(ScriptEngine.FILENAME, resource);
             try {
@@ -186,20 +232,51 @@ public class ScriptHelper {
             }
         }
 
+        /**
+         * Can this engine compile code?
+         *
+         * @return true iff the engine implements {@link Compilable}
+         */
         public boolean canCompile() {
             return engine instanceof Compilable;
         }
 
+        /**
+         * Compile the script. Only works if {@link #canCompile()} is true
+         *
+         * @param script text to compile
+         * @return the compiled script
+         * @throws ScriptException parse/compile problems
+         * @throws ClassCastException the engine does not compile
+         */
         CompiledScript compile(String script)
                 throws ScriptException {
             return getCompilable().compile(script);
         }
 
+        /**
+         * Compile the script. Only works if {@link #canCompile()} is true
+         *
+         * @param reader input
+         * @return the compiled script
+         * @throws ScriptException parse/compile problems
+         * @throws ClassCastException the engine does not compile
+         */
         CompiledScript compile(Reader reader)
                 throws ScriptException {
             return getCompilable().compile(reader);
         }
 
+        /**
+         * Compile the script. Only works if {@link #canCompile()} is true
+         *
+         * @param resource resource to load
+         * @return the compiled script
+         * @throws ScriptException parse/compile problems
+         * @throws ClassCastException the engine does not compile
+         * @throws SmartFrogException problems loading the resource
+         * @throws RemoteException network probems
+         */
 
         public Object compileResource(String resource) throws ScriptException, SmartFrogException, RemoteException {
             Reader reader = loadResource(resource);
@@ -234,11 +311,11 @@ public class ScriptHelper {
          * inline attribute resolves to a non-empty string, it is evaluated</li> </ol>
          *
          * @param attrResource name of an attribute that should resolve to a resource
-         * @param attrInline   name of an an attribute containing an inline string
+         * @param attrInline name of an an attribute containing an inline string
          * @return the result of the evaluation, or null if neither got evaluated
          * @throws SmartFrogException Failure to load the resource, resolve attributes
-         * @throws RemoteException    network problems
-         * @throws ScriptException    if the script failed
+         * @throws RemoteException network problems
+         * @throws ScriptException if the script failed
          */
         public Object resolveAndEvaluate(String attrResource, String attrInline) throws SmartFrogException,
                 RemoteException, ScriptException {

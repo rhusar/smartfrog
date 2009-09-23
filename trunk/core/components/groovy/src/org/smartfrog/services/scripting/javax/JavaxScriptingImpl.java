@@ -31,16 +31,18 @@ import javax.script.ScriptException;
 import java.rmi.RemoteException;
 
 /**
- * ScriptPrimImpl is a SmartFrog component which allows the user to write bits of java code in the description.
- * BeansShell is used to interpret them. It also implements the RemoteBSH which allows bsh scripts to be remotely
- * executed
+ * JavaxScriptingImpl is a SmartFrog component which allows the user to write bits of java code in the description.
+ * javax.scripting is used to interpret them. It also implements the {@link JavaxScript} interface which allows scripts
+ * to be remotely  executed
  */
 public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
-    /**
-     * The Beanshell interpreter
-     */
+
     private ScriptHelper scriptHelper;
     private ScriptHelper.LoadedEngine engine;
+
+    /**
+     * {@value}
+     */
 
     public static final String ERROR_EVAL = "There was an error in evaluating the script:";
 
@@ -78,7 +80,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * Start phase : execute the startup code, then maybe begin the termination phase
      *
      * @throws SmartFrogException startup failure
-     * @throws RemoteException    remote failure
+     * @throws RemoteException remote failure
      */
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
@@ -87,6 +89,13 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, sfCompleteName(), null);
     }
 
+    /**
+     * Ping operation calls the ping script
+     *
+     * @param source source of call
+     * @throws SmartFrogLivenessException liveness failure
+     * @throws RemoteException netwoork problems
+     */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -122,10 +131,10 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * Resolve the attributes, evaluate the code, convert Scripting Exceptions into SmartFrog ones
      *
      * @param resource resource attribute to look for
-     * @param inline   inline source attribute to look for
+     * @param inline inline source attribute to look for
      * @return the return value of the evaluation
      * @throws SmartFrogException if the resolution or the script fails
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     protected Object resolveAndEvaluate(String resource, String inline) throws SmartFrogException, RemoteException {
         try {
@@ -140,7 +149,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * Bind an object to a name in the beanshell interpreter.
      *
      * @param name the name you want the object to be called in the interpreter
-     * @param obj  the object you want to register in the interpreter.
+     * @param obj the object you want to register in the interpreter.
      */
     public synchronized void setRemote(String name, Object obj) throws
             SmartFrogException, RemoteException {
@@ -158,7 +167,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * @param script the script as a string.
      * @return the result
      * @throws SmartFrogException execution failure
-     * @throws RemoteException    network trouble
+     * @throws RemoteException network trouble
      */
     public synchronized Object eval(String script) throws SmartFrogException,
             RemoteException {

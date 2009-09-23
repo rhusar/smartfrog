@@ -56,14 +56,5 @@ public class JavaxScriptingConditionImpl extends JavaxScriptingImpl implements J
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         Object result = resolveAndEvaluate(ATTR_SF_CONDITION_RESOURCE, ATTR_SF_CONDITION_CODE);
         return isCondition();
-
-/*
-        if (!(result instanceof Boolean)) {
-            throw new SmartFrogException(ERROR_NOT_BOOLEAN + result);
-
-        } else {
-            return ((Boolean) result);
-        }
-*/
     }
 }
