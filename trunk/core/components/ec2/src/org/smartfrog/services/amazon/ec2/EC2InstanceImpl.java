@@ -173,9 +173,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         }
 
         /**
-         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
-         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
-         * of <code>Thread</code> should override this method.
+         * Reserve instances within the range specified
          *
          * @throws Throwable if anything went wrong
          */

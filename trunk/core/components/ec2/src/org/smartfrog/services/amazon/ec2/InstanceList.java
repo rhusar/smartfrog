@@ -36,6 +36,7 @@ public class InstanceList extends ArrayList<ImageInstance> {
 
 
     public static final InstanceList EMPTY_LIST = new InstanceList(0);
+    
     private static final ArrayList<TerminatingInstanceDescription> EMPTY_TERMINATED_INSTANCE_LIST =
             new ArrayList<TerminatingInstanceDescription>(
                     0);
