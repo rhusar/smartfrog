@@ -19,15 +19,27 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.amazon.ec2;
 
+import com.xerox.amazonws.common.AWSError;
+import com.xerox.amazonws.common.AWSException;
 import com.xerox.amazonws.ec2.EC2Exception;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * An exception that wraps an {@link EC2Exception}
+ * An exception that wraps an {@link EC2Exception} or {@link AWSException}.
+ * The request ID is stored under {@link #REQUEST_ID} while any errors
+ * are stored under {@link #ERRORS}
  */
 
 public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
+    /** Attribute for AWS-specific data : {@value} */
+    public static final String ERRORS = "errors";
+
+    /** Attribute for AWS-specific data : {@value} */
+    public static final String REQUEST_ID = "requestID";
 
     /**
      * Constructs a SmartFrogDeploymentException with specified message.
@@ -43,7 +55,7 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      *
      * @param cause exception causing this exception
      */
-    public SmartFrogEC2Exception(EC2Exception cause) {
+    public SmartFrogEC2Exception(AWSException cause) {
         super(cause);
         bind(cause);
     }
@@ -55,7 +67,7 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      * @param cause exception causing this exception
      * @param sfObject The Component that has encountered the exception
      */
-    public SmartFrogEC2Exception(EC2Exception cause, Prim sfObject) {
+    public SmartFrogEC2Exception(AWSException cause, Prim sfObject) {
         super(cause, sfObject);
         bind(cause);
     }
@@ -66,7 +78,7 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      * @param message exception message
      * @param cause exception causing this exception
      */
-    public SmartFrogEC2Exception(String message, EC2Exception cause) {
+    public SmartFrogEC2Exception(String message, AWSException cause) {
         super(message, cause);
         bind(cause);
     }
@@ -89,8 +101,16 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
      *
      * @param cause the root cause
      */
-    private void bind(EC2Exception cause) {
-        //do nothing yet
+    private void bind(AWSException cause) {
+        add(REQUEST_ID, cause.getRequestId());
+        List<? extends AWSError> errors = cause.getErrors();
+        if (errors != null) {
+            ArrayList<String> elist = new ArrayList<String>(errors.size());
+            for (AWSError error : errors) {
+                elist.add(error.toString());
+            }
+            add(ERRORS, elist);
+        }
     }
 
 }
