@@ -5,8 +5,7 @@
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-      Beanshell Scripting Component
-      Created 16-Nov-2006 
+      Groovy Component
     </description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
@@ -57,10 +56,6 @@
       changing="true"
       rev="latest.integration"
       conf="test->default"/>
-    <dependency org="org.smartfrog"
-        name="sf-scripting" changing="true"
-        rev="latest.integration"
-        conf="runtime->default"/>
     <dependency org="org.codehaus.groovy"
       name="groovy-all-minimal"
       rev="${groovy.version}"

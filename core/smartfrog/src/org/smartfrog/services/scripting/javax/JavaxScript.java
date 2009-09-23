@@ -20,7 +20,7 @@
 
 package org.smartfrog.services.scripting.javax;
 
-import org.smartfrog.services.scripting.RemoteScriptPrim;
+import org.smartfrog.services.scripting.common.RemoteScriptPrim;
 
 /**
  * extras for the javax scripting supporting

@@ -18,12 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/functions.sf"
-#include "org/smartfrog/services/scripting/scriptPrim.sf"
-#include "org/smartfrog/services/scripting/functions.sf"
-
-
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/services/scripting/bsh/components.sf"
 
 
 value1 11;
@@ -85,20 +82,20 @@ ComplexExpression extends expression{
 sfConfig extends Message {
    sfProcessName "BeanShell";
     message extends concat {
-	hello "hello - I will build a message with three values:\n";
+      hello "hello - I will build a message with three values:\n";
 
-	first "The first is a basic evaluation expression (8+6) :\n";
-	exp1 extends SimpleExpression;			// exp1 is replaced by 8+6
+      first "The first is a basic evaluation expression (8+6) :\n";
+      exp1 extends SimpleExpression;			// exp1 is replaced by 8+6
 
-	second "\nThe second is an example of function use (Math.max(a,b)) :\n";
-	exp2 extends CondExpression;			// exp2 is replaced by max(a,b)
+      second "\nThe second is an example of function use (Math.max(a,b)) :\n";
+      exp2 extends CondExpression;			// exp2 is replaced by max(a,b)
 
-	third "\nThe third is an example of loop (n!) :\n";
-	exp3 extends LoopExpression;			// exp3 is replaced by n!
+      third "\nThe third is an example of loop (n!) :\n";
+      exp3 extends LoopExpression;			// exp3 is replaced by n!
 
-	fourth "\nThe last one is just for fun:\n";
-	exp4 extends ComplexExpression;			// exp4 is a sum of strings, integers,
+      fourth "\nThe last one is just for fun:\n";
+      exp4 extends ComplexExpression;			// exp4 is a sum of strings, integers,
 
-	bye "goodbye\n";
+      bye "goodbye\n";
     }
 }

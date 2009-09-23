@@ -1,4 +1,4 @@
-/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/test/system/services/scripting/js/components.sf"
 
+#include "org/smartfrog/functions.sf"
 
+/**
+ * This SmartFrog function allows you to specify an expression
+ * under the 'exp' attribute, expression that will be evaluated
+ * at parsing time by a beanshell interpreter.
+ * Variables used in the expression have to be declared (as attributes)
+ * in the expression context.
+ */
 
-
-sfConfig testInlineLifecycle;
-
-
-
-
+expression extends Function {
+    sfFunctionClass "org.smartfrog.services.scripting.bsh.Expression";
+    // myvariable myvalue
+    // exp "function(myvariable)" ...
+}

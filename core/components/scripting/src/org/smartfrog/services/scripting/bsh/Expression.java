@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.services.scripting;
+package org.smartfrog.services.scripting.bsh;
 
 import org.smartfrog.sfcore.languages.sf.functions.*;
 import org.smartfrog.sfcore.languages.sf.*;
