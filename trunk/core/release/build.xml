@@ -488,6 +488,12 @@
     <ln artifact="commons-pool" version="${commons-pool.version}"/>
     <ln artifact="commons-dbutils" version="${commons-dbutils.version}"/>
 
+    <!-- groovy -->
+    <rpmpackage package="groovy"/>
+    <ln artifact="sf-groovy" version="${smartfrog.version}"/>
+    <ln artifact="groovy-all-minimal" version="${groovy.version}"/>
+    <ln artifact="groovy-engine" version="${groovy-engine.version}"/>
+    
     <!-- hadoop -->
     <rpmpackage package="hadoop"/>
     <ln artifact="sf-hadoop" version="${smartfrog.version}"/>
