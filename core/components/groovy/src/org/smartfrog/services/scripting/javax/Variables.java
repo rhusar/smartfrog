@@ -25,12 +25,22 @@ package org.smartfrog.services.scripting.javax;
  */
 public interface Variables {
 
+    /**
+     * the component {@value}
+     */
+
     String PRIM = "prim";
+    /**
+     * status variable {@value}
+     */
     String STATUS = "status";
     String SELF = "self";
+    /**
+     * The log {@value}
+     */
     String LOG = "log";
     /**
-     * The attribute which is set for a true condition: self.condition = true
+     * The attribute which is set for a true condition: self.condition = true {@value}
      */
     String CONDITION = "condition";
 }

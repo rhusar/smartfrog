@@ -27,13 +27,39 @@ import org.smartfrog.services.scripting.RemoteScriptPrim;
  */
 public interface JavaxScript extends RemoteScriptPrim {
 
-
+    /**
+     * {@value}
+     */
     String ATTR_SF_DEPLOY_RESOURCE = "sfDeployResource";
+
+    /**
+     * {@value}
+     */
     String ATTR_SF_START_RESOURCE = "sfStartResource";
+
+    /**
+     * {@value}
+     */
     String ATTR_SF_PING_RESOURCE = "sfPingResource";
+
+    /**
+     * {@value}
+     */
     String ATTR_SF_TERMINATE_WITH_RESOURCE = "sfTerminateWithResource";
+
+    /**
+     * {@value}
+     */
     String ATTR_SF_CONDITION_RESOURCE = "sfConditionResource";
+
+    /**
+     * {@value}
+     */
     String ATTR_SF_CONDITION_CODE = "sfConditionCode";
+
+    /**
+     * {@value}
+     */
     String ATTR_COMPILE = "compile";
 
 }
