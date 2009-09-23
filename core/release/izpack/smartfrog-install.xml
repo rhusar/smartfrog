@@ -434,7 +434,41 @@ SmartFrog to deploy complex systems.
         />
     </pack>
 
+    <pack name="EC2" required="no" preselected="no">
+      <description>
+        Amazon EC2 support.
+        Contains components for working with S3 files and EC2 instances.
+        Includes Restlet libraries (CDDL and GPL licensed)
 
+      </description>
+      <file src="ivy/lib/package-ec2/sf-ec2-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-ec2/typica-${typica.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-ec2/commons-fileupload-${commons-fileupload.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-ec2/org.restlet-${restlet.version}.jar"
+         targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-ec2/org.restlet.ext.fileupload-${restlet.version}.jar"
+         targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-ec2/com.noelios.restlet-${restlet.version}.jar"
+         targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-ec2/com.noelios.restlet.ext.httpclient-${restlet.version}.jar"
+         targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-ec2/com.noelios.restlet.ext.net-${restlet.version}.jar"
+         targetdir="$INSTALL_PATH/lib"
+          />
+      <depends packname="Logging"/>
+      <depends packname="WWW"/>
+    </pack>
+    
     <pack name="Groovy" required="no" preselected="no">
       <description>
         Groovy scripting support
