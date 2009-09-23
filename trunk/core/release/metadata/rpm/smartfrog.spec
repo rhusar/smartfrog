@@ -262,6 +262,7 @@ Summary:        Hadoop integration
 Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty,  %{name}-jasper
 
 %description hadoop
+
 This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
 It does not contain the Apache Hadoop shell scripts
 
@@ -769,6 +770,25 @@ fi
 %{linkdir}/commons-pool.jar
 %{libdir}/commons-dbutils-${commons-dbutils.version}.jar
 %{linkdir}/commons-dbutils.jar
+
+
+%files ec2
+%{linkdir}/sf-ec2.jar
+%{libdir}/sf-ec2-${smartfrog.version}.jar
+%{linkdir}/typica.jar
+%{libdir}/typica-${typica.version}.jar
+%{linkdir}/org.restlet.jar
+%{libdir}/org.restlet-${restlet.version}.jar
+%{linkdir}/org.restlet.ext.fileupload.jar
+%{libdir}/org.restlet.ext.fileupload-${restlet.version}.jar
+%{linkdir}/com.noelios.restlet.jar
+%{libdir}/com.noelios.restlet-${restlet.version}.jar
+%{linkdir}/com.noelios.restlet.ext.httpclient.jar
+%{libdir}/com.noelios.restlet.ext.httpclient-${restlet.version}.jar
+%{linkdir}/com.noelios.restlet.ext.net.jar
+%{libdir}/com.noelios.restlet.ext.net-${restlet.version}.jar
+%{linkdir}/commons-fileupload.jar
+%{libdir}/commons-fileupload-${commons-fileupload.version}.jar
 
 
 %files groovy
