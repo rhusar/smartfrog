@@ -80,7 +80,7 @@ public class MainFrame
   /**
    *  Description of the Field
    */
-  public final static String version = "v0.8 r05";
+  public final static String version = "v0.8 r06";
   // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
   static PrintStream msg = System.out;
   static JLabel statusBar = new JLabel();
@@ -1399,6 +1399,16 @@ public class MainFrame
               dir = dir + cmdAddSecurity + "\\";
               cmdStop = dir + cmdAddSecurity + "\\";
             }
+		  } else if (isWindows) {
+
+            cmdGeneral = "cmd.exe /C";
+            dir = ".\\" + batchDir + "\\";
+
+            if (this.securityCheckBox.isSelected()) {
+              dir = dir + cmdAddSecurity + "\\";
+              cmdStop = dir + cmdAddSecurity + "\\";
+            }
+			
 
           }  else {
             cmdGeneral = "bash";
@@ -1520,6 +1530,13 @@ public class MainFrame
         }
         else if (isWindows9x) {
           cmdGeneral = "command.exe /C";
+          dir = ".\\" + batchDir + "\\";
+        } else if (isWindows) {
+          cmdGeneral = "cmd.exe /C";
+          dir = ".\\" + batchDir + "\\";
+        }
+		else if (isWindows) {
+          cmdGeneral = "cmd.exe /C";
           dir = ".\\" + batchDir + "\\";
         }
         else {
@@ -1690,6 +1707,9 @@ public class MainFrame
       }
       else if (isWindows9x) {
         cmdGeneral = "command.exe /C";
+      }
+	  else if (isWindows) {
+        cmdGeneral = "cmd.exe /C";
       }
       else {
         // UNIX in general... (MAC not supported)
@@ -2441,7 +2461,7 @@ public class MainFrame
       if (osName.toLowerCase().equals("Windows 95") || osName.equals("Windows 98")) {
          isWindows9x =true;
       }
-      if (osName.equals("Windows 2000") || osName.startsWith("Windows NT") || osName.equals("Windows XP")|| osName.equals("Windows Vista")){
+      if (osName.equals("Windows 2000") || osName.startsWith("Windows NT") || osName.equals("Windows XP")|| osName.equals("Windows Vista")|| osName.equals("Windows 7")){
          isWindowsNT = true;                            
       }
     }
