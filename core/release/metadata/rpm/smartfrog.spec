@@ -232,12 +232,34 @@ commons-dbutils-${commons-dbutils.version}.jar
 commons-pool-${commons-pool.version}.jar
 commons-dbcp-${commons-dbcp.version}.jar
 
+
+# -----------------------------------------------------------------------------
+
+%package ec2
+Group:         ${rpm.framework}
+Summary:        Amazon EC2 support
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,
+
+%description ec2
+Components for working with S3 files and EC2 instances.
+Includes Restlet libraries (CDDL and GPL licensed)
+
+# -----------------------------------------------------------------------------
+
+%package groovy
+Group:         ${rpm.framework}
+Summary:        Groovy Script Support
+Requires:       %{name} = %{version}-%{release}
+
+%description groovy
+This includes Groovy and the components needed to embed Groovy scripts inside .sf files
+
 # -----------------------------------------------------------------------------
 
 %package hadoop
 Group:         ${rpm.framework}
 Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty,  %{name}-jasper
 
 %description hadoop
 This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
@@ -747,6 +769,15 @@ fi
 %{linkdir}/commons-pool.jar
 %{libdir}/commons-dbutils-${commons-dbutils.version}.jar
 %{linkdir}/commons-dbutils.jar
+
+
+%files groovy
+%{linkdir}/sf-groovy.jar
+%{libdir}/sf-groovy-${smartfrog.version}.jar
+%{linkdir}/groovy-all-minimal.jar
+%{libdir}/groovy-all-minimal-${groovy.version}.jar
+%{linkdir}/groovy-engine.jar
+%{libdir}/groovy-engine-${groovy-engine.version}.jar
 
 %files hadoop
 %{linkdir}/sf-hadoop.jar
