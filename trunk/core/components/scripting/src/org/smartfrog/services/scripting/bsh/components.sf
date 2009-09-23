@@ -1,4 +1,4 @@
-/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/scripting/javax/components.sf"
 
-JavaScript extends JavaxScripting {
-  language JAVASCRIPT;
-}
-
-JavaScriptWorkflow extends JavaxScriptingWorkflow {
-  language JAVASCRIPT;
-}
-
-JavaScriptCondition extends JavaxScriptingCondition {
-  language JAVASCRIPT;
-}
-
+#include "/org/smartfrog/services/scripting/bsh/scriptPrim.sf"
+#include "/org/smartfrog/services/scripting/bsh/functions.sf"
+#include "/org/smartfrog/services/scripting/bsh/heartbeat.sf"

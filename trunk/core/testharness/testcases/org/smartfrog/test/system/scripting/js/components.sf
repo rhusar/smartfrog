@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/scripting/js/components.sf"
 #include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 
-scriptbase "/org/smartfrog/test/system/services/scripting/js/";
+scriptbase "/org/smartfrog/test/system/scripting/js/";
 hello "hello.js";
 
 

@@ -30,7 +30,7 @@ Button extends ScriptPrim {
         buttonName "My Button";
         width 200;
         height 100;
-        code ## prim.sfTerminate(com.hp.SmartFrog.Prim.TerminationRecord.abnormal("Killed by Click",null));
+        code ## prim.sfTerminate(org.smartfrog.sfcore.prim.TerminationRecord.abnormal("Killed by Click",null));
                 // change this code to whatever you want,
                 // (System.out.println("Button Pressed: " + e); for example)
                 // this default code terminates the component

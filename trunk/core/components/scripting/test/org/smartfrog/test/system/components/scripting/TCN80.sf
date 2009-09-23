@@ -1,6 +1,6 @@
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/scripting/scriptPrim.sf"
-#include "org/smartfrog/examples/counter/components.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/scripting/components.sf"
+#include "/org/smartfrog/examples/counter/components.sf"
 
 sfConfig extends Compound 
 {

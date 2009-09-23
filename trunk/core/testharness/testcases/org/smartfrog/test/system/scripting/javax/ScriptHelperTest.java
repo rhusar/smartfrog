@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.test.system.services.scripting.javax;
+package org.smartfrog.test.system.scripting.javax;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.scripting.javax.ScriptHelper;
@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import javax.script.ScriptException;
 
 /**
+ * This is a unit test for scripting
  * Created 20-Feb-2009 13:44:51
  */
 
@@ -44,7 +45,7 @@ public class ScriptHelperTest extends TestCase {
 
 
     /**
-     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+     * set up the script engine
      */
     @Override
     protected void setUp() throws Exception {

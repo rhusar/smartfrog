@@ -18,7 +18,7 @@
 
  */
 
-package org.smartfrog.services.scripting;
+package org.smartfrog.services.scripting.bsh;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.services.scripting.common.RemoteScriptPrim;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -53,9 +54,11 @@ public class ScriptPrimImpl
     public static final String SCRIPT_PRIM = "prim";
     public static final String SCRIPT_STATUS = "status";
 
-    /** Standard RMI constructor */
+    /**
+     * Construct an instance
+     * @throws RemoteException
+     */
     public ScriptPrimImpl() throws RemoteException {
-        super();
     }
 
     /**
@@ -76,9 +79,10 @@ public class ScriptPrimImpl
 
     /**
      * Evaluate the String as a beanshell script. The string is handed off to the internal interpreter object
-     *
+     * On anly failure, the output is pre
      * @param script the script as a string.
-     * @throws Exception if the execution of the script fails.
+     * @throws SmartFrogException
+     * @throws RemoteException
      */
     public synchronized Object eval(String script) throws SmartFrogException,
             RemoteException {
@@ -86,6 +90,7 @@ public class ScriptPrimImpl
             return interpreter.eval(script);
         }
         catch (Exception e) {
+            sfLog().warn(e);
             interpreter.println(" Received : " + script);
             return null;
         }
@@ -144,6 +149,7 @@ public class ScriptPrimImpl
                 interpreter.print(messageHttp);
             }
             catch (SmartFrogResolutionException rex) {
+                //ignored, skip this phase
             }
 
             try {
@@ -153,6 +159,7 @@ public class ScriptPrimImpl
                 // exception handling could be lighter. For script debugging purpose, we'll keep it explicit & heavy
             }
             catch (SmartFrogResolutionException rex) {
+                //ignored, skip this phase
             }
             catch (TargetError e) {
                 sfLog().error(
@@ -173,7 +180,8 @@ public class ScriptPrimImpl
     /**
      * Start phase : execute the code described with the 'sfStartCode' attribute.
      *
-     * @throws Exception if the start phase fails.
+     * @throws SmartFrogException SF problems
+     * @throws RemoteException network problems
      */
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -183,6 +191,7 @@ public class ScriptPrimImpl
             interpreter.eval(getScript(sfStartCodeSource));
         }
         catch (SmartFrogResolutionException rex) {
+            //ignored, skip this phase
         }
         catch (TargetError e) {
             sfLog().error(
@@ -209,6 +218,7 @@ public class ScriptPrimImpl
             interpreter.eval(getScript(sfTerminateWithCodeSource));
         }
         catch (SmartFrogResolutionException rex) {
+            //ignored, skip this phase
         }
         catch (Exception e) {
             sfLog().error(e, e);
