@@ -17,23 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.farmer;
+#include "/org/smartfrog/test/system/farmer/components.sf"
 
-import java.rmi.Remote;
-
-/**
- * This component can ask a farmer for instances.
- *
- * Although written for testing, it could be extended to be more useful
- */
-
-public interface FarmCustomer extends Remote {
-    String ATTR_ROLE = "role";
-    String ATTR_DELETE_ON_TERMINATE = "deleteOnTerminate";
-    String ATTR_FARMER = "farmer";
-    String ATTR_MIN = "min";
-    String ATTR_MAX = "max";
-    String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
-    String ATTR_DEPLOYED = "deployed";
-    String ATTR_EXPECTED = "expected";
-}
+sfConfig extends testFarmRemembersDeployments;

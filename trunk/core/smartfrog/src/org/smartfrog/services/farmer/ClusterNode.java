@@ -49,6 +49,10 @@ public final class ClusterNode implements Serializable, Cloneable {
     private String externalHostname;
 
     /**
+     * Any details (can be null)
+     */
+    private String details;
+    /**
      * The role of the node
      */
     private String role;
@@ -91,6 +95,15 @@ public final class ClusterNode implements Serializable, Cloneable {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 
     /**
@@ -139,12 +152,11 @@ public final class ClusterNode implements Serializable, Cloneable {
      */
     @Override
     public String toString() {
-        return "ClusterInstance{" +
-                "id='" + id + '\'' +
-                ", hostname='" + hostname + '\'' +
-                ", externallyVisible=" + externallyVisible +
-                ", externalHostname='" + externalHostname + '\'' +
-                ", role='" + role + '\'' +
-                '}';
+        return "Node " + id
+                 + " @ " + hostname
+                 + (externallyVisible ?
+                    (" and " + externalHostname ): "")
+                 + " [" + role + ']'
+                 + (details != null ? details : "");
     }
 }

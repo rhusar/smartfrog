@@ -54,16 +54,22 @@ MockClusterFarmer extends WorkflowPrim {
   
 }
 
-
-FarmCustomer extends WorkflowPrim {
-  sfClass "org.smartfrog.services.farmer.FarmCustomerImpl";
+AbstractFarmerClient extends WorkflowPrim {
   farmer TBD;
+}
+
+AbstractFarmerClientCondition extends AbstractFarmerClient {
+  checkOnStartup true;
+}
+
+FarmCustomer extends AbstractFarmerClient {
+  sfClass "org.smartfrog.services.farmer.FarmCustomerImpl";
   role "";
   deleteOnTerminate true;
   min 1;
   max min;
   //this is updated with the real count of how many were created
-  created 0;
+  deployed 0;
   //if >=0, declare exactly how many you expect
   expected -1;
 }
@@ -72,11 +78,11 @@ WorkflowFarmCustomer extends FarmCustomer {
   sfShouldTerminate true;
 }
 
-FarmSupportsRole extends WorkflowPrim {
+FarmSupportsRole extends AbstractFarmerClientCondition {
   sfClass "org.smartfrog.services.farmer.FarmSupportsRoleImpl";
   farmer TBD;
   role TBD;
-  checkOnStartup true;
+
 }
 
 FarmSupportsRoleCondition extends FarmSupportsRole {
@@ -84,5 +90,36 @@ FarmSupportsRoleCondition extends FarmSupportsRole {
 }
 
 FarmSupportsRoleWorkflow extends FarmSupportsRole {
+  sfShouldTerminate true;
+}
+
+/**
+ checks for minimum and maximum instance count
+ If a role is set, it looks for that role; an empty string means no check
+
+ 1. The min and max values set a range which must be valid
+ 2. the expected value sets a number which much match exactly (if >= 0)
+ 3. the deployed attribute is set when evaluation takes place to the number of instances deployed
+
+ */
+
+FarmHasDeployedInstances extends AbstractFarmerClientCondition {
+  sfClass "org.smartfrog.services.farmer.FarmHasDeployedInstances";
+  //checks for a role
+  role "";
+  min 0;
+  max -1;
+  //if >=0, declare exactly how many you expect
+  expected -1;
+
+  //this is updated with the real count of how many were created
+  //deployed 0;
+}
+
+FarmHasDeployedInstancesCondition extends FarmHasDeployedInstances {
+  checkOnStartup false;
+}
+
+FarmHasDeployedInstancesWorkflow extends FarmHasDeployedInstances {
   sfShouldTerminate true;
 }

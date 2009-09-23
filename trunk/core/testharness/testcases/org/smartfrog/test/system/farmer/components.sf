@@ -32,6 +32,7 @@ ExpectFarmerDeploy extends ExpectDeploy {
 }
 
 testFarmHasRoles extends ExpectFarmerDeploy {
+  "Verify that the specific roles are available";
 
   tests extends Sequence {
 
@@ -52,9 +53,59 @@ testFarmHasRoles extends ExpectFarmerDeploy {
  }
 }
 
+testFarmRemembersDeployments extends ExpectFarmerDeploy {
+  description "Use FarmHasDeployedInstances to list and validate the instances";
+
+  tests extends Sequence {
+
+
+    master extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "master";
+      min 1;
+      expected 1;
+      deleteOnTerminate false;
+    }
+
+    workers extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "worker";
+      min 10;
+      expected 10;
+      deleteOnTerminate false;
+    }
+
+    checkClusterSize extends FarmHasDeployedInstancesWorkflow {
+      farmer LAZY action;
+      expected (workers:expected + master:expected);
+    }
+
+
+    checkWorkerCount extends FarmHasDeployedInstancesWorkflow {
+      farmer LAZY action;
+      role workers:role;
+      min workers:expected;
+    }
+
+    checkMasterCount extends FarmHasDeployedInstancesWorkflow {
+      farmer LAZY action;
+      role master:role;
+      
+      min master:expected;
+      max min;
+    }
+
+
+ }
+}
+
+
 
 testFarmCreate extends ExpectFarmerDeploy {
-  
+  description "create different nodes in a farm";
+
   tests extends Sequence {
 
     
@@ -64,6 +115,7 @@ testFarmCreate extends ExpectFarmerDeploy {
       role "master";
       min 1;
       expected 1;
+      deleteOnTerminate false;
     }
 
     worker extends WorkflowFarmCustomer {
@@ -87,7 +139,8 @@ testFarmCreate extends ExpectFarmerDeploy {
 
 
 testFarmCreateBounded extends ExpectFarmerDeploy {
-  
+
+  description "expect the size of nodes created to be limited to the cluster limit";
   tests extends Sequence {
 
     

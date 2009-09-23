@@ -57,7 +57,7 @@ public class FarmSupportsRoleImpl extends AbstractConditionPrim implements FarmC
         super.sfStart();
         role = sfResolve(ATTR_ROLE, "", true);
         farmer = (ClusterFarmer) sfResolve(ATTR_FARMER, (Prim) null, true);
-        boolean checkOnStartup = sfResolve("checkOnStartup", true, true);
+        boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
 
         ComponentHelper helper = new ComponentHelper(this);
         String outcome = "Test for role not performed";
@@ -102,8 +102,10 @@ public class FarmSupportsRoleImpl extends AbstractConditionPrim implements FarmC
             }
             return false;
         } catch (RemoteException e) {
+            setFailureCause(e);
             throw e;
         } catch (IOException e) {
+            setFailureCause(e);
             throw SmartFrogException.forward(e);
         }
     }
