@@ -1174,9 +1174,9 @@
 
 
     <property name="rpm.base.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant  smartfrog-logging "/>
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-logging "/>
     <property name="rpms.components.list"
-        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity smartfrog-rpmtools"/>
+        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity smartfrog-rpmtools smartfrog-ec2 smartfrog-groovy"/>
     <property name="rpms.www.list"
         value="smartfrog-www smartfrog-jetty smartfrog-xunit "/>
     <property name="rpms.testing.list"
@@ -1184,8 +1184,6 @@
 
     <property name="rpms.core.list"
         value="${rpm.base.list} ${rpms.components.list} ${rpms.www.list} ${rpms.testing.list} "/>
-<!--    <property name="rpms.cloud.list"
-        value="smartfrog-hadoop smartfrog-ec2"/>-->
 
     <property name="rpms.cloud.list"
         value="smartfrog-hadoop"/>
