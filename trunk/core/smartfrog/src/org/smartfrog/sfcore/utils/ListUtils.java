@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.util.List;
 import java.util.Vector;
@@ -235,6 +236,34 @@ public final class ListUtils {
             throws SmartFrogResolutionException, RemoteException {
         Vector<?> vector = null;
         vector = component.sfResolve(ref, vector, required);
+        return convertToStringList(vector);
+    }
+
+    /**
+     * Extract a string list; everything is converted to strings in the process
+     *
+     * @param cd component description to resolve against
+     * @param ref       a reference
+     * @param required  whether the element is required or not
+     * @return the list, or null if none was provided
+     * @throws SmartFrogResolutionException if the resolution fails.
+     * @throws RemoteException              network problems
+     */
+    public static Vector<String> resolveStringList(ComponentDescription cd,
+                                                   Reference ref,
+                                                   boolean required)
+            throws SmartFrogResolutionException {
+        Vector<?> vector = null;
+        vector = cd.sfResolve(ref, vector, required);
+        return convertToStringList(vector);
+    }
+    
+    /**
+     * Run through every element and call toString() on it, the result is a string list
+     * @param vector input vector
+     * @return string output
+     */
+    private static Vector<String> convertToStringList(Vector<?> vector) {
         if (vector == null) {
             return null;
         }
