@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.farmer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
@@ -49,14 +50,14 @@ public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterF
      *
      * @param min minimum number of nodes desired
      * @param max maximumum number  desired
-     * @throws SmartFrogException if the parameters are somehow invalid
+     * @throws SmartFrogDeploymentException if the parameters are somehow invalid
      */
-    public static void validateClusterRange(int min, int max) throws SmartFrogException {
+    public static void validateClusterRange(int min, int max) throws SmartFrogDeploymentException {
         if (max < min) {
-            throw new SmartFrogException(WRONG_MACHINE_COUNT);
+            throw new SmartFrogDeploymentException(WRONG_MACHINE_COUNT);
         }
         if (min < 0) {
-            throw new SmartFrogException(NEGATIVE_VALUES_NOT_SUPPORTED);
+            throw new SmartFrogDeploymentException(NEGATIVE_VALUES_NOT_SUPPORTED);
         }
     }
 
