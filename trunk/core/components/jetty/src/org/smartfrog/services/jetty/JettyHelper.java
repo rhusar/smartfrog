@@ -23,6 +23,8 @@ package org.smartfrog.services.jetty;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
 import org.smartfrog.services.www.ApplicationServerContext;
@@ -293,6 +295,31 @@ public class JettyHelper extends WebApplicationHelper {
             }
             removeConnector(connector);
         }
+    }
+
+    /**
+     * This is fairly complex as it patches a  handler in at the front of any handler collection.
+     * we cannot use {@link Server#addHandler(Handler)} because it patches it to the end
+     * @param handler handler
+     */
+    public synchronized void insertHandler(Handler handler) {
+        final Server server = getServer();
+        Handler baseHandler = server.getHandler();
+        Handler[] newHandlers;
+        Handler[] oldHandlers;
+        //extract the old handler list
+        if (baseHandler instanceof HandlerCollection) {
+            HandlerCollection handlers = (HandlerCollection) baseHandler;
+            oldHandlers = handlers.getHandlers();
+        } else {
+            oldHandlers = new Handler[] { baseHandler};
+        }
+        //create a larger array
+        newHandlers = new Handler[oldHandlers.length+1];
+        newHandlers[0] = handler;
+        //copy the old handlers into the new array
+        System.arraycopy(oldHandlers,0, newHandlers,1, oldHandlers.length);
+        server.setHandlers(newHandlers);
     }
 
 

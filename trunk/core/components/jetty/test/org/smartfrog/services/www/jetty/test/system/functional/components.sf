@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
-
+#include "/org/smartfrog/services/jetty/examples/war/components.sf"
 
 
 tcp19Test extends JettyTestCompound {
@@ -84,9 +84,13 @@ TestLivenessURL extends JettyTestCompound {
 
 TestSecurity extends JettyTestCompound {
 
+  condition extends RunFailingTests;
   password "secret";
 
-	action extends LocalJettyServer {
+	action extends TempDirServer {
+	
+	
+	  port 5050;
 
 	  security extends AdminSecurityRealm {
 	    server LAZY PARENT:server;
@@ -109,7 +113,7 @@ TestSecurity extends JettyTestCompound {
 
 testSecurityUnauth extends TestSecurity {
 
-
+  condition extends RunFailingTests;
 
   //patch the login
   tests:wait extends waitForAnyHttpResponse  {
@@ -144,11 +148,10 @@ TestRealm extends JettyTestCompound {
 
 	action extends LocalJettyServer {
 
-    testRealm extends JettySecurityRealm {
+    testRealm extends AdminSecurityRealm {
     	name "testRealm";
-    	users [["test", "password", "testRole"]];
+    	adminPassword password;
     	server LAZY PARENT:server;
-    	contextPath "/";
     }
     
   }

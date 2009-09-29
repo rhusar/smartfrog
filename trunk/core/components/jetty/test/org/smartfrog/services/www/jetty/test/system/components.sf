@@ -92,3 +92,9 @@ JettyTestCompound extends TestCompound {
     testTimeout test.timeout;
 
 }
+
+
+  RunFailingTests extends IsPropertySet {
+    property "run.failing.tests";
+  }
+

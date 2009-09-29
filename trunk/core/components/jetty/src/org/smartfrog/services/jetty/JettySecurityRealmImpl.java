@@ -19,19 +19,25 @@
  */
 package org.smartfrog.services.jetty;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Response;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.security.Constraint;
+import org.mortbay.jetty.security.ConstraintMapping;
+import org.mortbay.jetty.security.HashUserRealm;
+import org.mortbay.jetty.security.SecurityHandler;
+import org.smartfrog.services.passwords.PasswordHelper;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.passwords.PasswordHelper;
-import org.mortbay.jetty.security.HashUserRealm;
-import org.mortbay.jetty.security.ConstraintMapping;
-import org.mortbay.jetty.security.Constraint;
-import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.security.BasicAuthenticator;
-import org.mortbay.jetty.Server;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -47,6 +53,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
     public static final String ERROR_CONSTRAINT_LIST_LENGTH_WRONG = "Constraint list length wrong: entry#";
     private static final Reference CONSTRAINTS = new Reference(ATTR_CONSTRAINTS);
     private static final Reference USERS = new Reference(ATTR_USERS);
+    private static final int ROLE_BASE = 3;
 
     public JettySecurityRealmImpl() throws RemoteException {
     }
@@ -60,16 +67,17 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        jettyHelper.bindToServer();
+        Server server = jettyHelper.bindToServer();
 
         Vector users = null, constraints = null;
         String name = sfResolve(ATTR_NAME, "", true);
+        boolean checkWelcomeFiles = sfResolve(ATTR_CHECK_WELCOME_FILES, true, true);
         realm = new HashUserRealm(name);
         users = sfResolve(USERS, users, true);
         for (Object user : users) {
             Vector v = (Vector) user;
             if (v.size() < 3) {
-                throw new SmartFrogResolutionException(sfCompleteName(), USERS,ERROR_USER_ELEMENT_TOO_SHORT);
+                throw new SmartFrogResolutionException(sfCompleteName(), USERS, ERROR_USER_ELEMENT_TOO_SHORT);
             }
             String username = v.elementAt(0).toString();
             Object passwordEntry = v.elementAt(1);
@@ -79,37 +87,51 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             for (int role = 2; role < v.size(); role++) {
                 realm.addUserToRole(username, v.elementAt(role).toString());
             }
+            sfLog().info("Added User " + username);
         }
         //now the constraints
         constraints = sfResolve(CONSTRAINTS, constraints, true);
         ConstraintMapping[] mappings = new ConstraintMapping[constraints.size()];
         for (int entry = 0; entry < constraints.size(); entry++) {
             Vector oneConstraint = (Vector) constraints.elementAt(entry);
-            int roleCount = oneConstraint.size() - 2;
+            int roleCount = oneConstraint.size() - ROLE_BASE;
             if (roleCount <= 0) {
                 throw new SmartFrogResolutionException(sfCompleteName(), CONSTRAINTS,
                         ERROR_CONSTRAINT_LIST_LENGTH_WRONG + entry);
             }
-            String path = oneConstraint.elementAt(0).toString();
-            String constraintName = oneConstraint.elementAt(1).toString();
+            String constraintName = oneConstraint.elementAt(0).toString();
+            String path = oneConstraint.elementAt(1).toString();
+            String method = oneConstraint.elementAt(2).toString();
+            if (method.trim().isEmpty()) {
+                method = null;
+            }
             String[] roles = new String[roleCount];
             for (int roleEntry = 0; roleEntry < roleCount; roleEntry++) {
-                roles[roleEntry] = oneConstraint.elementAt(2 + roleEntry).toString();
+                roles[roleEntry] = oneConstraint.elementAt(ROLE_BASE + roleEntry).toString();
             }
-            Constraint cons = new Constraint();
+            Constraint cons = new JettyConstraint();
             cons.setName(constraintName);
             cons.setRoles(roles);
-            ConstraintMapping mapping = new ConstraintMapping();
+            cons.setAuthenticate(true);
+            JettyConstraintMapping mapping = new JettyConstraintMapping();
             mapping.setPathSpec(path);
+            mapping.setMethod(method);
             mapping.setConstraint(cons);
             mappings[entry] = mapping;
+            sfLog().info("Added Constraint " + mapping.toString());
         }
-        security = new SecurityHandler();
-        BasicAuthenticator authenticator = new BasicAuthenticator();
-        security.setAuthenticator(authenticator);
+        security = new JettySecurityHandler();
+        String authentication = sfResolve(ATTR_AUTHENTICATION, "", true);
+        security.setAuthMethod(authentication);
+        security.setUserRealm(realm);
         security.setConstraintMappings(mappings);
-        jettyHelper.getServer().addLifeCycle(security);
-        jettyHelper.getServer().addUserRealm(realm);
+        security.setCheckWelcomeFiles(checkWelcomeFiles);
+        //server.addUserRealm(realm);
+        server.addLifeCycle(security);
+        //now, we have to insert this handler at the front of the list. Calling addHandler places it at 
+        //the end, which only leads to java.lang.IllegalStateException: Committed in the stack traces
+        jettyHelper.insertHandler(security);
+        
     }
 
 
@@ -126,6 +148,76 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
                 server.removeHandler(security);
                 server.removeUserRealm(realm);
             }
+        }
+    }
+
+    /**
+     * This is just a security manager with a bit more logging of what is goin on.
+     */
+    private class JettySecurityHandler extends SecurityHandler {
+
+        @Override
+        public void doStart() throws Exception {
+            super.doStart();
+            sfLog().info("Starting security Handler with auth method " + getAuthMethod());
+            if (getAuthenticator() == null) {
+                throw new SmartFrogDeploymentException("Failed to start the security handler: "
+                        + "unrecognised Authenticator method: " + getAuthMethod());
+            }
+        }
+
+        @Override
+        protected void doStop() throws Exception {
+            sfLog().info("Stopping security Handler");
+            super.doStop();
+        }
+
+        @Override
+        public boolean checkSecurityConstraints(String pathInContext, Request request, Response response)
+                throws IOException {
+            boolean allowed = super.checkSecurityConstraints(pathInContext, request, response);
+            if (allowed) {
+                sfLog().info("Allowing request on " + pathInContext);
+            } else {
+                sfLog().info("Rejecting request on " + pathInContext);
+            }
+            return allowed;
+        }
+
+        @Override
+        public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch)
+                throws IOException, ServletException {
+            sfLog().info("Handling request to " + target);
+            super.handle(target, request, response, dispatch);
+        }
+    }
+
+    private static class JettyConstraintMapping extends ConstraintMapping {
+
+        @Override
+        public String toString() {
+            return "Constraint " + getConstraint().toString() + " mapped to " + getPathSpec()
+                    + (getMethod() != null ? (" for " + getMethod()) : "");
+        }
+    }
+
+    private static class JettyConstraint extends Constraint {
+
+
+        /* ------------------------------------------------------------ */
+        public String toString() {
+            String[] roles = getRoles();
+            StringBuilder roledump = new StringBuilder();
+            if (roles != null) {
+                roledump.append(" roles[" + roles.length + "] : [ ");
+                for (String role : roles) {
+                    roledump.append("'");
+                    roledump.append(role);
+                    roledump.append("' ");
+                }
+                roledump.append("]");
+            }
+            return super.toString() + roledump + " authenticate:"+getAuthenticate();
         }
     }
 }
