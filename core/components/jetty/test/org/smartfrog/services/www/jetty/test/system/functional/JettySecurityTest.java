@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -29,35 +29,25 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-package org.smartfrog.services.www.jetty.test.system.testwar;
+
+package org.smartfrog.services.www.jetty.test.system.functional;
 
 import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
+import org.smartfrog.sfcore.prim.Prim;
 
-/**
- *
- */
-public class WarSecurityTest extends JettyTestBase {
+import java.io.File;
 
+public class JettySecurityTest extends JettyTestBase {
 
-    private static final String FILES ="/org/smartfrog/services/www/jetty/test/system/testwar/";
-
-    public WarSecurityTest(String name) {
-        super(name);
-    }
+    public JettySecurityTest(String name) {
+		super(name);
+	}
 
     public void testSecurity() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testSecurity");
-    }
-
-    public void testSecurityUnauth() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testSecurityUnauth");
-    }
-
-    public void testRealm() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testRealm");
+        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurity");
     }
     
-    public void testRealmUnauth() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testRealmUnauth");
+    public void testSecurityUnauth() throws Throwable {
+        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurityUnauth");
     }
 }

@@ -34,11 +34,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
 
-  RunFailingTests extends IsPropertySet {
-    property "run.failing.tests";
-  }
-
-
  
   TestWarServer extends JettyWarServer ;
 
@@ -111,7 +106,7 @@ TestSecurity extends TestWarDeployed {
         server LAZY PARENT:server;
         adminPassword PARENT:ATTRIB password;
         name "testRealm";
-        contextPath PARENT:contextPath;
+//        contextPath PARENT:contextPath;
     }
   }
 
