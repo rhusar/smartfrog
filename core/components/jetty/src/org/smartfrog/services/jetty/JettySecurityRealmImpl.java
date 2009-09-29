@@ -26,6 +26,7 @@ import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
+import org.mortbay.jetty.security.Password;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -82,12 +83,19 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             String username = v.elementAt(0).toString();
             Object passwordEntry = v.elementAt(1);
             String password = PasswordHelper.extractPassword(this, USERS, passwordEntry);
-            realm.put(username, password);
+            Password pass = new Password(password);
+            realm.put(username, pass);
             //add the roles
+            StringBuilder rolelist = new StringBuilder("[ ");
             for (int role = 2; role < v.size(); role++) {
-                realm.addUserToRole(username, v.elementAt(role).toString());
+                final String rolename = v.elementAt(role).toString();
+                rolelist.append("'").append(rolename).append("' ");
+                realm.addUserToRole(username, rolename);
             }
-            sfLog().info("Added User " + username);
+            rolelist.append("]");
+            sfLog().info("Added User " + username
+                    + " in roles " + rolelist
+                    + " pass '" + password + "'");
         }
         //now the constraints
         constraints = sfResolve(CONSTRAINTS, constraints, true);

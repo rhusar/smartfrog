@@ -118,7 +118,7 @@ TestSecurity extends TestWarDeployed {
       host "localhost";
       port test.jetty.port.1;
       path contextPath;
-      //username "admin";
+      username "admin";
       password PARENT:ATTRIB password;
       minimumResponseCode HttpCodes:START_2XX;
       maximumResponseCode HttpCodes:END_2XX;
@@ -154,7 +154,7 @@ TestRealm extends TestWarDeployed {
     testRealm extends JettySecurityRealm {
     	name "testRealm";
     	users [
-    	  ["test", PARENT:ATTRIB password, "testRole"]
+    	  ["test", PARENT:ATTRIB password, name]
     	];
     	server LAZY PARENT:server;
     	contextPath "/";
