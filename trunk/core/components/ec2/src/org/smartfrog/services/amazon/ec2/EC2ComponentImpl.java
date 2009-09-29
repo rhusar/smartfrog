@@ -21,15 +21,16 @@ package org.smartfrog.services.amazon.ec2;
 
 import com.xerox.amazonws.ec2.Jec2;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
+import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.workflow.CompletableWork;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.List;
  * Created 25-Mar-2008 13:36:29
  */
 
-public class EC2ComponentImpl extends PrimImpl implements EC2Component, CompletableWork {
+public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component, CompletableWork {
 
     private Jec2 ec2binding;
     private String id;
@@ -218,5 +219,21 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component, Completa
      */
     protected void logInstances(InstanceList instanceList) {
         sfLog().info(instanceList.toString());
+    }
+
+    protected void logLaunchConfiguration(LaunchConfiguration launch) {
+        String configString = convertToString(launch);
+        sfLog().info(configString);
+    }
+
+    protected String convertToString(LaunchConfiguration launch) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Launch configuration:");
+        sb.append(" imageID='").append(launch.getImageId()).append('\'');
+        sb.append(" instanceSize='").append(launch.getInstanceType()).append('\'');
+        sb.append(" keyName='").append(launch.getKeyName()).append('\'');
+        sb.append(" availabilityZone='").append(launch.getAvailabilityZone()).append('\'');
+        String configString = sb.toString();
+        return configString;
     }
 }

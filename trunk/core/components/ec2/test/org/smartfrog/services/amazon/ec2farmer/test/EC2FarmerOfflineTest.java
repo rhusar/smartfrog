@@ -19,4 +19,8 @@ public class EC2FarmerOfflineTest extends DeployingTestBase {
     public void testFarmLacksRole() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmLacksRole");
     }
+    
+    public void testMasterLacksImageID() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testMasterLacksImageID");
+    }
 }

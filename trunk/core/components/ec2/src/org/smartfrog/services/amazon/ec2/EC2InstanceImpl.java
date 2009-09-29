@@ -25,7 +25,6 @@ import com.xerox.amazonws.ec2.EC2Exception;
 import com.xerox.amazonws.ec2.InstanceType;
 import com.xerox.amazonws.ec2.ReservationDescription;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -85,8 +84,8 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         super.sfStart();
         minCount = sfResolve(ATTR_MIN_COUNT, 0, true);
         maxCount = sfResolve(ATTR_MAX_COUNT, 0, true);
-        instanceType = sfResolve(ATTR_INSTANCETYPE, "", true);
-        imageID = sfResolve(ATTR_IMAGEID, "", true);
+        instanceType = sfResolve(ATTR_INSTANCE_TYPE, "", true);
+        imageID = sfResolve(ATTR_IMAGE_ID, "", true);
         userData = sfResolve(ATTR_USER_DATA, "", true);
         shutdown = sfResolve(ATTR_SHUTDOWN, false, true);
         if (imageID.length() == 0) {

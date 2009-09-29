@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.amazon.farmer;
 
 import org.smartfrog.services.amazon.ec2.EC2Component;
+import org.smartfrog.services.amazon.ec2.EC2Instance;
 import org.smartfrog.services.farmer.ClusterFarmer;
 
 /**
@@ -34,4 +35,5 @@ public interface EC2ClusterFarmer extends ClusterFarmer, EC2Component {
      * This is there to stop users accidentally running up large bills. If <0, it means ignore
      */
     String ATTR_CLUSTER_LIMIT = "clusterLimit";
+   
 }

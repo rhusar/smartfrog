@@ -39,21 +39,33 @@ Roles are inserted in an undeployed bit of the system, just plain data. That's s
  * just something that is used to configure the farmer
  */
 
-EC2ClusterRole extends EC2ImageSizes {
+EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, Prim   {
+  sfClass "org.smartfrog.services.amazon.farmer.EC2ClusterRole";
+  
   //the string value of the machine image to deploy. This must resolve before an attempt
   //to deploy a machine of the given role can work
-  image TBD;
+  imageID TBD;
+  
   //instance types
   instanceType SIZE_SMALL;
 
-  //user data
+  //user data. This is going to change before long
   userData "";
+  
+  //name of the key to use for SSH from the list of key pairs
+  keyName "";
+  
+  // where the image should live
+  availabilityZone ZONE_US_EAST_1A;
+  
+  // a list of string names
+  securityGroup [];
 
 }
 
 
 EC2ClusterFarmer extends AwsAuthorizedService {
-  sfClass "org.smartfrog.services.amazon.ec2farmer.EC2ClusterFarmerImpl"
+  sfClass "org.smartfrog.services.amazon.farmer.EC2ClusterFarmerImpl"
 
     /**
      * This is there to stop users accidentally running up large bills. If <0, it means ignore
@@ -61,7 +73,7 @@ EC2ClusterFarmer extends AwsAuthorizedService {
   NO_CLUSTER_LIMIT -1;
   clusterLimit 1000;
   //roles go under here
-  roles extends DATA {
+  roles extends Compound {
 
   }
 

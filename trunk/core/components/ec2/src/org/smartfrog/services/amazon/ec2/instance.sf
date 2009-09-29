@@ -21,7 +21,7 @@
 /**
  * options for image size
  */
-EC2ImageSizes extends DATA {
+EC2ImageSizes extends {
   SIZE_SMALL "m1.small";
   SIZE_LARGE "m1.large";
   SIZE_XL    "m1.xlarge";
@@ -29,7 +29,19 @@ EC2ImageSizes extends DATA {
 	SIZE_XLARGE_HCPU "c1.xlarge";
 }
 
-ImageInstance extends AwsAuthorizedWorkflowService, EC2ImageSizes {
+EC2AvailabilityZones extends {
+  ZONE_ANYWHERE "";
+  ZONE_US_EAST_1A "us-east-1a";
+  ZONE_US_EAST_1B "us-east-1b";
+  ZONE_US_EAST_1C "us-east-1c"; 
+  ZONE_US_EAST_1D "us-east-1d";
+    
+  ZONE_EU_WEST_1A "eu-west-1a";
+  ZONE_EU_WEST_1B "eu-west-1b";
+  
+}
+
+ImageInstance extends AwsAuthorizedWorkflowService, EC2ImageSizes, EC2AvailabilityZones {
   sfClass "org.smartfrog.services.amazon.ec2.EC2InstanceImpl";
   //this is the AMI of an image
   imageID TBD;

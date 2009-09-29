@@ -19,25 +19,40 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/farmer/components.sf"
-#include "/org/smartfrog/services/amazon/ec2farmer/components.sf"
-Farmer extends EC2ClusterFarmer {
+#include "/org/smartfrog/services/amazon/farmer/components.sf"
+
+
+BaseFarmer extends EC2ClusterFarmer {
 
     clusterLimit 4;
     id "";
     key "";
-    roles extends DATA {
 
-       master extends EC2ClusterRole {
-         image "";
-       }
+  }
+  
+Farmer extends BaseFarmer {
+
+    clusterLimit 4;
+    id "";
+    key "";
+    roles extends Compound {
+
 
        worker extends EC2ClusterRole {
-         image "";
+         imageID "ami-0236";
+         instanceType SIZE_LARGE;
+         availabilityZone ZONE_US_EAST_1B;
+       }
+       
+       master extends EC2ClusterRole {
+         imageID "ami-0234";
+         instanceType SIZE_LARGE;
+         availabilityZone ZONE_US_EAST_1B;
+         securityGroup ["undefined"];
        }
 
+
     }
-
-
 
   }
 
@@ -45,6 +60,7 @@ ExpectFarmerDeploy extends ExpectDeploy {
 
   action Farmer;
 
+  
 }
 
 testFarmHasRoles extends ExpectFarmerDeploy {
@@ -74,7 +90,7 @@ testFarmLacksRole extends ExpectDeployFailure {
     description "create a mock cluster, and, in parallel, a test for a role that isn't supported"
 
     action extends Parallel {
-     farmer Farmer;
+     farmer  BaseFarmer ;
 
      master extends FarmSupportsRole {
       farmer LAZY action:farmer;
@@ -83,6 +99,25 @@ testFarmLacksRole extends ExpectDeployFailure {
    }
 }
 
+
+
+testMasterLacksImageID extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a test for a role that lacks an ID"
+
+    action extends Parallel {
+    
+    farmer extends Farmer {
+      roles:master:imageID "";
+    }
+    
+
+     master extends FarmSupportsRole {
+      farmer LAZY action:farmer;
+      role "server";
+     }
+   }
+}
 
 
 testFarmCreate extends ExpectFarmerDeploy {
