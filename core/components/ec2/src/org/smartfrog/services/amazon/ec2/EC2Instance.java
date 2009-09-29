@@ -25,13 +25,49 @@ package org.smartfrog.services.amazon.ec2;
  */
 public interface EC2Instance extends EC2Component {
 
-    String ATTR_IMAGEID = "imageID";
-    String ATTR_INSTANCE = "instance";
-    String ATTR_SHUTDOWN = "shutdown";
-    String ATTR_INSTANCETYPE = "instanceType";
 
+    /**
+     * this is the AMI of an image. Empty string is don't care
+     * {@value}
+     */
+    String ATTR_IMAGE_ID = "imageID";
+
+    /**
+     * {@value}
+     */
+    String ATTR_INSTANCE = "instance";
+
+    /**
+     * {@value}
+     */
+    String ATTR_SHUTDOWN = "shutdown";
+
+    /**
+     * {@value}
+     */
+    String ATTR_INSTANCE_TYPE = "instanceType";
+
+    /**
+     * {@value}
+     */
+    String ATTR_AVAILABILITY_ZONE = "availabilityZone";
+
+    /**
+     * {@value}
+     */
+    String ATTR_SECURITY_GROUP = "securityGroup";
+
+
+    /**
+     * {@value}
+     */
     String ATTR_USER_DATA = "userData";
-    //this is the AMI of an image. Empty string is don't care
+
+    /**
+     * Key to use for SSH-ing
+     */
+    String ATTR_KEY_NAME = "keyName";
+    
     //string list of instances. Can be empty
     String ATTR_INSTANCES = "instances";
     //minimum number of instances

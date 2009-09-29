@@ -17,6 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/amazon/ec2farmer/test/components.sf"
+package org.smartfrog.services.amazon.farmer;
 
-sfConfig extends testFarmHasRoles;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.amazon.ec2.EC2Instance;
+
+import java.rmi.RemoteException;
+
+/**
+ * Created 29-Sep-2009 11:37:58
+ */
+
+public class EC2ClusterRole extends PrimImpl implements EC2Instance {
+
+    public EC2ClusterRole() throws RemoteException {
+    }
+
+    @Override
+    public void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        
+    }
+}

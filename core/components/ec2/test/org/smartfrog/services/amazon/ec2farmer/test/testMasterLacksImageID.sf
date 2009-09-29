@@ -19,4 +19,4 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/amazon/ec2farmer/test/components.sf"
 
-sfConfig extends testFarmHasRoles;
+sfConfig extends testMasterLacksImageID;

@@ -68,7 +68,7 @@ public class ListInstancesImpl extends EC2ComponentImpl
         instances = ListUtils.resolveStringList(this, refInstances, true);
         minCount = sfResolve(ATTR_MIN_COUNT, 0, true);
         maxCount = sfResolve(ATTR_MAX_COUNT, 0, true);
-        imageID = sfResolve(ATTR_IMAGEID, "", true);
+        imageID = sfResolve(ATTR_IMAGE_ID, "", true);
         state = sfResolve(ATTR_STATE, "", true);
         timeout = sfResolve(ATTR_TIMEOUT, 0, true);
         pollInterval = sfResolve(ATTR_POLL_INTERVAL, 0, true);
