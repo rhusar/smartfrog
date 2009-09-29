@@ -55,6 +55,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
     private static final Reference CONSTRAINTS = new Reference(ATTR_CONSTRAINTS);
     private static final Reference USERS = new Reference(ATTR_USERS);
     private static final int ROLE_BASE = 3;
+    public static final String ERROR_NO_SECURITY_CONSTRAINTS = "No security constraints were specified";
 
     public JettySecurityRealmImpl() throws RemoteException {
     }
@@ -94,12 +95,14 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             }
             rolelist.append("]");
             sfLog().info("Added User " + username
-                    + " in roles " + rolelist
-                    + " pass '" + password + "'");
+                    + " in roles " + rolelist);
         }
         //now the constraints
         constraints = sfResolve(CONSTRAINTS, constraints, true);
         ConstraintMapping[] mappings = new ConstraintMapping[constraints.size()];
+        if(constraints.size()==0) {
+            throw new SmartFrogResolutionException(sfCompleteName(), ERROR_NO_SECURITY_CONSTRAINTS);
+        }
         for (int entry = 0; entry < constraints.size(); entry++) {
             Vector oneConstraint = (Vector) constraints.elementAt(entry);
             int roleCount = oneConstraint.size() - ROLE_BASE;
@@ -153,6 +156,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
         if (security != null) {
             Server server = jettyHelper.getServer();
             if (server != null) {
+                server.removeLifeCycle(security);
                 server.removeHandler(security);
                 server.removeUserRealm(realm);
             }
@@ -184,10 +188,12 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
         public boolean checkSecurityConstraints(String pathInContext, Request request, Response response)
                 throws IOException {
             boolean allowed = super.checkSecurityConstraints(pathInContext, request, response);
-            if (allowed) {
-                sfLog().info("Allowing request on " + pathInContext);
-            } else {
-                sfLog().info("Rejecting request on " + pathInContext);
+            if (sfLog().isDebugEnabled()) {
+                if (allowed) {
+                    sfLog().debug("Allowing request on " + pathInContext);
+                } else {
+                    sfLog().debug("Rejecting request on " + pathInContext);
+                }
             }
             return allowed;
         }
@@ -195,11 +201,16 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
         @Override
         public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch)
                 throws IOException, ServletException {
-            sfLog().info("Handling request to " + target);
+            if (sfLog().isDebugEnabled()) {
+                sfLog().info("Handling request to " + target);
+            }
             super.handle(target, request, response, dispatch);
         }
     }
 
+    /**
+     * A constraint mapping with a useful string form
+     */
     private static class JettyConstraintMapping extends ConstraintMapping {
 
         @Override
@@ -209,6 +220,9 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
         }
     }
 
+    /**
+     * A constraint with a useful string form
+     */
     private static class JettyConstraint extends Constraint {
 
 

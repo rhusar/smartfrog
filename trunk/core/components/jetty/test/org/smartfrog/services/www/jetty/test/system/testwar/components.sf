@@ -97,16 +97,12 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 TestSecurity extends TestWarDeployed {
   contextPath "/testwar";
-  password "secret";
 
   action extends TestWarServer {
       contextPath PARENT:contextPath;
 
       security extends AdminSecurityRealm {
         server LAZY PARENT:server;
-        adminPassword PARENT:ATTRIB password;
-        name "testRealm";
-//        contextPath PARENT:contextPath;
     }
   }
 
@@ -119,7 +115,7 @@ TestSecurity extends TestWarDeployed {
       port test.jetty.port.1;
       path contextPath;
       username "admin";
-      password PARENT:ATTRIB password;
+      password "password";
       minimumResponseCode HttpCodes:START_2XX;
       maximumResponseCode HttpCodes:END_2XX;
     }
@@ -128,7 +124,6 @@ TestSecurity extends TestWarDeployed {
 }
 
 testSecurityUnauth extends TestSecurity {
-  condition extends RunFailingTests;
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
   //patch the wait operation
@@ -151,7 +146,7 @@ TestRealm extends TestWarDeployed {
     contextPath PARENT:contextPath;
 
     //security here is applied to the whole realm
-    testRealm extends JettySecurityRealm {
+    testRealm extends AdminSecurityRealm {
     	name "testRealm";
     	users [
     	  ["test", PARENT:ATTRIB password, name]
@@ -166,15 +161,14 @@ TestRealm extends TestWarDeployed {
   tests extends Sequence {
 
     sleep extends Delay {
-      time 5000;
+      time 1000;
     }
 
     wait extends waitForPage  {
-      //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
       host "localhost";
       port test.jetty.port.1;
       path contextPath;
-      //username "admin";
+      username "test";
       password PARENT:ATTRIB password;
       minimumResponseCode HttpCodes:START_2XX;
       maximumResponseCode HttpCodes:END_2XX;
@@ -189,9 +183,9 @@ testRealmUnauth extends TestRealm {
 
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
-  condition extends RunFailingTests;
   
   //patch the wait operation
+  tests:wait:username "no-such-user";
   tests:wait:password "wrong-password";
   tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
   tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
