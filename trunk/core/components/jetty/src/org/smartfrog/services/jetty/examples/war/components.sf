@@ -59,7 +59,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 
 
-
+  SecureWarServer extends JettyWarServer {
+  
+    security extends AdminSecurityRealm {
+      server LAZY PARENT:server;
+    }
+  
+  }
 
   
   

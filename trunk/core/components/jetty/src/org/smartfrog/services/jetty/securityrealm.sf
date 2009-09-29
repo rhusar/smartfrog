@@ -44,8 +44,8 @@ JettySecurityRealm extends Prim {
     METHOD_GET "GET";
     METHOD_PUT "GET";
     METHOD_POST "POST";
-    METHOD_DELETE "POST";
-    METHOD_HEAD "POST";
+    METHOD_DELETE "DELETE";
+    METHOD_HEAD "HEAD";
     METHOD_ANY "";
     
     PATH_EVERYTHING "/*";
@@ -62,7 +62,8 @@ AdminSecurityRealm extends JettySecurityRealm {
     
     
     users [
-      ["admin", adminPassword, name]
+      ["admin", adminPassword, name],
+      ["test", "test", name]
     ];
 
     constraints [

@@ -49,7 +49,7 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
   
   <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
-  <property name="deploy.sf" value="org/smartfrog/services/www/jetty/test/system/testwar/examples/warServer.sf"/>
+  <property name="deploy.sf" value="org/smartfrog/services/jetty/examples/war/secureWarServer.sf"/>
 
 
   
