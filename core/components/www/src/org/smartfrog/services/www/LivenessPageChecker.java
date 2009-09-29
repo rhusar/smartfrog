@@ -547,6 +547,7 @@ public class LivenessPageChecker implements LivenessPage {
     public String toString() {
         return urlAsString + " ["
                 + minimumResponseCode + "<= response <=" + maximumResponseCode+ ']'
+                + (username != null ? (" as \"" + username + "\" ") : "")
                 + (enabled ? "" : "(disabled)");
     }
 
