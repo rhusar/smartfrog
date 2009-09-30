@@ -154,8 +154,8 @@ testListEC2ImagesBadPassword extends  ExpectDeployFailureOnEC2  {
   }
 
   exceptions [
-    ["",""],
-    ["","AWS was not able to validate the provided access credentials"]
+    ["","Failed to talk to EC2"],
+    ["","The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method."]
   ];
 }
 
