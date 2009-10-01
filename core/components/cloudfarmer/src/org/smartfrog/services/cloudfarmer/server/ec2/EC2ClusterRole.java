@@ -17,11 +17,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.amazon.farmer;
+package org.smartfrog.services.cloudfarmer.server.ec2;
 
 import com.xerox.amazonws.ec2.InstanceType;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.ec2.EC2Instance;
+import org.smartfrog.services.amazon.ec2.EC2Utils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -65,20 +66,10 @@ public class EC2ClusterRole extends PrimImpl implements EC2Instance {
         lc.setSecurityGroup(groups);
         lc.setUserData(userData.getBytes());
         if (lc.getImageId().isEmpty()) {
-            throw new SmartFrogResolutionException(ERROR_NO_VALID_IMAGE_ID + role + " " + convertToString(lc)
+            throw new SmartFrogResolutionException(ERROR_NO_VALID_IMAGE_ID + role + " " + EC2Utils.convertToString(lc)
                     + ("- raw image ID :'" + imageID + "'"));
         }
         return lc;
     }
 
-    public static String convertToString(LaunchConfiguration launch) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Launch configuration:");
-        sb.append(" imageID='").append(launch.getImageId()).append('\'');
-        sb.append(" instanceSize='").append(launch.getInstanceType()).append('\'');
-        sb.append(" keyName='").append(launch.getKeyName()).append('\'');
-        sb.append(" availabilityZone='").append(launch.getAvailabilityZone()).append('\'');
-        String configString = sb.toString();
-        return configString;
-    }
 }

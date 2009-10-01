@@ -17,6 +17,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/amazon/ec2farmer/test/offline/components.sf"
+package org.smartfrog.services.cloudfarmer.server.ec2;
 
-sfConfig extends testFarmLacksRole;
+import org.smartfrog.services.amazon.ec2.EC2Component;
+import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
+
+/**
+ * Created 16-Sep-2009 16:06:06
+ */
+
+
+public interface EC2ClusterFarmer extends ClusterFarmer, EC2Component {
+
+    String ATTR_ROLES = "roles";
+    /**
+     * This is there to stop users accidentally running up large bills. If <0, it means ignore
+     */
+    String ATTR_CLUSTER_LIMIT = "clusterLimit";
+   
+}

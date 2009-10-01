@@ -19,7 +19,8 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/services/amazon/ec2/components.sf"
-#include "/org/smartfrog/services/farmer/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/components.sf"
+
 
 /**
  * The cluster farmer implements the ClusterFarmer interface, and so lets trusted callers
@@ -40,7 +41,7 @@ Roles are inserted in an undeployed bit of the system, just plain data. That's s
  */
 
 EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, Prim   {
-  sfClass "org.smartfrog.services.amazon.farmer.EC2ClusterRole";
+  sfClass "org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterRole";
   
   //the string value of the machine image to deploy. This must resolve before an attempt
   //to deploy a machine of the given role can work
@@ -69,7 +70,7 @@ EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, Prim   {
  */
 
 EC2ClusterFarmer extends AwsAuthorizedService {
-  sfClass "org.smartfrog.services.amazon.farmer.EC2ClusterFarmerImpl"
+  sfClass "org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterFarmerImpl"
 
     /**
      * This is there to stop users accidentally running up large bills. If <0, it means ignore

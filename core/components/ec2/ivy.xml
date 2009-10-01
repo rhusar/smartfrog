@@ -132,14 +132,6 @@
                 conf="restlet->default"/>
 
     <!--Typica
-    when internal, the spec was
-
-    <dependency org="typica"
-        name="typica"
-        changing="true"
-        rev="${typica.version}"
-        conf="typica->default"/>
-
     -->
     <dependency org="com.google.code.typica"
                 name="typica"

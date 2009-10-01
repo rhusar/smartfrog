@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.amazon.farmer;
+package org.smartfrog.services.cloudfarmer.server.ec2;
 
 import com.xerox.amazonws.ec2.EC2Exception;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
@@ -25,9 +25,10 @@ import com.xerox.amazonws.ec2.ReservationDescription;
 import org.smartfrog.services.amazon.ec2.EC2ComponentImpl;
 import org.smartfrog.services.amazon.ec2.EC2Instance;
 import org.smartfrog.services.amazon.ec2.SmartFrogEC2Exception;
-import org.smartfrog.services.farmer.AbstractClusterFarmer;
-import org.smartfrog.services.farmer.ClusterNode;
-import org.smartfrog.services.farmer.NoClusterSpaceException;
+import org.smartfrog.services.amazon.ec2.EC2Utils;
+import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -379,7 +380,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
             if (value instanceof Prim) {
                 Prim targetRole = (Prim) value;
                 LaunchConfiguration launch = createLaunchConfiguration(role, targetRole);
-                String configString = EC2ClusterRole.convertToString(launch);
+                String configString = EC2Utils.convertToString(launch);
                 sfLog().info("Role " + role + " " + configString);
                 rolelist.add(role);
             } else {

@@ -17,10 +17,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.amazon.farmer;
+package org.smartfrog.services.cloudfarmer.server.ec2;
 
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.ec2.InstanceList;
+import org.smartfrog.services.amazon.ec2.EC2Utils;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -40,7 +41,7 @@ public class RoleBinding {
         this.role = role;
         this.source = source;
         this.launchConfig = launchConfig;
-        description = EC2ClusterRole.convertToString(launchConfig);
+        description = EC2Utils.convertToString(launchConfig);
         instances = new InstanceList();
     }
 
