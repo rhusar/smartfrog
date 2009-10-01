@@ -120,6 +120,17 @@ BindableCluster extends FullCluster {
   jobtrackerHostname binding.jobtracker.hostname;
   //set the no. of task slots
   max_tasks binding.tasktracker.slots ;
+  
+  /** 
+  * these are some flags that get picked up when scanning for Hadoop nodes
+  * Their presence indicates that 
+  */
+  mombasa.isMombasaNode true;
+  mombasa.description "Hadoop Node";
+  mombasa.isMaster master;
+  mombasa.isWorker worker;
+  mombasa.fs.default.name fs.default.name;
+  mombasa.jobtracker.url ("ipc://" ++ job.tracker.binding);
 
 }
 
@@ -138,6 +149,7 @@ MasterNode extends BindableCluster {
   master true;
   namenode:sfProcessName NAMENODE_PROCESS;
   jobtracker:sfProcessName JOBTRACKER_PROCESS;
+  mombasa.description "Hadoop Master Node";
 }
 
 /**
@@ -147,10 +159,23 @@ WorkerNode extends BindableCluster {
   worker true;
   datanode:sfProcessName DATANODE1_PROCESS;
   tasktracker:sfProcessName TASKTRACKER1_PROCESS;
+  mombasa.description "Hadoop Worker Node";
 }
 
 MasterAndWorker extends Compound {
   master MasterNode;
   worker WorkerNode;
+  
+    /** 
+  * these are some flags that get picked up when scanning for Hadoop nodes
+  * Their presence indicates that 
+  */
+  mombasa.isMombasaNode true;
+  mombasa.description "Hadoop Node";
+  mombasa.isMaster true;
+  mombasa.isWorker true;
+  mombasa.fs.default.name master:fs.default.name;
+  mombasa.jobtracker.url ("ipc://" ++ master:job.tracker.binding);
+  
 }
 
