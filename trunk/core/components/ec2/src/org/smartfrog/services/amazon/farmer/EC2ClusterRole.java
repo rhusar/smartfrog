@@ -19,17 +19,25 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.amazon.farmer;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import com.xerox.amazonws.ec2.InstanceType;
+import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.ec2.EC2Instance;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
  * Created 29-Sep-2009 11:37:58
  */
 
 public class EC2ClusterRole extends PrimImpl implements EC2Instance {
+    public static final String ERROR_NO_VALID_IMAGE_ID = "No valid imageID for role ";
 
     public EC2ClusterRole() throws RemoteException {
     }
@@ -37,6 +45,40 @@ public class EC2ClusterRole extends PrimImpl implements EC2Instance {
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        
+        LaunchConfiguration lc = createLaunchConfiguration("none", this);
+    }
+
+
+    public static LaunchConfiguration createLaunchConfiguration(String role, Prim targetRole)
+            throws SmartFrogResolutionException, RemoteException {
+        String imageID = targetRole.sfResolve(ATTR_IMAGE_ID, "", true);
+        String zone = targetRole.sfResolve(ATTR_AVAILABILITY_ZONE, "", true);
+        String keyName = targetRole.sfResolve(ATTR_KEY_NAME, "", true);
+        String userData = targetRole.sfResolve(ATTR_USER_DATA, "", true);
+        InstanceType size = InstanceType.getTypeFromString(targetRole.sfResolve(ATTR_INSTANCE_TYPE, "", true));
+        Vector<String> groups = ListUtils.resolveStringList(targetRole, new Reference(ATTR_SECURITY_GROUP), true);
+        LaunchConfiguration lc = new LaunchConfiguration(imageID.trim());
+        lc.setConfigName(role);
+        lc.setAvailabilityZone(zone);
+        lc.setInstanceType(size);
+        lc.setKeyName(keyName);
+        lc.setSecurityGroup(groups);
+        lc.setUserData(userData.getBytes());
+        if (lc.getImageId().isEmpty()) {
+            throw new SmartFrogResolutionException(ERROR_NO_VALID_IMAGE_ID + role + " " + convertToString(lc)
+                    + ("- raw image ID :'" + imageID + "'"));
+        }
+        return lc;
+    }
+
+    public static String convertToString(LaunchConfiguration launch) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Launch configuration:");
+        sb.append(" imageID='").append(launch.getImageId()).append('\'');
+        sb.append(" instanceSize='").append(launch.getInstanceType()).append('\'');
+        sb.append(" keyName='").append(launch.getKeyName()).append('\'');
+        sb.append(" availabilityZone='").append(launch.getAvailabilityZone()).append('\'');
+        String configString = sb.toString();
+        return configString;
     }
 }

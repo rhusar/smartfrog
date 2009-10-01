@@ -30,6 +30,11 @@
     test.awsid = id
     test.awskey = secret key
     test.ec2.enabled to true for EC2 work
+
+    test.ec2.instances.enabled  tests that create instances
+    test.ec2.farmer.enabled=    tests that create a farmer and instances through it
+    test.s3.enabled             tests that go up against S3
+    
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>
@@ -47,8 +52,7 @@
 
 <!--  <property name="deploy.sf" value="${mockfarmer.sf}" />-->
 
-  <echo
-      message="==================================================================="/>
+  <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
@@ -57,12 +61,15 @@
 
 
   <target name="ready-to-test" depends="common.ready-to-test,testwar">
+    <property name="jetty.component.dir" location="../jetty" />
     <property name="test.jetty.home"
-        location="${test.src.dir}/files/jettyhome"/>
+        location="${jetty.component.dir}/test/files/jettyhome"/>
     <property name="test.demo.webapp"
-        location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
+        location="${jetty.component.dir}/test/files/jettyhome/demo/webapps/root"/>
     <echo level="verbose">
       test.ec2.enabled=${test.ec2.enabled}
+      test.ec2.instances.enabled=${test.ec2.instances.enabled}
+      test.ec2.farmer.enabled=${test.ec2.farmer.enabled}
       test.s3.enabled=${test.s3.enabled}
       
       test.jetty.home=${test.jetty.home}

@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.amazon.farmer;
 
 import org.smartfrog.services.amazon.ec2.EC2Component;
-import org.smartfrog.services.amazon.ec2.EC2Instance;
 import org.smartfrog.services.farmer.ClusterFarmer;
 
 /**

@@ -78,6 +78,7 @@ public class ValidateEC2SettingsImpl extends EC2ComponentImpl {
          *
          * @throws Throwable if anything went wrong
          */
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
             sfLog().info("worker thread sleeping for " + delay + " ms");

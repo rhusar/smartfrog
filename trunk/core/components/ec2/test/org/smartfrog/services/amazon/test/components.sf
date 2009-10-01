@@ -36,34 +36,62 @@ test.sleep.delay 1000;
 test.ec2.startup.delay 30000;
 
 
+/**
+ * turn the AWS key into a password
+ */
+
+AwsPassword extends PropertyPassword {
+  id login;
+  property test.awskey;
+}
+
 /*
  * Our AWS condition
  */
 
-IsAwsEnabled extends IsPropertySet {
+IsAwsEnabled extends IsPropertyTrue {
     property test.awsid;
 }
 
 
 
-IsEC2EnabledSet extends IsPropertySet {
+IsEC2EnabledSet extends IsPropertyTrue {
     property "test.ec2.enabled";
 }
 
 
-IsS3EnabledSet extends IsPropertySet {
+IsS3EnabledSet extends IsPropertyTrue {
     property "test.s3.enabled";
 }
 
+IsEC2InstancesSet extends IsPropertyTrue {
+    property "test.ec2.instances.enabled";
+}
+
+
+IsEC2FarmerSet extends IsPropertyTrue {
+    property "test.ec2.farmer.enabled";
+}
+
+
+
 IsEC2Enabled extends And {
-  ec2 IsEC2EnabledSet;
-  aws IsAwsEnabled;
+  ec2 extends IsEC2EnabledSet;
+  aws extends IsAwsEnabled;
+}
+
+IsEC2InstancesEnabled extends IsEC2Enabled {
+  ec2instances extends IsEC2InstancesSet;
+}
+
+IsEC2FarmerEnabled extends IsEC2Enabled {
+  ec2farmer extends IsEC2FarmerSet;
 }
 
 
 IsS3Enabled extends And {
-  ec2 IsS3EnabledSet;
-  aws IsAwsEnabled;
+  ec2 extends IsS3EnabledSet;
+  aws extends IsAwsEnabled;
 }
 
 
@@ -101,6 +129,18 @@ ExpectDeployOnEC2 extends ExpectDeploy {
 
 }
 
+
+ExpectDeployInstanceOnEC2 extends ExpectDeployOnEC2 {
+  description "A test deploying if instances are enabled";
+  condition extends IsEC2InstancesEnabled;
+}
+
+ExpectDeployFarmerOnEC2 extends ExpectDeployOnEC2 {
+  description "A test deploying if the ec2.farmer tests are enabled";
+  condition extends IsEC2FarmerEnabled;
+}
+
+
 /**
  A test on AWS
  */
@@ -110,16 +150,22 @@ ExpectDeployFailureOnEC2 extends ExpectDeployFailure {
   description ExpectDeployOnEC2:description;
 
   condition extends IsEC2Enabled ;
+}
+
+ExpectDeployInstanceFailureOnEC2 extends ExpectDeployFailure {
+
+  description ExpectDeployOnEC2:description;
+
+  condition extends IsEC2InstancesEnabled ;
+
+}
+
+ExpectDeployFarmerFailureOnEC2 extends ExpectDeployFailure {
+
+  description ExpectDeployFarmerOnEC2:description;
+
+  condition extends IsEC2FarmerEnabled ;
 
 }
 
 
-
-/**
- * turn the AWS key into a password
- */
-
-AwsPassword extends PropertyPassword {
-  id login;
-  property test.awskey;
-}

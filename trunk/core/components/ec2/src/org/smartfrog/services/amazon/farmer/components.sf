@@ -63,6 +63,10 @@ EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, Prim   {
 
 }
 
+/**
+ * This is our cluster farmer. 
+ * Its exact functionality will evolve over time
+ */
 
 EC2ClusterFarmer extends AwsAuthorizedService {
   sfClass "org.smartfrog.services.amazon.farmer.EC2ClusterFarmerImpl"
@@ -70,9 +74,32 @@ EC2ClusterFarmer extends AwsAuthorizedService {
     /**
      * This is there to stop users accidentally running up large bills. If <0, it means ignore
      */
+  
+  clusterLimit 10;
+  
+  /**
+   * constant to ignore all cluster limits
+   */
   NO_CLUSTER_LIMIT -1;
-  clusterLimit 1000;
-  //roles go under here
+  
+  /**
+   * Should the farmer recycle old instances given out. 
+   * For dev and test yes, but bear in mind that the machine may be in an unknown state. 
+   * When recycling, the old image is rebooted and left alone until needed
+   */
+  recycle true;
+  
+  /**
+    should you delete instances when terminating?
+    For HA systems the answer MUST BE no, leave them up, somehow the next instance will rebind. 
+    For test and dev systems, that can run up a large bill
+    */
+  deleteInstancesOnTermination true;
+  
+  /**
+    roles go under here. Each one should have all the attributes of an EC2ClusterRole, so that you can
+    create a cluster instance from the
+   */
   roles extends Compound {
 
   }

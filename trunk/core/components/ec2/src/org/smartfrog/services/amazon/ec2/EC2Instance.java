@@ -68,11 +68,13 @@ public interface EC2Instance extends EC2Component {
      */
     String ATTR_KEY_NAME = "keyName";
     
-    //string list of instances. Can be empty
+    /** string list of instances. Can be empty {@value} */
     String ATTR_INSTANCES = "instances";
-    //minimum number of instances
+    
+    /** minimum number of instances {@value} */
     String ATTR_MIN_COUNT = "minCount";
-    //max number
+    
+    /** max number {@value} */
     String ATTR_MAX_COUNT = "maxCount";
 
     /**
