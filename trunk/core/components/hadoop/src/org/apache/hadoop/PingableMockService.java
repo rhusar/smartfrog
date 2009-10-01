@@ -31,10 +31,10 @@ import java.io.IOException;
  */
 
 public class PingableMockService extends MockService implements InnerPing, Pingable {
-  private volatile int pingCount = 0;
-  private boolean failOnPing;
+    private volatile int pingCount = 0;
+    private boolean failOnPing;
 
-  /**
+    /**
      * {@inheritDoc}
      *
      * @param status a status that can be updated with problems
@@ -61,13 +61,13 @@ public class PingableMockService extends MockService implements InnerPing, Pinga
         return null;
     }
 
-  public int getPingCount() {
-    return pingCount;
-  }
+    public int getPingCount() {
+        return pingCount;
+    }
 
 
-  public void setFailOnPing(boolean failOnPing) {
-    this.failOnPing = failOnPing;
-  }
+    public void setFailOnPing(boolean failOnPing) {
+        this.failOnPing = failOnPing;
+    }
 
 }
