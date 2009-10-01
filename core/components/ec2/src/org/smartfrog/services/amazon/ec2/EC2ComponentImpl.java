@@ -23,6 +23,7 @@ import com.xerox.amazonws.ec2.Jec2;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.workflow.CompletableWork;
+import org.smartfrog.services.amazon.farmer.EC2ClusterRole;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
@@ -221,19 +222,13 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
         sfLog().info(instanceList.toString());
     }
 
+    /**
+     * Print any launch configuration out at the info level
+     * @param launch the configuration
+     */
     protected void logLaunchConfiguration(LaunchConfiguration launch) {
-        String configString = convertToString(launch);
+        String configString = EC2ClusterRole.convertToString(launch);
         sfLog().info(configString);
     }
 
-    protected String convertToString(LaunchConfiguration launch) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Launch configuration:");
-        sb.append(" imageID='").append(launch.getImageId()).append('\'');
-        sb.append(" instanceSize='").append(launch.getInstanceType()).append('\'');
-        sb.append(" keyName='").append(launch.getKeyName()).append('\'');
-        sb.append(" availabilityZone='").append(launch.getAvailabilityZone()).append('\'');
-        String configString = sb.toString();
-        return configString;
-    }
 }

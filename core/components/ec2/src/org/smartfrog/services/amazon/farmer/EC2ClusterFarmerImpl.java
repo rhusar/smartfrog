@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.amazon.farmer;
 
 import com.xerox.amazonws.ec2.EC2Exception;
-import com.xerox.amazonws.ec2.InstanceType;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import com.xerox.amazonws.ec2.ReservationDescription;
 import org.smartfrog.services.amazon.ec2.EC2ComponentImpl;
@@ -31,17 +30,15 @@ import org.smartfrog.services.farmer.ClusterNode;
 import org.smartfrog.services.farmer.NoClusterSpaceException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * This class implements an EC2 cluster farmer.
@@ -52,6 +49,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     private int nodeCount = 0;
     protected Prim roles;
     public static final String ERROR_NO_VALID_IMAGE_ID = "No valid imageID for role ";
+    private HashMap<String, RoleBinding> roleBindings;
 
 
     public EC2ClusterFarmerImpl() throws RemoteException {
@@ -59,7 +57,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
 
     @Override
-    public void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         //start the children
         synchCreateChildren();
@@ -67,11 +65,8 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
         sfLog().info("Creating EC2farmer with a limit of " + clusterLimit);
         roles = sfResolve(ATTR_ROLES, roles, true);
-        try {
-            listAvailableRoles();
-        } catch (IOException e) {
-            throw new SmartFrogLifecycleException(e);
-        }
+        roleBindings = new HashMap<String, RoleBinding>();
+        buildRoleBindings();
     }
 
     /**
@@ -82,19 +77,35 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      */
     @Override
     public ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
+        List<ClusterNode> nodes = createNodes(role, min, max);
+        return nodes.toArray(new ClusterNode[nodes.size()]);
+    }
+
+    /**
+     * Create the nodelist
+     * @param role instance role
+     * @param min  min# to create
+     * @param max  max# to create; must be equal to or greater than the min value
+     * @return a list of created nodes, size between the min and max values
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    private List<ClusterNode> createNodes(String role, int min, int max) throws SmartFrogException, IOException {
         AbstractClusterFarmer.validateClusterRange(min, max);
         int limit = addNodes(min, max);
-
-
         LaunchConfiguration launch = createLaunchConfigFromRole(role);
         launch.setMaxCount(limit);
         launch.setMinCount(min);
+        List<ClusterNode> nodes = new ArrayList<ClusterNode>(limit);
         try {
-            getEc2binding().runInstances(launch);
+            ReservationDescription reservation = getEc2binding().runInstances(launch);
+            for (ReservationDescription.Instance instance : reservation.getInstances()) {
+                nodes.add(createFromReservationInstance(instance));
+            }
         } catch (EC2Exception e) {
-
+            throw new SmartFrogEC2Exception(e, this);
         }
-        return new ClusterNode[0];
+        return nodes;
     }
 
     /**
@@ -114,8 +125,10 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     /**
      * Add the number of nodes
      *
+     * @param min number of nodes to allocate
      * @param max the number to add
      * @return the number actually added. This may be less, if the count is > the limit
+     * @throws NoClusterSpaceException there is no room in the cluster
      */
     private synchronized int addNodes(int min, int max) throws NoClusterSpaceException {
         int newCount = nodeCount + max;
@@ -342,6 +355,9 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         return ids;
     }
 
+    
+    
+    
     /**
      * {@inheritDoc}
      *
@@ -363,7 +379,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
             if (value instanceof Prim) {
                 Prim targetRole = (Prim) value;
                 LaunchConfiguration launch = createLaunchConfiguration(role, targetRole);
-                String configString = convertToString(launch);
+                String configString = EC2ClusterRole.convertToString(launch);
                 sfLog().info("Role " + role + " " + configString);
                 rolelist.add(role);
             } else {
@@ -378,7 +394,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      *
      * @param role role to look up
      * @return the role
-     * @throws RemoteException        IO/network problems
+     * @throws RemoteException    IO/network problems
      * @throws SmartFrogException other problems
      */
     private LaunchConfiguration createLaunchConfigFromRole(String role)
@@ -389,29 +405,42 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
     private LaunchConfiguration createLaunchConfiguration(String role, Prim targetRole)
             throws SmartFrogResolutionException, RemoteException {
-        sfLog().info("Creating a Launch config from "+ targetRole);
-        String imageID = targetRole.sfResolve(ATTR_IMAGE_ID, "", true);
-        String zone = targetRole.sfResolve(ATTR_AVAILABILITY_ZONE, "", true);
-        String keyName = targetRole.sfResolve(ATTR_KEY_NAME, "", true);
-        String userData = targetRole.sfResolve(ATTR_USER_DATA, "", true);
-        InstanceType size = InstanceType.getTypeFromString(targetRole.sfResolve(ATTR_INSTANCE_TYPE, "", true));
-        Vector<String> groups = ListUtils.resolveStringList(targetRole, new Reference(ATTR_SECURITY_GROUP), true);
-        LaunchConfiguration lc = new LaunchConfiguration(imageID.trim());
-        lc.setConfigName(role);
-        lc.setAvailabilityZone(zone);
-        lc.setInstanceType(size);
-        lc.setKeyName(keyName);
-        lc.setSecurityGroup(groups);
-        lc.setUserData(userData.getBytes());
-        if (lc.getImageId().isEmpty()) {
-            throw new SmartFrogResolutionException(ERROR_NO_VALID_IMAGE_ID + role + " " + convertToString(lc)
-            +("- raw image ID :'"+ imageID +"'"));
-        }
+        sfLog().info("Creating a Launch config from " + targetRole);
+        LaunchConfiguration lc = EC2ClusterRole.createLaunchConfiguration(role, targetRole);
         return lc;
     }
 
     private Prim resolveRole(String role) throws SmartFrogResolutionException, RemoteException {
         return roles.sfResolve(role, (Prim) null, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the number of roles
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    public int buildRoleBindings() throws RemoteException, SmartFrogException {
+
+        //and build a list of all that is a CD itself
+        Iterator attrs = roles.sfAttributes();
+        while (attrs.hasNext()) {
+            Object key = attrs.next();
+            String role = key.toString();
+            Object value = roles.sfResolve(new Reference(role), true);
+            if (value instanceof Prim) {
+                Prim targetRole = (Prim) value;
+                LaunchConfiguration launch = createLaunchConfiguration(role, targetRole);
+                RoleBinding binding = new RoleBinding(role, targetRole, launch);
+                roleBindings.put(role, binding);
+                sfLog().info(binding.toString());
+                
+            } else {
+                sfLog().debug("Ignoring roles attribute " + role + " which maps to " + value);
+            }
+        }
+        return roleBindings.size();
     }
 
 }
