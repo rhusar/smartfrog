@@ -23,7 +23,6 @@ import com.xerox.amazonws.ec2.Jec2;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.workflow.CompletableWork;
-import org.smartfrog.services.amazon.farmer.EC2ClusterRole;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
@@ -227,7 +226,7 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
      * @param launch the configuration
      */
     protected void logLaunchConfiguration(LaunchConfiguration launch) {
-        String configString = EC2ClusterRole.convertToString(launch);
+        String configString = EC2Utils.convertToString(launch);
         sfLog().info(configString);
     }
 

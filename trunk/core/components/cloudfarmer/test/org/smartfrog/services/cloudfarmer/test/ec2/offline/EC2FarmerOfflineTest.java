@@ -1,14 +1,14 @@
-package org.smartfrog.services.amazon.ec2farmer.test.offline;
+package org.smartfrog.services.cloudfarmer.test.ec2.offline;
 
 import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
  */
-public class FarmerTest extends DeployingTestBase {
-    public static final String FILES = "/org/smartfrog/services/amazon/ec2farmer/test/online";
+public class EC2FarmerOfflineTest extends DeployingTestBase {
+    public static final String FILES = "/org/smartfrog/services/cloudfarmer/test/ec2/offline";
 
-    public FarmerTest(String name) {
+    public EC2FarmerOfflineTest(String name) {
         super(name);
     }
 

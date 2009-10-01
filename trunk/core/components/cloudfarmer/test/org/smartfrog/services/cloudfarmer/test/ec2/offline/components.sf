@@ -18,9 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/farmer/components.sf"
-#include "/org/smartfrog/services/amazon/farmer/components.sf"
-
+#include "/org/smartfrog/services/cloudfarmer/test/ec2/components.sf"
 
 BaseFarmer extends EC2ClusterFarmer {
 
