@@ -58,11 +58,11 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
      * discovered.
      */
-    private static final String[] REQUIRED_ATTRIBUTES = {
+/*    private static final String[] REQUIRED_ATTRIBUTES = {
             MAPRED_INPUT_DIR,
             MAPRED_OUTPUT_DIR,
             MAPRED_LOCAL_DIR
-    };
+    };*/
     public static final String MISSING_ATTRIBUTE = "Missing attribute";
     private String description;
     private static final Reference REF_CLUSTER = new Reference(ClusterBound.ATTR_CLUSTER);
