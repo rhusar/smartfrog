@@ -57,6 +57,12 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     }
 
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws RemoteException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -416,7 +422,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     }
 
     /**
-     * {@inheritDoc}
+     * build the role bindings
      *
      * @return the number of roles
      * @throws IOException        IO/network problems
