@@ -193,6 +193,20 @@ It does not contain any of the Ant optional libraries, or their dependencies.
 
 # -----------------------------------------------------------------------------
 
+%package cloudfarmer
+
+Group:         ${rpm.framework}
+Summary:        Cloud Infrastructure Management
+Requires:       %{name} = %{version}-%{release}
+#
+%description cloudfarmer 
+Components and tools to deal with different cloud infrastructures.
+
+This RPM does not depend on the smartfrog-ec2 RPM, as that is not required for other infrastuctures, 
+but to manage Amazon EC2 systems, smartfrog-ec2 RPM must be installed
+
+# -----------------------------------------------------------------------------
+
 %package csvfiles
 Group:         ${rpm.framework}
 Summary:        Components to work with CSV files
@@ -747,11 +761,15 @@ fi
 %{linkdir}/ant.jar
 %{linkdir}/ant-launcher.jar
 
-
 %files anubis
 
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 %{linkdir}/sf-anubis.jar
+
+%files cloudfarmer
+
+%{libdir}/sf-cloudfarmer-${smartfrog.version}.jar
+%{linkdir}/sf-cloudfarmer.jar
 
 %files csvfiles
 
@@ -835,7 +853,7 @@ fi
 %{linkdir}/jetty.jar
 %{linkdir}/jetty-util.jar
 
-
+# these are the Jasper components
 %{libdir}/jsp-2.1-${jetty.version}.jar
 %{linkdir}/jsp-2.1.jar
 %{libdir}/jsp-api-2.1-${jetty.version}.jar
@@ -983,6 +1001,10 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Fri Oct 02 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
+- Groovy RPM, does not depend on scripting
+- cloudfarmer RPM
+
 * Fri Jul 24 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.013-1.el5
 - Move up to the RHEL5 RPMs. 
 * Fri Jun 12 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.011-1.el4

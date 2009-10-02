@@ -370,6 +370,28 @@ SmartFrog to deploy complex systems.
           unpack="true"/>
     </pack>
 
+    <pack name="CloudFarmer" required="no" preselected="no">
+      <description>
+        The cloudfarmer package contains components and client code to assist in 
+        deploying to cloud infrastructure.
+
+        To work with Amazon EC2, the EC2 package must be installed 
+
+        Includes opencsv-${opencsv.version}.jar
+      </description>
+      <file src="ivy/lib/package-csvfiles/sf-cloudfarmer-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-csvfiles/sf-csvfiles-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-csvfiles/sf-csvfiles-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-csvfiles/opencsv-${opencsv.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+    </pack>
 
     <pack name="CSVfiles" required="no" preselected="no">
       <description>

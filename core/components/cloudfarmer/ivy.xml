@@ -15,6 +15,8 @@
   -->
   <configurations defaultconfmapping="default">
     <conf name="default" extends="master,runtime"/>
+    <conf name="documentation"
+        description="all documentation artifacts"/>
     <conf name="build" visibility="private"
           description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"
@@ -36,6 +38,9 @@
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
+    <artifact name="sf-cloudfarmer-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-cloudfarmer-documentation" conf="documentation" ext="zip"/>
+
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
