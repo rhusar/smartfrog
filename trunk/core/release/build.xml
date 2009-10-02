@@ -475,7 +475,11 @@
     <!-- anubis -->
     <rpmpackage package="anubis"/>
     <ln artifact="sf-anubis" version="${smartfrog.version}"/>
-
+    
+    <!-- csvfiles -->
+    <rpmpackage package="cloudfarmer"/>
+    <ln artifact="sf-cloudfarmer" version="${smartfrog.version}"/>
+    
     <!-- csvfiles -->
     <rpmpackage package="csvfiles"/>
     <ln artifact="sf-csvfiles" version="${smartfrog.version}"/>
@@ -842,10 +846,12 @@
         <!--components-->
         <include name="sf-ant/${smartfrog.version}/*"/>
         <include name="sf-anubis/${smartfrog.version}/*"/>
+        <include name="sf-cloudfarmer/${smartfrog.version}/*"/>
         <include name="sf-csvfiles/${smartfrog.version}/*"/>
         <include name="sf-database/${smartfrog.version}/*"/>
         <include name="sf-dns/${smartfrog.version}/*"/>
         <include name="sf-emailer/${smartfrog.version}/*"/>
+        <include name="sf-groovy/${smartfrog.version}/*"/>
         <include name="sf-hadoop/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
@@ -1176,7 +1182,7 @@
     <property name="rpm.base.list"
         value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-logging "/>
     <property name="rpms.components.list"
-        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity smartfrog-rpmtools smartfrog-ec2 smartfrog-groovy"/>
+        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity smartfrog-rpmtools smartfrog-groovy"/>
     <property name="rpms.www.list"
         value="smartfrog-www smartfrog-jetty smartfrog-xunit "/>
     <property name="rpms.testing.list"
@@ -1186,7 +1192,7 @@
         value="${rpm.base.list} ${rpms.components.list} ${rpms.www.list} ${rpms.testing.list} "/>
 
     <property name="rpms.cloud.list"
-        value="smartfrog-hadoop"/>
+        value="smartfrog-hadoop smartfrog-cloudfarmer smartfrog-ec2"/>
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
     

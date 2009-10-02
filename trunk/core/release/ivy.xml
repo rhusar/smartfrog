@@ -50,6 +50,8 @@
         description="ant components"/>
     <conf name="package-anubis"
         description="anubis components"/>
+    <conf name="package-cloudfarmer"
+        description="Cloud management tools"/>
     <conf name="package-csvfiles"
         description="CSV File components"/>
     <conf name="package-database"
@@ -144,6 +146,14 @@
         rev="${ivy.smartfrog.version}"
         conf="package-anubis->master,redist,documentation"/>
 
+
+    <!--cloudfarmer-->
+    <dependency org="org.smartfrog"
+        name="sf-cloudfarmer"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-cloudfarmer->master,redist,documentation"/>
+
     <!--csvfiles-->
     <dependency org="org.smartfrog"
         name="sf-csvfiles"
@@ -159,7 +169,7 @@
 
         conf="package-database->master,redist,documentation"/>
 
-    <!--dns-->
+    <!--dns in networking-->
     <dependency org="org.smartfrog"
         name="sf-dns"
         changing="true"
@@ -167,23 +177,9 @@
         conf="package-networking->master,redist,documentation"/>
 
 
-    <!--email -->
+    <!--email in networking -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-networking->master,redist,documentation"/>
-
-    <!--net-->
-    <dependency org="org.smartfrog"
-        name="sf-net"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-networking->master,redist,documentation"/>
-
-    <!--ssh-->
-    <dependency org="org.smartfrog"
-        name="sf-ssh"
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
@@ -194,9 +190,9 @@
         name="sf-ec2"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-ec2->master,redist"/>
+        conf="package-ec2->master,redist,documentation"/>
 
-    <!--ec2 -->
+    <!--groovy -->
     <dependency org="org.smartfrog"
         name="sf-groovy"
         changing="true"
@@ -223,7 +219,15 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-logging->master,redist,documentation"/>
-    <!--scheduling-->
+
+    <!--net-->
+    <dependency org="org.smartfrog"
+        name="sf-net"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
+    
+    <!--quartz scheduling-->
     <dependency org="org.smartfrog"
         name="sf-quartz"
         changing="true"
@@ -244,7 +248,12 @@
         rev="${ivy.smartfrog.version}"
         conf="package-scripting->master,redist,documentation"/>
 
-
+    <!--ssh-->
+    <dependency org="org.smartfrog"
+        name="sf-ssh"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
 
 
     <!--SLP-->
