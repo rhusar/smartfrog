@@ -315,8 +315,15 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     <target name="ccClover"
         depends="with.clover,cc,clover.report,clover.summary"
-        description="cruise control full build with clover, with NO checkout"/>		
+        description="cruise control full build with clover, with NO checkout"/>
 
+  <!-- =================================================================== -->
+  <!-- cruise control/hudson test of hadoop                   -->
+  <!-- =================================================================== -->
+  <target name="cc-hadoop-test"
+      depends="ivy-hadoop-tested"
+      description="CI test run of Hadoop"/>
+  
   <!-- =================================================================== -->
   <!-- Start cruise control from inside ant  -->
   <!-- Currently we fork and use whichever version of ant is in CC, not -->
@@ -515,7 +522,6 @@ For more information: www.smartfrog.org
     <presetdef name="ivy-delegate" description="Delegate the build">
       <subant verbose="true">
         <buildpath refid="child.projects"/>
-        <!--<property file="master.properties"/>-->
       </subant>
     </presetdef>
 
@@ -617,12 +623,11 @@ ${child.projects.list}
     <ivy-delegate target="pdf-doc-folder" />
   </target>
 
-  <target name="ivy-hadoop" depends="ivy-init">
-    <ivy-projects reference="hadoop.projects" root="sf-hadoop-cluster">
+  <target name="ivy-hadoop-tested" depends="ivy-init">
+    <ivy-projects reference="hadoop.projects" root="sf-citerank">
     </ivy-projects>
-    <subant  target="hadoop" verbose="true">
+    <subant  target="tested" verbose="true">
       <buildpath refid="hadoop.projects"/>
-      <!--<property file="master.properties"/>-->
     </subant>
   </target>
 
