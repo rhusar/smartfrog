@@ -41,6 +41,12 @@ FileSystemLiveSequence extends Sequence {
     waitForDataNode extends WaitForDataNodeLive {
       service LAZY PARENT:datanode;
     }
+    
+    waitForDatanodeWorkers extends WaitForWorkersLive {
+      description "Waiting for the workers to register with the NN";
+      service LAZY PARENT:namenode;
+      minCount datanodeCount;
+    }
 
     
 }
