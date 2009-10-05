@@ -28,6 +28,8 @@ LightweightCluster extends Hostnames, HadoopConfigurationWithHostnameSetup {
   fs.default.name FS.DEFAULT.NAME;
   namenodeURL      NAME_NODE_URL;
   datanodeURL      DATA_NODE_URL ;
+  //bind to localhost for jobs unless we know who we are, otherwise the Task Trackers do not bond
+  mapred.job.tracker.hostname LOCALHOST;
 
   //dfs.hostname hostaddress;
   dfs.blockreport.intervalMsec DFS_BLOCKREPORT_INTERVALMSEC;
