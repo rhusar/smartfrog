@@ -58,7 +58,7 @@
   <!-- override point -->
   <property file="build.properties"/>
     <!-- tests are on-->
-  <property name="system.tests" value="true"/>
+  <!--<property name="system.tests" value="true"/>-->
   <property name="junit.timeout" value="120000000"/>
   <!--ask for more memory-->
   <property name="daemon.jvmargs" value="-Xmx256m" />
