@@ -284,7 +284,7 @@ For more information: www.smartfrog.org
     <!-- Cruise control test suite                                           -->
     <!-- =================================================================== -->
     <target name="cc-test"
-        depends="tested"/>
+        depends="clean,tested"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
@@ -329,7 +329,7 @@ For more information: www.smartfrog.org
   <!-- cruise control/hudson test of hadoop                   -->
   <!-- =================================================================== -->
   <target name="cc-hadoop-test"
-      depends="ivy-hadoop-tested"
+      depends="clean, ivy-hadoop-tested"
       description="CI test run of Hadoop"/>
   
   <!-- =================================================================== -->
