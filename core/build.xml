@@ -290,9 +290,17 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- this is not cutting a release as "release" is not in the list-->
   <!-- =================================================================== -->
+  <target name="cc-dist"
+      depends="clean,ivy-list-order,dist"
+      description="CI clean distribution build"/>
+  
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- this is not cutting a release as "release" is not in the list-->
+  <!-- =================================================================== -->
   <target name="cc-core"
-      depends="clean,ivy-list-order,dist,cc-test"
-      description="cruise control full build, with NO checkout"/>
+      depends="cc-dist,cc-test"
+      description="CI full build, with NO checkout"/>
 
   
   <!-- =================================================================== -->
