@@ -25,6 +25,7 @@ import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
+import org.smartfrog.services.cloudfarmer.api.Range;
 import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
 import org.smartfrog.services.cloudfarmer.server.common.ClusterRole;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -54,7 +55,6 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
 
     private String domain = "internal";
     private String externalDomain = "external";
-    private boolean allRolesAllowed;
 
     private Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
 
@@ -77,7 +77,6 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     public static final String ATTR_EXTERNAL_DOMAIN = "externalDomain";
 
-    public static final String ATTR_ALL_ROLES_ALLOWED = "allRolesAllowed";
 
 
     public MockClusterFarmerImpl() throws RemoteException {
@@ -105,7 +104,6 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         StringBuilder rolenames = new StringBuilder();
-        allRolesAllowed = sfResolve(ATTR_ALL_ROLES_ALLOWED, allRolesAllowed, true);
         Prim rolesChild = sfResolve(ATTR_ROLES, (Prim) null, true);
         Iterator attrs = rolesChild.sfAttributes();
         while (attrs.hasNext()) {
@@ -147,15 +145,41 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     public synchronized ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
         validateClusterRange(min, max);
         if (clusterSpace() < min) {
-            sfLog().info("Rejecting request for " + min + " nodes of role " + role + " : no space in cluster");
-            throw new NoClusterSpaceException();
+            String message = "Rejecting request for "
+                    + min + " to " + max
+                    + " nodes of role " + role + " : no space in cluster";
+            sfLog().info(message);
+            throw new NoClusterSpaceException(message);
         }
         //now check the role is allowed
-        if (!roleAllowed(role)) {
+        ClusterRoleInfo info = lookupRoleInfo(role);
+        if (info == null) {
             throw new UnsupportedClusterRoleException(role, this);
         }
-        List<ClusterNode> newnodes = new ArrayList<ClusterNode>(max);
-        for (int i = 0; i < max; i++) {
+        //get the number of nodes already in that role
+        int nodesInRole = nodesInRole(role);
+        Range roleRange = info.getRoleSize();
+        //put the top limit on the allocation
+        int nodesToAllocate = roleRange.calculateMaximumAllocatable(min, max, nodesInRole);
+
+        if(nodesToAllocate<=0 && min == 0) {
+            //no nodes left, but the minimum was zero. 
+            // Well, you ask for none, you get none
+            // THIS IS NOT AN ERROR!
+            return new ClusterNode[0];
+        }
+        if (nodesToAllocate <= 0) {
+            String message = "Rejecting request for " 
+                    + "["+ min + ", " + max +"]" 
+                    + " nodes of role " + role + " : "
+                    + " there are already "+ nodesInRole 
+                    + " nodes in that role, and the allowed range is "
+                    + roleRange.toString();
+            sfLog().info(message);
+            throw new NoClusterSpaceException(message);
+        }
+        List<ClusterNode> newnodes = new ArrayList<ClusterNode>(nodesToAllocate);
+        for (int i = 0; i < nodesToAllocate; i++) {
             ClusterNode clusterInstance = createOneInstance(role);
             if (clusterInstance == null) {
                 //we have run out of space, but as it is in range, the overall operation will succeed
@@ -207,15 +231,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @return true iff the role is supported
      */
     public boolean roleAllowed(String role) {
-        return isAllRolesAllowed() || roleInfoMap.containsKey(role);
-    }
-
-    public boolean isAllRolesAllowed() {
-        return allRolesAllowed;
-    }
-
-    public void setAllRolesAllowed(boolean allRolesAllowed) {
-        this.allRolesAllowed = allRolesAllowed;
+        return roleInfoMap.containsKey(role);
     }
 
     /**
@@ -226,14 +242,15 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @return true if all roles are allowed, or
      */
     public boolean roleInRange(String role, int quantity) {
-        if (isAllRolesAllowed()) {
-            return true;
-        }
-        ClusterRoleInfo info = roleInfoMap.get(role);
+        ClusterRoleInfo info = lookupRoleInfo(role);
         if (info == null) {
             return false;
         }
         return info.isInRange(quantity);
+    }
+
+    private ClusterRoleInfo lookupRoleInfo(String role) {
+        return roleInfoMap.get(role);
     }
 
     /**

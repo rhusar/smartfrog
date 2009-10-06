@@ -46,9 +46,7 @@ MockClusterFarmer extends Compound {
   
   //limit on the size of this cluster
   clusterLimit 1000;
-  
-  //set to true to allow any role, and ignore the list
-  allRolesAllowed false;
+ 
   
   //compound of roles
   roles extends Compound {
@@ -59,8 +57,4 @@ MockClusterFarmer extends Compound {
   //name of the external domain
   externalDomain "external";
   
-}
-
-MockClusterFarmerNoRoles extends MockClusterFarmer {
-  allRolesAllowed true;
 }

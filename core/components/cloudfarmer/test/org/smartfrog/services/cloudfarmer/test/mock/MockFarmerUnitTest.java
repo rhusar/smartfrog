@@ -26,18 +26,19 @@ public class MockFarmerUnitTest extends TestCase {
         farmer = new MockClusterFarmerImpl();
         farmer.fixupCompleteName("farmer");
         master = new ClusterRoleInfo(MASTER);
+        master.setRoleSize(1,1);
         worker = new ClusterRoleInfo(WORKER);
-        
+        worker.setRoleSize(1, 100);
+        addTestRoles();
     }
 
     public void testAddListRemove() throws Throwable {
-        farmer.setAllRolesAllowed(true);
-        ClusterNode[] first = farmer.create("first", 1, 1);
+        ClusterNode[] first = farmer.create(MASTER, 1, 1);
         assertEquals(1, first.length);
-        ClusterNode[] nodes = farmer.create("test", 1, 1);
+        ClusterNode[] nodes = farmer.create(WORKER, 1, 1);
         assertEquals(1, nodes.length);
         ClusterNode node = nodes[0];
-        ClusterNode[] listed = listByRole("test", 1);
+        ClusterNode[] listed = listByRole(WORKER, 1);
         assertSame(listed[0], nodes[0]);
         listByRole("other", 0);
         ClusterNode node2 = farmer.lookup(node.getId());
@@ -47,10 +48,9 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testBulkCreate() throws Throwable {
-        farmer.setAllRolesAllowed(true);
-        ClusterNode[] third = farmer.create("third", 4, 4);
+        ClusterNode[] third = farmer.create(WORKER, 4, 4);
         assertEquals(4, third.length);
-        listByRole("third", 4);
+        listByRole(WORKER, 4);
     }
 
     public void testNoNegatives() throws Throwable {
@@ -65,7 +65,7 @@ public class MockFarmerUnitTest extends TestCase {
     public void testNoRoomAtAll() throws Throwable {
         farmer.setClusterLimit(2);
         try {
-            farmer.create(MASTER, 7, 20);
+            farmer.create(WORKER, 7, 20);
             fail("should not have reached here");
         } catch (NoClusterSpaceException e) {
             //expected
@@ -73,9 +73,8 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testNotFullySatisfied() throws Throwable {
-        farmer.setAllRolesAllowed(true);
         farmer.setClusterLimit(2);
-        ClusterNode[] nodes = farmer.create(MASTER, 1, 20);
+        ClusterNode[] nodes = farmer.create(WORKER, 1, 20);
         assertEquals(2, nodes.length);
         //and now there should be no room
         try {
@@ -86,30 +85,33 @@ public class MockFarmerUnitTest extends TestCase {
         }
     }
 
-    public void testNoRoles() throws Throwable {
+    public void testTwoRoles() throws Throwable {
         String[] roles = farmer.listAvailableRoles();
-        assertEquals(0, roles.length);
+        assertEquals(2, roles.length);
     }
 
     public void testAddRole() throws Throwable {
+        farmer.addRole("Test", worker);
+        String[] roles = farmer.listAvailableRoles();
+        assertEquals(3, roles.length);
+        ClusterRoleInfo[] roleInfos = farmer.listClusterRoles();
+        assertEquals(3, roleInfos.length);
+    }
+
+    private void addTestRoles() {
         farmer.addRole(MASTER, master);
         farmer.addRole(WORKER, worker);
-        String[] roles = farmer.listAvailableRoles();
-        assertEquals(2, roles.length);
-        ClusterRoleInfo[] roleInfos = farmer.listClusterRoles();
-        assertEquals(2, roleInfos.length);
     }
 
 
     public void testCreateRole() throws Throwable {
-        farmer.addRole(MASTER, master);
-        farmer.create(MASTER, 1, 1);
+        farmer.addRole("NewRole", master);
+        farmer.create("NewRole", 1, 1);
     }
 
     public void testNoCreateInvalidRole() throws Throwable {
         try {
-            farmer.addRole(MASTER, master);
-            farmer.create(WORKER, 1, 1);
+            farmer.create("Invalid", 1, 1);
             fail("should not have reached here");
         } catch (UnsupportedClusterRoleException e) {
             //expected
@@ -119,7 +121,7 @@ public class MockFarmerUnitTest extends TestCase {
     private ClusterNode[] listByRole(String role, int expected) throws IOException, SmartFrogException {
         ClusterNode[] listed;
         listed = farmer.list(role);
-        assertEquals("Expected to find " + expected + " nodes of role '" + role + "' but got" + listed.length,
+        assertEquals("Expected to find " + expected + " nodes of role '" + role + "' but got " + listed.length,
                 expected, listed.length);
         return listed;
     }
