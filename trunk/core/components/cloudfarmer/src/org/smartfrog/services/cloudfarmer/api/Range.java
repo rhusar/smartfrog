@@ -27,7 +27,7 @@ import java.io.Serializable;
  */
 
 public class Range implements Cloneable, Serializable {
-    
+
     private int min;
     private int max;
 
@@ -45,17 +45,47 @@ public class Range implements Cloneable, Serializable {
     }
 
     public boolean isInRange(int value) {
-        return value >= min && (max<0 || value<=max);
+        return value >= min && (max < 0 || value <= max);
     }
+
     @Override
     public String toString() {
-        return "Range{" +
-                "min=" + min +
-                ", max=" + max +
-                '}';
+        return "[" + min + ", " + max +"]";
     }
-    
-    public static final Range NO_LIMITS = new Range(0,-1);
-    
-    
+
+    /**
+     * Calculate the max number that can be allocated. if the number <= 0: none
+     *
+     * @param requestMin the minimum that was asked for
+     * @param requestMax the max that was asked for
+     * @param current    the current number in use
+     * @return the permitted number
+     */
+    public int calculateMaximumAllocatable(int requestMin, int requestMax, int current) {
+        if (max < 0) {
+            //as many as you want
+            return requestMax;
+        }
+        int spaceLeft = max - current;
+        if (spaceLeft <= 0) {
+            //all in use, go away
+            return 0;
+        }
+        if (spaceLeft < requestMin) {
+            //no room for the min request
+            return 0;
+        }
+        if (spaceLeft >= requestMax) {
+            //room for all
+            return requestMax;
+        }
+        //otherwise, here is all the space that is left, and it is in range
+        return spaceLeft;
+
+
+    }
+
+    public static final Range NO_LIMITS = new Range(0, -1);
+
+
 }
