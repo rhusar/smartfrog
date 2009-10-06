@@ -31,6 +31,7 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testAddListRemove() throws Throwable {
+        farmer.setAllRolesAllowed(true);
         ClusterNode[] first = farmer.create("first", 1, 1);
         assertEquals(1, first.length);
         ClusterNode[] nodes = farmer.create("test", 1, 1);
@@ -46,6 +47,7 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testBulkCreate() throws Throwable {
+        farmer.setAllRolesAllowed(true);
         ClusterNode[] third = farmer.create("third", 4, 4);
         assertEquals(4, third.length);
         listByRole("third", 4);
@@ -71,6 +73,7 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testNotFullySatisfied() throws Throwable {
+        farmer.setAllRolesAllowed(true);
         farmer.setClusterLimit(2);
         ClusterNode[] nodes = farmer.create(MASTER, 1, 20);
         assertEquals(2, nodes.length);
@@ -93,6 +96,8 @@ public class MockFarmerUnitTest extends TestCase {
         farmer.addRole(WORKER, worker);
         String[] roles = farmer.listAvailableRoles();
         assertEquals(2, roles.length);
+        ClusterRoleInfo[] roleInfos = farmer.listClusterRoles();
+        assertEquals(2, roleInfos.length);
     }
 
 

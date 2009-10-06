@@ -27,24 +27,20 @@ import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
 import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
 import org.smartfrog.services.cloudfarmer.server.common.ClusterRole;
-import org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterRole;
-import org.smartfrog.services.cloudfarmer.server.ec2.RoleBinding;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
-
-import com.xerox.amazonws.ec2.LaunchConfiguration;
 
 /**
  * This is a mock cluster, very simple. A counter tracks the number of machines allocated, and whenever you ask for new
@@ -55,10 +51,10 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
 
     private int clusterLimit = 1000;
     private int counter;
-    //protected Prim roles;
 
     private String domain = "internal";
     private String externalDomain = "external";
+    private boolean allRolesAllowed;
 
     private Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
 
@@ -81,19 +77,22 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     public static final String ATTR_EXTERNAL_DOMAIN = "externalDomain";
 
+    public static final String ATTR_ALL_ROLES_ALLOWED = "allRolesAllowed";
+
 
     public MockClusterFarmerImpl() throws RemoteException {
     }
 
     /**
      * for unit tests: fix up the cloud farmer name
+     *
      * @param name new name
      */
     public void fixupCompleteName(String name) {
         sfCompleteName = new Reference();
         sfCompleteName.addElement(new HereReferencePart(name));
     }
-    
+
     public int getClusterLimit() {
         return clusterLimit;
     }
@@ -105,11 +104,9 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        
-        //start the children
-        //synchCreateChildren();
         StringBuilder rolenames = new StringBuilder();
-        Prim rolesChild = sfResolve(ATTR_ROLES, (Prim)null, true);
+        allRolesAllowed = sfResolve(ATTR_ALL_ROLES_ALLOWED, allRolesAllowed, true);
+        Prim rolesChild = sfResolve(ATTR_ROLES, (Prim) null, true);
         Iterator attrs = rolesChild.sfAttributes();
         while (attrs.hasNext()) {
             Object key = attrs.next();
@@ -131,7 +128,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
                     sfLog().debug("Ignoring roles attribute " + roleName + " which maps to " + value);
                 }
             }
-        }        
+        }
 
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
         domain = sfResolve(ATTR_DOMAIN, "", true);
@@ -196,10 +193,11 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     /**
      * Add a role to the list of allowed roles. No way to remove them.
      *
-     * @param role role to add
+     * @param role     role to add
+     * @param roleInfo role information
      */
     public void addRole(String role, ClusterRoleInfo roleInfo) {
-        roleInfoMap.put(role, roleInfo );
+        roleInfoMap.put(role, roleInfo);
     }
 
     /**
@@ -209,7 +207,33 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @return true iff the role is supported
      */
     public boolean roleAllowed(String role) {
-        return roleInfoMap.size() == 0 || roleInfoMap.containsKey(role);
+        return isAllRolesAllowed() || roleInfoMap.containsKey(role);
+    }
+
+    public boolean isAllRolesAllowed() {
+        return allRolesAllowed;
+    }
+
+    public void setAllRolesAllowed(boolean allRolesAllowed) {
+        this.allRolesAllowed = allRolesAllowed;
+    }
+
+    /**
+     * Returns true iff the role is in range
+     *
+     * @param role     role to look for
+     * @param quantity quantity to allocate
+     * @return true if all roles are allowed, or
+     */
+    public boolean roleInRange(String role, int quantity) {
+        if (isAllRolesAllowed()) {
+            return true;
+        }
+        ClusterRoleInfo info = roleInfoMap.get(role);
+        if (info == null) {
+            return false;
+        }
+        return info.isInRange(quantity);
     }
 
     /**
@@ -267,6 +291,23 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
             }
         }
         return null;
+    }
+
+
+    /**
+     * Count the number of nodes in a role
+     *
+     * @param role role to look for
+     * @return number of nodes in this role
+     */
+    protected int nodesInRole(String role) {
+        int count = 0;
+        for (ClusterNode node : nodes) {
+            if (role.equals(node.getRole())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
