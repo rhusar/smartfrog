@@ -2,9 +2,9 @@ package org.smartfrog.services.cloudfarmer.test.mock;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
-import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -20,13 +20,15 @@ public class MockFarmerUnitTest extends TestCase {
     private static final String MASTER = "master";
 
     private ClusterRoleInfo master, worker;
+    private static final int CLUSTER_SIZE = 50;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         farmer = new MockClusterFarmerImpl();
-        farmer.fixupCompleteName("farmer");
+        farmer.initForMockUse(CLUSTER_SIZE);
         master = new ClusterRoleInfo(MASTER);
-        master.setRoleSize(1,1);
+        master.setRoleSize(1, 1);
         worker = new ClusterRoleInfo(WORKER);
         worker.setRoleSize(1, 100);
         addTestRoles();
@@ -39,7 +41,10 @@ public class MockFarmerUnitTest extends TestCase {
         assertEquals(1, nodes.length);
         ClusterNode node = nodes[0];
         ClusterNode[] listed = listByRole(WORKER, 1);
+        assertEquals("Only one worker listed", 1, listed.length);
         assertSame(listed[0], nodes[0]);
+        listed = listByRole(MASTER, 1);
+        assertEquals("Only one master listed", 1, listed.length);
         listByRole("other", 0);
         ClusterNode node2 = farmer.lookup(node.getId());
         assertSame(node, node2);
@@ -63,9 +68,8 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testNoRoomAtAll() throws Throwable {
-        farmer.setClusterLimit(2);
         try {
-            farmer.create(WORKER, 7, 20);
+            farmer.create(WORKER, CLUSTER_SIZE + 10, CLUSTER_SIZE + 30);
             fail("should not have reached here");
         } catch (NoClusterSpaceException e) {
             //expected
@@ -73,13 +77,15 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testNotFullySatisfied() throws Throwable {
-        farmer.setClusterLimit(2);
-        ClusterNode[] nodes = farmer.create(WORKER, 1, 20);
-        assertEquals(2, nodes.length);
+        ClusterNode[] nodes = farmer.create(WORKER, CLUSTER_SIZE, CLUSTER_SIZE + 20);
+        assertEquals(CLUSTER_SIZE, nodes.length);
+        assertEquals(0, farmer.countFreeNodes());
         //and now there should be no room
         try {
-            farmer.create(MASTER, 1, 1);
-            fail("should not have reached here");
+            ClusterNode[] clusterNodes = farmer.create(MASTER, 1, 1);
+            fail("there should have been no room for a master, but the cluster still thinks it has space "
+                    + farmer.countFreeNodes()
+                    + " and it returned an array of nodes of length " + clusterNodes.length);
         } catch (NoClusterSpaceException e) {
             //expected
         }

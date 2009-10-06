@@ -26,6 +26,6 @@ import org.smartfrog.sfcore.prim.Prim;
 public class UnsupportedClusterRoleException extends SmartFrogException {
 
     public UnsupportedClusterRoleException(String role, Prim sfObject) {
-        super("Unsupported role: " +role, sfObject);
+        super("Unsupported role: " + role, sfObject);
     }
 }

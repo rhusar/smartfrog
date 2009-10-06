@@ -32,6 +32,16 @@ import java.rmi.Remote;
 public interface ClusterFarmer extends Remote {
 
     /**
+     * Attribute used in deployments {@value}
+     */
+    String ATTR_ROLES = "roles";
+
+    /**
+     * This is there to stop users accidentally running up large bills. If <0, it means ignore {@value}
+     */
+    String ATTR_CLUSTER_LIMIT = "clusterLimit";
+
+    /**
      * Create a number of instances. The operation will return when the instance is created, but it may not be live.
      *
      * @param role instance role
@@ -145,8 +155,8 @@ public interface ClusterFarmer extends Remote {
             throws IOException, SmartFrogException;
 
     /**
-     * Create a list of available roles. 
-     * The list may vary during the life of a farmer.
+     * Create a list of available roles. The list may vary during the life of a farmer.
+     *
      * @return a possibly empty list of role names
      * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
@@ -154,9 +164,9 @@ public interface ClusterFarmer extends Remote {
     public String[] listAvailableRoles() throws IOException, SmartFrogException;
 
     /**
-     * More powerful API call than {@link #listAvailableRoles()} this lists 
-     * a description and range for every role. This lets client apps
-     * display more details and do some in-gui validation
+     * More powerful API call than {@link #listAvailableRoles()} this lists a description and range for every role. This
+     * lets client apps display more details and do some in-gui validation
+     *
      * @return a list of roles, possibly empty
      * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems

@@ -40,7 +40,9 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
     public ClusterRoleImpl() throws RemoteException {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -48,13 +50,17 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
         info.setName(sfCompleteName.lastElement().toString());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ClusterRoleInfo buildClusterRoleInfo() throws RemoteException {
         return info.clone();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "Cluster Role " + info;
@@ -62,6 +68,7 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
 
     /**
      * This will build the role information
+     *
      * @return role info -without any name
      * @throws RemoteException              network trouble
      * @throws SmartFrogResolutionException resolution problems
@@ -73,13 +80,14 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
     }
 
 
-        /**
-         * This will build the role information
-         * @param target info target
-         * @return role info -without any name
-         * @throws RemoteException              network trouble
-         * @throws SmartFrogResolutionException resolution problems
-         */
+    /**
+     * This will build the role information
+     *
+     * @param target info target
+     * @return role info -without any name
+     * @throws RemoteException              network trouble
+     * @throws SmartFrogResolutionException resolution problems
+     */
     public static ClusterRoleInfo resolveRoleInfo(Prim target) throws RemoteException, SmartFrogResolutionException {
         ClusterRoleInfo role = new ClusterRoleInfo();
         role.setDescription(target.sfResolve(ATTR_DESCRIPTION, "", true));

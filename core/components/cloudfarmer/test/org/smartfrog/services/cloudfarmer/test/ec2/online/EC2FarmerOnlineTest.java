@@ -13,6 +13,6 @@ public class EC2FarmerOnlineTest extends DeployingTestBase {
     }
 
     public void testNothing() throws Throwable {
-        
+
     }
 }

@@ -153,10 +153,10 @@ public final class ClusterNode implements Serializable, Cloneable {
     @Override
     public String toString() {
         return "Node " + id
-                 + " @ " + hostname
-                 + (externallyVisible ?
-                    (" and " + externalHostname ): "")
-                 + " [" + role + ']'
-                 + (details != null ? details : "");
+                + " @ " + hostname
+                + (externallyVisible ?
+                (" and " + externalHostname) : "")
+                + " [" + role + ']'
+                + (details != null ? details : "");
     }
 }

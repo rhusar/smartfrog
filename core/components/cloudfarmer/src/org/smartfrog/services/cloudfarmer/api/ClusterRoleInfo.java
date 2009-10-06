@@ -22,7 +22,7 @@ package org.smartfrog.services.cloudfarmer.api;
 import java.io.Serializable;
 
 /**
- * Information about a cluster role 
+ * Information about a cluster role
  */
 
 public final class ClusterRoleInfo implements Serializable, Cloneable {
@@ -88,8 +88,7 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
         return recommendedSize;
     }
 
-    
-    
+
     public boolean isInRange(int proposed) {
         return roleSize.isInRange(proposed);
     }
@@ -100,8 +99,7 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return "ClusterRoleInfo{" +
-                "name='" + name + '\'' +
+        return "Role " + name +
                 ", description='" + description + '\'' +
                 ", longDescription='" + longDescription + '\'' +
                 ", roleSize=" + roleSize +
@@ -111,11 +109,12 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
 
     /**
      * {@inheritDoc}
+     *
      * @return a clone
      * @throws CloneNotSupportedException
      */
     @Override
-    public ClusterRoleInfo clone()  {
+    public ClusterRoleInfo clone() {
         try {
             return (ClusterRoleInfo) super.clone();
         } catch (CloneNotSupportedException noClone) {

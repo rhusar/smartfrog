@@ -20,16 +20,17 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.server.ec2;
 
 import com.xerox.amazonws.ec2.LaunchConfiguration;
-import org.smartfrog.services.amazon.ec2.InstanceList;
 import org.smartfrog.services.amazon.ec2.EC2Utils;
+import org.smartfrog.services.amazon.ec2.InstanceList;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * This is the binding of roles that is created at deploy time; it can be used to remember which instances are mapped where
+ * This is the binding of roles that is created at deploy time; it can be used to remember which instances are mapped
+ * where
  */
 
 public class RoleBinding {
-    
+
     private String role;
     private LaunchConfiguration launchConfig;
     private String description;
@@ -71,6 +72,6 @@ public class RoleBinding {
 
     @Override
     public String toString() {
-        return "Role "+ role + " " + description;
+        return "Role " + role + " " + description;
     }
 }
