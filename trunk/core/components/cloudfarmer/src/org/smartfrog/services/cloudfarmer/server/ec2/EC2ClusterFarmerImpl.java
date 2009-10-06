@@ -29,6 +29,7 @@ import org.smartfrog.services.amazon.ec2.EC2Utils;
 import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -40,16 +41,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements an EC2 cluster farmer.
  */
 public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2ClusterFarmer, EC2Instance {
+    public static final String ERROR_NO_VALID_IMAGE_ID = "No valid imageID for role ";
+
     private static final List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
     private int clusterLimit = 10;
     private int nodeCount = 0;
     protected Prim roles;
-    public static final String ERROR_NO_VALID_IMAGE_ID = "No valid imageID for role ";
+    protected Map<String, ClusterRoleInfo> roleInfoMap;
+    private List<EC2ClusterRole> clusterRoleList;
     private HashMap<String, RoleBinding> roleBindings;
 
 
@@ -362,9 +367,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         return ids;
     }
 
-    
-    
-    
+
     /**
      * {@inheritDoc}
      *
@@ -374,26 +377,20 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      */
     @Override
     public String[] listAvailableRoles() throws IOException, SmartFrogException {
-        //get the component containing the roles
 
-        //and build a list of all that is a CD itself
-        List<String> rolelist = new ArrayList<String>();
-        Iterator attrs = roles.sfAttributes();
-        while (attrs.hasNext()) {
-            Object key = attrs.next();
-            String role = key.toString();
-            Object value = roles.sfResolve(new Reference(role), true);
-            if (value instanceof Prim) {
-                Prim targetRole = (Prim) value;
-                LaunchConfiguration launch = createLaunchConfiguration(role, targetRole);
-                String configString = EC2Utils.convertToString(launch);
-                sfLog().info("Role " + role + " " + configString);
-                rolelist.add(role);
-            } else {
-                sfLog().debug("Ignoring roles attribute " + role + " which maps to " + value);
-            }
-        }
-        return rolelist.toArray(new String[rolelist.size()]);
+        return roleBindings.keySet().toArray(new String[roleBindings.size()]);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return a possibly empty list of roles
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
+        return roleInfoMap.values().toArray(new ClusterRoleInfo[roleInfoMap.size()]);
     }
 
     /**
@@ -410,6 +407,52 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         return createLaunchConfiguration(role, targetRole);
     }
 
+    /**
+     * build the role bindings
+     *
+     * @return the number of roles
+     * @throws RemoteException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    private int buildRoleBindings() throws RemoteException, SmartFrogException {
+
+        clusterRoleList = new ArrayList<EC2ClusterRole>();
+        roleInfoMap = new HashMap<String, ClusterRoleInfo>();
+        Iterator attrs = roles.sfAttributes();
+        while (attrs.hasNext()) {
+            Object key = attrs.next();
+            String roleName = key.toString();
+            Reference roleRef = new Reference(roleName);
+            Object value = roles.sfResolve(roleRef, true);
+            if (value instanceof EC2ClusterRole) {
+                EC2ClusterRole targetRole = (EC2ClusterRole) value;
+                roleInfoMap.put(roleName, targetRole.resolveRoleInfo(roleName));
+                LaunchConfiguration launch = createLaunchConfiguration(roleName, targetRole);
+                RoleBinding binding = new RoleBinding(roleName, targetRole, launch);
+                roleBindings.put(roleName, binding);
+                sfLog().info(binding.toString());
+            } else {
+                if (value instanceof Prim) {
+                    throw new SmartFrogResolutionException(roleRef, 
+                            sfCompleteName, 
+                            "Expected a component implementing EC2ClusterRole", 
+                            value);
+                } else {
+                    sfLog().debug("Ignoring roles attribute " + roleName + " which maps to " + value);
+                }
+            }
+        }
+        return roleBindings.size();
+    }
+
+    /**
+     * Create a launch configuration; this is logged
+     * @param role
+     * @param targetRole
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
     private LaunchConfiguration createLaunchConfiguration(String role, Prim targetRole)
             throws SmartFrogResolutionException, RemoteException {
         sfLog().info("Creating a Launch config from " + targetRole);
@@ -417,37 +460,15 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         return lc;
     }
 
+
+    /**
+     * Look up a role
+     * @param role
+     * @return the prim at the far end
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
     private Prim resolveRole(String role) throws SmartFrogResolutionException, RemoteException {
         return roles.sfResolve(role, (Prim) null, true);
     }
-
-    /**
-     * build the role bindings
-     *
-     * @return the number of roles
-     * @throws IOException        IO/network problems
-     * @throws SmartFrogException other problems
-     */
-    public int buildRoleBindings() throws RemoteException, SmartFrogException {
-
-        //and build a list of all that is a CD itself
-        Iterator attrs = roles.sfAttributes();
-        while (attrs.hasNext()) {
-            Object key = attrs.next();
-            String role = key.toString();
-            Object value = roles.sfResolve(new Reference(role), true);
-            if (value instanceof Prim) {
-                Prim targetRole = (Prim) value;
-                LaunchConfiguration launch = createLaunchConfiguration(role, targetRole);
-                RoleBinding binding = new RoleBinding(role, targetRole, launch);
-                roleBindings.put(role, binding);
-                sfLog().info(binding.toString());
-                
-            } else {
-                sfLog().debug("Ignoring roles attribute " + role + " which maps to " + value);
-            }
-        }
-        return roleBindings.size();
-    }
-
 }

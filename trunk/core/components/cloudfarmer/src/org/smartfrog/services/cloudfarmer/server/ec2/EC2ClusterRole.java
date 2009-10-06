@@ -23,6 +23,7 @@ import com.xerox.amazonws.ec2.InstanceType;
 import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.ec2.EC2Instance;
 import org.smartfrog.services.amazon.ec2.EC2Utils;
+import org.smartfrog.services.cloudfarmer.server.common.ClusterRoleImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -37,7 +38,7 @@ import java.util.Vector;
  * Created 29-Sep-2009 11:37:58
  */
 
-public class EC2ClusterRole extends PrimImpl implements EC2Instance {
+public class EC2ClusterRole extends ClusterRoleImpl implements EC2Instance {
     public static final String ERROR_NO_VALID_IMAGE_ID = "No valid imageID for role ";
 
     public EC2ClusterRole() throws RemoteException {
