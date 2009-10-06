@@ -111,7 +111,7 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
             sfReplaceAttribute(ATTR_DEPLOYED, deployed);
             
             if (sfLog().isInfoEnabled()) {
-                sfLog().info("There are " + nodeCount + "nodes");
+                sfLog().info("There are " + nodeCount + " nodes");
                 for (ClusterNode node : nodes) {
                     sfLog().info(node.toString());
                 }

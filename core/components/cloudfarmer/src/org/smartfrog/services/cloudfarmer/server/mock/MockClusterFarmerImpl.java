@@ -20,14 +20,20 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.server.mock;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
+import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
+import org.smartfrog.services.cloudfarmer.server.common.ClusterRole;
+import org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterRole;
+import org.smartfrog.services.cloudfarmer.server.ec2.RoleBinding;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -36,7 +42,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.Iterator;
+
+import com.xerox.amazonws.ec2.LaunchConfiguration;
 
 /**
  * This is a mock cluster, very simple. A counter tracks the number of machines allocated, and whenever you ask for new
@@ -47,10 +55,12 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
 
     private int clusterLimit = 1000;
     private int counter;
+    //protected Prim roles;
+
     private String domain = "internal";
     private String externalDomain = "external";
 
-    private Map<String, String> roles = new HashMap<String, String>();
+    private Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
 
     private List<ClusterNode> nodes = new LinkedList<ClusterNode>();
 
@@ -75,6 +85,15 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     public MockClusterFarmerImpl() throws RemoteException {
     }
 
+    /**
+     * for unit tests: fix up the cloud farmer name
+     * @param name new name
+     */
+    public void fixupCompleteName(String name) {
+        sfCompleteName = new Reference();
+        sfCompleteName.addElement(new HereReferencePart(name));
+    }
+    
     public int getClusterLimit() {
         return clusterLimit;
     }
@@ -86,13 +105,34 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Vector<String> roleList = ListUtils.resolveStringList(this, new Reference(ATTR_ROLES), false);
+        
+        //start the children
+        //synchCreateChildren();
         StringBuilder rolenames = new StringBuilder();
-        for (String role : roleList) {
-            roles.put(role, role);
-            rolenames.append(role);
-            rolenames.append(" ");
-        }
+        Prim rolesChild = sfResolve(ATTR_ROLES, (Prim)null, true);
+        Iterator attrs = rolesChild.sfAttributes();
+        while (attrs.hasNext()) {
+            Object key = attrs.next();
+            String roleName = key.toString();
+            Reference roleRef = new Reference(roleName);
+            Object value = rolesChild.sfResolve(roleRef, true);
+            if (value instanceof ClusterRole) {
+                ClusterRole targetRole = (ClusterRole) value;
+                roleInfoMap.put(roleName, targetRole.resolveRoleInfo(roleName));
+                rolenames.append(roleName);
+                rolenames.append(" ");
+            } else {
+                if (value instanceof Prim) {
+                    throw new SmartFrogResolutionException(roleRef,
+                            sfCompleteName,
+                            "Expected a component implementing ClusterRole",
+                            value);
+                } else {
+                    sfLog().debug("Ignoring roles attribute " + roleName + " which maps to " + value);
+                }
+            }
+        }        
+
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
         domain = sfResolve(ATTR_DOMAIN, "", true);
         externalDomain = sfResolve(ATTR_EXTERNAL_DOMAIN, "", true);
@@ -145,7 +185,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
             node.setExternalHostname(machinename + "." + externalDomain);
             node.setRole(role);
             nodes.add(node);
-            sfLog().info("added "+node);
+            sfLog().info("added " + node);
             counter++;
             return node;
         } else {
@@ -158,8 +198,8 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      *
      * @param role role to add
      */
-    public void addRole(String role) {
-        roles.put(role, role);
+    public void addRole(String role, ClusterRoleInfo roleInfo) {
+        roleInfoMap.put(role, roleInfo );
     }
 
     /**
@@ -169,7 +209,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @return true iff the role is supported
      */
     public boolean roleAllowed(String role) {
-        return roles.size() == 0 || roles.containsKey(role);
+        return roleInfoMap.size() == 0 || roleInfoMap.containsKey(role);
     }
 
     /**
@@ -306,9 +346,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public ClusterNode[] list() throws IOException, SmartFrogException {
-        sfLog().info("list() returning "+nodes.size() +" nodes");
-
-        return nodes.toArray(new ClusterNode[nodes.size()]);
+        return listToArray("", nodes);
     }
 
     /**
@@ -325,18 +363,41 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
                 result.add(node);
             }
         }
-        sfLog().info("list("+role+") returning "+nodes.size() +"nodes");
+        return listToArray(role, result);
+    }
+
+    private ClusterNode[] listToArray(String role, List<ClusterNode> result) {
+        sfLog().info("list(" + role + ") returning " + nodes.size() + " nodes");
         return result.toArray(new ClusterNode[result.size()]);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return a possibly empty list of role names
-     * @throws IOException IO/network problems
+     * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
     public String[] listAvailableRoles() throws IOException, SmartFrogException {
-        return roles.values().toArray(new String[roles.size()]);
+        return roleInfoMap.keySet().toArray(new String[roleInfoMap.size()]);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return a possibly empty list of roles
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
+        ClusterRoleInfo[] roleInfo = new ClusterRoleInfo[roleInfoMap.size()];
+        int count = 0;
+        for (String role : roleInfoMap.keySet()) {
+            ClusterRoleInfo info = new ClusterRoleInfo(role);
+            roleInfo[count++] = info;
+        }
+        return roleInfo;
     }
 }

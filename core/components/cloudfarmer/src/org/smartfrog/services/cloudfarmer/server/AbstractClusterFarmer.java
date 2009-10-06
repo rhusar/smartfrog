@@ -22,16 +22,20 @@ package org.smartfrog.services.cloudfarmer.server;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 
 import java.rmi.RemoteException;
 import java.io.IOException;
 
 /**
- * Intermediate class for cluster farmer implementations -contains any helper methods that they should be sharing
+ * Intermediate class for cluster farmer implementations
+ * contains any helper methods that they should be sharing.
+ * 
+ * This class is a compound, 
  */
-public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterFarmer {
+public abstract class AbstractClusterFarmer extends CompoundImpl implements ClusterFarmer {
 
     /**
      * {@value}
@@ -46,6 +50,7 @@ public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterF
     protected AbstractClusterFarmer() throws RemoteException {
     }
 
+    
     /**
      * check the min and max arguments
      *
@@ -63,7 +68,7 @@ public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterF
     }
 
     /**
-     * Stub method to stop breaking the build; once all subclasses have the method, it can be deleted
+     * Stub method to stop breaking the build
      *
      * @return an empty list of role names
      * @throws IOException IO/network problems
@@ -72,5 +77,17 @@ public abstract class AbstractClusterFarmer extends PrimImpl implements ClusterF
     @Override
     public String[] listAvailableRoles() throws IOException, SmartFrogException {
         return new String[0];
+    }
+
+    /**
+     * Stub method to stop breaking the build.
+     *
+     * @return alist of roles
+     * @throws IOException IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
+        return new ClusterRoleInfo[0];
     }
 }

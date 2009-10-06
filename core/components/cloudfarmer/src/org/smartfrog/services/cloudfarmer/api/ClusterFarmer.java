@@ -152,4 +152,14 @@ public interface ClusterFarmer extends Remote {
      * @throws SmartFrogException other problems
      */
     public String[] listAvailableRoles() throws IOException, SmartFrogException;
+
+    /**
+     * More powerful API call than {@link #listAvailableRoles()} this lists 
+     * a description and range for every role. This lets client apps
+     * display more details and do some in-gui validation
+     * @return a list of roles, possibly empty
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException;
 }

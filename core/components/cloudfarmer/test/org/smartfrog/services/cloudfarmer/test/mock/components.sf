@@ -20,7 +20,10 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/cloudfarmer/test/components.sf"
 
 MockCluster extends MockClusterFarmer {
-    roles ["master","worker"];
+    roles extends Compound {
+      master extends ClusterRole;
+      worker extends ClusterRole;
+    }
     clusterLimit 20;
   }
 

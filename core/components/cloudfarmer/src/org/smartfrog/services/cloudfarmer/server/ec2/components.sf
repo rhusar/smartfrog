@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/amazon/ec2/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/common/components.sf"
 
 
 /**
@@ -40,7 +41,7 @@ Roles are inserted in an undeployed bit of the system, just plain data. That's s
  * just something that is used to configure the farmer
  */
 
-EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, Prim   {
+EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, ClusterRole   {
   sfClass "org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterRole";
   
   //the string value of the machine image to deploy. This must resolve before an attempt

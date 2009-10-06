@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -18,10 +19,15 @@ public class MockFarmerUnitTest extends TestCase {
     private static final String WORKER = "worker";
     private static final String MASTER = "master";
 
+    private ClusterRoleInfo master, worker;
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         farmer = new MockClusterFarmerImpl();
+        farmer.fixupCompleteName("farmer");
+        master = new ClusterRoleInfo(MASTER);
+        worker = new ClusterRoleInfo(WORKER);
+        
     }
 
     public void testAddListRemove() throws Throwable {
@@ -83,21 +89,21 @@ public class MockFarmerUnitTest extends TestCase {
     }
 
     public void testAddRole() throws Throwable {
-        farmer.addRole(MASTER);
-        farmer.addRole(WORKER);
+        farmer.addRole(MASTER, master);
+        farmer.addRole(WORKER, worker);
         String[] roles = farmer.listAvailableRoles();
         assertEquals(2, roles.length);
     }
 
 
     public void testCreateRole() throws Throwable {
-        farmer.addRole(MASTER);
+        farmer.addRole(MASTER, master);
         farmer.create(MASTER, 1, 1);
     }
 
     public void testNoCreateInvalidRole() throws Throwable {
         try {
-            farmer.addRole(MASTER);
+            farmer.addRole(MASTER, master);
             farmer.create(WORKER, 1, 1);
             fail("should not have reached here");
         } catch (UnsupportedClusterRoleException e) {
