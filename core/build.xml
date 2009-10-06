@@ -635,8 +635,9 @@ ${child.projects.list}
   <target name="ivy-hadoop-tested" depends="ivy-init">
     <ivy-projects reference="hadoop.projects" root="sf-citerank">
     </ivy-projects>
-    <subant  target="tested" verbose="true">
+    <subant target="test" verbose="true">
       <buildpath refid="hadoop.projects"/>
+      <property name="system.tests" value="true" />
     </subant>
   </target>
 
