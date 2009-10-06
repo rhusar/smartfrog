@@ -36,8 +36,7 @@ Example extends Compound {
     logger extends Logger {
 	      logFile "tcp36.log";
     }
-    Foo extends Prim {
-        sfClass "org.smartfrog.services.logger.LoggerTest";
+    Foo extends LoggerTest {
         sfProcessHost "localhost";
         sfProcessComponentName "Foo";
         mylogger LAZY PARENT:logger;

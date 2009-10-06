@@ -29,21 +29,18 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/test/system/components/logger/components.sf"
 
 Example extends Compound {
     logger extends Logger {
 	      logFile "tcp38.log";	
     }
-    Foo extends Prim {
-        sfClass "org.smartfrog.services.logger.LoggerTest";
+    Foo extends LoggerTest {
         sfProcessHost "localhost";
         sfProcessComponentName "Foo";
        // mylogger LAZY PARENT:logger;
     }
-    Bar extends Prim {
-        sfClass "org.smartfrog.services.logger.LoggerTest";
+    Bar extends LoggerTest {
         sfProcessHost "localhost";
         sfProcessComponentName "Bar";
         //mylogger LAZY PARENT:logger;

@@ -20,3 +20,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/sfcore/common/logger.sf"
 
+LoggerTest  extends Prim {
+  sfClass "org.smartfrog.test.system.components.logger.LoggerTest"
+}
