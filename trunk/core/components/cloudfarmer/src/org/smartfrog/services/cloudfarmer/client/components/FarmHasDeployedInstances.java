@@ -19,13 +19,13 @@
  */
 package org.smartfrog.services.cloudfarmer.client.components;
 
+import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractConditionPrim;
-import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
-import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -49,7 +49,7 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
     /**
      * Create the nodes on startup
      *
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException SF trouble
      */
     @Override
@@ -63,7 +63,7 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
         boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
 
         ComponentHelper helper = new ComponentHelper(this);
-        String outcome = "Instance Check not performed";
+        String outcome = "Instance check not performed";
 
         if (checkOnStartup) {
             boolean success = evaluate();
@@ -79,7 +79,7 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
         //no problems, so check the workflow settings
         helper.sfSelfDetachAndOrTerminate(
                 TerminationRecord.NORMAL,
-                "the Farm has deployed " + deployed + " nodes" ,
+                "the Farm has deployed " + deployed + " nodes",
                 sfCompleteName,
                 null);
     }
@@ -89,7 +89,7 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
      * Fetch the list of roles, assert that the chosen one is available
      *
      * @return true if the named role is listed.
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException SF trouble
      */
     @Override
@@ -97,9 +97,9 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
         try {
             ClusterNode[] nodes;
             String roleText;
-            if (!role.isEmpty() ) {
+            if (!role.isEmpty()) {
                 nodes = farmer.list(role);
-                roleText = " role of \""+role+'"';
+                roleText = " role of \"" + role + '"';
             } else {
                 nodes = farmer.list();
                 roleText = "";
@@ -109,7 +109,7 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
 
             deployed = nodeCount;
             sfReplaceAttribute(ATTR_DEPLOYED, deployed);
-            
+
             if (sfLog().isInfoEnabled()) {
                 sfLog().info("There are " + nodeCount + " nodes");
                 for (ClusterNode node : nodes) {
@@ -117,9 +117,9 @@ public class FarmHasDeployedInstances extends AbstractConditionPrim implements F
                 }
             }
 
-            if (expected >= 0 && deployed!=expected) {
+            if (expected >= 0 && deployed != expected) {
                 setFailureText("The node count of " + nodeCount + " is not what was expected: " + expected
-                 + roleText);
+                        + roleText);
                 return false;
             }
             if (max >= 0 && nodeCount > max) {

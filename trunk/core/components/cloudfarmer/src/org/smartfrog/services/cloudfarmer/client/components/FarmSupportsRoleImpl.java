@@ -19,12 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.components;
 
+import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractConditionPrim;
-import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -32,8 +32,8 @@ import java.rmi.RemoteException;
 /**
  * Workflow component/condition that verifies that a farmer supports a role.
  *
- * It's primary purpose is doing some preflight testing against Farmers when it costs
- * to create/destroy nodes; this is the lower cost option
+ * It's primary purpose is doing some preflight testing against Farmers when it costs to create/destroy nodes; this is
+ * the lower cost option
  */
 
 public class FarmSupportsRoleImpl extends AbstractConditionPrim implements FarmCustomer {
@@ -50,7 +50,7 @@ public class FarmSupportsRoleImpl extends AbstractConditionPrim implements FarmC
     /**
      * Create the nodes on startup
      *
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException SF trouble
      */
     @Override
@@ -89,7 +89,7 @@ public class FarmSupportsRoleImpl extends AbstractConditionPrim implements FarmC
      * Fetch the list of roles, assert that the chosen one is available
      *
      * @return true if the named role is listed.
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException SF trouble
      */
     @Override

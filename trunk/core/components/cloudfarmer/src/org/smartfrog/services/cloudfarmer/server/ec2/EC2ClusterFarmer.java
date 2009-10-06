@@ -29,10 +29,5 @@ import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 
 public interface EC2ClusterFarmer extends ClusterFarmer, EC2Component {
 
-    String ATTR_ROLES = "roles";
-    /**
-     * This is there to stop users accidentally running up large bills. If <0, it means ignore
-     */
-    String ATTR_CLUSTER_LIMIT = "clusterLimit";
-   
+
 }

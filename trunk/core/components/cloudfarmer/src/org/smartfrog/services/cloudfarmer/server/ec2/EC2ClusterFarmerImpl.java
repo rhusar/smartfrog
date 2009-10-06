@@ -25,11 +25,10 @@ import com.xerox.amazonws.ec2.ReservationDescription;
 import org.smartfrog.services.amazon.ec2.EC2ComponentImpl;
 import org.smartfrog.services.amazon.ec2.EC2Instance;
 import org.smartfrog.services.amazon.ec2.SmartFrogEC2Exception;
-import org.smartfrog.services.amazon.ec2.EC2Utils;
-import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
-import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
+import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -65,7 +64,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     /**
      * {@inheritDoc}
      *
-     * @throws RemoteException        IO/network problems
+     * @throws RemoteException    IO/network problems
      * @throws SmartFrogException other problems
      */
     @Override
@@ -95,6 +94,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
     /**
      * Create the nodelist
+     *
      * @param role instance role
      * @param min  min# to create
      * @param max  max# to create; must be equal to or greater than the min value
@@ -411,7 +411,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      * build the role bindings
      *
      * @return the number of roles
-     * @throws RemoteException        IO/network problems
+     * @throws RemoteException    IO/network problems
      * @throws SmartFrogException other problems
      */
     private int buildRoleBindings() throws RemoteException, SmartFrogException {
@@ -433,9 +433,9 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
                 sfLog().info(binding.toString());
             } else {
                 if (value instanceof Prim) {
-                    throw new SmartFrogResolutionException(roleRef, 
-                            sfCompleteName, 
-                            "Expected a component implementing EC2ClusterRole", 
+                    throw new SmartFrogResolutionException(roleRef,
+                            sfCompleteName,
+                            "Expected a component implementing EC2ClusterRole",
                             value);
                 } else {
                     sfLog().debug("Ignoring roles attribute " + roleName + " which maps to " + value);
@@ -447,6 +447,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
     /**
      * Create a launch configuration; this is logged
+     *
      * @param role
      * @param targetRole
      * @return
@@ -463,6 +464,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
     /**
      * Look up a role
+     *
      * @param role
      * @return the prim at the far end
      * @throws SmartFrogResolutionException

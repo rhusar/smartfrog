@@ -50,7 +50,7 @@ public class Range implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        return "[" + min + ", " + max +"]";
+        return "[" + min + ", " + max + "]";
     }
 
     /**

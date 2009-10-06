@@ -70,6 +70,10 @@ testFarmRemembersDeployments extends ExpectFarmerDeploy {
 
   tests extends Sequence {
 
+    checkClusterEmpty extends FarmHasDeployedInstancesWorkflow {
+      farmer LAZY action;
+      expected 0;
+    }
 
     master extends WorkflowFarmCustomer {
     //this is the farmer
@@ -85,14 +89,11 @@ testFarmRemembersDeployments extends ExpectFarmerDeploy {
       farmer LAZY action;
       role "worker";
       min 10;
+      max 10;
       expected 10;
       deleteOnTerminate false;
     }
 
-    checkClusterSize extends FarmHasDeployedInstancesWorkflow {
-      farmer LAZY action;
-      expected (workers:expected + master:expected);
-    }
 
 
     checkWorkerCount extends FarmHasDeployedInstancesWorkflow {
@@ -106,9 +107,14 @@ testFarmRemembersDeployments extends ExpectFarmerDeploy {
       role master:role;
       
       min master:expected;
-      max min;
+      max master:expected;
     }
 
+
+    checkClusterSize extends FarmHasDeployedInstancesWorkflow {
+      farmer LAZY action;
+      expected (workers:expected + master:expected);
+    }
 
  }
 }

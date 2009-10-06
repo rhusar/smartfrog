@@ -24,22 +24,19 @@ import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
-import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
 import org.smartfrog.services.cloudfarmer.api.Range;
+import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
 import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
-import org.smartfrog.services.cloudfarmer.server.common.ClusterRole;
+import org.smartfrog.services.cloudfarmer.server.common.FarmNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,24 +47,11 @@ import java.util.Map;
  */
 public class MockClusterFarmerImpl extends AbstractClusterFarmer implements ClusterFarmer {
 
-    private int clusterLimit = 1000;
-    private int counter;
 
     private String domain = "internal";
     private String externalDomain = "external";
+    protected Map<String, FarmNode> nodeFarm;
 
-    private Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
-
-    private List<ClusterNode> nodes = new LinkedList<ClusterNode>();
-
-    /**
-     * {@value}
-     */
-    public static final String ATTR_ROLES = "roles";
-    /**
-     * {@value}
-     */
-    public static final String ATTR_CLUSTER_LIMIT = "clusterLimit";
     /**
      * {@value}
      */
@@ -78,61 +62,25 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     public static final String ATTR_EXTERNAL_DOMAIN = "externalDomain";
 
 
-
     public MockClusterFarmerImpl() throws RemoteException {
-    }
-
-    /**
-     * for unit tests: fix up the cloud farmer name
-     *
-     * @param name new name
-     */
-    public void fixupCompleteName(String name) {
-        sfCompleteName = new Reference();
-        sfCompleteName.addElement(new HereReferencePart(name));
-    }
-
-    public int getClusterLimit() {
-        return clusterLimit;
-    }
-
-    public void setClusterLimit(int clusterLimit) {
-        this.clusterLimit = clusterLimit;
     }
 
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        StringBuilder rolenames = new StringBuilder();
-        Prim rolesChild = sfResolve(ATTR_ROLES, (Prim) null, true);
-        Iterator attrs = rolesChild.sfAttributes();
-        while (attrs.hasNext()) {
-            Object key = attrs.next();
-            String roleName = key.toString();
-            Reference roleRef = new Reference(roleName);
-            Object value = rolesChild.sfResolve(roleRef, true);
-            if (value instanceof ClusterRole) {
-                ClusterRole targetRole = (ClusterRole) value;
-                roleInfoMap.put(roleName, targetRole.resolveRoleInfo(roleName));
-                rolenames.append(roleName);
-                rolenames.append(" ");
-            } else {
-                if (value instanceof Prim) {
-                    throw new SmartFrogResolutionException(roleRef,
-                            sfCompleteName,
-                            "Expected a component implementing ClusterRole",
-                            value);
-                } else {
-                    sfLog().debug("Ignoring roles attribute " + roleName + " which maps to " + value);
-                }
-            }
-        }
-
-        clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
+        resolveClusterLimit();
+        sfLog().info("Creating Farmer with a limit of " + clusterLimit);
         domain = sfResolve(ATTR_DOMAIN, "", true);
         externalDomain = sfResolve(ATTR_EXTERNAL_DOMAIN, "", true);
-        sfLog().info("Creating Mock farmer with a limit of " + clusterLimit
-                + " and roles: " + rolenames);
+        buildRoleMap();
+        buildNodeFarm();
+    }
+
+    public void initForMockUse(int size) {
+        sfCompleteName = new Reference();
+        sfCompleteName.addElement(new HereReferencePart("farmer"));
+        clusterLimit = size;
+        buildNodeFarm();
     }
 
     /**
@@ -144,13 +92,10 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
     @Override
     public synchronized ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
         validateClusterRange(min, max);
-        if (clusterSpace() < min) {
-            String message = "Rejecting request for "
-                    + min + " to " + max
-                    + " nodes of role " + role + " : no space in cluster";
-            sfLog().info(message);
-            throw new NoClusterSpaceException(message);
-        }
+        String rejectionText = "Rejecting request for "
+                + "[" + min + ", " + max + "]"
+                + " nodes of role " + role;
+
         //now check the role is allowed
         ClusterRoleInfo info = lookupRoleInfo(role);
         if (info == null) {
@@ -162,25 +107,31 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         //put the top limit on the allocation
         int nodesToAllocate = roleRange.calculateMaximumAllocatable(min, max, nodesInRole);
 
-        if(nodesToAllocate<=0 && min == 0) {
+        if (nodesToAllocate <= 0 && min == 0) {
             //no nodes left, but the minimum was zero. 
             // Well, you ask for none, you get none
             // THIS IS NOT AN ERROR!
             return new ClusterNode[0];
         }
         if (nodesToAllocate <= 0) {
-            String message = "Rejecting request for " 
-                    + "["+ min + ", " + max +"]" 
-                    + " nodes of role " + role + " : "
-                    + " there are already "+ nodesInRole 
+            String message = rejectionText + " : "
+                    + " there are already " + nodesInRole
                     + " nodes in that role, and the allowed range is "
                     + roleRange.toString();
             sfLog().info(message);
             throw new NoClusterSpaceException(message);
         }
+
+        //now check the cluster space 
+        int freespace = countFreeNodes();
+        if (countFreeNodes() < min) {
+            String message = rejectionText + " : no space in cluster";
+            sfLog().info(message);
+            throw new NoClusterSpaceException(message);
+        }
         List<ClusterNode> newnodes = new ArrayList<ClusterNode>(nodesToAllocate);
         for (int i = 0; i < nodesToAllocate; i++) {
-            ClusterNode clusterInstance = createOneInstance(role);
+            ClusterNode clusterInstance = createOneInstance(info);
             if (clusterInstance == null) {
                 //we have run out of space, but as it is in range, the overall operation will succeed
                 break;
@@ -191,27 +142,45 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         return newnodes.toArray(new ClusterNode[newnodes.size()]);
     }
 
+    protected void buildNodeFarm() {
+        nodeFarm = new HashMap<String, FarmNode>(clusterLimit);
+        for (int i = 0; i < clusterLimit; i++) {
+            FarmNode node = createFarmNode(i);
+            nodeFarm.put(node.getId(), node);
+        }
+    }
+
+    /**
+     * Creates a farm node entry. The mock implementation just creates a stub one
+     *
+     * @param nodeCounter position in the farm (just a helper)
+     * @return a new farm node
+     */
+    protected FarmNode createFarmNode(int nodeCounter) {
+        ClusterNode node = new ClusterNode();
+        String machinename = "host" + nodeCounter;
+        node.setId(machinename);
+        node.setHostname(machinename + "." + domain);
+        node.setExternalHostname(machinename + "." + externalDomain);
+        FarmNode fnode = new FarmNode(node, null, null);
+        return fnode;
+    }
+
     /**
      * Create a node and add it to the list
      *
      * @param role role to create
      * @return the instance, or null if there is no room
      */
-    private synchronized ClusterNode createOneInstance(String role) {
-        if (clusterSpace() > 0) {
-            ClusterNode node = new ClusterNode();
-            String machinename = "host" + counter;
-            node.setId(machinename);
-            node.setHostname(machinename + "." + domain);
-            node.setExternalHostname(machinename + "." + externalDomain);
-            node.setRole(role);
-            nodes.add(node);
-            sfLog().info("added " + node);
-            counter++;
-            return node;
-        } else {
-            return null;
+    private synchronized ClusterNode createOneInstance(ClusterRoleInfo role) {
+        for (FarmNode node : farmNodes()) {
+            if (node.isFree()) {
+                //allocate and use
+                node.setRoleInfo(role);
+                return node.getClusterNode();
+            }
         }
+        return null;
     }
 
     /**
@@ -253,15 +222,6 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         return roleInfoMap.get(role);
     }
 
-    /**
-     * Get the current cluster space
-     *
-     * @return the number of machines between the current size and that of the cluster limit. This may be less than
-     *         zero, if the cluster limit was reduced
-     */
-    private synchronized int clusterSpace() {
-        return clusterLimit - nodes.size();
-    }
 
     /**
      * {@inheritDoc}
@@ -271,12 +231,8 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public ClusterNode lookup(String id) throws IOException, SmartFrogException {
-        for (ClusterNode node : nodes) {
-            if (id.equals(node.getId())) {
-                return node;
-            }
-        }
-        return null;
+        FarmNode fnode = nodeFarm.get(id);
+        return fnode != null ? fnode.getClusterNode() : null;
     }
 
     /**
@@ -287,12 +243,16 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public ClusterNode lookupByHostname(String hostname) throws IOException, SmartFrogException {
-        for (ClusterNode node : nodes) {
+        for (FarmNode node : farmNodes()) {
             if (hostname.equals(node.getHostname())) {
-                return node;
+                return node.getClusterNode();
             }
         }
         return null;
+    }
+
+    protected Collection<FarmNode> farmNodes() {
+        return nodeFarm.values();
     }
 
     /**
@@ -302,9 +262,9 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @return a node in this role, or null
      */
     protected ClusterNode nodeInRole(String role) {
-        for (ClusterNode node : nodes) {
-            if (role.equals(node.getRole())) {
-                return node;
+        for (FarmNode node : farmNodes()) {
+            if (node.isInRole(role)) {
+                return node.getClusterNode();
             }
         }
         return null;
@@ -317,10 +277,10 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @param role role to look for
      * @return number of nodes in this role
      */
-    protected int nodesInRole(String role) {
+    protected synchronized int nodesInRole(String role) {
         int count = 0;
-        for (ClusterNode node : nodes) {
-            if (role.equals(node.getRole())) {
+        for (FarmNode node : farmNodes()) {
+            if (node.isInRole(role)) {
                 count++;
             }
         }
@@ -334,9 +294,11 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @throws SmartFrogException other problems
      */
     @Override
-    public void delete(String id) throws IOException, SmartFrogException {
-        ClusterNode node = lookup(id);
-        nodes.remove(node);
+    public synchronized void delete(String id) throws IOException, SmartFrogException {
+        FarmNode node = nodeFarm.get(id);
+        if (node != null) {
+            node.free();
+        }
     }
 
     /**
@@ -360,9 +322,8 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public void delete(ClusterNode[] nodesToDelete) throws IOException, SmartFrogException {
-        //this is very inefficient, O(nodes)*O(nodesToDelete)
         for (ClusterNode node : nodesToDelete) {
-            nodes.remove(node);
+            delete(node.getId());
         }
     }
 
@@ -374,8 +335,10 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      */
     @Override
     public synchronized int deleteAll() throws IOException, SmartFrogException {
-        int deleted = nodes.size();
-        nodes = new ArrayList<ClusterNode>();
+        int deleted = nodeFarm.size();
+        for (FarmNode node : farmNodes()) {
+            node.free();
+        }
         return deleted;
     }
 
@@ -386,12 +349,13 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @throws SmartFrogException other problems
      */
     @Override
-    public int deleteAllInRole(String role) throws IOException, SmartFrogException {
-        ClusterNode node;
+    public synchronized int deleteAllInRole(String role) throws IOException, SmartFrogException {
         int count = 0;
-        while ((node = nodeInRole(role)) != null) {
-            nodes.remove(node);
-            count++;
+        for (FarmNode node : farmNodes()) {
+            if (node.isInRole(role)) {
+                node.free();
+                count++;
+            }
         }
         return count;
     }
@@ -403,8 +367,14 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @throws SmartFrogException other problems
      */
     @Override
-    public ClusterNode[] list() throws IOException, SmartFrogException {
-        return listToArray("", nodes);
+    public synchronized ClusterNode[] list() throws IOException, SmartFrogException {
+        List<ClusterNode> result = new ArrayList<ClusterNode>(nodeFarm.values().size());
+        for (FarmNode node : farmNodes()) {
+            if(!node.isFree()) {
+                result.add(node.getClusterNode());
+            }
+        }
+        return collectionToArray("", result);
     }
 
     /**
@@ -414,18 +384,18 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @throws SmartFrogException other problems
      */
     @Override
-    public ClusterNode[] list(String role) throws IOException, SmartFrogException {
-        List<ClusterNode> result = new ArrayList<ClusterNode>(nodes.size());
-        for (ClusterNode node : nodes) {
-            if (role.equals(node.getRole())) {
-                result.add(node);
+    public synchronized ClusterNode[] list(String role) throws IOException, SmartFrogException {
+        List<ClusterNode> result = new ArrayList<ClusterNode>(nodeFarm.values().size());
+        for (FarmNode node : farmNodes()) {
+            if (node.isInRole(role)) {
+                result.add(node.getClusterNode());
             }
         }
-        return listToArray(role, result);
+        return collectionToArray(role, result);
     }
 
-    private ClusterNode[] listToArray(String role, List<ClusterNode> result) {
-        sfLog().info("list(" + role + ") returning " + nodes.size() + " nodes");
+    private ClusterNode[] collectionToArray(String role, Collection<ClusterNode> result) {
+        sfLog().info("list(" + role + ") returning " + result.size() + " nodes");
         return result.toArray(new ClusterNode[result.size()]);
     }
 
@@ -437,7 +407,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @throws SmartFrogException other problems
      */
     @Override
-    public String[] listAvailableRoles() throws IOException, SmartFrogException {
+    public synchronized String[] listAvailableRoles() throws IOException, SmartFrogException {
         return roleInfoMap.keySet().toArray(new String[roleInfoMap.size()]);
     }
 
@@ -449,7 +419,7 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
      * @throws SmartFrogException other problems
      */
     @Override
-    public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
+    public synchronized ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
         ClusterRoleInfo[] roleInfo = new ClusterRoleInfo[roleInfoMap.size()];
         int count = 0;
         for (String role : roleInfoMap.keySet()) {
@@ -458,4 +428,22 @@ public class MockClusterFarmerImpl extends AbstractClusterFarmer implements Clus
         }
         return roleInfo;
     }
+
+    /**
+     * Count the #of free nodes
+     *
+     * @return free node count
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    public synchronized int countFreeNodes() throws IOException, SmartFrogException {
+        int count = 0;
+        for (FarmNode node : farmNodes()) {
+            if (node.isFree()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 }

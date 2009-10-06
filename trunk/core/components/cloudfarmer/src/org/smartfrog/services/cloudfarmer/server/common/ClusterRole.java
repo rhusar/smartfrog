@@ -64,6 +64,7 @@ public interface ClusterRole extends Remote {
 
     /**
      * Build a new ClusterRoleInfo instance
+     *
      * @return the new instance
      * @throws RemoteException for network problems
      */

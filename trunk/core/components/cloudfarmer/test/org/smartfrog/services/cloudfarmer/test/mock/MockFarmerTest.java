@@ -39,7 +39,7 @@ public class MockFarmerTest extends DeployingTestBase {
     public void testFarmCreateBounded() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmCreateBounded");
     }
-    
+
     public void testFarmCreateBoundedbyRole() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmCreateBoundedbyRole");
     }
@@ -55,11 +55,11 @@ public class MockFarmerTest extends DeployingTestBase {
     public void testFarmHasRoles() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmHasRoles");
     }
-    
+
     public void testFarmLacksRole() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmLacksRole");
     }
-    
+
     public void testFarmRemembersDeployments() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testFarmRemembersDeployments");
     }
