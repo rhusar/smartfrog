@@ -92,6 +92,7 @@ testFarmRemembersDeployments extends ExpectFarmerDeploy {
       min 1;
       expected 1;
       deleteOnTerminate false;
+      expectedHostnames [action:hosts:h1:hostname];
     }
 
     workers extends WorkflowFarmCustomer {

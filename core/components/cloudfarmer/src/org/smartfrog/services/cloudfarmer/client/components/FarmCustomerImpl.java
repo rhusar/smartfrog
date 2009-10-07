@@ -27,12 +27,16 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * This is a workflow component that is bound to a farmer, and which creates/destroys nodes through its lifecycle.
@@ -47,7 +51,10 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     protected String role;
     protected int min;
     protected int max;
-    boolean deleteOnTerminate;
+    private boolean deleteOnTerminate;
+    private List<String> expectedHostnames;
+    private CustomerThread worker;
+    private static final int SHUTDOWN_TIMEOUT = 2000;
 
     public FarmCustomerImpl() throws RemoteException {
     }
@@ -67,32 +74,18 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         max = sfResolve(ATTR_MAX, 0, true);
         deleteOnTerminate = sfResolve(ATTR_DELETE_ON_TERMINATE, true, true);
         farmer = (ClusterFarmer) sfResolve(ATTR_FARMER, (Prim) null, true);
-
+        expectedHostnames = ListUtils.resolveStringList(this, new Reference(ATTR_EXPECTED_HOSTNAMES), true);
         if (max > 0) {
-            try {
-                ClusterNode[] nodes = farmer.create(role, min, max);
-                this.nodes = nodes;
-            } catch (RemoteException e) {
-                throw e;
-            } catch (IOException e) {
-                throw SmartFrogException.forward(e);
-            }
+            worker = new CustomerThread();
+            worker.start();
+        } else {
+            ComponentHelper helper = new ComponentHelper(this);
+            helper.sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
+                    "No nodes to create",
+                    sfCompleteName,
+                    null);
         }
-        int created = nodes.length;
-        sfReplaceAttribute(ATTR_DEPLOYED, created);
-        String info = "Created " + created + " nodes of role " + role;
-        sfLog().info(info);
-        //check the expected value
-        int expected = sfResolve(ATTR_EXPECTED, -1, true);
-        if (expected >= 0 && expected != created) {
-            throw new SmartFrogDeploymentException(info
-                    + " - instead of the expected number " + expected);
-        }
-        ComponentHelper helper = new ComponentHelper(this);
-        helper.sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
-                info,
-                sfCompleteName,
-                null);
+
     }
 
 
@@ -130,6 +123,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     @Override
     public void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        WorkflowThread.requestAndWaitForThreadTermination(worker, SHUTDOWN_TIMEOUT);
         if (deleteOnTerminate) {
             try {
                 farmer.delete(nodes);
@@ -139,4 +133,65 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         }
         nodes = null;
     }
+
+    public class CustomerThread extends WorkflowThread {
+
+        /**
+         * Create a basic thread. Notification is bound to a local notification object.
+         */
+        public CustomerThread() {
+            super(FarmCustomerImpl.this, true);
+        }
+
+        /**
+         * Allocate the machines
+         *
+         * @throws Throwable if anything went wrong
+         */
+        public void execute() throws Throwable {
+            ClusterNode[] clusterNodes;
+            clusterNodes = farmer.create(role, min, max);
+            //set the owner's attributes
+            nodes = clusterNodes;
+            int created = clusterNodes.length;
+            sfReplaceAttribute(ATTR_DEPLOYED, created);
+            String info = "Created " + created + " nodes of role " + role;
+            sfLog().info(info);
+            //check the expected value
+            int expected = sfResolve(ATTR_EXPECTED, -1, true);
+            if (expected >= 0 && expected != created) {
+                throw new SmartFrogDeploymentException(info
+                        + " - instead of the expected number " + expected);
+            }
+            //put the host list up
+            Vector<String> hosts = new Vector<String>(created);
+            Vector<ClusterNode> clusterNodeList = new Vector<ClusterNode>(created);
+            StringBuilder hostnames = new StringBuilder();
+            HashMap<String, ClusterNode> nodeMap = new HashMap<String, ClusterNode>(created);
+            
+            for (ClusterNode node : clusterNodes) {
+                String hostname = node.getHostname();
+                hosts.add(hostname);
+                nodeMap.put(hostname, node);
+                hostnames.append(hostname).append(' ');
+                clusterNodeList.add(node);
+            }
+            //publish the attributes
+            sfReplaceAttribute(ATTR_CLUSTERNODES, clusterNodeList);
+            sfReplaceAttribute(ATTR_HOSTNAMES, hosts);
+            
+            //now validate the expected hostname list
+            for (String hostname : expectedHostnames) {
+                if (nodeMap.get(hostname) == null) {
+                    throw new SmartFrogDeploymentException("Failed to find expected host "
+                            + hostname
+                            + " in the list of allocated hosts: "
+                            + hostnames);
+                }
+            }
+
+
+        }
+    }
+
 }

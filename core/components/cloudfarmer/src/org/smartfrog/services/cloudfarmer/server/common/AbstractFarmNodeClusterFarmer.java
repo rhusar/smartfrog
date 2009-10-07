@@ -24,8 +24,9 @@ import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.Range;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
-import org.smartfrog.services.cloudfarmer.server.AbstractClusterFarmer;
+import org.smartfrog.services.cloudfarmer.server.common.AbstractClusterFarmer;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -398,5 +399,16 @@ public abstract class AbstractFarmNodeClusterFarmer extends AbstractClusterFarme
     protected void assignNodeToRole(FarmNode node, ClusterRoleInfo role) throws SmartFrogException, IOException {
         //allocate and use
         node.setRoleInfo(role);
+    }
+
+    /**
+     * Update the cluster limit -also sets the matching attribute
+     * @param limit new limit
+     * @throws SmartFrogRuntimeException problems setting the limit
+     * @throws RemoteException    network problems
+     */
+    protected void replaceClusterLimit(int limit) throws SmartFrogRuntimeException, RemoteException {
+        clusterLimit = limit;
+        sfReplaceAttribute(ATTR_CLUSTER_LIMIT, clusterLimit);
     }
 }

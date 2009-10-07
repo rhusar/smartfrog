@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.services.cloudfarmer.server;
+package org.smartfrog.services.cloudfarmer.server.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
@@ -77,10 +77,19 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     }
 
 
+    /**
+     * Get the local limit on the cluster size
+     * @return the limit on the cluster
+     */
     public int getClusterLimit() {
         return clusterLimit;
     }
 
+    /**
+     * Resolve the cluster limit attribute
+     * @throws SmartFrogResolutionException resolution failure
+     * @throws RemoteException network problems
+     */
     protected void resolveClusterLimit() throws SmartFrogResolutionException, RemoteException {
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
     }
@@ -111,7 +120,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
             } else {
                 if (value instanceof Prim) {
                     throw new SmartFrogResolutionException(roleRef,
-                            sfCompleteName,
+                            rolesChild.sfCompleteName(), 
                             "Expected a component implementing ClusterRole",
                             value);
                 } else {
@@ -152,6 +161,12 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         return info.isInRange(quantity);
     }
 
+    /**
+     * Look up a role in the map
+     * @param role role to look up 
+     * @return the info or null
+     * 
+     */
     protected ClusterRoleInfo lookupRoleInfo(String role) {
         return roleInfoMap.get(role);
     }
