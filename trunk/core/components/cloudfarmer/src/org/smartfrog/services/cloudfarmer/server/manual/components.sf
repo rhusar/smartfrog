@@ -35,68 +35,36 @@ For more information: www.smartfrog.org
  * just something that is used to configure the farmer
  */
 
-EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, ClusterRole   {
-  sfClass "org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterRole";
-  
-  //the string value of the machine image to deploy. This must resolve before an attempt
-  //to deploy a machine of the given role can work
-  imageID TBD;
-  
-  //instance types
-  instanceType SIZE_SMALL;
+ManualHost extends Prim  {
+  sfClass "org.smartfrog.services.cloudfarmer.server.manual.ManualHostImpl";
 
-  //user data. This is going to change before long
-  userData "";
+  //a hostname is required
+  hostname TBD;
   
-  //name of the key to use for SSH from the list of key pairs
-  keyName "";
-  
-  // where the image should live
-  availabilityZone ZONE_US_EAST_1A;
-  
-  // a list of string names
-  securityGroup [];
+  //Any description
+  description "";
+
 
 }
 
 /**
- * This is our cluster farmer. 
- * Its exact functionality will evolve over time
+ * This is a manual cluster farmer that 
  */
 
-EC2ClusterFarmer extends AwsAuthorizedService {
-  sfClass "org.smartfrog.services.cloudfarmer.server.ec2.EC2ClusterFarmerImpl"
+ManualClusterFarmer extends AbstractClusterFarmer {
+  sfClass "org.smartfrog.services.cloudfarmer.server.manual.ManualClusterFarmerImpl"
 
     /**
-     * This is there to stop users accidentally running up large bills. If <0, it means ignore
+     * the limit on cluster size is the number of hosts underneath 
      */
   
-  clusterLimit 10;
-  
+  clusterLimit NO_LIMIT;
+
+
   /**
-   * constant to ignore all cluster limits
+    hosts go under here. 
    */
-  NO_CLUSTER_LIMIT -1;
-  
-  /**
-   * Should the farmer recycle old instances given out. 
-   * For dev and test yes, but bear in mind that the machine may be in an unknown state. 
-   * When recycling, the old image is rebooted and left alone until needed
-   */
-  recycle true;
-  
-  /**
-    should you delete instances when terminating?
-    For HA systems the answer MUST BE no, leave them up, somehow the next instance will rebind. 
-    For test and dev systems, that can run up a large bill
-    */
-  deleteInstancesOnTermination true;
-  
-  /**
-    roles go under here. Each one should have all the attributes of an EC2ClusterRole, so that you can
-    create a cluster instance from the
-   */
-  roles extends Compound {
+  hosts extends Compound {
 
   }
 
