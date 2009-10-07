@@ -35,13 +35,13 @@ SleepSequence extends Sequence {
 
 ExpectLive extends ExpectDeploy {
 
-  tests SleepSequence;
+  tests extends SleepSequence;
 }
 
 
 
 testCluster extends ExpectLive {
-  action HadoopFilesystem;
+  action extends HadoopFilesystem;
 
   tests extends FileSystemTestSequence {
 
@@ -59,7 +59,7 @@ testFileSystemCopyFileInAndOut extends testCluster {
 
   description "copy a file in and out the file system";
 
-  action HadoopFilesystem;
+  action extends HadoopFilesystem;
   
   tests extends CopyFileInAndOut {
 
@@ -81,24 +81,20 @@ testDistributedCluster extends ExpectLive {
 }
 
 testHDFS extends ExpectLive {
-  action HadoopFilesystem;
-}
-
-testAnubis extends ExpectLive {
-  action HadoopAnubisService;
+  action extends HadoopFilesystem;
 }
 
 
 testJasperHealth extends ExpectTerminate {
-  action CheckJasperClasses;
+  action extends CheckJasperClasses;
 }
 
 testHealth extends ExpectTerminate {
-  action HadoopJspClasses;
+  action extends HadoopJspClasses;
 }
 
 testLiveHealth extends ExpectDeploy {
-  action LiveHealthCheck;
+  action extends LiveHealthCheck;
 
   tests extends Sequence {
     s extends Sleep;

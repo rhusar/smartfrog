@@ -19,7 +19,7 @@
  */
 
 
-#include "/org/smartfrog/extras/hadoop/cluster/test/system/components.sf"
+#include "/org/smartfrog/extras/hadoop/cluster/test/system/anubis/components.sf"
 
 
 /**
