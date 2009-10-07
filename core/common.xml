@@ -1817,6 +1817,11 @@ ${test.reports.dir}/index.html
     description="compile and run all the tests"
     />
 
+  <target name="tested"
+      depends="test"
+      description="compile and run all the tests"
+      />
+  
   <!-- ========================================================== -->
   <!-- public entry point does all tests and the reports -->
   <!-- ========================================================== -->
