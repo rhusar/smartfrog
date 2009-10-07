@@ -17,22 +17,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.extras.hadoop.cluster.test.system;
+package org.smartfrog.extras.hadoop.cluster.test.system.anubis;
 
 import org.smartfrog.extras.hadoop.cluster.test.HadoopTestBase;
+import org.smartfrog.extras.hadoop.cluster.test.system.Names;
 
 /**
  * Created 05-Jan-2009 16:12:47
  */
 
 public class AnubisTest extends HadoopTestBase implements Names {
-
+    
+    public static final String ANUBIS_TEST_PACKAGE = "/org/smartfrog/extras/hadoop/cluster/test/system/anubis/";
 
     public AnubisTest(String name) {
         super(name);
     }
 
     public void testAnubis() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testAnubis.sf");
+        expectSuccessfulTestRunOrSkip(ANUBIS_TEST_PACKAGE, "testAnubis.sf");
     }
 }

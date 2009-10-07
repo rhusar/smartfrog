@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/extras/hadoop/cluster/services/bondable/components.sf"
 testFullCluster extends ExpectLive {
   description "Test we can bring up a full cluster master and worker";
-  action FullClusterWithBindings;
+  action extends FullClusterWithBindings;
 
 
 }
