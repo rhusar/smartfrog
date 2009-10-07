@@ -24,6 +24,7 @@ import org.smartfrog.services.cloudfarmer.server.common.AbstractFarmNodeClusterF
 import org.smartfrog.services.cloudfarmer.server.common.FarmNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -115,17 +116,25 @@ public class ManualClusterFarmerImpl extends AbstractFarmNodeClusterFarmer {
                 }
             }
         }
-        //the cluster limit is the size of the farm
-        clusterLimit = nodeFarm.size();
-        sfReplaceAttribute(ATTR_CLUSTER_LIMIT, clusterLimit);
+        rebuildClusterLimit();
 
+    }
+
+    /**
+     * Rebuild the cluster limit after adding or removing nodes
+     * @throws SmartFrogRuntimeException  SmartFrog problems
+     * @throws RemoteException  network problems
+     */
+    private void rebuildClusterLimit() throws SmartFrogRuntimeException, RemoteException {
+        //the cluster limit is the size of the farm
+        replaceClusterLimit(nodeFarm.size());
     }
 
     /**
      * Creates a farm node entry
      *
      * @param host the host
-     * @param name
+     * @param name name of the host's prim
      * @return a new farm node
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException    network problems
@@ -140,4 +149,5 @@ public class ManualClusterFarmerImpl extends AbstractFarmNodeClusterFarmer {
         FarmNode fnode = new FarmNode(node, null, host);
         return fnode;
     }
+
 }

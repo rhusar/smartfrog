@@ -28,12 +28,28 @@ import java.rmi.Remote;
  */
 
 public interface FarmCustomer extends Remote {
+    /** {@value} */
     String ATTR_ROLE = "role";
+    /** {@value} */
     String ATTR_DELETE_ON_TERMINATE = "deleteOnTerminate";
+    /** {@value} */
     String ATTR_FARMER = "farmer";
+    /** {@value} */
     String ATTR_MIN = "min";
+    /** {@value} */
     String ATTR_MAX = "max";
+    /** {@value} */
     String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
+    /** {@value} */
     String ATTR_DEPLOYED = "deployed";
+    /** {@value} */
     String ATTR_EXPECTED = "expected";
+    /** {@value} */
+    String ATTR_EXPECTED_HOSTNAMES = "expectedHostnames";
+    /** {@value} */
+    String ATTR_HOSTNAMES = "hostnames";
+    /**
+     * {@value}
+     */
+    String ATTR_CLUSTERNODES = "clusterNodes";
 }
