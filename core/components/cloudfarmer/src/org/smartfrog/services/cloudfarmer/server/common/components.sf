@@ -22,20 +22,51 @@ For more information: www.smartfrog.org
  * Anything common to all the farmer implementations goes here
  */
  
+ 
+AbstractClusterFarmer extends Compound {
+
+  //limit on the size of this cluster
+  clusterLimit 1000;
+ 
+ 
+  
+  //compound of roles
+  roles extends Compound {
+  
+  }
+ 
+    
+  /**
+   * constant to ignore all cluster limits
+   */
+  NO_LIMIT -1;
+} 
+ 
  /**
  * A cluster role defines a role for a cluster.
  * This is a template which may be used by specific farmers, in which case they may extend it with their own
  * implementation classes, with extra validation
+ *
+ * The min/max values are used during allocation to ensure that the role numbers are not exceeded.
+ * The recommended values are just hints for GUIs and other tools
  */
 
 ClusterRole extends Prim  {
   sfClass "org.smartfrog.services.cloudfarmer.server.common.ClusterRoleImpl";
-    NO_RANGE_LIMIT -1;
+    NO_LIMIT -1;
+    //descriptive text for clients
     description "";
+    //more detailed text
     longDescription description;
+    
+    //minimum number of this role to create
     min 0;
-    max NO_RANGE_LIMIT;
+    //max number
+    max NO_LIMIT;
+    
+    //the number you should create
     recommendedMin 0 ;
-    recommendedMax NO_RANGE_LIMIT;
+    //the maximum number
+    recommendedMax NO_LIMIT;
     
 }

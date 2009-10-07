@@ -17,20 +17,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/cloudfarmer/server/mock/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/examples/hadooproles.sf"
+package org.smartfrog.services.cloudfarmer.server.manual;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
- * a mock of a very small cluster
+ * a manual host
  */
 
 
+public interface ManualHost extends Remote {
+    /** {@value} */
+    String ATTR_HOSTNAME ="hostname";
+    /**
+     * {@value}
+     */
+    String ATTR_DESCRIPTION = "description";
 
-MockHadoopCluster extends MockClusterFarmer {
-  clusterLimit 20;
-  
-  roles extends HadoopRoles;
+    /**
+     * 
+     * @return the hostname
+     * @throws RemoteException  network problems
+     */
+    String getHostname() throws RemoteException;
+
+    /**
+     * @return The description
+     * @throws RemoteException network problems
+     */
+    String getDescription() throws RemoteException;
 }
-
-sfConfig extends MockHadoopCluster;

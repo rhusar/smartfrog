@@ -17,20 +17,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/cloudfarmer/server/mock/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/manual/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/examples/hadooproles.sf"
 
 
-/**
- * a mock of a very small cluster
- */
-
-
-
-MockHadoopCluster extends MockClusterFarmer {
-  clusterLimit 20;
+LocalhostHost extends ManualHost {
+    hostname "localhost";
   
-  roles extends HadoopRoles;
+    description "local host, loopback addressing";
 }
 
-sfConfig extends MockHadoopCluster;
+/**
+ * this serves up localhost only
+ */
+
+LocalhostCluster extends ManualClusterFarmer {
+  
+  roles extends HadoopRoles ;
+  
+  hosts extends Compound {
+    localhost extends LocalhostHost;
+  }
+}
+
+sfConfig extends LocalhostCluster;

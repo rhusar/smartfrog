@@ -76,29 +76,6 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         }
     }
 
-    /**
-     * Stub method to stop breaking the build
-     *
-     * @return an empty list of role names
-     * @throws IOException        IO/network problems
-     * @throws SmartFrogException other problems
-     */
-    @Override
-    public String[] listAvailableRoles() throws IOException, SmartFrogException {
-        return new String[0];
-    }
-
-    /**
-     * Stub method to stop breaking the build.
-     *
-     * @return alist of roles
-     * @throws IOException        IO/network problems
-     * @throws SmartFrogException other problems
-     */
-    @Override
-    public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
-        return new ClusterRoleInfo[0];
-    }
 
     public int getClusterLimit() {
         return clusterLimit;
@@ -160,4 +137,52 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     }
 
 
+    /**
+     * Returns true iff the role is in range
+     *
+     * @param role     role to look for
+     * @param quantity quantity to allocate
+     * @return true if all roles are allowed, or
+     */
+    public boolean roleInRange(String role, int quantity) {
+        ClusterRoleInfo info = lookupRoleInfo(role);
+        if (info == null) {
+            return false;
+        }
+        return info.isInRange(quantity);
+    }
+
+    protected ClusterRoleInfo lookupRoleInfo(String role) {
+        return roleInfoMap.get(role);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return a possibly empty list of role names
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public synchronized String[] listAvailableRoles() throws IOException, SmartFrogException {
+        return roleInfoMap.keySet().toArray(new String[roleInfoMap.size()]);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return a possibly empty list of roles
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public synchronized ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException {
+        ClusterRoleInfo[] roleInfo = new ClusterRoleInfo[roleInfoMap.size()];
+        int count = 0;
+        for (String role : roleInfoMap.keySet()) {
+            ClusterRoleInfo info = new ClusterRoleInfo(role);
+            roleInfo[count++] = info;
+        }
+        return roleInfo;
+    }
 }

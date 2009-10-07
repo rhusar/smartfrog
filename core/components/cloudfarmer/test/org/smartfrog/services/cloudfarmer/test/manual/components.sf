@@ -18,15 +18,38 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/cloudfarmer/test/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/mock/example.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/examples/manual_localhost.sf"
 
-MockCluster extends MockHadoopCluster {
-   
+
+TestCluster extends ManualClusterFarmer {
+  
+  roles extends HadoopRoles ;
+  
+  hosts extends Compound {
+    h1 extends ManualHost {
+      hostname "h1.example.org";
+    }
+    
+    h2 extends ManualHost {
+      hostname "h2.example.org";
+    }
+
+    h3 extends ManualHost {
+      hostname "h3.example.org";
+    }
+
+    h4 extends ManualHost {
+      hostname "h4.example.org";
+    }
+    
   }
+  
+  
+}
 
 ExpectFarmerDeploy extends ExpectDeploy {
     
-  action MockCluster;
+  action TestCluster;
 
 }
 
@@ -75,9 +98,9 @@ testFarmRemembersDeployments extends ExpectFarmerDeploy {
     //this is the farmer
       farmer LAZY action;
       role "worker";
-      min 10;
-      max 10;
-      expected 10;
+      min 2;
+      max 2;
+      expected 2;
       deleteOnTerminate false;
     }
 
@@ -127,16 +150,16 @@ testFarmCreate extends ExpectFarmerDeploy {
     //this is the farmer
       farmer LAZY action;
       role "worker";
-      min 10;
-      expected 10;
+      min 1;
+      expected 1;
     }
     
     worker2 extends WorkflowFarmCustomer {
     //this is the farmer
       farmer LAZY action;
       role "worker";
-      min 10;
-      expected 10;
+      min 2;
+      expected 2;
     }
     
  }
@@ -145,7 +168,7 @@ testFarmCreate extends ExpectFarmerDeploy {
 
 testFarmCreateBoundedbyRole extends ExpectFarmerDeploy {
 
-  description "expect the size of nodes created to be limited to the cluster limit";
+  description "expect the size of nodes created to be limited to the role";
   tests extends Sequence {
 
     
@@ -154,7 +177,7 @@ testFarmCreateBoundedbyRole extends ExpectFarmerDeploy {
       farmer LAZY action;
       role "master";
       min 1;
-      max 100;
+      max 4;
       expected 1;
     }
  }
@@ -184,7 +207,7 @@ testFarmCreateNoRoom extends ExpectDeployFailure {
     description "create a mock cluster, and, in parallel, a farm customer that demands too many items"
       
     action extends Parallel {
-     farmer MockCluster;
+     farmer TestCluster;
    
      master extends WorkflowFarmCustomer {
       farmer LAZY action:farmer;
@@ -201,7 +224,7 @@ testFarmCreateNoRole extends ExpectDeployFailure {
     description "create a mock cluster, and, in parallel, a farm customer that tries to create something of an unknown role"
 
     action extends Parallel {
-     farmer MockCluster;
+     farmer TestCluster;
 
      master extends WorkflowFarmCustomer {
       farmer LAZY action:farmer;
@@ -218,7 +241,7 @@ testFarmCreateNegativeNumber extends ExpectDeployFailure {
     description "create a mock cluster, and, in parallel, a farm customer that demands less than 0 nodes"
       
     action extends Parallel {
-     farmer MockCluster;
+     farmer TestCluster;
    
      master extends WorkflowFarmCustomer {
       farmer LAZY action:farmer;
@@ -234,7 +257,7 @@ testFarmLacksRole extends ExpectDeployFailure {
     description "create a mock cluster, and, in parallel, a test for a role that isn't supported"
 
     action extends Parallel {
-     farmer MockCluster;
+     farmer TestCluster;
 
      master extends FarmSupportsRole {
       farmer LAZY action:farmer;

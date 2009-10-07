@@ -39,19 +39,11 @@ That is out of scope for the farmer, which just creates and destroys machines.
 */
 
 /**
- * A mock cluster farmer has a limited set of allowed roles, and a maximum cluster size.
+ * A mock cluster farmer makes up a cluster of its own
  */
-MockClusterFarmer extends Compound {
+MockClusterFarmer extends AbstractClusterFarmer {
   sfClass "org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl"
   
-  //limit on the size of this cluster
-  clusterLimit 1000;
- 
-  
-  //compound of roles
-  roles extends Compound {
-  
-  }
   //name of the internal domain
   domain "internal";
   //name of the external domain

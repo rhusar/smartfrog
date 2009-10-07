@@ -57,6 +57,7 @@ public final class ClusterNode implements Serializable, Cloneable {
      */
     private String role;
 
+
     public String getId() {
         return id;
     }

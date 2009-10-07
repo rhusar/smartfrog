@@ -17,20 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/cloudfarmer/server/mock/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/examples/hadooproles.sf"
 
-
-/**
- * a mock of a very small cluster
- */
-
-
-
-MockHadoopCluster extends MockClusterFarmer {
-  clusterLimit 20;
-  
-  roles extends HadoopRoles;
+HadoopRoles extends Compound {
+    master extends ClusterRole {
+      description "Hadoop Namenode and Job Tracker";
+      min 1;
+      max 1;
+    }
+    
+    worker extends ClusterRole {
+      description "Worker nodes are Datanodes and TaskTrackers";
+      min 1;
+      recommendedMin 3;
+    }
 }
 
-sfConfig extends MockHadoopCluster;
