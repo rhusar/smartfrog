@@ -104,14 +104,14 @@ BindableCluster extends FullCluster {
    */
   binding.master.hostname PROPERTY binding.master.hostname;
 
-  /* to allow for future tweaking, this is split up */
-  binding.namenode.hostname binding.master.hostname;
-  binding.jobtracker.hostname binding.master.hostname;
-
   /**
    * The number of slots for a tasktracker
    */
   binding.tasktracker.slots IPROPERTY binding.tasktracker.slots;
+
+  /* to allow for future tweaking, this is split up */
+  binding.namenode.hostname binding.master.hostname;
+  binding.jobtracker.hostname binding.master.hostname;
 
 
   //fix the namenode hostname
