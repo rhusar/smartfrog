@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+    "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+
+  <!-- ====================================================================================================  -->
+  <!-- Mombasa Portlet -->
+  <!-- ====================================================================================================  -->
+
+  <definition name="portlet.mombasa-portlet" path="/html/mombasa-portlet/cluster_portlet.jsp"/>
+
+  <definition name="portlet.mombasa-portlet.error" extends="portlet.mombasa-portlet">
+    <put name="portlet-content" value="/html/mombasa-portlet/error.jsp"/>
+  </definition>
+
+  <definition name="portlet.mombasa-portlet.view" extends="portlet.mombasa-portlet">
+    <put name="portlet-content" value="/html/mombasa-portlet/cluster_view.jsp"/>
+  </definition>
+
+
+  <!-- Workflow List operations -->
+
+  <!-- ====================================================================================================  -->
+  <!-- Workflow Portlet -->
+  <!-- ====================================================================================================  -->
+
+
+  <definition name="portlet.mombasa-portlet.workflowList.success"
+      path="/html/mombasa-portlet/workflow_list_success.jsp"/>
+
+
+  <definition name="portlet.mombasa-portlet.workflowList.failure"
+      path="/html/mombasa-portlet/error.jsp"/>
+
+
+  <definition name="portlet.mombasa-portlet.submitMRJobFormViewAction.success"
+      path="/html/mombasa-portlet/workflow_queue_mr_job.jsp"/>
+
+  <definition name="portlet.mombasa-portlet.submitMRJobFormViewAction.failure"
+      path="/html/mombasa-portlet/error.jsp"/>
+
+  <definition name="portlet.mombasa-portlet.submitMRJob.success"
+      path="/html/mombasa-portlet/workflow_submit_job_success.jsp"/>
+
+
+  <definition name="portlet.mombasa-portlet.submitMRJob.failure"
+      path="/html/mombasa-portlet/error.jsp"/>
+
+  <definition name="portlet.mombasa-portlet.submitMRJob.parseError"
+      path="/html/mombasa-portlet/parseerror.jsp"/>
+  <!--
+  
+    <definition name="portlet.mombasa-portlet.workflowList.success" extends="portlet.mombasa-portlet">
+      <put name="portlet-content" value="/mombasa-portlet/workflow_list_success.jsp" />
+    </definition>
+  
+  -->
+
+
+  <!-- ====================================================================================================  -->
+  <!-- Cluster Portlet -->
+  <!-- ====================================================================================================  -->
+
+  <!-- ====================================================================================================  -->
+  <!-- Cluster views (template driven) -->
+  <definition name="portlet.mombasa.cluster" path="/html/mombasa-portlet/cluster/template.jsp">
+    <put name="title" value=""/>
+    <!--you must add a content page here-->
+    <put name="content" value="/html/mombasa-portlet/cluster/empty_content.jsp"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.text" extends="portlet.mombasa.cluster">
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_text.jsp"/>
+    <put name="title" value=""/>
+    <put name="text" value=""/>
+  </definition>
+
+
+  <!-- The Error page is not template driven-->
+  
+  <definition name="portlet.mombasa.cluster.error"
+      path="/html/mombasa-portlet/cluster/error.jsp"
+      extends="portlet.mombasa.cluster">
+  </definition>
+  
+  <definition name="portlet.mombasa.cluster.bindFailure"
+      path="/html/mombasa-portlet/cluster/bindfailure.jsp"
+      extends="portlet.mombasa.cluster">
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.happy" extends="portlet.mombasa.cluster">
+    <put name="content" value="/html/mombasa-portlet/happy.jsp"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.start" extends="portlet.mombasa.cluster">
+    <put name="title" value="Hadoop Cluster"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_start.jsp"/>
+  </definition>
+
+  <!--List the clusters-->
+  <definition name="portlet.mombasa.cluster.list" extends="portlet.mombasa.cluster">
+    <put name="title" value="Hadoop Hosts"/>
+    <put name="text" value=""/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_list.jsp"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.list.success" extends="portlet.mombasa.cluster.list">
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.add.success" extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Add a host"/>
+    <put name="text" value="TODO"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.add_named.success"
+      extends="portlet.mombasa.cluster">
+    <put name="title" value="Add a host"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_add_named.jsp"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.add_dynamic.success"
+      extends="portlet.mombasa.cluster">
+    <put name="title" value="Add hosts"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_add_dynamic.jsp"/>
+  </definition>
+
+
+  <definition name="portlet.mombasa.cluster.add_named.process.success"
+      extends="portlet.mombasa.cluster.list">
+    <put name="title" value="Add a host"/>
+    <!--<put name="content" value="/html/mombasa-portlet/cluster/cluster_add_host_success.jsp"/>-->
+    <put name="text" value="The new host has been added"/>
+  </definition>
+
+
+  <definition name="portlet.mombasa.cluster.add_dynamic.process.success"
+      extends="portlet.mombasa.cluster.list">
+    <put name="title" value="Add a host"/>
+    <!--<put name="content" value="/html/mombasa-portlet/cluster/cluster_add_host_success.jsp"/>-->
+    <put name="text" value="The hosts have been added"/>
+  </definition>  
+
+  <definition name="portlet.mombasa.cluster.viewhost.success"
+      extends="portlet.mombasa.cluster">
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_viewhost.jsp"/>
+    <put name="title" value="Host"/>
+    <put name="text" value="Host details"/>
+  </definition>
+  
+  <definition name="portlet.mombasa.cluster.delete.success"
+      extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Delete a Host"/>
+    <put name="text" value="The host has been deleted"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.terminate.success" extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Shut down the cluster"/>
+    <put name="text" value="The cluster has been shut down"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.admin.success" extends="portlet.mombasa.cluster">
+    <put name="title" value="Cluster Administration"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_admin.jsp"/>
+  </definition>
+
+
+  <definition name="portlet.mombasa.cluster.change_manager.success"
+      extends="portlet.mombasa.cluster">
+    <put name="title" value="Change the Manager"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_change_manager.jsp"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.change_manager.process.success"
+      extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Change Cluster Manager"/>
+    <put name="text"
+        value="The cluster manager has been changed, and the old cluster shut down"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.host_ping.success" extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Ping the host"/>
+    <put name="text" value="This is not yet implemented"/>
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.host_terminate.success" extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Shut down the host"/>
+    <put name="text" value="This is not yet implemented"/>
+  </definition>
+
+
+  <!-- This is the default view-->
+  <definition name="portlet.mombasa.cluster.default" extends="portlet.mombasa.cluster.start">
+  </definition>
+
+
+  <!-- ====================================================================================================  -->
+  <!-- Cluster Actions -->
+
+  <!-- ====================================================================================================  -->
+  <!-- Filesystem Portlet -->
+  <!-- ====================================================================================================  -->
+
+  <!-- ====================================================================================================  -->
+  <!-- Filesystem Views -->
+
+  <!-- ====================================================================================================  -->
+  <!-- Filesystem Actions-->
+
+  <!-- ====================================================================================================  -->
+
+</tiles-definitions>

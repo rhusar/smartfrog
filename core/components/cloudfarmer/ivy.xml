@@ -20,14 +20,14 @@
     <conf name="build" visibility="private"
           description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"
-          extends="redist,webui,ec2"
+          extends="redist,webapp,ec2"
           description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
           description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="compile,default"
           description="the classpath needed to run tests"/>
     <conf name="ec2" description="contains EC2 support"/>
-    <conf name="webui" description="the web gui"/>
+    <conf name="webapp" description="the web gui"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts" />
     <conf name="runtime" description="runtime but not the artifact"
@@ -62,19 +62,33 @@
                 changing="true"
                 rev="latest.integration"
                 conf="compile,runtime,daemon->default"/>-->
+
     <!--httpclient needs commons logging; logging services pulls it in-->
     <dependency org="org.smartfrog"
                 name="sf-loggingservices"
                 changing="true"
                 rev="latest.integration"
                 conf="daemon,compile->default;runtime->runtime;redist->redist"/>
-    
-    <!--jetty for testing-->
+
+    <dependency org="struts"
+      name="struts"
+      rev="${struts.version}"
+      conf="webapp->default"/>
+
+
+    <!--portlet is there as something to move away from-->
+    <dependency org="javax.portlet"
+      name="portlet-api"
+      rev="${portlet-api.version}"
+      conf="webapp->default"/>
+
+
+    <!--jetty for the webapp-->
     <dependency org="org.smartfrog"
                 name="sf-jetty"
                 changing="true"
                 rev="latest.integration"
-                conf="webui->default"/>
+                conf="webapp->default"/>
 
     <dependency org="org.smartfrog"
                 name="sf-testharness"
