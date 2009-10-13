@@ -63,6 +63,11 @@ public interface ClusterRole extends Remote {
     String ATTR_RECOMMENDED_MAX = "recommendedMax";
 
     /**
+     * CD of name, value pairs
+     */
+    String ATTR_OPTIONS = "options";
+
+    /**
      * Build a new ClusterRoleInfo instance
      *
      * @return the new instance

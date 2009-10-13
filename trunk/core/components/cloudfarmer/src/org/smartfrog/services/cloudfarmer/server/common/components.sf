@@ -68,5 +68,12 @@ ClusterRole extends Prim  {
     recommendedMin 0 ;
     //the maximum number
     recommendedMax NO_LIMIT;
-    
+
+    /**
+     * This is where a list of options get added; clients can see all these values and act on them
+     */
+    options extends DATA {
+
+    }
+
 }

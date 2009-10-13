@@ -60,6 +60,9 @@ ManualClusterFarmer extends AbstractClusterFarmer {
   
   clusterLimit NO_LIMIT;
 
+  //delay per node
+  nodeStartupDelayMilliseconds 0;
+
 
   /**
     hosts go under here. 

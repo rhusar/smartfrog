@@ -25,8 +25,10 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 
 /**
@@ -81,7 +83,7 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
 
 
     /**
-     * This will build the role information
+     * This will build the role information. that includes options.
      *
      * @param target info target
      * @return role info -without any name
@@ -94,12 +96,23 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
         role.setLongDescription(target.sfResolve(ATTR_LONG_DESCRIPTION, "", true));
         role.setRoleSize(resolveRange(target, ATTR_MIN, ATTR_MAX));
         role.setRecommendedSize(resolveRange(target, ATTR_RECOMMENDED_MIN, ATTR_RECOMMENDED_MAX));
+        ComponentDescription cd = null;
+        cd = target.sfResolve(ATTR_OPTIONS, cd, true);
+        Iterator optionset = cd.sfAttributes();
+        while (optionset.hasNext()) {
+            String optionKey = (String) optionset.next();
+            String value = cd.sfResolve(optionKey).toString();
+            role.replaceOption(optionKey, value);
+        }
         return role;
     }
 
     /**
      * resolve a range pair
      *
+     * @param target target component
+     * @param minName name of the min attribute
+     * @param maxName name of the max attribute
      * @return the new range
      * @throws RemoteException              network trouble
      * @throws SmartFrogResolutionException resolution problems
@@ -111,4 +124,6 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
         Range range = new Range(min, max);
         return range;
     }
+
+
 }
