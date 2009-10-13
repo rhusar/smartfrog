@@ -34,14 +34,13 @@
 
 
 CoreJettySchema extends Schema {
-    jettyhome extends String;
     host extends String;
 
     enableLogging extends Boolean;
     //log pattern
     logPattern extends String;
-    //could be a file or a directory
-    //relative paths are resolved relative to jetty home
+    
+    //the log dir must be an absolute path
     logDir extends Optional;
     //a vector of paths, which are strings in the app server.
     //such as ["/jetty/images/*","/demo/images/*", "*.css"];

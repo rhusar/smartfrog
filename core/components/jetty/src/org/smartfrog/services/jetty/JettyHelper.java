@@ -137,36 +137,6 @@ public class JettyHelper extends WebApplicationHelper {
 
     }
 
-
-    /**
-     * locate jettyhome
-     *
-     * @return jetty home or null if it is not there
-     * @throws SmartFrogException In case of error while deploying
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public String findJettyHome() throws SmartFrogException, RemoteException {
-        assert serverComponent != null;
-        String jettyhome = null;
-        jettyhome =
-                serverComponent.sfResolve(JettyIntf.ATTR_JETTY_HOME,
-                        jettyhome,
-                        false);
-        return jettyhome;
-    }
-
-    /**
-     * save jetty home for retrieval
-     *
-     * @param jettyhome jetty home property
-     * @throws SmartFrogRuntimeException In case of error while deploying
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public void cacheJettyHome(String jettyhome)
-            throws SmartFrogRuntimeException, RemoteException {
-        getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_HOME, jettyhome);
-    }
-
     /**
      * for servlets: get the servlet context.
      *
