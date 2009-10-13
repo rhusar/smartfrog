@@ -26,7 +26,6 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.thread.QueuedThreadPool;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateWebApplicationContext;
@@ -39,7 +38,6 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -52,12 +50,6 @@ import java.util.Vector;
  */
 
 public class JettyImpl extends PrimImpl implements JettyIntf {
-
-    private final Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
-
-    /** Jetty home path */
-    private String jettyHome;
-
 
     /** A jetty helper */
     private JettyHelper jettyHelper = new JettyHelper(this);
@@ -121,8 +113,6 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
 
         //set the jetty helper up
         jettyHelper.cacheJettyServer(server);
-        jettyHome = sfResolve(jettyhomeRef, jettyHome, true);
-        jettyHelper.cacheJettyHome(jettyHome);
 
 
         //this holds all the server contexts
@@ -176,7 +166,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @return the log handler
      */
     public RequestLogHandler configureLogging() throws SmartFrogException, RemoteException {
-        String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyHome, null, true, null);
+        String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, null, null, true, null);
         String logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", true);
 
         NCSARequestLog requestlog = new NCSARequestLog();

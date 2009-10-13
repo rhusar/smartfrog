@@ -29,12 +29,6 @@ import org.smartfrog.services.www.JavaWebApplicationServer;
 
 public interface JettyIntf extends JavaWebApplicationServer {
 
-    /**
-     * jetty home attribute
-     * {@value}
-     */
-    String ATTR_JETTY_HOME = "jettyhome";
-
 
     /**
      * cached jetty server
