@@ -20,33 +20,18 @@ For more information: www.smartfrog.org
 */
 --%>
 
-<%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+
+<%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
+
+<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+<%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
+<%@ taglib uri="http://struts.apache.org/tags-nested" prefix="nested" %>
+<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
 
 
-<p>
-The host has been added, though it may take time for it to be live.
-</p>
+<% /* Struts extras */ %>
 
-<p>
-Host Count: <bean:write name="hostcount"/>
-</p>
-<table border="2">
-  <tr bgcolor="grey">
-    <th>Hostname</th>
-  </tr>
-  <logic:iterate id="host"
-                 name="hosts"
-                 property="list"
-                 type="com.hp.hpl.thor.services.mombasa.model.HostInstance">
-    <tr>
-      <td>
-        <bean:write name="host" property="hostname"/>
-      </td>
-    </tr>
-  </logic:iterate>
-</table>
+<% /* the model */ %>
 
-
-
-
-
+<portlet:defineObjects/>

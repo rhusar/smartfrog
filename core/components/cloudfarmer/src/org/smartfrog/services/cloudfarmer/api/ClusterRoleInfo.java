@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.api;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Information about a cluster role
@@ -32,6 +33,7 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
     private String longDescription = "";
     private Range roleSize = Range.NO_LIMITS;
     private Range recommendedSize = Range.NO_LIMITS;
+    private HashMap<String, String> options = new HashMap<String, String>();
 
     public ClusterRoleInfo() {
     }
@@ -95,6 +97,40 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
 
     public boolean isInRecommendedRange(int proposed) {
         return recommendedSize.isInRange(proposed);
+    }
+
+    public HashMap<String, String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(HashMap<String, String> options) {
+        this.options = options;
+    }
+
+    /**
+     * Get an option or its default value
+     *
+     * @param optionKey option to look for
+     * @param defVal default value
+     * @return the option if present, otherwise the default
+     */
+    public String getOption(String optionKey, String defVal) {
+        String value = options.get(optionKey);
+        return (value != null) ? value : defVal;
+    }
+
+    /**
+     * Set or replace the option
+     *
+     * @param optionKey option to set
+     * @param value new value. If null: delete
+     */
+    public void replaceOption(String optionKey, String value) {
+        if (value == null) {
+            options.remove(optionKey);
+        } else {
+            options.put(optionKey, value);
+        }
     }
 
     @Override

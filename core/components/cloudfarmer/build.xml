@@ -46,6 +46,7 @@
   <!--very long test timeout to allow for startup delays-->
   <property name="test.timeout.execute" value="120000" />
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
+  <property name="test.web.dir" location="web" />
   <!--<property name="application.name" value="ec2" />-->
   <property name="mockfarmer.sf" value="/org/smartfrog/services/cloudfarmer/server/mock/example.sf" />
 

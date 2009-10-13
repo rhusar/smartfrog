@@ -48,5 +48,7 @@ MockClusterFarmer extends AbstractClusterFarmer {
   domain "internal";
   //name of the external domain
   externalDomain "external";
-  
+
+  //delay per node
+  nodeStartupDelayMilliseconds  0;
 }
