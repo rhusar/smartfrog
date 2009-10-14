@@ -17,9 +17,11 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
+import java.util.Iterator;
 
 /**
  */
@@ -41,6 +43,7 @@ public class JettyServletDelegate
     private static final Reference pathSpecRef = new Reference(ServletComponent.ATTR_PATH_SPEC);
     private static final Reference classNameRef = new Reference(ServletComponent.ATTR_CLASSNAME);
     private static final Reference initParamsRef = new Reference(ServletComponent.ATTR_INIT_PARAMS);
+    private static final Reference initOptionsRef = new Reference(ServletComponent.ATTR_INIT_OPTIONS);
 
     private String name = null;
     private String pathSpec = null;
@@ -105,11 +108,21 @@ public class JettyServletDelegate
             holder.setInitOrder(initOrder);
         }
 
-        //apply initialisation params
+        //apply initialisation params from the list
         Vector<Vector<String>> paramTuples = ListUtils.resolveStringTupleList(prim, initParamsRef, true);
         for (Vector<String> tuple : paramTuples) {
             holder.setInitParameter(tuple.firstElement(), tuple.get(1));
         }
+        //apply initialisation params from the context
+        ComponentDescription optionsCD = prim.sfResolve(initOptionsRef, (ComponentDescription) null, true);
+        org.smartfrog.sfcore.common.Context optionsContext = optionsCD.sfContext();
+        Iterator iterator = optionsContext.sfAttributes();
+        while (iterator.hasNext()) {
+            Object key = iterator.next();
+            Object value = optionsContext.get(key);
+            holder.setInitParameter(key.toString(), value.toString());
+        }
+
 
         //update our path attribute
         String ancestorPath = ctx.getAbsolutePath();

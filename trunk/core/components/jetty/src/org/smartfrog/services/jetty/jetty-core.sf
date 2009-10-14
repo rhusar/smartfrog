@@ -296,3 +296,73 @@ CoreJettyHttpServer JettySocketHttpServerCompound;
  * this name gest stamped on in jetty-complete
  */
 JettyHttpServer extends CoreJettyHttpServer;
+
+
+/* ------------------------------------------------------------ */
+// From the javadocs
+/** The default servlet.
+ * This servlet, normally mapped to /, provides the handling for static
+ * content, OPTION and TRACE methods for the context.
+ * The following initParameters are supported, these can be set either
+ * on the servlet itself or as ServletContext initParameters with a prefix
+ * of org.mortbay.jetty.servlet.Default. :
+ * <PRE>
+ *   acceptRanges     If true, range requests and responses are
+ *                    supported
+ *
+ *   dirAllowed       If true, directory listings are returned if no
+ *                    welcome file is found. Else 403 Forbidden.
+ *
+ *   redirectWelcome  If true, welcome files are redirected rather than
+ *                    forwarded to.
+ *
+ *   gzip             If set to true, then static content will be served as
+ *                    gzip content encoded if a matching resource is
+ *                    found ending with ".gz"
+ *
+ *  resourceBase      Set to replace the context resource base
+ *
+ *  relativeResourceBase
+ *                    Set with a pathname relative to the base of the
+ *                    servlet context root. Useful for only serving static content out
+ *                    of only specific subdirectories.
+ *
+ *  aliases           If True, aliases of resources are allowed (eg. symbolic
+ *                    links and caps variations). May bypass security constraints.
+ *
+ *  maxCacheSize      The maximum total size of the cache or 0 for no cache.
+ *  maxCachedFileSize The maximum size of a file to cache
+ *  maxCachedFiles    The maximum number of files to cache
+ *  cacheType         Set to "bio", "nio" or "both" to determine the type resource cache.
+ *                    A bio cached buffer may be used by nio but is not as efficient as an
+ *                    nio buffer.  An nio cached buffer may not be used by bio.
+ *
+ *  useFileMappedBuffer
+ *                    If set to true, it will use mapped file buffer to serve static content
+ *                    when using NIO connector. Setting this value to false means that
+ *                    a direct buffer will be used instead of a mapped file buffer.
+ *                    By default, this is set to true.
+ *
+ *  cacheControl      If set, all static content will have this value set as the cache-control
+ *                    header.
+ *
+ *
+ * </PRE>
+
+ */
+DefaultContentServlet extends Servlet {
+
+
+  name "DefaultServlet";
+  className "org.mortbay.jetty.servlet.DefaultServlet";
+  pathSpec "*.html";
+  mappings ["*.txt","*.xhtml","*.css","*.jpg","*.png","*.ico"];
+
+  initOptions extends DATA {
+    //directory operation
+    org.mortbay.jetty.servlet.Default.dirAllowed false;
+    org.mortbay.jetty.servlet.Default.aliases false;
+    org.mortbay.jetty.servlet.Default.redirectWelcome false;
+  }
+
+}
