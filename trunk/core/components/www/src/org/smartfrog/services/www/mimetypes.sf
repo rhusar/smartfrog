@@ -47,20 +47,4 @@ MimeTypes extends DATA {
 }
 
 
-TextHtmlMimeType extends MimeType {
-  extension "html";
-  type MimeTypes:TEXT_HTML;
-}
-
-TextPlainMimeType extends MimeType {
-  extension "txt";
-  type MimeTypes:TEXT_PLAIN;
-}
-
-ApplicationXmlMimeType extends MimeType {
-  extension "txt";
-  type MimeTypes:APPLICATION_XML;
-}
-
-
 

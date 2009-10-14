@@ -32,11 +32,11 @@ public interface MimeType extends ServletContextComponent {
     /**
      * Extension to define a mime type for. {@value}
      */
-    public static final String ATTR_EXTENSION = "extension";
+    String ATTR_EXTENSION = "extension";
 
     /**
      * mime type for. {@value}
      */
-    public static final String ATTR_TYPE = "type";
+    String ATTR_TYPE = "type";
 
 }
