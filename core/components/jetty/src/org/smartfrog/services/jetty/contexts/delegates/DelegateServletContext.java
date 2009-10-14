@@ -25,6 +25,9 @@ import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.HashSessionManager;
+import org.mortbay.jetty.servlet.SessionHandler;
+import org.mortbay.resource.Resource;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.JettyImpl;
@@ -35,6 +38,7 @@ import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.WebApplicationHelper;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.Log;
@@ -42,6 +46,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
 
@@ -53,15 +58,17 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
     private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     private Reference resourceBaseRef = new Reference(ATTR_RESOURCE_BASE);
+    private Reference resourcePackageRef = new Reference(ATTR_RESOURCE_PACKAGE);
     private String contextPath;
     private String resourceBase;
+    private String resourcePackage;
     private String absolutePath;
     private Prim owner;
     /**
      * a log
      */
     private Log log;
-    private ResourceHandler resources;
+    private ResourceHandler resourceHandler;
     private HandlerCollection handlerSet;
     private JettyToSFLifecycle<HandlerCollection> handlerLifecycle;
 
@@ -69,8 +76,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     /**
      * Constructor
      *
-     * @param server      server that is creating this
-     * @param context     the context
+     * @param server server that is creating this
+     * @param context the context
      * @param declaration the servlet declaration
      */
     public DelegateServletContext(JettyImpl server, Context context, Prim declaration) {
@@ -92,7 +99,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * do all deployment short of starting the thing
      *
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public void deploy() throws SmartFrogException, RemoteException {
         super.deploy();
@@ -106,6 +113,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         //hostnames
         String address = jettyHelper.getIpAddress();
         owner.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
+        //create a servlet 
     }
 
 
@@ -113,18 +121,23 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * start: deploy this context
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     @Override
     public void start() throws SmartFrogException, RemoteException {
         super.start();
-        resourceBase = FileSystem.lookupAbsolutePath(owner, resourceBaseRef, null, null, true, null);
-        FileSystem.requireFileToExist(resourceBase, false, 0);
-
+        resourceBase = FileSystem.lookupAbsolutePath(owner, resourceBaseRef, null, null, false, null);
+        if (resourceBase != null) {
+            FileSystem.requireFileToExist(resourceBase, false, 0);
+        } else {
+            resourcePackage = owner.sfResolve(resourcePackageRef, "", true);
+        }
+        HashSessionManager sessionManager = new HashSessionManager();
+        SessionHandler sessionHandler = new SessionHandler(sessionManager);
         //to get resources seen before the other bits of the tree, we patch the handlerSet.
         Context ctx = new Context(
                 null,                           //parent
-                null,                           //sessions
+                sessionHandler,                 //sessions
                 new ExtendedSecurityHandler(),  //security; can be null
                 new ExtendedServletHandler(),   //servlets
                 null); //error handler
@@ -132,16 +145,32 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
         handlerSet = new HandlerCollection();
 
-        resources = new ResourceHandler();
-        resources.setResourceBase(resourceBase);
-
+        resourceHandler = new ResourceHandler();
+        Resource baseResource;
+        String source;
+        if (resourceBase != null) {
+            source = "location " + resourceBase;
+            try {
+                baseResource = Resource.newResource(resourceBase);
+            } catch (IOException e) {
+                throw new SmartFrogDeploymentException("Failed to create a resource from " + resourceBase
+                        + " : " + e,
+                        e);
+            }
+        } else {
+            source = "package " + resourcePackage;
+            baseResource = Resource.newClassPathResource(resourcePackage);
+        }
+        log.info("Deploying " + contextPath + " from " + source);
+        resourceHandler.setBaseResource(baseResource);
         //configure the context
+        ctx.setBaseResource(baseResource);
         ctx.setContextPath(contextPath);
-        ctx.setResourceBase(resourceBase);
-        log.info("Deploying " + contextPath + " from " + resourceBase);
 
         //add the resources
-        handlerSet.addHandler(resources);
+        handlerSet.addHandler(resourceHandler);
+        //now paste in a session handler
+
         //then patch in the servlet context *afterwards*
         handlerSet.addHandler(getContext());
         handlerLifecycle = new JettyToSFLifecycle<HandlerCollection>("handlers", handlerSet);
@@ -155,14 +184,29 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         contextHandler.addHandler(handlerSet);
         handlerLifecycle.start();
     }
+/*
+ava.lang.NullPointerException,
+at org.mortbay.jetty.servlet.AbstractSessionManager.doStart(AbstractSessionManager.java:171),
+at org.mortbay.jetty.servlet.HashSessionManager.doStart(HashSessionManager.java:67),
+at org.mortbay.component.AbstractLifeCycle.start(AbstractLifeCycle.java:50),
+at org.mortbay.jetty.servlet.SessionHandler.doStart(SessionHandler.java:115),
+at org.mortbay.component.AbstractLifeCycle.start(AbstractLifeCycle.java:50),
+at org.mortbay.jetty.handler.HandlerCollection.doStart(HandlerCollection.java:152),
+at org.mortbay.component.AbstractLifeCycle.start(AbstractLifeCycle.java:50),
+at org.smartfrog.services.jetty.JettyToSFLifecycle.start(JettyToSFLifecycle.java:110),
+	 	 	 	 	 	 	 	... 21 more, ALL: SmartFrogLifecycleException: [sfStart] HOST "192.168.1.88":rootProcess:mombasa:jetty:servlets, cause: SmartFrogException:: java.lang.NullPointerException,    SmartFrog 3.17.015dev (2009-10-13 13:48:23 BST),   context: , primContext sfCodeBase "default";
+   [deploy] sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
+   [deploy] port "8081";
+   [deploy] sfSyncTerminate "true";
 
+ */
 
     /**
      * undeploy a context. If the server is already stopped, this the undeployment is skipped without an error. The
      * context field is set to null, to tell the system to skip this in future.
      *
      * @throws SmartFrogException SmartFrog problems
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     @Override
     public void terminate() throws RemoteException, SmartFrogException {
@@ -209,16 +253,16 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
 
     protected ResourceHandler getResources() {
-        return resources;
+        return resourceHandler;
     }
 
     /**
      * Add a mime mapping
      *
      * @param extension extension to map (no '.')
-     * @param mimeType  mimetype to generate
+     * @param mimeType mimetype to generate
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
         log.info("Adding mime mapping " + extension + " maps to " + mimeType);
@@ -232,7 +276,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @param extension extension to unmap
      * @return true if the unmapping was successful
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
         log.info("removing mime mapping " + extension);
@@ -250,7 +294,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @param servletDeclaration component declaring the servlet
      * @return the delegate that implements the servlet binding
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration)
             throws RemoteException, SmartFrogException {
@@ -264,7 +308,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param handler handler
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public void addHandler(Handler handler) throws SmartFrogException,
             RemoteException {
@@ -276,7 +320,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param handler handler
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public void removeHandler(Handler handler) throws SmartFrogException, RemoteException {
         try {

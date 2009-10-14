@@ -21,6 +21,7 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.JettyImpl;
@@ -97,16 +98,12 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
 
         declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
         application = new WebAppContext(webApp, contextPath);
-        //application.setContextPath(contextPath);
-        //application.setWar(webApp);
 
 
         ServletHandler servlethandler = application.getServletHandler();
-/*      TODO: turn this on if needed
-        AbstractSessionManager sessionmanager = (AbstractSessionManager)
+/*        AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
-        sessionmanager.setUseRequestedId(requestId);
-        */
+        sessionmanager.setUseRequestedId(requestId);*/
 
 
         setContext(application);
