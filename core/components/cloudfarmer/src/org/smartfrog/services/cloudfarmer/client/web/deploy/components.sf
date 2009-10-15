@@ -31,55 +31,66 @@
 
 StrutsOnJetty extends Compound {
 
-    port 8081;
+  port 8081;
 
-    sfSyncTerminate true;
+  sfSyncTerminate true;
 
-    //integrate logging with smartfrog
-    logging extends IntegrateJettyLogging;
+  //integrate logging with smartfrog
+  logging extends IntegrateJettyLogging;
 
-    tempDir extends TempDirWithCleanup {
-        prefix "jetty";
-    }
+  server extends CoreJettyServer {
 
+    port PARENT:port;
 
-   server extends CoreJettyServer {
+    server "jetty";
 
-      port PARENT:port;
-
-      server "jetty";
-
-    }
+  }
 
 
-    listener extends JettySocketConnector {
-        port PARENT:port;
-        server LAZY PARENT:server;
-    }
+  listener extends JettySocketConnector {
+    port PARENT:port;
+    server LAZY PARENT:server;
+  }
 
-    servlets extends ServletContext {
+  servlets extends ServletContext {
+    resourcePackage "/org/smartfrog/services/cloudfarmer/client/web/site";
+    contextPath "/";
+    server LAZY PARENT:server;
+   }
 
-        resourceBase LAZY tempDir;
-        contextPath "/";
-        server LAZY PARENT:server;
+  mimemap extends CoreMimeTypes {
+    context LAZY servlets;
+  }
 
-     }
+  /**
+   * default HTML pages &c. For dev, everything HTML is served up
+   */
 
-    /**
-     * this is the servlet to which endpoints need to be bound
-     */
+/*
+  defaultContent extends DefaultContentServlet {
+    context LAZY servlets;
+    pathSpec "*.html";
+    initOptions:org.mortbay.jetty.servlet.Default.dirAllowed true;
+    initOptions:dirAllowed true;
+  }
+*/
 
-    struts extends StrutsActionServlet {
-       context LAZY servlets;
-    }
+  /**
+   * this is the servlet to which endpoints need to be bound
+   */
 
-    jasper extends ApacheJasperServlet {
-      context LAZY servlets;
-    }
-    
-    textHtml extends TextHtmlMimeType {
-       context LAZY servlets;
-    }
+  struts extends StrutsActionServlet {
+    context LAZY servlets;
+  }
+/*
+
+  jasper extends ApacheJasperServlet {
+    context LAZY servlets;
+    pathSpec "*.jsp";
+    mappings ["*.JSP","*.jsp","*.jspx","*.JSPX"];
+  }
+*/
+
 
 }
 
@@ -90,9 +101,11 @@ WorkflowActions extends DATA {
   root "/html/mombasa-portlet";
 
   actionRoot "/mombasa-portlet/";
-  workflowList ( actionRoot ++ "workflowList");
+  workflowList ( actionRoot ++ "workflowList.do");
 }
 
 ClusterActions extends DATA {
-  list "/mombasa-portlet/cluster/list";
+  root "/html/mombasa-portlet";
+  actionRoot "/mombasa-portlet/";
+  list ( actionRoot ++ "cluster/list.do");
 }

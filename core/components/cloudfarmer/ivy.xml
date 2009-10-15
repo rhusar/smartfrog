@@ -31,7 +31,7 @@
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts" />
     <conf name="runtime" description="runtime but not the artifact"
-          extends="redist"/>
+          extends="redist,webapp"/>
     
   </configurations>
 
@@ -88,7 +88,7 @@
                 name="sf-jetty"
                 changing="true"
                 rev="latest.integration"
-                conf="webapp->default"/>
+                conf="webapp->default,jsp"/>
 
     <dependency org="org.smartfrog"
                 name="sf-testharness"
