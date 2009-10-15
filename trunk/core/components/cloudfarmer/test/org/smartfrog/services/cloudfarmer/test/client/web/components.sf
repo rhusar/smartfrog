@@ -42,9 +42,32 @@ WaitForJettyPage extends WaitForPage {
   fetchErrorText true;
   port StrutsOnJetty:port;
   timeout 10000;
-
-
 }
+
+
+WaitForIndex extends WaitForJettyPage {
+  page "/index.html";
+}
+
+
+WaitForJSP extends WaitForJettyPage {
+  page "/index.jsp";
+}
+
+WaitForJSPError extends WaitForJettyPage {
+  page "/error.jsp";
+}
+
+
+WaitForJSPErrorCode extends WaitForJettyPage {
+  errorCode 200;
+  page "/error.jsp";
+  headers [
+      ["status",errorCode]
+      ];
+  minimumResponseCode errorCode;
+  maximumResponseCode errorCode;
+  }
 
 WaitForWorkflowList extends WaitForJettyPage {
   page WorkflowActions:workflowList;

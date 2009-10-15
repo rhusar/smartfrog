@@ -242,8 +242,8 @@
   </action-mappings>
 
   <!-- Custom Request Processor -->
-  <controller processorClass="org.apache.portals.bridges.struts.PortletTilesRequestProcessor"/>
-
+ <!-- <controller processorClass="org.apache.portals.bridges.struts.PortletTilesRequestProcessor"/>
+-->
 
   <!-- Message Resources -->
 

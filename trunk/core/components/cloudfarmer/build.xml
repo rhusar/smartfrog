@@ -34,8 +34,23 @@
     test.ec2.instances.enabled  tests that create instances
     test.ec2.farmer.enabled=    tests that create a farmer and instances through it
     test.s3.enabled             tests that go up against S3
-    
+
   </description>
+
+  <!--
+
+  This build does a bit of a trick in that it has a subdir called site/ in the root directory.
+
+  This directory is copied into the source tree under org/smartfrog/services/cloudfarmer/client/web
+
+  Why this layout?
+  * makes it easy for the IDEs to handle things
+  * we want the site in the JAR for Jetty
+  * gives us the option in future of creating a WAR file based on site/
+
+
+  -->
+
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
@@ -46,7 +61,8 @@
   <!--very long test timeout to allow for startup delays-->
   <property name="test.timeout.execute" value="120000" />
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
-  <property name="test.web.dir" location="web" />
+  <property name="site.dir" location="site" />
+  <property name="test.web.dir" location="${site.dir}" />
   <!--<property name="application.name" value="ec2" />-->
   <property name="mockfarmer.sf" value="/org/smartfrog/services/cloudfarmer/server/mock/example.sf" />
 
@@ -59,6 +75,18 @@
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
+  <target name="ready-to-jar" depends="common.ready-to-jar,copy-site" />
+
+
+  <target name="copy-site" depends="init">
+    <property name="site.target.package" value="/org/smartfrog/services/cloudfarmer/client/web/site"/>
+    <property name="site.target.dir" location="${build.classes.dir}${site.target.package}" />
+    <mkdir  dir="${site.target.dir}"/>
+
+    <copy todir="${site.target.dir}" >
+       <fileset dir="site" />
+    </copy>
+    </target>
 
 
   <target name="ready-to-test" depends="common.ready-to-test">
@@ -79,6 +107,15 @@
       <deploy>
         <application name="farmer"
             descriptor="/${mockfarmer.sf}"/>
+      </deploy>
+  </target>
+
+
+  <target  name="mombasa" depends="ready-to-deploy"
+       description="Deploy a mock farm manager" >
+      <deploy>
+        <application name="mombasa"
+            descriptor="/org/smartfrog/services/cloudfarmer/client/web/deploy/server.sf"/>
       </deploy>
   </target>
 </project>

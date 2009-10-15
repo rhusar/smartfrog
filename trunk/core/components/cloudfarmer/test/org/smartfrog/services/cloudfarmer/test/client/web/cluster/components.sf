@@ -25,6 +25,37 @@
 testJettyDeployed extends ExpectJettyServerDeployed {
 
   tests extends Sequence {
+    -- extends WaitForIndex;
+    -- extends WaitForJSP;
+  }
+}
+
+
+testJettySupportsJSP extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    -- extends WaitForJSP;
+  }
+}
+
+testJettyExecutesJSP extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    -- extends WaitForJSP;
+    testStatus200 extends WaitForJSPErrorCode;
+    testStatus201 extends WaitForJSPErrorCode {
+      errorCode 201;
+    }
+    testStatus501 extends WaitForJSPErrorCode {
+      errorCode 501;
+    }
+  }
+}
+
+testClusterList extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
     list extends WaitForClusterList;
   }
 }
+

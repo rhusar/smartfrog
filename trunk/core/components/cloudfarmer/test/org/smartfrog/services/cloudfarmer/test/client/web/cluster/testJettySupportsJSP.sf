@@ -17,29 +17,6 @@
  For more information: www.smartfrog.org
 
  */
+#include "/org/smartfrog/services/cloudfarmer/test/client/web/cluster/components.sf"
 
- #include "/org/smartfrog/services/www/components.sf"
-
-
- /**
-  * Base servlet for alpine
-  */
-StrutsActionServlet extends Servlet {
-  name "action";
-  className "org.apache.struts.action.ActionServlet";
-  STRUTS_MAPPING "*.do";
-  pathSpec STRUTS_MAPPING;
-  mappings [];
-  
-  initOptions extends DATA {
-    config "/WEB-INF/struts-config.xml";
-    chainConfig "org/apache/struts/tiles/chain-config.xml";
-    debug 2;
-    detail 2;
-  }
-
-  //init order for the servlet;
-  //Holders with order<0, are initialized on use.
-  //Those with order>=0 are initialized in increasing order when the handler is started
-  initOrder 2;
-  }
+sfConfig extends testJettySupportsJSP;
