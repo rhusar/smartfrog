@@ -22,6 +22,7 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.util.FileUtils;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -52,7 +53,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     protected List<Codebase> codebase = new LinkedList<Codebase>();
     public static final String ERROR_NO_APPLICATIONS_DECLARED = "No applications declared";
-    public static final String ACTION_DEPLOY = "DEPLOY";
+    public static final String ACTION_DEPLOY = ConfigurationDescriptor.Action.ACT_DEPLOY;
+    public static final String ACTION_UPDATE = ConfigurationDescriptor.Action.ACT_UPDATE;
     public static final String DEFAULT_SUBPROCESS = "";
 
     /**
@@ -98,7 +100,20 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     /**
      * deploy the applications listed by creating a -a app descriptor list on the command line
      */
+
+    /**
+     * deploy the applications listed by creating a -a app descriptor list on the command line.
+     * The DEPLOY action is used
+     */
     public void deployApplications() {
+        deployApplications(false);
+    }
+
+    /**
+     * Deploy or update applications
+     * @param update flag to say update rather than deploy
+     */
+    public void deployApplications(boolean update) {
         verifyHostDefined();
         setupCodebase();
         for (Application application : applications) {
@@ -107,8 +122,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             String path = makePath(application);
             String subprocess = getSubprocess();
 
+            String deployAction = update ? ACTION_UPDATE: ACTION_DEPLOY;
             addArg(application.getName() + ':' //NAME
-                    + ACTION_DEPLOY + ':'      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+                    + deployAction + ':'      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
                     + path                     //URL
                     + "" + ':'                 // sfConfig or empty
                     + getHost() + ':'          // host
