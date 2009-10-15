@@ -173,8 +173,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    	if (source instanceof DeployingAgent) {
     	    		DeployingAgent source_nd = (DeployingAgent) source;
     	    		try {
-    	    			Prim primTerm = (Prim) source_nd.sfResolve(key.toString());
-    	    			((DeployingAgent) source).addToTerminate(key.toString(), primTerm);
+    	    			((DeployingAgent) source).addToTerminate(key.toString());
     	    		} catch (Exception e){
     	    		  /*Leave for now*/	
     	    		}
@@ -299,7 +298,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     }
     
     public interface DeployingAgent extends Remote, Compound {
-    	public void addToDeploy(String name, ComponentDescription cd) throws RemoteException;
-    	public void addToTerminate(String name, Prim p) throws RemoteException;
+    	public void addToDeploy(String name, ComponentDescription cd) throws Exception;
+    	public void addToTerminate(String name) throws RemoteException;
     }
 }

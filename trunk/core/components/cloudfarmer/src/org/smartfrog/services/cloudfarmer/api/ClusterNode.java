@@ -27,6 +27,21 @@ import java.io.Serializable;
  */
 public final class ClusterNode implements Serializable, Cloneable {
 
+	/**
+	 * Whether this cluster node is in fact a compound of cluster nodes
+	 */
+	private boolean compound=false;
+	
+	/**
+	 * Vector of cluster nodes, not null if compound is true
+	 */
+	private ClusterNode[] children;
+	
+	/**
+	 * Instance id of the role relating to this node.  
+	 */
+	private String roleInstance;
+	
     /**
      * The Id of this node. This should be treated as opaque, and is only of interest to the Farmer
      */
@@ -56,8 +71,44 @@ public final class ClusterNode implements Serializable, Cloneable {
      * The role of the node
      */
     private String role;
+    
+    /**
+     * Current status of the instance
+     */
+    private String state;  
+    
+    public boolean isCompound() {
+        return compound;
+    }
 
+    public void setCompound(final boolean compound) {
+        this.compound = compound;
+    }
+    
+    public String getState() {
+        return state;
+    }
 
+    public void setState(final String state) {
+        this.state = state;
+    }
+    
+    public ClusterNode[] getChildren() {
+        return children;
+    }
+
+    public void setChildren(final ClusterNode[] children) {
+        this.children = children;
+    }
+    
+    public String getRoleInstance() {
+        return roleInstance;
+    }
+
+    public void setRoleInstance(final String roleInstance) {
+        this.roleInstance = roleInstance;
+    }
+    
     public String getId() {
         return id;
     }
@@ -154,10 +205,10 @@ public final class ClusterNode implements Serializable, Cloneable {
     @Override
     public String toString() {
         return "Node " + id
-                + " @ " + hostname
-                + (externallyVisible ?
-                (" and " + externalHostname) : "")
-                + " [" + role + ']'
-                + (details != null ? details : "");
+                 + " @ " + hostname
+                 + (externallyVisible ?
+                    (" and " + externalHostname ): "")
+                 + " [" + role + ']'
+                 + (details != null ? details : "");
     }
 }

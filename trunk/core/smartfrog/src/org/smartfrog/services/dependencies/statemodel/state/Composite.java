@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Vector;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -41,14 +42,18 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	
    private String name="";
    private boolean terminating=false;
-   private HashMap<String, Prim> toTerminate = new HashMap<String, Prim>();
+   private Vector<String> toTerminate = new Vector<String>();
    private HashMap<String, ComponentDescription>  toDeploy = new HashMap<String, ComponentDescription>();
    
    public Composite() throws RemoteException {
 	   super();
    }
    
-   public void addToDeploy(String name, ComponentDescription cd){
+   public void addToDeploy(String name, ComponentDescription cd) throws Exception {
+	   if (toDeploy.containsKey(name)){
+		   throw new Exception("Name: "+name+" exists already");
+	   }
+	   
 	   toDeploy.put(name, cd);
 	   
 	   /*CODE LEFT HERE FOR CONVENIENCE.  Need to accommodate, but not now.
@@ -65,8 +70,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 		}*/
    }
    
-   public void addToTerminate(String name, Prim p){
-	   toTerminate.put(name, p);
+   public void addToTerminate(String name){
+	   toTerminate.add(name);
    }
    
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {      
@@ -144,14 +149,16 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	  }
 
 	  if (toTerminate.size()>0){
-		  Iterator<String> keys = toTerminate.keySet().iterator();
+		  Iterator<String> keys = toTerminate.iterator();
 		  while (keys.hasNext()){
-			  String key = keys.next();
-			  Prim p = toTerminate.get(key);
-			  if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +"Terminating "+key);
-			  p.sfDetachAndTerminate(TerminationRecord.normal(null));
+			  try {
+				  String key = keys.next();	
+				  Prim p = (Prim) sfResolve(key);
+				  if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +"Terminating "+key);
+				  p.sfDetachAndTerminate(TerminationRecord.normal(null));
+			  } catch (Exception e){}
 		  }
-		  toTerminate = new HashMap<String, Prim>();
+		  toTerminate = new Vector<String>();
 	  }
 	  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Composite.hsc()"+name);
 	  
