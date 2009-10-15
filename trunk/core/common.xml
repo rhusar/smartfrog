@@ -169,8 +169,12 @@
     <property name="system.tests" value="false" />
     <property name="unit.tests" value="false" />
 
+    <!--if you set a testcase, the tests go on-->
     <condition property="system.tests.enabled">
-      <istrue value="${system.tests}"/>
+      <or>
+        <istrue value="${system.tests}"/>
+        <isset  property="testcase"/>
+      </or>
     </condition>
 
     <condition property="unit.tests.enabled">
