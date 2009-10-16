@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,32 +19,17 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.jetty.internal;
 
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.MimeTypes;
-import org.mortbay.resource.Resource;
-import org.mortbay.io.Buffer;
-
-import javax.servlet.http.HttpServletResponse;
+import org.mortbay.jetty.handler.ErrorHandler;
+import org.smartfrog.sfcore.logging.Log;
 
 /**
- *
- * Trying to fix JETTY-442 by subclassing; no joy.
+ * any extensions to the error handling. A key one is that the error is logged
  */
 
-public class MimeResourceHandler extends ResourceHandler {
+public class ExtendedErrorHandler extends ErrorHandler {
+    private Log log;
 
-    private MimeTypes _mimeTypes = new MimeTypes();
-
-    public MimeResourceHandler() {
-    }
-
-    public MimeTypes getMimeTypes() {
-     //   return super._mimeTypes;
-        return null;
-    }
-
-
-    public MimeTypes get_mimeTypes() {
-        return _mimeTypes;
+    public ExtendedErrorHandler(Log log) {
+        this.log = log;
     }
 }

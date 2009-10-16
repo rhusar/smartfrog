@@ -40,7 +40,7 @@ public abstract class DelegateApplicationContext
 
     /**
      * @param server  jetty sever
-     * @param context context
+     * @param context jetty context
      */
     protected DelegateApplicationContext(JettyImpl server, Context context) {
         this.server = server;

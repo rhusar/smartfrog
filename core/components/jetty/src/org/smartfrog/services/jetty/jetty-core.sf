@@ -360,9 +360,9 @@ DefaultContentServlet extends Servlet {
 
   initOptions extends DATA {
     //directory operation
-    org.mortbay.jetty.servlet.Default.dirAllowed false;
-    org.mortbay.jetty.servlet.Default.aliases false;
-    org.mortbay.jetty.servlet.Default.redirectWelcome false;
+    dirAllowed false;
+    aliases false;
+    redirectWelcome false;
   }
 
 }

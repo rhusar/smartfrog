@@ -275,7 +275,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      */
     public ServletContextIntf deployServletContext(Prim servletContext) throws RemoteException, SmartFrogException {
 
-        DelegateServletContext delegate = new DelegateServletContext(this, null, servletContext);
+        DelegateServletContext delegate = new DelegateServletContext(this, servletContext);
         delegate.deploy();
         return delegate;
     }
