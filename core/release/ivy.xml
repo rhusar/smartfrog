@@ -152,7 +152,7 @@
         name="sf-cloudfarmer"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-cloudfarmer->master,redist,documentation"/>
+        conf="package-cloudfarmer->master,redist,documentation,webapp"/>
 
     <!--csvfiles-->
     <dependency org="org.smartfrog"
