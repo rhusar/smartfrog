@@ -12,7 +12,11 @@ public class ClusterWebappTest extends DeployingTestBase {
         super(name);
     }
 
-    public void testClusterList() throws Throwable {
+    public void testJettyDeployed() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testJettyDeployed");
+    }
+
+    public void NotestClusterList() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterList");
     }
 }
