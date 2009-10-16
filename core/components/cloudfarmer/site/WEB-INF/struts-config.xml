@@ -240,6 +240,7 @@
     </action>
 
   </action-mappings>
+  <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>
 
   <!-- Custom Request Processor -->
  <!-- <controller processorClass="org.apache.portals.bridges.struts.PortletTilesRequestProcessor"/>
@@ -267,4 +268,7 @@
   </plug-in>
 -->
 
+  <plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property value="/WEB-INF/tiles-defs.xml" property="definitions-config"/>
+  </plug-in>
 </struts-config>

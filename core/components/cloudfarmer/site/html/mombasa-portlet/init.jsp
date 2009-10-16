@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 */
 --%>
 
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://portals.apache.org/bridges/struts/tags-portlet-html" prefix="html" %>
 
@@ -39,4 +38,3 @@ For more information: www.smartfrog.org
 
 <% /* the model */ %>
 
-<portlet:defineObjects/>
