@@ -18,13 +18,9 @@
 
  */
 
-#include "/org/smartfrog/services/cloudfarmer/test/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/client/web/deploy/components.sf"
+
+#include "/org/smartfrog/services/cloudfarmer/test/client/web/components.sf"
 
 
-ExpectJettyServerDeployed extends ExpectDeployed {
-
-  action extends StrutsOnJetty;
-}
 
 

@@ -18,7 +18,6 @@
 
  */
 
-#include "/org/smartfrog/services/cloudfarmer/test/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/test/client/web/components.sf"
 
 
