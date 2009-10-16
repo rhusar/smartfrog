@@ -40,6 +40,7 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
      */
     private SignalHandler oldHandler;
     protected LogSF log;
+    public static final String SF_DAEMON_TERMINATED = "sfDaemon terminated through an interrupt";
 
     public InterruptHandlerImpl() {
     }
@@ -57,8 +58,8 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
         if (!SFProcess.markProcessCompoundTerminated()) {
             if (SFProcess.processCompound != null) {
                 try {
-                    log.out("Terminating sfDaemon gracefully!!");
-                    SFProcess.processCompound.sfTerminate(TerminationRecord.normal("sfDaemon forced to terminate ",
+                    log.out("Terminating sfDaemon gracefully.");
+                    SFProcess.processCompound.sfTerminate(TerminationRecord.normal(SF_DAEMON_TERMINATED,
                             SFProcess.processCompound.sfCompleteName()));
                 } catch (RemoteException re) {
                     //log and ignore
@@ -73,7 +74,7 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
                 }
             }
         } else {
-            log.out("sfDaemon killed!");
+            log.out("sfDaemon forcibly killed!");
             //http://www.tldp.org/LDP/abs/html/exitcodes.html
             // 130 - Control-C is fatal error signal 2, (130 = 128 + 2)
             ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_CTRL_ALT_DEL);
