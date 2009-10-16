@@ -1,10 +1,9 @@
 <%@ page import="java.io.PrintWriter" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
 <%--
 This page exists to make sure that JSP is really being parsed and handled properly
 --%>
-    PrintWriter out = response.getWriter();
+<%
     String codestr = request.getParameter("status");
     int code = 200;
     if (codestr != null) {
