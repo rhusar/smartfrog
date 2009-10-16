@@ -22,9 +22,9 @@
     <conf name="compile" visibility="private"
           extends="redist,webapp,ec2"
           description="artifacts needed to compile the application"/>
-    <conf name="daemon" visibility="private"
+    <conf name="daemon" visibility="private" extends="default,compile" 
           description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="compile,default"
+    <conf name="test" extends="daemon"
           description="the classpath needed to run tests"/>
     <conf name="ec2" description="contains EC2 support"/>
     <conf name="webapp" description="the web gui"/>

@@ -21,3 +21,6 @@ For more information: www.smartfrog.org
 /**
  * Anything common to all the farmer implementations goes here
  */
+ 
+ #include "/org/smartfrog/services/cloudfarmer/server/common/components.sf"
+ 

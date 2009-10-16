@@ -21,7 +21,7 @@
 #include "/org/smartfrog/services/jetty/jetty-core.sf";
 //pull in the base struts definitions
 #include "/org/smartfrog/services/cloudfarmer/client/web/deploy/struts.sf"
-#include "/org/smartfrog/services/www/jasper.sf"
+#include "/org/smartfrog/services/jetty/jettyjsp.sf"
 #include "/org/smartfrog/services/www/mimetypes.sf"
 
 /**
@@ -30,7 +30,8 @@
 
 
 StrutsOnJetty extends Compound {
-
+  //we always run this in its own JVM, as Jasper is trouble otherwise
+  sfProcessName "StrutsOnJettyPS";
   port 8081;
 
   sfSyncTerminate true;
@@ -62,36 +63,33 @@ StrutsOnJetty extends Compound {
     context LAZY servlets;
   }
 
-  /**
-   * default HTML pages &c. For dev, everything HTML is served up
-   */
-
-/*
-  defaultContent extends DefaultContentServlet {
-    context LAZY servlets;
-    pathSpec "*.html";
-    initOptions:org.mortbay.jetty.servlet.Default.dirAllowed true;
-    initOptions:dirAllowed true;
-  }
-*/
 
   /**
    * this is the servlet to which endpoints need to be bound
    */
-
   struts extends StrutsActionServlet {
     context LAZY servlets;
+    initOptions:validating false;
+    
   }
-/*
-
-  jasper extends ApacheJasperServlet {
+  
+  jasper extends JettyJSPServlet {
     context LAZY servlets;
-    pathSpec "*.jsp";
-    mappings ["*.JSP","*.jsp","*.jspx","*.JSPX"];
+     pathSpec "*.jsp";
+     mappings [];
+     initOptions:sendErrorToClient true;
   }
-*/
 
 
+  /**
+   * default HTML pages &c. For dev, everything HTML is served up
+   */
+  defaultContent extends DefaultContentServlet {
+    context LAZY servlets;
+    pathSpec "/";
+    initOptions:org.mortbay.jetty.servlet.Default.dirAllowed true;
+    initOptions:dirAllowed true;
+  }
 }
 
 /**

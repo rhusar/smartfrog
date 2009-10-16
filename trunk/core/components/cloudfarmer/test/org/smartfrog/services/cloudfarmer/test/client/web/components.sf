@@ -62,7 +62,7 @@ WaitForJSPError extends WaitForJettyPage {
 WaitForJSPErrorCode extends WaitForJettyPage {
   errorCode 200;
   page "/error.jsp";
-  headers [
+  queries [
       ["status",errorCode]
       ];
   minimumResponseCode errorCode;

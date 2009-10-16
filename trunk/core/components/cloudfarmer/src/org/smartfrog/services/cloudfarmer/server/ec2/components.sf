@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/amazon/ec2/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/common/components.sf"
+
 
 
 /**
