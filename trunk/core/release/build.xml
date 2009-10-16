@@ -476,9 +476,19 @@
     <rpmpackage package="anubis"/>
     <ln artifact="sf-anubis" version="${smartfrog.version}"/>
     
-    <!-- csvfiles -->
+    <!-- cloudfarmer -->
     <rpmpackage package="cloudfarmer"/>
     <ln artifact="sf-cloudfarmer" version="${smartfrog.version}"/>
+    <ln artifact="commons-beanutils" version="${commons-beanutils.version}"/>
+    <ln artifact="commons-chain" version="${commons-chain.version}"/>
+    <ln artifact="commons-digester" version="${commons-digester.version}"/>
+    <ln artifact="commons-validator" version="${commons-validator.version}"/>
+    <ln artifact="antlr" version="${antlr.version}"/>
+    <ln artifact="struts-core" version="${struts.version}"/>
+    <ln artifact="struts-taglib" version="${struts.version}"/>
+    <ln artifact="struts-tiles" version="${struts.version}"/>
+    <ln artifact="portlet-api" version="${portlet-api.version}"/>
+
     
     <!-- csvfiles -->
     <rpmpackage package="csvfiles"/>

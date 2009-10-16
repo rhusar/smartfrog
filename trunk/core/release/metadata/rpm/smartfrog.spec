@@ -766,10 +766,32 @@ fi
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 %{linkdir}/sf-anubis.jar
 
+
+
 %files cloudfarmer
 
 %{libdir}/sf-cloudfarmer-${smartfrog.version}.jar
 %{linkdir}/sf-cloudfarmer.jar
+%{libdir}/commons-beanutils-${commons-beanutils.version}.jar
+%{linkdir}/commons-beanutils.jar
+%{libdir}/commons-chain-${commons-chain.version}.jar
+%{linkdir}/commons-chain.jar
+%{libdir}/commons-digester-${commons-digester.version}.jar
+%{linkdir}/commons-digester.jar
+%{libdir}/commons-validator-${commons-validator.version}.jar
+%{linkdir}/commons-validator.jar
+%{libdir}/struts-core-${struts.version}.jar
+%{linkdir}/struts-core.jar
+%{libdir}/struts-taglib-${struts.version}.jar
+%{linkdir}/struts-taglib.jar
+%{libdir}/struts-taglib-${struts.version}.jar
+%{linkdir}/struts-taglib.jar
+%{libdir}/antlr-${antlr.version}.jar
+%{linkdir}/antlr.jar
+%{libdir}/portlet-api-${portlet-api.version}.jar
+%{linkdir}/portlet-api.jar
+
+
 
 %files csvfiles
 

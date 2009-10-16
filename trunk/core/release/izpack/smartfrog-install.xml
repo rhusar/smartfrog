@@ -387,7 +387,26 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-cloudfarmer/sf-cloudfarmer-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
-          />
+      <file src="ivy/lib/package-cloudfarmer/commons-beanutils-${commons-beanutils.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/commons-chain-${commons-chain.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/commons-digester-${commons-digester.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/commons-validator-${commons-validator.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      
+      <file src="ivy/lib/package-cloudfarmer/antlr-${antlr.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/portlet-api-${portlet-api.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/struts-core-${struts.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/struts-taglib-${struts.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-cloudfarmer/struts-tiles-${struts.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+
     </pack>
 
     <pack name="CSVfiles" required="no" preselected="no">
