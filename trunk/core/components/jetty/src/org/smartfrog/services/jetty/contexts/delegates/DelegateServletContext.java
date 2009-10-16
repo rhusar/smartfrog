@@ -24,9 +24,12 @@ import org.mortbay.jetty.MimeTypes;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.handler.AbstractHandlerContainer;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.HashSessionManager;
 import org.mortbay.jetty.servlet.SessionHandler;
+import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletMapping;
 import org.mortbay.resource.Resource;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.JettyHelper;
@@ -34,6 +37,8 @@ import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.jetty.JettyToSFLifecycle;
 import org.smartfrog.services.jetty.internal.ExtendedSecurityHandler;
 import org.smartfrog.services.jetty.internal.ExtendedServletHandler;
+import org.smartfrog.services.jetty.internal.ExtendedErrorHandler;
+import org.smartfrog.services.jetty.internal.ExtendedResourceHandler;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
@@ -77,11 +82,10 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * Constructor
      *
      * @param server server that is creating this
-     * @param context the context
      * @param declaration the servlet declaration
      */
-    public DelegateServletContext(JettyImpl server, Context context, Prim declaration) {
-        super(server, context);
+    public DelegateServletContext(JettyImpl server, Prim declaration) {
+        super(server, null);
         owner = declaration;
         log = LogFactory.getOwnerLog(declaration);
     }
@@ -101,6 +105,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
+    @Override
     public void deploy() throws SmartFrogException, RemoteException {
         super.deploy();
         JettyHelper jettyHelper = new JettyHelper(owner);
@@ -118,7 +123,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
 
     /**
-     * start: deploy this context
+     * start: create and deploy this context
      *
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException In case of network/rmi error
@@ -138,14 +143,14 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         Context ctx = new Context(
                 null,                           //parent
                 sessionHandler,                 //sessions
-                new ExtendedSecurityHandler(),  //security; can be null
-                new ExtendedServletHandler(),   //servlets
-                null); //error handler
+                new ExtendedSecurityHandler(log),  //security; 
+                new ExtendedServletHandler(log),   //servlets
+                new ExtendedErrorHandler(log)); //error handler
         setContext(ctx);
 
         handlerSet = new HandlerCollection();
 
-        resourceHandler = new ResourceHandler();
+        resourceHandler = new ExtendedResourceHandler();
         Resource baseResource;
         String source;
         if (resourceBase != null) {
@@ -167,12 +172,11 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         ctx.setBaseResource(baseResource);
         ctx.setContextPath(contextPath);
 
-        //add the resources
-        handlerSet.addHandler(resourceHandler);
-        //now paste in a session handler
 
         //then patch in the servlet context *afterwards*
         handlerSet.addHandler(getContext());
+        //add the resources
+        handlerSet.addHandler(resourceHandler);
         handlerLifecycle = new JettyToSFLifecycle<HandlerCollection>("handlers", handlerSet);
 
 
@@ -183,27 +187,40 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         log.info("Starting Jetty servlet context");
         contextHandler.addHandler(handlerSet);
         handlerLifecycle.start();
+        if(log.isInfoEnabled()) {
+            dumpHandlers(getServerContextHandler().getHandlers());
+        }
     }
-/*
-ava.lang.NullPointerException,
-at org.mortbay.jetty.servlet.AbstractSessionManager.doStart(AbstractSessionManager.java:171),
-at org.mortbay.jetty.servlet.HashSessionManager.doStart(HashSessionManager.java:67),
-at org.mortbay.component.AbstractLifeCycle.start(AbstractLifeCycle.java:50),
-at org.mortbay.jetty.servlet.SessionHandler.doStart(SessionHandler.java:115),
-at org.mortbay.component.AbstractLifeCycle.start(AbstractLifeCycle.java:50),
-at org.mortbay.jetty.handler.HandlerCollection.doStart(HandlerCollection.java:152),
-at org.mortbay.component.AbstractLifeCycle.start(AbstractLifeCycle.java:50),
-at org.smartfrog.services.jetty.JettyToSFLifecycle.start(JettyToSFLifecycle.java:110),
-	 	 	 	 	 	 	 	... 21 more, ALL: SmartFrogLifecycleException: [sfStart] HOST "192.168.1.88":rootProcess:mombasa:jetty:servlets, cause: SmartFrogException:: java.lang.NullPointerException,    SmartFrog 3.17.015dev (2009-10-13 13:48:23 BST),   context: , primContext sfCodeBase "default";
-   [deploy] sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
-   [deploy] port "8081";
-   [deploy] sfSyncTerminate "true";
-
- */
 
     /**
-     * undeploy a context. If the server is already stopped, this the undeployment is skipped without an error. The
-     * context field is set to null, to tell the system to skip this in future.
+     * Dump our handler chain, make things meaningful. This is a recursive function and logs to info
+     * @param handlers handlers to dump. 
+     */
+    private void dumpHandlers(Handler[] handlers) {
+        
+        for (Handler handler : handlers) {
+            log.info(handler.toString());
+            if (handler instanceof ServletHandler) {
+                ServletHandler sh = (ServletHandler) handler;
+                ServletMapping[] servletMappings = sh.getServletMappings();
+                if(servletMappings!=null) {
+                    for (ServletMapping mapping : servletMappings) {
+                        log.info(mapping.toString());
+                    }
+                } else {
+                    
+                }
+            } else {
+                if (handler instanceof AbstractHandlerContainer) {
+                    AbstractHandlerContainer hc = (AbstractHandlerContainer) handler;
+                    dumpHandlers(hc.getChildHandlers());
+                }
+            }
+        }
+    }
+
+    /**
+     * undeploy a the servlet by stopping it and removing it from the server context handler
      *
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException In case of network/rmi error

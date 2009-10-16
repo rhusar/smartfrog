@@ -19,20 +19,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.jetty.internal;
 
-import org.mortbay.jetty.security.SecurityHandler;
-import org.smartfrog.sfcore.logging.Log;
+import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.MimeTypes;
+import org.mortbay.resource.Resource;
+import org.mortbay.io.Buffer;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * Created 15-Oct-2007 12:01:51
- *
+ * extended resource handler
  */
 
-public class ExtendedSecurityHandler extends SecurityHandler {
+public class ExtendedResourceHandler extends ResourceHandler {
 
-    private Log log;
-
-    public ExtendedSecurityHandler(Log log) {
-        this.log = log;
-    }
 }

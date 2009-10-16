@@ -20,6 +20,7 @@
 package org.smartfrog.services.jetty.internal;
 
 import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletHolder;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -33,10 +34,10 @@ import java.io.IOException;
  */
 
 public class ExtendedServletHandler extends ServletHandler {
+    private Log log;
 
-
-    public ExtendedServletHandler() {
-
+    public ExtendedServletHandler(Log log) {
+        this.log = log;
     }
 
     /**
@@ -50,9 +51,27 @@ public class ExtendedServletHandler extends ServletHandler {
     protected void notFound(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             Log log = LogFactory.getLog(this);
-            log.info("Ignoring " + request.getContextPath());
+            log.info("404 \"" + request.getRequestURI()+ "\"" 
+                    + " from "+ request.getRemoteAddr());
         } catch (SmartFrogLogException e) {
             throw new RuntimeException(e);
         }
+        super.notFound(request, response);
+    }
+
+
+    @Override
+    public String toString() {
+        if(_string==null) {
+            StringBuffer details = new StringBuffer("ExtendedServletHandler ");
+            ServletHolder[] servlets = getServlets();
+            if(servlets!=null) {
+                for (ServletHolder sh:servlets) {
+                    details.append(sh.toString()).append("; ");
+                }
+            }
+            _string = details.toString();
+        }
+        return _string;
     }
 }
