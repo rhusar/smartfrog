@@ -1006,13 +1006,15 @@ smartfrog.tasks.classpath=
         </assertions>
         <jvmarg line="${daemon.jvmargs}" />
         <!-- load in a property file if it is present -->
-        <!--copy all proxy settings from the running JVM-->
         <propertyfile file="${runtime.properties}" optional="true"/>
+        <!--copy all proxy settings from the running JVM-->
         <syspropertyset refid="proxy.settings"/>
         <!--copy all properties beginning with test. or run.-->
         <syspropertyset>
           <propertyref prefix="test."/>
           <propertyref prefix="run."/>
+          <propertyref prefix="http.proxy"/>
+          <propertyref prefix="https.proxy"/>
         </syspropertyset>
       </sf-startdaemon>
     </presetdef>
