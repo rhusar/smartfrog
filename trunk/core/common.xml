@@ -995,7 +995,7 @@ smartfrog.tasks.classpath=
   <target name="declare-extended-smartfrog-tasks"
       depends="init,use-smartfrog-tasks,declare-classpaths">
     <presetdef name="sf-startdaemon-debug">
-      <sf-startdaemon classpathref="run.classpath"
+      <sf-startdaemon classpathref="exec.classpath"
         logStackTraces="true" spawn="true"
         securityManager="${security.manager}"
         dir="${build.test.dir}"
