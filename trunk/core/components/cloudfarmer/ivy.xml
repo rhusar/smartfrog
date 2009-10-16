@@ -5,7 +5,7 @@
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-      Cloud Farmer: managing machines in a cloud 
+      Cloud Farmer: managing machines in a cloud
     </description>
   </info>
   <!-- FIXME: Ivy 1.4.1 buildlist bug
@@ -18,21 +18,21 @@
     <conf name="documentation"
         description="all documentation artifacts"/>
     <conf name="build" visibility="private"
-          description="artifacts needed to build the application"/>
+        description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"
-          extends="redist,webapp,ec2"
-          description="artifacts needed to compile the application"/>
-    <conf name="daemon" visibility="private" extends="default,compile" 
-          description="the classpath needed to run smartfrog daemons"/>
+        extends="redist,webapp,ec2"
+        description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private" extends="default,compile"
+        description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="daemon"
-          description="the classpath needed to run tests"/>
+        description="the classpath needed to run tests"/>
     <conf name="ec2" description="contains EC2 support"/>
     <conf name="webapp" description="the web gui"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts" />
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
-          extends="redist,webapp"/>
-    
+        extends="redist,webapp"/>
+
   </configurations>
 
   <publications>
@@ -44,77 +44,77 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-                name="smartfrog"
-                changing="true"
-                rev="latest.integration"
-                conf="compile,runtime,daemon->services"/>
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->services"/>
 
     <!--we pull in www stuff -->
     <dependency org="org.smartfrog"
-                name="sf-www"
-                changing="true"
-                rev="latest.integration"
-                conf="compile,runtime,daemon,test->default;redist->httpclient"/>
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon,test->default;redist->httpclient"/>
 
     <!--XML content-->
-<!--    <dependency org="org.smartfrog"
-                name="sf-xml"
-                changing="true"
-                rev="latest.integration"
-                conf="compile,runtime,daemon->default"/>-->
+    <!--    <dependency org="org.smartfrog"
+    name="sf-xml"
+    changing="true"
+    rev="latest.integration"
+    conf="compile,runtime,daemon->default"/>-->
 
     <!--httpclient needs commons logging; logging services pulls it in-->
     <dependency org="org.smartfrog"
-                name="sf-loggingservices"
-                changing="true"
-                rev="latest.integration"
-                conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
 
     <dependency org="struts"
-      name="struts"
-      rev="${struts.version}"
-      conf="webapp->default"/>
+        name="struts"
+        rev="${struts.version}"
+        conf="webapp->default"/>
 
 
     <!--portlet is there as something to move away from-->
     <dependency org="javax.portlet"
-      name="portlet-api"
-      rev="${portlet-api.version}"
-      conf="webapp->default"/>
+        name="portlet-api"
+        rev="${portlet-api.version}"
+        conf="webapp->default"/>
 
 
     <!--jetty for the webapp-->
     <dependency org="org.smartfrog"
-                name="sf-jetty"
-                changing="true"
-                rev="latest.integration"
-                conf="webapp->default,jsp"/>
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="webapp->default,jsp"/>
 
     <dependency org="org.smartfrog"
-                name="sf-testharness"
-                changing="true"
-                rev="latest.integration"
-                conf="test->default"/>
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
 
 
     <dependency org="org.smartfrog"
-                name="sf-tasks"
-                rev="latest.integration"
-                changing="true"
-                conf="build->default"/>
+        name="sf-tasks"
+        rev="latest.integration"
+        changing="true"
+        conf="build->default"/>
 
     <dependency org="org.smartfrog"
-                name="sf-xunit"
-                changing="true"
-                rev="latest.integration"
-                conf="test->default"/>
+        name="sf-xunit"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
 
     <!--grab mail and activation-->
     <dependency org="org.smartfrog"
-                name="sf-ec2"
-                changing="true"
-                rev="latest.integration"
-                conf="ec2->default"/>
+        name="sf-ec2"
+        changing="true"
+        rev="latest.integration"
+        conf="ec2->default"/>
 
 
   </dependencies>
