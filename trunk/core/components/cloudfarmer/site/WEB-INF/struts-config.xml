@@ -52,6 +52,8 @@
 
   <action-mappings>
 
+
+
     <!-- Actions to list a workflow-->
     <action path="/mombasa-portlet/workflowList"
       type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.WorkflowListAction">
@@ -59,12 +61,6 @@
       <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
     </action>
 
-        <!-- Actions to list a workflow-->
-    <action path="/mombasa-portlet/happy"
-      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.WorkflowListAction">
-      <forward name="success" path="/happy/happy.html"/>
-      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
-    </action>
 
     <action path="/mombasa-portlet/submitMRJob/view"
       type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.SubmitMRJobFormViewAction"
@@ -245,8 +241,27 @@
       <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
     </action>
 
+
+        <!-- Actions to list a workflow-->
+    <action path="/mombasa-portlet/happy"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="/happy/happy.html"/>
+      <forward name="failure" path="/happy/unhappy.html"/>
+    </action>
+
+    <action path="/mombasa-portlet/happytiles"
+     type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="struts.happytiles.success" redirect="true"/>
+      <forward name="failure" path="/happy/unhappy.html"/>
+    </action>
+
   </action-mappings>
+
+
+
+<!--
   <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>
+-->
 
   <!-- Custom Request Processor -->
  <!-- <controller processorClass="org.apache.portals.bridges.struts.PortletTilesRequestProcessor"/>
@@ -260,6 +275,7 @@
 
   -->
   <message-resources parameter="org.smartfrog.services.cloudfarmer.client.web.forms.MessageResources"/>
+  <message-resources parameter="MessageResources"/>
 
   <!-- Tiles Plugin -->
 
@@ -273,8 +289,15 @@
     <set-property value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml" property="pathnames"/>
   </plug-in>
 -->
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property
+        property="pathnames"
+        value="/org/apache/struts/validator/validator-rules.xml,
+               /WEB-INF/validation.xml"/>
+  </plug-in>
 
   <plug-in className="org.apache.struts.tiles.TilesPlugin">
     <set-property value="/WEB-INF/tiles-defs.xml" property="definitions-config"/>
   </plug-in>
+
 </struts-config>
