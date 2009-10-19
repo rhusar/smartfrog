@@ -59,6 +59,12 @@
       <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
     </action>
 
+        <!-- Actions to list a workflow-->
+    <action path="/mombasa-portlet/happy"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.WorkflowListAction">
+      <forward name="success" path="/happy/happy.html"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
 
     <action path="/mombasa-portlet/submitMRJob/view"
       type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.SubmitMRJobFormViewAction"

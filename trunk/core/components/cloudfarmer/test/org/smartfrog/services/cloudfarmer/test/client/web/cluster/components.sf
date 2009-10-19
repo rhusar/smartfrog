@@ -51,6 +51,14 @@ testJettyExecutesJSP extends ExpectJettyServerDeployed {
   }
 }
 
+testStrutsHappy extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    list extends WaitForStrutsHappy;
+  }
+}
+
+
 testClusterList extends ExpectJettyServerDeployed {
 
   tests extends Sequence {

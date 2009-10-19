@@ -12,8 +12,8 @@ public class ClusterWebappTest extends DeployingTestBase {
         super(name);
     }
 
-    public void testJettyDeployed() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testJettyDeployed");
+    public void testStrutsHappy() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testStrutsHappy");
     }
 
     public void NotestClusterList() throws Throwable {

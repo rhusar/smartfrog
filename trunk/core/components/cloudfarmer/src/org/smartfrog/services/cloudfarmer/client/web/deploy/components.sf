@@ -92,18 +92,23 @@ StrutsOnJetty extends Compound {
   }
 }
 
+
+StrutsActions  extends DATA {
+  root "/html/mombasa-portlet";
+
+  actionRoot "/mombasa-portlet/";
+}
+
+
 /**
  * A list of pages, nothing deployable
  */
-WorkflowActions extends DATA {
-  root "/html/mombasa-portlet";
-
-  actionRoot "/mombasa-portlet/";
+WorkflowActions extends StrutsActions {
+  strutsHappy ( actionRoot ++ "happy.do");
   workflowList ( actionRoot ++ "workflowList.do");
 }
 
-ClusterActions extends DATA {
-  root "/html/mombasa-portlet";
-  actionRoot "/mombasa-portlet/";
-  list ( actionRoot ++ "cluster/list.do");
+ClusterActions extends StrutsActions {
+  actionRoot "/mombasa-portlet/cluster/";
+  list ( actionRoot ++ "list.do");
 }
