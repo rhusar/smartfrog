@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.actions.cluster.SuccessAction;
-
 /**
  * A success action that does any checkup forst
  */

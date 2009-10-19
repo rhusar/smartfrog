@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 
-<h2>Happy Portlet</h2>
+<h2>Happy Job Submission Application</h2>
 
 <%!
 

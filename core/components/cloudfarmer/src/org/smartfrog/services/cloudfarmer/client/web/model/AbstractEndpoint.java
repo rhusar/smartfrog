@@ -22,7 +22,6 @@ package org.smartfrog.services.cloudfarmer.client.web.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.cloudfarmer.client.web.model.Constants;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;

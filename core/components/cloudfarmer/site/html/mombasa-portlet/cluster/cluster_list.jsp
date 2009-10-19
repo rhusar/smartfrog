@@ -36,10 +36,10 @@ For more information: www.smartfrog.org
   <logic:iterate id="host"
                  name="hosts"
                  property="list"
-                 type="com.hp.hpl.thor.services.mombasa.model.HostInstance">
+                 type="org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance">
     <tr>
       <td>
-        <html:link page="/portlet_action/mombasa-portlet/cluster/viewhost"
+        <html:link action="/mombasa-portlet/cluster/viewhost"
             paramId="hostid" paramName="host" paramProperty="id">
           <bean:write name="host" property="hostname"/>
         </html:link>

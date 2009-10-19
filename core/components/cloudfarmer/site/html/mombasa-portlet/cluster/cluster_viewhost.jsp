@@ -52,14 +52,14 @@ This is driven by the "host" value, which maps to a host
   <tr>
     <td colspan="2"  bgcolor="grey">
       <html:link paramId="hostid" paramName="host" paramProperty="id"
-          page="/portlet_action/mombasa-portlet/cluster/host_ping">Ping the host
+          action="/mombasa-portlet/cluster/host_ping">Ping the host
       </html:link>
     </td>
   </tr>
   <tr>
     <td colspan="2"  bgcolor="grey">
       <html:link paramId="hostid" paramName="host" paramProperty="id"
-          page="/portlet_action/mombasa-portlet/cluster/host_terminate">Terminate the host
+          action="/mombasa-portlet/cluster/host_terminate">Terminate the host
       </html:link>
     </td>
   </tr>

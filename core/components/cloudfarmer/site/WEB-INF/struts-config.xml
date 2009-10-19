@@ -275,7 +275,6 @@
 
   -->
   <message-resources parameter="org.smartfrog.services.cloudfarmer.client.web.forms.MessageResources"/>
-  <message-resources parameter="MessageResources"/>
 
   <!-- Tiles Plugin -->
 

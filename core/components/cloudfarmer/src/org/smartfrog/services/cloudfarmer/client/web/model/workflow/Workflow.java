@@ -22,8 +22,8 @@ package org.smartfrog.services.cloudfarmer.client.web.model.workflow;
 
 import org.apache.struts.util.LabelValueBean;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnboundException;
-import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;

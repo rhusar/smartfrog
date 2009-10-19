@@ -12,15 +12,7 @@ public class ClusterWebappTest extends DeployingTestBase {
         super(name);
     }
     
-    public void testStrutsHappy() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testStrutsHappy");
-    }
-
-    public void testTilesHappy() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testTilesHappy");
-    }
-
-    public void NotestClusterList() throws Throwable {
+    public void testClusterList() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterList");
     }
 }

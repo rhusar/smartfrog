@@ -19,11 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.actions.cluster.AbstractMombasaAction;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -46,9 +44,8 @@ public class ClusterControllerFactory {
      */
     public ClusterController createClusterController(HttpServletRequest request)
             throws IOException, SmartFrogException {
-        PortletRequest pr = AbstractMombasaAction.extractPortletRequest(request);
         ClusterControllerBinding binding = new ClusterControllerBinding();
-        binding.loadBinding(pr.getPreferences());
+        //binding.loadBinding(pr.getPreferences());
         return createClusterController(binding);
     }
 

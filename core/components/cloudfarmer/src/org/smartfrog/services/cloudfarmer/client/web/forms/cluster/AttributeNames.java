@@ -36,7 +36,7 @@ public interface AttributeNames extends ClusterRequestAttributes {
     String REMOTE_DAEMON_URL = "remoteDaemonURL";
     String ATTR_WORKFLOW_LIST = "workflowList";
     String WORKFLOW_INSTANCE = "workflowInstance";
-    String ATTR_PARSE_ERROR_LIST = "com.hp.hpl.thor.services.mombasa.struts.errorList";
+    String ATTR_PARSE_ERROR_LIST = "mombasa.errorList";
     String ACTION_PARSE_ERROR = "parseError";
     String ACTION_BIND_FAILURE = "bindFailure";
 }

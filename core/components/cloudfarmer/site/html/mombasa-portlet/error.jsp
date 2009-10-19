@@ -1,4 +1,5 @@
-<%@ page isErrorPage="true" %>
+<%@ page isErrorPage="false" %>
+<%@ include file="/html/mombasa-portlet/patcherrorpages.jsp" %>
 <%--
 /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
@@ -22,10 +23,12 @@ For more information: www.smartfrog.org
 --%>
 
 <%
-  /*
-  * This is the error reporting page. If an exception is attached in the attribute "org.apache.struts.action.EXCEPTION", it gets displayed
-  * If an errorMessage is attached, it is printed
-  */
+/*
+* This is the error reporting page.
+*  If an exception is attached in the attribute "org.apache.struts.action.EXCEPTION",
+*  it gets displayed
+* If an errorMessage is attached, it is printed
+*/
 %>
 <%@ include file="/html/mombasa-portlet/init.jsp" %>
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>

@@ -37,7 +37,7 @@ Host Count: <bean:write name="hostcount"/>
   <logic:iterate id="host"
                  name="hosts"
                  property="list"
-                 type="com.hp.hpl.thor.services.mombasa.model.HostInstance">
+                 type="org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance">
     <tr>
       <td>
         <bean:write name="host" property="hostname"/>

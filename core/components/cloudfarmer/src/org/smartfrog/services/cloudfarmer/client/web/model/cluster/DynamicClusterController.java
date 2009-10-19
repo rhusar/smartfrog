@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.cloudfarmer.client.web.model.LocalSmartFrogDescriptor;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
 

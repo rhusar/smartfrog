@@ -41,9 +41,10 @@ public interface TemplateNames {
     String BINDING_TASKTRACKER_SLOTS = "binding.tasktracker.slots";
 
     /**
+     * Package containing the temlates
      * {@value}
      */
-    String TEMPLATE_PACKAGE = "/com/hp/hpl/thor/services/mombasa/model/descriptions/";
+    String TEMPLATE_PACKAGE = "/org/smartfrog/services/cloudfarmer/client/web/hadoop/descriptions/";
 
     /**
      * This defines a master node. It will create a node given some predefined JVM properties {@value}

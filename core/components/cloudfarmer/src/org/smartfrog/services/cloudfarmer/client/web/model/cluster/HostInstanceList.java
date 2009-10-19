@@ -42,6 +42,7 @@ public class HostInstanceList extends ArrayList<HostInstance> {
 
     /**
      * for struts integration
+     * @return list of host instances
      */
     public List<HostInstance> getList() {
         return this;

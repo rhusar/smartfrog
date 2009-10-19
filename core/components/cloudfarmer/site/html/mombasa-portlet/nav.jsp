@@ -26,24 +26,23 @@ For more information: www.smartfrog.org
 <table border="0" width="100%">
   <tr>
     <td>
-      <html:link
-          page="/portlet_action/mombasa-portlet/workflowList">List Workflows</html:link>
+      <html:link action="/mombasa-portlet/workflowList">List Workflows</html:link>
     </td>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/submitMRJob/view">Queue a MapReduce Job</html:link>
+          action="/mombasa-portlet/submitMRJob/view">Queue a MapReduce Job</html:link>
     </td>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/submitTool/view">Queue a Tool Job</html:link>
+          action="/mombasa-portlet/submitTool/view">Queue a Tool Job</html:link>
     </td>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/queueWorkflow/view">Queue a Workflow</html:link>
+          action="/mombasa-portlet/queueWorkflow/view">Queue a Workflow</html:link>
     </td>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/workflowAdmin/view">Administration</html:link>
+          action="/mombasa-portlet/workflowAdmin/view">Administration</html:link>
     </td>
   </tr>
 </table>
