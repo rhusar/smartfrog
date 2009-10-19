@@ -19,8 +19,12 @@ public class JettyWebappTest extends DeployingTestBase {
     public void testJettySupportsJSP() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testJettySupportsJSP");
     }
-    
+
     public void testJettyExecutesJSP() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testJettyExecutesJSP");
+    }
+
+    public void testStrutsHappy() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testStrutsHappy");
     }
 }

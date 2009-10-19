@@ -112,9 +112,8 @@
 
 
   <target  name="mombasa" depends="ready-to-deploy"
-       description="Deploy a mock farm manager" >
-    <property name="update" value="false"/>
-      <deploy update="${update}">
+       description="Deploy a mock farm manager and the client web application" >
+      <deploy>
         <application name="mombasa"
             descriptor="/org/smartfrog/services/cloudfarmer/client/web/deploy/server.sf"/>
       </deploy>
