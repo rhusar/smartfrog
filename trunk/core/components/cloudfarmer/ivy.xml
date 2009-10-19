@@ -94,13 +94,6 @@
         conf="webapp->default"/>
 
 
-    <!--portlet is there as something to move away from-->
-    <dependency org="javax.portlet"
-        name="portlet-api"
-        rev="${portlet-api.version}"
-        conf="webapp->default"/>
-
-
     <!--jetty for the webapp-->
     <dependency org="org.smartfrog"
         name="sf-jetty"

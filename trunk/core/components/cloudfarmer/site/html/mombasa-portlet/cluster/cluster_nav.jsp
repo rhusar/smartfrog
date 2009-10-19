@@ -28,15 +28,15 @@ For more information: www.smartfrog.org
   <tr>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/cluster/list">List Hosts</html:link>
+          action="/mombasa-portlet/cluster/list">List Hosts</html:link>
     </td>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/cluster/add">Add a Host</html:link>
+          action="/mombasa-portlet/cluster/add">Add a Host</html:link>
     </td>
     <td>
       <html:link
-          page="/portlet_action/mombasa-portlet/cluster/admin">Administration</html:link>
+          action="/mombasa-portlet/cluster/admin">Administration</html:link>
     </td>
   </tr>
 </table>

@@ -20,12 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HadoopCluster;
-import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
-import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
-import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
-import org.smartfrog.services.cloudfarmer.client.web.actions.cluster.AbstractStrutsAction;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.BadParameterException;
+import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
+import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HadoopCluster;
+import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.servlet.http.HttpServletRequest;

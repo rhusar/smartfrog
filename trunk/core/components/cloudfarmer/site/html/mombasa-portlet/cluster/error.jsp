@@ -30,16 +30,15 @@ For more information: www.smartfrog.org
   * If an errorMessage is attached, it is printed
   */
 %>
-<%@ include file="/html/mombasa-portlet/init.jsp" %>
-<jsp:include page="/html/mombasa-portlet/header.jsp"/>
-
 
 <h2>Error: <bean:write name="errorMessage"/></h2>
+<%--
 
 <div>
 <jsp:include page="/html/mombasa-portlet/cluster/cluster_nav.jsp" flush="true"/>
 </div>
 
+--%>
 
 <logic:present name="org.apache.struts.action.EXCEPTION">
   <bean:write name="org.apache.struts.action.EXCEPTION"/>

@@ -21,16 +21,14 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model;
 
+import org.apache.struts.upload.FormFile;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.ParseFailedException;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.AbstractWorkflowServerActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitMRJobActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitToolActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitWorkflowActionForm;
-import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
-import org.smartfrog.services.cloudfarmer.client.web.model.Constants;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.WorkflowList;
-import org.apache.struts.upload.FormFile;
-import org.smartfrog.services.cloudfarmer.client.web.exceptions.ParseFailedException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;

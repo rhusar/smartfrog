@@ -23,6 +23,7 @@ For more information: www.smartfrog.org
 <%@ page import="java.io.IOException,
                  java.io.InputStream"
          session="false" %>
+<%@ page import="java.util.Enumeration" %>
 <%@ include file="/html/mombasa-portlet/init.jsp" %>
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 
@@ -253,7 +254,8 @@ For more information: www.smartfrog.org
    * @param out outstream
    * @param resource resource wanted
    * @param errorText text to print on failure
-   * @throws Exception
+   * @return 1 if the resource was found, 0 otherwise
+   * @throws Exception if writing fails
    */
   int wantResource(JspWriter out,
                    String resource,

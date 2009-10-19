@@ -19,22 +19,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerBinding;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerFactory;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.BadParameterException;
 import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterChangeManagerForm;
-import org.smartfrog.services.cloudfarmer.client.web.actions.cluster.AbstractStrutsAction;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerBinding;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerFactory;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import javax.portlet.PortletRequest;
-import javax.portlet.ReadOnlyException;
-import javax.portlet.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -153,14 +149,16 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
         ClusterControllerBinding binding = changeClusterForm.createControllerBinding();
         ClusterControllerFactory factory = new ClusterControllerFactory();
         ClusterController server = factory.createClusterController(binding);
+/*
         PortletRequest pr = extractPortletRequest(request);
         try {
             binding.saveBinding(pr.getPreferences());
         } catch (ReadOnlyException e) {
             throw SmartFrogException.forward(e);
-        } catch (ValidatorException e) {
+        } catch (Exception e) {
             throw SmartFrogException.forward(e);
         }
+*/
         removeAttribute(request, FARM_CONTROLLER);
         //this can fail. In this situation, the current controller has alreaby been removed.
         server.bind();

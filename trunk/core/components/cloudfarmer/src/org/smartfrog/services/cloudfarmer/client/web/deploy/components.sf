@@ -23,7 +23,7 @@
 #include "/org/smartfrog/services/cloudfarmer/client/web/deploy/struts.sf"
 #include "/org/smartfrog/services/jetty/jettyjsp.sf"
 #include "/org/smartfrog/services/www/mimetypes.sf"
-
+#include "/org/smartfrog/services/filesystem/components.sf"
 /**
  * Deploy a compound containing jetty and servlets
  */
@@ -33,8 +33,9 @@ StrutsOnJetty extends Compound {
   //we always run this in its own JVM, as Jasper is trouble otherwise
   sfProcessName "StrutsOnJettyPS";
   port 8081;
-
   sfSyncTerminate true;
+  //set to true to keep JSP pages, do more debugging and logging etc.
+  debugFlag true;
 
   //integrate logging with smartfrog
   logging extends IntegrateJettyLogging;
@@ -45,6 +46,13 @@ StrutsOnJetty extends Compound {
 
     server "jetty";
 
+  }
+
+
+  JspDir extends TempDir {
+   dir LAZY PROPERTY java.io.tmpdir;
+   prefix "jettyJSP";
+   deleteOnExit (! debugFlag);
   }
 
 
@@ -77,7 +85,12 @@ StrutsOnJetty extends Compound {
     context LAZY servlets;
      pathSpec "*.jsp";
      mappings [];
+
      initOptions:sendErrorToClient true;
+     initOptions:reloading false;
+     initOptions:keepgenerated debugFlag;
+     initOptions:mappedfile debugFlag;
+     //initOptions:scratchdir LAZY JspDir:absolutePath;
   }
 
 
@@ -94,7 +107,7 @@ StrutsOnJetty extends Compound {
 
 
 StrutsActions  extends DATA {
-  root "/html/mombasa-portlet";
+  htmlRoot "/html/mombasa-portlet/";
 
   actionRoot "/mombasa-portlet/";
 }
@@ -107,9 +120,25 @@ WorkflowActions extends StrutsActions {
   strutsHappy ( actionRoot ++ "happy.do");
   tilesHappy ( actionRoot ++ "happytiles.do");
   workflowList ( actionRoot ++ "workflowList.do");
+  submitMRJob (actionRoot ++ "submitMRJob/view.do");
+  //http://localhost:8081/mombasa-portlet/submitTool/view.do
+  submitTool (actionRoot ++ "submitTool/view.do");
+  //http://localhost:8081/mombasa-portlet/queueWorkflow/view.do
+  queueWorkflow (actionRoot ++ "queueWorkflow/view.do");
+  //http://localhost:8081/mombasa-portlet/workflowAdmin/view.do
+  workflowAdmin (actionRoot ++ "workflowAdmin/view.do");
+  workflowServerHappy (htmlRoot + "workflow_server_happy.jsp");
+  portletHappy (htmlRoot + "happy.jsp");
 }
 
 ClusterActions extends StrutsActions {
-  actionRoot "/mombasa-portlet/cluster/";
-  list ( actionRoot ++ "list.do");
+  cluster "/mombasa-portlet/cluster/";
+
+  add ( cluster ++ "add.do");
+  admin ( cluster ++ "admin.do");
+  list ( cluster ++ "list.do");
+  terminate ( cluster ++ "change_manager.do");
+  change_manager ( cluster ++ "change_manager.do");
+  viewhost ( cluster ++ "viewhost.do");
+
 }

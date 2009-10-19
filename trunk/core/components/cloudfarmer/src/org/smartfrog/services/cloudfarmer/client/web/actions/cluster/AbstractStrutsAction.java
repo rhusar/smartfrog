@@ -19,9 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
-import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
@@ -29,16 +26,12 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.BadParameterException;
+import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
-import javax.portlet.ReadOnlyException;
-import javax.portlet.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.rmi.ConnectException;
 
 /**
@@ -46,8 +39,8 @@ import java.rmi.ConnectException;
  */
 
 public abstract class AbstractStrutsAction extends Action implements ClusterRequestAttributes {
-    protected static Log LOG = LogFactory.getLog(" com.hp.hpl.thor.services.mombasa.struts.action");
-    protected Log log = LogFactory.getLog(" com.hp.hpl.thor.services.mombasa.struts.action."
+    protected static Log LOG = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web.action");
+    protected Log log = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web."
             + getActionName());
 
     /**
@@ -147,12 +140,10 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
     }
 
     /**
-     * This is a funny in that it tries to get the attribute from any of request/session or portlet preferences It
-     * doesnt care which, only that it can be found.
-     *
+     * Retrieve attribute state, may integrate with persistent configuration mechanisms
      * @param request http request
      * @param key     key to retrieve on
-     * @return
+     * @return the value
      */
     protected static Object getAttributeFromRequestState(HttpServletRequest request, String key) {
         Object o = request.getAttribute(key);
@@ -170,62 +161,6 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
     protected static void removeAttribute(HttpServletRequest request, String key) {
         request.removeAttribute(key);
         request.getSession().removeAttribute(key);
-    }
-
-    public static PortletRequest extractPortletRequest(HttpServletRequest request) {
-        return (PortletRequest) request.getAttribute("javax.portlet.request");
-    }
-
-    public PortletConfig extractPortletConfig(HttpServletRequest request) {
-        PortletConfig cfg = (PortletConfig) request.getAttribute("javax.portlet.config");
-        return cfg;
-    }
-
-    /**
-     * retrieves a value from the portlet space
-     *
-     * @param request request
-     * @param key     key
-     * @param defVal  default value, can be null
-     * @return the value or the default value
-     */
-    protected String getPortletPrefsValue(HttpServletRequest request, String key, String defVal) {
-        PortletRequest pr = extractPortletRequest(request);
-        PortletPreferences prefs = pr.getPreferences();
-        return prefs.getValue(key, defVal);
-    }
-
-    /**
-     * Set a value in the portlet preferences
-     *
-     * @param request request to work with
-     * @param key     key to set
-     * @param value   value
-     * @throws ReadOnlyException  cannot set an RO property
-     * @throws ValidatorException trouble storing
-     * @throws IOException        trouble storing
-     */
-    protected void setPortletPrefsValue(HttpServletRequest request, String key, String value)
-            throws ReadOnlyException, ValidatorException, IOException {
-        PortletRequest pr = extractPortletRequest(request);
-        PortletPreferences prefs = pr.getPreferences();
-        prefs.setValue(key, value);
-        prefs.store();
-    }
-
-    /**
-     * Get the portlet request
-     *
-     * @param request incoming request
-     * @return the portlet request
-     */
-    public static PortletRequest getPortletRequest(HttpServletRequest request) {
-        return (PortletRequest) request.getAttribute("javax.portlet.request");
-    }
-
-    public static PortletSession getPortletSession(HttpServletRequest request) {
-        PortletRequest pr = getPortletRequest(request);
-        return pr.getPortletSession(true);
     }
 
     /**

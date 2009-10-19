@@ -45,7 +45,7 @@ For more information: www.smartfrog.org
   <logic:iterate id="workflow"
                  name="workflowList"
                  property="list"
-                 type="com.hp.hpl.thor.services.mombasa.model.Workflow">
+                 type="org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow">
     <tr>
       <td><bean:write name="workflow" property="name"/></td>
       <td style="padding-left: 10px;"></td>

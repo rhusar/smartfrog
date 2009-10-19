@@ -1,4 +1,5 @@
-<%@ page isErrorPage="true" %>
+<%@ page isErrorPage="false" %>
+<%@ include file="/html/mombasa-portlet/patcherrorpages.jsp" %>
 <%--
 /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
@@ -30,7 +31,6 @@ For more information: www.smartfrog.org
   * If an errorMessage is attached, it is printed
   */
 %>
-<jsp:include page="/html/mombasa-portlet/header.jsp"/>
 
 
 <h2>Error: <bean:write name="errorMessage"/></h2>
@@ -39,7 +39,7 @@ For more information: www.smartfrog.org
 The cluster controller is not running or not reachable. Please
 start the controller, or correct the controller settings in the
   <html:link
-      page="/portlet_action/mombasa-portlet/cluster/admin">administration tab</html:link>
+      action="/mombasa-portlet/cluster/admin">administration tab</html:link>
 </div>
 
 <logic:present name="errorCause">

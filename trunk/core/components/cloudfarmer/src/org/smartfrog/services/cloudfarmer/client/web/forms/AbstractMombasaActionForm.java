@@ -29,7 +29,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.upload.FormFile;
 
 public abstract class AbstractMombasaActionForm extends ActionForm implements AttributeNames {
-    protected final Log log = LogFactory.getLog(" com.hp.hpl.thor.services.mombasa.struts.action." + getActionName());
+    protected final Log log = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web.action." + getActionName());
 
 
     /**

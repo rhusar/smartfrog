@@ -1,4 +1,5 @@
-<%@ page isErrorPage="true" %>
+<%@ page isErrorPage="false" %>
+<%@ include file="/html/mombasa-portlet/patcherrorpages.jsp" %>
 <%--
 /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
@@ -44,7 +45,7 @@ For more information: www.smartfrog.org
     <th>Error</th>
   </tr>
   <logic:iterate id="parseerror"
-                 name="com.hp.hpl.thor.services.mombasa.struts.errorList"
+                 name="mombasa.errorList"
                  type="list">
     <tr>
       <td><bean:write name="parseerror"/></td>

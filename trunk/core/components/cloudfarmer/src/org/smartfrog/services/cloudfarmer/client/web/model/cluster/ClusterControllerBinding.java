@@ -19,9 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
-import javax.portlet.PortletPreferences;
-import javax.portlet.ReadOnlyException;
-import javax.portlet.ValidatorException;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -31,6 +28,9 @@ import java.io.Serializable;
 
 public class ClusterControllerBinding implements Serializable {
 
+    /**
+     * The default controller is {@link ClusterControllerFactory#SMARTFROG_CONTROLLER}
+     */
     private int controller = ClusterControllerFactory.SMARTFROG_CONTROLLER;
 
     private String URL;
@@ -77,25 +77,23 @@ public class ClusterControllerBinding implements Serializable {
     /**
      * Persist the controller binding
      *
-     * @param prefs the portlet preferences to use
-     * @throws ReadOnlyException  if the specific setting cannot be used
-     * @throws ValidatorException trouble saving
+     * @param prefs the preferences to use
      * @throws IOException        trouble saving
      */
-    public void saveBinding(PortletPreferences prefs) throws ReadOnlyException, ValidatorException, IOException {
-        prefs.setValue(PREFIX + "controller", Integer.toString(controller));
+    public void saveBinding(Object prefs) throws IOException {
+/*        prefs.setValue(PREFIX + "controller", Integer.toString(controller));
         prefs.setValue(PREFIX + "url", URL);
         prefs.setValue(PREFIX + "username", username);
         prefs.setValue(PREFIX + "password", password);
-        prefs.store();
+        prefs.store();*/
     }
 
-    public void loadBinding(PortletPreferences prefs) {
-        String c = prefs.getValue(PREFIX + "controller", Integer.toString(controller));
+    public void loadBinding(Object prefs) {
+/*        String c = prefs.getValue(PREFIX + "controller", Integer.toString(controller));
         controller = Integer.valueOf(c);
         URL = prefs.getValue(PREFIX + "url", URL);
         username = prefs.getValue(PREFIX + "username", username);
-        password = prefs.getValue(PREFIX + "password", password);
+        password = prefs.getValue(PREFIX + "password", password);*/
     }
 
 

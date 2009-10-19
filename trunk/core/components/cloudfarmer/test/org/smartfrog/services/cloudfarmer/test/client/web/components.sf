@@ -41,7 +41,7 @@ ExpectJettyServerDeployed extends ExpectDeploy {
 WaitForJettyPage extends WaitForPage {
   fetchErrorText true;
   port StrutsOnJetty:port;
-  timeout 10000;
+  timeout 5000;
 }
 
 
