@@ -76,7 +76,10 @@ WaitForWorkflowList extends WaitForJettyPage {
 WaitForClusterList extends WaitForJettyPage {
   page ClusterActions:list;
 }
-
 WaitForStrutsHappy extends WaitForJettyPage {
   page WorkflowActions:strutsHappy;
+}
+
+WaitForTilesHappy extends WaitForJettyPage {
+  page WorkflowActions:tilesHappy;
 }

@@ -58,6 +58,12 @@ testStrutsHappy extends ExpectJettyServerDeployed {
   }
 }
 
+testTilesHappy extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    list extends WaitForTilesHappy;
+  }
+}
 
 testClusterList extends ExpectJettyServerDeployed {
 

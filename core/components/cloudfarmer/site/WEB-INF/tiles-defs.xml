@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
-<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
-    "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+    <!DOCTYPE tiles-definitions PUBLIC
+              "-//Apache Software Foundation//DTD Tiles Configuration 1.3//EN"
+              "http://struts.apache.org/dtds/tiles-config_1_3.dtd">
+<!--<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+    "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">-->
 
 <tiles-definitions>
 
@@ -20,6 +23,15 @@
 
 
   <!-- Workflow List operations -->
+   <!-- ====================================================================================================  -->
+   <!-- Workflow Portlet -->
+   <!-- ====================================================================================================  -->
+
+
+  <definition name="struts.happytiles.success"
+              path="/happy/happytiles.jsp">
+    <put name="content" value="Content has been Loaded From Tiles"/>
+  </definition>
 
   <!-- ====================================================================================================  -->
   <!-- Workflow Portlet -->

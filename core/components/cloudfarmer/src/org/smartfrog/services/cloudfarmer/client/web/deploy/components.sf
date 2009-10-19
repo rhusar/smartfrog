@@ -105,6 +105,7 @@ StrutsActions  extends DATA {
  */
 WorkflowActions extends StrutsActions {
   strutsHappy ( actionRoot ++ "happy.do");
+  tilesHappy ( actionRoot ++ "happytiles.do");
   workflowList ( actionRoot ++ "workflowList.do");
 }
 
