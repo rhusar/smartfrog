@@ -28,6 +28,7 @@ For more information: www.smartfrog.org
 
 
 MockHadoopCluster extends MockClusterFarmer {
+  description ("This farmer is a mock farmer with a limit of " ++ clusterLimit ++ " and Hadoop Roles");
   clusterLimit 20;
   
   roles extends HadoopRoles;
