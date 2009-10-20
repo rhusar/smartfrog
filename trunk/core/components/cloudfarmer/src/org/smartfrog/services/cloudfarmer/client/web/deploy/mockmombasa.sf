@@ -20,5 +20,13 @@
 
 
 #include "/org/smartfrog/services/cloudfarmer/client/web/deploy/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/mock/example.sf"
+sfConfig extends Compound {
 
-sfConfig extends ForkedMombasaServer ;
+  farmer extends MockHadoopCluster {
+    clusterLimit 100;
+  }
+
+  //deploy the webapp
+  subprocess extends ForkedMombasaServer;
+}

@@ -110,12 +110,18 @@
       </deploy>
   </target>
 
-
   <target  name="mombasa" depends="ready-to-deploy"
-       description="Deploy a mock farm manager and the client web application" >
+       description="Deploy the mombasa web application" >
       <deploy>
         <application name="mombasa"
             descriptor="/org/smartfrog/services/cloudfarmer/client/web/deploy/server.sf"/>
       </deploy>
   </target>
+
+  <target  name="mockmombasa" depends="mombasa,mockfarmer"
+       description="Deploy a mock farm manager and the client web application" >
+  </target>
+
+
+
 </project>
