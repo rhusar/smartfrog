@@ -786,12 +786,6 @@ fi
 %{linkdir}/struts-taglib.jar
 %{libdir}/struts-taglib-${struts.version}.jar
 %{linkdir}/struts-taglib.jar
-%{libdir}/antlr-${antlr.version}.jar
-%{linkdir}/antlr.jar
-%{libdir}/portlet-api-${portlet-api.version}.jar
-%{linkdir}/portlet-api.jar
-
-
 
 %files csvfiles
 
