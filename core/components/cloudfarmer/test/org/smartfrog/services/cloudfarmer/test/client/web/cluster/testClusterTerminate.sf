@@ -19,4 +19,4 @@
  */
 #include "/org/smartfrog/services/cloudfarmer/test/client/web/cluster/components.sf"
 
-sfConfig extends testStrutsHappy;
+sfConfig extends testClusterTerminate;

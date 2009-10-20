@@ -24,3 +24,31 @@
 
 
 
+testWebappHappy extends testForPage {
+  page WorkflowActions:webappHappy;
+}
+
+
+testWorkflowList extends testForPage {
+  page WorkflowActions:workflowList;
+}
+
+testSubmitMRJob extends testForPage {
+  page WorkflowActions:submitMRJob;
+}
+
+testSubmitTool extends testForPage {
+  page WorkflowActions:submitTool;
+}
+
+testQueueWorkflow extends testForPage {
+  page WorkflowActions:queueWorkflow;
+}
+
+testWorkflowAdmin extends testForPage {
+  page WorkflowActions:workflowAdmin;
+}
+
+testWorkflowServerHappy extends testForPage {
+  page WorkflowActions:workflowServerHappy;
+}

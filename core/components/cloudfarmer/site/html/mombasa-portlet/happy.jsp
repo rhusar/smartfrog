@@ -1,6 +1,9 @@
 <%@ page import="java.io.IOException,
                  java.io.InputStream"
          session="true" %>
+<%@ page import="java.util.Enumeration" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%@ include file="/html/mombasa-portlet/init.jsp" %>
 <%--
 /** (C) Copyright 2009 Hewlett-Packard Development Company, LP

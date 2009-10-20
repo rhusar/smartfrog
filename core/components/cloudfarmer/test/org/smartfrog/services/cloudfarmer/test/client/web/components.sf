@@ -83,3 +83,14 @@ WaitForStrutsHappy extends WaitForJettyPage {
 WaitForTilesHappy extends WaitForJettyPage {
   page WorkflowActions:tilesHappy;
 }
+
+
+testForPage extends ExpectJettyServerDeployed {
+  page TBD;
+
+  tests extends Sequence {
+    wait extends WaitForJSP {
+       page PARENT:PARENT:page;
+    }
+  }
+}
