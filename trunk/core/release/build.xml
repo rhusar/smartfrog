@@ -483,11 +483,9 @@
     <ln artifact="commons-chain" version="${commons-chain.version}"/>
     <ln artifact="commons-digester" version="${commons-digester.version}"/>
     <ln artifact="commons-validator" version="${commons-validator.version}"/>
-    <ln artifact="antlr" version="${antlr.version}"/>
     <ln artifact="struts-core" version="${struts.version}"/>
     <ln artifact="struts-taglib" version="${struts.version}"/>
     <ln artifact="struts-tiles" version="${struts.version}"/>
-    <ln artifact="portlet-api" version="${portlet-api.version}"/>
 
     
     <!-- csvfiles -->
