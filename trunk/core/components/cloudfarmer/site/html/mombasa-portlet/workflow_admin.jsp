@@ -73,7 +73,7 @@ For more information: www.smartfrog.org
     </td>
     <td>
       <html:link
-          page="/html/mombasa-portlet/happy.jsp">Portlet Happiness Test</html:link>
+          page="/html/mombasa-portlet/happy.jsp">Web application Happiness Test</html:link>
     </td>
   </tr>
 </table>

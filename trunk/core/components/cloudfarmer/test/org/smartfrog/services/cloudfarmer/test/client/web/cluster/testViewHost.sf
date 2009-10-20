@@ -17,48 +17,6 @@
  For more information: www.smartfrog.org
 
  */
+#include "/org/smartfrog/services/cloudfarmer/test/client/web/cluster/components.sf"
 
-#include "/org/smartfrog/services/cloudfarmer/test/client/web/components.sf"
-
-
-testClusterList extends ExpectJettyServerDeployed {
-
-  tests extends Sequence {
-    list extends WaitForClusterList;
-  }
-}
-
-/*
-
-  add ( cluster ++ "add.do");
-  admin ( cluster ++ "admin.do");
-  list ( cluster ++ "list.do");
-  terminate ( cluster ++ "change_manager.do");
-  change_manager ( cluster ++ "change_manager.do");
-  viewhost ( cluster ++ "viewhost.do");
-  */
-
-testClusterAdmin extends testForPage {
-  page ClusterActions:admin;
-}
-
-testClusterAdd extends testForPage {
-  page ClusterActions:add;
-}
-
-
-testClusterTerminate extends testForPage {
-  page ClusterActions:terminate;
-}
-
-testChangeManager extends testForPage {
-  page ClusterActions:change_manager;
-}
-
-testViewHost extends testForPage {
-  page ClusterActions:viewhost;
-}
-
-
-
-
+sfConfig extends testViewHost;

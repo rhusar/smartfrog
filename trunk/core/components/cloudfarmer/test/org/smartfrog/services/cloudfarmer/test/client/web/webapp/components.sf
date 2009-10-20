@@ -21,44 +21,51 @@
 #include "/org/smartfrog/services/cloudfarmer/test/client/web/components.sf"
 
 
-testClusterList extends ExpectJettyServerDeployed {
+testJettyDeployed extends ExpectJettyServerDeployed {
 
   tests extends Sequence {
-    list extends WaitForClusterList;
+    -- extends WaitForIndex;
+    -- extends WaitForJSP;
   }
 }
 
-/*
 
-  add ( cluster ++ "add.do");
-  admin ( cluster ++ "admin.do");
-  list ( cluster ++ "list.do");
-  terminate ( cluster ++ "change_manager.do");
-  change_manager ( cluster ++ "change_manager.do");
-  viewhost ( cluster ++ "viewhost.do");
-  */
+testJettySupportsJSP extends ExpectJettyServerDeployed {
 
-testClusterAdmin extends testForPage {
-  page ClusterActions:admin;
+  tests extends Sequence {
+    -- extends WaitForJSP;
+  }
 }
 
-testClusterAdd extends testForPage {
-  page ClusterActions:add;
+testJettyExecutesJSP extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    -- extends WaitForJSP;
+    testStatus200 extends WaitForJSPErrorCode;
+    testStatus201 extends WaitForJSPErrorCode {
+      errorCode 201;
+    }
+    testStatus501 extends WaitForJSPErrorCode {
+      errorCode 501;
+    }
+  }
+}
+
+testStrutsHappy extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    list extends WaitForStrutsHappy;
+  }
+}
+
+testTilesHappy extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    list extends WaitForTilesHappy;
+  }
 }
 
 
-testClusterTerminate extends testForPage {
-  page ClusterActions:terminate;
+testWebappHappy extends testForPage {
+  page WorkflowActions:webappHappy;
 }
-
-testChangeManager extends testForPage {
-  page ClusterActions:change_manager;
-}
-
-testViewHost extends testForPage {
-  page ClusterActions:viewhost;
-}
-
-
-
-

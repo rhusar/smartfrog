@@ -17,6 +17,6 @@
  For more information: www.smartfrog.org
 
  */
-#include "/org/smartfrog/services/cloudfarmer/test/client/web/cluster/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/test/client/web/workflow/components.sf"
 
-sfConfig extends testJettyDeployed;
+sfConfig extends testWorkflowList;

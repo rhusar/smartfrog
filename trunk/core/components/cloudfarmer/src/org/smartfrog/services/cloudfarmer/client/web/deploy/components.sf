@@ -110,6 +110,9 @@ StrutsActions  extends DATA {
   htmlRoot "/html/mombasa-portlet/";
 
   actionRoot "/mombasa-portlet/";
+  strutsHappy ( actionRoot ++ "happy.do");
+  tilesHappy ( actionRoot ++ "happytiles.do");
+
 }
 
 
@@ -117,8 +120,13 @@ StrutsActions  extends DATA {
  * A list of pages, nothing deployable
  */
 WorkflowActions extends StrutsActions {
-  strutsHappy ( actionRoot ++ "happy.do");
-  tilesHappy ( actionRoot ++ "happytiles.do");
+  //JSP health checks
+  workflowServerHappy (htmlRoot ++ "workflow_server_happy.jsp");
+  webappHappy (htmlRoot ++ "happy.jsp");
+
+
+  //struts actions; will only work if JSP and struts are happy
+
   workflowList ( actionRoot ++ "workflowList.do");
   submitMRJob (actionRoot ++ "submitMRJob/view.do");
   //http://localhost:8081/mombasa-portlet/submitTool/view.do
@@ -127,17 +135,19 @@ WorkflowActions extends StrutsActions {
   queueWorkflow (actionRoot ++ "queueWorkflow/view.do");
   //http://localhost:8081/mombasa-portlet/workflowAdmin/view.do
   workflowAdmin (actionRoot ++ "workflowAdmin/view.do");
-  workflowServerHappy (htmlRoot + "workflow_server_happy.jsp");
-  portletHappy (htmlRoot + "happy.jsp");
+
 }
 
+/**
+ * Cluster Actions
+ */
 ClusterActions extends StrutsActions {
   cluster "/mombasa-portlet/cluster/";
 
   add ( cluster ++ "add.do");
   admin ( cluster ++ "admin.do");
   list ( cluster ++ "list.do");
-  terminate ( cluster ++ "change_manager.do");
+  terminate ( cluster ++ "terminate.do");
   change_manager ( cluster ++ "change_manager.do");
   viewhost ( cluster ++ "viewhost.do");
 
