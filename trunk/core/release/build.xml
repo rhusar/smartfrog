@@ -1163,7 +1163,6 @@
       </sequential>
     </macrodef>
 
-
     <fileset id="rpm.upload.fileset" dir="${upload.dir}">
       <include name="*.rpm"/>
     </fileset>

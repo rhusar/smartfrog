@@ -784,8 +784,8 @@ fi
 %{linkdir}/struts-core.jar
 %{libdir}/struts-taglib-${struts.version}.jar
 %{linkdir}/struts-taglib.jar
-%{libdir}/struts-taglib-${struts.version}.jar
-%{linkdir}/struts-taglib.jar
+%{libdir}/struts-tiles-${struts.version}.jar
+%{linkdir}/struts-tiles.jar
 
 %files csvfiles
 

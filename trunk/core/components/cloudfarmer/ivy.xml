@@ -76,7 +76,10 @@
     <dependency org="org.apache.struts"
         name="struts-core"
         rev="${struts.version}"
-        conf="webapp->default"/>
+        conf="webapp->default">
+      <exclude org="antlr"/>
+      <exclude org="oro"/>
+    </dependency>
     <dependency org="org.apache.struts"
         name="struts-taglib"
         rev="${struts.version}"
