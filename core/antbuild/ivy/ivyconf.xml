@@ -18,6 +18,11 @@
   <property name="maven-repository.dev.java.net"
     value="https://maven-repository.dev.java.net/" override="false"/>
 
+  <property name="smartfrog.sourceforge.repository"
+      value="http://smartfrog.sourceforge.net/repository/" override="false"/>
+
+    
+    
   <property name="maven2.pattern"
       value="[organisation]/[module]/[revision]/[module]-[revision]" />
   <property name="maven2.pattern.ext"
@@ -63,7 +68,11 @@
       pattern="${maven2.pattern.ext}"
       m2compatible="true"
       />
-
+   <ibiblio name="smartfrog"
+      root="${smartfrog.sourceforge.repository}"
+      pattern="${maven2.pattern.ext}"
+      m2compatible="true"
+      />
     <chain name="default" dual="true">
       <resolver ref="local"/>
       <resolver ref="team2"/>
@@ -75,10 +84,25 @@
       <resolver ref="local"/>
       <resolver ref="team2"/>
     </chain>
+    <chain name="all" dual="true">
+      <resolver ref="local"/>
+      <resolver ref="smartfrog"/>
+      <resolver ref="team2"/>
+      <resolver ref="maven2"/>
+      <resolver ref="sun"/>
+      <resolver ref="maven.restlet.org"/>
+    </chain>
   </resolvers>
   <modules>
+    <!--
+      uncomment to pull in remote SF references
+    -->
+    <module organisation="org.smartfrog" name=".*" resolver="all"/>
+    <!-- 
     <module organisation="org.smartfrog" name=".*" resolver="internal"/>
+     -->
     <module organisation="org.ggf" name=".*" resolver="internal"/>
+    
     <!-- here so that Steve can build the antbook at the same time-->
     <module organisation="org.antbook" name=".*" resolver="internal"/>
     <!--Hadoop artifacts-->
@@ -91,11 +115,6 @@
     <module organisation="javax.jms" name=".*" resolver="internal"/>
     <module organisation="kizoom" name=".*" resolver="internal"/>
     <module organisation="solid" name=".*" resolver="internal"/>
-<!--    <module organisation="" name=".*" resolver="internal"/>
-    <module organisation="" name=".*" resolver="internal"/>
-    <module organisation="" name=".*" resolver="internal"/>
-    <module organisation="" name=".*" resolver="internal"/>
-    <module organisation="" name=".*" resolver="internal"/>
-    <module organisation="" name=".*" resolver="internal"/>-->
+
   </modules>
 </ivysettings>
