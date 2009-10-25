@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
@@ -297,8 +296,10 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	Constraint.replaceAttribute(key, update, source);
     }
     
-    public interface DeployingAgent extends Remote, Compound {
+    public interface DeployingAgent extends Remote {
     	public void addToDeploy(String name, ComponentDescription cd) throws Exception;
     	public void addToTerminate(String name) throws RemoteException;
+    	public void waitOnQueuesCleared() throws RemoteException;
     }
+    
 }
