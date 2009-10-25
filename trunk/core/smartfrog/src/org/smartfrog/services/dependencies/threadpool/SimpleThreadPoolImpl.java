@@ -76,13 +76,13 @@ public class SimpleThreadPoolImpl extends PrimImpl implements ThreadPool, Remote
     *
     */
    public Future<?> addToQueue(Runnable run){
-	  if (sfLog().isInfoEnabled()) sfLog().info("IN: threadPool: addToQueue()");
+	  sfLog().debug("IN: threadPool: addToQueue()");
 	  synchronized (this){
 		  busyThreads++;  //we should increase before it's run...
 	  }
-	  if (sfLog().isInfoEnabled()) sfLog().info("threadPool: addToQueue() SUBMITTING");
+	  sfLog().debug("threadPool: addToQueue() SUBMITTING");
       Future<?> future = es.submit(new Runnable_(run));
-      if (sfLog().isInfoEnabled()) sfLog().info("OUT: threadPool: addToQueue()");
+      sfLog().debug("OUT: threadPool: addToQueue()");
       return future;
    }  
  
