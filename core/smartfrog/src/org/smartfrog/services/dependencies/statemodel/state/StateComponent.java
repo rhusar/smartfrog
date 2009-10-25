@@ -106,7 +106,6 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     		  ApplyReference ar = (ApplyReference) val;
     		  ComponentDescription cd = ar.getComponentDescription();
     		  String functionClass = (String) cd.sfContext().get("sfFunctionClass");
-    		  //System.out.println("REGISTRATION REGISTRATION!!!fc"+functionClass);
     		  if (functionClass.endsWith("DynamicPolicyEvaluation")) {
     			  dpes.add(ar);
     		  } //else System.out.println("Haven't filed...");
@@ -186,7 +185,6 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		   try { go = trans.sfResolve(ConstraintConstants.GUARD, false, true); } catch (Exception e){
 			   enabled=null;
 			   /**Exception needs handling properly**/
-			   System.out.println("We have excepted!!!");
 			   throw new StateComponentTransitionException(StateComponentTransitionException.g_DEPENDENCYVALUEUNRESOLVABLE);
 			   
 		   }
@@ -468,8 +466,6 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
       if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateComponent.setState() Added to Queue");
       
       cleanLock();
-      
-      System.out.println("Adding to queue..."+currentAction);
      
       if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateComponent.setState()");
    }
