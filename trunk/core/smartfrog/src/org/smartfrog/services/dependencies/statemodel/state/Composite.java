@@ -206,6 +206,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 			  try {
 				  String key = keys.next();	
 				  Prim p = (Prim) sfResolve(key);
+				  if (p instanceof Composite) p.sfReplaceAttribute("sfNormalTermination", true);
 				  if (sfLog().isDebugEnabled())  sfLog().debug("Composite.hsc() "+name +"Terminating "+key);
 				  p.sfDetachAndTerminate(TerminationRecord.normal(null));
 			  } catch (Exception e){}
