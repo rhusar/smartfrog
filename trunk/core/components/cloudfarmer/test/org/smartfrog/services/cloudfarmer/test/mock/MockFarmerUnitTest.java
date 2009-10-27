@@ -13,6 +13,7 @@ import java.io.IOException;
 /**
  * This walks the mock farmer through its life
  */
+@SuppressWarnings({"ProhibitedExceptionDeclared"})
 public class MockFarmerUnitTest extends TestCase {
 
     private MockClusterFarmerImpl farmer;
@@ -33,18 +34,28 @@ public class MockFarmerUnitTest extends TestCase {
         worker.setRoleSize(1, 100);
         addTestRoles();
     }
+    
+    private void assertInRole(ClusterNode node, String role) {
+        assertNotNull(node);
+        assertEquals(role, node.getRole());
+    }
 
     public void testAddListRemove() throws Throwable {
         ClusterNode[] first = farmer.create(MASTER, 1, 1);
         assertEquals(1, first.length);
+        assertInRole(first[0], MASTER);
         ClusterNode[] nodes = farmer.create(WORKER, 1, 1);
         assertEquals(1, nodes.length);
         ClusterNode node = nodes[0];
+        assertInRole(node, WORKER);
         ClusterNode[] listed = listByRole(WORKER, 1);
         assertEquals("Only one worker listed", 1, listed.length);
         assertSame(listed[0], nodes[0]);
+        assertInRole(listed[0], WORKER);
         listed = listByRole(MASTER, 1);
         assertEquals("Only one master listed", 1, listed.length);
+        //tests that roles propagate down
+        assertInRole(listed[0], MASTER);
         listByRole("other", 0);
         ClusterNode node2 = farmer.lookup(node.getId());
         assertSame(node, node2);
@@ -129,6 +140,10 @@ public class MockFarmerUnitTest extends TestCase {
         listed = farmer.list(role);
         assertEquals("Expected to find " + expected + " nodes of role '" + role + "' but got " + listed.length,
                 expected, listed.length);
+        for (int i=0; i< expected; i++) {
+            ClusterNode node = listed[i];
+            assertEquals(" Node " + i + " with value "+node +" is not a "+role, role, node.getRole());
+        }
         return listed;
     }
 

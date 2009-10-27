@@ -19,30 +19,35 @@ For more information: www.smartfrog.org
 
 */
 --%>
-
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
-<div class="separator"></div>
-
-<table border="0" width="100%">
-  <tr>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/list">List Hosts</html:link>
-    </td>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/listbyRole">List Roles</html:link>
-    </td>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/add">Add a Host</html:link>
-    </td>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/admin">Administration</html:link>
-    </td>
+<tiles:useAttribute id="text" name="text" classname="java.lang.String" ignore="true"/>
+<div>
+<%= text %>
+</div>
+<div>
+</div>
+<table border="0">
+  <tr bgcolor="grey">
+    <th>Role</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Description</th>
   </tr>
+  <logic:iterate id="role"
+                 name="cluster.controller"
+                 property="roles"
+                 type="org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo">
+    <tr>
+      <td>
+        <bean:write name="role" property="name"/>
+      </td>
+      <td style="padding-left: 10px;"></td>
+      <td><bean:write name="role" property="description"/></td>
+      <td style="padding-left: 10px;"></td>
+    </tr>
+  </logic:iterate>
 </table>
+<div>
 
+</div>
 

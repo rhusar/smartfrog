@@ -22,6 +22,7 @@ package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -32,6 +33,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 /**
  * Created 10-Sep-2009 17:20:57
@@ -148,6 +150,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         if (!checkFarmer()) {
             return;
         }
+        //build the nodes
         ClusterNode[] clusterNodes = farmer.list();
         HostInstanceList newHostList = new HostInstanceList(clusterNodes.length);
         for (ClusterNode node : clusterNodes) {
@@ -163,6 +166,25 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         }
         //now push out the new value
         replaceHostList(newHostList);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException        network trouble
+     * @throws SmartFrogException SF trouble
+     */
+    @Override
+    public void refreshRoleList() throws IOException, SmartFrogException {
+        if (!checkFarmer()) {
+            return;
+        }
+        ClusterRoleInfo[] rolelist = farmer.listClusterRoles();
+        HashMap<String, ClusterRoleInfo> roles = new HashMap<String, ClusterRoleInfo>(rolelist.length);
+        for(ClusterRoleInfo roleInfo: rolelist) {
+            roles.put(roleInfo.getName(), roleInfo);
+        }
+        replaceRoles(roles);
     }
 
     /**

@@ -46,6 +46,7 @@ public class WorkflowBindToRemoteServerAction extends AbstractWorkflowAction {
         return "WorkflowBindToRemoteServerAction";
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,

@@ -57,6 +57,7 @@ public class ClusterAddNodeAction extends AbstractClusterAction {
      * @return the next action
      * @throws Exception
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {

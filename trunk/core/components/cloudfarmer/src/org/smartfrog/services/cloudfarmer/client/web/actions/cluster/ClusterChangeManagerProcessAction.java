@@ -50,6 +50,7 @@ public class ClusterChangeManagerProcessAction extends AbstractClusterAction {
      * @return the follow-up action
      * @throws Exception any exception to handle server-side
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,

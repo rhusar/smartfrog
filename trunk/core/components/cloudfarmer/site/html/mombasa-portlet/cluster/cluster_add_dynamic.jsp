@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
 
 <p>Add Hadooop hosts </p>
 
-<html:form action="/mombasa-portlet/cluster/add_dynamic/process" method="post" focus="name">
+<html:form action="/mombasa-portlet/cluster/add_dynamic/process" method="post" focus="minWorkers">
 
 
   <table border="0" cellpadding="0" cellspacing="0">

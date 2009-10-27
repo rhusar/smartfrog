@@ -20,9 +20,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created 01-Sep-2009 13:48:11
@@ -51,7 +53,27 @@ public class PhysicalClusterController extends ClusterController implements Temp
      */
     @Override
     public void refreshHostList() throws IOException, SmartFrogException {
-        //do nothing
+        //build the list of roles only
+        refreshRoleList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws IOException        network trouble
+     * @throws SmartFrogException SF trouble
+     */
+    @Override
+    public void refreshRoleList() throws IOException, SmartFrogException {
+        HashMap<String, ClusterRoleInfo> roles = new HashMap<String, ClusterRoleInfo>(2);
+        ClusterRoleInfo master = new ClusterRoleInfo("master");
+        master.setRecommendedSize(1,1);
+        master.setRoleSize(1, 1);
+        roles.put(master.getName(), master);
+        ClusterRoleInfo worker = new ClusterRoleInfo("worker");
+        worker.setRecommendedSize(3, -1);
+        worker.setRoleSize(1, -1);
+        roles.put(worker.getName(), worker);
+        replaceRoles(roles);
     }
 
 

@@ -46,6 +46,7 @@ public class WorkflowAdminAction extends AbstractWorkflowAction {
     }
 
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,

@@ -56,6 +56,16 @@ public class DynamicClusterController extends ClusterController {
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException        IO problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public void refreshRoleList() throws IOException, SmartFrogException {
+
+    }
 
     /**
      * Override point

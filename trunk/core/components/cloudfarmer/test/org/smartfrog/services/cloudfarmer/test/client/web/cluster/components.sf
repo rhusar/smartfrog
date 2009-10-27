@@ -37,7 +37,9 @@ testClusterList extends ExpectJettyServerDeployed {
   change_manager ( cluster ++ "change_manager.do");
   viewhost ( cluster ++ "viewhost.do");
   */
-
+testClusterListbyRole extends testForPage {
+  page ClusterActions:listbyRole;
+}
 testClusterAdmin extends testForPage {
   page ClusterActions:admin;
 }

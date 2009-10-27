@@ -46,7 +46,7 @@ public class SuccessAction extends AbstractMombasaAction {
         return "SuccessAction";
     }
 
-
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,
