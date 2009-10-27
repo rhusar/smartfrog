@@ -77,7 +77,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     public static void applyEffects(ComponentDescription effects) throws SmartFrogFunctionResolutionException {
     	    //NOTE: This code is lacking a jolly good tidy- ADHF
     	
-    		System.out.println("IN applyEffects");
+    		//System.out.println("IN applyEffects");
     
     	    //Array/path/pred?
     	    Reference array = null;
@@ -88,31 +88,31 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    
     	    try { array = (Reference) effects.sfContext().get(ConstraintConstants.ARRAY); }
     	    catch(Exception e){/**/}
-    	    System.out.println("ARRAY: "+array);
+    	    //System.out.println("ARRAY: "+array);
     	    
     	    if (array!=null){
     	    	try { prefix = (String) effects.sfContext().get(ConstraintConstants.PREFIX); }
         	    catch(Exception e){/**/}
-        	    System.out.println("PREFIX: "+prefix);
+        	    //System.out.println("PREFIX: "+prefix);
         	    
         	    try { pred = (Reference) effects.sfContext().get(ConstraintConstants.PRED); }
         	    catch(Exception e){/**/}
-        	    System.out.println("PRED: "+pred);
+        	    //System.out.println("PRED: "+pred);
         	    
         	    try { pcontext = (ComponentDescription) effects.sfContext().get(ConstraintConstants.CONTEXT); }
         	    catch(Exception e){/**/}
-        	    System.out.println("PCONTEXT: "+pcontext);
+        	    //System.out.println("PCONTEXT: "+pcontext);
     	    }
     	    
     	    Object key = effects.sfContext().get(ConstraintConstants.KEY);
     	    if (key==SFNull.get()) key=null;
     	    if (key!=null && key instanceof Reference) try { key=effects.sfResolve((Reference)key);}catch(Exception e){}
-    	    System.out.println("KEY: "+key);
+    	    //System.out.println("KEY: "+key);
     	    
     	    Object update = effects.sfContext().get(ConstraintConstants.UPDATE);
     	    if (update==SFNull.get()) update=null;
     	    if (update!=null && update instanceof Reference) try { update=effects.sfResolve((Reference)update);}catch(Exception e){}
-    	    System.out.println("UPDATE: "+update);
+    	    //System.out.println("UPDATE: "+update);
     	    
     	    ComponentDescription deploy = null;
     	    if (update==null){
@@ -121,13 +121,13 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
 	    	    	try { toTerminate=effects.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.TERMINATE)));}catch(Exception e){}
 	    	    }
     	    }
-    	    System.out.println("DEPLOY: "+deploy);
+    	    //System.out.println("DEPLOY: "+deploy);
     	    if (deploy==null && update==null && toTerminate==null) return;
     	    
     	    Reference path = null;
     	    try { path = (Reference) effects.sfContext().get(ConstraintConstants.PATH); }
     	    catch(ClassCastException cce){ /*Take as null*/ }
-    	   System.out.println("PATH: "+path);
+    	   //System.out.println("PATH: "+path);
     	   
     	    Object source = null; 
     	    if (array==null){
@@ -137,7 +137,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
 	        	    	throw new SmartFrogFunctionResolutionException("path in effects will not resolve: "+effects); }    
 	    	    } else {        	
 		        	source = effects;
-		        	System.out.println("Looking for..."+key+" to update with "+update);
+		        	//System.out.println("Looking for..."+key+" to update with "+update);
 		    		while (true){
 		        		source = Constraint.resolveParent(source);
 		        		
@@ -146,14 +146,14 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
 		        	}
 	    	    }
     	    
-	    	    System.out.println("SOURCE: "+source.getClass()+source.hashCode());
+	    	    //System.out.println("SOURCE: "+source.getClass()+source.hashCode());
     	    }
     	    
     	    if (array==null && source==null) return;
  
     	    if (deploy!=null) {
     	    	
-    	    	System.out.println("DEPLOYING..."+key);
+    	    	//System.out.println("DEPLOYING..."+key);
     	    	
     	    	
     	    	if (source instanceof DeployingAgent) {
@@ -184,7 +184,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    	//Replace in array?
     	    	if (array!=null && prefix!=null){
 
-    	    	System.out.println("We are replacing in an array");
+    	    	//System.out.println("We are replacing in an array");
     	    		
     	    		try { source=effects.sfResolve(array); }
 	        	    catch(Exception e){
@@ -202,7 +202,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	        		String akey = en.nextElement().toString();
     	            	
     	        		if (akey.startsWith(prefix)){
-    	        			System.out.println("In with the prefix..."+akey);
+    	        			//System.out.println("In with the prefix..."+akey);
     	        			
     	        			Object member = src_context.get(akey);
     	        	    	
@@ -226,18 +226,17 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	        				}
     	    	    				    	        					
 	    	    				if (pred!=null){
-	    	    					System.out.println("Pred not null..."+pred);
+	    	    					//System.out.println("Pred not null..."+pred);
 	    	    					try {
 	    	    					if (pred instanceof SFReference) pred=((SFReference) pred).sfAsReference();
-	    	    					} catch (SmartFrogCompilationException sfce){ System.out.println(sfce); throw new SmartFrogFunctionResolutionException(sfce);}
-	    	    					System.out.println("Really pred not null...");
+	    	    					} catch (SmartFrogCompilationException sfce){ throw new SmartFrogFunctionResolutionException(sfce);}
+	    	    					//System.out.println("Really pred not null...");
 	    	    					
 	    	    					Object eval_pred = null;
 	    	    					try {
 	    	    						eval_pred = (p!=null? p.sfResolve(pred) : c.sfResolve(pred));
 	    	    					} catch (Exception e)
 	    	    					{
-	    	    						//System.out.println("FART::::"+e);
 	    	    						/*Intentionally Leave*/
 	    	    					}
 	    	    					if (eval_pred!=null && eval_pred instanceof Boolean) {
@@ -246,13 +245,12 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
 	    	    					}
 	    	    					else if (eval_pred==null || !(eval_pred instanceof SFNull)) throw new SmartFrogFunctionResolutionException("In extracting values as per source, pred "+pred+" should yield Boolean from: "+source);
     	    	    			}
-    	    					System.out.println("We have a match...");
+    	    					//System.out.println("We have a match...");
     	    					
     	    					try {
     	    						if (path!=null) member = (p!=null? p.sfResolve(path) : c.sfResolve(path));
     	    					} catch (Exception e)
     	    					{
-    	    						//System.out.println("FART::::"+e);
     	    						/*Intentionally Leave*/
     	    					}
     	    					
