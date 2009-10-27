@@ -46,6 +46,7 @@ public class SubmitToolFormViewAction extends AbstractMombasaAction {
         return "SubmitTool";
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,

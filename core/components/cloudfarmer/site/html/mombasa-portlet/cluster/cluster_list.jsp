@@ -27,11 +27,15 @@ For more information: www.smartfrog.org
 </div>
 <div>
 </div>
-<table border="2">
+<table border="0">
   <tr bgcolor="grey">
     <th>Hostname</th>
     <th style="padding-left: 10px;"></th>
     <th>Application</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Role</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Description</th>
   </tr>
   <logic:iterate id="host"
                  name="hosts"
@@ -46,6 +50,12 @@ For more information: www.smartfrog.org
       </td>
       <td style="padding-left: 10px;"></td>
       <td><bean:write name="host" property="application"/></td>
+      <td style="padding-left: 10px;"></td>
+      <td>
+        <logic:notEmpty name="host" property="role">
+          <bean:write name="host" property="role"/>
+        </logic:notEmpty>
+      </td>
       <td style="padding-left: 10px;"></td>
       <td>
         <logic:notEmpty name="host" property="application">

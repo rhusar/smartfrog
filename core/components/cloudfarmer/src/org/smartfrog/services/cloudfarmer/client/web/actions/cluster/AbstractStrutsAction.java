@@ -19,8 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -30,6 +28,8 @@ import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeName
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.ConnectException;
@@ -52,10 +52,22 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
         return "AbstractMombasaAction";
     }
 
+    /**
+     * Handle by the success handler
+     * @param mapping mapping object
+     * @return the success handler to use
+     */
     protected ActionForward success(ActionMapping mapping) {
         return mapping.findForward(ACTION_SUCCESS);
     }
 
+    /**
+     * Handle a failure by looking for the failure action
+     * @param request incoming request
+     * @param mapping mapping object
+     * @param message error message
+     * @return the next action handler
+     */
     protected ActionForward failure(HttpServletRequest request, ActionMapping mapping, String message) {
         request.setAttribute(AttributeNames.ATTR_ERROR_MESSAGE, message);
         return mapping.findForward(ClusterRequestAttributes.ACTION_FAILURE);
@@ -74,6 +86,7 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
                                     Throwable thrown) {
         log.error(message, thrown);
         request.setAttribute(AttributeNames.ATTR_THROWN, thrown);
+        request.setAttribute(AttributeNames.ATTR_ERROR_CAUSE, thrown);
         return failure(request, mapping, message);
     }
 

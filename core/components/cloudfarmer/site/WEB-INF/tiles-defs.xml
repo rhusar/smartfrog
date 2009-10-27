@@ -120,6 +120,15 @@
   <definition name="portlet.mombasa.cluster.list.success" extends="portlet.mombasa.cluster.list">
   </definition>
 
+
+  <definition name="portlet.mombasa.cluster.list.roles.success" extends="portlet.mombasa.cluster">
+    <put name="title" value="Hadoop Hosts"/>
+    <put name="text" value=""/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_list_roles.jsp"/>
+  </definition>
+
+
+
   <definition name="portlet.mombasa.cluster.add.success" extends="portlet.mombasa.cluster.text">
     <put name="title" value="Add a host"/>
     <put name="text" value="TODO"/>

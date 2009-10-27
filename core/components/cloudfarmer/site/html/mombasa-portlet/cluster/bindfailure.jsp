@@ -1,5 +1,5 @@
 <%@ page isErrorPage="false" %>
-<%@ include file="/html/mombasa-portlet/patcherrorpages.jsp" %>
+<%@ include file="/html/mombasa-portlet/common/patcherrorpages.jsp" %>
 <%--
 /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
@@ -52,17 +52,7 @@ start the controller, or correct the controller settings in the
 <jsp:include page="/html/mombasa-portlet/cluster/cluster_nav.jsp" flush="true"/>
 </div>
 
-  
-<logic:present name="org.apache.struts.action.EXCEPTION">
-  <pre>
-    <bean:write name="org.apache.struts.action.EXCEPTION"/>
-  </pre>
-</logic:present>
-
-<logic:messagesPresent>
-	<span class="portlet-msg-error">
-	<html:errors/>
-	</span>
-</logic:messagesPresent>
+<%@ include file="/html/mombasa-portlet/common/printStrutsException.jsp" %>
+<%@ include file="/html/mombasa-portlet/common/printMessages.jsp" %>
 
 

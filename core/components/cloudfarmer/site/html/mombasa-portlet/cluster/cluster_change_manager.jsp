@@ -24,9 +24,9 @@ For more information: www.smartfrog.org
 
 <p>Add a named machine to the Hadoop Cluster</p>
 
-<html:form action="/mombasa-portlet/cluster/change_manager/process" method="post" focus="name">
+<html:form action="/mombasa-portlet/cluster/change_manager/process" method="post" focus="controller">
 
-  <table border="0" cellpadding="0" cellspacing="0">
+  <table border="0" cellpadding="0" cellspacing="0" width="80%">
 
     <tr>
       <td>
@@ -88,6 +88,8 @@ For more information: www.smartfrog.org
     </tr>
 
   </table>
+  For cells, use http://localhost/farmer/cellModel/farmer </br>
+  For mock, use http://localhost/farmer 
 
 
 </html:form>

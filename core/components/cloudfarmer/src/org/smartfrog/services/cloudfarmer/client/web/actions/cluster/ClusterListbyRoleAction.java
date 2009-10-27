@@ -17,22 +17,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
-package org.smartfrog.services.cloudfarmer.client.web.actions.workflow;
-
-import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionForm;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * List the workflows on this server
+ * Created 27-Oct-2009 15:47:04
  */
 @SuppressWarnings({"RefusedBequest"})
-public class WorkflowDeleteAction extends AbstractWorkflowAction {
+public class ClusterListbyRoleAction extends AbstractClusterAction {
 
     /**
      * Get the name of this action, used in logging and debugging
@@ -40,33 +39,39 @@ public class WorkflowDeleteAction extends AbstractWorkflowAction {
      * @return the name
      */
 
-    @Override
     protected String getActionName() {
-        return "WorkflowDeleteAction";
+        return "ClusterListbyRoleAction";
     }
 
-    @SuppressWarnings({"ProhibitedExceptionDeclared"})
+    /**
+     * Lists the hosts to the "hosts" attribute
+     *
+     * @param mapping    mapping
+     * @param form       incoming form
+     * @param request    incoming request
+     * @param response   response to build up
+     * @param controller the cluster controller
+     * @return the follow-up action
+     * @throws Exception any exception to handle server-side
+     */
     @Override
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,
                                  HttpServletRequest request,
-                                 HttpServletResponse response) throws Exception {
-        return unimplemented(request, mapping);
-        /*
-        RemoteDaemon daemon;
+                                 HttpServletResponse response,
+                                 ClusterController controller) throws Exception {
+
         try {
-            daemon = bindToRemoteDaemon(request);
-        } catch (Exception e) {
-            return failure(request, mapping, "Failed to Bind to the daemon :"+ e, e);
-        }
-        try {
-            final WorkflowList workflows = daemon.listWorkflows();
-            request.setAttribute(ATTR_WORKFLOW_LIST, workflows);
+            //refresh the lists
+            controller.refreshRoleList();
+            controller.refreshHostList();
+            //get the values
+            addClusterAttributes(request, controller);
             return success(mapping);
         } catch (Exception e) {
-            return failure(request, mapping, "Failed to list workflows :"+ e, e);
+            return failure(request, mapping, "Failed to list roles and hosts :" + e, e);
         }
-        */
     }
 
 }

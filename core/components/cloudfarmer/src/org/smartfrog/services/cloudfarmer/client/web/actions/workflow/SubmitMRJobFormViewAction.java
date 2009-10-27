@@ -46,6 +46,7 @@ public class SubmitMRJobFormViewAction extends AbstractMombasaAction {
         return "SubmitMRJob";
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,

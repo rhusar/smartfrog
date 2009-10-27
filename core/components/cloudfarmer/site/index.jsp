@@ -11,15 +11,14 @@ If you can see this, the JSP page is not being executed
 Mombasa is the way to see the elephants
 <h2>Cluster</h2>
 <ul>
-    <li><a href="/html/mombasa-portlet/cluster/cluster_nav.jsp">Workflow Links</a></li>
+    <li><a href="/html/mombasa-portlet/cluster/cluster_nav.jsp">Cluster Links</a></li>
     <li><a href="/mombasa-portlet/cluster/list.do">List the cluster</a></li>
 </ul>
 
 <h2>Workflow</h2>
 <ul>
-    <li><a href="/html/mombasa-portlet/nav.jsp">Cluster Links</a></li>
-    <li><a href="/html/mombasa-portlet/cluster/cluster_nav.jsp">Workflow Links</a></li>
-    <li><a href="/mombasa-portlet/workflowList.do">List the cluster</a></li>
+    <li><a href="/html/mombasa-portlet/nav.jsp">Workflow Links</a></li>
+    <li><a href="/mombasa-portlet/workflowList.do">List the workflow</a></li>
 </ul>
 
 <h2>Other</h2>

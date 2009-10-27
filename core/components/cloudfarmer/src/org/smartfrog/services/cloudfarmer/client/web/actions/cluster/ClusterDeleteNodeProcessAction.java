@@ -48,6 +48,7 @@ public class ClusterDeleteNodeProcessAction extends AbstractClusterAction {
         return "QueueAnyWorkflow";
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {

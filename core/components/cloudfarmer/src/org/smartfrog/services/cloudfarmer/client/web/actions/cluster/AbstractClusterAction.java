@@ -53,6 +53,7 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
      * @throws Exception any exception to handle server-side
      */
     @Override
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,
                                  HttpServletRequest request,
@@ -79,6 +80,8 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
      * @return the follow-up action
      * @throws Exception any exception to handle server-side
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
+
     public abstract ActionForward execute(ActionMapping mapping,
                                           ActionForm form,
                                           HttpServletRequest request,

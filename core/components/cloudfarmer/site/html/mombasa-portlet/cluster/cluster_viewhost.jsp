@@ -37,12 +37,18 @@ This is driven by the "host" value, which maps to a host
     <td><bean:write name="host" property="application"/></td>
   </tr>
     <tr>
-      <td>isMaster</td>
-      <td><bean:write name="host" property="master"/></td>
+      <td>Description</td>
+      <td>
+        <logic:notEmpty name="host" property="application">
+          <logic:notEmpty name="host" property="application.description">
+            <bean:write name="host" property="application.description"/>
+          </logic:notEmpty>
+        </logic:notEmpty>
+      </td>
     </tr>
     <tr>
-      <td>isWorker</td>
-      <td><bean:write name="host" property="worker"/></td>
+      <td>Role</td>
+      <td><bean:write name="host" property="role"/></td>
     </tr>
   <tr>
     <td colspan="2">

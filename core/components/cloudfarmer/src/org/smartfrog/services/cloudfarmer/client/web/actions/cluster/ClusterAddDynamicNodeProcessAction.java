@@ -54,8 +54,10 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
                                  HttpServletResponse response, ClusterController controller) throws Exception {
         ClusterAddDynamicForm form = (ClusterAddDynamicForm) aform;
         try {
+            log.info("Creating workers in range ["+ form.getMinWorkers() +"-"+form.getMaxWorkers() + "]");
             //add a master automatically
             if (controller.getMaster() == null) {
+                log.info("Creating a master node");
                 controller.createHosts("master", 1, 1);
             }
             controller.createHosts("worker", form.getMinWorkers(), form.getMaxWorkers());

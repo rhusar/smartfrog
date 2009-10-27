@@ -56,6 +56,8 @@ public class ClusterListAction extends AbstractClusterAction {
      * @return the follow-up action
      * @throws Exception any exception to handle server-side
      */
+    @Override
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,
                                  HttpServletRequest request,

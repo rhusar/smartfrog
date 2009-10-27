@@ -1,4 +1,5 @@
-<%@ page isErrorPage="true" %>
+<%@ page isErrorPage="false" %>
+<%@ include file="/html/mombasa-portlet/common/patcherrorpages.jsp" %>
 <%--
 /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
@@ -32,22 +33,12 @@ For more information: www.smartfrog.org
 %>
 
 <h2>Error: <bean:write name="errorMessage"/></h2>
-<%--
 
 <div>
 <jsp:include page="/html/mombasa-portlet/cluster/cluster_nav.jsp" flush="true"/>
 </div>
 
---%>
-
-<logic:present name="org.apache.struts.action.EXCEPTION">
-  <bean:write name="org.apache.struts.action.EXCEPTION"/>
-</logic:present>
-
-<logic:messagesPresent>
-	<span class="portlet-msg-error">
-	<html:errors/>
-	</span>
-</logic:messagesPresent>
+<%@ include file="/html/mombasa-portlet/common/printStrutsException.jsp" %>
+<%@ include file="/html/mombasa-portlet/common/printMessages.jsp" %>
 
 

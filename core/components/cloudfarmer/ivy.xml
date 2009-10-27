@@ -80,6 +80,7 @@
       <exclude org="antlr"/>
       <exclude org="oro"/>
     </dependency>
+    
     <dependency org="org.apache.struts"
         name="struts-taglib"
         rev="${struts.version}"
@@ -116,13 +117,18 @@
         rev="latest.integration"
         conf="test->default"/>
 
-    <!--grab mail and activation-->
+    <!--EC2 support-->
     <dependency org="org.smartfrog"
         name="sf-ec2"
         changing="true"
         rev="latest.integration"
         conf="ec2->default"/>
 
-
+    <dependency org="org.smartfrog"
+        name="sf-hadoop-cluster"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon->default,server"/>
+    
   </dependencies>
 </ivy-module>

@@ -52,6 +52,7 @@ public class QueueAnyWorkflowProcessAction extends AbstractMombasaAction {
         return "QueueAnyWorkflow";
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping,
                                  ActionForm form,

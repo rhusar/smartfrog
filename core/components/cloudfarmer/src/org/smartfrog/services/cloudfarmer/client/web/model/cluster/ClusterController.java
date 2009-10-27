@@ -27,12 +27,15 @@ import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.web.model.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * The cluster controller is whatever gives us new clusters
@@ -41,6 +44,10 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     private HostInstanceList hosts;
     private Map<String, HostInstance> hostMap;
+    //hosts by role
+    private HashMap<String, ClusterRoleInfo> roles;
+
+
     private static final int INITIAL_HOSTLIST_CAPACITY = 1;
 
     /**
@@ -82,6 +89,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     protected synchronized void clearHostList() {
         hosts = new HostInstanceList(INITIAL_HOSTLIST_CAPACITY);
         hostMap = new HashMap<String, HostInstance>(INITIAL_HOSTLIST_CAPACITY);
+        roles = new HashMap<String, ClusterRoleInfo>(2);
     }
 
     /**
@@ -99,11 +107,42 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
-     * Get a list of the hosts. The list is a clone, no need to worry about synchronization problems, though hosts may
-     * have been deleted by the time you get to them
-     *
-     * @return the cloned list
+     * replace the roles
+     * @param rolemap new role map
      */
+    protected synchronized void replaceRoles(HashMap<String, ClusterRoleInfo> rolemap) {
+        roles = rolemap;
+    }
+
+    /**
+     * Get a clone of the roles
+     * @return
+     */
+    public synchronized Map<String, ClusterRoleInfo> getRoleMap() {
+        return (Map<String, ClusterRoleInfo>) roles.clone();
+    }
+
+    /**
+     * Get the list of roles
+     * @return a list of roles, no specific order.
+     */
+    public synchronized List<ClusterRoleInfo> getRoles() {
+        if (roles == null) {
+            return new ArrayList<ClusterRoleInfo>(0);
+        }
+        List<ClusterRoleInfo> roleList = new ArrayList<ClusterRoleInfo>(roles.size());
+        for(ClusterRoleInfo role:roles.values()) {
+            roleList.add(role);
+        }
+        return roleList;
+    }
+
+    /**
+    * Get a list of the hosts. The list is a clone, no need to worry about synchronization problems, though hosts may
+    * have been deleted by the time you get to them
+    *
+    * @return the cloned list
+    */
     public synchronized HostInstanceList getHosts() {
         return (HostInstanceList) hosts.clone();
     }
@@ -160,6 +199,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @throws SmartFrogException SF trouble
      */
     public abstract void refreshHostList() throws IOException, SmartFrogException;
+
 
 
     /**
@@ -429,4 +469,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         host.setRole(roleName);
         return workflow;
     }
+
+    /**
+     * Refresh the role list
+     * @throws IOException io problems
+     * @throws SmartFrogException SF problems
+     */
+    public abstract void refreshRoleList() throws IOException, SmartFrogException;
 }
