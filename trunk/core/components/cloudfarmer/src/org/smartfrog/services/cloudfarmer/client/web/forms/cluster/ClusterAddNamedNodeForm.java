@@ -21,11 +21,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.forms.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionMapping;
 import org.smartfrog.services.cloudfarmer.client.web.actions.cluster.AbstractClusterAction;
+import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -106,7 +106,10 @@ public class ClusterAddNamedNodeForm extends AbstractMombasaActionForm {
             }
             controller.refreshHostList();
             boolean hasMaster = controller.hasMaster();
-            if (isWorker() && !isMaster() && !hasMaster) {
+            if (isWorker() && isMaster()) {
+                actionErrors = addError(actionErrors, "master", "error.twin.roles.not.supported");
+            }
+            if (!isMaster() && !hasMaster) {
                 actionErrors = addError(actionErrors, "master", "error.no.master");
             }
             if (isMaster() && hasMaster) {

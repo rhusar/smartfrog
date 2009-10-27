@@ -21,6 +21,7 @@ package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
@@ -36,27 +37,37 @@ public final class HostInstance implements Serializable {
 
     public String hostname;
 
+    public String role;
+    
     public boolean canDelete;
-
-    public boolean master;
-    public boolean worker;
 
     private Workflow application;
 
     private RemoteDaemon daemon;
+    
+    private String details;
+    
+    public static final String ROLE_MASTER = "master";
+    private static final String ROLE_WORKER = "worker";
 
     public HostInstance() {
     }
 
     public HostInstance(String hostname) {
         this.hostname = hostname;
-        this.id = hostname;
+        id = hostname;
     }
 
     public HostInstance(String id, String hostname, boolean canDelete) {
         this.id = id;
         this.hostname = hostname;
         this.canDelete = canDelete;
+    }
+    
+    public HostInstance(String id, ClusterNode node, boolean canDelete) {
+        this(id, node.getHostname(), canDelete);
+        role = node.getRole();
+        details = node.getDetails();
     }
 
     /**
@@ -115,22 +126,30 @@ public final class HostInstance implements Serializable {
         this.canDelete = canDelete;
     }
 
-    public boolean isMaster() {
-        return master;
+    public String getRole() {
+        return role;
     }
 
-    public void setMaster(boolean master) {
-        this.master = master;
+    public void setRole(String role) {
+        this.role = role;
     }
+
+    public boolean isMaster() {
+        return ROLE_MASTER.equals(role);
+    }
+
 
     public boolean isWorker() {
-        return worker;
+        return ROLE_WORKER.equals(role);
     }
 
-    public void setWorker(boolean worker) {
-        this.worker = worker;
+    public String getDetails() {
+        return details;
     }
 
+    public void setDetails(String details) {
+        this.details = details;
+    }
 
     /**
      * Bind to the SF daemon on the remote machine

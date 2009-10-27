@@ -110,6 +110,7 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         node.setId(machinename);
         node.setHostname(machinename + "." + domain);
         node.setExternalHostname(machinename + "." + externalDomain);
+        
         FarmNode fnode = new FarmNode(node, null, null);
         return fnode;
     }

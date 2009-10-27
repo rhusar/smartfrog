@@ -31,9 +31,11 @@ public class ClusterControllerBinding implements Serializable {
     /**
      * The default controller is {@link ClusterControllerFactory#SMARTFROG_CONTROLLER}
      */
-    private int controller = ClusterControllerFactory.SMARTFROG_CONTROLLER;
+    
+    public static final int DEFAULT_CONTROLLER = ClusterControllerFactory.SMARTFROG_CONTROLLER;
+    private int controller = DEFAULT_CONTROLLER;
 
-    private String URL;
+    private String URL = ClusterControllerFactory.DEFAULT_FARMER_URL;
 
     private String username;
 

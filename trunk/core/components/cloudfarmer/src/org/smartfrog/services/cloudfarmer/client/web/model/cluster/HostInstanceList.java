@@ -48,12 +48,22 @@ public class HostInstanceList extends ArrayList<HostInstance> {
         return this;
     }
 
-    public HostInstance getMaster() {
+    public List<HostInstance> getListInRole(String role) {
+        List<HostInstance> results = new ArrayList<HostInstance>();
         for (HostInstance instance : this) {
             if (instance.isMaster()) {
-                return instance;
+                results.add(instance);
             }
         }
-        return null;
+        return results;
+    }
+    
+    public HostInstance getMaster() {
+        List<HostInstance> masters = getListInRole(HostInstance.ROLE_MASTER);
+        if (masters.size()>0) {
+            return masters.get(0);
+        } else {
+            return null;
+        }
     }
 }

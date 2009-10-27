@@ -38,8 +38,8 @@ public class FarmNode {
 
     public FarmNode(ClusterNode clusterNode, ClusterRoleInfo roleInfo, Object extraData) {
         this.clusterNode = clusterNode;
-        this.roleInfo = roleInfo;
         this.extraData = extraData;
+        setRoleInfo(roleInfo);
     }
 
     public FarmNode() {
@@ -60,6 +60,11 @@ public class FarmNode {
 
     public void setRoleInfo(ClusterRoleInfo roleInfo) {
         this.roleInfo = roleInfo;
+        if(roleInfo!=null) {
+            clusterNode.setRole(roleInfo.getName());
+        } else {
+            clusterNode.setRole(null);
+        }
     }
 
     public String getId() {
