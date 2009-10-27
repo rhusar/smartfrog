@@ -1,0 +1,61 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/cloudfarmer/server/ec2/components.sf"
+
+
+/**
+ * This example is driven from 
+ test.image.id ID of an AWS image
+ */
+
+test.image.id PROPERTY test.image.id;
+test.awsid PROPERTY test.awsid;
+test.awskey PROPERTY test.awskey;
+timeout 10;
+
+EC2HadoopRoles extends Compound {
+
+
+
+    master extends EC2ClusterRole {
+      description "Hadoop Namenode and Job Tracker";
+      min 1;
+      max 1;
+      imageID test.image.id;
+    }
+    
+    worker extends EC2ClusterRole {
+      description "Worker nodes are Datanodes and TaskTrackers";
+      min 1;
+      recommendedMin 3;
+      imageID test.image.id;
+    }
+}
+
+EC2HadoopFarmer extends EC2ClusterFarmer {
+    id test.awsid;
+    key test.awskey;
+
+  roles extends EC2HadoopRoles {
+  
+  }
+}
+
+sfConfig extends EC2HadoopFarmer;

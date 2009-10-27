@@ -50,7 +50,7 @@ public class Range implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        return "[" + min + ", " + max + "]";
+        return "[" + min + ", " + (max > 0 ? max: "unlimited")  + "]";
     }
 
     /**
@@ -85,7 +85,8 @@ public class Range implements Cloneable, Serializable {
 
     }
 
-    public static final Range NO_LIMITS = new Range(0, -1);
+    private static final int UNLIMITED = -1;
+    public static final Range NO_LIMITS = new Range(0, UNLIMITED);
 
 
 }
