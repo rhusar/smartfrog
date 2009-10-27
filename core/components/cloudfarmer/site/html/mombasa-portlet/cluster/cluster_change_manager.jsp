@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
-<p>Add a named machine to the Hadoop Cluster</p>
+<p>Change the type or remote address of the cluster manager</p>
 
 <html:form action="/mombasa-portlet/cluster/change_manager/process" method="post" focus="controller">
 

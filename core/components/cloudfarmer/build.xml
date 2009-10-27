@@ -129,5 +129,12 @@
           descriptor="/org/smartfrog/services/cloudfarmer/client/web/deploy/mockmombasa.sf"/>
     </deploy>
   </target>
-
+  
+  <target  name="ec2farmer" depends="ready-to-deploy"
+      description="Deploy an EC2 farmer" >
+    <deploy>
+      <application name="farmer"
+          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/ec2_hadoop_farmer.sf"/>
+    </deploy>
+  </target>
 </project>

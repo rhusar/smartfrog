@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 
 
 
-<p>Add a named machine to the Hadoop Cluster</p>
+<p>Add a named machine to the cluster</p>
 
 <html:form action="/mombasa-portlet/cluster/add_named/process" method="post" focus="name">
 

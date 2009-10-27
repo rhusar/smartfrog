@@ -106,13 +106,13 @@
   </definition>
 
   <definition name="portlet.mombasa.cluster.start" extends="portlet.mombasa.cluster">
-    <put name="title" value="Hadoop Cluster"/>
+    <put name="title" value="Manage a Cluster"/>
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_start.jsp"/>
   </definition>
 
   <!--List the clusters-->
   <definition name="portlet.mombasa.cluster.list" extends="portlet.mombasa.cluster">
-    <put name="title" value="Hadoop Hosts"/>
+    <put name="title" value="Cluster Hosts"/>
     <put name="text" value=""/>
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_list.jsp"/>
   </definition>
@@ -122,7 +122,7 @@
 
 
   <definition name="portlet.mombasa.cluster.list.roles.success" extends="portlet.mombasa.cluster">
-    <put name="title" value="Hadoop Hosts"/>
+    <put name="title" value="Cluster Roles"/>
     <put name="text" value=""/>
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_list_roles.jsp"/>
   </definition>

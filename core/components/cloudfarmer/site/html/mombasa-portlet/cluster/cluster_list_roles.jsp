@@ -32,6 +32,10 @@ For more information: www.smartfrog.org
     <th>Role</th>
     <th style="padding-left: 10px;"></th>
     <th>Description</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Size</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Recommended</th>
   </tr>
   <logic:iterate id="role"
                  name="cluster.controller"
@@ -44,6 +48,9 @@ For more information: www.smartfrog.org
       <td style="padding-left: 10px;"></td>
       <td><bean:write name="role" property="description"/></td>
       <td style="padding-left: 10px;"></td>
+      <td><bean:write name="role" property="roleSize"/></td>
+      <td style="padding-left: 10px;"></td>
+      <td><bean:write name="role" property="recommendedSize"/></td>
     </tr>
   </logic:iterate>
 </table>

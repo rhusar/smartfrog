@@ -80,11 +80,11 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
 
     /**
      * code to resolve the farmer. This is kept separate just to make testing easier
-     * @param process
-     * @param path
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws IOException
+     * @param process process to work with
+     * @param path path to convert and resolve
+     * @return the resolve cluster farmer
+     * @throws SmartFrogResolutionException if the path does not resolve, or what it resolves to is something unexpected
+     * @throws IOException network trouble
      */
     public static ClusterFarmer resolveFarmer(ProcessCompound process, String path)
             throws SmartFrogResolutionException, IOException {
