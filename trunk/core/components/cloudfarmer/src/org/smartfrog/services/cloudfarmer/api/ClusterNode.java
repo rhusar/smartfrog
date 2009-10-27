@@ -37,11 +37,6 @@ public final class ClusterNode implements Serializable, Cloneable {
 	 */
 	private ClusterNode[] children;
 	
-	/**
-	 * Instance id of the role relating to this node.  
-	 */
-	private String roleInstance;
-	
     /**
      * The Id of this node. This should be treated as opaque, and is only of interest to the Farmer
      */
@@ -99,14 +94,6 @@ public final class ClusterNode implements Serializable, Cloneable {
 
     public void setChildren(final ClusterNode[] children) {
         this.children = children;
-    }
-    
-    public String getRoleInstance() {
-        return roleInstance;
-    }
-
-    public void setRoleInstance(final String roleInstance) {
-        this.roleInstance = roleInstance;
     }
     
     public String getId() {
