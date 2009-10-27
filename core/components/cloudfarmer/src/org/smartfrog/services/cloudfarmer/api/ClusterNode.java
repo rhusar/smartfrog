@@ -27,16 +27,16 @@ import java.io.Serializable;
  */
 public final class ClusterNode implements Serializable, Cloneable {
 
-	/**
-	 * Whether this cluster node is in fact a compound of cluster nodes
-	 */
-	private boolean compound=false;
-	
-	/**
-	 * Vector of cluster nodes, not null if compound is true
-	 */
-	private ClusterNode[] children;
-	
+    /**
+     * Whether this cluster node is in fact a compound of cluster nodes
+     */
+    private boolean compound = false;
+
+    /**
+     * Vector of cluster nodes, not null if compound is true
+     */
+    private ClusterNode[] children;
+
     /**
      * The Id of this node. This should be treated as opaque, and is only of interest to the Farmer
      */
@@ -72,6 +72,9 @@ public final class ClusterNode implements Serializable, Cloneable {
      */
     private String state;  
     
+    public ClusterNode() {
+    }
+
     public boolean isCompound() {
         return compound;
     }
@@ -192,10 +195,10 @@ public final class ClusterNode implements Serializable, Cloneable {
     @Override
     public String toString() {
         return "Node " + id
-                 + " @ " + hostname
-                 + (externallyVisible ?
-                    (" and " + externalHostname ): "")
-                 + " [" + role + ']'
-                 + (details != null ? details : "");
+                + " @ " + hostname
+                + (externallyVisible ?
+                (" and " + externalHostname) : "")
+                + " [" + role + ']'
+                + (details != null ? details : "");
     }
 }

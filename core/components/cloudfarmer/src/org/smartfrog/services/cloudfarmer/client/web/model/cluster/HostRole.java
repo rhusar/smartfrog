@@ -24,15 +24,14 @@ public enum HostRole {
 
     none,
     master,
-    worker,
-    masterworker,;
+    worker;
 
     HostRole() {
     }
 
     public static HostRole getRole(boolean isMaster, boolean isWorker) {
         if (isMaster) {
-            return !isWorker ? master : masterworker;
+            return master;
         } else {
             //worker or none
             return isWorker ? worker : none;

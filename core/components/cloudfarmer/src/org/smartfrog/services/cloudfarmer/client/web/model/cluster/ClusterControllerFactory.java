@@ -32,6 +32,11 @@ import java.io.IOException;
  */
 
 public class ClusterControllerFactory {
+    /**
+     * Default path for cluster components. This should really be driven from some config parameter
+     * {@value}
+     */
+    public static final String DEFAULT_FARMER_URL = "http://localhost/farmer";
 
     /**
      * Read in the preferences and create cluster controller from them. If loading fails, the default controller and
@@ -87,13 +92,12 @@ public class ClusterControllerFactory {
      */
 
     public static String getDefaultURL(int controllerID) {
-        String url;
         switch (controllerID) {
             case PHYSICAL_CONTROLLER:
-                return "";
+                return DEFAULT_FARMER_URL;
 
             case SMARTFROG_CONTROLLER:
-                return "http://localhost/";
+                return DEFAULT_FARMER_URL;
 
             default:
                 return "";

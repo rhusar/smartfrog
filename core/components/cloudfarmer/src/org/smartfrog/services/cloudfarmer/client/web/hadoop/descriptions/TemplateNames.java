@@ -73,6 +73,6 @@ public interface TemplateNames {
     /**
      * The default name for a farmer on a server, if no path is given in the URL. Value: {@value}
      */
-    String FARMER_REFERENCE = "farmer";
+    String FARMER_PATH = "farmer";
 
 }

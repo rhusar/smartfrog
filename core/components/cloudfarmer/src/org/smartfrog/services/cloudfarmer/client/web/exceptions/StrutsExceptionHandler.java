@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * See JETTY-761 for the need for this
- * 
+ * @link 
  */
 public class StrutsExceptionHandler extends org.apache.struts.action.ExceptionHandler {
 
     protected static final Log log = LogFactory.getLog(StrutsExceptionHandler.class);
+    public static final String STRUTS_EXCEPTION = "strutsException";
+    public static final String STRUTS_REQUEST_URI = "strutsRequestURI";
 
     @Override
     public ActionForward execute(final Exception exception,
@@ -26,8 +28,10 @@ public class StrutsExceptionHandler extends org.apache.struts.action.ExceptionHa
                                  final ActionForm form,
                                  final HttpServletRequest request,
                                  final HttpServletResponse response) throws ServletException {
-        log.error("Failed to process " + request.getRequestURI() + " due to " + exception, exception);
-        request.setAttribute("strutsException", exception);
+        String requestURI = request.getRequestURI();
+        log.error("Failed to process " + requestURI + " due to " + exception, exception);
+        request.setAttribute(STRUTS_EXCEPTION, exception);
+        request.setAttribute(STRUTS_REQUEST_URI, requestURI);
         return new ActionForward(config.getPath());
     }
 }

@@ -337,6 +337,9 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             throw new SmartFrogException("Cluster has no master"
                     + " proposed values master=" + isMaster + " worker=" + isWorker);
         }
+        if (isMaster && isWorker) {
+            throw new SmartFrogException("A node cannot be both a master and a worker");
+        }
     }
 
     /**
@@ -357,16 +360,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         HostInstance master = getMaster();
         boolean hasMaster = master != null;
         HostRole role = HostRole.getRole(isMaster, isWorker);
+        String rolename;
         switch (role) {
-            case masterworker:
-                resource = HADOOP_MASTER_WORKER;
-                if (hasMaster) {
-                    throw new SmartFrogException("Cluster already has the master " + master.hostname);
-                }
-                masterName = host.getHostname();
-                break;
             case master:
                 resource = HADOOP_MASTER;
+                rolename = HostInstance.ROLE_MASTER;
                 if (hasMaster) {
                     throw new SmartFrogException("Cluster already has the master " + master.hostname);
                 }
@@ -374,6 +372,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 break;
             case worker:
                 resource = HADOOP_WORKER;
+                rolename = HostInstance.ROLE_MASTER;
                 if (!hasMaster) {
                     throw new SmartFrogException("Cluster has no master");
                 }
@@ -383,13 +382,14 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             default:
                 masterName = "";
                 resource = null;
+                rolename = "";
         }
         if (resource == null) {
             //nothing to deploy
             return null;
         } else {
             String appname = role.toString();
-            return installApplication(host, appname, resource, masterName, isMaster, isWorker);
+            return installApplication(host, appname, resource, masterName, rolename);
         }
     }
 
@@ -400,8 +400,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @param appname    application name
      * @param resource   resource name (must be on classpath)
      * @param masterName hostname for the master
-     * @param isMaster   is the node to be a master
-     * @param isWorker   is the node to be a worker
+     * @param roleName   name of the role
      * @return the workflow
      * @throws IOException        network trouble
      * @throws SmartFrogException SF trouble
@@ -410,9 +409,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                                           String appname,
                                           String resource,
                                           String masterName,
-                                          boolean isMaster,
-                                          boolean isWorker
-    ) throws IOException, SmartFrogException {
+                                          String roleName)
+                     throws IOException, SmartFrogException {
         ///set the binding values
         System.setProperty(BINDING_MASTER_HOSTNAME, masterName);
         System.setProperty(BINDING_TASKTRACKER_SLOTS, "" + getTaskSlots());
@@ -428,8 +426,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         //create the workflow
         Workflow workflow = daemon.createWorkflow(appname, localApp.getComponentDescription());
         host.setApplication(workflow);
-        host.setMaster(isMaster);
-        host.setWorker(isWorker);
+        host.setRole(roleName);
         return workflow;
     }
 }

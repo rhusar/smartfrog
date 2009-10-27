@@ -31,7 +31,7 @@ import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaAction
 public class ClusterChangeManagerForm extends AbstractMombasaActionForm {
 
 
-    private int controller;
+    private int controller = ClusterControllerBinding.DEFAULT_CONTROLLER;
 
     private String url;
 
