@@ -57,7 +57,7 @@ public class WorkflowBindToRemoteServerActionForm extends AbstractMombasaActionF
      *
      * @param actionMapping mapping
      * @param request       request
-     * @return
+     * @return a list of errors
      */
     @Override
     public ActionErrors validate(ActionMapping actionMapping, HttpServletRequest request) {

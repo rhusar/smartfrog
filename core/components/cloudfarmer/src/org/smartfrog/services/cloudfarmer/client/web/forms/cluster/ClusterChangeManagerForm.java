@@ -75,7 +75,7 @@ public class ClusterChangeManagerForm extends AbstractMombasaActionForm {
     /**
      * read, trim and maybe replace cluster controller bindings
      *
-     * @return
+     * @return the binding
      */
     public ClusterControllerBinding createControllerBinding() {
         ClusterControllerBinding binding = new ClusterControllerBinding();

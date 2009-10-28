@@ -93,14 +93,14 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
     }
 
     /**
-     * extract the value of {@value #ATTR_HOSTID} from the request, look up the host by that ID in the cluster, then
-     * return the host. The host is set on the request under the attribute {@value #ATTR_HOST}
+     * extract the value of {@link #ATTR_HOSTID} from the request, look up the host by that ID in the cluster, then
+     * return the host. The host is set on the request under the attribute {@link #ATTR_HOSTID}
      *
      * @param request request to manipulate
      * @return the host
      * @throws BadParameterException if the hostId is missing or there is no host with that name
-     * @throws IOException
-     * @throws SmartFrogException
+     * @throws IOException        network problems
+     * @throws SmartFrogException SF problems
      */
     public static HostInstance bindHostInstance(HttpServletRequest request) throws IOException, SmartFrogException {
         String hostID = parameterToAttribute(request, ATTR_HOSTID, ATTR_HOSTID, true);

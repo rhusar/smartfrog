@@ -89,6 +89,7 @@ For more information: www.smartfrog.org
 
   </table>
   For cells, use http://localhost/farmer/cellModel/farmer </br>
+  or use http://localhost/mombasa/farmer/cellModel/farmer </br>
   For mock, use http://localhost/farmer 
 
 

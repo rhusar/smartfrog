@@ -20,25 +20,43 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
 /**
- * Created 02-Oct-2009 12:53:27
+ * These are struts request attributes -either parameters on those set on ongoing actions
  */
 
 public interface ClusterRequestAttributes {
 
+    /** {@value} */
     String ACTION_SUCCESS = "success";
+    /** {@value} */
     String ACTION_FAILURE = "failure";
+    /** {@value} */
     String ERROR = "error";
+    /** {@value} */
     String ATTR_HOSTS = "hosts";
+    /** {@value} */
     String ATTR_HOSTCOUNT = "hostcount";
+    /** {@value} */
     String ATTR_CLUSTER_HAS_MASTER = "cluster.hasMaster";
+    /** {@value} */
     String ATTR_CLUSTER_MASTER = "cluster.master";
+    /** {@value} */
     String ATTR_CLUSTER_CONTROLLER = "cluster.controller";
+    /** {@value} */
     String ATTR_CLUSTER_MASTER_HOSTNAME = "cluster.master.hostname";
+    /** {@value} */
     String ATTR_THROWN = "org.apache.struts.action.EXCEPTION";
+    /** {@value} */
     String ATTR_ERROR_MESSAGE = "errorMessage";
+    /** {@value} */
     String ATTR_ERROR_CAUSE = "errorCause";
+    /** {@value} */
     String FARM_CONTROLLER_URL = "farmControllerURL";
+    /** {@value} */
     String FARM_CONTROLLER = "farmController";
+    /** {@value} */
     String ATTR_HOSTID = "hostid";
+    /** {@value} */
     String ATTR_HOST = "host";
+    /** {@value} */
+    String ATTR_ROLE = "role";
 }

@@ -43,7 +43,10 @@ For more information: www.smartfrog.org
                  type="org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo">
     <tr>
       <td>
-        <bean:write name="role" property="name"/>
+         <html:link action="/mombasa-portlet/cluster/listInRole"
+            paramId="role" paramName="role" paramProperty="name">
+           <bean:write name="role" property="name"/>
+         </html:link>
       </td>
       <td style="padding-left: 10px;"></td>
       <td><bean:write name="role" property="description"/></td>

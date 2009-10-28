@@ -39,7 +39,7 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
     }
 
     public ClusterRoleInfo(String name) {
-        this.name = name;
+        setName(name);
     }
 
     public String getName() {

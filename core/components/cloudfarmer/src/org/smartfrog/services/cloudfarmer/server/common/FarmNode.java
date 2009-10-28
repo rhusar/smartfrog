@@ -60,10 +60,10 @@ public class FarmNode {
 
     public void setRoleInfo(ClusterRoleInfo roleInfo) {
         this.roleInfo = roleInfo;
-        if(roleInfo!=null) {
+        if (roleInfo != null) {
             clusterNode.setRole(roleInfo.getName());
         } else {
-            clusterNode.setRole(null);
+            clusterNode.setRole("");
         }
     }
 
