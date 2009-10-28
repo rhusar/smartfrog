@@ -29,11 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
- * This class exists to work around limitations in the 1.1 Restlet implementation, namely no
- * support for http proxies.
+ * This class exists to work around limitations in the 1.1 Restlet implementation, namely no support for http proxies.
  * Created 29-Jan-2008 12:47:51
- *
  */
 
 public class ProxyEnabledClient extends Client {
@@ -53,7 +50,7 @@ public class ProxyEnabledClient extends Client {
         super(context, protocols);
 
         if ((protocols != null) && (protocols.size() > 0)) {
-            helper=new ProxyEnabledHttpClientHelper(this);
+            helper = new ProxyEnabledHttpClientHelper(this);
         }
     }
 
@@ -73,7 +70,7 @@ public class ProxyEnabledClient extends Client {
      * @param protocols The connector protocols.
      */
     public ProxyEnabledClient(List<Protocol> protocols) {
-        this(null, protocols);
+        this(new Context(), protocols);
     }
 
     /**
@@ -82,7 +79,7 @@ public class ProxyEnabledClient extends Client {
      * @param protocol The connector protocol.
      */
     public ProxyEnabledClient(Protocol protocol) {
-        this(null, protocol);
+        this(new Context(), protocol);
     }
 
     /**
@@ -102,28 +99,31 @@ public class ProxyEnabledClient extends Client {
      */
     public void handle(Request request, Response response) {
         init(request, response);
-        if (getHelper() != null)
+        if (getHelper() != null) {
             getHelper().handle(request, response);
+        }
     }
 
     @Override
     public void start() throws Exception {
         if (isStopped()) {
             super.start();
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().start();
+            }
         }
     }
 
     @Override
     public void stop() throws Exception {
         if (isStarted()) {
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().stop();
+            }
             super.stop();
         }
     }
-    
+
     /**
      * Bind to the local proxy settings
      */
@@ -137,6 +137,6 @@ public class ProxyEnabledClient extends Client {
      * @return a string representation of the object.
      */
     public String toString() {
-        return getHelper()==null?"Uninitialized http client":("HttpClient with "+getHelper().toString());
+        return getHelper() == null ? "Uninitialized http client" : ("HttpClient with " + getHelper().toString());
     }
 }

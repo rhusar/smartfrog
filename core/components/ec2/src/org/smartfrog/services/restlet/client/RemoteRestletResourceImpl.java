@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.restlet.client;
 
 import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
@@ -63,9 +64,13 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     private Protocol protocol;
     private boolean followRedirects;
     private boolean useSystemProxySettings;
+    /** {@value} */
     public static final String UNSUPPORTED_MEDIA_TYPE = "Unsupported media type:";
+    /** {@value} */
     public static final String UNKNOWN_VERB = "Unknown verb: ";
+    /** {@value} */
     public static final String ATTR_DATASOURCE = "datasource";
+    /** {@value} */
     public static final String ERROR_DIFFERENT_JVM = "Cannot access data from a data source in a different JVM";
 
     private Vector<Vector<?>> startActions, terminateActions, livenessActions;
@@ -265,7 +270,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     protected Response handle(Client client,Request request) {
 
         //add redirection support
-        Series<Parameter> params = client.getContext().getParameters();
+        Context context = client.getContext();
+        Series<Parameter> params = context.getParameters();
         params.add("followRedirects", Boolean.toString(followRedirects));
         params.add("readTimeout", Integer.toString(readTimeout));
 
