@@ -249,6 +249,14 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFarmerAvailable() throws IOException, SmartFrogException {
+        return true;
+    }
+
+    /**
      * Take a list of instances and get their details (slow), then return an array of the results
      *
      * @param instanceIDs instance strings
