@@ -200,4 +200,13 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         }
         return roleInfo;
     }
+
+    /**
+     * {@inheritDoc }
+     * @return true always
+     */
+    @Override
+    public boolean isFarmerAvailable() throws IOException, SmartFrogException {
+        return true;
+    }
 }
