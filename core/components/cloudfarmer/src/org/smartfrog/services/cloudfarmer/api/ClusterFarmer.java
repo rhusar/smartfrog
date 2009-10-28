@@ -172,4 +172,13 @@ public interface ClusterFarmer extends Remote {
      * @throws SmartFrogException other problems
      */
     public ClusterRoleInfo[] listClusterRoles() throws IOException, SmartFrogException;
+
+    /**
+     * Query the farmer to see if it is live. 
+     * @return true if the service considers itself available. If not, it can return false or throw
+     * an exception.
+     * @throws IOException something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public boolean isFarmerAvailable() throws IOException, SmartFrogException;
 }
