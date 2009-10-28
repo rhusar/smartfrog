@@ -63,7 +63,7 @@ public class LocalSmartFrogDescriptor {
     /**
      * Get options which can be set on the parse
      *
-     * @return
+     * @return the options
      */
     public ParseOptionSet getOptions() {
         return options;

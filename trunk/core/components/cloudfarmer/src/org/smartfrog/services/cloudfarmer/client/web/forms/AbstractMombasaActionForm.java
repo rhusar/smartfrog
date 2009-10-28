@@ -35,7 +35,7 @@ public abstract class AbstractMombasaActionForm extends ActionForm implements At
     /**
      * Get the name of this action, used in logging and debugging
      *
-     * @return
+     * @return the action name
      */
     protected String getActionName() {
         return "AbstractMombasaActionForm";
@@ -49,6 +49,13 @@ public abstract class AbstractMombasaActionForm extends ActionForm implements At
         return file == null || file.getFileSize() <= 0;
     }
 
+    /**
+     * Add an error
+     * @param errors errors in, can be null
+     * @param name new error name
+     * @param key key to use
+     * @return the updated/created error list
+     */
     protected ActionErrors addError(ActionErrors errors, String name, String key) {
         if (errors == null) {
             errors = new ActionErrors();

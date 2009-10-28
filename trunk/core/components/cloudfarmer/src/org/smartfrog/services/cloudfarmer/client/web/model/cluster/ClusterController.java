@@ -318,6 +318,21 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
+     * Return all hosts in the specific role
+     * @param role role to search for
+     * @return a possibly empty list of hosts
+     */
+    public synchronized HostInstanceList lookupHostsByRole(String role) {
+        HostInstanceList hostsInRole = new HostInstanceList(hosts.size());
+        for (HostInstance host:hosts) {
+            if(role.equals(host.getRole())) {
+                hostsInRole.add(host);
+            }
+        }
+        return hostsInRole;
+    }
+    
+    /**
      * Add a new host to the hosts list
      *
      * @param hi instance

@@ -148,8 +148,8 @@ ClusterActions extends StrutsActions {
   admin ( cluster ++ "admin.do");
   list ( cluster ++ "list.do");
   ///mombasa-portlet/cluster/listbyRole
+  listRoles ( cluster ++ "listRoles.do");  
   listbyRole ( cluster ++ "listbyRole.do");  
-  
   terminate ( cluster ++ "terminate.do");
   change_manager ( cluster ++ "change_manager.do");
   viewhost ( cluster ++ "viewhost.do");

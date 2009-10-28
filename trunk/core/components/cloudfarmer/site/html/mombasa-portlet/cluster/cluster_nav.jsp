@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/listbyRole">List Roles</html:link>
+          action="/mombasa-portlet/cluster/listRoles">List Roles</html:link>
     </td>
     <td>
       <html:link
