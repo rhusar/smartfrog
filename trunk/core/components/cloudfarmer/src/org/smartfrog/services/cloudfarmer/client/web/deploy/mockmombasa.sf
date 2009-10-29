@@ -28,5 +28,7 @@ sfConfig extends Compound {
   }
 
   //deploy the webapp
-  subprocess extends ForkedMombasaServer;
+  subprocess extends ForkedMombasaServer {
+    cloudfarmer.url  CloudFarmerURLs:FarmerWithMombasa;
+  }
 }

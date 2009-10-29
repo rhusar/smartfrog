@@ -24,6 +24,18 @@
 #include "/org/smartfrog/services/jetty/jettyjsp.sf"
 #include "/org/smartfrog/services/www/mimetypes.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
+
+
+CloudFarmerURLs extends DATA {
+  //this is the URL to the cloud farmer
+  FarmerWithMombasa "http://localhost/mombasa/farmer";
+  FarmerOnLocalhost "http://localhost/farmer";
+  
+  PhysicalFarmer "0";
+  SmartFrogFarmer "1";
+  
+}
+
 /**
  * Deploy a compound containing jetty and servlets
  */
@@ -36,6 +48,7 @@ StrutsOnJetty extends Compound {
   sfSyncTerminate true;
   //set to true to keep JSP pages, do more debugging and logging etc.
   debugFlag true;
+  cloudfarmer.url  CloudFarmerURLs:FarmerOnLocalhost;
 
   //integrate logging with smartfrog
   logging extends IntegrateJettyLogging;
@@ -65,6 +78,10 @@ StrutsOnJetty extends Compound {
     resourcePackage "/org/smartfrog/services/cloudfarmer/client/web/site";
     contextPath "/";
     server LAZY PARENT:server;
+    options extends DATA {
+      cloudfarmer.url PARENT:ATTRIB cloudfarmer.url;
+      cloudfarmer.controller CloudFarmerURLs:SmartFrogFarmer;
+    }
    }
 
   mimemap extends CoreMimeTypes {
@@ -149,19 +166,26 @@ ClusterActions extends StrutsActions {
   list ( cluster ++ "list.do");
   ///mombasa-portlet/cluster/listbyRole
   listRoles ( cluster ++ "listRoles.do");  
-  listbyRole ( cluster ++ "listbyRole.do");  
+  listInRole ( cluster ++ "listInRole.do");  
   terminate ( cluster ++ "terminate.do");
   change_manager ( cluster ++ "change_manager.do");
   viewhost ( cluster ++ "viewhost.do");
 
 }
 
-
+/**
+ * The mombasa server should be deployed in a fork for better JSP isolation
+ * otherwise it behaves badly when restarted
+ */
+ 
 ForkedMombasaServer extends Compound {
   description "This is the mombasa web application";
+  
+  cloudfarmer.url  CloudFarmerURLs:FarmerOnLocalhost;
 
   subprocess extends Compound {
-    jetty extends StrutsOnJetty;
-    //mock;
+    jetty extends StrutsOnJetty {
+      cloudfarmer.url PARENT:ATTRIB cloudfarmer.url;
+    }
   }
 }
