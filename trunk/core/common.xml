@@ -2253,7 +2253,10 @@ Exist.
        <typefound name="settings" uri="antlib:org.apache.ivy.ant"/>
       </not>
     </condition>
-    No Ivy found in ${ivy.jar}
+      No Ivy found in ${ivy.jar}
+      antbuild.dir=${antbuild.dir}
+      core.dir=${core.dir}
+      root.dir=${root.dir}
     </fail>
   </target>
 
