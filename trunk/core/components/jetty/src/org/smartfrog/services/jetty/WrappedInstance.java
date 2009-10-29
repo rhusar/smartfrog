@@ -36,9 +36,10 @@ public class WrappedInstance<T> implements Serializable {
      * The context does not serialize
      */
     private transient T instance;
+    private String stringValue;
 
     public WrappedInstance(T instance) {
-        this.instance = instance;
+        setInstance(instance);
     }
 
     public WrappedInstance() {
@@ -50,6 +51,14 @@ public class WrappedInstance<T> implements Serializable {
 
     public void setInstance(T instance) {
         this.instance = instance;
+        
+        stringValue = instance==null? null : instance.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "Wrapping of "+stringValue
+                + (instance == null ? " instance not serialized" : "");
     }
 
     /**
