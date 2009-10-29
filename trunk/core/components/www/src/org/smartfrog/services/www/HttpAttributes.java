@@ -96,9 +96,14 @@ public interface HttpAttributes extends Remote {
     String ATTR_LOGRESPONSE = "logResponse";
     /** {@value} */
     String ATTR_AUTH_REQUIRED = "authenticationRequired";
+    /** {@value} */
     int HTTP_PORT = 80;
+    /** {@value} */
     int HTTPS_PORT = 443;
+    /** choose the port from the protocol: {@value} */
     int CHOOSE_PORT = 0;
+    /** {@value} */
     String HTTP = "http";
+    /** {@value} */
     String HTTPS = "https";
 }

@@ -26,7 +26,6 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.Context;
-import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -128,81 +127,6 @@ public class JettyHelper extends WebApplicationHelper {
             throws SmartFrogException, RemoteException {
         getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_SERVER, new WrappedJettyServer(server));
 
-    }
-
-    /**
-     * for servlets: get the servlet context.
-     *
-     * @param mandatory set this to true if you want an exception if there is no context
-     * @return context, or null if there is not one found
-     * @throws SmartFrogException In case of error while deploying
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public Context getServletContext(boolean mandatory)
-            throws SmartFrogException, RemoteException {
-
-
-        Context jettyContext = null;
-
-        Prim contextImpl = findServletContext();
-        if (contextImpl != null) {
-            jettyContext = new WrappedJettyServletContext().resolve(contextImpl,
-                    JettyServletContextIntf.ATTR_CONTEXT,
-                    mandatory);
-        } else if (mandatory) {
-            throw new SmartFrogResolutionException(
-                    "Could not locate "
-                            +
-                            JettyServletContextIntf.ATTR_CONTEXT, contextImpl);
-        }
-        return jettyContext;
-    }
-
-
-    /**
-     * Extract the servlet context
-     *
-     * @param prim the prim to use
-     * @return the context or null
-     * @throws SmartFrogResolutionException if the attribute is the wrong type
-     * @throws RemoteException              network trouble
-     */
-    private Context extractServletContext(Prim prim) throws SmartFrogResolutionException, RemoteException {
-        Object wrapper = prim.sfResolve(JettyServletContextIntf.ATTR_CONTEXT);
-        if (wrapper == null) {
-            return null;
-        }
-        if (!(wrapper instanceof WrappedJettyServletContext)) {
-            throw new SmartFrogResolutionException(
-                    "Wrong instance type on "
-                            + JettyServletContextIntf.ATTR_CONTEXT
-                            + " found " + wrapper,
-                    prim);
-        }
-        WrappedJettyServletContext wrappedContext = (WrappedJettyServletContext) wrapper;
-        return wrappedContext.getInstance();
-    }
-
-
-    private static class WrappedJettyServletContext extends WrappedInstance<Context> {
-        private WrappedJettyServletContext(Context object) {
-            super(object);
-        }
-
-        private WrappedJettyServletContext() {
-        }
-
-    }
-
-    /**
-     * Find the servlet context. This is done by resolving the owner and looking for its server attribute
-     *
-     * @return the owner server, null if there is no server,
-     * @throws RemoteException              network trouble
-     * @throws SmartFrogResolutionException failure to resolve
-     */
-    public Prim findServletContext() throws RemoteException, SmartFrogResolutionException {
-        return getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER, (Prim) null, false);
     }
 
 
