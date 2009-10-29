@@ -48,6 +48,10 @@ testClusterListInRole extends testForPage {
   tests:wait:queries [ ["role", role] ];
 }
 
+testClusterView extends testForPage {
+  page ClusterActions:view;
+}
+
 testClusterAdmin extends testForPage {
   page ClusterActions:admin;
 }

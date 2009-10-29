@@ -143,8 +143,8 @@ WorkflowActions extends StrutsActions {
 
 
   //struts actions; will only work if JSP and struts are happy
-
-  workflowList ( actionRoot ++ "workflowList.do");
+  workflowView (actionRoot ++ "view.do");
+  workflowList (actionRoot ++ "workflowList.do");
   submitMRJob (actionRoot ++ "submitMRJob/view.do");
   //http://localhost:8081/mombasa-portlet/submitTool/view.do
   submitTool (actionRoot ++ "submitTool/view.do");
@@ -160,16 +160,16 @@ WorkflowActions extends StrutsActions {
  */
 ClusterActions extends StrutsActions {
   cluster "/mombasa-portlet/cluster/";
-
-  add ( cluster ++ "add.do");
-  admin ( cluster ++ "admin.do");
-  list ( cluster ++ "list.do");
+  view  (cluster ++ "view.do");
+  add   (cluster ++ "add.do");
+  admin (cluster ++ "admin.do");
+  list  (cluster ++ "list.do");
   ///mombasa-portlet/cluster/listbyRole
-  listRoles ( cluster ++ "listRoles.do");  
-  listInRole ( cluster ++ "listInRole.do");  
-  terminate ( cluster ++ "terminate.do");
-  change_manager ( cluster ++ "change_manager.do");
-  viewhost ( cluster ++ "viewhost.do");
+  listRoles   (cluster ++ "listRoles.do");  
+  listInRole  (cluster ++ "listInRole.do");  
+  terminate   (cluster ++ "terminate.do");
+  change_manager (cluster ++ "change_manager.do");
+  viewhost    (cluster ++ "viewhost.do");
 
 }
 

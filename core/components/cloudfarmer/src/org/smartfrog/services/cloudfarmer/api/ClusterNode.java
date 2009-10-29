@@ -131,6 +131,15 @@ public final class ClusterNode implements Serializable, Cloneable {
         this.externalHostname = externalHostname;
     }
 
+    /**
+     * check for being in a role; the node role can be null
+     * @param roleToCheck the non-null role to check
+     * @return true iff the two role strings are equal
+     */
+    public boolean isInRole(String roleToCheck) {
+        return roleToCheck.equals(role);
+    }
+
     public String getRole() {
         return role;
     }

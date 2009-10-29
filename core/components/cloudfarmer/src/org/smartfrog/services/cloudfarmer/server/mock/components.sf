@@ -51,4 +51,7 @@ MockClusterFarmer extends AbstractClusterFarmer {
 
   //delay per node
   nodeStartupDelayMilliseconds  0;
+  
+  //is the cluster actually available
+  available true;
 }
