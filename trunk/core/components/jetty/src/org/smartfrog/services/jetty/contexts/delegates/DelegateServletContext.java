@@ -118,7 +118,6 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         //hostnames
         String address = jettyHelper.getIpAddress();
         owner.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
-        //create a servlet 
     }
 
 
