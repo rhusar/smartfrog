@@ -50,10 +50,12 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.Iterator;
 
 /**
  * This is a helper servlet context; it gets stuff delegated to it. It is remotable, but not a Prim-derived class.
@@ -183,8 +185,21 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         if (contextHandler == null) {
             throw new SmartFrogLifecycleException("Cannot start " + this + " as the server is not yet deployed");
         }
-        log.info("Starting Jetty servlet context");
         contextHandler.addHandler(handlerSet);
+        
+        //now read in the options
+        //apply initialisation params from the context
+        ComponentDescription optionsCD = owner.sfResolve(ATTR_OPTIONS, (ComponentDescription) null, true);
+        org.smartfrog.sfcore.common.Context optionsContext = optionsCD.sfContext();
+        Iterator iterator = optionsContext.sfAttributes();
+        while (iterator.hasNext()) {
+            Object key = iterator.next();
+            Object value = optionsContext.get(key);
+            ctx.setAttribute(key.toString(), value.toString());
+        }
+
+
+        log.info("Starting Jetty servlet context");
         handlerLifecycle.start();
         if(log.isInfoEnabled()) {
             dumpHandlers(getServerContextHandler().getHandlers());
@@ -343,8 +358,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
             if (handler.isStarted()) {
                 handler.stop();
             }
-        } catch (Exception ignore) {
-            log.info(ignore);
+        } catch (Exception e) {
+            log.info(e);
         }
         //remove the handler
         getHandlers().removeHandler(handler);

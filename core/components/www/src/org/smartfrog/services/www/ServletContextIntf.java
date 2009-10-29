@@ -48,6 +48,11 @@ public interface ServletContextIntf extends ApplicationServerContext {
     String ATTR_HOST_ADDRESS = "ipaddr";
 
     /**
+     * Initial options for the context
+     */
+    String ATTR_OPTIONS = "options";
+
+    /**
      * Add a mime mapping
      *
      * @param extension extension to map (no '.')

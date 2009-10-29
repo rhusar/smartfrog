@@ -133,10 +133,16 @@ ServletContext extends ApplicationServerContext {
 
         //url path on server
         contextPath extends String;
+        
+        //CD of options
+        options extends Compulsory;
     }
 
     //implementation class
     sfClass "org.smartfrog.services.www.context.ServletContextImpl";
+    
+    //CD of options
+    options extends DATA { };
 
 }
 
