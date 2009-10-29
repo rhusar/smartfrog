@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -41,8 +42,19 @@ public class ClusterControllerBinding implements Serializable {
 
     private String password;
 
-    private static final String PREFIX = "ClusterControllerBinding.";
+    /** {@value} */private static final String PREFIX = "cloudfarmer.";
+    /** {@value} */
+    public static final String CLOUDFARMER_URL = PREFIX + "url";
+    /** {@value} */
+    public static final String CLOUDFARMER_USERNAME = PREFIX + "username";
+    /** {@value} */
+    public static final String CLOUDFARMER_PASSWORD = PREFIX + "password";
+    /** {@value} */
+    public static final String CLOUDFARMER_CONTROLLER = PREFIX + "controller";
 
+
+    public ClusterControllerBinding() {
+    }
 
     public String getURL() {
         return URL;
@@ -77,26 +89,20 @@ public class ClusterControllerBinding implements Serializable {
     }
 
     /**
-     * Persist the controller binding
-     *
-     * @param prefs the preferences to use
-     * @throws IOException        trouble saving
+     * Load the controller binding from the servlet context
+     * @param prefs
      */
-    public void saveBinding(Object prefs) throws IOException {
-/*        prefs.setValue(PREFIX + "controller", Integer.toString(controller));
-        prefs.setValue(PREFIX + "url", URL);
-        prefs.setValue(PREFIX + "username", username);
-        prefs.setValue(PREFIX + "password", password);
-        prefs.store();*/
-    }
-
-    public void loadBinding(Object prefs) {
-/*        String c = prefs.getValue(PREFIX + "controller", Integer.toString(controller));
+    public void loadBinding(ServletContext prefs) {
+        String c = getValue(prefs, CLOUDFARMER_CONTROLLER, Integer.toString(controller));
         controller = Integer.valueOf(c);
-        URL = prefs.getValue(PREFIX + "url", URL);
-        username = prefs.getValue(PREFIX + "username", username);
-        password = prefs.getValue(PREFIX + "password", password);*/
+        URL = getValue(prefs, CLOUDFARMER_URL, URL);
+        username = getValue(prefs, CLOUDFARMER_USERNAME, username);
+        password = getValue(prefs, CLOUDFARMER_PASSWORD, password);
     }
 
+    private String getValue(ServletContext ctx, String key, String defval) {
+        Object o = ctx.getAttribute(key);
+        return o==null? defval: o.toString();
+    }
 
 }

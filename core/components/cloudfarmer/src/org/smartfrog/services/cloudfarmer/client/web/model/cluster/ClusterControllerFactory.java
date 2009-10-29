@@ -50,7 +50,7 @@ public class ClusterControllerFactory {
     public ClusterController createClusterController(HttpServletRequest request)
             throws IOException, SmartFrogException {
         ClusterControllerBinding binding = new ClusterControllerBinding();
-        //binding.loadBinding(pr.getPreferences());
+        binding.loadBinding(request.getSession().getServletContext());
         return createClusterController(binding);
     }
 
