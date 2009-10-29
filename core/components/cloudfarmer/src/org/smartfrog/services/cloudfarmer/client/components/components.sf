@@ -125,3 +125,19 @@ FarmHasDeployedInstancesCondition extends FarmHasDeployedInstances {
 FarmHasDeployedInstancesWorkflow extends FarmHasDeployedInstances {
   sfShouldTerminate true;
 }
+
+/**
+ * Check for the farm being avaialable
+ */
+FarmIsAvailable extends AbstractFarmerClientCondition {
+  sfClass "org.smartfrog.services.cloudfarmer.client.components.FarmIsAvailable"
+}
+
+
+FarmIsAvailableCondition extends FarmIsAvailable {
+  checkOnStartup false;
+}
+
+FarmIsAvailableWorkflow extends FarmIsAvailable {
+  sfShouldTerminate true;
+}

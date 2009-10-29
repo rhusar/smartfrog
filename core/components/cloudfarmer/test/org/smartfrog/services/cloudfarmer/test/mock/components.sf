@@ -35,6 +35,9 @@ testFarmHasRoles extends ExpectFarmerDeploy {
 
   tests extends Sequence {
 
+    available extends FarmIsAvailableWorkflow {
+      farmer LAZY action;
+    }
 
     master extends FarmSupportsRoleWorkflow {
     //this is the farmer
