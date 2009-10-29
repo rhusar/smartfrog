@@ -2257,6 +2257,7 @@ Exist.
       antbuild.dir=${antbuild.dir}
       core.dir=${core.dir}
       root.dir=${root.dir}
+      ivy.repository.dir = ${ivy.repository.dir}
     </fail>
   </target>
 
