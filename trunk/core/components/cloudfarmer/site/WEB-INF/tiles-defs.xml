@@ -129,8 +129,8 @@
 
   <definition name="portlet.mombasa.cluster.list.in.role.success" extends="portlet.mombasa.cluster.list">
     <put name="title" value="Hosts in Role"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_list_in_role.jsp"/>   
   </definition>
-
 
   <definition name="portlet.mombasa.cluster.add.success" extends="portlet.mombasa.cluster.text">
     <put name="title" value="Add a host"/>

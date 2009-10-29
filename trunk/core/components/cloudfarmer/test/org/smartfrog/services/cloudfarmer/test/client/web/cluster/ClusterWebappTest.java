@@ -16,6 +16,10 @@ public class ClusterWebappTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterList");
     }
 
+    public void testClusterView() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testClusterView");
+    }
+
     public void testClusterListRoles() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterListRoles");
     }
@@ -23,6 +27,7 @@ public class ClusterWebappTest extends DeployingTestBase {
     public void listInRole() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterListInRole");
     }
+    
     public void testClusterAdd() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterAdd");
     }

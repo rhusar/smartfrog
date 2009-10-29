@@ -6,9 +6,12 @@ import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This walks the mock farmer through its life
@@ -34,7 +37,7 @@ public class MockFarmerUnitTest extends TestCase {
         worker.setRoleSize(1, 100);
         addTestRoles();
     }
-    
+
     private void assertInRole(ClusterNode node, String role) {
         assertNotNull(node);
         assertEquals(role, node.getRole());
@@ -140,11 +143,49 @@ public class MockFarmerUnitTest extends TestCase {
         listed = farmer.list(role);
         assertEquals("Expected to find " + expected + " nodes of role '" + role + "' but got " + listed.length,
                 expected, listed.length);
-        for (int i=0; i< expected; i++) {
+        for (int i = 0; i < expected; i++) {
             ClusterNode node = listed[i];
-            assertEquals(" Node " + i + " with value "+node +" is not a "+role, role, node.getRole());
+            assertEquals(" Node " + i + " with value " + node + " is not a " + role, role, node.getRole());
         }
         return listed;
+    }
+
+    /**
+     * Test that the list of roles works
+     * @throws Throwable on failure
+     */
+    public void testListReturnsRoles() throws Throwable {
+        int clusterSize = 3;
+        ClusterNode[] clusterNodes = createSmallHadoopCluster(clusterSize);
+        int workers = 0;
+        int masters = 0;
+        for (ClusterNode cn : clusterNodes) {
+            if (cn.isInRole(MASTER)) masters++;
+            if (cn.isInRole(WORKER)) workers++;
+        }
+        assertEquals("One master", 1, masters);
+        assertEquals("workers", clusterSize, workers);
+    }
+
+    private ClusterNode[] createSmallHadoopCluster(int clusterSize) throws IOException, SmartFrogException {
+        ClusterNode[] first = farmer.create(MASTER, 1, 1);
+        assertEquals(1, first.length);
+        assertInRole(first[0], MASTER);
+        ClusterNode[] nodes = farmer.create(WORKER, clusterSize, clusterSize);
+        assertEquals(clusterSize, nodes.length);
+        ClusterNode[] clusterNodes = farmer.list();
+        return clusterNodes;
+    }
+
+    public void testHostInstanceListPropagatesRoles() throws Throwable {
+        int clusterSize = 3;
+        ClusterNode[] clusterNodes = createSmallHadoopCluster(clusterSize);
+        HostInstanceList hil= new HostInstanceList(clusterNodes);
+        List<HostInstance> masters = hil.getListInRole(MASTER);
+        List<HostInstance> workers = hil.getListInRole(WORKER);
+        assertEquals(clusterSize, workers.size());
+        assertEquals(1, masters.size());
+
     }
 
 }

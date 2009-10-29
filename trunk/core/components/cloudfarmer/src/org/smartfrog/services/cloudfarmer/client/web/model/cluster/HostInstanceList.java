@@ -19,6 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +42,12 @@ public class HostInstanceList extends ArrayList<HostInstance> {
         super(c);
     }
 
+    public HostInstanceList(ClusterNode[] clusterNodes) {
+        super(clusterNodes.length);
+        importNodes(clusterNodes);
+    }
+
+
     /**
      * for struts integration
      * @return list of host instances
@@ -48,10 +56,15 @@ public class HostInstanceList extends ArrayList<HostInstance> {
         return this;
     }
 
+    /**
+     * Get a list of all hosts in a role
+     * @param role role to search for
+     * @return the list of hosts in that role, may be empty
+     */
     public List<HostInstance> getListInRole(String role) {
         List<HostInstance> results = new ArrayList<HostInstance>();
         for (HostInstance instance : this) {
-            if (instance.isMaster()) {
+            if (role.equals(instance.getRole())) {
                 results.add(instance);
             }
         }
@@ -64,6 +77,15 @@ public class HostInstanceList extends ArrayList<HostInstance> {
             return masters.get(0);
         } else {
             return null;
+        }
+    }
+    
+    public void importNodes(ClusterNode[] clusterNodes) {
+        synchronized (this) {
+            for (ClusterNode node : clusterNodes) {
+                HostInstance instance = new HostInstance(node.getId(), node, true);
+                add(instance);
+            }
         }
     }
 }

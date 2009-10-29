@@ -177,6 +177,10 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
      */
     protected void addHostAttributes(HttpServletRequest request, ClusterController controller) {
         HostInstanceList hosts = controller.getHosts();
+        addHostAttributes(request, hosts);
+    }
+
+    protected void addHostAttributes(HttpServletRequest request, HostInstanceList hosts) {
         request.setAttribute(ATTR_HOSTS, hosts);
         request.setAttribute(ATTR_HOSTCOUNT, hosts.size());
     }

@@ -73,7 +73,7 @@ public class ClusterListHostsInRoleAction extends AbstractClusterAction {
             //get the values
             addClusterAttributes(request, controller);
             HostInstanceList hosts = hostsInRole(request, controller);
-            request.setAttribute(ATTR_HOSTS, hosts);
+            addHostAttributes(request, hosts);
             return success(mapping);
         } catch (Exception e) {
             return failure(request, mapping, "Failed to list roles and hosts :" + e, e);

@@ -26,11 +26,13 @@ import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.server.common.AbstractFarmNodeClusterFarmer;
 import org.smartfrog.services.cloudfarmer.server.common.FarmNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.io.IOException;
 
 /**
  * This is a mock cluster, very simple. A counter tracks the number of machines allocated, and whenever you ask for new
@@ -40,18 +42,23 @@ import java.util.HashMap;
 public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer implements ClusterFarmer {
 
 
-    private String domain = "internal";
-    private String externalDomain = "external";
-
     /**
      * {@value}
      */
     public static final String ATTR_DOMAIN = "domain";
+
     /**
      * {@value}
      */
     public static final String ATTR_EXTERNAL_DOMAIN = "externalDomain";
+    /**
+     * {@value}
+     */
+    public static final String ATTR_AVAILABLE = "available";
 
+    private String domain = "internal";
+    private String externalDomain = "external";
+    private boolean available = true;
 
     public MockClusterFarmerImpl() throws RemoteException {
     }
@@ -66,6 +73,7 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         super.sfStart();
         domain = sfResolve(ATTR_DOMAIN, "", true);
         externalDomain = sfResolve(ATTR_EXTERNAL_DOMAIN, "", true);
+        available = sfResolve(ATTR_AVAILABLE, true, true);
         resolveClusterLimit();
         sfLog().info("Creating Farmer with a limit of " + clusterLimit);
         buildRoleMap();
@@ -125,5 +133,21 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         roleInfoMap.put(role, roleInfo);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFarmerAvailable() throws IOException, SmartFrogException {
+        return available;
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void checkClusterAvailable() throws IOException, SmartFrogException {
+        if(!available) {
+            throw new SmartFrogDeploymentException("Cluster is not available");
+        }
+    }
 }

@@ -93,6 +93,7 @@ public final class HostInstance implements Serializable {
         return "HostInstance{" +
                 "id='" + id + '\'' +
                 ", hostname='" + hostname + '\'' +
+                ", role='" + role + '\'' +
                 ", canDelete=" + canDelete +
                 '}';
     }

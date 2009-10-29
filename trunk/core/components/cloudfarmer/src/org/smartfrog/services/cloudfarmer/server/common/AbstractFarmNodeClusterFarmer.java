@@ -24,7 +24,6 @@ import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.Range;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
-import org.smartfrog.services.cloudfarmer.server.common.AbstractClusterFarmer;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
@@ -44,18 +43,7 @@ import java.util.Map;
 public abstract class AbstractFarmNodeClusterFarmer extends AbstractClusterFarmer {
     protected Map<String, FarmNode> nodeFarm;
 
-    public AbstractFarmNodeClusterFarmer() throws RemoteException {
-    }
-
-    /**
-     * Resolve the cluster limit
-     *
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
+    protected AbstractFarmNodeClusterFarmer() throws RemoteException {
     }
 
     /**
@@ -294,11 +282,21 @@ public abstract class AbstractFarmNodeClusterFarmer extends AbstractClusterFarme
     }
 
     /**
-     * {@inheritDoc}
-     *
+     * Check for the cluster being available before working with it, throw something if it
+     * is not considered live
      * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
+    protected void checkClusterAvailable() throws IOException, SmartFrogException{
+        
+    }
+
+    /**
+    * {@inheritDoc}
+    *
+    * @throws IOException        IO/network problems
+    * @throws SmartFrogException other problems
+    */
     @Override
     public synchronized ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
         validateClusterRange(min, max);
@@ -311,6 +309,7 @@ public abstract class AbstractFarmNodeClusterFarmer extends AbstractClusterFarme
         if (info == null) {
             throw new UnsupportedClusterRoleException(role, this);
         }
+        checkClusterAvailable();
         //get the number of nodes already in that role
         int nodesInRole = nodesInRole(role);
         Range roleRange = info.getRoleSize();

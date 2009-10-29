@@ -162,6 +162,7 @@
       <forward name="failure" path="portlet.mombasa.cluster.error"/>
       <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
     </action>
+    
     <action path="/mombasa-portlet/cluster/add"
       type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterAddNodeAction">
       <forward name="add.dynamic.node" path="portlet.mombasa.cluster.add_dynamic.success" redirect="true"/>

@@ -16,6 +16,10 @@ public class WorkflowWebappTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testWebappHappy");
     }
 
+    public void testWorkflowView() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testWorkflowView");
+    }
+    
     public void testWorkflowList() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testWorkflowList");
     }
