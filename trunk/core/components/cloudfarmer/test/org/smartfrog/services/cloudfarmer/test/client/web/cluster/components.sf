@@ -42,9 +42,10 @@ testClusterListRoles extends testForPage {
 }
 
 //needs a role
-testClusterListbyRole extends testForPage {
+testClusterListInRole extends testForPage {
   role "master";
   page ClusterActions:listbyRole;
+  tests:wait:queries [ ["role", role] ];
 }
 
 testClusterAdmin extends testForPage {

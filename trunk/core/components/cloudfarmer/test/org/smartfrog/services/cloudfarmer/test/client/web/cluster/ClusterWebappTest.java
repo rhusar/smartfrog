@@ -20,8 +20,8 @@ public class ClusterWebappTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterListRoles");
     }
     
-    public void testClusterListbyRole() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testClusterListbyRole");
+    public void listInRole() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testClusterListInRole");
     }
     public void testClusterAdd() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testClusterAdd");
