@@ -154,7 +154,6 @@ public class SmartFrogThread extends Thread implements Executable {
      * Internal initialization
      *
      * @param target what we want to run
-     * @param notify object to notify after the run. If null, it is set to <code>this</code>
      */
     private void init(Executable target) {
         executable = target;
@@ -303,6 +302,7 @@ public class SmartFrogThread extends Thread implements Executable {
      *
      * @throws Throwable if anything went wrong
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public void execute() throws Throwable {
         if (runnable != null) {
             runnable.run();
@@ -379,8 +379,8 @@ public class SmartFrogThread extends Thread implements Executable {
         //not alive, so let's wait a bit
         try {
             join(timeout);
-        } catch (InterruptedException e) {
-
+        } catch (InterruptedException ignored) {
+            
         }
         //and try again
         return !isAlive();
