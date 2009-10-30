@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 /**
  * Implementation for SFLogStdStream component.
  */
+@SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream {
 
 
@@ -69,53 +70,64 @@ public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream
         }
 
         /**
-         * Reads an inputStream and shows the content in the System.out.
-         * Overrides Thread.run.
+         * Reads an inputStream and logs it
+         * @throws InterruptedException if interrupted
+         * @throws IOException on IO failures
+         * @throws Throwable on other problems
          */
-        public void run() {
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
+        @Override
+        public void execute() throws Throwable {
+            super.execute();
+            BufferedReader br = null;
             try {
                 InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
+                br = new BufferedReader(isr);
                 String line = null;
-               try {
-                   while (!br.ready()) {
-                       Thread.sleep(500);
-                   }
-               } catch (InterruptedException ex) {
-               }
+                while (!br.ready()) {
+                    Thread.sleep(500);
+                }
 
                 while ((line = br.readLine()) != null) {
                     if (out) {
-                        if (logStdOutTag!=null){
-                           ((LogImpl)sfLog()).invoke(methodOut,new Object[]{"["+logStdOutTag+"]"+line});
+                        if (logStdOutTag != null) {
+                            ((LogImpl) sfLog()).invoke(methodOut, new Object[]{"[" + logStdOutTag + "]" + line});
                         } else {
-                            ((LogImpl)sfLog()).invoke(methodOut,new Object[]{line});
+                            ((LogImpl) sfLog()).invoke(methodOut, new Object[]{line});
                         }
                     } else {
-                        if (logStdErrTag!=null){
-                            ((LogImpl)sfLog()).invoke(methodErr,new Object[]{"["+logStdErrTag+"]"+line});
+                        if (logStdErrTag != null) {
+                            ((LogImpl) sfLog()).invoke(methodErr, new Object[]{"[" + logStdErrTag + "]" + line});
                         } else {
-                            ((LogImpl)sfLog()).invoke(methodErr,new Object[]{line});
+                            ((LogImpl) sfLog()).invoke(methodErr, new Object[]{line});
                         }
                     }
                 }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                sfLog().info(ioe);
+                throw ioe;
+            } finally {
+                if (br != null) {
+                    br.close();
+                }
             }
         }
+
     }
+    
+    
 
 
 
-    boolean logStdErr = true;
-    String logStdErrTag = null;
-    String logStdErrLevel = "ERROR";
-    boolean logStdOut = true;
-    String logStdOutTag = null;
-    String logStdOutLevel = "ERROR";
+    private boolean logStdErr = true;
+    private String logStdErrTag = null;
+    private String logStdErrLevel = "ERROR";
+    private boolean logStdOut = true;
+    private String logStdOutTag = null;
+    private String logStdOutLevel = "ERROR";
 
-    PrintStream originalOut = null; //OutputStream
-    PrintStream originalErr = null;
+    private PrintStream originalOut = null; //OutputStream
+    private PrintStream originalErr = null;
 
     public Method methodOut = null;
     public Method methodErr = null;
