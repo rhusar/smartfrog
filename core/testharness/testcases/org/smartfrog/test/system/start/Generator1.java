@@ -70,18 +70,16 @@ public class Generator1 extends NetElemImpl implements Remote {
     }
 
     class TheGenerator extends SmartFrogThread {
-        public void run() {
+        @Override
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
+        public void execute() throws Throwable {
             Random r = new Random(seed);
 
             while (true) {
                 int v = Math.abs((r.nextInt() % diff)) + min;
-                System.out.println(name + " generating " + v);
+                sfLog().info(name + " generating " + v);
                 addValue(v);
-
-                try {
-                    sleep(delay * 1000);
-                } catch (Exception e) {
-                }
+                sleep(delay * 1000);
             }
         }
     }
