@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveException;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.web.model.LocalSmartFrogDescriptor;
@@ -29,6 +30,7 @@ import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -116,7 +118,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Get a clone of the roles
-     * @return
+     * @return a map
      */
     public synchronized Map<String, ClusterRoleInfo> getRoleMap() {
         return (Map<String, ClusterRoleInfo>) roles.clone();
@@ -491,4 +493,89 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @throws SmartFrogException SF problems
      */
     public abstract void refreshRoleList() throws IOException, SmartFrogException;
+
+
+    /**
+     * Query the farmer to see if it is live.
+     *
+     * @return true if the service considers itself available. If not, it can return false or throw an exception.
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public boolean isFarmerAvailable() throws IOException, SmartFrogException {
+        return true;
+    }
+    
+    /**
+     * Create set of machines 
+     * @param allocations the list of allocation actions to perform
+     * @return the worker thread that is doing the allocation
+     * @throws IOException        network trouble
+     * @throws SmartFrogException SF trouble
+     */
+    public AsynchronousHostCreationThread asyncCreateHosts(List<RoleAllocationReqest> allocations)
+            throws IOException, SmartFrogException {
+        
+        if(!isFarmerAvailable()) {
+            throw new FarmerNotLiveException(); 
+        }
+        AsynchronousHostCreationThread worker = new AsynchronousHostCreationThread(allocations);
+        worker.start();
+        return worker;
+    }
+    
+
+    public static class RoleAllocationReqest {
+        public String role;
+        public int currentCount;
+        public int min;
+        public int max;
+
+        public RoleAllocationReqest(String role, int currentCount, int min, int max) {
+            this.role = role;
+            this.currentCount = currentCount;
+            this.min = min;
+            this.max = max;
+        }
+
+    }
+    
+    
+    public class AsynchronousHostCreationThread extends SmartFrogThread {
+        private List<RoleAllocationReqest> allocations;
+        private HostInstanceList hostList = new HostInstanceList();
+
+        public AsynchronousHostCreationThread(List<RoleAllocationReqest> allocations) {
+            super();
+            this.allocations = allocations;
+        }
+
+        /**
+         * allocate the requests in sequence
+         * @throws Throwable on any failure
+         */
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
+        @Override
+        public void execute() throws Throwable {
+            for (RoleAllocationReqest request: allocations) {
+                HostInstanceList newhosts = createHosts(request.role, request.min, request.max);
+                addHosts(newhosts);
+            }
+        }
+
+        /**
+         * Get a cloned copy of the list. Why cloned? to stop problems when new hosts get added to the list
+         * @return a new list of hosts
+         */
+        public synchronized HostInstanceList getHostList() {
+            return (HostInstanceList) hostList.clone();
+        }
+
+        private synchronized void addHosts(HostInstanceList newhosts) {
+            hostList.addAll(newhosts);
+        }
+    }
+    
+    
+
 }

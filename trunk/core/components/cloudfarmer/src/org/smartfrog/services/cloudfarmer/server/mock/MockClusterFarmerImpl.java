@@ -56,12 +56,15 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
      */
     public static final String ATTR_AVAILABLE = "available";
 
+    public static final String ATTR_NODE_STARTUP_DELAY_MILLISECONDS = "nodeStartupDelayMilliseconds";
     private String domain = "internal";
     private String externalDomain = "external";
     private boolean available = true;
+    private int nodeStartupDelayMilliseconds;
 
     public MockClusterFarmerImpl() throws RemoteException {
     }
+
 
     /**
      * set up the mock cluster
@@ -74,6 +77,7 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         domain = sfResolve(ATTR_DOMAIN, "", true);
         externalDomain = sfResolve(ATTR_EXTERNAL_DOMAIN, "", true);
         available = sfResolve(ATTR_AVAILABLE, true, true);
+        nodeStartupDelayMilliseconds = sfResolve(ATTR_NODE_STARTUP_DELAY_MILLISECONDS, 0, true);
         resolveClusterLimit();
         sfLog().info("Creating Farmer with a limit of " + clusterLimit);
         buildRoleMap();
@@ -86,10 +90,15 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
-    public void initForMockUse(int size) throws SmartFrogException, RemoteException {
+    public void initForMockUse(int size, String localDomain, String externalDomain, boolean isLive,
+                               int startupDelay) throws SmartFrogException, RemoteException {
         sfCompleteName = new Reference();
         sfCompleteName.addElement(new HereReferencePart("farmer"));
-        clusterLimit = size;
+        setClusterLimit(size);
+        domain = localDomain;
+        externalDomain = externalDomain;
+        available = isLive;
+        nodeStartupDelayMilliseconds = startupDelay;
         buildNodeFarm();
     }
 
@@ -149,5 +158,24 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         if(!available) {
             throw new SmartFrogDeploymentException("Cluster is not available");
         }
+    }
+
+    /**
+     * Optionally sleep before calling the superclass to allocate things
+     * @param role role required
+     * @return the node
+     * @throws SmartFrogException
+     * @throws IOException
+     */
+    @Override
+    protected ClusterNode allocateOneNode(ClusterRoleInfo role) throws SmartFrogException, IOException {
+        if (nodeStartupDelayMilliseconds > 0) {
+            try {
+                Thread.sleep(nodeStartupDelayMilliseconds);
+            } catch (InterruptedException e) {
+                throw new SmartFrogException(e);
+            }
+        }
+        return super.allocateOneNode(role);
     }
 }

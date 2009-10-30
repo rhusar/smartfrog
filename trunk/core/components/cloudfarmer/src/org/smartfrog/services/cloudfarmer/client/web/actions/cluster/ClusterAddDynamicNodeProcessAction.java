@@ -28,6 +28,8 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -56,11 +58,13 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
         try {
             log.info("Creating workers in range ["+ form.getMinWorkers() +"-"+form.getMaxWorkers() + "]");
             //add a master automatically
+            List<ClusterController.RoleAllocationReqest> requests = new ArrayList<ClusterController.RoleAllocationReqest>(2);
             if (controller.getMaster() == null) {
                 log.info("Creating a master node");
-                controller.createHosts("master", 1, 1);
+                requests.add(new ClusterController.RoleAllocationReqest("master", 0, 1, 1));
             }
-            controller.createHosts("worker", form.getMinWorkers(), form.getMaxWorkers());
+            requests.add(new ClusterController.RoleAllocationReqest("worker", -1, form.getMinWorkers(), form.getMaxWorkers()));
+            ClusterController.AsynchronousHostCreationThread worker = controller.asyncCreateHosts(requests);
             addClusterAttributes(request, controller);
             return success(mapping);
         } catch (Exception e) {
@@ -69,4 +73,5 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
 
     }
 
+    
 }

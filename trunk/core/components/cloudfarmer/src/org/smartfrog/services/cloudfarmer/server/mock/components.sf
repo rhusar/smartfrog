@@ -50,7 +50,7 @@ MockClusterFarmer extends AbstractClusterFarmer {
   externalDomain "external";
 
   //delay per node
-  nodeStartupDelayMilliseconds  0;
+  nodeStartupDelayMilliseconds  1000;
   
   //is the cluster actually available
   available true;

@@ -370,13 +370,13 @@ public abstract class AbstractFarmNodeClusterFarmer extends AbstractClusterFarme
     }
 
     /**
-     * Override point: select a node for allocating to a role
-     *
-     * @param role role required
-     * @return the chosen node, or null for no match
-     * @throws SmartFrogException other problems
-     * @throws IOException        network problems
-     */
+    * Override point: select a node for allocating to a role
+    *
+    * @param role role required
+    * @return the chosen node, or null for no match
+    * @throws SmartFrogException other problems
+    * @throws IOException        network problems
+    */
     protected FarmNode selectFarmNodeForAllocation(ClusterRoleInfo role) throws SmartFrogException, IOException {
         for (FarmNode node : farmNodes()) {
             if (node.isFree()) {

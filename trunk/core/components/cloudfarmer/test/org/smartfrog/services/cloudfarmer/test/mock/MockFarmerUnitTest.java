@@ -8,10 +8,12 @@ import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This walks the mock farmer through its life
@@ -30,7 +32,7 @@ public class MockFarmerUnitTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         farmer = new MockClusterFarmerImpl();
-        farmer.initForMockUse(CLUSTER_SIZE);
+        farmer.initForMockUse(CLUSTER_SIZE, "internal", "external", true, 0);
         master = new ClusterRoleInfo(MASTER);
         master.setRoleSize(1, 1);
         worker = new ClusterRoleInfo(WORKER);
@@ -187,5 +189,6 @@ public class MockFarmerUnitTest extends TestCase {
         assertEquals(1, masters.size());
 
     }
+
 
 }

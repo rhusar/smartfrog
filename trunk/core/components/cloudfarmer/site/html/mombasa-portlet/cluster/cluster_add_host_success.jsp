@@ -24,26 +24,9 @@ For more information: www.smartfrog.org
 
 
 <p>
-The host has been added, though it may take time for it to be live.
+The hosts have been requested.
 </p>
 
-<p>
-Host Count: <bean:write name="hostcount"/>
-</p>
-<table border="2">
-  <tr bgcolor="grey">
-    <th>Hostname</th>
-  </tr>
-  <logic:iterate id="host"
-                 name="hosts"
-                 property="list"
-                 type="org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance">
-    <tr>
-      <td>
-        <bean:write name="host" property="hostname"/>
-      </td>
-    </tr>
-  </logic:iterate>
 </table>
 
 

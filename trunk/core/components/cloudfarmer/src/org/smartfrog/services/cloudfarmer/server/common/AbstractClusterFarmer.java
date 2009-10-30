@@ -85,6 +85,10 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         return clusterLimit;
     }
 
+    public void setClusterLimit(int clusterLimit) {
+        this.clusterLimit = clusterLimit;
+    }
+
     /**
      * Resolve the cluster limit attribute
      * @throws SmartFrogResolutionException resolution failure
@@ -93,6 +97,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     protected void resolveClusterLimit() throws SmartFrogResolutionException, RemoteException {
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
     }
+    
 
     /**
      * Run through the roles attribute and build a role map. For every role found, {@link #processRole(String,
