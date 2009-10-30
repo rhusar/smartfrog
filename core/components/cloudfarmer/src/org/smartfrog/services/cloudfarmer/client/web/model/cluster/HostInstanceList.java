@@ -29,7 +29,7 @@ import java.util.List;
  * Created 02-Sep-2009 16:25:15
  */
 
-public class HostInstanceList extends ArrayList<HostInstance> {
+public final class HostInstanceList extends ArrayList<HostInstance> {
 
     public HostInstanceList(int initialCapacity) {
         super(initialCapacity);
@@ -88,4 +88,5 @@ public class HostInstanceList extends ArrayList<HostInstance> {
             }
         }
     }
+    
 }

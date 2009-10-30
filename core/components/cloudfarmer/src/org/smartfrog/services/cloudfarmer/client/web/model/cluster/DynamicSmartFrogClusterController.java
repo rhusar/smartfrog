@@ -43,13 +43,24 @@ import java.util.HashMap;
 
 public class DynamicSmartFrogClusterController extends DynamicClusterController {
 
-    private RemoteDaemon daemon;
     private ClusterFarmer farmer;
 
+    /**
+     * Create a cluster controller bound to a farmer instance
+     * @param baseURL
+     */
     public DynamicSmartFrogClusterController(String baseURL) {
         super(baseURL);
     }
 
+    /**
+     * This is for testing only
+     * @param farmer farmer to bind to
+     */
+    public DynamicSmartFrogClusterController(ClusterFarmer farmer) {
+        super("bound");
+        this.farmer = farmer;
+    }
 
     /**
      * Create a remote daemon proxy bound do the base URL of our cluster controller
@@ -60,7 +71,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
     @Override
     public void bind() throws SmartFrogException, IOException {
         URL server = getTargetURL();
-        daemon = new RemoteDaemon(getBaseURL());
+        RemoteDaemon daemon = new RemoteDaemon(getBaseURL());
         daemon.bindOnDemand();
         //now work out the farmer reference using the path, or, if empty, the 
         //default path
@@ -86,7 +97,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      * @throws SmartFrogResolutionException if the path does not resolve, or what it resolves to is something unexpected
      * @throws IOException network trouble
      */
-    public static ClusterFarmer resolveFarmer(ProcessCompound process, String path)
+    private static ClusterFarmer resolveFarmer(ProcessCompound process, String path)
             throws SmartFrogResolutionException, IOException {
         String newpath = convertPath(path);
         Reference ref = new Reference(newpath, true);
@@ -120,11 +131,6 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         return newpath;
     }
 
-
-    public RemoteDaemon getDaemon() {
-        return daemon;
-    }
-
     public ClusterFarmer getFarmer() {
         return farmer;
     }
@@ -142,6 +148,17 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         return true;
     }
 
+    /**
+     * Query the farmer to see if it is live.
+     *
+     * @return true if the service considers itself available. If not, it can return false or throw an exception.
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public boolean isFarmerAvailable() throws IOException, SmartFrogException {
+        return farmer != null && farmer.isFarmerAvailable();
+    }
+    
     /**
      * {@inheritDoc}
      */
