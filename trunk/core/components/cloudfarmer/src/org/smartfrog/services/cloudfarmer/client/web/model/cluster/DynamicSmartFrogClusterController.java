@@ -233,4 +233,26 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         return newHostList;
     }
 
+    /**
+     * Caller can return diagnostics text for use in bug reports
+     *
+     * @return a short description (e.g. name)
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public String getRemoteDescription() throws IOException, SmartFrogException {
+        return farmer.getDescription();
+    }
+
+    /**
+     * Caller can return diagnostics text for use in bug reports, use \n between lines and expect this printed as
+     * preformatted text (with all angle brackets stripped)
+     *
+     * @return a diagnostics text string.
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return farmer.getDiagnosticsText();
+    }
 }

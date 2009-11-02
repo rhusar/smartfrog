@@ -181,4 +181,21 @@ public interface ClusterFarmer extends Remote {
      * @throws SmartFrogException something different went wrong
      */
     public boolean isFarmerAvailable() throws IOException, SmartFrogException;
+
+    /**
+     * Caller can return diagnostics text for use in bug reports 
+     * @return a short description (e.g. name)
+     * @throws IOException something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public String getDescription() throws IOException, SmartFrogException;
+
+    /**
+     * Caller can return diagnostics text for use in bug reports, use \n between lines and
+     * expect this printed as preformatted text (with all angle brackets stripped) 
+     * @return a diagnostics text string.
+     * @throws IOException something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException; 
 }

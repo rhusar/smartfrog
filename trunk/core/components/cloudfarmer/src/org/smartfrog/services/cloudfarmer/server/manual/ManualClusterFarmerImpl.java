@@ -32,6 +32,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.io.IOException;
 
 /**
  * The manual cluster farmer
@@ -149,5 +150,14 @@ public class ManualClusterFarmerImpl extends AbstractFarmNodeClusterFarmer {
         FarmNode fnode = new FarmNode(node, null, host);
         return fnode;
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDescription() throws IOException, SmartFrogException {
+        return "Manual Farmer";
+    }    
 
 }

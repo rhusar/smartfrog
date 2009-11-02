@@ -178,4 +178,14 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         }
         return super.allocateOneNode(role);
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDescription() throws IOException, SmartFrogException {
+        return "Mock Farmer";
+    }
+
 }

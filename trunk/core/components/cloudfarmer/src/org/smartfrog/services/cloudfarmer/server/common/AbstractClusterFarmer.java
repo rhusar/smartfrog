@@ -22,7 +22,6 @@ package org.smartfrog.services.cloudfarmer.server.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
-import org.smartfrog.services.cloudfarmer.server.common.ClusterRole;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -79,6 +78,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
 
     /**
      * Get the local limit on the cluster size
+     *
      * @return the limit on the cluster
      */
     public int getClusterLimit() {
@@ -91,13 +91,14 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
 
     /**
      * Resolve the cluster limit attribute
+     *
      * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException network problems
+     * @throws RemoteException              network problems
      */
     protected void resolveClusterLimit() throws SmartFrogResolutionException, RemoteException {
         clusterLimit = sfResolve(ATTR_CLUSTER_LIMIT, clusterLimit, true);
     }
-    
+
 
     /**
      * Run through the roles attribute and build a role map. For every role found, {@link #processRole(String,
@@ -125,7 +126,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
             } else {
                 if (value instanceof Prim) {
                     throw new SmartFrogResolutionException(roleRef,
-                            rolesChild.sfCompleteName(), 
+                            rolesChild.sfCompleteName(),
                             "Expected a component implementing ClusterRole",
                             value);
                 } else {
@@ -168,9 +169,9 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
 
     /**
      * Look up a role in the map
-     * @param role role to look up 
+     *
+     * @param role role to look up
      * @return the info or null
-     * 
      */
     protected ClusterRoleInfo lookupRoleInfo(String role) {
         return roleInfoMap.get(role);
@@ -208,10 +209,28 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
 
     /**
      * {@inheritDoc }
+     *
      * @return true always
      */
     @Override
     public boolean isFarmerAvailable() throws IOException, SmartFrogException {
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDescription() throws IOException, SmartFrogException {
+        return "Cloud Farmer";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return getDescription()
+                + "\nclusterLimit:" + clusterLimit;
     }
 }

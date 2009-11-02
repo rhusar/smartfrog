@@ -254,21 +254,28 @@
       <forward name="failure" path="portlet.mombasa.cluster.error"/>
       <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
     </action>
+    
+    <action path="/mombasa-portlet/cluster/diagnostics"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterDiagnosticsAction">
+      <forward name="success" path="portlet.mombasa.cluster.diagnostics.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
 
 
-        <!-- Actions to list a workflow-->
+    <!-- Actions to list a workflow-->
     <action path="/mombasa-portlet/happy"
       type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
       <forward name="success" path="/happy/happy.html"/>
       <forward name="failure" path="/happy/unhappy.html"/>
     </action>
 
+
     <action path="/mombasa-portlet/happytiles"
-     type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
       <forward name="success" path="struts.happytiles.success" redirect="true"/>
       <forward name="failure" path="/happy/unhappy.html"/>
     </action>
-    
 
   </action-mappings>
 

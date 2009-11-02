@@ -505,6 +505,29 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     public boolean isFarmerAvailable() throws IOException, SmartFrogException {
         return true;
     }
+
+    /**
+     * Caller can return diagnostics text for use in bug reports
+     *
+     * @return a short description (e.g. name)
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public String getRemoteDescription() throws IOException, SmartFrogException {
+        return "Cluster Controller";
+    }
+
+    /**
+     * Caller can return diagnostics text for use in bug reports, use \n between lines and expect this printed as
+     * preformatted text (with all angle brackets stripped)
+     *
+     * @return a diagnostics text string.
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return getRemoteDescription();
+    }
     
     /**
      * Create set of machines 

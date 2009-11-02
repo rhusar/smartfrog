@@ -79,7 +79,11 @@ For more information: www.smartfrog.org
   <tr >
     <td>Master</td>
     <td style="padding-left: 10px;"></td>
-    <td><bean:write name="cluster.master.hostname"/></td>
+    <td>    
+        <logic:notEmpty name="cluster.master.hostname">
+          <bean:write name="cluster.master.hostname"/>
+        </logic:notEmpty>
+    </td>
   </tr>  
   <tr >
     <td>Controller</td>

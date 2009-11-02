@@ -47,5 +47,8 @@ public class ClusterWebappTest extends DeployingTestBase {
     public void testChangeManager() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testChangeManager");
     }
+    public void testClusterDiagnostics() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testClusterDiagnostics");
+    }
 
 }

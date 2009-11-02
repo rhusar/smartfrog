@@ -212,6 +212,12 @@
     <put name="text" value="This is not yet implemented"/>
   </definition>
 
+  <definition name="portlet.mombasa.cluster.diagnostics.success" extends="portlet.mombasa.cluster">
+    <put name="title" value="Cluster Diagnostics"/>
+    <put name="text" value=""/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_diagnostics.jsp"/>
+  </definition>
+  
 
   <!-- This is the default view-->
   <definition name="portlet.mombasa.cluster.default" extends="portlet.mombasa.cluster.start">
