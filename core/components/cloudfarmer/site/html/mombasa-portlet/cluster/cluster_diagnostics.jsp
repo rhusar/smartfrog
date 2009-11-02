@@ -24,23 +24,15 @@ For more information: www.smartfrog.org
 
 <table border="0" width="100%">
   <tr>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/terminate">Shut down the cluster</html:link>
-    </td>
+    <td>Description</td>
+    <td style="padding-left: 10px;"></td>
+    <td><bean:write name="farmer.description"/></td>
   </tr>
-  <tr>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/change_manager">Change Manager</html:link>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/diagnostics">Cluster Diagnostics</html:link>
-    </td>
-  </tr>
+  <p>Diagnostics</p>
+  <pre>
+    <bean:write name="farmer.diagnostics.text"/>
+  </pre>
+
 </table>
 
 

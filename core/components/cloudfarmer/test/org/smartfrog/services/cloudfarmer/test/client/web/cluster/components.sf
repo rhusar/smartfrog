@@ -72,6 +72,9 @@ testChangeManager extends testForPage {
 testViewHost extends testForPage {
   page ClusterActions:viewhost;
 }
+testClusterDiagnostics extends testForPage {
+  page ClusterActions:diagnostics;
+}
 
 
 

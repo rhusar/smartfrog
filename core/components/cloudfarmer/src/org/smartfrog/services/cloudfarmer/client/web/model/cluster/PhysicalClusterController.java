@@ -45,6 +45,11 @@ public class PhysicalClusterController extends ClusterController implements Temp
         return "Physical host controller";
     }
 
+    @Override
+    public String getRemoteDescription() throws IOException, SmartFrogException {
+        return getDescription();
+    }
+
     /**
      * Lists the hosts
      *

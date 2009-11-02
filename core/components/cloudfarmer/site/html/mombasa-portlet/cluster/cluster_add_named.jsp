@@ -56,7 +56,7 @@ For more information: www.smartfrog.org
       </td>
       <td style="padding-left: 10px;"></td>
       <td>
-        <logic:notEmpty name="cluster.master">
+        <logic:notEmpty name="cluster.master.hostname">
           <bean:write name="cluster.master.hostname"/>
         </logic:notEmpty>
         <logic:empty name="cluster.master">

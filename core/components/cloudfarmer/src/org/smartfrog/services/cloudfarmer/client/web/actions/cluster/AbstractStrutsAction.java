@@ -192,7 +192,7 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
             request.setAttribute(ATTR_CLUSTER_MASTER, master);
             request.setAttribute(ATTR_CLUSTER_MASTER_HOSTNAME, master.getHostname());
         } else {
-            request.setAttribute(ATTR_CLUSTER_MASTER_HOSTNAME, "");
+            request.setAttribute(ATTR_CLUSTER_MASTER_HOSTNAME, "(no Hadoop master node)");
         }
     }
 }

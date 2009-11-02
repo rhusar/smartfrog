@@ -456,11 +456,11 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     /**
      * Create a launch configuration; this is logged
      *
-     * @param role
-     * @param targetRole
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @param role role to create
+     * @param targetRole the component containing the target roled
+     * @return a launch config
+     * @throws RemoteException    IO/network problems
+     * @throws SmartFrogResolutionException problems creating the launch config
      */
     private LaunchConfiguration createLaunchConfiguration(String role, Prim targetRole)
             throws SmartFrogResolutionException, RemoteException {
@@ -471,14 +471,34 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
 
     /**
-     * Look up a role
+     * Look up a role under the roles compound/CD
      *
-     * @param role
+     * @param role role to create
      * @return the prim at the far end
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws RemoteException    IO/network problems
+     * @throws SmartFrogResolutionException problems creating the launch config
      */
     private Prim resolveRole(String role) throws SmartFrogResolutionException, RemoteException {
         return roles.sfResolve(role, (Prim) null, true);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDescription() throws IOException, SmartFrogException {
+        return "EC2 Cloud Farmer";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return getDescription()
+                + "\nclusterLimit:" + clusterLimit
+                + "\nnodeCount:" + nodeCount
+                + "\nEC2 user ID:" + getId();
     }
 }

@@ -59,4 +59,6 @@ public interface ClusterRequestAttributes {
     String ATTR_HOST = "host";
     /** {@value} */
     String ATTR_ROLE = "role";
+    String FARMER_DESCRIPTION = "farmer.description";
+    String FARMER_DIAGNOSTICS_TEXT = "farmer.diagnostics.text";
 }
