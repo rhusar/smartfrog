@@ -88,5 +88,13 @@ public final class HostInstanceList extends ArrayList<HostInstance> {
             }
         }
     }
-    
+
+    @Override
+    public String toString() {
+        StringBuilder builder=new StringBuilder();
+        for (HostInstance instance:this) {
+            builder.append(instance.hostname).append(' ');
+        }
+        return builder.toString();
+    }
 }

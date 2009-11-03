@@ -78,7 +78,7 @@ public class HostCreationUnitTest extends TestCase {
                 2);
         requests.add(new ClusterController.RoleAllocationReqest("master", 0, 1, 1));
         requests.add(new ClusterController.RoleAllocationReqest("worker", -1, 5, 8));
-        ClusterController.AsynchronousHostCreationThread workerThread = controller.asyncCreateHosts(requests);
+        ClusterController.AsynchronousHostCreationThread workerThread = controller.asyncCreateHosts(requests, 0);
         log.info("Notify object = " + workerThread.getNotifyObject() + "; finished = "+ workerThread.isFinished());
         
         //workerThread.waitForNotification(60000);

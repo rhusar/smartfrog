@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import javax.servlet.ServletContext;
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -32,7 +31,7 @@ public class ClusterControllerBinding implements Serializable {
     /**
      * The default controller is {@link ClusterControllerFactory#SMARTFROG_CONTROLLER}
      */
-    
+
     public static final int DEFAULT_CONTROLLER = ClusterControllerFactory.SMARTFROG_CONTROLLER;
     private int controller = DEFAULT_CONTROLLER;
 
@@ -42,14 +41,25 @@ public class ClusterControllerBinding implements Serializable {
 
     private String password;
 
-    /** {@value} */private static final String PREFIX = "cloudfarmer.";
-    /** {@value} */
+    /**
+     * {@value}
+     */
+    private static final String PREFIX = "cloudfarmer.";
+    /**
+     * {@value}
+     */
     public static final String CLOUDFARMER_URL = PREFIX + "url";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public static final String CLOUDFARMER_USERNAME = PREFIX + "username";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public static final String CLOUDFARMER_PASSWORD = PREFIX + "password";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public static final String CLOUDFARMER_CONTROLLER = PREFIX + "controller";
 
 
@@ -90,6 +100,7 @@ public class ClusterControllerBinding implements Serializable {
 
     /**
      * Load the controller binding from the servlet context
+     *
      * @param prefs
      */
     public void loadBinding(ServletContext prefs) {
@@ -102,7 +113,7 @@ public class ClusterControllerBinding implements Serializable {
 
     private String getValue(ServletContext ctx, String key, String defval) {
         Object o = ctx.getAttribute(key);
-        return o==null? defval: o.toString();
+        return o == null ? defval : o.toString();
     }
 
 }
