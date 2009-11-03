@@ -50,6 +50,8 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
         return "ClusterAddDynamicNodeProcessAction";
     }
 
+    
+
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm aform, HttpServletRequest request,
@@ -63,8 +65,16 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
                 log.info("Creating a master node");
                 requests.add(new ClusterController.RoleAllocationReqest("master", 0, 1, 1));
             }
-            requests.add(new ClusterController.RoleAllocationReqest("worker", -1, form.getMinWorkers(), form.getMaxWorkers()));
-            ClusterController.AsynchronousHostCreationThread worker = controller.asyncCreateHosts(requests);
+            requests.add(
+                    new ClusterController.RoleAllocationReqest("worker",
+                        -1, 
+                        form.getMinWorkers(), 
+                        form.getMaxWorkers()));
+            //TODO, drive this from configuration properties
+            long farmCreationTimeout = 10000;
+            log.info("Queueing a request, waiting up to "+farmCreationTimeout+" milliseconds for the farm");
+            ClusterController.AsynchronousHostCreationThread worker = controller.asyncCreateHosts(requests,
+                    farmCreationTimeout);
             addClusterAttributes(request, controller);
             return success(mapping);
         } catch (Exception e) {

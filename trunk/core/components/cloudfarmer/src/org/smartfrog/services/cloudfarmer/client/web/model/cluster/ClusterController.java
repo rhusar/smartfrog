@@ -21,23 +21,23 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveException;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.web.model.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
-import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * The cluster controller is whatever gives us new clusters
@@ -49,8 +49,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     //hosts by role
     private HashMap<String, ClusterRoleInfo> roles;
 
-
     private static final int INITIAL_HOSTLIST_CAPACITY = 1;
+    private static final int FARMER_AVAILABILITY_SLEEP_MILLIS = 500;
 
     /**
      * Basic constructor clears the host list
@@ -61,6 +61,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Bind to the URL
+     *
      * @param baseURL the URL for the controller
      */
     protected ClusterController(String baseURL) {
@@ -110,6 +111,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * replace the roles
+     *
      * @param rolemap new role map
      */
     protected synchronized void replaceRoles(HashMap<String, ClusterRoleInfo> rolemap) {
@@ -118,6 +120,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Get a clone of the roles
+     *
      * @return a map
      */
     public synchronized Map<String, ClusterRoleInfo> getRoleMap() {
@@ -126,6 +129,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Get the list of roles
+     *
      * @return a list of roles, no specific order.
      */
     public synchronized List<ClusterRoleInfo> getRoles() {
@@ -133,18 +137,18 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             return new ArrayList<ClusterRoleInfo>(0);
         }
         List<ClusterRoleInfo> roleList = new ArrayList<ClusterRoleInfo>(roles.size());
-        for(ClusterRoleInfo role:roles.values()) {
+        for (ClusterRoleInfo role : roles.values()) {
             roleList.add(role);
         }
         return roleList;
     }
 
     /**
-    * Get a list of the hosts. The list is a clone, no need to worry about synchronization problems, though hosts may
-    * have been deleted by the time you get to them
-    *
-    * @return the cloned list
-    */
+     * Get a list of the hosts. The list is a clone, no need to worry about synchronization problems, though hosts may
+     * have been deleted by the time you get to them
+     *
+     * @return the cloned list
+     */
     public synchronized HostInstanceList getHosts() {
         return (HostInstanceList) hosts.clone();
     }
@@ -201,7 +205,6 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @throws SmartFrogException SF trouble
      */
     public abstract void refreshHostList() throws IOException, SmartFrogException;
-
 
 
     /**
@@ -263,7 +266,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @param hostname a hostname
      * @param isMaster is the node a master
      * @param isWorker is the node a worker
-     * @return the instance  
+     * @return the instance
      * @throws IOException            network trouble
      * @throws SmartFrogException     SF trouble
      * @throws UnimplementedException if you cannot add hosts to this manager
@@ -321,19 +324,20 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Return all hosts in the specific role
+     *
      * @param role role to search for
      * @return a possibly empty list of hosts
      */
     public synchronized HostInstanceList lookupHostsByRole(String role) {
         HostInstanceList hostsInRole = new HostInstanceList(hosts.size());
-        for (HostInstance host:hosts) {
-            if(role.equals(host.getRole())) {
+        for (HostInstance host : hosts) {
+            if (role.equals(host.getRole())) {
                 hostsInRole.add(host);
             }
         }
         return hostsInRole;
     }
-    
+
     /**
      * Add a new host to the hosts list
      *
@@ -467,7 +471,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                                           String resource,
                                           String masterName,
                                           String roleName)
-                     throws IOException, SmartFrogException {
+            throws IOException, SmartFrogException {
         ///set the binding values
         System.setProperty(BINDING_MASTER_HOSTNAME, masterName);
         System.setProperty(BINDING_TASKTRACKER_SLOTS, "" + getTaskSlots());
@@ -489,7 +493,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Refresh the role list
-     * @throws IOException io problems
+     *
+     * @throws IOException        io problems
      * @throws SmartFrogException SF problems
      */
     public abstract void refreshRoleList() throws IOException, SmartFrogException;
@@ -528,25 +533,27 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return getRemoteDescription();
     }
-    
+
     /**
-     * Create set of machines 
-     * @param allocations the list of allocation actions to perform
+     * Create set of machines
+     *
+     * @param allocations               the list of allocation actions to perform
+     * @param farmerAvailabilityTimeout
      * @return the worker thread that is doing the allocation
      * @throws IOException        network trouble
      * @throws SmartFrogException SF trouble
      */
-    public AsynchronousHostCreationThread asyncCreateHosts(List<RoleAllocationReqest> allocations)
+    public AsynchronousHostCreationThread asyncCreateHosts(List<RoleAllocationReqest> allocations,
+                                                           long farmerAvailabilityTimeout)
             throws IOException, SmartFrogException {
-        
-        if(!isFarmerAvailable()) {
-            throw new FarmerNotLiveException(); 
-        }
-        AsynchronousHostCreationThread worker = new AsynchronousHostCreationThread(allocations);
+        //quick check for the farmer to raise any exception here and now
+        isFarmerAvailable();
+        AsynchronousHostCreationThread worker = new AsynchronousHostCreationThread(allocations,
+                farmerAvailabilityTimeout);
         worker.start();
         return worker;
     }
-    
+
 
     public static class RoleAllocationReqest {
         public String role;
@@ -561,33 +568,59 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             this.max = max;
         }
 
+        @Override
+        public String toString() {
+            return "role " + role + " range [" + min + "," + max + "]";
+        }
     }
-    
-    
+
+
     public class AsynchronousHostCreationThread extends SmartFrogThread {
         private List<RoleAllocationReqest> allocations;
         private HostInstanceList hostList = new HostInstanceList();
+        private long farmerAvailabilityTimeout;
 
-        public AsynchronousHostCreationThread(List<RoleAllocationReqest> allocations) {
+
+        public AsynchronousHostCreationThread(List<RoleAllocationReqest> allocations, long farmerAvailabilityTimeout) {
             super();
             this.allocations = allocations;
+            this.farmerAvailabilityTimeout = farmerAvailabilityTimeout;
         }
 
         /**
          * allocate the requests in sequence
+         *
          * @throws Throwable on any failure
          */
         @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
-            for (RoleAllocationReqest request: allocations) {
+            if (!isFarmerAvailable()) {
+                log.info("Waiting up to " + farmerAvailabilityTimeout + " for the farmer");
+                long timeout = System.currentTimeMillis() + farmerAvailabilityTimeout;
+                while (!isFarmerAvailable() && System.currentTimeMillis() < timeout) {
+                    Thread.sleep(FARMER_AVAILABILITY_SLEEP_MILLIS);
+                }
+                if (!isFarmerAvailable()) {
+
+                    String message = "Failed to create hosts -" 
+                            + FarmerNotLiveException.ERROR_NOT_LIVE
+                            + " after " + farmerAvailabilityTimeout + " milliseconds";
+                    log.error(message);
+                    throw new FarmerNotLiveException(message);
+                }
+            }
+            for (RoleAllocationReqest request : allocations) {
+                log.info("Requesting hosts " + request);
                 HostInstanceList newhosts = createHosts(request.role, request.min, request.max);
+                log.info("got " + newhosts.size() + " - " + newhosts);
                 addHosts(newhosts);
             }
         }
 
         /**
          * Get a cloned copy of the list. Why cloned? to stop problems when new hosts get added to the list
+         *
          * @return a new list of hosts
          */
         public synchronized HostInstanceList getHostList() {
@@ -598,7 +631,6 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             hostList.addAll(newhosts);
         }
     }
-    
-    
+
 
 }

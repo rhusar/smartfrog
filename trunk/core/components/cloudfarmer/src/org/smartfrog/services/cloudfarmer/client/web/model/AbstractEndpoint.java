@@ -20,8 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;

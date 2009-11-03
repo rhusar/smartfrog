@@ -27,9 +27,10 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  */
 
 public class FarmerNotLiveException extends SmartFrogException {
+    public static final String ERROR_NOT_LIVE = "The cluster farmer is not live";
 
     public FarmerNotLiveException() {
-        super("The cluster farmer is not live");
+        super(ERROR_NOT_LIVE);
     }
 
     public FarmerNotLiveException(String message) {

@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletContext;
 import java.rmi.ConnectException;
 
 /**
@@ -177,12 +178,25 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
     }
 
     /**
-     * Add the {@link #ATTR_CLUSTER_HAS_MASTER} boolean, and, if that is true the {@link #ATTR_CLUSTER_MASTER} and
-     * {@link #ATTR_CLUSTER_MASTER_HOSTNAME} attributes,
-     *
-     * @param request    request to manipulate
-     * @param controller cluster controller
+     * Get an option from the servlet context, extracted from the request
+     * @param request request
+     * @param key key to look for
+     * @param defval default value
+     * @return the value
      */
+    protected Object getContextOption(HttpServletRequest request, String key, Object defval) {
+        ServletContext context = request.getSession().getServletContext();
+        Object o = context.getAttribute(key);
+        return o == null ? defval : o;
+    }
+
+    /**
+    * Add the {@link #ATTR_CLUSTER_HAS_MASTER} boolean, and, if that is true the {@link #ATTR_CLUSTER_MASTER} and
+    * {@link #ATTR_CLUSTER_MASTER_HOSTNAME} attributes,
+    *
+    * @param request    request to manipulate
+    * @param controller cluster controller
+    */
     protected void addMasterAttributes(HttpServletRequest request, ClusterController controller) {
         request.setAttribute(ATTR_CLUSTER_CONTROLLER, controller);
         HostInstance master = controller.getMaster();
