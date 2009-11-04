@@ -23,10 +23,7 @@ package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDynamicForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,56 +34,55 @@ import javax.servlet.http.HttpServletResponse;
  * received, it is routed over to the daemon to handle
  */
 @SuppressWarnings({"RefusedBequest"})
-public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
-    
+public class ClusterAddDynamicNodeStatusAction extends AbstractClusterAction {
+
+
     /**
-     * Get the name of this action, used in logging and debugging
-     *
-     * @return the name
+     * {@inheritDoc}
      */
 
     @Override
     protected String getActionName() {
-        return "ClusterAddDynamicNodeProcessAction";
+        return "ClusterAddDynamicNodeStatusAction";
     }
 
 
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * Build the request queue and set it off.
+     */
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm aform, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {
-        ClusterAddDynamicForm form = (ClusterAddDynamicForm) aform;
         try {
-            log.info("Creating workers in range [" + form.getMinWorkers() + "-" + form.getMaxWorkers() + "]");
-            //add a master automatically
-            RoleAllocationRequestList requests = new RoleAllocationRequestList(2);
-            if (controller.getMaster() == null) {
-                log.info("Creating a master node");
-                requests.add(new RoleAllocationRequest("master", 0, 1, 1, null));
-            }
-            RoleAllocationRequest master = new RoleAllocationRequest("worker",
-                    -1,
-                    form.getMinWorkers(),
-                    form.getMaxWorkers(),
-                    null);
-            RoleAllocationRequest workers = master;
-            requests.add(
-                    workers);
-            //TODO, drive this from configuration properties
-            long farmCreationTimeout = 10000;
-            log.info("Queueing a request, waiting up to " + farmCreationTimeout + " milliseconds for the farm");
-            ClusterController.AsynchronousHostCreationThread worker = controller.asyncCreateHosts(requests,
-                    farmCreationTimeout,
-                    null,
-                    null);
+            ClusterController.AsynchronousHostCreationThread workerThread = controller.getWorkerThread();
+            setWorkAttributes(request,controller.isWorkerThreadWorking(), controller, workerThread);
             addClusterAttributes(request, controller);
             return success(mapping);
         } catch (Exception e) {
-            return failure(request, mapping, "Failed to add the hosts : " + e, e);
+            return failure(request, mapping, "get the request status : " + e, e);
         }
 
     }
 
+    private void setWorkAttributes(HttpServletRequest request, boolean working, ClusterController controller,
+                                   ClusterController.AsynchronousHostCreationThread workerThread) {
+        request.setAttribute(ATTR_FARMER_WORKING, working);
+        Throwable workerThreadException = controller.getWorkerThreadException();
+        if (workerThreadException != null) {
+            request.setAttribute(ATTR_FARMER_WORK_ERROR, workerThreadException);
+        }
+        if (working) {
+            request.setAttribute(ATTR_FARMER_WORK_REQUESTS, workerThread.getAllocationRequests());
+        }
+        if (workerThread!=null) {
+            request.setAttribute(ATTR_FARMER_WORK_STATUS, workerThread.getStatus());
+        } else {
+            request.setAttribute(ATTR_FARMER_WORK_STATUS, "No operation is in process");
+        }
+    }
 
-    
+
 }

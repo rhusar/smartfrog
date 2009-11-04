@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.ClusterControllerBusyException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
@@ -48,9 +49,13 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     private Map<String, HostInstance> hostMap;
     //hosts by role
     private HashMap<String, ClusterRoleInfo> roles;
+    private volatile AsynchronousHostCreationThread workerThread;
+    private volatile Throwable workerThreadException;
 
     private static final int INITIAL_HOSTLIST_CAPACITY = 1;
     private static final int FARMER_AVAILABILITY_SLEEP_MILLIS = 500;
+    public static final int TASK_SLOTS = 4;
+    private static final String STATUS_NOT_STARTED = "not yet started";
 
     /**
      * Basic constructor clears the host list
@@ -72,7 +77,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     /**
      * Bind to the controller. If this fails, the controller must be considered invalid.
      *
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public void bind() throws IOException, SmartFrogException {
@@ -195,13 +200,13 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @return a default value, or something cleverer
      */
     public int getTaskSlots() {
-        return 4;
+        return TASK_SLOTS;
     }
 
     /**
      * Refreshes the host list
      *
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public abstract void refreshHostList() throws IOException, SmartFrogException;
@@ -209,10 +214,10 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * @param role role of these hosts
-     * @param min  minimum number
-     * @param max  maximum number
+     * @param min minimum number
+     * @param max maximum number
      * @return the allocated machines
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public HostInstanceList createHosts(String role, int min, int max)
@@ -224,11 +229,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     /**
      * Create a new host
      *
-     * @param hostname      a hostname
+     * @param hostname a hostname
      * @param largeInstance the instance
-     * @param descriptor    descriptor to deploy on the host
+     * @param descriptor descriptor to deploy on the host
      * @return a new host
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public HostInstance createHost(String hostname,
@@ -259,7 +264,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Add a host to the system.
-     *
+     * <p/>
      * The base class validates against {@link #canAddNamedHost()} and the current cluster state, then creates a stub
      * instance, which can be replaced with a different one, if desired. It does not add it to the host list.
      *
@@ -267,8 +272,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * @param isMaster is the node a master
      * @param isWorker is the node a worker
      * @return the instance
-     * @throws IOException            network trouble
-     * @throws SmartFrogException     SF trouble
+     * @throws IOException network trouble
+     * @throws SmartFrogException SF trouble
      * @throws UnimplementedException if you cannot add hosts to this manager
      */
     public HostInstance addNamedHost(String hostname, boolean isMaster, boolean isWorker)
@@ -286,7 +291,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      *
      * @param hostID a host ID
      * @return true if the request has been queued
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public boolean deleteHost(String hostID)
@@ -299,7 +304,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      *
      * @param hostID ID
      * @return the host information or null for no match
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public synchronized HostInstance lookupHost(String hostID)
@@ -369,7 +374,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     /**
      * Shut down the cluster
      *
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     public abstract void shutdownCluster() throws IOException, SmartFrogException;
@@ -407,11 +412,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * Based on the role, choose what to install on the target host. There is no waiting for the host to be up here;
      * that work has to be done in some other mechanism.
      *
-     * @param host     target host
+     * @param host target host
      * @param isMaster is the node to be a master
      * @param isWorker is the node to be a worker
      * @return the workflow
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     protected Workflow installRole(HostInstance host, boolean isMaster, boolean isWorker)
@@ -457,13 +462,13 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     /**
      * Install the application
      *
-     * @param host       target host
-     * @param appname    application name
-     * @param resource   resource name (must be on classpath)
+     * @param host target host
+     * @param appname application name
+     * @param resource resource name (must be on classpath)
      * @param masterName hostname for the master
-     * @param roleName   name of the role
+     * @param roleName name of the role
      * @return the workflow
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
      */
     protected Workflow installApplication(HostInstance host,
@@ -494,7 +499,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     /**
      * Refresh the role list
      *
-     * @throws IOException        io problems
+     * @throws IOException io problems
      * @throws SmartFrogException SF problems
      */
     public abstract void refreshRoleList() throws IOException, SmartFrogException;
@@ -504,7 +509,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * Query the farmer to see if it is live.
      *
      * @return true if the service considers itself available. If not, it can return false or throw an exception.
-     * @throws IOException        something went wrong
+     * @throws IOException something went wrong
      * @throws SmartFrogException something different went wrong
      */
     public boolean isFarmerAvailable() throws IOException, SmartFrogException {
@@ -515,7 +520,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * Caller can return diagnostics text for use in bug reports
      *
      * @return a short description (e.g. name)
-     * @throws IOException        something went wrong
+     * @throws IOException something went wrong
      * @throws SmartFrogException something different went wrong
      */
     public String getRemoteDescription() throws IOException, SmartFrogException {
@@ -527,7 +532,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      * preformatted text (with all angle brackets stripped)
      *
      * @return a diagnostics text string.
-     * @throws IOException        something went wrong
+     * @throws IOException something went wrong
      * @throws SmartFrogException something different went wrong
      */
     public String getDiagnosticsText() throws IOException, SmartFrogException {
@@ -535,56 +540,126 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
-     * Create set of machines
+     * Queue a request to create a set of hosts, with the allocation request
      *
-     * @param allocations               the list of allocation actions to perform
-     * @param farmerAvailabilityTimeout
+     * @param allocations the list of allocation actions to perform
+     * @param farmerAvailabilityTimeout time to give up on the farmer
+     * @param clusterAllocationCompleted callback for completion
+     * @param callbackData any data to include with the callback
      * @return the worker thread that is doing the allocation
-     * @throws IOException        network trouble
+     * @throws IOException network trouble
      * @throws SmartFrogException SF trouble
+     * @throws ClusterControllerBusyException if the controller is busy
      */
-    public AsynchronousHostCreationThread asyncCreateHosts(List<RoleAllocationReqest> allocations,
-                                                           long farmerAvailabilityTimeout)
+    public synchronized AsynchronousHostCreationThread asyncCreateHosts(RoleAllocationRequestList allocations,
+                                                                        long farmerAvailabilityTimeout,
+                                                                        ClusterAllocationCompleted clusterAllocationCompleted,
+                                                                        Object callbackData)
             throws IOException, SmartFrogException {
         //quick check for the farmer to raise any exception here and now
         isFarmerAvailable();
-        AsynchronousHostCreationThread worker = new AsynchronousHostCreationThread(allocations,
-                farmerAvailabilityTimeout);
-        worker.start();
-        return worker;
+        //now look for the worker, and bail out if it is live
+        if (isWorkerThreadWorking()) {
+            throw new ClusterControllerBusyException("The cluster controller is busy with an earlier request");
+        }
+        workerThread = new AsynchronousHostCreationThread(allocations,
+                farmerAvailabilityTimeout,
+                clusterAllocationCompleted,
+                callbackData);
+        workerThread.start();
+        return workerThread;
     }
 
 
-    public static class RoleAllocationReqest {
-        public String role;
-        public int currentCount;
-        public int min;
-        public int max;
-
-        public RoleAllocationReqest(String role, int currentCount, int min, int max) {
-            this.role = role;
-            this.currentCount = currentCount;
-            this.min = min;
-            this.max = max;
-        }
-
-        @Override
-        public String toString() {
-            return "role " + role + " range [" + min + "," + max + "]";
-        }
+    /**
+     * Get the worker thread, may be null
+     *
+     * @return the worker
+     */
+    public AsynchronousHostCreationThread getWorkerThread() {
+        return workerThread;
     }
 
+    /**
+     * Do we have a worker thread?
+     *
+     * @return true iff there's a thread
+     */
+    public final boolean hasWorkerThread() {
+        return workerThread != null;
+    }
 
+    /**
+     * Test to see if there is a worker thread that is live
+     *
+     * @return true iff there is a worker thread that is not finished
+     */
+    public synchronized boolean isWorkerThreadWorking() {
+        return hasWorkerThread() && !workerThread.isFinished();
+    }
+
+    /**
+     * Get any worker thread extension
+     *
+     * @return
+     */
+    public Throwable getWorkerThreadException() {
+        return workerThreadException;
+    }
+
+    /**
+     * This thread creates host asynchronously, and can call callbacks afterwards, to perform the installation stages
+     */
     public class AsynchronousHostCreationThread extends SmartFrogThread {
-        private List<RoleAllocationReqest> allocations;
+        private RoleAllocationRequestList allocationRequests;
         private HostInstanceList hostList = new HostInstanceList();
         private long farmerAvailabilityTimeout;
+        private Object callbackData;
+        private ClusterAllocationCompleted clusterAllocationCompleted;
+        private String status;
+        private volatile boolean started;
+        private volatile boolean finished;
+        private volatile long startTime;
+        private volatile long finishTime;
 
-
-        public AsynchronousHostCreationThread(List<RoleAllocationReqest> allocations, long farmerAvailabilityTimeout) {
-            super();
-            this.allocations = allocations;
+        /**
+         * create a thread
+         *
+         * @param allocationRequests request queue
+         * @param farmerAvailabilityTimeout timeout for the farmer
+         * @param clusterAllocationCompleted callback for completion
+         * @param callbackData any data to include with the callback
+         */
+        public AsynchronousHostCreationThread(RoleAllocationRequestList allocationRequests,
+                                              long farmerAvailabilityTimeout,
+                                              ClusterAllocationCompleted clusterAllocationCompleted,
+                                              Object callbackData) {
+            this.allocationRequests = allocationRequests;
             this.farmerAvailabilityTimeout = farmerAvailabilityTimeout;
+            this.callbackData = callbackData;
+            this.clusterAllocationCompleted = clusterAllocationCompleted;
+            status = STATUS_NOT_STARTED;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        private void setStatus(String status) {
+            this.status = status;
+            log.info(status);
+        }
+
+        /**
+         * Log that the request has started
+         */
+        private void started() {
+            started = true;
+            startTime = System.currentTimeMillis();
+        }
+
+        private void finished() {
+            finishTime = System.currentTimeMillis();
         }
 
         /**
@@ -595,27 +670,112 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
+            started();
+            try {
+                waitForFarmerAvailable();
+                try {
+                    for (RoleAllocationRequest request : allocationRequests) {
+                        requestHosts(request);
+                    }
+                } catch (Throwable throwable) {
+                    //failure, notify and rethrow
+                    if (clusterAllocationCompleted != null) {
+                        clusterAllocationCompleted
+                                .allocationFailed(allocationRequests, getHosts(), throwable, callbackData);
+                    }
+                    throw throwable;
+                }
+                setStatus("Completed cluster requests");
+            } finally {
+                finished();
+            }
+            //notify of success
+            if (clusterAllocationCompleted != null) {
+                clusterAllocationCompleted.allocationSucceeded(allocationRequests, getHosts(), callbackData);
+            }
+        }
+
+        private void requestHosts(RoleAllocationRequest request) throws IOException, SmartFrogException {
+            setStatus("Requesting hosts " + request);
+            request.requestStarted();
+            try {
+                HostInstanceList newhosts = createHosts(request.role, request.min, request.max);
+                request.requestSucceeded(newhosts);
+                log.info("got " + newhosts.size() + " - " + newhosts);
+                addHosts(newhosts);
+            } catch (IOException e) {
+                requestFailed(e, request);
+                throw e;
+            } catch (SmartFrogException e) {
+                requestFailed(e, request);
+                throw e;
+            }
+        }
+
+        /**
+         * Process a request failure
+         * @param e exception
+         * @param request request to update
+         */
+        private void requestFailed(Throwable e, RoleAllocationRequest request) {
+            setStatus("Request failed: " +request + ":"+e);
+            request.requestFailed(e);
+        }
+
+        /**
+         * Wait for the farmer
+         * @throws Throwable on any failure
+         */
+        private void waitForFarmerAvailable() throws Throwable {
             if (!isFarmerAvailable()) {
-                log.info("Waiting up to " + farmerAvailabilityTimeout + " for the farmer");
+                setStatus("Waiting for Farmer for up to " + farmerAvailabilityTimeout + "mS");
                 long timeout = System.currentTimeMillis() + farmerAvailabilityTimeout;
-                while (!isFarmerAvailable() && System.currentTimeMillis() < timeout) {
-                    Thread.sleep(FARMER_AVAILABILITY_SLEEP_MILLIS);
+                try {
+                    while (!isFarmerAvailable() && System.currentTimeMillis() < timeout) {
+                        Thread.sleep(FARMER_AVAILABILITY_SLEEP_MILLIS);
+                    }
+                } catch (Throwable e) {
+                    notifyFarmerAvailabilityException(e);
+                    throw e;
                 }
                 if (!isFarmerAvailable()) {
-
-                    String message = "Failed to create hosts -" 
+                    String message = "Failed to create hosts -"
                             + FarmerNotLiveException.ERROR_NOT_LIVE
                             + " after " + farmerAvailabilityTimeout + " milliseconds";
-                    log.error(message);
+                    setStatus(message);
+                    if (clusterAllocationCompleted != null) {
+                        clusterAllocationCompleted.farmerAvailabilityFailure(true,
+                                farmerAvailabilityTimeout,
+                                null,
+                                callbackData);
+                    }
                     throw new FarmerNotLiveException(message);
                 }
             }
-            for (RoleAllocationReqest request : allocations) {
-                log.info("Requesting hosts " + request);
-                HostInstanceList newhosts = createHosts(request.role, request.min, request.max);
-                log.info("got " + newhosts.size() + " - " + newhosts);
-                addHosts(newhosts);
+        }
+
+        /**
+         * Notify the cluster callback if the check for farmer availability failed f
+         *
+         * @param e the exception
+         * @throws SmartFrogException trouble
+         * @throws IOException trouble
+         */
+        private void notifyFarmerAvailabilityException(Throwable e) throws SmartFrogException, IOException {
+            if (clusterAllocationCompleted != null) {
+                clusterAllocationCompleted.farmerAvailabilityFailure(false, farmerAvailabilityTimeout, e, callbackData);
             }
+        }
+
+        /**
+         * set the thrown exception in this class and in the owner
+         *
+         * @param thrown the exception to record as thrown
+         */
+        @Override
+        public void setThrown(Throwable thrown) {
+            super.setThrown(thrown);
+            workerThreadException = thrown;
         }
 
         /**
@@ -627,8 +787,26 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             return (HostInstanceList) hostList.clone();
         }
 
+        /**
+         * Process the addition of some new hosts, by appending them to the list this is synchronized
+         *
+         * @param newhosts new hosts to add
+         */
         private synchronized void addHosts(HostInstanceList newhosts) {
             hostList.addAll(newhosts);
+        }
+
+        /**
+         * Get the list of allocation Requests
+         *
+         * @return the request list
+         */
+        public List<RoleAllocationRequest> getAllocationRequests() {
+            return allocationRequests;
+        }
+
+        public Object getCallbackData() {
+            return callbackData;
         }
     }
 

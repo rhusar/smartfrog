@@ -20,9 +20,15 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model;
 
+/*
+
 
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+*/
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -40,6 +46,7 @@ public abstract class AbstractEndpoint implements Serializable, Constants {
     private int timeout;
 
     protected static final Log log = LogFactory.getLog(AbstractEndpoint.class);
+    private static final String UNBOUND_ENDPOINT = "unbound endpoint";
 
     /**
      * Construct an instance bound to the url
@@ -85,11 +92,11 @@ public abstract class AbstractEndpoint implements Serializable, Constants {
 
     /**
      * String operator returns the endpoint
-     * @return
+     * @return the string value or a message about an unbound endpoint
      */
     @Override
     public String toString() {
-        return baseURL != null ? baseURL : "unbound endpoint";
+        return baseURL != null ? baseURL : UNBOUND_ENDPOINT;
     }
 
     /**

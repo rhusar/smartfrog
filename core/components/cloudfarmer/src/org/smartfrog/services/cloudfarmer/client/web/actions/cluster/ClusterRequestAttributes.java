@@ -25,40 +25,98 @@ package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
 public interface ClusterRequestAttributes {
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ACTION_SUCCESS = "success";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ACTION_FAILURE = "failure";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ERROR = "error";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_HOSTS = "hosts";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_HOSTCOUNT = "hostcount";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_CLUSTER_HAS_MASTER = "cluster.hasMaster";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_CLUSTER_MASTER = "cluster.master";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_CLUSTER_CONTROLLER = "cluster.controller";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_CLUSTER_MASTER_HOSTNAME = "cluster.master.hostname";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_THROWN = "org.apache.struts.action.EXCEPTION";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_ERROR_MESSAGE = "errorMessage";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_ERROR_CAUSE = "errorCause";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String FARM_CONTROLLER_URL = "farmControllerURL";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String FARM_CONTROLLER = "farmController";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_HOSTID = "hostid";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_HOST = "host";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_ROLE = "role";
+    /**
+     * {@value}
+     */
     String FARMER_DESCRIPTION = "farmer.description";
+    /**
+     * {@value}
+     */
     String FARMER_DIAGNOSTICS_TEXT = "farmer.diagnostics.text";
+
+    /**
+     * {@value}
+     */
+    String ATTR_FARMER_WORKING = "farmer.working";
+    /**
+     * {@value}
+     */
+    String ATTR_FARMER_WORK_STATUS = "farmer.work.status";
+    /**
+     * {@value}
+     */
+    String ATTR_FARMER_WORK_ERROR = "farmer.work.error";
+    /**
+     * {@value}
+     */
+    String ATTR_FARMER_WORK_REQUESTS = "farmer.work.requests";
+
 }

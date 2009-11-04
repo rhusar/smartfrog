@@ -163,7 +163,14 @@
     <put name="title" value="Add a host"/>
     <!--<put name="content" value="/html/mombasa-portlet/cluster/cluster_add_host_success.jsp"/>-->
     <put name="text" value="The hosts have been added, but may take some time to appear"/>
-  </definition>  
+  </definition>
+
+  <definition name="portlet.mombasa.cluster.add_dynamic.status.success"
+      extends="portlet.mombasa.cluster">
+    <put name="title" value="Add host operation in progress"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_add_node_status.jsp"/>
+    <put name="text" value="The request is in progress"/>
+  </definition>
 
   <definition name="portlet.mombasa.cluster.viewhost.success"
       extends="portlet.mombasa.cluster">

@@ -50,6 +50,7 @@ public final class HostInstanceList extends ArrayList<HostInstance> {
 
     /**
      * for struts integration
+     *
      * @return list of host instances
      */
     public List<HostInstance> getList() {
@@ -58,6 +59,7 @@ public final class HostInstanceList extends ArrayList<HostInstance> {
 
     /**
      * Get a list of all hosts in a role
+     *
      * @param role role to search for
      * @return the list of hosts in that role, may be empty
      */
@@ -70,16 +72,16 @@ public final class HostInstanceList extends ArrayList<HostInstance> {
         }
         return results;
     }
-    
+
     public HostInstance getMaster() {
         List<HostInstance> masters = getListInRole(HostInstance.ROLE_MASTER);
-        if (masters.size()>0) {
+        if (masters.size() > 0) {
             return masters.get(0);
         } else {
             return null;
         }
     }
-    
+
     public void importNodes(ClusterNode[] clusterNodes) {
         synchronized (this) {
             for (ClusterNode node : clusterNodes) {
@@ -91,8 +93,8 @@ public final class HostInstanceList extends ArrayList<HostInstance> {
 
     @Override
     public String toString() {
-        StringBuilder builder=new StringBuilder();
-        for (HostInstance instance:this) {
+        StringBuilder builder = new StringBuilder();
+        for (HostInstance instance : this) {
             builder.append(instance.hostname).append(' ');
         }
         return builder.toString();
