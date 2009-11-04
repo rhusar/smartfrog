@@ -47,7 +47,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
 
     /**
      * Create a cluster controller bound to a farmer instance
-     * @param baseURL
+     * @param baseURL URL of the farmer
      */
     public DynamicSmartFrogClusterController(String baseURL) {
         super(baseURL);

@@ -24,7 +24,7 @@
 #include "/org/smartfrog/services/jetty/jettyjsp.sf"
 #include "/org/smartfrog/services/www/mimetypes.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
-
+#include "/org/smartfrog/services/logging/jcl/components.sf"
 
 CloudFarmerURLs extends DATA {
   //this is the URL to the cloud farmer
@@ -50,8 +50,12 @@ StrutsOnJetty extends Compound {
   debugFlag true;
   cloudfarmer.url  CloudFarmerURLs:FarmerOnLocalhost;
 
-  //integrate logging with smartfrog
+  //integrate Jetty logging with smartfrog
   logging extends IntegrateJettyLogging;
+
+  //this is for commons logging, which allows the struts code to use the commons logging API
+  //and not be restricted to running under SF only
+  //commonsLogging extends BindCommonsLogging;
 
   server extends CoreJettyServer {
 
