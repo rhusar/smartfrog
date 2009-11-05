@@ -38,12 +38,12 @@ public class RoleAllocationRequest {
     @Override
     public String toString() {
         return
-                "role " + role +
-                        " range [" + min +
-                        " -" + max +
-                        "]"
-                        + (thrown != null ? (", thrown=" + thrown) : "")
-                        + (hosts != null ? (", hosts=" + hosts) : "");
+                "role: " + role +
+                        " range: " + min +
+                        " to " + (max>= 0 ? max : "unlimited") 
+                        + ""
+                        + (thrown != null ? ("; thrown=" + thrown) : "")
+                        + (hosts != null ? ("; hosts=" + hosts) : "");
     }
 
     public String getRole() {

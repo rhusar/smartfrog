@@ -118,5 +118,10 @@ public interface ClusterRequestAttributes {
      * {@value}
      */
     String ATTR_FARMER_WORK_REQUESTS = "farmer.work.requests";
+    /**
+     * {@value}
+     */
+    String ATTR_FARMER_WORK_STATUS_EVENTS = "farmer.work.status.events";
+    
 
 }

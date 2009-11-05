@@ -22,17 +22,45 @@ For more information: www.smartfrog.org
 
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
-<table border="0" width="100%">
+<div align="center">
+<html:link
+    action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
+</div>
 
-  <p>Operation status</p>
-  <bean:write name="farmer.work.status"/>
 
-  <div align="center">
+<p>Operation status</p>
+<bean:write name="farmer.work.status"/>
 
-   <html:link
-      action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
-  </div>
+<div align="center">
+<html:link
+    action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
+</div>
 
-</table>
+<logic:notEmpty name="farmer.work.status.events">
+  <table border="0">
+    <tr bgcolor="grey">
+      <th>Level</th>
+      <th style="padding-left: 10px;"></th>
+      <th>Message</th>
+      <th style="padding-left: 10px;"></th>
+    </tr>
+    <logic:iterate id="event"
+                   property="list"
+                   name="farmer.work.status.events"
+                   type="org.smartfrog.services.cloudfarmer.client.web.model.cluster.StatusEvent">
+      <tr>
+        <td>
+          <bean:write name="event" property="level"/>
+        </td>
+        <td style="padding-left: 10px;"></td>
+        <td>
+          <bean:write name="event" property="message"/>
+        </td>
+      </tr>
+    </logic:iterate>
+  </table>
+</logic:notEmpty>
+
+
 
 

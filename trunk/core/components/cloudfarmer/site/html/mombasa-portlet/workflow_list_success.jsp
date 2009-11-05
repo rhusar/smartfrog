@@ -34,7 +34,7 @@ For more information: www.smartfrog.org
 </div>
 
 
-<table border="2">
+<table border="0">
   <tr bgcolor="grey">
     <th>Name</th>
     <th style="padding-left: 10px;"></th>

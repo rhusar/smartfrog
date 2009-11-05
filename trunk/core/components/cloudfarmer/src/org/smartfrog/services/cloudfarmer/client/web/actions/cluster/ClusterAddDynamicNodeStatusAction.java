@@ -57,7 +57,7 @@ public class ClusterAddDynamicNodeStatusAction extends AbstractClusterAction {
     public ActionForward execute(ActionMapping mapping, ActionForm aform, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {
         try {
-            ClusterController.AsynchronousHostCreationThread workerThread = controller.getWorkerThread();
+            ClusterController.HostCreationThread workerThread = controller.getWorkerThread();
             setWorkAttributes(request,controller.isWorkerThreadWorking(), controller, workerThread);
             addClusterAttributes(request, controller);
             return success(mapping);
@@ -68,7 +68,7 @@ public class ClusterAddDynamicNodeStatusAction extends AbstractClusterAction {
     }
 
     private void setWorkAttributes(HttpServletRequest request, boolean working, ClusterController controller,
-                                   ClusterController.AsynchronousHostCreationThread workerThread) {
+                                   ClusterController.HostCreationThread workerThread) {
         request.setAttribute(ATTR_FARMER_WORKING, working);
         Throwable workerThreadException = controller.getWorkerThreadException();
         if (workerThreadException != null) {
@@ -79,6 +79,8 @@ public class ClusterAddDynamicNodeStatusAction extends AbstractClusterAction {
         }
         if (workerThread!=null) {
             request.setAttribute(ATTR_FARMER_WORK_STATUS, workerThread.getStatus());
+            request.setAttribute(ATTR_FARMER_WORK_STATUS_EVENTS, workerThread.getStatusEvents());
+            
         } else {
             request.setAttribute(ATTR_FARMER_WORK_STATUS, "No operation is in process");
         }
