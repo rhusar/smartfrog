@@ -75,7 +75,7 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
             //TODO, drive this from configuration properties
             long farmCreationTimeout = 10000;
             log.info("Queueing a request, waiting up to " + farmCreationTimeout + " milliseconds for the farm");
-            ClusterController.AsynchronousHostCreationThread worker = controller.asyncCreateHosts(requests,
+            ClusterController.HostCreationThread worker = controller.asyncCreateHosts(requests,
                     farmCreationTimeout,
                     null,
                     null);
