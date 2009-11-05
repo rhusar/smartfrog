@@ -87,8 +87,14 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
     /**
      * Entry point for some mock tests, fixes up enough internal data structures to avoid NPEs
      * @param size cluster size
+     * @param localDomain local domain suffix
+     * @param externalDomain external domain suffix
+     * @param isLive is the farmer live
+     * @param startupDelay how long should it take per node to start up
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
+     * @throws SmartFrogException
+     * @throws RemoteException
      */
     public void initForMockUse(int size, String localDomain, String externalDomain, boolean isLive,
                                int startupDelay) throws SmartFrogException, RemoteException {
@@ -96,7 +102,7 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         sfCompleteName.addElement(new HereReferencePart("farmer"));
         setClusterLimit(size);
         domain = localDomain;
-        externalDomain = externalDomain;
+        this.externalDomain = externalDomain;
         available = isLive;
         nodeStartupDelayMilliseconds = startupDelay;
         buildNodeFarm();
