@@ -29,6 +29,8 @@ For more information: www.smartfrog.org
 </div>
 <table border="0">
   <tr bgcolor="grey">
+    <th>ID</th>
+    <th style="padding-left: 10px;"></th>
     <th>Hostname</th>
     <th style="padding-left: 10px;"></th>
     <th>Application</th>
@@ -42,6 +44,13 @@ For more information: www.smartfrog.org
                  property="list"
                  type="org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance">
     <tr>
+      <td>
+        <html:link action="/mombasa-portlet/cluster/viewhost"
+                   paramId="hostid" paramName="host" paramProperty="id">
+          <bean:write name="host" property="id"/>
+        </html:link>
+      </td>
+      <td style="padding-left: 10px;"></td>
       <td>
         <html:link action="/mombasa-portlet/cluster/viewhost"
             paramId="hostid" paramName="host" paramProperty="id">

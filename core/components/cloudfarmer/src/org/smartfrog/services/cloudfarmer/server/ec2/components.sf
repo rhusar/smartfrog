@@ -55,7 +55,7 @@ EC2ClusterRole extends EC2ImageSizes, EC2AvailabilityZones, ClusterRole   {
   userData "";
   
   //name of the key to use for SSH from the list of key pairs
-  keyName "";
+  keyName ""; 
   
   // where the image should live
   availabilityZone ZONE_US_EAST_1A;

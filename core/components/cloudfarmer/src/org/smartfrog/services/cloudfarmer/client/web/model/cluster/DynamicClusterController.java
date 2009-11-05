@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.client.web.model.LocalSmartFrogDescriptor;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
@@ -97,5 +98,15 @@ public class DynamicClusterController extends ClusterController {
     @Override
     public void shutdownCluster() throws IOException, SmartFrogException {
 
+    }
+
+    /**
+     * log cluster nodes at the info level
+     * @param clusterNodes nodes
+     */
+    protected void logClusterNodes(ClusterNode[] clusterNodes) {
+        for (ClusterNode node:clusterNodes) {
+            log.info(node.toString());
+        }
     }
 }

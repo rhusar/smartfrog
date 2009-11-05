@@ -224,9 +224,13 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
     public HostInstanceList createHosts(String role, int min, int max)
             throws IOException, SmartFrogException {
         ClusterNode[] clusterNodes = farmer.create(role, min, max);
+        if(log.isInfoEnabled()) {
+            logClusterNodes(clusterNodes);
+        }
         HostInstanceList newHostList = new HostInstanceList(clusterNodes);
         synchronized (this) {
             for(HostInstance instance:newHostList) { 
+                
                 addHostInstance(instance);
             }
         }
