@@ -152,16 +152,6 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
         ClusterControllerBinding binding = changeClusterForm.createControllerBinding();
         ClusterControllerFactory factory = new ClusterControllerFactory();
         ClusterController server = factory.createClusterController(binding);
-/*
-        PortletRequest pr = extractPortletRequest(request);
-        try {
-            binding.saveBinding(pr.getPreferences());
-        } catch (ReadOnlyException e) {
-            throw SmartFrogException.forward(e);
-        } catch (Exception e) {
-            throw SmartFrogException.forward(e);
-        }
-*/
         removeAttribute(request, FARM_CONTROLLER);
         //this can fail. In this situation, the current controller has alreaby been removed.
         server.bind();

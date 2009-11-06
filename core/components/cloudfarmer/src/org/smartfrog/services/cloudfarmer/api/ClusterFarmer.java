@@ -197,5 +197,20 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException something went wrong
      * @throws SmartFrogException something different went wrong
      */
-    public String getDiagnosticsText() throws IOException, SmartFrogException; 
+    public String getDiagnosticsText() throws IOException, SmartFrogException;
+
+    /**
+     * Call to start the cluster if it is not already live
+     * @throws IOException something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public void startCluster() throws IOException, SmartFrogException;
+
+    /**
+     * Call to stop the cluster. This may be a no-op, it may shut down the entire cluster.
+     * Some infrastructures require this to release allocations.
+     * @throws IOException something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    public void stopCluster() throws IOException, SmartFrogException;
 }

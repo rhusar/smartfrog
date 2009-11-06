@@ -138,14 +138,18 @@ public class PhysicalClusterController extends ClusterController implements Temp
      */
     @Override
     public void shutdownCluster() throws IOException, SmartFrogException {
-        for (HostInstance host : this) {
-            try {
-                host.terminateApplication();
-            } catch (IOException e) {
-                log.error("When terminating " + host + ": " + e, e);
+        try {
+            for (HostInstance host : this) {
+                try {
+                    host.terminateApplication();
+                } catch (IOException e) {
+                    log.error("When terminating " + host + ": " + e, e);
+                }
             }
+            clearHostList();
+        } finally {
+            stopCluster();
         }
-        clearHostList();
     }
 
 }

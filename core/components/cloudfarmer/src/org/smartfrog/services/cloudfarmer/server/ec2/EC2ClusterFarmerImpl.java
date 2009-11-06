@@ -501,4 +501,21 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
                 + "\nnodeCount:" + nodeCount
                 + "\nEC2 user ID:" + getId();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startCluster() throws IOException, SmartFrogException {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void stopCluster() throws IOException, SmartFrogException {
+
+    }
+
 }

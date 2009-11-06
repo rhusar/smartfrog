@@ -31,11 +31,6 @@ For more information: www.smartfrog.org
 <p>Operation status</p>
 <bean:write name="farmer.work.status"/>
 
-<div align="center">
-<html:link
-    action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
-</div>
-
 <logic:notEmpty name="farmer.work.status.events">
   <table border="0">
     <tr bgcolor="grey">
@@ -60,6 +55,11 @@ For more information: www.smartfrog.org
     </logic:iterate>
   </table>
 </logic:notEmpty>
+
+<div align="center">
+<html:link
+    action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
+</div>
 
 
 

@@ -84,8 +84,9 @@ public class ClusterChangeManagerProcessAction extends AbstractClusterAction {
      * @param response   response to build up
      * @param controller the cluster controller
      * @return null, always
-     * @throws Exception
+     * @throws Exception if something goes wrong
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {

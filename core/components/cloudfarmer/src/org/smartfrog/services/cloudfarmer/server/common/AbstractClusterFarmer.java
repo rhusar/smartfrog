@@ -233,4 +233,20 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         return getDescription()
                 + "\nclusterLimit:" + clusterLimit;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startCluster() throws IOException, SmartFrogException {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void stopCluster() throws IOException, SmartFrogException {
+
+    }
 }

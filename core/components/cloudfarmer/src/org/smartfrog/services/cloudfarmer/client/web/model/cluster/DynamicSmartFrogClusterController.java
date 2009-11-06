@@ -87,6 +87,26 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
             log.error("Failed to bind to " + path + ": " + e, e);
             throw e;
         }
+        //call the parent class, which will then start the cluster
+        super.bind();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void startCluster() throws IOException, SmartFrogException {
+        farmer.startCluster();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void stopCluster() throws IOException, SmartFrogException {
+        if (checkFarmer()) {
+            farmer.stopCluster();
+        }
     }
 
     /**
@@ -209,8 +229,12 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      */
     @Override
     public void shutdownCluster() throws IOException, SmartFrogException {
-        if (checkFarmer()) {
-            farmer.deleteAll();
+        try {
+            if (checkFarmer()) {
+                farmer.deleteAll();
+            }
+        } finally {
+            stopCluster();
         }
     }
 
