@@ -76,13 +76,36 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Bind to the controller. If this fails, the controller must be considered invalid.
-     *
+     * The base class calls startCluster();
      * @throws IOException        network trouble
      * @throws SmartFrogException SF trouble
      */
     public void bind() throws IOException, SmartFrogException {
+        startCluster();
+    }
+
+    /**
+     * Call to start the cluster if it is not already live
+     *
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    protected void startCluster() throws IOException, SmartFrogException {
 
     }
+
+
+    /**
+     * Call to stop the cluster. This may be a no-op, it may shut down the entire cluster. Some infrastructures require
+     * this to release allocations.
+     *
+     * @throws IOException        something went wrong
+     * @throws SmartFrogException something different went wrong
+     */
+    protected void stopCluster() throws IOException, SmartFrogException {
+
+    }
+
 
     /**
      * Get the description -can be displayed in the view
