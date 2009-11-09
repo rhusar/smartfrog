@@ -38,7 +38,7 @@ import java.util.Enumeration;
 public class SynchedComposite extends Composite {
 
    public SynchedComposite() throws RemoteException {
-	   super();
+	   
    }
 
    public synchronized Object sfReplaceAttribute(Object name, Object value)

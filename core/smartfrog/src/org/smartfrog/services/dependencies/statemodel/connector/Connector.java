@@ -32,9 +32,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 public class Connector extends PrimImpl implements Prim, DependencyValidation, StateDependencies {
        protected HashSet dependencies = new HashSet();
    
-       public Connector() throws RemoteException {
-    	   super();
-       }
+       public Connector() throws RemoteException {}
        
 	   public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
 		      System.out.println("My dependencies:"+dependencies+" and me:"+d);

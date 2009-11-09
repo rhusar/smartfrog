@@ -53,7 +53,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
    }
    
    public Composite() throws RemoteException {
-	   super();
+	   
    }
    
    public void waitOnQueuesCleared(){
@@ -72,11 +72,11 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	   sfLog().debug("OUT: Composite: waitOnQueuesCleared()");
    }
    
-   public void addToDeploy(String name, ComponentDescription cd) throws Exception {
+   public void addToDeploy(String name, ComponentDescription cd) throws SmartFrogException {
 	   sfLog().debug("IN: Composite: addToDeploy(...)");
 	   synchronized (toDeploy){
 		   if (toDeploy.containsKey(name)){
-			   throw new Exception("Name: "+name+" exists already");
+			   throw new SmartFrogException("Name: "+name+" exists already");
 		   }
 		   
 		   toDeploy.put(name, cd);

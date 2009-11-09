@@ -29,9 +29,7 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
  */
  public class AndConnectorExists extends Connector {
 
-   public AndConnectorExists() throws RemoteException {
-	   super();
-   }
+   public AndConnectorExists() throws RemoteException {}
 
    public boolean isEnabled() {
 	  boolean exists=false;

@@ -45,7 +45,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class NilStateComponent extends StateComponent implements Prim {
 			
-	public NilStateComponent() throws RemoteException {super();}  
+	public NilStateComponent() throws RemoteException {}  
 
 	public boolean threadBody(){
 		return true;

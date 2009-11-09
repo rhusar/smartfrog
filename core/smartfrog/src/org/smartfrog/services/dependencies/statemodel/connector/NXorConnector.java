@@ -27,7 +27,6 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
 
 public class NXorConnector extends Connector {
 	   public NXorConnector() throws RemoteException {
-		   super();
 	   }
 
 	   public boolean isEnabled() {
