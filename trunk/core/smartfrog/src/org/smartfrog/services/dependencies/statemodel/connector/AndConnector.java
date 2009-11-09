@@ -29,9 +29,7 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
  */
  public class AndConnector extends Connector {
 
-   public AndConnector() throws RemoteException {
-	   super();
-   }
+   public AndConnector() throws RemoteException {}
 
    public boolean isEnabled() {
       for (Iterator d = dependencies.iterator(); d.hasNext();){ 

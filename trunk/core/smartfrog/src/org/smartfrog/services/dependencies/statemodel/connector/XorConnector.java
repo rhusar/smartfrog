@@ -27,7 +27,7 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
 
 public class XorConnector extends Connector {
 	   public XorConnector() throws RemoteException {
-		   super();
+		   
 	   }
 
 	   public boolean isEnabled() {

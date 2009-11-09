@@ -45,7 +45,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class SimpleStateComponent extends StateComponent implements Prim {
 			
-	public SimpleStateComponent() throws RemoteException {super();}  
+	public SimpleStateComponent() throws RemoteException {}  
 
 	public boolean threadBody(){
 		selectSingleAndGo();  //ignore return value...

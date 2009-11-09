@@ -30,7 +30,7 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
  public class NandConnector extends Connector {
 
    public NandConnector() throws RemoteException {
-	   super();
+	  
    }
 
    public boolean isEnabled() {

@@ -70,7 +70,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    private boolean m_running=false;
    private ReentrantLock transitionLock = new ReentrantLock();
    
-   public StateComponent() throws RemoteException {super();}
+   public StateComponent() throws RemoteException {}
 
    public synchronized void sfTerminateWith(TerminationRecord t) {
 		if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: (IN) sfTerminateWith(t)");
@@ -277,7 +277,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   try {
 		   if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition"+transition);
 		   ComponentDescription trans = null;
-		   try{trans = (ComponentDescription) enabled.get(transition);} catch (Throwable e){sfLog().debug("WHAT THE JC? "+e.getMessage());}
+		   try{trans = (ComponentDescription) enabled.get(transition);} catch (Throwable e){sfLog().debug("WHAT? "+e.getMessage());}
 		   trans.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));
 	   } catch (Exception e){throw new StateComponentTransitionException("Unable to apply effects in transition: "+transition, StateComponentTransitionException.g_UNABLETOAPPLYEFFECTS);}
 	   

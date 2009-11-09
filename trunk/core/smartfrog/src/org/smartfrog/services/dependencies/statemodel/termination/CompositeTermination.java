@@ -36,7 +36,7 @@ public class CompositeTermination extends StateComponent {
    boolean detach = false;
 
    public CompositeTermination() throws RemoteException {
-	   super();
+	  
    }
 
    public void sfDeploy() throws RemoteException, SmartFrogException {

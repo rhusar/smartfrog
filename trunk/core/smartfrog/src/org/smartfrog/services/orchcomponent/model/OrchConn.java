@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class OrchConn extends StateComponent implements Prim {
 			
-	public OrchConn() throws RemoteException {super();}  
+	public OrchConn() throws RemoteException {}  
 
 	public boolean threadBody(){
 		selectSingleAndGo();  //ignore return value...

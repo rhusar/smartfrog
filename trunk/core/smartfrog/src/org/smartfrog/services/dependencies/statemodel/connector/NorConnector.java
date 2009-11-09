@@ -30,7 +30,7 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
  public class NorConnector extends Connector {
 
    public NorConnector() throws RemoteException {
-	   super();
+	   
    }
 
 

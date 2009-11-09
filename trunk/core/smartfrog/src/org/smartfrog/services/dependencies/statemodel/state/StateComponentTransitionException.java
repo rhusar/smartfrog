@@ -26,7 +26,7 @@ public class StateComponentTransitionException extends SmartFrogException {
 	private int code;
 	
 	public StateComponentTransitionException(int code){
-		this.code = code;
+        this.code = code;
 	}
 	
 	public StateComponentTransitionException(String msg, int code){
@@ -37,6 +37,10 @@ public class StateComponentTransitionException extends SmartFrogException {
 	public StateComponentTransitionException(String msg){
 		this(msg, g_NOCODEAVAILABLE);
 	}
+
+    public StateComponentTransitionException(Throwable t) {
+        super(t);
+    }
 	
 	public static final int g_NOCODEAVAILABLE=0xFFFF;
 	public static final int g_NOTRANSITIONS=0x0;

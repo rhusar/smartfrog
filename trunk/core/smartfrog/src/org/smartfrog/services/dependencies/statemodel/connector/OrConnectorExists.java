@@ -30,7 +30,7 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
  public class OrConnectorExists extends Connector {
 
    public OrConnectorExists() throws RemoteException {
-	   super();
+	   
    }
 
    public boolean isEnabled() {
