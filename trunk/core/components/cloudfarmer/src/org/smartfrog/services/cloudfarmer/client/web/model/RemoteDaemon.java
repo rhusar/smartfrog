@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model;
 
 import org.apache.struts.upload.FormFile;
+import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.ParseFailedException;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.AbstractWorkflowServerActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitMRJobActionForm;
@@ -29,21 +30,18 @@ import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitToolAc
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitWorkflowActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.WorkflowList;
+import org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMI;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.Enumeration;
 
 /**
@@ -51,12 +49,10 @@ import java.util.Enumeration;
  */
 public class RemoteDaemon extends AbstractEndpoint {
 
-    private String hostname = Constants.DEFAULT_DAEMON_HOST;
-    private int port = Constants.DEFAULT_DAEMON_PORT;
     //we have to reconnect when deserializing
-    private transient ProcessCompound boundProcess;
     private static final long serialVersionUID = -3102169331874193302L;
 
+    private transient NodeDeploymentOverRMI nodeDeploy;
 
     public RemoteDaemon() {
     }
@@ -69,28 +65,17 @@ public class RemoteDaemon extends AbstractEndpoint {
      */
     public RemoteDaemon(String baseURL) throws MalformedURLException {
         super(baseURL);
-        URL url = new URL(baseURL);
-        setHostname(url.getHost());
-        if (url.getPort() != -1) {
-            setPort(url.getPort());
-        }
+        nodeDeploy = new NodeDeploymentOverRMI(baseURL);
     }
 
     public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
+        return nodeDeploy.getHostname();
     }
 
     public int getPort() {
-        return port;
+        return nodeDeploy.getPort();
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
 
     /**
      * Print the hostname and port
@@ -99,7 +84,7 @@ public class RemoteDaemon extends AbstractEndpoint {
      */
     @Override
     public String toString() {
-        return "workflow server at " + hostname + ":" + port;
+        return "workflow server "+ nodeDeploy.toString();
     }
 
     /**
@@ -110,17 +95,7 @@ public class RemoteDaemon extends AbstractEndpoint {
      * @throws IOException        network/RMI trouble
      */
     private ProcessCompound bind() throws SmartFrogException, IOException {
-        InetAddress addr = InetAddress.getByName(hostname);
-        DefaultRootLocatorImpl defaultRootLocator = new DefaultRootLocatorImpl();
-        try {
-            return defaultRootLocator.getRootProcessCompound(addr, port);
-        } catch (SmartFrogException e) {
-            throw e;
-        } catch (RemoteException e) {
-            throw e;
-        } catch (Exception e) {
-            throw SmartFrogException.forward(e);
-        }
+        return nodeDeploy.bind();
     }
 
     /**
@@ -130,12 +105,8 @@ public class RemoteDaemon extends AbstractEndpoint {
      * @throws SmartFrogException problems binding
      * @throws IOException        network/RMI trouble
      */
-    @SuppressWarnings({"ProhibitedExceptionDeclared"})
-    public synchronized ProcessCompound bindOnDemand() throws SmartFrogException, IOException {
-        if (boundProcess == null) {
-            boundProcess = bind();
-        }
-        return boundProcess;
+    public ProcessCompound bindOnDemand() throws SmartFrogException, IOException {
+        return nodeDeploy.bindOnDemand();
     }
 
     /**
@@ -144,15 +115,17 @@ public class RemoteDaemon extends AbstractEndpoint {
      * @return the process or null
      */
     public synchronized ProcessCompound getBoundProcess() {
-        return boundProcess;
+        return nodeDeploy.getBoundProcess();
     }
 
 
     /**
      * Break the connection
+     * @throws IOException        on network failure
+     * @throws SmartFrogException SF problems
      */
-    public synchronized void unbind() {
-        boundProcess = null;
+    public synchronized void unbind() throws SmartFrogException, IOException {
+        nodeDeploy.terminate();
     }
 
     /**
@@ -206,9 +179,9 @@ public class RemoteDaemon extends AbstractEndpoint {
     /**
      * Create a CD of a given classname
      *
-     * @param classname
+     * @param classname class to use in the CD
      * @return the stub CD
-     * @throws SmartFrogRuntimeException
+     * @throws SmartFrogRuntimeException on a failure to create
      */
     private ComponentDescription createCD(String classname) throws SmartFrogRuntimeException {
         ComponentDescription cd = createCD();
@@ -220,6 +193,8 @@ public class RemoteDaemon extends AbstractEndpoint {
      * Creates a local CD that is then pushed over
      *
      * @return a blank CD
+     * @throws SmartFrogRuntimeException on a failure to create
+     *
      */
     private ComponentDescription createCompoundCD() throws SmartFrogRuntimeException {
         return createCD("org.smartfrog.sfcore.compound.CompoundImpl");
@@ -242,28 +217,14 @@ public class RemoteDaemon extends AbstractEndpoint {
      *
      * @param name      string to look up
      * @param mandatory true iff the name is required
-     * @return a resolved workflow
+     * @return a resolved workflow  or null if there was none and mandatory==false
      * @throws IOException        for network problems
      * @throws SmartFrogException any resolution problems
      */
     public Workflow lookup(String name, boolean mandatory) throws IOException, SmartFrogException {
-        ProcessCompound root = getBoundProcess();
-        Object resolved = root.sfResolveHere(name, mandatory);
-        if (resolved == null) {
-            return null;
-        }
-        if (resolved instanceof ComponentDescription) {
-            throw new SmartFrogResolutionException("The name " + name + " resolves to an undeployed component");
-        }
-        if (!(resolved instanceof Prim)) {
-            throw new SmartFrogResolutionException("The name " + name
-                    + " resolves to " + resolved.toString()
-                    + " and not a deployed workflow");
-        }
-        Prim prim = (Prim) resolved;
+        Prim prim = nodeDeploy.lookupPrim(name, mandatory);
         return new Workflow(this, name, prim);
     }
-
 
     /**
      * Resolve and terminate a workflow
@@ -276,12 +237,7 @@ public class RemoteDaemon extends AbstractEndpoint {
      * @throws SmartFrogException any resolution problems
      */
     public boolean terminate(String name, boolean normal, String exitText) throws IOException, SmartFrogException {
-        Workflow workflow = lookup(name, false);
-        if (workflow == null) {
-            return false;
-        }
-        workflow.terminate(normal, exitText);
-        return true;
+        return nodeDeploy.terminateApplication(name, normal, exitText);
     }
 
     /**
@@ -326,7 +282,7 @@ public class RemoteDaemon extends AbstractEndpoint {
         FormFile srcFile = form.getFile();
 
         if (srcFile != null) {
-            localSF.parseFormFile(srcFile);
+            parseFormFile(localSF, srcFile);
         } else {
             //it will have to be text, won't it
             localSF.parseText(form.getConf());
@@ -337,6 +293,23 @@ public class RemoteDaemon extends AbstractEndpoint {
         ComponentDescription cd = localSF.getComponentDescription();
         Workflow workflow = createWorkflow(form, cd);
         return workflow;
+    }
+
+    /**
+     * Parse a form file, using the supplied filename as the filename if it is non null and ends with .sf
+     *
+     * @param descriptor SF descriptor
+     * @param file the form file to parse
+     * @return true iff it it parsed without errors
+     * @throws IOException on any failure
+     */
+    public boolean parseFormFile(LocalSmartFrogDescriptor descriptor, FormFile file) throws IOException {
+        String filename = file.getFileName();
+        if (filename == null || !filename.endsWith(".sf")) {
+            filename = "uploaded.sf";
+        }
+        InputStream is = file.getInputStream();
+        return descriptor.parseFromInputStream(filename, is);
     }
 
 }
