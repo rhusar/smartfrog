@@ -18,9 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.services.cloudfarmer.client.web.model;
+package org.smartfrog.services.cloudfarmer.api;
 
-import org.apache.struts.upload.FormFile;
 import org.smartfrog.SFParse;
 import org.smartfrog.sfcore.common.ParseOptionSet;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
@@ -29,7 +28,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,12 +46,15 @@ public class LocalSmartFrogDescriptor {
 
     List<String> errorList = new ArrayList<String>();
 
-
     public LocalSmartFrogDescriptor() {
     }
 
     public SFParse.ParseResults getParsedDescriptor() {
         return parsedDescriptor;
+    }
+
+    public void setParsedDescriptor(SFParse.ParseResults parsedDescriptor) {
+        this.parsedDescriptor = parsedDescriptor;
     }
 
     public void clearOptions() {
@@ -118,19 +119,15 @@ public class LocalSmartFrogDescriptor {
 
 
     /**
-     * Parse a form file, using the supplied filename as the filename if it is non null and ends with .sf
-     *
-     * @param file the form file to parse
-     * @return true iff it it parsed without errors
-     * @throws IOException on any failure
+     * Parse from an input stream; parse in a non-empty filename
+     * @param filename filename
+     * @param is input stream
+     * @return true iff there were no errors
      */
-    public boolean parseFormFile(FormFile file) throws IOException {
-        String filename = file.getFileName();
-        if (filename == null || !filename.endsWith(".sf")) {
-            filename = "uploaded.sf";
-        }
-        InputStream is = file.getInputStream();
-        parsedDescriptor = SFParse.parseInputStreamToResults(filename, is, null, options);
+    public boolean parseFromInputStream(String filename,
+                                               InputStream is) {
+        setParsedDescriptor(SFParse.parseInputStreamToResults(filename, is, null,
+                getOptions()));
         return !buildErrorList();
     }
 
@@ -192,7 +189,7 @@ public class LocalSmartFrogDescriptor {
         if (!hasErrors()) {
             return null;
         }
-        SmartFrogException sfe = new SmartFrogCompilationException(errorList.get(0).toString());
+        SmartFrogException sfe = new SmartFrogCompilationException(errorList.get(0));
         return sfe;
     }
 

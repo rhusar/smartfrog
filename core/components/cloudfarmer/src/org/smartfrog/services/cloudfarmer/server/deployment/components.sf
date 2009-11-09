@@ -17,29 +17,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.cloudfarmer.client.web.exceptions;
-
-
-import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
-
-import java.io.IOException;
-
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/components.sf"
+#include "/org/smartfrog/services/ssh/scp.sf"
 /**
- * Created 04-Aug-2009 17:31:30
+ * This component offers deployment over SmartFrog -LAN only; requires mutual trust
  */
+ 
+NodeDeploymentOverRMIFactory extends Prim {
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory"
+  }
 
-public class ParseFailedException extends IOException {
-
-    public LocalSmartFrogDescriptor descriptor;
-
-    /**
-     * Constructs an {@code IOException} with the specified detail message.
-     *
-     * @param message    The detail message (which is saved for later retrieval by the {@link #getMessage()} method)
-     * @param descriptor the failing descriptor, including all errors
-     */
-    public ParseFailedException(String message, LocalSmartFrogDescriptor descriptor) {
-        super(message);
-        this.descriptor = descriptor;
-    }
+NodeDeploymentOverSSHFactory extends Prim {
+  passwordProvider TBD;
 }

@@ -80,6 +80,7 @@
         name="struts-taglib"
         rev="${struts.version}"
         conf="webapp->default"/>
+
     <dependency org="org.apache.struts"
         name="struts-tiles"
         rev="${struts.version}"
@@ -117,6 +118,12 @@
         rev="latest.integration"
         conf="ec2->default"/>
 
+    <!--SSH deployment-->
+    <dependency org="org.smartfrog"
+                name="sf-ssh"
+                changing="true"
+                rev="latest.integration"
+                conf="compile,runtime,daemon->default"/>
     <!--Hadoop-->
     <dependency org="org.smartfrog"
         name="sf-hadoop-cluster"
