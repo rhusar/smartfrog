@@ -24,6 +24,8 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartFrogClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
@@ -71,28 +73,30 @@ public class HostCreationUnitTest extends TestCase {
         assertNotNull(node);
         assertEquals(role, node.getRole());
     }
-    
+
     public void testAsyncHostCreation() throws Throwable {
         //add a master automatically
-        List<ClusterController.RoleAllocationReqest> requests = new ArrayList<ClusterController.RoleAllocationReqest>(
-                2);
-        requests.add(new ClusterController.RoleAllocationReqest("master", 0, 1, 1));
-        requests.add(new ClusterController.RoleAllocationReqest("worker", -1, 5, 8));
-        ClusterController.AsynchronousHostCreationThread workerThread = controller.asyncCreateHosts(requests, 0);
-        log.info("Notify object = " + workerThread.getNotifyObject() + "; finished = "+ workerThread.isFinished());
-        
+        RoleAllocationRequestList requests = new RoleAllocationRequestList(2);
+
+        requests.add(new RoleAllocationRequest("master", 0, 1, 1, null));
+        requests.add(new RoleAllocationRequest("worker", -1, 5, 8, null));
+
+
+        ClusterController.HostCreationThread workerThread = controller.asyncCreateHosts(requests, 0, null, null);
+        log.info("Notify object = " + workerThread.getNotifyObject() + "; finished = " + workerThread.isFinished());
+
         //workerThread.waitForNotification(60000);
-        long timeout = System.currentTimeMillis()+60000;
+        long timeout = System.currentTimeMillis() + 60000;
         //spin for a bit
-        while(!workerThread.isFinished() && System.currentTimeMillis()<timeout) {
+        while (!workerThread.isFinished() && System.currentTimeMillis() < timeout) {
             Thread.sleep(1000);
         }
-        if(workerThread.isThrown()) {
+        if (workerThread.isThrown()) {
             throw workerThread.getThrown();
         }
         assertTrue("Worker is not finished", workerThread.isFinished());
         HostInstanceList hosts = workerThread.getHostList();
-        assertTrue("Host list is only "+hosts.size(), hosts.size() >=6 );
+        assertTrue("Host list is only " + hosts.size(), hosts.size() >= 6);
         assertNotNull("Hosts have no master", hosts.getMaster());
         List<HostInstance> workerList = hosts.getListInRole("worker");
         assertTrue("Worker list is only " + hosts.size(), workerList.size() >= 5);
