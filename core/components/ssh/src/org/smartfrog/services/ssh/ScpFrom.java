@@ -25,6 +25,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -45,8 +46,6 @@ import java.util.StringTokenizer;
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  */
 public class ScpFrom extends AbstractScpOperation {
-
-    private static final String EXEC = "exec";
 
     /**
      * Constucts ScpFrom using log object.
@@ -69,19 +68,18 @@ public class ScpFrom extends AbstractScpOperation {
      */
     public void doCopy(Session session, List<String> remoteFilenames,
                        List<File> localFiles)
-            throws IOException, JSchException {
+            throws IOException, JSchException, SmartFrogException {
         Iterator<String> remoteFilenameIterator = remoteFilenames.listIterator();
         for (File localFile : localFiles) {
-            if (haltOperation) {
-                throw new InterruptedIOException();
-            }
+            checkForHalted();
             String remoteFile = remoteFilenameIterator.next();
             String cmdPrefix = "scp -f ";
-            Channel channel = null;
+            ChannelExec channel = null;
+            beginTransfer(localFile, remoteFile);
             try {
-                channel = session.openChannel(EXEC);
+                channel = openExecChannel(session);
                 String command = cmdPrefix + remoteFile;
-                ((ChannelExec) channel).setCommand(command);
+                channel.setCommand(command);
                 // get I/O streams from channel
                 OutputStream out = channel.getOutputStream();
                 InputStream in = channel.getInputStream();
@@ -89,9 +87,8 @@ public class ScpFrom extends AbstractScpOperation {
                 writeAck(out);
                 doScpFrom(in, out, localFile);
             } finally {
-                if (channel != null) {
-                    channel.disconnect();
-                }
+                closeChannel(channel);
+                endTransfer(localFile, remoteFile);
             }
         }
     }
@@ -120,9 +117,7 @@ public class ScpFrom extends AbstractScpOperation {
                 }
                 arr.write(read);
             }
-            if (haltOperation) {
-                throw new InterruptedIOException();
-            }
+            checkForHalted();
             String serverResponse = arr.toString();
             log.info(serverResponse);
             // Server responds to channel connect 

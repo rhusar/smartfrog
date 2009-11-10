@@ -71,9 +71,7 @@ public class ScpTo extends AbstractScpOperation {
         Iterator<String> remoteFilenameIterator = remoteFilenames.listIterator();
         int count = 0;
         for (File localFile : localFiles) {
-            if (haltOperation) {
-                throw new InterruptedIOException();
-            }
+            checkForHalted();
             String remoteFile = remoteFilenameIterator.next();
             count += uploadOneFile(session, localFile, remoteFile);
         }
@@ -95,26 +93,24 @@ public class ScpTo extends AbstractScpOperation {
                                 File localFile,
                                 String remoteFile)
             throws JSchException, IOException, SmartFrogException {
-        Channel channel = null;
         String cmdPrefix = "scp -t ";
         int count = 0;
+        ChannelExec channel = null;
+        beginTransfer(localFile, remoteFile);
         try {
-            beginTransfer(localFile, remoteFile);
-            channel = session.openChannel("exec");
+            channel = openExecChannel(session);
             String command = cmdPrefix + remoteFile.trim();
             log.info("Scp command := " + command);
-            ((ChannelExec) channel).setCommand(command);
+            channel.setCommand(command);
             // get I/O streams from channel
             OutputStream out = channel.getOutputStream();
             InputStream in = channel.getInputStream();
             channel.connect();
             checkAck(in);
             count = doScpTo(in, out, localFile);
-            endTransfer(localFile, remoteFile);
         } finally {
-            if (channel != null) {
-                channel.disconnect();
-            }
+            closeChannel(channel);
+            endTransfer(localFile, remoteFile);
         }
         return count;
     }
@@ -128,8 +124,8 @@ public class ScpTo extends AbstractScpOperation {
      * @return number of bytes uploaded
      * @throws IOException in case we were not able to transfer files
      */
-    private int doScpTo(InputStream in, OutputStream out,
-                        File localFile) throws IOException {
+    protected int doScpTo(InputStream in, OutputStream out,
+                          File localFile) throws IOException {
         int fileSize = (int) localFile.length();
         String lFilePart = localFile.getName();
         StringBuffer cmdBuff = new StringBuffer("C0644")
@@ -148,6 +144,7 @@ public class ScpTo extends AbstractScpOperation {
         return sendFile(localFile, in, out);
     }
 
+
     /**
      * Writes file content to output stream of the ssh channel. The {@link #haltOperation} attribute is checked during
      * the operation, so that the operation can be interrupted -in which case a
@@ -159,7 +156,7 @@ public class ScpTo extends AbstractScpOperation {
      * @throws IOException in case of any error while writing
      * @throws InterruptedIOException if the operation was halted
      */
-    private int sendFile(File file, InputStream in, OutputStream out)
+    protected int sendFile(File file, InputStream in, OutputStream out)
             throws IOException {
         FileInputStream fis = null;
         int count = 0;
@@ -175,9 +172,7 @@ public class ScpTo extends AbstractScpOperation {
                 out.write(buf, 0, bytesRead);
                 count += bytesRead;
             }
-            if (haltOperation) {
-                throw new InterruptedIOException();
-            }
+            checkForHalted();
             out.flush();
             writeAck(out);
             checkAck(in);
@@ -185,6 +180,30 @@ public class ScpTo extends AbstractScpOperation {
             FileSystem.close(fis);
         }
         return count;
+    }
+
+
+    /**
+     * Make a directory over an (open) SCP channel
+     * @param in the input stream from the far end
+     * @param out the output strea,
+     * @param dir to create
+     * @throws IOException IO problems
+     */
+    protected void mkdirOverScp(InputStream in, OutputStream out,
+                               String dir) throws IOException {
+        String command = "D0755 0 ";
+        command += dir;
+        command += "\n";
+
+        out.write(command.getBytes());
+        out.flush();
+
+        checkAck(in);
+        //sendDirectory(directory, in, out);
+        out.write("E\n".getBytes());
+        out.flush();
+        checkAck(in);
     }
 }
 

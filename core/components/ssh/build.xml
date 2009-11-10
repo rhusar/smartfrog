@@ -24,7 +24,12 @@ For more information: www.smartfrog.org
 -->
 
 <description>
-    Build file for ssh SmartFrog components.
+  Build file for ssh SmartFrog components.
+
+  For the functional test, set test.ssh.host to the name of a host, including, obviously, localhost
+
+  This build file assumes that if you are building on any unix, you can ssh in to localhost as yourself.
+  If this is not the case, set test.ssh.host = ""
 </description>
 
    <!-- override point -->
@@ -41,6 +46,17 @@ For more information: www.smartfrog.org
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
 
+<!--  <condition property="test.ssh.host" value="localhost">
+    <os family="unix" />
+  </condition>-->
+  <condition property="test.ssh.user" value="${user.name}">
+    <os family="unix" />
+  </condition>
+  <!--you really need to set this to get the build to work-->
+  <condition property="test.ssh.pass" value="">
+    <os family="unix" />
+  </condition>
+  <property name="test.remote.dir" value="${java.io.tmpdir}" />
 
 
 

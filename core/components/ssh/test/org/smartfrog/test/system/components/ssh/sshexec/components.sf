@@ -93,16 +93,34 @@ SshTestServer extends SSHSessionInlinePassword {
     timeout SshTestProperties:timeout;
  }
 
+SSHTestKeySession extends SSHSessionPublicKey {
+  keyFile SshTestProperties:privateKeyPath;
+}
+
 testSshLogin extends ExpectTerminate {
   description "this logs in and prints 'hello' out";
   condition extends SshTestPropertiesSet;
   exitType EXIT_TYPE_NORMAL;
-  action extends SshTestServer {
-    commands [
+  commandList [
       "echo hello",
       "exit"];
+  action extends SshTestServer {
+    commands commandList;
   }
 }
+
+testSshLoginPrivateKey extends testSshLogin {
+  description "this logs in and prints 'hello' out using a private key";
+  condition extends SshTestPrivateKeySet;
+  action extends SSHTestKeySession {
+    commands commandList;
+  }
+}
+
+
+AUTH_FAIL "Auth fail";
+AUTH_CANCEL "Auth cancel";
+BAD_LOGIN_FAILURE AUTH_FAIL;
 
 testLoginBadUser extends testSshLogin {
   description "set an invalid user and expect to get a diagnostics message";
@@ -110,17 +128,23 @@ testLoginBadUser extends testSshLogin {
   exitType EXIT_TYPE_ABNORMAL;
   exceptions [
     [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
-    ["com.jcraft.jsch.JSchException","Auth cancel"]
+    ["com.jcraft.jsch.JSchException",BAD_LOGIN_FAILURE ]
   ];
 }
 
-testLoginBadUser extends testSshLogin {
+testLoginBadPassword extends testSshLogin {
   description "set an invalid password and expect to get a diagnostics message";
   action:password "Not a valid password";
   exitType EXIT_TYPE_ABNORMAL;
   exceptions [
     [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
-    ["com.jcraft.jsch.JSchException","Auth cancel"]
+    ["com.jcraft.jsch.JSchException",BAD_LOGIN_FAILURE ]
   ];
 }
 
+testLoginBadAuthType extends testSshLogin {
+  description "set an invalid user and expect to get a diagnostics message";
+  action:username "Not a valid user";
+  exitType EXIT_TYPE_ABNORMAL;
+  action:authentication "something-unexpected";
+}
