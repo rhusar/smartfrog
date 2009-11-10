@@ -94,7 +94,11 @@ SshTestServer extends SSHSessionInlinePassword {
  }
 
 SSHTestKeySession extends SSHSessionPublicKey {
+  sfShouldTerminate true;
   keyFile SshTestProperties:privateKeyPath;
+  host SshTestProperties:host;
+  username SshTestProperties:username;
+  timeout SshTestProperties:timeout;
 }
 
 testSshLogin extends ExpectTerminate {
@@ -120,7 +124,8 @@ testSshLoginPrivateKey extends testSshLogin {
 
 AUTH_FAIL "Auth fail";
 AUTH_CANCEL "Auth cancel";
-BAD_LOGIN_FAILURE AUTH_FAIL;
+//the error seems to vary, but auth is always there
+BAD_LOGIN_FAILURE "Auth";
 
 testLoginBadUser extends testSshLogin {
   description "set an invalid user and expect to get a diagnostics message";
