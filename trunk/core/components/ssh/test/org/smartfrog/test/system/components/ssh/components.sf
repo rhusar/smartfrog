@@ -92,6 +92,7 @@ SshTestProperties extends Compound {
     password OPTIONAL("") PROPERTY test.ssh.pass;
     host OPTIONAL("") PROPERTY test.ssh.host;
     username OPTIONAL("") PROPERTY test.ssh.user;
+    privateKeyPath OPTIONAL("") PROPERTY test.ssh.privatekey.filename;
     timeout OPTIONAL(5000) IPROPERTY test.ssh.timeout;
     remoteDir OPTIONAL("/tmp") PROPERTY test.remote.dir;
  }
@@ -101,5 +102,13 @@ SshTestPropertiesSet  extends Not {
     condition extends StringEquals {
       left "";
       right OPTIONAL("") PROPERTY "test.ssh.host";
+    }
+  }
+
+
+SshTestPrivateKeySet  extends Not {
+    condition extends StringEquals {
+      left "";
+      right OPTIONAL("") PROPERTY "test.ssh.privatekey.filename";
     }
   }

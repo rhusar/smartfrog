@@ -45,6 +45,7 @@ public class UserInfoImpl implements UserInfo {
     }
 
     /**
+     * @return the username
      */
     public String getName() {
         return name;
@@ -59,7 +60,7 @@ public class UserInfoImpl implements UserInfo {
     }
 
     /**
-     *
+     * @return the password
      */
     public String getPassword() {
         return password;
@@ -171,6 +172,6 @@ public class UserInfoImpl implements UserInfo {
      */
     public String toString() {
         return "user " + name + " [trustsEveryone:" + trustAllCertificates + ", authentication:"
-                + (password == null ? "public key" : "password") + "]";
+                + (password == null ? "no password" : "password set") + "]";
     }
 }

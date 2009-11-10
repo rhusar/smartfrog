@@ -43,6 +43,8 @@ import java.rmi.RemoteException;
 
 public abstract class AbstractSSHComponent extends PrimImpl implements SSHComponent {
 
+    /** default SSH port: {@value} */
+    private static final int SSH_PORT = 22;
     protected LogSF log;
     protected String passphrase;
     protected String keyFile;
@@ -50,16 +52,19 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
     protected UserInfoImpl userInfo;
     private static final Reference pwdProviderRef = new Reference(SSHComponent.ATTR_PASSWORD_PROVIDER);
     protected boolean trustAllCerts = true;
-    private static final int SSH_PORT = 22;
     protected int timeout = 0;
     protected int connectTimeout = 0;
     protected String host;
     protected int port = SSH_PORT;
     protected String userName;
+    private volatile Session session = null;
 
     protected String knownHosts;
-
-    private volatile Session session = null;
+    /**
+     * This is a very dangerous switch, as it lets you get your password in log files.
+     * It's there for emergencies, you can turn it on and rebuild stuff.
+     */
+    private static final boolean INCLUDE_PASSWORD_IN_DIAGNOSTICS = false;
 
     /**
      * {@value}
@@ -91,7 +96,9 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
 
 
     /**
-     * Called after instantiation for deployment purposes. <p/> This class sets up the log, then reads in the security
+     * Called after instantiation for deployment purposes. <p/>
+     *
+     * This class sets up the log, then reads in the security
      * attributes
      *
      * @throws SmartFrogException error while deploying
@@ -226,13 +233,26 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
      * @throws JSchException if things go wrong
      */
     protected Session createSession(JSch jsch) throws JSchException {
+        Session newSession = createSession(jsch, host, port);
+        log.info("Connecting to " + getConnectionDetails());
+        return newSession;
+    }
+
+    /**
+     * Create a session for a named host using the current user policies
+     * @param jsch the sch instances
+     * @param hostname target host
+     * @param connectPort target port
+     * @return a connected session
+     * @throws JSchException if things go wrong
+     */
+    protected Session createSession(JSch jsch, String hostname, int connectPort) throws JSchException {
         Session newSession;
-        newSession = jsch.getSession(userInfo.getName(), host, port);
+        newSession = jsch.getSession(userInfo.getName(), hostname, connectPort);
         newSession.setUserInfo(userInfo);
         if (!usePublicKey) {
             newSession.setPassword(userInfo.getPassword());
         }
-        log.info("Connecting to " + getConnectionDetails());
         return newSession;
     }
 
@@ -245,11 +265,23 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
         return host + ':' + port + " as " + userInfo;
     }
 
+    protected int getPasswordLength() {
+        return getStringLength(userInfo.getPassword());
+    }
+
+    protected int getStringLength(String s) {
+        int len =0;
+        if (s !=null) {
+            len = s.length();
+        }
+        return len;
+    }
+
     /**
-     * Get the current session
-     *
-     * @return the session
-     */
+    * Get the current session
+    *
+    * @return the session
+    */
     public synchronized Session getSession() {
         return session;
     }
@@ -315,13 +347,18 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
         if (faulttext.contains(SESSION_IS_DOWN)) {
             message = TIMEOUT_MESSAGE + getConnectionDetails();
         } else if (faulttext.contains(AUTH_FAIL) || faulttext.contains(AUTH_CANCEL)) {
-            message = "Unable to authenticate with the server" + getConnectionDetails()
+            int passLen = getPasswordLength();
+            message = "Unable to authenticate with the server  " + getConnectionDetails()
                     + "\nThis can be caused by: "
-                    + "\n -Unknown username " + userName
-                    + "\n -wrong password"
+                    + "\n -Unknown username \"" + userName + "\""
                     + (usePublicKey ?
-                    "\n -key-based authentication failure" :
-                    "\n -server not supporting password authentication")
+                     "\n -key-based authentication failure; key file = " + keyFile 
+                    :
+                     ( "\n -wrong password (it has a length of " + passLen + " characters)"
+                     + ((INCLUDE_PASSWORD_IN_DIAGNOSTICS && passLen > 0) ?
+                             (" - \"" + userInfo.getPassword() + "\"")
+                             : "")
+                     + "\n -server not supporting password authentication"))
                     + (trustAllCerts ?
                     "\n -server not trusted" :
                     "")

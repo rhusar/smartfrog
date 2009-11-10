@@ -26,13 +26,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.InterruptedIOException;
 import java.rmi.RemoteException;
+
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.JSchException;
 
 /**
  * Abstract parent class for ScpTo and ScpFrom.
  *
  * @author Ashish Awasthi
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
+ * @see <a href="http://blogs.sun.com/janp/entry/how_the_scp_protocol_works">How the SCP protocol works</a>
  */
 public abstract class AbstractScpOperation implements ScpProgressCallback {
 
@@ -53,6 +60,7 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
      * This flag is set to halt a child thread at work
      */
     protected volatile boolean haltOperation = false;
+    protected static final String EXEC = "exec";
 
     /**
      * Constucts an instance.
@@ -87,6 +95,7 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
      * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
+    @Override
     public void beginTransfer(File localFile, String remoteFile) throws
             SmartFrogException, RemoteException {
         if (progress != null) {
@@ -103,12 +112,12 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
      * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
+    @Override
     public void endTransfer(File localFile, String remoteFile) throws
             SmartFrogException, RemoteException {
         if (progress != null) {
             progress.endTransfer(localFile, remoteFile);
         }
-
     }
 
 
@@ -157,5 +166,24 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
         }
     }
 
+    /**
+     * Close a channel
+     * @param channel channel; can be null
+     */
+    protected void closeChannel(Channel channel) {
+        if (channel != null) {
+            channel.disconnect();
+        }
+    }
+
+    public void checkForHalted() throws InterruptedIOException {
+        if (haltOperation) {
+            throw new InterruptedIOException();
+        }
+    }
+
+    protected ChannelExec openExecChannel(Session session) throws JSchException {
+        return (ChannelExec) session.openChannel(EXEC);
+    }
 }
 

@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,12 +17,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.test.system.components.ssh.sshexec;
 
-#include "/org/smartfrog/test/system/components/ssh/sshexec/components.sf"
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
+ * tests that look for negative outcomes
+ *
  */
 
- sfConfig extends testLoginBadPassword;
+public class SshExecBadFunctionalTest extends DeployingTestBase {
+    private static final String FILES = "org/smartfrog/test/system/components/ssh/sshexec/";
 
+    public SshExecBadFunctionalTest(String name) {
+        super(name);
+    }
+
+    public void testLoginBadPassword() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testLoginBadPassword");
+    }
+
+    public void testLoginBadUser() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES,"testLoginBadUser");
+    }
+
+
+}
