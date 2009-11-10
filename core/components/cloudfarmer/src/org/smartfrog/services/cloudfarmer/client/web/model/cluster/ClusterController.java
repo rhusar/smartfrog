@@ -22,12 +22,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.ClusterControllerBusyException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
-import org.smartfrog.services.cloudfarmer.client.web.model.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -513,6 +513,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
         //create the workflow
         Workflow workflow = daemon.createWorkflow(appname, localApp.getComponentDescription());
+
+
         host.setApplication(workflow);
         host.setRole(roleName);
         return workflow;
