@@ -90,7 +90,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * Connects to remote host over SSH and executes commands.
      *
      * @throws SmartFrogException in case of error while connecting to remote host or executing commands
-     * @throws RemoteException    in case of network/emi error
+     * @throws RemoteException in case of network/emi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -106,7 +106,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      *
      * @param source source of call
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
@@ -130,7 +130,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * Reads SmartFrog attributes.
      *
      * @throws SmartFrogException if failed to read any attribute or a mandatory attribute is not defined.
-     * @throws RemoteException    in case of network/rmi error
+     * @throws RemoteException in case of network/rmi error
      */
     protected void readSFAttributes()
             throws SmartFrogException, RemoteException {

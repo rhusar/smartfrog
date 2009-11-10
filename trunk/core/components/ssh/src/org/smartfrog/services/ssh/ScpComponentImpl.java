@@ -29,8 +29,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -58,8 +58,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      */
     private Vector<File> localFiles = null;
     /**
-    /**
-     * The worker thread is here
+     * /** The worker thread is here
      */
     private ScpWorkerThread worker;
 
@@ -67,7 +66,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
     public static final String ERROR_MISSING_FILE_TO_UPLOAD = "Missing file to upload: ";
     public static final String ERROR_NOT_A_NORMAL_FILE = "Not a normal file:";
     public static final String INFO_NO_FILES_TO_PROCESS = "No files to process";
-    public static final String ERROR_FILE_COUNT_MISMATCH = "Mismatch between the number of elements in the local file list (";
+    public static final String ERROR_FILE_COUNT_MISMATCH =
+            "Mismatch between the number of elements in the local file list (";
     public static final String UNSUPPORTED_ACTION = "Unsupported action:";
 
     /**
@@ -112,7 +112,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                 }
             }
         }
-        worker = new ScpWorkerThread(this,log,
+        worker = new ScpWorkerThread(this, log,
                 isGetFiles(), localFiles, remoteFileList);
         worker.start();
     }
@@ -137,7 +137,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         SmartFrogThread.requestThreadTermination(worker);
-        worker=null;
+        worker = null;
         super.sfTerminateWith(tr);
     }
 
@@ -156,6 +156,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
 
     /**
      * Read and validate the transfer type
+     *
      * @throws SmartFrogResolutionException if failed to read any attribute or a mandatory attribute is not defined.
      * @throws SmartFrogLifecycleException if the transfer type is unsupported
      * @throws RemoteException in case of network/rmi error
@@ -173,14 +174,14 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             setGetFiles(false);
         } else {
             throw new SmartFrogLifecycleException(
-                    UNSUPPORTED_ACTION +'"' + transferType+ '"');
+                    UNSUPPORTED_ACTION + '"' + transferType + '"');
         }
     }
 
     /**
-     * Read the file lists in, and resolve the local list
-     * Subclasses can override this, as long as the localFiles and remoteFiles lists
-     * are full at the end of the operation, and they have the same number of files.
+     * Read the file lists in, and resolve the local list Subclasses can override this, as long as the localFiles and
+     * remoteFiles lists are full at the end of the operation, and they have the same number of files.
+     *
      * @throws SmartFrogException for resolution problems
      * @throws RemoteException network problems
      * @throws SmartFrogLifecycleException if there is a mismatch between the count of local and remote files
@@ -197,8 +198,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
     }
 
     /**
-     * Check that the file lists are valid, that they have the same number
-     * of elements.
+     * Check that the file lists are valid, that they have the same number of elements.
+     *
      * @throws SmartFrogLifecycleException if there is a size mismatch
      */
     protected void validateFileLists() throws SmartFrogLifecycleException {

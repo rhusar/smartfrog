@@ -26,23 +26,25 @@ import java.io.File;
 import java.rmi.RemoteException;
 
 /**
- *
+ * Progress callback on SCP operations
  */
-interface ScpProgressCallback {
+public interface ScpProgressCallback {
 
     /**
      * Called when a transfer begins
+     *
      * @param localFile local file name
      * @param remoteFile remote filename
      * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
-    void beginTransfer(File localFile,String remoteFile) throws
+    void beginTransfer(File localFile, String remoteFile) throws
             SmartFrogException, RemoteException;
 
 
     /**
      * Called when a transfer ends
+     *
      * @param localFile local file name
      * @param remoteFile remote filename
      * @throws RemoteException when the network plays up

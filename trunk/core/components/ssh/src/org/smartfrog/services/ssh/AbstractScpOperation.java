@@ -36,7 +36,14 @@ import java.rmi.RemoteException;
  */
 public abstract class AbstractScpOperation implements ScpProgressCallback {
 
+    /**
+     * {@value}
+     */
+
     protected final byte LINE_FEED = 0x0a;
+    /**
+     * {@value}
+     */
     protected final int BUFFER_SIZE = 1024;
     protected LogSF log;
     protected ScpProgressCallback progress;

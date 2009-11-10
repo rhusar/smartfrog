@@ -48,8 +48,8 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
      * remoteFiles lists are full at the end of the operation, and they have the same number of files.
      *
      * @throws SmartFrogResolutionException for resolution problems
-     * @throws RemoteException              network problems
-     * @throws SmartFrogLifecycleException  if there is a mismatch between the count of local and remote files
+     * @throws RemoteException network problems
+     * @throws SmartFrogLifecycleException if there is a mismatch between the count of local and remote files
      */
     @Override
     protected void readFileLists() throws
@@ -64,11 +64,11 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
         Vector<File> local = new Vector<File>(files.length);
         Vector<String> remote = new Vector<String>(files.length);
         for (File file : files) {
-            if(file.isFile()) {
+            if (file.isFile()) {
                 local.add(file);
                 String remoteName = remoteDir + '/' + file.getName();
                 remote.add(remoteName);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Uploading " + file + " to " + remoteName);
                 }
             } else {
@@ -84,8 +84,8 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
      * Force the transfer type to be an upload
      *
      * @throws SmartFrogResolutionException if failed to read any attribute or a mandatory attribute is not defined.
-     * @throws SmartFrogLifecycleException  if the transfer type is unsupported
-     * @throws RemoteException              in case of network/rmi error
+     * @throws SmartFrogLifecycleException if the transfer type is unsupported
+     * @throws RemoteException in case of network/rmi error
      */
     @Override
     protected void readTransferType() throws
@@ -101,7 +101,7 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
      * acting
      *
      * @return a list of files that match the pattern, or an empty list for no match
-     * @throws RemoteException    when the network plays up
+     * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
 
@@ -113,7 +113,7 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
      * Get the base directory of these files (may be null)
      *
      * @return the base directory
-     * @throws RemoteException    when the network plays up
+     * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
     public File getBaseDir() throws RemoteException, SmartFrogException {

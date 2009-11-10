@@ -22,8 +22,7 @@ package org.smartfrog.services.ssh;
 import java.rmi.Remote;
 
 /**
- * Interface with common connection options
- * Created 22-Oct-2007 16:10:09
+ * Interface with common connection options Created 22-Oct-2007 16:10:09
  */
 
 
@@ -55,14 +54,11 @@ public interface SSHComponent extends Remote {
      */
     String ATTR_PASSWORD = "password";
     /**
-     * Waits at most millis milliseconds for this operation to finish.
-     * A timeout of 0 means to wait forever.
-     * {@value}
+     * Waits at most millis milliseconds for this operation to finish. A timeout of 0 means to wait forever. {@value}
      */
     String ATTR_TIMEOUT = "timeout";
     /**
-     * Waits at most millis milliseconds for this operation to finish. A timeout
-     * of 0 means to wait forever. {@value}
+     * Waits at most millis milliseconds for this operation to finish. A timeout of 0 means to wait forever. {@value}
      */
     String ATTR_CONNECT_TIMEOUT = "connectTimeout";
     /**
@@ -76,12 +72,12 @@ public interface SSHComponent extends Remote {
     /**
      * How to authenticate: {@value}
      */
-    String ATTR_AUTHENTICATION ="authentication";
+    String ATTR_AUTHENTICATION = "authentication";
 
     /**
      * Use password based authentication: {@value}
      */
-    String AUTHENTICATION_PASSWORD ="password";
+    String AUTHENTICATION_PASSWORD = "password";
 
     /**
      * Use a key file: {@value}

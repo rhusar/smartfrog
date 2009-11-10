@@ -37,12 +37,11 @@ import java.rmi.RemoteException;
 
 /**
  * This base class handles all SSH authentication issues for any component that needs SSH auth.
- *
- *  <p/> Created 22-Oct-2007
- * 16:04:14
+ * <p/>
+ * <p/> Created 22-Oct-2007 16:04:14
  */
 
-public abstract class  AbstractSSHComponent extends PrimImpl implements SSHComponent {
+public abstract class AbstractSSHComponent extends PrimImpl implements SSHComponent {
 
     protected LogSF log;
     protected String passphrase;
@@ -62,18 +61,28 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     private volatile Session session = null;
 
+    /**
+     * {@value}
+     */
     protected static final String TIMEOUT_MESSAGE = "Connection timed out connecting to ";
+    /**
+     * {@value}
+     */
     protected static final String SESSION_IS_DOWN = "session is down";
     private static final String AUTH_FAIL = "Auth fail";
     private static final String AUTH_CANCEL = "Auth cancel";
+    /**
+     * {@value}
+     */
     public static final String ERROR_WRONG_PASSWORD_PROVIDER_TYPE = "The attribute "
-            +ATTR_PASSWORD_PROVIDER
-            +" must be a lazy reference to a class that implements the "
-            +"org.smartfrog.services.passwords.PasswordProvider"+" interface -";
+            + ATTR_PASSWORD_PROVIDER
+            + " must be a lazy reference to a class that implements the "
+            + "org.smartfrog.services.passwords.PasswordProvider" + " interface -";
     private final Reference attrKnownHosts;
 
     /**
      * Only subclasses can instantiate this
+     *
      * @throws RemoteException if the superclass constructor raises it
      */
     protected AbstractSSHComponent() throws RemoteException {
@@ -97,7 +106,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      * Read in the common SHS attributes during startup
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -127,11 +136,12 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
         //create the user info to get filled in.
         userInfo = new UserInfoImpl(sfLog(), trustAllCerts);
-        Prim provider = sfResolve(pwdProviderRef,(Prim)null,true);
-        if(!(provider instanceof PasswordProvider)) {
+        Prim provider = sfResolve(pwdProviderRef, (Prim) null, true);
+        if (!(provider instanceof PasswordProvider)) {
             throw new SmartFrogResolutionException(
                     ERROR_WRONG_PASSWORD_PROVIDER_TYPE
-                    +"what is present is an instance of "+provider.getClass()+" with value "+provider.toString());
+                            + "what is present is an instance of " + provider.getClass() + " with value " +
+                            provider.toString());
         }
         PasswordProvider pwdProvider = (PasswordProvider) provider;
         passphrase = pwdProvider.getPassword();
@@ -146,7 +156,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         }
         userName = sfResolve(ATTR_USER, userName, true);
         userInfo.setName(userName);
-        
+
         host = sfResolve(ATTR_HOST, host, true);
         port = sfResolve(ATTR_PORT, port, true);
 
@@ -189,14 +199,14 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
 
     /**
-     * Gets a SSH session after connecting to remote host over SSH.
-     * the value is saved in setSssion
+     * Gets a SSH session after connecting to remote host over SSH. the value is saved in setSssion
+     *
      * @return SSH Session
      * @throws JSchException if unable to open SSH session
      * @see Session
      */
     public synchronized Session openSession() throws JSchException {
-        if(session!=null) {
+        if (session != null) {
             throw new JSchException("Existing session is in use");
         }
         JSch jsch = createJschInstance();
@@ -206,7 +216,6 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         setSession(newSession);
         return newSession;
     }
-
 
 
     /**
@@ -229,6 +238,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     /**
      * Provide a diagnostics string for use in error messages and the like
+     *
      * @return the connection info
      */
     public String getConnectionDetails() {
@@ -237,6 +247,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     /**
      * Get the current session
+     *
      * @return the session
      */
     public synchronized Session getSession() {
@@ -245,6 +256,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     /**
      * Set the current session
+     *
      * @param session the new session, can be null
      */
     public synchronized void setSession(Session session) {
@@ -269,20 +281,20 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
             try {
                 getSession().disconnect();
             } finally {
-                session=null;
+                session = null;
             }
         }
     }
 
     /**
-     * Translate an exception into a SmartFrogLifecycle one.
-     * IF the exception is a JSchException, it is left to
-     * {@link #translateStartupException(JSchException)} to handle
+     * Translate an exception into a SmartFrogLifecycle one. IF the exception is a JSchException, it is left to {@link
+     * #translateStartupException(JSchException)} to handle
+     *
      * @param thrown incoming exception
      * @return a lifecycle exception
      */
     protected SmartFrogLifecycleException forward(Throwable thrown) {
-        if(thrown instanceof JSchException) {
+        if (thrown instanceof JSchException) {
             return translateStartupException((JSchException) thrown);
         } else {
             return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
@@ -291,8 +303,9 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
 
     /**
-     * Translate a jsch exception into a SmartFrog one, including better diagnostics.
-     * This is brittle as it searches for specific error text in the exception.
+     * Translate a jsch exception into a SmartFrog one, including better diagnostics. This is brittle as it searches for
+     * specific error text in the exception.
+     *
      * @param ex incoming exception
      * @return a new lifecycle exception that includes connection details
      */
@@ -304,16 +317,16 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         } else if (faulttext.contains(AUTH_FAIL) || faulttext.contains(AUTH_CANCEL)) {
             message = "Unable to authenticate with the server" + getConnectionDetails()
                     + "\nThis can be caused by: "
-                    + "\n -Unknown username "+userName
+                    + "\n -Unknown username " + userName
                     + "\n -wrong password"
-                    + (usePublicKey?
-                      "\n -key-based authentication failure":
-                      "\n -server not supporting password authentication")
-                    + (trustAllCerts?
-                      "\n -server not trusted":
-                      "")
+                    + (usePublicKey ?
+                    "\n -key-based authentication failure" :
+                    "\n -server not supporting password authentication")
+                    + (trustAllCerts ?
+                    "\n -server not trusted" :
+                    "")
                     + "\n -server not supporting login by that user";
-        } else if(faulttext.contains("reject HostKey:")) {
+        } else if (faulttext.contains("reject HostKey:")) {
             message = "The host key of the server is not trusted:"
                     + (knownHosts != null ? (" (knownHosts=" + knownHosts + ')') : "")
                     + getConnectionDetails() + " -" + faulttext;
