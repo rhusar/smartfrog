@@ -25,9 +25,13 @@ For more information: www.smartfrog.org
  */
  
 NodeDeploymentOverRMIFactory extends Prim {
-  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory"
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory";
   }
 
-NodeDeploymentOverSSHFactory extends Prim {
+NodeDeploymentOverSSHFactory extends SSHComponent {
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverSSHFactory";
+  sfShouldTerminate false;
+  //destination directory in the path format of scp
+  destDir TBD;
   passwordProvider TBD;
 }
