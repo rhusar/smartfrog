@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.Channel;
@@ -39,10 +39,10 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Class to copy securely from a remote machine. 
+ * Class to copy securely from a remote machine.
+ *
  * @author Ashish Awasthi
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
- * 
  */
 public class ScpFrom extends AbstractScpOperation {
 
@@ -50,6 +50,7 @@ public class ScpFrom extends AbstractScpOperation {
 
     /**
      * Constucts ScpFrom using log object.
+     *
      * @param sfLog log
      */
     public ScpFrom(LogSF sfLog) {
@@ -58,6 +59,7 @@ public class ScpFrom extends AbstractScpOperation {
 
     /**
      * Downloads files from a remote machine.
+     *
      * @param session current session
      * @param remoteFilenames vector of remote file names
      * @param localFiles vector of corresponding local file names
@@ -65,9 +67,9 @@ public class ScpFrom extends AbstractScpOperation {
      * @throws JSchException for JSCH problems.
      * @throws InterruptedIOException if the operation was halted
      */
-    public void doCopy (Session session, List<String> remoteFilenames, 
-                        List<File> localFiles)
-                                 throws IOException, JSchException {
+    public void doCopy(Session session, List<String> remoteFilenames,
+                       List<File> localFiles)
+            throws IOException, JSchException {
         Iterator<String> remoteFilenameIterator = remoteFilenames.listIterator();
         for (File localFile : localFiles) {
             if (haltOperation) {
@@ -96,14 +98,15 @@ public class ScpFrom extends AbstractScpOperation {
 
     /**
      * Copies file from the remote host.
+     *
      * @param in Input Stream of the channel
      * @param out Output Stream of the channel
      * @param localFile local file
-     * @throws IOException for errors on the server, or in writing the file. An InterruptedIOException is thrown
-     * if the operation was halted.
+     * @throws IOException for errors on the server, or in writing the file. An InterruptedIOException is thrown if the
+     * operation was halted.
      */
-    private void doScpFrom(InputStream in, OutputStream out, 
-                        File localFile) throws IOException {
+    private void doScpFrom(InputStream in, OutputStream out,
+                           File localFile) throws IOException {
         while (!haltOperation) {
             ByteArrayOutputStream arr = new ByteArrayOutputStream();
             // read server response from input stream
@@ -117,7 +120,7 @@ public class ScpFrom extends AbstractScpOperation {
                 }
                 arr.write(read);
             }
-            if(haltOperation) {
+            if (haltOperation) {
                 throw new InterruptedIOException();
             }
             String serverResponse = arr.toString();
@@ -127,7 +130,7 @@ public class ScpFrom extends AbstractScpOperation {
             if (serverResponse.charAt(0) == 'C') {
                 // Sucessful
                 StringTokenizer token = new StringTokenizer(serverResponse);
-                String cmd  = token.nextToken();
+                String cmd = token.nextToken();
                 int filesize = Integer.parseInt(token.nextToken());
                 String filename = token.nextToken();
                 log.info("Receiving " + filename + "of size : " + filesize);
@@ -142,10 +145,12 @@ public class ScpFrom extends AbstractScpOperation {
             }
         }
     }
+
     /**
      * Reads remote file from stream and writes to local file.
      * <p/>
      * After the operation, both the out and in streams are left open.
+     *
      * @param localFile destination
      * @param filesize size of file to read
      * @param out output stream of the communications
@@ -153,11 +158,11 @@ public class ScpFrom extends AbstractScpOperation {
      * @throws IOException if unable to read file or server reponse is an error
      */
     private void getFile(File localFile,
-                            int filesize,
-                            OutputStream out,
-                            InputStream in) throws IOException {
+                         int filesize,
+                         OutputStream out,
+                         InputStream in) throws IOException {
         byte[] buf = new byte[BUFFER_SIZE];
-        FileOutputStream fos=null;
+        FileOutputStream fos = null;
         int bytesRead;
         try {
             fos = new FileOutputStream(localFile);
