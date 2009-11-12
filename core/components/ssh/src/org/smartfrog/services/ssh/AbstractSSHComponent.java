@@ -69,7 +69,7 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
     /**
      * {@value}
      */
-    protected static final String TIMEOUT_MESSAGE = "Connection timed out connecting to ";
+    public static final String TIMEOUT_MESSAGE = "Connection timed out connecting to ";
     /**
      * {@value}
      */

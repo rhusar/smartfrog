@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.ssh;
 
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -42,7 +41,7 @@ import java.util.List;
  * @author Ashish Awasthi
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  */
-public class ScpTo extends AbstractScpOperation {
+public class ScpTo extends AbstractSshOperation {
 
     /**
      * Constucts ScpTo using log object.
