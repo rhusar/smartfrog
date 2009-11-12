@@ -78,7 +78,8 @@ public class SFExpandFully {
             //enable stack trace logging
             org.smartfrog.sfcore.common.Logger.logStackTrace = true;
 
-            File srcFile, destFile;
+            File srcFile;
+            File destFile;
             if (args.length != 3) {
                 usage();
                 ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_BAD_ARGS);
@@ -108,13 +109,10 @@ public class SFExpandFully {
             } else {
                 //save the results to a string and then a file
                 ComponentDescription description = results.cd;
-                StringBuilder buffer = new StringBuilder();
-                buffer.append("sfConfig extends {\n");
-                buffer.append(description.toString());
-                buffer.append("\n}\n");
-                saveTextToFile(destFile, buffer.toString());
+                saveCDtoFile(description, destFile);
                 SFSystem.sfLog().out(NAME + ": SUCCESSFUL");
                 ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
+
             }
         } catch (Throwable thr) {
             SFSystem.sfLog().error("Exception " + thr, thr);
@@ -123,7 +121,27 @@ public class SFExpandFully {
 
     }
 
-    private static void saveTextToFile(File destFile, String text) throws SmartFrogException {
+    /**
+     * Utility method to save a CD to a file
+     * @param description CD to save
+     * @param destFile destfile
+     * @throws SmartFrogException something went wrong
+     */
+    public static void saveCDtoFile(ComponentDescription description, File destFile) throws SmartFrogException {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("sfConfig extends {\n");
+        buffer.append(description.toString());
+        buffer.append("\n}\n");
+        saveTextToFile(destFile, buffer.toString());
+    }
+
+    /**
+     * Save text to a file
+     * @param destFile destfile
+     * @param text text to save
+     * @throws SmartFrogException failure to write the file
+     */
+    public static void saveTextToFile(File destFile, String text) throws SmartFrogException {
         Writer wout = null;
         try {
             OutputStream fout;
