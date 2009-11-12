@@ -50,7 +50,7 @@ TestCluster extends ManualClusterFarmer {
 
 ExpectFarmerDeploy extends ExpectDeploy {
     
-  action TestCluster;
+  action extends TestCluster;
 
 }
 
@@ -276,7 +276,7 @@ TestLocalhostCluster extends LocalhostCluster {
 testLocalhostDeployCompound extends ExpectDeploy {
     
   description "create a farm node and then deploy something via SSH";
-  action TestLocalhostCluster;
+  action extends TestLocalhostCluster;
 
 
   tests extends Sequence {
@@ -294,7 +294,5 @@ testLocalhostDeployCompound extends ExpectDeploy {
       expected 1;
       deleteOnTerminate false;
     }
-    
- }
-}
+  }
 }

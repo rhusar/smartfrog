@@ -47,6 +47,8 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   //destination directory in the path format of scp
   //this directory is assumed to exist
   destDir "/tmp";
+  //there for the schema
+  host "";
   tempfilePrefix "sfoverssh";
   //log level for communications
   logLevel LogLevel:LOG_LEVEL_INFO;
