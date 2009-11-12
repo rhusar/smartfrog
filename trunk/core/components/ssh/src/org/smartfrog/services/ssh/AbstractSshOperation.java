@@ -19,21 +19,20 @@
  */
 package org.smartfrog.services.ssh;
 
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelShell;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.ChannelShell;
 
 /**
  * Abstract parent class for SCP and SSH operations
@@ -61,14 +60,14 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
      * This flag is set to halt a child thread at work
      */
     protected volatile boolean haltOperation = false;
-    
-    
+
+
     protected static final String EXEC = "exec";
 
     /**
      * Constucts an instance.
      *
-     * @param log log a log of the owner
+     * @param log      log a log of the owner
      * @param callback progress callback
      */
     protected AbstractSshOperation(LogSF log, ScpProgressCallback callback) {
@@ -93,9 +92,9 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
     /**
      * Called when a transfer begins
      *
-     * @param localFile local file name
+     * @param localFile  local file name
      * @param remoteFile remote filename
-     * @throws RemoteException when the network plays up
+     * @throws RemoteException    when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
     @Override
@@ -110,9 +109,9 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
     /**
      * Called when a transfer ends
      *
-     * @param localFile local file name
+     * @param localFile  local file name
      * @param remoteFile remote filename
-     * @throws RemoteException when the network plays up
+     * @throws RemoteException    when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
     @Override
@@ -171,6 +170,7 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
 
     /**
      * Close a channel
+     *
      * @param channel channel; can be null
      */
     protected void closeChannel(Channel channel) {
@@ -181,6 +181,7 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
 
     /**
      * Check for being interrupted
+     *
      * @throws InterruptedIOException if the operation has been halted
      */
     public void checkForHalted() throws InterruptedIOException {
@@ -191,6 +192,7 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
 
     /**
      * Open a channel for exec commands
+     *
      * @param session session
      * @return a new channel
      * @throws JSchException something went wrong
@@ -202,15 +204,17 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
 
     /**
      * Get connection info for use in diagnostics messages
+     *
      * @param session the session
      * @return a string to use in messages
      */
     public static String getSessionInfo(Session session) {
-        return "SSH connection to "+session.getHost() + ":" + session.getPort();
+        return "SSH connection to " + session.getHost() + ":" + session.getPort();
     }
 
     /**
      * Open a shell channel
+     *
      * @param session the session
      * @return the channel
      * @throws JSchException if the shell channel cannot be opened
