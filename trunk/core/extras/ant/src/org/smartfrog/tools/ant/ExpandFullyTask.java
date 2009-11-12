@@ -110,7 +110,6 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
         //now let's configure the parser
         setupClasspath(parser);
         parser.setFork(true);
-        String action;
         if (dest == null) {
             throw new BuildException(ERROR_NO_DEST);
         }
