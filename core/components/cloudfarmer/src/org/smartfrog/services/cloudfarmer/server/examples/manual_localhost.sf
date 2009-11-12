@@ -41,11 +41,11 @@ LocalhostCluster extends ManualClusterFarmer {
   }
   
   passwordProvider extends FilePassword {
-    user LAZY PROPERTY user.name;
-    passwordFile ((LAZY PROPERTY user.name) + ".ssh/id_dsa");
+    passwordFile ((LAZY PROPERTY user.home) ++ "/.ssh/id_dsa");
   }
   
   deploymentFactory extends NodeDeploymentOverSSHFactory {
+    username LAZY PROPERTY user.name;
     passwordProvider LAZY PARENT:passwordProvider
     authentication authenticate_key;
   }
