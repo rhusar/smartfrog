@@ -33,15 +33,16 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.ChannelShell;
 
 /**
- * Abstract parent class for ScpTo and ScpFrom.
+ * Abstract parent class for SCP and SSH operations
  *
  * @author Ashish Awasthi
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * @see <a href="http://blogs.sun.com/janp/entry/how_the_scp_protocol_works">How the SCP protocol works</a>
  */
-public abstract class AbstractScpOperation implements ScpProgressCallback {
+public abstract class AbstractSshOperation implements ScpProgressCallback {
 
     /**
      * {@value}
@@ -60,6 +61,8 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
      * This flag is set to halt a child thread at work
      */
     protected volatile boolean haltOperation = false;
+    
+    
     protected static final String EXEC = "exec";
 
     /**
@@ -68,7 +71,7 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
      * @param log log a log of the owner
      * @param callback progress callback
      */
-    protected AbstractScpOperation(LogSF log, ScpProgressCallback callback) {
+    protected AbstractSshOperation(LogSF log, ScpProgressCallback callback) {
         this.log = log;
         this.progress = callback;
     }
@@ -147,7 +150,7 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
             // didn't receive any response
             throw new IOException("No response from server");
         } else if (svrRsp != 0) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             int ch = in.read();
             while (ch > 0 && ch != '\n') {
                 sb.append((char) ch);
@@ -155,13 +158,13 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
             }
             if (svrRsp == 1) {
                 throw new IOException(
-                        "error reported by server: " + sb.toString());
+                        "error reported by server: " + sb);
             } else if (svrRsp == 2) {
                 throw new IOException(
-                        "fatal error reported by server: " + sb.toString());
+                        "fatal error reported by server: " + sb);
             } else {
                 throw new IOException("unknown response, code " + svrRsp
-                        + " message: " + sb.toString());
+                        + " message: " + sb);
             }
         }
     }
@@ -176,14 +179,44 @@ public abstract class AbstractScpOperation implements ScpProgressCallback {
         }
     }
 
+    /**
+     * Check for being interrupted
+     * @throws InterruptedIOException if the operation has been halted
+     */
     public void checkForHalted() throws InterruptedIOException {
         if (haltOperation) {
             throw new InterruptedIOException();
         }
     }
 
+    /**
+     * Open a channel for exec commands
+     * @param session session
+     * @return a new channel
+     * @throws JSchException something went wrong
+     */
     protected ChannelExec openExecChannel(Session session) throws JSchException {
         return (ChannelExec) session.openChannel(EXEC);
+    }
+
+
+    /**
+     * Get connection info for use in diagnostics messages
+     * @param session the session
+     * @return a string to use in messages
+     */
+    public static String getSessionInfo(Session session) {
+        return "SSH connection to "+session.getHost() + ":" + session.getPort();
+    }
+
+    /**
+     * Open a shell channel
+     * @param session the session
+     * @return the channel
+     * @throws JSchException if the shell channel cannot be opened
+     */
+    protected ChannelShell openShellChannel(Session session) throws JSchException {
+        return (ChannelShell) session.openChannel("shell");
     }
 }
 

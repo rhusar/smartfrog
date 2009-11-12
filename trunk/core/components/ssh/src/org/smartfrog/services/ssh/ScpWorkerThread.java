@@ -44,7 +44,7 @@ class ScpWorkerThread extends SmartFrogThread implements ScpProgressCallback {
     private List<File> localFiles;
     private List<String> remoteFiles;
     private boolean getFiles;
-    private AbstractScpOperation operation;
+    private AbstractSshOperation operation;
     private int counter = 0;
 
     /**
@@ -67,7 +67,7 @@ class ScpWorkerThread extends SmartFrogThread implements ScpProgressCallback {
         this.getFiles = getFiles;
     }
 
-    private synchronized void setOperation(AbstractScpOperation operation) {
+    private synchronized void setOperation(AbstractSshOperation operation) {
         this.operation = operation;
     }
 

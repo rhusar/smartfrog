@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.ssh;
 
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -45,7 +44,7 @@ import java.util.StringTokenizer;
  * @author Ashish Awasthi
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  */
-public class ScpFrom extends AbstractScpOperation {
+public class ScpFrom extends AbstractSshOperation {
 
     /**
      * Constucts ScpFrom using log object.
@@ -65,6 +64,7 @@ public class ScpFrom extends AbstractScpOperation {
      * @throws IOException in case not able to transfer files
      * @throws JSchException for JSCH problems.
      * @throws InterruptedIOException if the operation was halted
+     * @throws SmartFrogException SmartFrog-related exceptions
      */
     public void doCopy(Session session, List<String> remoteFilenames,
                        List<File> localFiles)
@@ -99,8 +99,8 @@ public class ScpFrom extends AbstractScpOperation {
      * @param in Input Stream of the channel
      * @param out Output Stream of the channel
      * @param localFile local file
-     * @throws IOException for errors on the server, or in writing the file. An InterruptedIOException is thrown if the
-     * operation was halted.
+     * @throws IOException for errors on the server, or in writing the file. 
+     * @throws InterruptedIOException the operation was halted.
      */
     private void doScpFrom(InputStream in, OutputStream out,
                            File localFile) throws IOException {
