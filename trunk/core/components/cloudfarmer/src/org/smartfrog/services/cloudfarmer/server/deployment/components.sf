@@ -20,6 +20,10 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/components.sf"
 #include "/org/smartfrog/services/ssh/scp.sf"
+#include "/org/smartfrog/sfcore/logging/loglevels.sf"
+//the deploy directory component here
+#include "/org/smartfrog/services/deploydir/components.sf"
+
 /**
  * This component offers deployment over SmartFrog -LAN only; requires mutual trust
  */
@@ -28,10 +32,18 @@ NodeDeploymentOverRMIFactory extends Prim {
   sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory";
   }
 
+
+/**
+ * This component offers deployment over SSH
+ * The destdir must be set up with the DeployingDirectoryWatcher watching the target directory for new applications;
+ * There is currently no way to ping or terminate these applications
+ */
 NodeDeploymentOverSSHFactory extends SSHComponent {
   sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverSSHFactory";
   sfShouldTerminate false;
   //destination directory in the path format of scp
   destDir TBD;
+  //log level for communications
+  logLevel LogLevel:LOG_LEVEL_INFO;
   passwordProvider TBD;
 }

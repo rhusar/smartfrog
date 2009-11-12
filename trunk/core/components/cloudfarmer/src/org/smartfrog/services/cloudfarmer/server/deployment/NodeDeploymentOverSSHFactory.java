@@ -8,8 +8,11 @@ import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.ssh.AbstractSSHComponent;
 import org.smartfrog.services.ssh.SSHComponent;
 import org.smartfrog.services.ssh.ScpTo;
+import org.smartfrog.services.ssh.SshCommand;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.OutputStreamLog;
+import org.smartfrog.sfcore.logging.LogLevel;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +28,8 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     private String destDir;
     protected JSch jschInstance;
     public static final String ATTR_DEST_DIR = "destDir";
+    protected int outputLogLevel;
+    public static final String ATTR_LOG_LEVEL = "logLevel";
 
     public NodeDeploymentOverSSHFactory() throws RemoteException {
     }
@@ -42,7 +47,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         if (!destDir.endsWith("/")) {
             destDir += "/";
         }
-
+        outputLogLevel = sfResolve(ATTR_LOG_LEVEL,LogLevel.LOG_LEVEL_INFO, true);
         try {
             jschInstance = createJschInstance();
         } catch (JSchException e) {
@@ -80,9 +85,9 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
 
         private String hostname;
         private String appDir;
-        private boolean mock = false;
         private ArrayList<File> sourceFiles = new ArrayList<File>();
         private ArrayList<String> destFiles = new ArrayList<String>();
+
 
         /**
          * Create an instance
@@ -116,14 +121,27 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         public synchronized void deployApplication(String name, ComponentDescription cd)
                 throws IOException, SmartFrogException {
             bindAppDir(name);
-            doScp();
+            doDeploy();
         }
 
-        private void doScp() throws IOException, SmartFrogException {
-            ScpTo scp = new ScpTo(sfLog());
+        private void doDeploy() throws IOException, SmartFrogException {
+            if(appDir==null || appDir.isEmpty()) {
+                throw new IllegalArgumentException("appDir is not bound correctly");
+            }
             Session session = null;
             try {
                 session = demandCreateSession(host);
+                SshCommand command = new SshCommand(sfLog(), null);
+                
+                OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
+                ArrayList<String> commandsList = new ArrayList<String>(1);
+                String mkdir = "mkdir -p -m 700 " + appDir;
+                commandsList.add(mkdir);
+                int exitCode = command.execute(getSession(), commandsList, outputStream, timeout);
+                if (exitCode!=0) {
+                    throw new SmartFrogException("Error response on command "+ mkdir);
+                }
+                ScpTo scp = new ScpTo(sfLog());
                 scp.doCopy(session, destFiles, sourceFiles);
             } catch (JSchException e) {
                 log.error("Failed to upload to " + host + ": " + e, e);

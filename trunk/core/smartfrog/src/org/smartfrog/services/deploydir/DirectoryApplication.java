@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.deploydir;
 
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,9 +42,27 @@ public class DirectoryApplication implements Serializable {
     private String resource;
     private boolean resourceExists;
     private Properties propertySet;
+    private ConfigurationDescriptor configuration;
+    
     private static final String TRUE = "true";
-    public static final String APPLICATION_XML = "application.xml";
-    public static final String APPLICATION_PROPERTIES = "application.properties";
+    private static final String PROPFILE_NAME = "application";
+    /**
+     * XML file of properties to look for
+     */
+    public static final String APPLICATION_XML = PROPFILE_NAME +".xml";
+    /**
+     * Classic properties file to look for
+     */
+    public static final String APPLICATION_PROPERTIES = PROPFILE_NAME +".properties";
+
+    /**
+     * name of the file
+     */
+    public static final String CONFIGURATION_FILENAME = "configuration.sf";
+    /**
+     * name of the file
+     */
+    public static final String ENABLED_FILENAME = "enabled";
 
     public DirectoryApplication(File directory, String name) throws IOException {
         this.directory = directory;

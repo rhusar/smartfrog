@@ -18,7 +18,6 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
 
 /**
  * Components in this package let us deploy a directory of items
