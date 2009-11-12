@@ -50,12 +50,21 @@ EC2HadoopRoles extends Compound {
 }
 
 EC2HadoopFarmer extends EC2ClusterFarmer {
-    id test.awsid;
-    key test.awskey;
+  id test.awsid;
+  key test.awskey;
 
   roles extends EC2HadoopRoles {
   
   }
+  
+  /**
+   * Mock deployments
+   */
+  deploymentFactory extends MockNodeDeploymentFactory {
+  
+  }
+  
+  
 }
 
 sfConfig extends EC2HadoopFarmer;

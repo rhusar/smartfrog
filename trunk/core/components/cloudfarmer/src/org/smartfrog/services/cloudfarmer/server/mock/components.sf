@@ -54,4 +54,11 @@ MockClusterFarmer extends AbstractClusterFarmer {
   
   //is the cluster actually available
   available true;
+
+  /**
+   * Mock deployments
+   */
+  deploymentFactory extends MockNodeDeploymentFactory {
+  
+  }
 }

@@ -70,4 +70,13 @@ public interface NodeDeploymentService extends Remote {
      * @throws SmartFrogException other problems
      */
     public void terminate() throws IOException, SmartFrogException;
+
+
+    /**
+     * Get the cluster node information
+     * @return the cluster node this deployment is bonded to
+     * @throws IOException for trouble
+     */
+    ClusterNode getClusterNode() throws IOException;
+
 }

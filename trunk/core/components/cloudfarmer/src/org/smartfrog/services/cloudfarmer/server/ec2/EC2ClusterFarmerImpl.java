@@ -28,6 +28,8 @@ import org.smartfrog.services.amazon.ec2.SmartFrogEC2Exception;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.server.common.AbstractClusterFarmer;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -55,7 +57,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     protected Map<String, ClusterRoleInfo> roleInfoMap;
     private List<EC2ClusterRole> clusterRoleList;
     private HashMap<String, RoleBinding> roleBindings;
-
+    private NodeDeploymentServiceFactory deploymentFactory;
 
     public EC2ClusterFarmerImpl() throws RemoteException {
     }
@@ -77,6 +79,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         sfLog().info("Creating EC2farmer with a limit of " + clusterLimit);
         roles = sfResolve(ATTR_ROLES, roles, true);
         roleBindings = new HashMap<String, RoleBinding>();
+        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim) null, true);
         buildRoleBindings();
     }
 
@@ -518,4 +521,12 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
 
     }
 
+
+    /**
+     * {@inheritDoc} <p/> This is implemented by handing off to any declared deployment factory
+     */
+    @Override
+    public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
+        return deploymentFactory.createInstance(node);
+    }
 }

@@ -21,9 +21,11 @@ package org.smartfrog.services.cloudfarmer.client.components;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -55,6 +57,8 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     private List<String> expectedHostnames;
     private CustomerThread worker;
     private static final int SHUTDOWN_TIMEOUT = 2000;
+    private ComponentDescription toDeploy;
+    private String toDeployName;
 
     public FarmCustomerImpl() throws RemoteException {
     }
@@ -75,6 +79,8 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         deleteOnTerminate = sfResolve(ATTR_DELETE_ON_TERMINATE, true, true);
         farmer = (ClusterFarmer) sfResolve(ATTR_FARMER, (Prim) null, true);
         expectedHostnames = ListUtils.resolveStringList(this, new Reference(ATTR_EXPECTED_HOSTNAMES), true);
+        toDeploy = sfResolve(ATTR_TO_DEPLOY, toDeploy, false);
+        toDeployName = sfResolve(ATTR_TO_DEPLOY_NAME, toDeployName, true);
         if (max > 0) {
             worker = new CustomerThread();
             worker.start();
@@ -148,6 +154,8 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
          *
          * @throws Throwable if anything went wrong
          */
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
+        @Override
         public void execute() throws Throwable {
             ClusterNode[] clusterNodes;
             clusterNodes = farmer.create(role, min, max);
@@ -168,7 +176,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
             Vector<ClusterNode> clusterNodeList = new Vector<ClusterNode>(created);
             StringBuilder hostnames = new StringBuilder();
             HashMap<String, ClusterNode> nodeMap = new HashMap<String, ClusterNode>(created);
-            
+
             for (ClusterNode node : clusterNodes) {
                 String hostname = node.getHostname();
                 hosts.add(hostname);
@@ -179,7 +187,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
             //publish the attributes
             sfReplaceAttribute(ATTR_CLUSTERNODES, clusterNodeList);
             sfReplaceAttribute(ATTR_HOSTNAMES, hosts);
-            
+
             //now validate the expected hostname list
             for (String hostname : expectedHostnames) {
                 if (nodeMap.get(hostname) == null) {
@@ -187,6 +195,15 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                             + hostname
                             + " in the list of allocated hosts: "
                             + hostnames);
+                }
+            }
+
+            //now, if the toDeploy field is not empty, push something out to all of them
+            if (toDeploy != null) {
+                for (ClusterNode node : clusterNodes) {
+                    NodeDeploymentService service = farmer.createNodeDeploymentService(node);
+                    sfLog().info("Deploying application " + toDeployName + " to " + node.getHostname());
+                    service.deployApplication(toDeployName, toDeploy);
                 }
             }
 

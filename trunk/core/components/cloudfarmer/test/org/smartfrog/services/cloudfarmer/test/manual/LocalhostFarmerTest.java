@@ -1,4 +1,4 @@
-/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.cloudfarmer.test.manual;
+
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * Anything common to all the farmer implementations goes here
+ * Created 30-Nov-2007 16:46:45
  */
- 
-#include "/org/smartfrog/services/cloudfarmer/server/common/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/deployment/components.sf"
+
+public class LocalhostFarmerTest extends DeployingTestBase {
+    public static final String FILES = "/org/smartfrog/services/cloudfarmer/test/manual/";
+
+    public LocalhostFarmerTest(String name) {
+        super(name);
+    }
+
+    public void testLocalhostDeployCompound() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testLocalhostDeployCompound");
+    }
+
+}

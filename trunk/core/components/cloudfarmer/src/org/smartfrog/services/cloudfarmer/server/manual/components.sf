@@ -69,5 +69,12 @@ ManualClusterFarmer extends AbstractClusterFarmer {
   hosts extends Compound {
 
   }
+  
+  /**
+   * Assume direct SF deployment
+   */
+  deploymentFactory extends NodeDeploymentOverRMIFactory {
+  
+  }
 
 }

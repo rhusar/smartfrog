@@ -74,6 +74,11 @@ FarmCustomer extends AbstractFarmerClient {
   
   //after allocation, the hostnames attribute is set to the list of hosts
   //hostnames
+  
+  //name of an application to deploy
+  toDeployName "application"; 
+  //this is a CD that can be set to whatever needs to be deployed. 
+  //toDeploy ;
 }
 
 WorkflowFarmCustomer extends FarmCustomer {

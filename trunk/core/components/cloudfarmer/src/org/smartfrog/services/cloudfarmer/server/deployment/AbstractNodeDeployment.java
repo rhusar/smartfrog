@@ -17,10 +17,33 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.cloudfarmer.server.deployment;
+
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+
+import java.io.IOException;
 
 /**
- * Anything common to all the farmer implementations goes here
+ * Created 12-Nov-2009 16:08:51
  */
- 
-#include "/org/smartfrog/services/cloudfarmer/server/common/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/deployment/components.sf"
+
+public abstract class AbstractNodeDeployment implements NodeDeploymentService {
+
+    protected ClusterNode clusterNode;
+
+    protected AbstractNodeDeployment(ClusterNode clusterNode) {
+        this.clusterNode = clusterNode;
+    }
+
+    /**
+     * Get the cluster node information
+     *
+     * @return the cluster node this deployment is bonded to
+     * @throws IOException for trouble
+     */
+    @Override
+    public ClusterNode getClusterNode() throws IOException {
+        return clusterNode;
+    }
+}

@@ -52,4 +52,12 @@ public interface FarmCustomer extends Remote {
      * {@value}
      */
     String ATTR_CLUSTERNODES = "clusterNodes";
+    /**
+     * {@value}
+     */
+    String ATTR_TO_DEPLOY_NAME = "toDeployName";
+    /**
+     * {@value}
+     */
+    String ATTR_TO_DEPLOY = "toDeploy";
 }
