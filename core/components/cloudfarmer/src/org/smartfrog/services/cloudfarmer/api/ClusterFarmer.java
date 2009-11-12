@@ -42,6 +42,11 @@ public interface ClusterFarmer extends Remote {
     String ATTR_CLUSTER_LIMIT = "clusterLimit";
 
     /**
+     * {@value}
+     */
+    String ATTR_DEPLOYMENT_FACTORY = "deploymentFactory";
+    
+    /**
      * Create a number of instances. The operation will return when the instance is created, but it may not be live.
      *
      * @param role instance role
@@ -213,4 +218,13 @@ public interface ClusterFarmer extends Remote {
      * @throws SmartFrogException something different went wrong
      */
     public void stopCluster() throws IOException, SmartFrogException;
+
+    /**
+     * Create a node deployment service for the specific node
+     * @param node node to deploy to
+     * @return a deployment service
+     * @throws IOException IO problems
+     * @throws SmartFrogException Other problems
+     */
+    public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException; 
 }

@@ -3,6 +3,7 @@ package org.smartfrog.services.cloudfarmer.server.deployment;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.ssh.AbstractSSHComponent;
@@ -11,8 +12,9 @@ import org.smartfrog.services.ssh.ScpTo;
 import org.smartfrog.services.ssh.SshCommand;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.logging.OutputStreamLog;
 import org.smartfrog.sfcore.logging.LogLevel;
+import org.smartfrog.sfcore.logging.OutputStreamLog;
+import org.smartfrog.sfcore.utils.SFExpandFully;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +30,11 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     private String destDir;
     protected JSch jschInstance;
     public static final String ATTR_DEST_DIR = "destDir";
-    protected int outputLogLevel;
     public static final String ATTR_LOG_LEVEL = "logLevel";
+    public static final String ATTR_TEMP_FILE_PREFIX = "tempfilePrefix";
+    protected int outputLogLevel;
+    protected int counter = 0;
+    protected String tempfilePrefix;
 
     public NodeDeploymentOverSSHFactory() throws RemoteException {
     }
@@ -38,7 +43,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      * At startup, the jsch instance is created
      *
      * @throws SmartFrogException problems -can include a nested JSchException
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
@@ -47,7 +52,8 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         if (!destDir.endsWith("/")) {
             destDir += "/";
         }
-        outputLogLevel = sfResolve(ATTR_LOG_LEVEL,LogLevel.LOG_LEVEL_INFO, true);
+        tempfilePrefix = sfResolve(ATTR_TEMP_FILE_PREFIX, "", true);
+        outputLogLevel = sfResolve(ATTR_LOG_LEVEL, LogLevel.LOG_LEVEL_INFO, true);
         try {
             jschInstance = createJschInstance();
         } catch (JSchException e) {
@@ -60,8 +66,8 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      * {@inheritDoc}
      */
     @Override
-    public NodeDeploymentService createInstance(String hostname) throws IOException, SmartFrogException {
-        return new NodeDeploymentOverSSH(hostname);
+    public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
+        return new NodeDeploymentOverSSH(node);
     }
 
     /**
@@ -77,77 +83,60 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
 
 
     /**
-     * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login
-     * <p/>
-     * This is an inner class and it uses the parent to do the work
+     * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login <p/> This is an inner
+     * class and it uses the parent to do the work
      */
-    public class NodeDeploymentOverSSH implements NodeDeploymentService {
+    public class NodeDeploymentOverSSH extends AbstractNodeDeployment implements NodeDeploymentService {
 
         private String hostname;
-        private String appDir;
-        private ArrayList<File> sourceFiles = new ArrayList<File>();
-        private ArrayList<String> destFiles = new ArrayList<String>();
+        private static final String SF_SUFFIX = ".sf";
 
-
-        /**
-         * Create an instance
-         *
-         * @param hostname target host
-         */
-        public NodeDeploymentOverSSH(String hostname) {
-            this.hostname = hostname;
-        }
-
-        private void bindAppDir(String app) {
-            appDir = destDir + app;
-            if (!appDir.endsWith("/")) {
-                appDir += "/";
-            }
-        }
-
-        /**
-         * Add a source file
-         *
-         * @param localFilePath local filename
-         * @param destFilename the destination filename
-         */
-        private synchronized void addSourceFile(File localFilePath, String destFilename) {
-            sourceFiles.add(localFilePath);
-            String destPath = appDir + destFilename;
-            destFiles.add(destPath);
+        public NodeDeploymentOverSSH(ClusterNode node) {
+            super(node);
+            hostname = node.getHostname();
         }
 
         @Override
         public synchronized void deployApplication(String name, ComponentDescription cd)
                 throws IOException, SmartFrogException {
-            bindAppDir(name);
-            doDeploy();
-        }
 
-        private void doDeploy() throws IOException, SmartFrogException {
-            if(appDir==null || appDir.isEmpty()) {
-                throw new IllegalArgumentException("appDir is not bound correctly");
-            }
+            File localtempfile = File.createTempFile(tempfilePrefix, SF_SUFFIX);
+            String desttempfile = destDir + tempfilePrefix + incCounter() + SF_SUFFIX;
+            SFExpandFully.saveCDtoFile(cd, localtempfile);
+            ArrayList<File> sourceFiles = new ArrayList<File>();
+            ArrayList<String> destFiles = new ArrayList<String>();
+            sourceFiles.add(localtempfile);
+            destFiles.add(desttempfile);
             Session session = null;
             try {
                 session = demandCreateSession(host);
-                SshCommand command = new SshCommand(sfLog(), null);
-                
-                OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
-                ArrayList<String> commandsList = new ArrayList<String>(1);
-                String mkdir = "mkdir -p -m 700 " + appDir;
-                commandsList.add(mkdir);
-                int exitCode = command.execute(getSession(), commandsList, outputStream, timeout);
-                if (exitCode!=0) {
-                    throw new SmartFrogException("Error response on command "+ mkdir);
-                }
+                sshExec("mkdir -p " + destDir, false);
                 ScpTo scp = new ScpTo(sfLog());
+                //copy up the temp files
                 scp.doCopy(session, destFiles, sourceFiles);
+                sshExec("sfStart " + "localhost" + " " + name + " " + desttempfile, false);
+                localtempfile.delete();
             } catch (JSchException e) {
                 log.error("Failed to upload to " + host + ": " + e, e);
                 throw forward(e);
             } finally {
                 endSession(session);
+            }
+        }
+
+        private synchronized int incCounter() {
+            return counter++;
+        }
+
+        private void sshExec(String commandString, boolean checkResponse)
+                throws JSchException, IOException, SmartFrogException {
+            SshCommand command = new SshCommand(sfLog(), null);
+            OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
+            ArrayList<String> commandsList = new ArrayList<String>(1);
+            commandsList.add(commandString);
+            int exitCode = command.execute(getSession(), commandsList, outputStream, timeout);
+            if (exitCode != 0) {
+                throw new SmartFrogException("Error response on command " + commandString);
             }
         }
 

@@ -13,11 +13,11 @@ public interface NodeDeploymentServiceFactory extends Remote {
 
     /**
      * Create a service that can deploy to this node
-     * @param hostname the hostname to work with
+     * @param node the node to work with
      * @return a service interface
      * @throws IOException Network and other IO problems
      * @throws SmartFrogException SmartFrog problems
      */
-    public NodeDeploymentService createInstance(String hostname) throws IOException, SmartFrogException;
+    public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException;
 
 }

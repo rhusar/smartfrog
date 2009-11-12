@@ -1,5 +1,6 @@
 package org.smartfrog.services.cloudfarmer.server.deployment;
 
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -21,7 +22,7 @@ import java.rmi.RemoteException;
  * This is not an SF component; it is something that can be created by such components and passed back to callers; you
  * can also have a wrapper component that creates an instance
  */
-public class NodeDeploymentOverRMI implements NodeDeploymentService {
+public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements NodeDeploymentService {
 
     private final Log log = LogFactory.getLog(NodeDeploymentOverRMI.class);
 
@@ -33,15 +34,21 @@ public class NodeDeploymentOverRMI implements NodeDeploymentService {
     public static final String DEFAULT_HOST = "localhost";
     public static final String ATTR_DESCRIPTION = "description";
 
+    public NodeDeploymentOverRMI(ClusterNode clusterNode, String hostname, int port) {
+        super(clusterNode);
+        this.hostname = hostname;
+        this.port = port;
+    }
 
     /**
      * Bind to a host and port
      *
-     * @param hostname host
+     * @param node node
      * @param port port value
      */
-    public NodeDeploymentOverRMI(String hostname, int port) {
-        this.hostname = hostname;
+    public NodeDeploymentOverRMI(ClusterNode node, int port) {
+        super(node);
+        hostname = node.getHostname();
         this.port = port;
     }
 
@@ -52,6 +59,7 @@ public class NodeDeploymentOverRMI implements NodeDeploymentService {
      * @throws MalformedURLException if this does not parse
      */
     public NodeDeploymentOverRMI(String baseURL) throws MalformedURLException {
+        super(null);
         URL url = new URL(baseURL);
         hostname = url.getHost();
         if (url.getPort() != -1) {
@@ -75,7 +83,7 @@ public class NodeDeploymentOverRMI implements NodeDeploymentService {
      *
      * @return the process compound
      * @throws SmartFrogException problems binding
-     * @throws IOException network/RMI trouble
+     * @throws IOException        network/RMI trouble
      */
     public synchronized ProcessCompound bind() throws SmartFrogException, IOException {
         InetAddress addr = InetAddress.getByName(hostname);
@@ -102,6 +110,7 @@ public class NodeDeploymentOverRMI implements NodeDeploymentService {
     private synchronized void unbind() {
         boundProcess = null;
     }
+
     /**
      * Implement on-demand binding
      *
@@ -137,10 +146,10 @@ public class NodeDeploymentOverRMI implements NodeDeploymentService {
     /**
      * retrieve a workflow by name. This is a remote operation.
      *
-     * @param name string to look up
+     * @param name      string to look up
      * @param mandatory true iff the name is required
      * @return a resolved prim or null if there was none and mandatory==false
-     * @throws IOException for network problems
+     * @throws IOException        for network problems
      * @throws SmartFrogException any resolution problems
      */
     public Prim lookupPrim(String name, boolean mandatory) throws IOException, SmartFrogException {
@@ -167,7 +176,7 @@ public class NodeDeploymentOverRMI implements NodeDeploymentService {
      */
     @Override
     public void deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
-        log.info("Deploying the application " + name + " at "+toString());
+        log.info("Deploying the application " + name + " at " + toString());
         ProcessCompound root = getBoundProcess();
         Prim app = root.sfCreateNewApp(name, cd, null);
     }

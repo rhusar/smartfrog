@@ -18,11 +18,12 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/components.sf"
 #include "/org/smartfrog/services/ssh/scp.sf"
 #include "/org/smartfrog/sfcore/logging/loglevels.sf"
-//the deploy directory component here
-#include "/org/smartfrog/services/deploydir/components.sf"
+
+/**
+ * This defines the various factories for node deployment
+ */
 
 /**
  * This component offers deployment over SmartFrog -LAN only; requires mutual trust
@@ -30,7 +31,8 @@ For more information: www.smartfrog.org
  
 NodeDeploymentOverRMIFactory extends Prim {
   sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory";
-  }
+  description "NodeDeploymentOverRMIFactory";
+}
 
 
 /**
@@ -41,9 +43,31 @@ NodeDeploymentOverRMIFactory extends Prim {
 NodeDeploymentOverSSHFactory extends SSHComponent {
   sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverSSHFactory";
   sfShouldTerminate false;
+  description "NodeDeploymentOverSSHFactory";
   //destination directory in the path format of scp
-  destDir TBD;
+  //this directory is assumed to exist
+  destDir "/tmp";
+  tempfilePrefix "sfoverssh";
   //log level for communications
   logLevel LogLevel:LOG_LEVEL_INFO;
   passwordProvider TBD;
+  user LAZY PROPERTY user.name;
+}
+
+/**
+ * This raises an exception when a node service is requested
+ */
+
+NodeDeploymentUnsupportedFactory extends Prim {
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentUnsupportedFactory";
+  description "NodeDeploymentUnsupportedFactory";
+}
+
+
+/**
+ * This logs every action and pretends that it works
+ */
+MockNodeDeploymentFactory extends Prim {
+  sfClass "org.smartfrog.services.cloudfarmer.server.mock.MockNodeDeploymentFactory";
+  description "MockNodeDeploymentFactory";
 }

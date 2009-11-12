@@ -47,6 +47,7 @@ TestCluster extends ManualClusterFarmer {
   
 }
 
+
 ExpectFarmerDeploy extends ExpectDeploy {
     
   action TestCluster;
@@ -265,4 +266,35 @@ testFarmLacksRole extends ExpectDeployFailure {
       role "server";
      }
    }
+}
+
+
+
+TestLocalhostCluster extends LocalhostCluster {
+}
+
+testLocalhostDeployCompound extends ExpectDeploy {
+    
+  description "create a farm node and then deploy something via SSH";
+  action TestLocalhostCluster;
+
+
+  tests extends Sequence {
+
+    
+    master extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "master";
+      toDeploy extends DATA {
+        sfClass Compound:sfClass;
+        "this is the toplevel application";
+      }
+      min 1;
+      expected 1;
+      deleteOnTerminate false;
+    }
+    
+ }
+}
 }

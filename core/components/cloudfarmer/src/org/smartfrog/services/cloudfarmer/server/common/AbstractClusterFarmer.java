@@ -22,6 +22,9 @@ package org.smartfrog.services.cloudfarmer.server.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -54,10 +57,25 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     protected Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
 
     protected int clusterLimit = 1000;
-
+    
+    private NodeDeploymentServiceFactory deploymentFactory;
+    
+    
     protected AbstractClusterFarmer() throws RemoteException {
+        
     }
 
+    /**
+     * set up the cluster
+     *
+     * @throws RemoteException    network problems
+     * @throws SmartFrogException other problems
+     */
+    @Override
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim)null, true);
+    }
 
     /**
      * check the min and max arguments
@@ -248,5 +266,15 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     @Override
     public void stopCluster() throws IOException, SmartFrogException {
 
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * This is implemented by handing off to any declared deployment factory
+     */
+    @Override
+    public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
+        return deploymentFactory.createInstance(node);
     }
 }

@@ -35,6 +35,10 @@ AbstractClusterFarmer extends Compound {
   
   }
  
+  /**
+   * the node deployment server
+   */
+  deploymentFactory TBD;
     
   /**
    * constant to ignore all cluster limits

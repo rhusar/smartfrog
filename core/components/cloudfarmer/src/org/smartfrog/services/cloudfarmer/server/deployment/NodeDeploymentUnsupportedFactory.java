@@ -10,10 +10,12 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- *
+ * this is used to mark node deployment as unsupported
  */
-public class NodeDeploymentOverRMIFactory extends PrimImpl implements NodeDeploymentServiceFactory {
-    public NodeDeploymentOverRMIFactory() throws RemoteException {
+public class NodeDeploymentUnsupportedFactory extends PrimImpl implements NodeDeploymentServiceFactory {
+    public static final String ERROR_UNSUPPORTED = "Unsupported Operation";
+
+    public NodeDeploymentUnsupportedFactory() throws RemoteException {
     }
 
     /**
@@ -21,6 +23,6 @@ public class NodeDeploymentOverRMIFactory extends PrimImpl implements NodeDeploy
      */
     @Override
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
-        return new NodeDeploymentOverRMI(node, NodeDeploymentOverRMI.DEFAULT_PORT);
+        throw new SmartFrogException(ERROR_UNSUPPORTED);
     }
 }

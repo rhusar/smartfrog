@@ -28,7 +28,8 @@ LocalhostHost extends ManualHost {
 }
 
 /**
- * this serves up localhost only
+ * this serves up localhost only, and assumes that 
+ * we can SSH in to ourselves, if need be
  */
 
 LocalhostCluster extends ManualClusterFarmer {
@@ -38,6 +39,17 @@ LocalhostCluster extends ManualClusterFarmer {
   hosts extends Compound {
     localhost extends LocalhostHost;
   }
+  
+  passwordProvider extends FilePassword {
+    user LAZY PROPERTY user.name;
+    passwordFile ((LAZY PROPERTY user.name) + ".ssh/id_dsa");
+  }
+  
+  deploymentFactory extends NodeDeploymentOverSSHFactory {
+    passwordProvider LAZY PARENT:passwordProvider
+    authentication authenticate_key;
+  }
+  
 }
 
 sfConfig extends LocalhostCluster;
