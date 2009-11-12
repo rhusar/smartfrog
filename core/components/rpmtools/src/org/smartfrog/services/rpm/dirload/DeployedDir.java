@@ -31,7 +31,7 @@ import java.net.URI;
  * Created 08-Dec-2008 16:49:38
  */
 
-public class DeployedDir implements Comparable {
+public class DeployedDir implements Comparable<DeployedDir> {
 
     private File path;
     private File applicationFile;
@@ -113,13 +113,12 @@ public class DeployedDir implements Comparable {
      *
      * the sorting is done using the application name as the comparison
      *
-     * @param o the object to be compared.
+     * @param other the object to be compared.
      * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than
      *         the specified object.
      * @throws ClassCastException if the specified object's type prevents it from being compared to this object.
      */
-    public int compareTo(Object o) {
-        DeployedDir other = (DeployedDir) o;
+    public int compareTo(DeployedDir other) {
         return name.compareTo(other.name);
     }
 

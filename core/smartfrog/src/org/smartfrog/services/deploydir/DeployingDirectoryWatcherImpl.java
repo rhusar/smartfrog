@@ -47,6 +47,7 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
         private ProcessCompound parent;
         private static final String ERROR_BAD_PARENT = "Not a ProcessCompound";
     */
+    /** attribute used to indicate this was deployed from a dir: {@value} */
     public static final String ATTR_DEPLOYED_DIRECTORY_INFO = "sfDeployedDirectoryInfo";
 
     public DeployingDirectoryWatcherImpl() throws RemoteException {

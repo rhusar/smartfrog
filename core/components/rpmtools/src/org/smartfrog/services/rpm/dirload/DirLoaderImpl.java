@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.utils.Executable;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -208,7 +207,7 @@ public class DirLoaderImpl extends FileUsingCompoundImpl implements DirLoader, E
      */
     private List<DeployedDir> scan() {
         File[] files = getFile().listFiles(new ApplicationFilter(pattern, application));
-        List<DeployedDir> targets = new ArrayList(files.length);
+        List<DeployedDir> targets = new ArrayList<DeployedDir>(files.length);
         //look through the list for arrivals and departures; queue arrivals for deployment.
         //alternatively: queue everything for ordered deployment and let the deployer decide.
         for (File file : files) {
@@ -222,7 +221,7 @@ public class DirLoaderImpl extends FileUsingCompoundImpl implements DirLoader, E
     /**
      * Filter that only accepts applications
      */
-    public class ApplicationFilter implements FilenameFilter {
+    public static class ApplicationFilter implements FilenameFilter {
         private Pattern pattern;
         private String application;
 
