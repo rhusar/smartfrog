@@ -58,6 +58,9 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
         fileset = FilesImpl.resolveFileset(this);
         FilesImpl.checkAndUpdateFileCount(this, fileset);
         String remoteDir = sfResolve(ATTR_REMOTE_DIR, "", true);
+        if(!remoteDir.endsWith("/")) {
+            remoteDir = remoteDir + "/";
+        }
         //this is the list of files to work with
         File[] files = fileset.listFiles();
         //now we build the local and remote lists from this
@@ -66,7 +69,7 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
         for (File file : files) {
             if (file.isFile()) {
                 local.add(file);
-                String remoteName = remoteDir + '/' + file.getName();
+                String remoteName = remoteDir + file.getName();
                 remote.add(remoteName);
                 if (log.isDebugEnabled()) {
                     log.debug("Uploading " + file + " to " + remoteName);
