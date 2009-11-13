@@ -132,7 +132,7 @@ testLoginBadUser extends testSshLogin {
   action:username "Not a valid user";
   exitType EXIT_TYPE_ABNORMAL;
   exceptions [
-    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
+//    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
     ["com.jcraft.jsch.JSchException",BAD_LOGIN_FAILURE ]
   ];
 }
@@ -142,7 +142,7 @@ testLoginBadPassword extends testSshLogin {
   action:password "Not a valid password";
   exitType EXIT_TYPE_ABNORMAL;
   exceptions [
-    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
+//    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
     ["com.jcraft.jsch.JSchException",BAD_LOGIN_FAILURE ]
   ];
 }
