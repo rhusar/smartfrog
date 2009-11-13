@@ -41,7 +41,8 @@ SSHComponentSchema extends Schema {
     knownHostsFile extends OptionalFilenameType;
 
     //a reference to a password provider
-    passwordProvider extends Compulsory;
+    //needed if you are working with a password; optional for private key work
+    passwordProvider extends Optional;
 
     //port to connect to
     port extends Integer;
@@ -83,4 +84,11 @@ SshCompound extends Compound {
     port SSHComponent:port;
     timeout SSHComponent:timeout;
     trustAllCertificates SSHComponent:trustAllCertificates;
+}
+
+/**
+ * This is an empty password for when you don't have any passphrase protecting your private key
+ */
+SSHEmptyPassword  extends InlinePassword {
+  password "";
 }

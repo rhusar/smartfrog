@@ -63,6 +63,9 @@ public class SshCommand extends AbstractSshOperation {
                        int timeout)
             throws JSchException, IOException {
         ChannelShell channel = null;
+        if (session == null) {
+            throw new JSchException("No active SSH session");
+        }
         String sessionInfo = getSessionInfo(session);
         try {
             // open ssh session

@@ -67,7 +67,7 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
     /**
      * Constucts an instance.
      *
-     * @param log      log a log of the owner
+     * @param log log a log of the owner
      * @param callback progress callback
      */
     protected AbstractSshOperation(LogSF log, ScpProgressCallback callback) {
@@ -92,9 +92,9 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
     /**
      * Called when a transfer begins
      *
-     * @param localFile  local file name
+     * @param localFile local file name
      * @param remoteFile remote filename
-     * @throws RemoteException    when the network plays up
+     * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
     @Override
@@ -109,9 +109,9 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
     /**
      * Called when a transfer ends
      *
-     * @param localFile  local file name
+     * @param localFile local file name
      * @param remoteFile remote filename
-     * @throws RemoteException    when the network plays up
+     * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
     @Override
@@ -209,7 +209,11 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
      * @return a string to use in messages
      */
     public static String getSessionInfo(Session session) {
-        return "SSH connection to " + session.getHost() + ":" + session.getPort();
+        if (session == null) {
+            return "Not connected to any host";
+        } else {
+            return "SSH connection to " + session.getHost() + ":" + session.getPort();
+        }
     }
 
     /**
