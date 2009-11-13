@@ -36,15 +36,17 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     protected int counter = 0;
     protected String tempfilePrefix;
 
+
     public NodeDeploymentOverSSHFactory() throws RemoteException {
     }
 
+
     /**
-     * At startup, the jsch instance is created
-     *
-     * @throws SmartFrogException problems -can include a nested JSchException
-     * @throws RemoteException    network problems
-     */
+    * At startup, the jsch instance is created
+    *
+    * @throws SmartFrogException problems -can include a nested JSchException
+    * @throws RemoteException    network problems
+    */
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -78,7 +80,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      * @throws JSchException connection problems
      */
     public synchronized Session demandCreateSession(String host) throws JSchException {
-        return createSession(jschInstance, host, port);
+        return createSession(jschInstance, host, getPort());
     }
 
 
@@ -86,14 +88,23 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login <p/> This is an inner
      * class and it uses the parent to do the work
      */
-    public class NodeDeploymentOverSSH extends AbstractNodeDeployment implements NodeDeploymentService {
+    final class NodeDeploymentOverSSH extends AbstractNodeDeployment implements NodeDeploymentService {
 
         private String hostname;
         private static final String SF_SUFFIX = ".sf";
 
-        public NodeDeploymentOverSSH(ClusterNode node) {
+        NodeDeploymentOverSSH(ClusterNode node) {
             super(node);
             hostname = node.getHostname();
+        }
+
+        /**
+         * This is here to stop any code even accidentally asking the superclass for a session
+         * @return nothing
+         * @throws IllegalStateException always
+         */
+        private Session getSession() {
+            throw new IllegalStateException("getSession not supported");
         }
 
         @Override
@@ -107,18 +118,19 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             ArrayList<String> destFiles = new ArrayList<String>();
             sourceFiles.add(localtempfile);
             destFiles.add(desttempfile);
+            String connectionDetails = hostname + ":" + getPort();
             Session session = null;
             try {
-                session = demandCreateSession(host);
-                sshExec("mkdir -p " + destDir, false);
+                session = demandCreateSession(hostname);
+                sshExec(session, "mkdir -p " + destDir, false);
                 ScpTo scp = new ScpTo(sfLog());
                 //copy up the temp files
                 scp.doCopy(session, destFiles, sourceFiles);
-                sshExec("sfStart " + "localhost" + " " + name + " " + desttempfile, false);
+                sshExec(session, "sfStart " + "localhost" + " " + name + " " + desttempfile, false);
                 localtempfile.delete();
             } catch (JSchException e) {
-                log.error("Failed to upload to " + host + ": " + e, e);
-                throw forward(e);
+                log.error("Failed to upload to " + connectionDetails + " : " + e, e);
+                throw forward(e, connectionDetails);
             } finally {
                 endSession(session);
             }
@@ -128,13 +140,13 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             return counter++;
         }
 
-        private void sshExec(String commandString, boolean checkResponse)
+        private void sshExec(Session session, String commandString, boolean checkResponse)
                 throws JSchException, IOException, SmartFrogException {
             SshCommand command = new SshCommand(sfLog(), null);
             OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
             ArrayList<String> commandsList = new ArrayList<String>(1);
             commandsList.add(commandString);
-            int exitCode = command.execute(getSession(), commandsList, outputStream, timeout);
+            int exitCode = command.execute(session, commandsList, outputStream, getTimeout());
             if (exitCode != 0) {
                 throw new SmartFrogException("Error response on command " + commandString);
             }

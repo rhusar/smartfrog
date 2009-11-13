@@ -40,16 +40,31 @@ LocalhostCluster extends ManualClusterFarmer {
     localhost extends LocalhostHost;
   }
   
+  
+}
+
+
+LocalhostClusterRMIDeploy extends LocalhostCluster {
+  description "a localhost cluster with SmartFrog-RMI deployment"
+
+  deploymentFactory extends NodeDeploymentOverRMIFactory;
+
+}
+
+LocalhostClusterSSHDeploy extends LocalhostCluster {
+  description "a localhost cluster with SmartFrog-RMI deployment"
+
   passwordProvider extends FilePassword {
     passwordFile ((LAZY PROPERTY user.home) ++ "/.ssh/id_dsa");
   }
-  
+
+
   deploymentFactory extends NodeDeploymentOverSSHFactory {
     username LAZY PROPERTY user.name;
-    passwordProvider LAZY PARENT:passwordProvider
     authentication authenticate_key;
+    keyFile ((LAZY PROPERTY user.home) ++ "/.ssh/id_dsa");
   }
-  
+
 }
 
 sfConfig extends LocalhostCluster;
