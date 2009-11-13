@@ -117,8 +117,6 @@ SSHSessionPublicKey extends BaseSshSessionAuthPass {
     keyFile TBD;
     authentication SSHComponent:authenticate_key;
     SSHCmdExec:keyFile LAZY PARENT:keyFile;
-    passwordProvider extends InlinePassword {
-        password "";
-    }
+    passwordProvider extends SSHEmptyPassword ;
 
 }

@@ -204,7 +204,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 openSession();
 
                 command = new SshCommand(sfLog(), null);
-                int exitCode = command.execute(getSession(), commandsList, outputStream, timeout);
+                int exitCode = command.execute(getSession(), commandsList, outputStream, getTimeout());
                 
 
                 if (exitCode < exitCodeMin || exitCode > exitCodeMax) {
