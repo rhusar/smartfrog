@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.cloudfarmer.test.manual;
+package org.smartfrog.services.cloudfarmer.test.deployment;
 
 import org.smartfrog.test.DeployingTestBase;
 
@@ -26,14 +26,18 @@ import org.smartfrog.test.DeployingTestBase;
  */
 
 public class LocalhostFarmerTest extends DeployingTestBase {
-    public static final String FILES = "/org/smartfrog/services/cloudfarmer/test/manual/";
+    public static final String FILES = "/org/smartfrog/services/cloudfarmer/test/deployment/";
 
     public LocalhostFarmerTest(String name) {
         super(name);
     }
 
-    public void testLocalhostDeployCompound() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testLocalhostDeployCompound");
+    public void testLocalhostDeployCompoundOverRMI() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testLocalhostDeployCompoundOverRMI");
+    }
+
+    public void testLocalhostDeployCompoundOverSSH() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testLocalhostDeployCompoundOverSSH");
     }
 
 }

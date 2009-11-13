@@ -34,21 +34,18 @@ public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements Nod
     public static final String DEFAULT_HOST = "localhost";
     public static final String ATTR_DESCRIPTION = "description";
 
-    public NodeDeploymentOverRMI(ClusterNode clusterNode, String hostname, int port) {
-        super(clusterNode);
-        this.hostname = hostname;
-        this.port = port;
-    }
 
     /**
      * Bind to a host and port
      *
      * @param node node
      * @param port port value
+     * @throws SmartFrogException problems binding
+     * @throws IOException        network/RMI trouble
      */
-    public NodeDeploymentOverRMI(ClusterNode node, int port) {
+    public NodeDeploymentOverRMI(ClusterNode node, int port) throws SmartFrogException, IOException {
         super(node);
-        hostname = node.getHostname();
+        bindOnDemand();
         this.port = port;
     }
 
@@ -178,6 +175,9 @@ public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements Nod
     public void deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
         log.info("Deploying the application " + name + " at " + toString());
         ProcessCompound root = getBoundProcess();
+        if(root==null) {
+            throw new SmartFrogException("Not bound to SmartFrog daemon at "+getHostname());
+        }
         Prim app = root.sfCreateNewApp(name, cd, null);
     }
 

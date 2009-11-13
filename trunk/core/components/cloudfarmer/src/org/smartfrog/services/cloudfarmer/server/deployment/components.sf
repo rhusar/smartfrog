@@ -52,8 +52,9 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   tempfilePrefix "sfoverssh";
   //log level for communications
   logLevel LogLevel:LOG_LEVEL_INFO;
-  passwordProvider TBD;
+  //passwordProvider TBD;
   user LAZY PROPERTY user.name;
+
 }
 
 /**
