@@ -58,7 +58,8 @@
   <condition property="test.ssh.pass" value="">
     <os family="unix"/>
   </condition>
-  <property name="test.remote.dir" value="${java.io.tmpdir}"/>
+  <property name="test.remote.dir" location="${java.io.tmpdir}/remote"/>
+  <mkdir dir="${test.remote.dir}" />
 
 
 </project>
