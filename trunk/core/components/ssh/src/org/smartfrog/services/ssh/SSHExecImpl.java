@@ -103,6 +103,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * {@inheritDoc}
      *
      * @param source source of call
+     *
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
@@ -125,10 +126,10 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
 
     private void shutdownExecutor() {
         SSHExecImpl.CommandExecutor worker = executorThread;
-        if(worker != null) {
+        if (worker != null) {
             worker.haltCommand();
             SmartFrogThread.requestAndWaitForThreadTermination(worker,
-                THREAD_SHUTDOWN_TIME);
+                                                               THREAD_SHUTDOWN_TIME);
         }
     }
 
@@ -142,25 +143,23 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             throws SmartFrogException, RemoteException {
         // Mandatory attributes
         commandsList = ListUtils.resolveStringList(this,
-                new Reference(ATTR_COMMANDS),
-                true);
+                                                   new Reference(ATTR_COMMANDS),
+                                                   true);
 
         //optional attributes
         logFile = FileSystem.lookupAbsoluteFile(this,
-                ATTR_LOG_FILE,
-                logFile,
-                null,
-                false,
-                null);
+                                                ATTR_LOG_FILE,
+                                                logFile,
+                                                null,
+                                                false,
+                                                null);
 
         exitCodeMax = sfResolve(ATTR_EXIT_CODE_MAX, exitCodeMax, true);
         exitCodeMin = sfResolve(ATTR_EXIT_CODE_MIN, exitCodeMin, true);
     }
 
 
-    /**
-     * This thread executes commands down an SSH channel
-     */
+    /** This thread executes commands down an SSH channel */
     private class CommandExecutor extends WorkflowThread {
 
         private volatile SshCommand command;
@@ -169,12 +168,10 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             super(SSHExecImpl.this, true);
         }
 
-        /**
-         * Halt the command if non null
-         */
+        /** Halt the command if non null */
         void haltCommand() {
             SshCommand cmd = command;
-            if(cmd != null) {
+            if (cmd != null) {
                 cmd.haltOperation();
             }
         }
@@ -182,7 +179,6 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
         @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
-            ChannelShell channel = null;
             OutputStream outputStream;
             String sessionInfo = "SSH Session to " + getConnectionDetails();
             if (logFile != null) {
@@ -191,7 +187,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 } catch (FileNotFoundException e) {
                     throw new SmartFrogException(
                             sessionInfo + " failed to create log file "
-                                    + logFile,
+                            + logFile,
                             e);
                 }
             } else {
@@ -205,27 +201,20 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
 
                 command = new SshCommand(sfLog(), null);
                 int exitCode = command.execute(getSession(), commandsList, outputStream, getTimeout());
-                
+
 
                 if (exitCode < exitCodeMin || exitCode > exitCodeMax) {
                     String msg = sessionInfo
-                            + " failed with exit status " + exitCode
-                            + " out of the range ["
-                            + exitCodeMin
-                            + ','
-                            + exitCodeMax + ']';
+                                 + " failed with exit status " + exitCode
+                                 + " out of the range ["
+                                 + exitCodeMin
+                                 + ','
+                                 + exitCodeMax + ']';
                     throw new SmartFrogException(msg);
                 }
 
             } finally {
                 command = null;
-                //clean up time
-                if (channel != null) {
-                    channel.disconnect();
-                } else {
-                    //if there's no channel, we may not have closed the output stream
-                    FileSystem.close(outputStream);
-                }
             }
         }
     }
