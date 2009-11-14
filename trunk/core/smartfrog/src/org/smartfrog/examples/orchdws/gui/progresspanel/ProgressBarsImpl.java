@@ -70,9 +70,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @exception RemoteException In case of network/rmi error
      */
-    public ProgressBarsImpl() throws RemoteException {
-        super();
-    }
+    public ProgressBarsImpl() throws RemoteException {}
 
     /**
      * Print the receipt of any event for debugging

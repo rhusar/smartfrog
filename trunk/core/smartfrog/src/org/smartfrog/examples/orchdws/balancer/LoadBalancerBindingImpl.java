@@ -34,7 +34,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 
 public class LoadBalancerBindingImpl extends StateComponent implements Prim, LoadBalancerBinding {
 	
-	public LoadBalancerBindingImpl() throws RemoteException {super();}  
+	public LoadBalancerBindingImpl() throws RemoteException {}  
 	
 	private Balancer lb = null;
 	private Integer sfIndex;
