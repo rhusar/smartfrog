@@ -110,6 +110,10 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
         return timeout;
     }
 
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
     public String getHost() {
         return host;
     }
