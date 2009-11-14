@@ -295,7 +295,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     }
     
     public interface DeployingAgent extends Remote {
-    	public void addToDeploy(String name, ComponentDescription cd) throws Exception;
+    	public void addToDeploy(String name, ComponentDescription cd) throws SmartFrogException, RemoteException;
     	public void addToTerminate(String name) throws RemoteException;
     	public void waitOnQueuesCleared() throws RemoteException;
     }

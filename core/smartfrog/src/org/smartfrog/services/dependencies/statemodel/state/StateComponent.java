@@ -73,17 +73,17 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    public StateComponent() throws RemoteException {}
 
    public synchronized void sfTerminateWith(TerminationRecord t) {
-		if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: (IN) sfTerminateWith(t)");
+		sfLog().debug ("StateComponent: (IN) sfTerminateWith(t)");
 		
 		ComponentDescription tTermination = transitions.get("tOnTermination");
 		try{
-			if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: Applying termination script");	
+			sfLog().debug ("StateComponent: Applying termination script");	
 			tTermination.sfResolve("doScript");}
 		catch(Exception e){/*Ok for now*/}
 		
 		super.sfTerminateWith(t);
-       if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: "+name+" terminated");
-       if (sfLog().isDebugEnabled()) sfLog().debug ("StateComponent: (OUT) sfTerminateWith(t)");
+       sfLog().debug ("StateComponent: "+name+" terminated");
+       sfLog().debug ("StateComponent: (OUT) sfTerminateWith(t)");
    }
    
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
@@ -156,7 +156,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    
    
    private void resetPossibleTransitions() throws StateComponentTransitionException {
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").resetPossibleTransitions()");
+	    sfLog().debug("IN: State("+name+").resetPossibleTransitions()");
 	   
 	   enabled=null;
 	   if (!checkRunning() || !checkIsEnabled()) throw new StateComponentTransitionException(StateComponentTransitionException.g_COMPONENTNOTENABLED);	   
@@ -188,50 +188,50 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 			   throw new StateComponentTransitionException(StateComponentTransitionException.g_DEPENDENCYVALUEUNRESOLVABLE);
 			   
 		   }
-		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Key:"+key+":"+go);
+		    sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Key:"+key+":"+go);
 		   
 		   if (go) {
-			   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency enabled.");
+			    sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency enabled.");
 		   } else {
-			   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency not enabled."); 
+			    sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Dependency not enabled."); 
 		      enabled.remove(key);
 		   }
 	   }
 	   
 	   if (enabled.isEmpty()) enabled=null;
 
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").resetPossibleTransitions()");
+	    sfLog().debug("OUT: State("+name+").resetPossibleTransitions()");
    }
    
    protected boolean acquireLock(){
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").acquireLock(...)");
-	   if (sfLog().isDebugEnabled())  sfLog().debug("is locked?"+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
+	    sfLog().debug("IN: State("+name+").acquireLock(...)");
+	    sfLog().debug("is locked?"+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
 	   if ((currentAction!=null && currentAction!=Thread.currentThread()) || //Allow locking only by scheduled action...
 			   (currentAction==null && transitionLock.isLocked() && !transitionLock.isHeldByCurrentThread())) return false;  //or by current owner thread
 	   transitionLock.lock();
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").acquireLock(...)");
+	    sfLog().debug("OUT: State("+name+").acquireLock(...)");
 	   return true;
    }
    
    protected void cleanLock(){
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").cleanLock(...)");
+	    sfLog().debug("IN: State("+name+").cleanLock(...)");
 	   while (transitionLock.isHeldByCurrentThread()) {  //CHECK!
 		   transitionLock.unlock();
 	   }
-	   if (sfLog().isDebugEnabled())  sfLog().debug("is locked?"+transitionLock.isHeldByCurrentThread()+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").cleanLock(...)");
+	    sfLog().debug("is locked?"+transitionLock.isHeldByCurrentThread()+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
+	    sfLog().debug("OUT: State("+name+").cleanLock(...)");
    }
        
    public boolean selectSingleAndGo(){	   
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").selectSingleAndGo(...)");
+	    sfLog().debug("IN: State("+name+").selectSingleAndGo(...)");
 
 	   boolean result=true;
 	   try {
 		 
 		   resetPossibleTransitions(); 		
-		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Number transitions..."+enabled.size());
+		    sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Number transitions..."+enabled.size());
 		   if (enabled.size()==0 || enabled.size()>1) return false;		   
-		   if (sfLog().isDebugEnabled())  sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Single transition...");
+		    sfLog().debug("WITHIN: State("+name+").selectSingleAndGo(...). Single transition...");
 		   
 		   Iterator keys = enabled.keySet().iterator(); 
 		   if (keys.hasNext()){
@@ -239,7 +239,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 				go(key);
 		   }
 	   } catch (StateComponentTransitionException e) {result=false;}
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").selectSingleAndGo(...)");
+	    sfLog().debug("OUT: State("+name+").selectSingleAndGo(...)");
 	   
 	   return result;
    }
@@ -247,52 +247,52 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    public void preparefinalize(boolean prepare, String transition) throws StateComponentTransitionException {
 		 //Is there a prepare/finalizetransition script?
 	      String actualName = (prepare?"tPrepare"+transition.substring(1):"tFinalize"+transition.substring(1));
-	      if (sfLog().isDebugEnabled())  sfLog().debug("Prepare transition..."+actualName);
+	       sfLog().debug("Prepare transition..."+actualName);
 	      ComponentDescription action = (ComponentDescription) sfContext().get(actualName);
 		  if (action!=null) {
-			  if (sfLog().isDebugEnabled())  sfLog().debug("Prepare/Finalize transition...");
+			   sfLog().debug("Prepare/Finalize transition...");
               			  
 			  Object qual = action.sfContext().get("sfIsStateComponentTransition");
-			  if (sfLog().isDebugEnabled())  sfLog().debug("Prepare/Finalize transition..."+qual.toString());
+			   sfLog().debug("Prepare/Finalize transition..."+qual.toString());
 			  
 			  try{if (qual!=null && qual.toString().equals((prepare?"prepare":"finalize"))) action.sfResolve("doScript");}
-			  catch(Exception e){/*Ok for now*/if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: Prepare/Finalize transition..."+e.getMessage());
+			  catch(Exception e){/*Ok for now*/ sfLog().debug("EXCEPTION: Prepare/Finalize transition..."+e.getMessage());
 			  }
 		  }
    }
    
    public void doPrepare(String transition) throws StateComponentTransitionException {
-	   if (sfLog().isDebugEnabled())  sfLog().debug("Prepare transition...");
+	    sfLog().debug("Prepare transition...");
 	   preparefinalize(true, transition);
    }
    
    public void doFinalize(String transition) throws StateComponentTransitionException {
-	   if (sfLog().isDebugEnabled())  sfLog().debug("Finalize transition...");
+	    sfLog().debug("Finalize transition...");
 	   preparefinalize(false, transition);
    }
    
    public void go(String transition) throws StateComponentTransitionException {
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").go()");
+	    sfLog().debug("IN: State("+name+").go()");
 	   
 	   try {
-		   if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition"+transition);
+		    sfLog().debug("Key in simple transition"+transition);
 		   ComponentDescription trans = null;
 		   try{trans = (ComponentDescription) enabled.get(transition);} catch (Throwable e){sfLog().debug("WHAT? "+e.getMessage());}
 		   trans.sfResolve(new Reference(ReferencePart.here(ConstraintConstants.EFFECTS)));
 	   } catch (Exception e){throw new StateComponentTransitionException("Unable to apply effects in transition: "+transition, StateComponentTransitionException.g_UNABLETOAPPLYEFFECTS);}
 	   
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").go()");
+	    sfLog().debug("OUT: State("+name+").go()");
    }
    
    
      
    public void clean(){
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").clean(...)");
+	    sfLog().debug("IN: State("+name+").clean(...)");
 	   currentAction=null;
 	   cleanLock();
 	   asyncResponse=false;
 	   scriptTimer=null;
-	   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").clean(...)");
+	    sfLog().debug("OUT: State("+name+").clean(...)");
    }
    
    boolean runDPEs(){
@@ -308,7 +308,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }
    
    public boolean handleDPEs(){
-	   if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleDPEs()");
+	    sfLog().debug("IN: State("+name+").handleDPEs()");
 	   boolean progress=false;
 		  
 		  //synchronized(CoreSolver.getInstance()){
@@ -317,7 +317,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 			  Constraint.applyUpdateContext();
 		  //}
 		  
-		  if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleDPEs() Progress"+progress);
+		   sfLog().debug("IN: State("+name+").handleDPEs() Progress"+progress);
 		  
 		  return progress;
    }
@@ -327,17 +327,16 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    Timer scriptTimer;
    public void handleStateChange() throws RemoteException { 
 	   
-	  
-	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: State("+name+").handleStateChange()");
+	   sfLog().debug("IN: State("+name+").handleStateChange()");
 	  	   
-	  if (sfLog().isDebugEnabled())  sfLog().debug("To run DPEs..."+dpes.size()+": currentAction: "+currentAction);
+	   sfLog().debug("To run DPEs..."+dpes.size()+": currentAction: "+currentAction);
 	
 	  if (currentAction!=null || scriptTimer!=null) return;  //temporary
 	  
 	  if (!acquireLock()) return; //need to except...
 	  
 	  if (handleDPEs()){
-		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange()");
+		   sfLog().debug("OUT: State("+name+").handleStateChange()");
 		  clean();
 		  return;
 	  }
@@ -349,9 +348,9 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  }
 	  
 	  if (enabled==null) {
-		  if (sfLog().isDebugEnabled())  sfLog().debug("no enabled transitions...");
+		   sfLog().debug("no enabled transitions...");
 		  
-		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Nothing to do...");
+		   sfLog().debug("OUT: State("+name+").handleStateChange() -- Nothing to do...");
 		  clean();
 		  return;  //nothing to do...
 	  }
@@ -361,11 +360,11 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  if (enabled.size()==1){
 		  final String key = enabled.keySet().iterator().next();
 		  final ComponentDescription transition = (ComponentDescription) enabled.get(key);
-		  if (sfLog().isDebugEnabled())  sfLog().debug("Key in simple transition: "+key);
+		   sfLog().debug("Key in simple transition: "+key);
 		  
 		  if (!transition.sfResolve("requiresThread", false, true)){
 			
-			  if (sfLog().isDebugEnabled())  sfLog().debug("Does not require thread");
+			   sfLog().debug("Does not require thread");
 			  
 			  //Is there a preparetransition script?
 			  doPrepare(key);
@@ -383,29 +382,29 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 			  return;
 		  }
 	  }
-	  } catch (SmartFrogException e){if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: in applying simple transition"+e.getMessage());}
+	  } catch (SmartFrogException e){ sfLog().debug("EXCEPTION: in applying simple transition"+e.getMessage());}
 	  
 	  
 	  try {
 		  setState();
 	  } catch (StateComponentTransitionException stce) {/*Hardly acceptable handling*/}
       	  
-	  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange()");
+	   sfLog().debug("OUT: State("+name+").handleStateChange()");
    }     
 
    void transitionScript(ComponentDescription transition, String key)  {
 	   //Need to handle properly...
 	   try {
-	   	  if (sfLog().isDebugEnabled())  sfLog().debug("State("+name+").handleStateChange() -- Script call...");
-		  try{transition.sfResolve("doScript");} catch (Exception e){if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: in applying simple script "+e.getMessage());}//Apply script...
+	   	   sfLog().debug("State("+name+").handleStateChange() -- Script call...");
+		  try{transition.sfResolve("doScript");} catch (Exception e){ sfLog().debug("EXCEPTION: in applying simple script "+e.getMessage());}//Apply script...
 		  
 		  //Is there a finalizetransition script?
 		  doFinalize(key);
 		  
 		  go(key);
 		  clean();
-		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
-	   } catch (SmartFrogException e){if (sfLog().isDebugEnabled())  sfLog().debug("EXCEPTION: in applying simple transition"+e.getMessage());}
+		   sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
+	   } catch (SmartFrogException e){ sfLog().debug("EXCEPTION: in applying simple transition"+e.getMessage());}
    }
    
    public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
@@ -452,22 +451,22 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }
    
    public void setState() throws StateComponentTransitionException {
-	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateComponent.setState()");
+	   sfLog().debug("IN: StateComponent.setState()");
       
 	  //handled above: if (clearCurrentAction()!=null) return; //Not appropriate to allow further transition at this time...
 	 
-	  if (sfLog().isDebugEnabled())  sfLog().debug("Adding to queue...");
+	   sfLog().debug("Adding to queue...");
 	 
 	  
       //currentActionFuture= threadpool.addToQueue(new StateUpdateThread());
       
       threadpool.addToQueue((StateUpdateThread)(currentAction=new StateUpdateThread()));
       
-      if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateComponent.setState() Added to Queue");
+       sfLog().debug("IN: StateComponent.setState() Added to Queue");
       
       cleanLock();
      
-      if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateComponent.setState()");
+       sfLog().debug("OUT: StateComponent.setState()");
    }
    
    protected abstract boolean threadBody() throws StateComponentTransitionException;
@@ -479,7 +478,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     */
    public class StateUpdateThread implements Runnable {
       public void run() {
-    	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateUpdateThread.run()");
+    	   sfLog().debug("IN: StateUpdateThread.run()");
     	  try{
     	   String key=null;
     	   if (enabled.size()==1){
@@ -496,7 +495,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         	   StateComponent.this.asyncResponse=true;
            }
     	  }  catch (StateComponentTransitionException stce) {/*Hardly acceptable handling*/}
-          if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateUpdateThread.run()");
+           sfLog().debug("OUT: StateUpdateThread.run()");
       }
    }
 }

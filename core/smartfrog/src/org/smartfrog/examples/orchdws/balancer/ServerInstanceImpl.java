@@ -38,7 +38,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 
 public class ServerInstanceImpl extends StateComponent implements Prim, ServerInstance {
 	
-	public ServerInstanceImpl() throws RemoteException {super();}  
+	public ServerInstanceImpl() throws RemoteException {}  
 	
 	private Balancer lb = null;
 	private ComponentDescription template = null;
