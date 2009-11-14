@@ -55,6 +55,10 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   //passwordProvider TBD;
   user LAZY PROPERTY user.name;
 
+  //this is something you can turn on for debugging; it stops the files being deleted
+  //at either end
+  keepFiles false;
+
 }
 
 /**

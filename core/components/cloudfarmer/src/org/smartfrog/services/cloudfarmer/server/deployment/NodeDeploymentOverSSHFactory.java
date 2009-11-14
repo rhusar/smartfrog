@@ -32,9 +32,12 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     public static final String ATTR_DEST_DIR = "destDir";
     public static final String ATTR_LOG_LEVEL = "logLevel";
     public static final String ATTR_TEMP_FILE_PREFIX = "tempfilePrefix";
+    public static final String ATTR_KEEP_FILES = "keepFiles";
     protected int outputLogLevel;
     protected int counter = 0;
     protected String tempfilePrefix;
+
+    protected boolean keepFiles = false;
 
 
     public NodeDeploymentOverSSHFactory() throws RemoteException {
@@ -56,6 +59,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         }
         tempfilePrefix = sfResolve(ATTR_TEMP_FILE_PREFIX, "", true);
         outputLogLevel = sfResolve(ATTR_LOG_LEVEL, LogLevel.LOG_LEVEL_INFO, true);
+        keepFiles = sfResolve(ATTR_KEEP_FILES, keepFiles, true);
         try {
             jschInstance = createJschInstance();
         } catch (JSchException e) {
@@ -80,12 +84,17 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      * @throws JSchException connection problems
      */
     public synchronized Session demandCreateSession(String host) throws JSchException {
-        return createSession(jschInstance, host, getPort());
+        Session newSession = createSession(jschInstance, host, getPort());
+        newSession.setTimeout(getTimeout());
+        newSession.connect(getConnectTimeout());
+        return newSession;
     }
 
 
     /**
-     * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login <p/> This is an inner
+     * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login
+     * <p/>
+     * This is an inner
      * class and it uses the parent to do the work
      */
     final class NodeDeploymentOverSSH extends AbstractNodeDeployment implements NodeDeploymentService {
@@ -121,18 +130,26 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             String connectionDetails = hostname + ":" + getPort();
             Session session = null;
             try {
+                log.info("Deploying application "+ name + " to " + connectionDetails);
                 session = demandCreateSession(hostname);
                 sshExec(session, "mkdir -p " + destDir, false);
                 ScpTo scp = new ScpTo(sfLog());
                 //copy up the temp files
                 scp.doCopy(session, destFiles, sourceFiles);
-                sshExec(session, "sfStart " + "localhost" + " " + name + " " + desttempfile, false);
-                localtempfile.delete();
+                String sshCommand = "sfStart " + "localhost" + " " + name + " " + desttempfile;
+                log.info("executing: " + sshCommand);
+                sshExec(session, sshCommand, true);
+                if(!keepFiles) {
+                    sshExec(session, "rm " + desttempfile, true);
+                }
             } catch (JSchException e) {
                 log.error("Failed to upload to " + connectionDetails + " : " + e, e);
                 throw forward(e, connectionDetails);
             } finally {
                 endSession(session);
+                if(!keepFiles) {
+                    localtempfile.delete();
+                }
             }
         }
 

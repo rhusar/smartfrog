@@ -23,15 +23,15 @@ For more information: www.smartfrog.org
 
 
 DeployMaster extends WorkflowFarmCustomer {
-      role "master";
-      toDeploy extends DATA {
-        sfClass Compound:sfClass;
-        "this is the toplevel application";
-      }
-      min 1;
-      expected 1;
-      deleteOnTerminate false;
-    }
+  role "master";
+  toDeploy extends DATA {
+    sfClass Compound:sfClass;
+    description "this is the toplevel application";
+  }
+  min 1;
+  expected 1;
+  deleteOnTerminate false;
+}
 
 
 

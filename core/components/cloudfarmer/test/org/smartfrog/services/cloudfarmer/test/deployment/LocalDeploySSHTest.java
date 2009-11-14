@@ -25,15 +25,11 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 30-Nov-2007 16:46:45
  */
 
-public class LocalhostFarmerTest extends DeployingTestBase {
+public class LocalDeploySSHTest extends DeployingTestBase {
     public static final String FILES = "/org/smartfrog/services/cloudfarmer/test/deployment/";
 
-    public LocalhostFarmerTest(String name) {
+    public LocalDeploySSHTest(String name) {
         super(name);
-    }
-
-    public void testLocalhostDeployCompoundOverRMI() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testLocalhostDeployCompoundOverRMI");
     }
 
     public void testLocalhostDeployCompoundOverSSH() throws Throwable {
