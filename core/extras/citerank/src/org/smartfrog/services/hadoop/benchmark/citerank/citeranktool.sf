@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
  
 CiteRankToolRunner extends ToolRunner  {
   
-
+  description "Run Citerank";
 
   //cluster TBD;
 
@@ -46,3 +46,21 @@ CiteRankToolRunner extends ToolRunner  {
   //terminate afterwards
   sfshouldTerminate true;
 }
+
+CiteRankHtmlTable extends CiteRankToolRunner {
+  description "Run Citerank with HTML output";
+  pixels.only false;
+  report.citeseer.url "http://citeseer.ist.psu.edu/";
+  toolClass "org.smartfrog.services.hadoop.benchmark.citerank.HTMLTable";
+  
+  
+}
+
+RunCiteRank extends CiteRankToolRunner {
+  inPath "/datasets/citeseer";
+  outPath "/playground/citeseer"
+  arguments [inPath, outPath, "100", "0.0000001"];
+}
+
+
+
