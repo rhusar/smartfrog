@@ -146,7 +146,7 @@ ClusterWithUpload extends Parallel {
  CiteRankTestRun extends UploadTestData {
     
 
-    citerank extends CiteRankToolRunner {
+    citerank extends RunCiteRank; {
       cluster LAZY PARENT:ATTRIB testcluster;
     }
     

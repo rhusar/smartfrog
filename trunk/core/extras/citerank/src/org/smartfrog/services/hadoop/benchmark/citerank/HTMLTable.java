@@ -34,11 +34,17 @@ import java.util.StringTokenizer;
 public class HTMLTable extends CiteRankTool {
 
     private static final boolean PIXELS_ONLY = false;
-    /** {@value} */
+    /**
+     * {@value}
+     */
     private static final String COL_BAD = "#cc0000";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     private static final String COL_IN_FINAL_POSITION = "#00cc00";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     private static final String COL_IN_FINAL_RANKING_BUT_WRONG_PLACE = "#cccc00";
 
     @Override
@@ -64,8 +70,8 @@ public class HTMLTable extends CiteRankTool {
         PrintWriter out = new PrintWriter(fs.create(new Path(inputDir + File.separator
                 + CiteRankTool.RANKS_HTML)).getWrappedStream());
 
-        boolean pixelsOnly = job.getBoolean(OPTION_PIXELS_ONLY,PIXELS_ONLY);
-        String citationURL = job.get(OPTION_REPORT_CITESEER_URL,Utils.HTTP_CITESEER);
+        boolean pixelsOnly = job.getBoolean(OPTION_PIXELS_ONLY, PIXELS_ONLY);
+        String citationURL = job.get(OPTION_REPORT_CITESEER_URL, Utils.HTTP_CITESEER);
 
         BufferedReader in;
 
@@ -146,7 +152,6 @@ public class HTMLTable extends CiteRankTool {
 
         return 0;
     }
-
 
 
     public static void main(String[] args) throws Exception {
