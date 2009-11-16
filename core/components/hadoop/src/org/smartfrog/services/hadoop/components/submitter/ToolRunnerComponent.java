@@ -20,18 +20,19 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.hadoop.components.submitter;
 
-import java.rmi.Remote;
+import org.smartfrog.services.hadoop.conf.ClusterBound;
 
-public interface ToolRunnerComponent extends Remote {
+
+public interface ToolRunnerComponent extends ClusterBound {
 
     /** {@value} */
     String ATTR_TOOLCLASS = "toolClass";
     
     /** {@value} */
     String ATTR_ARGUMENTS = "arguments";
-    
+    /** {@value} */
     String ATTR_RETURNCODE = "returnCode";
-    
+    /** {@value} */
     String ATTR_FAIL_ON_NON_ZERO_RETURN_CODE = "failOnNonZeroReturnCode";
     
     

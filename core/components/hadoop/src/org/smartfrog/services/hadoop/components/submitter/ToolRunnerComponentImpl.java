@@ -20,30 +20,29 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.hadoop.components.submitter;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.apache.hadoop.util.Tool;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.Executable;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.reference.Reference;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.conf.Configuration;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
 
 public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerComponent, Executable {
 
-    WorkflowThread worker;
-    Tool tool;
+    private WorkflowThread worker;
+    private Tool tool;
     private static final int WORKER_TERMINATION_TIMEOUT = 1000;
-    protected String[] arguments;
-    protected String argumentsAsString;
+    private String[] arguments;
+    private String argumentsAsString;
+    private ManagedConfiguration toolConf;
 
     public ToolRunnerComponentImpl() throws RemoteException {
     }
@@ -68,8 +67,9 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
         arguments = new String[vector.size()];
         vector.copyInto(arguments);
         argumentsAsString = ListUtils.stringify(vector, "(", ", ", ")");
-        sfLog().info("Running " + toolClassname + " with "
-                + argumentsAsString);
+        if(sfLog().isInfoEnabled()) {
+            sfLog().info("Running " + toolClassname + " with " + argumentsAsString);
+        }
 
         Class toolClass = ch.loadClass(toolClassname);
         if (!Tool.class.isAssignableFrom(toolClass)) {
@@ -86,7 +86,9 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
             throw new SmartFrogLifecycleException("Class " + toolClassname
                     + " cannot be instantiated: " + e, e);
         }
-        //start the tool
+        //sort out the configuration
+        toolConf = ManagedConfiguration.createConfiguration(this, true, false, true);
+        //start the tool in a new thread
         worker = new WorkflowThread(this, this, true);
         worker.start();
     }
@@ -108,16 +110,17 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
      *
      * @throws Throwable if something goes wrong
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public void execute() throws Throwable {
-        tool.setConf(new Configuration());
+        tool.setConf(toolConf);
         int returnCode = tool.run(arguments);
         sfReplaceAttribute(ATTR_RETURNCODE, returnCode);
-        sfLog().info("Tool completed: "+returnCode);
+        sfLog().info("Tool completed: " + returnCode);
         boolean failOnNonZeroReturnCode = sfResolve(ATTR_FAIL_ON_NON_ZERO_RETURN_CODE, true, true);
-        if(returnCode !=0 && failOnNonZeroReturnCode) {
-            throw new SmartFrogException("Return value of executing the tool "+tool.toString() 
-                    + " with arguments "+argumentsAsString 
+        if (returnCode != 0 && failOnNonZeroReturnCode) {
+            throw new SmartFrogException("Return value of executing the tool " + tool
+                    + " with arguments " + argumentsAsString
                     + " was " + returnCode);
         }
     }

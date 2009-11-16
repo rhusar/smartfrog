@@ -33,6 +33,7 @@ ToolRunner extends HadoopJobRunner  {
 
   //the cluster reference is optional
   //cluster TBD;
+  clusterRequired false;
 
   //class that you want to run
   toolClass TBD;
