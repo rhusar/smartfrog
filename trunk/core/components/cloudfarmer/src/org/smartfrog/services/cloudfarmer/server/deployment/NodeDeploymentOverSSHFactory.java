@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * This factory copies applicatiions over then starts them.
@@ -28,16 +29,16 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         implements NodeDeploymentServiceFactory, SSHComponent {
 
     private String destDir;
-    protected JSch jschInstance;
+    private JSch jschInstance;
     public static final String ATTR_DEST_DIR = "destDir";
     public static final String ATTR_LOG_LEVEL = "logLevel";
     public static final String ATTR_TEMP_FILE_PREFIX = "tempfilePrefix";
     public static final String ATTR_KEEP_FILES = "keepFiles";
-    protected int outputLogLevel;
-    protected int counter = 0;
-    protected String tempfilePrefix;
+    private int outputLogLevel;
+    private String tempfilePrefix;
+    private Random random = new Random();
 
-    protected boolean keepFiles = false;
+    private boolean keepFiles = false;
 
 
     public NodeDeploymentOverSSHFactory() throws RemoteException {
@@ -51,7 +52,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     * @throws RemoteException    network problems
     */
     @Override
-    public void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         destDir = sfResolve(ATTR_DEST_DIR, "", true);
         if (!destDir.endsWith("/")) {
@@ -121,27 +122,35 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
                 throws IOException, SmartFrogException {
 
             File localtempfile = File.createTempFile(tempfilePrefix, SF_SUFFIX);
-            String desttempfile = destDir + tempfilePrefix + incCounter() + SF_SUFFIX;
+            String desttempfile = destDir + tempfilePrefix + getNextNumber() + SF_SUFFIX;
             SFExpandFully.saveCDtoFile(cd, localtempfile);
             ArrayList<File> sourceFiles = new ArrayList<File>();
             ArrayList<String> destFiles = new ArrayList<String>();
             sourceFiles.add(localtempfile);
             destFiles.add(desttempfile);
-            String connectionDetails = hostname + ":" + getPort();
+            String connectionDetails = getConnectionDetails();
             Session session = null;
             try {
                 log.info("Deploying application "+ name + " to " + connectionDetails);
                 session = demandCreateSession(hostname);
-                sshExec(session, "mkdir -p " + destDir, false);
+                ArrayList<String> commandsList = new ArrayList<String>(1);
+                commandsList.add("mkdir -p " + destDir);
+                commandsList.add("exit");
+                sshExec(session, commandsList, true);
+                
                 ScpTo scp = new ScpTo(sfLog());
                 //copy up the temp files
+                log.info("copying " + localtempfile + " to " + desttempfile);
                 scp.doCopy(session, destFiles, sourceFiles);
                 String sshCommand = "sfStart " + "localhost" + " " + name + " " + desttempfile;
                 log.info("executing: " + sshCommand);
-                sshExec(session, sshCommand, true);
-                if(!keepFiles) {
-                    sshExec(session, "rm " + desttempfile, true);
+                commandsList = new ArrayList<String>(1);
+                commandsList.add(sshCommand);
+                if (!keepFiles) {
+                    commandsList.add("rm " + desttempfile);
                 }
+                commandsList.add("exit");
+                sshExec(session, commandsList, true);
             } catch (JSchException e) {
                 log.error("Failed to upload to " + connectionDetails + " : " + e, e);
                 throw forward(e, connectionDetails);
@@ -153,20 +162,34 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             }
         }
 
-        private synchronized int incCounter() {
-            return counter++;
+        private String getConnectionDetails() {
+            return hostname + ":" + getPort();
+        }
+
+        /**
+         * Get a new number
+         * @return a new number for use in filenames
+         */
+        private synchronized int getNextNumber() {
+            return random.nextInt();
         }
 
         private void sshExec(Session session, String commandString, boolean checkResponse)
                 throws JSchException, IOException, SmartFrogException {
-            SshCommand command = new SshCommand(sfLog(), null);
-            OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
             ArrayList<String> commandsList = new ArrayList<String>(1);
             commandsList.add(commandString);
+            sshExec(session, commandsList, checkResponse);
+        }
+
+        private int sshExec(Session session, ArrayList<String> commandsList, boolean checkResponse)
+                throws JSchException, IOException, SmartFrogException {
+            SshCommand command = new SshCommand(sfLog(), null);
+            OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
             int exitCode = command.execute(session, commandsList, outputStream, getTimeout());
-            if (exitCode != 0) {
-                throw new SmartFrogException("Error response on command " + commandString);
+            if (checkResponse && exitCode != 0) {
+                throw new SmartFrogException("Error response on command " + commandsList.get(0));
             }
+            return exitCode;
         }
 
         /**
@@ -175,7 +198,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
          * @param session session, can be null
          */
         private void endSession(Session session) {
-            if (session != null) {
+            if (session != null && session.isConnected()) {
                 session.disconnect();
             }
         }
@@ -186,7 +209,23 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         @Override
         public boolean terminateApplication(String name, boolean normal, String exitText)
                 throws IOException, SmartFrogException {
-            return false;
+            Session session = null;
+            try {
+                log.info("Terminating application " + name + " for " + exitText);
+                session = demandCreateSession(hostname);
+                ArrayList<String> commandsList = new ArrayList<String>(1);
+                String sshCommand = "sfTerminate " + "localhost" + " " + name;
+                log.info("executing: " + sshCommand);
+                commandsList.add(sshCommand);
+                commandsList.add("exit");
+                return sshExec(session, commandsList, false) == 0;
+            } catch (JSchException e) {
+                String connectionDetails = getConnectionDetails();
+                log.error("Failed to terminate "+ name+ " on " + connectionDetails + " : " + e, e);
+                throw forward(e, connectionDetails);
+            } finally {
+                endSession(session);
+            }
         }
 
         /**

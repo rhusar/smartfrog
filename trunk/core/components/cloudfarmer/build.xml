@@ -110,6 +110,21 @@
       </deploy>
   </target>
 
+  <target  name="localfarmer" depends="ready-to-deploy"
+      description="Deploy a farm manager that serves up the local host" >
+    <deploy>
+      <application name="farmer"
+          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/manual_localhost.sf"/>
+    </deploy>
+  </target>
+  <target  name="localfarmerssh" depends="ready-to-deploy"
+      description="Deploy a farm manager that serves up the local hostover SSH" >
+    <deploy>
+      <application name="farmer"
+          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/localhost_over_ssh.sf"/>
+    </deploy>
+  </target>
+  
   <target  name="mombasa" depends="ready-to-deploy"
        description="Deploy the mombasa web application" >
       <deploy>
@@ -137,4 +152,13 @@
           descriptor="/org/smartfrog/services/cloudfarmer/server/examples/ec2_hadoop_farmer.sf"/>
     </deploy>
   </target>
+
+  <target  name="forkedcluster" depends="ready-to-deploy"
+      description="Deploy a forked Hadoop cluster against a local farmer" >
+    <deploy>
+      <application name="forkedcluster"
+          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/forkedhadoopcustomer.sf"/>
+    </deploy>
+  </target>
+
 </project>

@@ -67,4 +67,7 @@ EC2HadoopFarmer extends EC2ClusterFarmer {
   
 }
 
+
+
+
 sfConfig extends EC2HadoopFarmer;

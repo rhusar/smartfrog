@@ -99,8 +99,8 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
      * Check the nodes are there on a liveness call
      *
      * @param source source of call
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
+     * @throws SmartFrogLivenessException failure to find a node in that role
+     * @throws RemoteException network problems
      */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
@@ -140,6 +140,9 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         nodes = null;
     }
 
+    /**
+     * This is the customer thread that pushed out the files
+     */
     public class CustomerThread extends WorkflowThread {
 
         /**
