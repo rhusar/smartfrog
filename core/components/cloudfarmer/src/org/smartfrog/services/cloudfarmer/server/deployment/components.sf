@@ -49,7 +49,7 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   destDir "/tmp";
   //there for the schema
   host "";
-  tempfilePrefix "sfoverssh";
+  tempfilePrefix "sf_over_ssh_";
   //log level for communications
   logLevel LogLevel:LOG_LEVEL_INFO;
   //passwordProvider TBD;

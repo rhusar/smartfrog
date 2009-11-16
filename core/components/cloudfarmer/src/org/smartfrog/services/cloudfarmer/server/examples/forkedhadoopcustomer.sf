@@ -17,49 +17,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/cloudfarmer/server/examples/hadoopcustomer.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/manual/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/examples/hadooproles.sf"
+#include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 
-
-LocalhostHost extends ManualHost {
-    hostname "localhost";
-  
-    description "local host, loopback addressing";
-}
-
-/**
- * this serves up localhost only, and assumes that 
- * we can SSH in to ourselves, if need be
- */
-
-LocalhostCluster extends ManualClusterFarmer {
-  
-  roles extends HadoopRoles ;
-  
-  hosts extends Compound {
-    localhost extends LocalhostHost;
+ForkedClusterFarmCustomer extends HadoopMasterFarmCustomer {
+  toDeployName "HadoopCluster";
+  toDeploy extends HadoopClusterMultiProcess {
+    
   }
-  
-  
+} 
+
+
+sfConfig extends ForkedClusterFarmCustomer {
+  farmer LAZY PROCESS:farmer;
 }
-
-
-LocalhostClusterRMIDeploy extends LocalhostCluster {
-  description "a localhost cluster with SmartFrog-RMI deployment"
-
-  deploymentFactory extends NodeDeploymentOverRMIFactory;
-
-}
-
-LocalhostClusterSSHDeploy extends LocalhostCluster {
-  description "a localhost cluster with SmartFrog-RMI deployment"
-
-  deploymentFactory extends NodeDeploymentOverSSHFactory {
-    username LAZY PROPERTY user.name;
-    authentication authenticate_key;
-    keyFile ((LAZY PROPERTY user.home) ++ "/.ssh/id_dsa");
-  }
-
-}
-
-sfConfig extends LocalhostClusterRMIDeploy;
