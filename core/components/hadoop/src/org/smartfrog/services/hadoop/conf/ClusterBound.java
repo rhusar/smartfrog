@@ -19,13 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
+import java.rmi.Remote;
+
 /**
  * This interface declares that component is bound to a cluster. It still has the right to override those settings; the
  * cluster is the initial template that may be dynamically built up from the core Hadoop XML files
  */
 
 
-public interface ClusterBound {
+public interface ClusterBound extends Remote {
 
     /**
      * {@value}
