@@ -26,6 +26,7 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceL
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
+import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
@@ -44,8 +45,8 @@ public class HostCreationUnitTest extends TestCase {
 
     private MockClusterFarmerImpl farmer;
     DynamicSmartFrogClusterController controller;
-    private static final String WORKER = "worker";
-    private static final String MASTER = "master";
+    private static final String WORKER = HadoopRoles.WORKER;
+    private static final String MASTER = HadoopRoles.MASTER;
 
     private ClusterRoleInfo master, worker;
     private static final int CLUSTER_SIZE = 50;
@@ -78,8 +79,8 @@ public class HostCreationUnitTest extends TestCase {
         //add a master automatically
         RoleAllocationRequestList requests = new RoleAllocationRequestList(2);
 
-        requests.add(new RoleAllocationRequest("master", 0, 1, 1, null));
-        requests.add(new RoleAllocationRequest("worker", -1, 5, 8, null));
+        requests.add(new RoleAllocationRequest(MASTER, 0, 1, 1, null));
+        requests.add(new RoleAllocationRequest(WORKER, -1, 5, 8, null));
 
 
         ClusterController.HostCreationThread workerThread = controller.asyncCreateHosts(requests, 0, null, null);
@@ -98,7 +99,7 @@ public class HostCreationUnitTest extends TestCase {
         HostInstanceList hosts = workerThread.getHostList();
         assertTrue("Host list is only " + hosts.size(), hosts.size() >= 6);
         assertNotNull("Hosts have no master", hosts.getMaster());
-        List<HostInstance> workerList = hosts.getListInRole("worker");
+        List<HostInstance> workerList = hosts.getListInRole(WORKER);
         assertTrue("Worker list is only " + hosts.size(), workerList.size() >= 5);
 
     }

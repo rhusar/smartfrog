@@ -49,21 +49,21 @@ public interface TemplateNames {
     /**
      * This defines a master node. It will create a node given some predefined JVM properties {@value}
      */
-    String HADOOP_MASTER = TEMPLATE_PACKAGE + "master.sf";
+    String HADOOP_MASTER_SF = TEMPLATE_PACKAGE + "master.sf";
     /**
      * This defines a master node. It will create a node given some predefined JVM properties {@value}
      */
-    String HADOOP_MASTER_WORKER = TEMPLATE_PACKAGE + "master_worker.sf";
+    String HADOOP_MASTER_WORKER_SF = TEMPLATE_PACKAGE + "master_worker.sf";
 
     /**
      * {@value}
      */
-    String HADOOP_WORKER = TEMPLATE_PACKAGE + "worker.sf";
+    String HADOOP_WORKER_SF = TEMPLATE_PACKAGE + "worker.sf";
 
     /**
      * {@value}
      */
-    String MAPREDUCE_JOB = TEMPLATE_PACKAGE + "mrjob.sf";
+    String MAPREDUCE_JOB_SF = TEMPLATE_PACKAGE + "mrjob.sf";
 
     /**
      * {@value}
@@ -75,4 +75,5 @@ public interface TemplateNames {
      */
     String FARMER_PATH = "farmer";
 
+    int TASK_SLOTS = 4;
 }

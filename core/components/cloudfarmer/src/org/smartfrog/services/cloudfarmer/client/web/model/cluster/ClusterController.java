@@ -27,6 +27,7 @@ import org.smartfrog.services.cloudfarmer.client.web.exceptions.ClusterControlle
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
+import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
 import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
@@ -54,7 +55,6 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     private static final int INITIAL_HOSTLIST_CAPACITY = 1;
     private static final int FARMER_AVAILABILITY_SLEEP_MILLIS = 500;
-    public static final int TASK_SLOTS = 4;
     private static final String STATUS_NOT_STARTED = "not yet started";
 
     /**
@@ -451,16 +451,16 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         String rolename;
         switch (role) {
             case master:
-                resource = HADOOP_MASTER;
-                rolename = HostInstance.ROLE_MASTER;
+                resource = HADOOP_MASTER_SF;
+                rolename = HadoopRoles.MASTER;
                 if (hasMaster) {
                     throw new SmartFrogException("Cluster already has the master " + master.hostname);
                 }
                 masterName = host.getHostname();
                 break;
             case worker:
-                resource = HADOOP_WORKER;
-                rolename = HostInstance.ROLE_MASTER;
+                resource = HADOOP_WORKER_SF;
+                rolename = HadoopRoles.MASTER;
                 if (!hasMaster) {
                     throw new SmartFrogException("Cluster has no master");
                 }
@@ -625,7 +625,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     /**
      * Get any worker thread extension
      *
-     * @return
+     * @return any exception in the worker thread
      */
     public Throwable getWorkerThreadException() {
         return workerThreadException;
@@ -719,7 +719,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 waitForFarmerAvailable();
                 try {
                     for (RoleAllocationRequest request : allocationRequests) {
-                        requestHosts(request);
+                        requestHosts(request, clusterAllocationCompleted);
                     }
                 } catch (Throwable throwable) {
                     //failure, notify and rethrow
@@ -730,23 +730,27 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                     throw throwable;
                 }
                 updateStatus(false, "Completed cluster requests");
+                //notify of success
+                if (clusterAllocationCompleted != null) {
+                    clusterAllocationCompleted.allocationSucceeded(allocationRequests, getHosts(), callbackData);
+                }
             } finally {
                 finished();
             }
-            //notify of success
-            if (clusterAllocationCompleted != null) {
-                clusterAllocationCompleted.allocationSucceeded(allocationRequests, getHosts(), callbackData);
-            }
         }
 
-        private void requestHosts(RoleAllocationRequest request) throws IOException, SmartFrogException {
+        private void requestHosts(RoleAllocationRequest request, 
+                                  ClusterAllocationCompleted clusterAllocationCompleted) throws IOException, SmartFrogException {
             updateStatus(false, "Requesting hosts " + request);
             request.requestStarted();
             try {
                 HostInstanceList newhosts = createHosts(request.role, request.min, request.max);
                 request.requestSucceeded(newhosts);
-                updateStatus(false, "Got " + newhosts.size() + " - " + newhosts);
                 addHosts(newhosts);
+                updateStatus(false, "Got " + newhosts.size() + " - " + newhosts);
+                if(clusterAllocationCompleted!=null) {
+                    clusterAllocationCompleted.allocationRequestSucceeded(request, newhosts);
+                }
             } catch (IOException e) {
                 requestFailed(e, request);
                 throw e;
