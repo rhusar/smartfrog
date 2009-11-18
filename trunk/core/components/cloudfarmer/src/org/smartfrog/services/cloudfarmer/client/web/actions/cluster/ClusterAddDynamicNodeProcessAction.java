@@ -27,6 +27,9 @@ import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDyn
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopDeploymentCallback;
+import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,26 +61,30 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
         ClusterAddDynamicForm form = (ClusterAddDynamicForm) aform;
         try {
             log.info("Creating workers in range [" + form.getMinWorkers() + "-" + form.getMaxWorkers() + "]");
+            HadoopDeploymentCallback handler = new HadoopDeploymentCallback(controller); 
             //add a master automatically
             RoleAllocationRequestList requests = new RoleAllocationRequestList(2);
-            if (controller.getMaster() == null) {
+            HostInstance master = controller.getMaster();
+            if (master == null) {
                 log.info("Creating a master node");
-                requests.add(new RoleAllocationRequest("master", 0, 1, 1, null));
+                requests.add(new RoleAllocationRequest(HadoopRoles.MASTER, 0, 1, 1, null));
+                handler.setCreatingMaster(true);
+            } else {
+                handler.setCreatingMaster(false);
+                handler.setMaster(master);
             }
-            RoleAllocationRequest master = new RoleAllocationRequest("worker",
+            RoleAllocationRequest workers = new RoleAllocationRequest(HadoopRoles.WORKER,
                     -1,
                     form.getMinWorkers(),
                     form.getMaxWorkers(),
                     null);
-            RoleAllocationRequest workers = master;
-            requests.add(
-                    workers);
+            requests.add(workers);
             //TODO, drive this from configuration properties
             long farmCreationTimeout = 10000;
             log.info("Queueing a request, waiting up to " + farmCreationTimeout + " milliseconds for the farm");
             ClusterController.HostCreationThread worker = controller.asyncCreateHosts(requests,
                     farmCreationTimeout,
-                    null,
+                    handler,
                     null);
             addClusterAttributes(request, controller);
             return success(mapping);

@@ -22,6 +22,7 @@ package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
+import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
@@ -46,10 +47,9 @@ public final class HostInstance implements Serializable {
     private RemoteDaemon daemon;
     
     private String details;
-    
-    public static final String ROLE_MASTER = "master";
-    private static final String ROLE_WORKER = "worker";
 
+    private ClusterNode clusterNode;
+    
     public HostInstance() {
     }
 
@@ -136,12 +136,12 @@ public final class HostInstance implements Serializable {
     }
 
     public boolean isMaster() {
-        return ROLE_MASTER.equals(role);
+        return HadoopRoles.MASTER.equals(role);
     }
 
 
     public boolean isWorker() {
-        return ROLE_WORKER.equals(role);
+        return HadoopRoles.WORKER.equals(role);
     }
 
     public String getDetails() {
@@ -150,6 +150,10 @@ public final class HostInstance implements Serializable {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public ClusterNode getClusterNode() {
+        return clusterNode;
     }
 
     /**

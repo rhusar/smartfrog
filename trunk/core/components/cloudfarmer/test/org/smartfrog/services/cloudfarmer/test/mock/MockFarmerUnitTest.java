@@ -9,6 +9,7 @@ import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
@@ -22,8 +23,8 @@ import java.util.ArrayList;
 public class MockFarmerUnitTest extends TestCase {
 
     private MockClusterFarmerImpl farmer;
-    private static final String WORKER = "worker";
-    private static final String MASTER = "master";
+    private static final String WORKER = HadoopRoles.WORKER;
+    private static final String MASTER = HadoopRoles.MASTER;
 
     private ClusterRoleInfo master, worker;
     private static final int CLUSTER_SIZE = 50;

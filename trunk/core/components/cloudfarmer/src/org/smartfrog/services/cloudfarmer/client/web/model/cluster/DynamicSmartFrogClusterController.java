@@ -23,6 +23,7 @@ package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -282,5 +283,17 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      */
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return farmer.getDiagnosticsText();
+    }
+
+    /**
+     * Create a node deployment service for this node
+     * @param hostInstance the host to work with
+     * @return the node deployment service
+     * @throws SmartFrogException trouble creating the service
+     * @throws IOException        something went wrong
+     */
+    public NodeDeploymentService createNodeDeploymentService(HostInstance hostInstance)
+            throws SmartFrogException, IOException {
+        return farmer.createNodeDeploymentService(hostInstance.getClusterNode());
     }
 }

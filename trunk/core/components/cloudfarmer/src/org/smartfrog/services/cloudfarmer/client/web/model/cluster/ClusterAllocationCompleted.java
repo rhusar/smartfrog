@@ -18,7 +18,7 @@ public interface ClusterAllocationCompleted {
      * @throws IOException IO problems
      * @throws SmartFrogException other problems
      */
-    public void farmerAvailabilityFailure(boolean timedOut, long timeout, Throwable exception, Object extraData)
+    void farmerAvailabilityFailure(boolean timedOut, long timeout, Throwable exception, Object extraData)
          throws IOException, SmartFrogException;
 
     /**
@@ -30,7 +30,7 @@ public interface ClusterAllocationCompleted {
      * @throws IOException IO problems
      * @throws SmartFrogException other problems
      */
-    public void allocationSucceeded(RoleAllocationRequestList requests,
+    void allocationSucceeded(RoleAllocationRequestList requests,
                                     HostInstanceList hosts,
                                     Object extraData) throws IOException, SmartFrogException;
 
@@ -44,8 +44,18 @@ public interface ClusterAllocationCompleted {
      * @throws IOException IO problems
      * @throws SmartFrogException other problems
      */
-    public void allocationFailed(RoleAllocationRequestList requests,
+    void allocationFailed(RoleAllocationRequestList requests,
                                  HostInstanceList hosts,
                                  Throwable failureCause,
                                  Object extraData) throws IOException, SmartFrogException;
+
+    /**
+     * A single role request has succeeded
+     * @param request the request that just succeeded
+     * @param newhosts the new hosts
+     * @throws IOException IO problems
+     * @throws SmartFrogException other problems
+     */
+    void allocationRequestSucceeded(RoleAllocationRequest request, HostInstanceList newhosts)
+            throws IOException, SmartFrogException;
 }
