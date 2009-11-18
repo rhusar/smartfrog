@@ -475,10 +475,11 @@ java.class.path=
     <property name="junit.printformatter" value="plain" />
     <property name="junit.timeout" value="6000000"/>
     <property name="junit.memory" value="512m"/>
+    <property name="junit.fork.mode" value="once"/>
     <presetdef name="sf-junit">
       <junit printsummary="${junit.printsummary}"
         fork="true"
-        forkmode="once"
+        forkmode="${junit.fork.mode}"
         maxmemory="${junit.memory}"
         includeantruntime="true"
         showoutput="true"
