@@ -132,17 +132,36 @@ FarmHasDeployedInstancesWorkflow extends FarmHasDeployedInstances {
 }
 
 /**
- * Check for the farm being avaialable
+ * Check for the farm being available
  */
 FarmIsAvailable extends AbstractFarmerClientCondition {
   sfClass "org.smartfrog.services.cloudfarmer.client.components.FarmIsAvailable"
 }
 
-
+/*
+ * Availability test as a condition
+ */
 FarmIsAvailableCondition extends FarmIsAvailable {
   checkOnStartup false;
 }
 
+/**
+ * Availability test as a workflow which will terminate on startup if met. If not met, it just hangs around,
+ * does not make any serious attempts to exit
+ */
 FarmIsAvailableWorkflow extends FarmIsAvailable {
   sfShouldTerminate true;
+}
+
+/**
+ * Wait for the farmer to declare itself available
+ */
+WaitForFarmer extends FailingWaitFor {
+  farmer TBD;
+  interval 500;
+  timeout 20000;
+  failureText "Farmer was not available on time";
+  condition extends FarmIsAvailableCondition {
+    farmer LAZY PARENT:farmer;
+  }
 }
