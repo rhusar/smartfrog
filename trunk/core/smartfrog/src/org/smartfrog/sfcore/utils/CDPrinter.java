@@ -1,4 +1,4 @@
-/** (C) Copyright Hewlett-Packard Development Company, LP
+/** (C) Copyright 1996-2009 Hewlett-Packard Development Company, LP
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -30,11 +30,14 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  * This class provides a single static method - print - which takes a ComponentDescription
@@ -43,6 +46,9 @@ import org.smartfrog.sfcore.reference.ReferencePart;
  * It also contains a main method used for testing...
  */
 public class CDPrinter {
+    
+    private static LogSF log = LogFactory.getLog(CDPrinter.class);
+    
     /**
      * The method looks for three optional attributes: CDPStart, CDPEnd, CPDSep and returns
      * the following print string
@@ -80,19 +86,18 @@ public class CDPrinter {
             CDPStart = cd.sfResolve(new Reference(ReferencePart.here("CDPStart")), CDPStart, false);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e);
         }
         try {
             CDPEnd = cd.sfResolve(new Reference(ReferencePart.here("CDPEnd")), CDPEnd, false);
         } catch (SmartFrogResolutionException e) {
-            //shouldn't happen
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e);
         }
         try {
             CDPSep = cd.sfResolve(new Reference(ReferencePart.here("CDPSep")), CDPSep, false);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e);
         }
 
         for (Iterator i = cd.sfAttributes(); i.hasNext(); ) {
@@ -100,7 +105,9 @@ public class CDPrinter {
             Object value = cd.sfContext().get(next);
             if (value instanceof ComponentDescription) {
                 String resNext = print((ComponentDescription) value);
-                if (!resNext.equals("") && !nested .equals("")) nested += CDPSep;
+                if (!resNext.isEmpty() && !nested.isEmpty()) {
+                    nested += CDPSep;
+                }
                 nested += resNext;
             }
         }
@@ -131,11 +138,12 @@ public class CDPrinter {
      * @throws FileNotFoundException
      */
     public static String printURLSorted(String url, Context params, boolean sort) throws SmartFrogException, FileNotFoundException {
-            
-            ComponentDescription cd = SFComponentDescriptionImpl.getDescriptionURL(url, params);
-            try { if (sort) cd=sort(cd); } catch (Exception e){throw new SmartFrogException(e); }
-            
-            return print(cd);
+
+        ComponentDescription cd = SFComponentDescriptionImpl.getDescriptionURL(url, params);
+        if (sort) {
+            cd = sort(cd);
+        }
+        return print(cd);
     }
     
     
@@ -143,24 +151,29 @@ public class CDPrinter {
     //This should be moved...
     /**
      * Helper method for recursively lexicographically sorting attributes of a component description
-     * @param Component Description which is to have attributes sorted
+     * @param comp Description which is to have attributes sorted
      * @return sorted component description
+     * @throws SmartFrogRuntimeException on failure
      */
-	private static ComponentDescription sort(ComponentDescription comp) throws Exception {
+	private static ComponentDescription sort(ComponentDescription comp) throws SmartFrogRuntimeException {
 		//Simple link resolve...
 		ComponentDescription newcomp = new ComponentDescriptionImpl(comp.sfParent(), null, comp.getEager());
 		List<String> keys = new ArrayList<String>();
-		for (Iterator v = comp.sfAttributes(); v.hasNext();) keys.add(v.next().toString());
+        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+            keys.add(v.next().toString());
+        }
 		Collections.sort(keys);
-		
-		for (Iterator v = keys.iterator(); v.hasNext();) {
-            String nameS = v.next().toString();
+
+        for (Object key : keys) {
+            String nameS = key.toString();
             Reference ref = new Reference(ReferencePart.here(nameS));
-            Object value=comp.sfResolve(ref);
-            if (value instanceof ComponentDescription) value=sort((ComponentDescription)value);           
-           
+            Object value = comp.sfResolve(ref);
+            if (value instanceof ComponentDescription) {
+                value = sort((ComponentDescription) value);
+            }
+
             newcomp.sfAddAttribute(nameS, value);
-            newcomp.sfAddTags(nameS, comp.sfGetTags(nameS));     
+            newcomp.sfAddTags(nameS, comp.sfGetTags(nameS));
         }     
 		return newcomp;
 	}
@@ -170,6 +183,7 @@ public class CDPrinter {
     /**
      * The main method takes a URL, parses it, resolves the structure and then displays the
      * print string on the resultant description of sfConfig. Used for debugging descriptions.
+     * @param args any arguments
      */
     public static void main(String [] args) {
         String url = args[0];
