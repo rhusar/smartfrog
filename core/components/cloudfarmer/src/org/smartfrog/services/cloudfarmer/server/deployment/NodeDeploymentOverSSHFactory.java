@@ -15,12 +15,15 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.OutputStreamLog;
 import org.smartfrog.sfcore.utils.SFExpandFully;
+import org.apache.commons.io.output.TeeOutputStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.nio.charset.Charset;
 
 /**
  * This factory copies applicatiions over then starts them.
@@ -102,6 +105,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
 
         private String hostname;
         private static final String SF_SUFFIX = ".sf";
+        private static final String SSH_RESPONSE_CHARSET = "ISO-8859-1";
 
         NodeDeploymentOverSSH(ClusterNode node) {
             super(node);
@@ -184,10 +188,15 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         private int sshExec(Session session, ArrayList<String> commandsList, boolean checkResponse)
                 throws JSchException, IOException, SmartFrogException {
             SshCommand command = new SshCommand(sfLog(), null);
-            OutputStreamLog outputStream = new OutputStreamLog(log, outputLogLevel);
-            int exitCode = command.execute(session, commandsList, outputStream, getTimeout());
+            OutputStreamLog outputStreamLog = new OutputStreamLog(log, outputLogLevel);
+            ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+            TeeOutputStream teeOut = new TeeOutputStream(outputStreamLog, byteOutputStream);
+            int exitCode = command.execute(session, commandsList, outputStreamLog, getTimeout());
             if (checkResponse && exitCode != 0) {
-                throw new SmartFrogException("Error response on command " + commandsList.get(0));
+                String output = byteOutputStream.toString(SSH_RESPONSE_CHARSET);
+                throw new SmartFrogException("Error response on command " + commandsList.get(0)
+                    +":-\n"
+                    + output);
             }
             return exitCode;
         }
