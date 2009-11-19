@@ -15,15 +15,13 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.OutputStreamLog;
 import org.smartfrog.sfcore.utils.SFExpandFully;
-import org.apache.commons.io.output.TeeOutputStream;
-
+import org.apache.tools.ant.util.TeeOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.nio.charset.Charset;
 
 /**
  * This factory copies applicatiions over then starts them.
