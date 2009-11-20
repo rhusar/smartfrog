@@ -105,6 +105,15 @@ StringEquals extends TwoArgumentCondition {
 }
 
 /**
+ * Test for string length
+ */
+StringLength extends ConditionPrim {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.StringLength";
+  string TBD;
+  length TBD;
+}
+
+/**
  * A test for a property being set and true
  */
 IsPropertySet extends ConditionPrim {
