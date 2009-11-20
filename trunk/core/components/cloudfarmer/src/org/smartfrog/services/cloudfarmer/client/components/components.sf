@@ -43,6 +43,10 @@ AbstractFarmerClient extends WorkflowPrim {
   farmer TBD;
 }
 
+WorkflowFarmerClient extends AbstractFarmerClient {
+  sfShouldTerminate true;
+}
+
 AbstractFarmerClientCondition extends AbstractFarmerClient {
   checkOnStartup true;
 }
@@ -165,3 +169,42 @@ WaitForFarmer extends FailingWaitFor {
     farmer LAZY PARENT:farmer;
   }
 }
+
+/**
+ * Deletes all resources belong to a specific user.
+ * This is handy as part of a cleanup operation
+ */
+ReleaseAllFarmResources extends WorkflowFarmerClient {
+  sfClass "org.smartfrog.services.cloudfarmer.client.components.ReleaseAllFarmResources";
+}
+
+
+/**
+ * Deletes all resources belong to a specific user.
+ * This is handy as part of a cleanup operation
+ */
+DeleteByRole extends WorkflowFarmerClient {
+  role TBD; 
+  sfClass "org.smartfrog.services.cloudfarmer.client.components.DeleteByRole";
+}
+
+DeleteAllNodes extends DeleteByRole {
+  role "";
+}
+
+/**
+ * Start the cluster if it is not live; idempotent
+ */
+StartCluster extends WorkflowFarmerClient {
+  sfClass "org.smartfrog.services.cloudfarmer.client.components.StartCluster";
+}
+
+
+/**
+ * Start the cluster if it is live; idempotent
+ * After this call is made, other farmer operations may fail as there is no longer a live cluster
+ */
+StopCluster extends WorkflowFarmerClient {
+  sfClass "org.smartfrog.services.cloudfarmer.client.components.StopCluster";
+}
+

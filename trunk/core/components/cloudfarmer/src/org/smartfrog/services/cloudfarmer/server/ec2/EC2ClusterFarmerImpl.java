@@ -518,9 +518,16 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      */
     @Override
     public void stopCluster() throws IOException, SmartFrogException {
-
+        deleteAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void releaseAllResources() throws IOException, SmartFrogException {
+        stopCluster();
+    }
 
     /**
      * {@inheritDoc} <p/> This is implemented by handing off to any declared deployment factory

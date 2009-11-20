@@ -28,6 +28,12 @@ import java.rmi.Remote;
 /**
  * This interface is an (unstable) interface for a cluster farmer, a component that provides cluster management of
  * virtual clusters.
+ * 
+ * The model is that you first may start a cluster; at the end of use stop it.
+ * 
+ * You may opt to release all resources, which means release all clusters belonging to the authenticated user
+ * This is to prevent leakage of resources from farmer restarts
+ * 
  */
 public interface ClusterFarmer extends Remote {
 
@@ -103,9 +109,7 @@ public interface ClusterFarmer extends Remote {
 
     /**
      * Shut down everything. All nodes are shut down, regardless of role.
-     *
-     * You can get into trouble here if the farm controller is on a node manageable in the same list. Safer to delete by
-     * role
+     * 
      *
      * @return the number scheduled for deletion
      * @throws IOException        IO/network problems
@@ -113,6 +117,20 @@ public interface ClusterFarmer extends Remote {
      */
 
     public int deleteAll()
+            throws IOException, SmartFrogException;
+
+
+    /**
+     * Idempotent call to shut down all nodes and any other resources used in the farm.
+     * 
+     * The expectation is that after this call is returned, no machines, virtual clusters etc exist. 
+     * Persistent storage is untouched
+     *
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+
+    public void releaseAllResources()
             throws IOException, SmartFrogException;
 
     /**

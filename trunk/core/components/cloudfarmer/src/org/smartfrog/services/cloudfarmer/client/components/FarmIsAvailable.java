@@ -20,7 +20,6 @@
 package org.smartfrog.services.cloudfarmer.client.components;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
-import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -51,7 +50,13 @@ public class FarmIsAvailable extends AbstractConditionPrim implements FarmCustom
         super.sfStart();
         farmer = (ClusterFarmer) sfResolve(ATTR_FARMER, (Prim) null, true);
         boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
-
+        try {
+            setFailureText(farmer.getDiagnosticsText());
+        } catch (RemoteException e) {
+            throw e;
+        } catch (IOException e) {
+            throw SmartFrogException.forward(e);
+        }
         ComponentHelper helper = new ComponentHelper(this);
 
         if (checkOnStartup) {
@@ -71,6 +76,7 @@ public class FarmIsAvailable extends AbstractConditionPrim implements FarmCustom
                 "the Farm is available",
                 sfCompleteName,
                 null);
+        
     }
 
 

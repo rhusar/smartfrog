@@ -148,6 +148,17 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
         roleInfoMap.put(role, roleInfo);
     }
 
+
+    @Override
+    public void startCluster() throws IOException, SmartFrogException {
+        available = true;
+    }
+
+    @Override
+    public void stopCluster() throws IOException, SmartFrogException {
+        available = false;
+    }
+
     /**
      * {@inheritDoc}
      */
