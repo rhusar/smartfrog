@@ -60,4 +60,6 @@ public interface FarmCustomer extends Remote {
      * {@value}
      */
     String ATTR_TO_DEPLOY = "toDeploy";
+    
+    String ATTR_PING_CHECKS_NODES = "pingChecksNodes";
 }

@@ -83,6 +83,9 @@ FarmCustomer extends AbstractFarmerClient {
   toDeployName "application"; 
   //this is a CD that can be set to whatever needs to be deployed. 
   //toDeploy ;
+  
+  //should a ping check the nodes
+  pingChecksNodes true;
 }
 
 WorkflowFarmCustomer extends FarmCustomer {
