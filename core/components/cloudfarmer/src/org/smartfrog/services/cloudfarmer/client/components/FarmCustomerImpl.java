@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a workflow component that is bound to a farmer, and which creates/destroys nodes through its lifecycle.
@@ -54,11 +55,13 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     protected int min;
     protected int max;
     private boolean deleteOnTerminate;
+    private boolean pingChecksNodes;
     private List<String> expectedHostnames;
     private CustomerThread worker;
     private static final int SHUTDOWN_TIMEOUT = 2000;
     private ComponentDescription toDeploy;
     private String toDeployName;
+    private AtomicInteger inAllocationOperation= new AtomicInteger(0); 
 
     public FarmCustomerImpl() throws RemoteException {
     }
@@ -81,6 +84,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         expectedHostnames = ListUtils.resolveStringList(this, new Reference(ATTR_EXPECTED_HOSTNAMES), true);
         toDeploy = sfResolve(ATTR_TO_DEPLOY, toDeploy, false);
         toDeployName = sfResolve(ATTR_TO_DEPLOY_NAME, toDeployName, true);
+        pingChecksNodes = sfResolve(ATTR_PING_CHECKS_NODES, pingChecksNodes, true);
         if (max > 0) {
             worker = new CustomerThread();
             worker.start();
@@ -105,6 +109,9 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if(!pingChecksNodes || inAllocationOperation()) {
+            return;
+        }
         try {
             ClusterNode[] listed = farmer.list(role);
             Map<String, ClusterNode> map = new HashMap<String, ClusterNode>(listed.length);
@@ -140,9 +147,22 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         nodes = null;
     }
 
+    protected void enterAllocationOperation() {
+        inAllocationOperation.incrementAndGet();
+    }
+
+    protected void exitAllocationOperation() {
+        inAllocationOperation.decrementAndGet();
+    }
+
+    protected boolean inAllocationOperation() {
+        return inAllocationOperation.get()>0;
+    }
+
+
     /**
-     * This is the customer thread that pushed out the files
-     */
+    * This is the customer thread that pushed out the files
+    */
     public class CustomerThread extends WorkflowThread {
 
         /**
@@ -161,7 +181,12 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         @Override
         public void execute() throws Throwable {
             ClusterNode[] clusterNodes;
-            clusterNodes = farmer.create(role, min, max);
+            enterAllocationOperation();
+            try {
+                clusterNodes = farmer.create(role, min, max);
+            } finally {
+                exitAllocationOperation();
+            }
             //set the owner's attributes
             nodes = clusterNodes;
             int created = clusterNodes.length;
