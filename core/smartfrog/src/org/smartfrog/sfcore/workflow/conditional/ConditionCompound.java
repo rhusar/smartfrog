@@ -151,9 +151,15 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     protected void propagateFailureCause(Condition failingCondition) throws SmartFrogRuntimeException, RemoteException {
         if (failingCondition != null && failingCondition instanceof ConditionWithFailureCause) {
             ConditionWithFailureCause cwf = (ConditionWithFailureCause) failingCondition;
-            sfReplaceAttribute(ConditionWithFailureCause.ATTR_FAILURE_TEXT, cwf.getFailureText());
-            sfReplaceAttribute(ConditionWithFailureCause.ATTR_FAILURE_CAUSE,
-                    SmartFrogExtractedException.convert(cwf.getFailureCause()));
+            String failureText = cwf.getFailureText();
+            if (failureText != null) {
+                sfReplaceAttribute(ConditionWithFailureCause.ATTR_FAILURE_TEXT, failureText);
+            }
+            Throwable failureCause = cwf.getFailureCause();
+            if (failureCause != null) {
+                sfReplaceAttribute(ConditionWithFailureCause.ATTR_FAILURE_CAUSE,
+                        SmartFrogExtractedException.convert(failureCause));
+            }
         }
     }
 }
