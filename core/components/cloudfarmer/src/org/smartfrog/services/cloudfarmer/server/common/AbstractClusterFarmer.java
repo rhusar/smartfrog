@@ -261,11 +261,20 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     }
 
     /**
+     * Stop the cluster by deleting every node
      * {@inheritDoc}
      */
     @Override
     public void stopCluster() throws IOException, SmartFrogException {
+        deleteAll();
+    }
 
+    /**
+     * The base implementation calls {@link #stopCluster()} to stop the cluster
+     */
+    @Override
+    public void releaseAllResources() throws IOException, SmartFrogException {
+        stopCluster();
     }
 
     /**
