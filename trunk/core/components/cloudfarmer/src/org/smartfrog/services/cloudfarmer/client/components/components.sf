@@ -104,6 +104,7 @@ FarmSupportsRoleCondition extends FarmSupportsRole {
 }
 
 FarmSupportsRoleWorkflow extends FarmSupportsRole {
+  checkOnStartup true;
   sfShouldTerminate true;
 }
 

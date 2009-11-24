@@ -31,8 +31,11 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocatio
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 import java.io.IOException;
+
 
 /**
  * Created 18-Nov-2009 15:44:39
@@ -40,6 +43,7 @@ import java.io.IOException;
 
 public class HadoopDeploymentCallback implements ClusterAllocationCompleted, HadoopRoles, TemplateNames {
 
+    private static final Log LOG = LogFactory.getLog(HadoopDeploymentCallback.class);
     private ClusterController controller;
     private boolean creatingMaster;
     private String status;
@@ -105,6 +109,7 @@ public class HadoopDeploymentCallback implements ClusterAllocationCompleted, Had
         }
         status = text.toString();
         thrown = exception;
+        LOG.error(status, thrown);
     }
 
     /**
@@ -125,7 +130,8 @@ public class HadoopDeploymentCallback implements ClusterAllocationCompleted, Had
         StringBuilder text = new StringBuilder();
         text.append("Allocation failed ").append(failureCause);
         status = text.toString();
-        ;
+        thrown = failureCause;
+        LOG.error(status, thrown);
     }
 
     /**
@@ -189,8 +195,16 @@ public class HadoopDeploymentCallback implements ClusterAllocationCompleted, Had
      */
     private void deployApplication(HostInstance instance, String name, LocalSmartFrogDescriptor descriptor)
             throws SmartFrogException, IOException {
-        NodeDeploymentService deploymentService = createNodeDeploymentService(instance);
-        deploymentService.deployApplication(name, descriptor.getComponentDescription());
+        try {
+            NodeDeploymentService deploymentService = createNodeDeploymentService(instance);
+            deploymentService.deployApplication(name, descriptor.getComponentDescription());
+        } catch (SmartFrogException e) {
+            LOG.error(e);
+            throw e;
+        } catch (IOException e) {
+            LOG.error(e);
+            throw e;
+        }
     }
 
     /**
@@ -202,9 +216,17 @@ public class HadoopDeploymentCallback implements ClusterAllocationCompleted, Had
      */
     private NodeDeploymentService createNodeDeploymentService(HostInstance instance)
             throws SmartFrogException, IOException {
-        DynamicSmartFrogClusterController sfcontroller = (DynamicSmartFrogClusterController) controller;
-        NodeDeploymentService deploymentService = sfcontroller.createNodeDeploymentService(instance);
-        return deploymentService;
+        try {
+            DynamicSmartFrogClusterController sfcontroller = (DynamicSmartFrogClusterController) controller;
+            NodeDeploymentService deploymentService = sfcontroller.createNodeDeploymentService(instance);
+            return deploymentService;
+        } catch (SmartFrogException e) {
+            LOG.error(e);
+            throw e;
+        } catch (IOException e) {
+            LOG.error(e);
+            throw e;
+        }
     }
 
     /**
