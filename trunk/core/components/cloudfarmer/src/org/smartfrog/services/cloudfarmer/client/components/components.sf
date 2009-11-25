@@ -212,3 +212,13 @@ StopCluster extends WorkflowFarmerClient {
   sfClass "org.smartfrog.services.cloudfarmer.client.components.StopCluster";
 }
 
+/**
+ * Checks that the exact list of roles is supported. There are two API calls to get a list of roles
+ * this can be set to use either
+ */
+FarmCheckRoles extends WorkflowFarmerClient {
+  sfClass "org.smartfrog.services.cloudfarmer.client.components.FarmCheckRoles";
+  useListClusterRoles false;
+  //a list of roles
+  roles TBD;
+}
