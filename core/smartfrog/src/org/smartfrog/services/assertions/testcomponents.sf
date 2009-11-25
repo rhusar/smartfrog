@@ -138,6 +138,8 @@ TestCompound extends ActionCompound {
 
   exitType EXIT_TYPE_NORMAL;
   exitText "";
+  //this is a list of [classname, exception text] string tuples; each non-emtpy string is looked for in the classname
+  //and exception text
   exceptions [];
   forcePing false;
 
