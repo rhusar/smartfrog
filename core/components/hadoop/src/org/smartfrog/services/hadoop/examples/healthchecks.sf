@@ -21,12 +21,12 @@ For more information: www.smartfrog.org
 
 HealthCheck extends Sequence {
   description "a sequence to deploy on startup to check health of the system";
-  checkJava6PlusClassesPresent CheckJava6PlusClassesPresent;
-  checkJspHelperClasses CheckJspHelperClasses;
-  checkNamenodeJspClasses CheckNamenodeJspClasses;
-  checkJobtrackerJspClasses CheckJobtrackerJspClasses;
-  checkDatanodeJspClasses CheckDatanodeJspClasses;
-  checkJspClassesPresent  HadoopJspClasses;
+  checkJava6PlusClassesPresent extends CheckJava6PlusClassesPresent;
+  checkJspHelperClasses extends CheckJspHelperClasses;
+  checkNamenodeJspClasses extends CheckNamenodeJspClasses;
+  checkJobtrackerJspClasses extends CheckJobtrackerJspClasses;
+  checkDatanodeJspClasses extends CheckDatanodeJspClasses;
+  checkJspClassesPresent extends HadoopJspClasses;
   checkPolicyPermissions extends CheckPolicyPermissionsAddSupported;
 }
 
