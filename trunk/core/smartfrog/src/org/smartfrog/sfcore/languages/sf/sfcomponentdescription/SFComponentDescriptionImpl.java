@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
@@ -971,11 +972,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     * @param url the file to parse
     * @param params a context containing the parameter key-value pairs
     * @return the resultant component description
-    * @throws SmartFrogException
-    * @throws FileNotFoundException
+    * @throws SmartFrogException on parsing problems
+    * @throws FileNotFoundException if the resource does not resolve
     */
    public static ComponentDescription getDescriptionURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-	       Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
+       InputStream instream = SFClassLoader.getResourceAsStream(url);
+       if (instream == null) {
+           throw new FileNotFoundException("Unable to load " + url);
+       }
+       Phases p = new SFParser().sfParse(instream);
 	   	   
 	   	   // add params
            if (params != null) {
