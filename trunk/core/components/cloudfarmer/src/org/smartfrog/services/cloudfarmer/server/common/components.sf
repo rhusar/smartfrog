@@ -46,6 +46,7 @@ AbstractClusterFarmer extends Compound {
   NO_LIMIT -1;
 } 
  
+  
  /**
  * A cluster role defines a role for a cluster.
  * This is a template which may be used by specific farmers, in which case they may extend it with their own
@@ -54,30 +55,34 @@ AbstractClusterFarmer extends Compound {
  * The min/max values are used during allocation to ensure that the role numbers are not exceeded.
  * The recommended values are just hints for GUIs and other tools
  */
+ 
+ AbstractClusterRole extends {
+  NO_LIMIT -1;
+  //descriptive text for clients
+  description "";
+  //more detailed text
+  longDescription description;
+  
+  //minimum number of this role to create
+  min 0;
+  //max number
+  max NO_LIMIT;
+  
+  //the number you should create
+  recommendedMin 0 ;
+  //the maximum number
+  recommendedMax NO_LIMIT;
 
-ClusterRole extends Prim  {
+  /**
+   * This is where a list of options get added; clients can see all these values and act on them
+   */
+  options extends DATA {
+
+  }
+}
+
+
+ClusterRole extends AbstractClusterRole, Prim  {
   sfClass "org.smartfrog.services.cloudfarmer.server.common.ClusterRoleImpl";
-    NO_LIMIT -1;
-    //descriptive text for clients
-    description "";
-    //more detailed text
-    longDescription description;
-    
-    //minimum number of this role to create
-    min 0;
-    //max number
-    max NO_LIMIT;
-    
-    //the number you should create
-    recommendedMin 0 ;
-    //the maximum number
-    recommendedMax NO_LIMIT;
-
-    /**
-     * This is where a list of options get added; clients can see all these values and act on them
-     */
-    options extends DATA {
-
-    }
-
+  
 }
