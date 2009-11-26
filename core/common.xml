@@ -1067,7 +1067,6 @@ smartfrog.tasks.classpath=
 
     <presetdef name="sf-extended-expand">
       <sf-expandfully classpathref="run.classpath"
-        dir="${build.test.dir}"
           >
         <jvmarg line="${daemon.jvmargs}" />
         <!-- load in a property file if it is present -->
@@ -1081,6 +1080,7 @@ smartfrog.tasks.classpath=
         </syspropertyset>
       </sf-expandfully>
     </presetdef>
+    
   </target>
 
   <!-- ========================================================== -->
@@ -1697,8 +1697,9 @@ smartfrog.tasks.classpath=
   -->
   <target name="declare-system-test-tasks" depends="declare-extended-smartfrog-tasks,init-codebase" >
 
+    <property  name="functional.test.timeout" value="600" />
     <presetdef name="sf-system-test">
-      <sf-functionaltest testTimeout="600" shutdownTime="10">
+      <sf-functionaltest testTimeout="${functional.test.timeout}" shutdownTime="10">
         <application>
           <condition property="daemon.already.live">
             <socket server="localhost" port="${smartfrog.daemon.port}" />
