@@ -41,16 +41,24 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * Composite pattern for orchestration components
  */
 public class Composite extends CompoundImpl implements Compound, StateChangeNotification, RunSynchronisation, DeployingAgent {
-	
-   private String name="";
-   private boolean terminating=false;
-   private List<String> toTerminate = new ArrayList<String>();
-   private List<CompositeQueueListener> listeners = new ArrayList<CompositeQueueListener>();
-   private HashMap<String, ComponentDescription>  toDeploy = new HashMap<String, ComponentDescription>();
-   
-   private class CompositeQueueListener {
-	   boolean cleared=false;
-   }
+
+    private String name = "";
+    private volatile boolean terminating = false;
+    private List<String> toTerminate = new ArrayList<String>();
+    private List<CompositeQueueListener> listeners = new ArrayList<CompositeQueueListener>();
+    private HashMap<String, ComponentDescription> toDeploy = new HashMap<String, ComponentDescription>();
+
+    private static class CompositeQueueListener {
+        private volatile boolean cleared = false;
+
+        void clear() {
+            cleared = true;
+        }
+
+        public boolean isCleared() {
+            return cleared;
+        }
+    }
    
    public Composite() throws RemoteException {
 	   
@@ -64,7 +72,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	   }
 	   while (true) {
 		    synchronized (ccl){
-		    	if (ccl.cleared) break; //from while...
+		    	if (ccl.isCleared()) break; //from while...
 		    }
 		    sfLog().debug("Sleeping...");
 			try {Thread.sleep(5000);} catch(Exception e){}
@@ -215,7 +223,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	  }
 	  
 	  for (CompositeQueueListener l : listeners) {
-		  synchronized (l) { l.cleared=true; }
+          l.clear();
 	  }
 	  listeners.clear(); 
 	   
