@@ -20,17 +20,16 @@
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.UserInfo;
+import com.jcraft.jsch.UIKeyboardInteractive;
 import org.smartfrog.sfcore.logging.LogSF;
 
 /**
- * Implements UserInfo interface required by Jsch. Some of these methods are not in the current version of UserInfo;
- * they are retained for historical compatibility, and, as they return false, incur no development/maintenance costs. At
- * some point they may be deleted.
+ * Implements UserInfo interface required by Jsch. 
  *
  * @author Ashish Awasthi
  * @see com.jcraft.jsch.UserInfo
  */
-public class UserInfoImpl implements UserInfo {
+public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
 
     private String name;
     private String password = null;
@@ -45,43 +44,15 @@ public class UserInfoImpl implements UserInfo {
     }
 
     /**
-     * @return the username
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param message message to display to the user (discarded)
-     * @return pass phrase
-     */
-    public String getPassphrase(String message) {
-        return passphrase;
-    }
-
-    /**
      * @return the password
      */
+    @Override
     public String getPassword() {
         return password;
     }
 
-    /**
-     * prompt for a string
-     * @param str prompt text
-     * @return false always
-     */
-    public boolean prompt(String str) {
-        return false;
-    }
-
-    /**
-     * Retry
-     *
-     * @return false always
-     */
-    public boolean retry() {
-        return false;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -132,6 +103,7 @@ public class UserInfoImpl implements UserInfo {
      *
      * @return String
      */
+    @Override
     public String getPassphrase() {
         return passphrase;
     }
@@ -139,20 +111,49 @@ public class UserInfoImpl implements UserInfo {
     /**
      * @see com.jcraft.jsch.UserInfo#promptPassphrase(String)
      */
+    @Override
     public boolean promptPassphrase(String message) {
-        return true;
+        return passphrase!=null;
     }
 
     /**
      * @see com.jcraft.jsch.UserInfo#promptPassword(String)
      */
+    @Override
     public boolean promptPassword(String passwordPrompt) {
-        return false;
+        return password!=null;
     }
+
+    
+    /**
+     * Ant's Implementation of UIKeyboardInteractive#promptKeyboardInteractive.
+     *
+     * @param destination not used.
+     * @param username        not used.
+     * @param instruction not used.
+     * @param prompt      the method checks if this is one in length.
+     * @param echo        the method checks if the first element is false.
+     * @return the password in an size one array if there is a password and if the prompt and echo checks pass.
+     */
+    @Override
+    public String[] promptKeyboardInteractive(String destination,
+                                              String username,
+                                              String instruction,
+                                              String[] prompt,
+                                              boolean[] echo) {
+        if (prompt.length != 1 || echo[0] || password == null) {
+            return null;
+        }
+        String[] response = new String[1];
+        response[0] = password;
+        return response;
+    }
+
 
     /**
      * @see com.jcraft.jsch.UserInfo#promptYesNo(String)
      */
+    @Override
     public boolean promptYesNo(String message) {
         return trustAllCertificates;
     }
@@ -160,6 +161,7 @@ public class UserInfoImpl implements UserInfo {
     /**
      * @see com.jcraft.jsch.UserInfo#showMessage(String)
      */
+    @Override
     public void showMessage(String message) {
         log.info(message);
     }
@@ -170,6 +172,7 @@ public class UserInfoImpl implements UserInfo {
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return "user " + name + " [trustsEveryone:" + trustAllCertificates + ", authentication:"
                 + (password == null ? "no password" : "password set") + "]";

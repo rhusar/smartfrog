@@ -84,6 +84,7 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
             + " must be a lazy reference to a class that implements the "
             + "org.smartfrog.services.passwords.PasswordProvider" + " interface -";
     private final Reference attrKnownHosts;
+    public static final String CONNECTION_DETAILS = "connectionDetails";
 
     /**
      * Only subclasses can instantiate this
@@ -179,7 +180,7 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
         //create the user info to get filled in.
         userInfo = new UserInfoImpl(sfLog(), trustAllCerts);
         Prim provider = sfResolve(pwdProviderRef, (Prim) null, !usePublicKey);
-        if(provider!=null) {
+        if (provider != null) {
             if (!(provider instanceof PasswordProvider)) {
                 throw new SmartFrogResolutionException(
                         ERROR_WRONG_PASSWORD_PROVIDER_TYPE
@@ -199,7 +200,6 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
             userInfo.setPassphrase(passphrase);
         } else {
             userInfo.setPassword(passphrase);
-            userInfo.setPassphrase(passphrase);
         }
         userName = sfResolve(ATTR_USER, userName, true);
         userInfo.setName(userName);
@@ -310,8 +310,8 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
     }
 
     protected int getStringLength(String s) {
-        int len =0;
-        if (s !=null) {
+        int len = 0;
+        if (s != null) {
             len = s.length();
         }
         return len;
@@ -384,7 +384,7 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
         } else {
             lifecycleException = (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
         }
-        lifecycleException.add("connectionDetails", connectionDetails);
+        lifecycleException.add(CONNECTION_DETAILS, connectionDetails);
         return lifecycleException;
     }
 
@@ -416,9 +416,9 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
             message = TIMEOUT_MESSAGE + connectionDetails;
         } else if (faulttext.contains(AUTH_FAIL) || faulttext.contains(AUTH_CANCEL)) {
             int passLen = getPasswordLength();
-            message = "Unable to authenticate with the server  " + connectionDetails
+            message = "Unable to authenticate with the server " + connectionDetails
                     + "\nThis can be caused by: "
-                    + "\n -Unknown username \"" + userName + "\""
+                    + "\n -an unknown username \"" + userName + "\""
                     + (usePublicKey ?
                      "\n -key-based authentication failure; key file = " + keyFile 
                     :
@@ -427,10 +427,13 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
                              (" - \"" + userInfo.getPassword() + "\"")
                              : "")
                      + "\n -server not supporting password authentication"))
-                    + (trustAllCerts ?
-                    "\n -server not trusted" :
-                    "")
-                    + "\n -server not supporting login by that user";
+                    + (trustAllCerts ? "": 
+                      "\n -server not trusted" )
+                    + "\n -server not supporting login by that user"
+                    + "\nFault Text: " + faulttext
+                    + "\nUserinfo Text: " + userInfo;
+                    ;
+                
         } else if (faulttext.contains("reject HostKey:")) {
             message = "The host key of the server is not trusted:"
                     + (knownHosts != null ? (" (knownHosts=" + knownHosts + ')') : "")
