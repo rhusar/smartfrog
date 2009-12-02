@@ -55,7 +55,7 @@
     <dependency org="org.smartfrog"
         name="sf-xunit" changing="true"
         rev="latest.integration"
-        conf="compile->master;runtime->default"/>
+        conf="compile->master;runtime->default"/>    
     <dependency org="junit"
         name="junit"
         rev="${junit3.version}"
