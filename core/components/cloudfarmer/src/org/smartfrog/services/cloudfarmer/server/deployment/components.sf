@@ -52,6 +52,7 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   tempfilePrefix "sf_over_ssh_";
   //log level for communications
   logLevel LogLevel:LOG_LEVEL_INFO;
+  //if you use a password, you need a password provider
   //passwordProvider TBD;
   user LAZY PROPERTY user.name;
 
@@ -59,6 +60,12 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   //at either end
   keepFiles false;
 
+  //the home dir at the far end for SmartFrog. If non null, this is prefixed in front of every command
+  // (so include a / in it);
+  sf.home.dir "";
+  
+  //time in milliseconds to wait for the SSH port opening
+  portConnectTimeout (10 * 1000);
 }
 
 /**

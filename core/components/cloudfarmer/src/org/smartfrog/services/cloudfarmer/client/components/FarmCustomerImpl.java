@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -62,7 +63,9 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     private ComponentDescription toDeploy;
     private String toDeployName;
     private AtomicInteger inAllocationOperation= new AtomicInteger(0); 
-
+    private Prim target;
+    private String hostPrefix;
+    
     public FarmCustomerImpl() throws RemoteException {
     }
 
@@ -76,11 +79,14 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        
+        hostPrefix = sfResolve(ATTR_HOST_ATTR_PREFIX, "", true);
         role = sfResolve(ATTR_ROLE, "", true);
         min = sfResolve(ATTR_MIN, 0, true);
         max = sfResolve(ATTR_MAX, 0, true);
         deleteOnTerminate = sfResolve(ATTR_DELETE_ON_TERMINATE, true, true);
         farmer = (ClusterFarmer) sfResolve(ATTR_FARMER, (Prim) null, true);
+        target = sfResolve(ATTR_TARGET, (Prim) null, true);
         expectedHostnames = ListUtils.resolveStringList(this, new Reference(ATTR_EXPECTED_HOSTNAMES), true);
         toDeploy = sfResolve(ATTR_TO_DEPLOY, toDeploy, false);
         toDeployName = sfResolve(ATTR_TO_DEPLOY_NAME, toDeployName, true);
@@ -200,21 +206,25 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                         + " - instead of the expected number " + expected);
             }
             //put the host list up
-            Vector<String> hosts = new Vector<String>(created);
+            Vector<String> hostnameList = new Vector<String>(created);
             Vector<ClusterNode> clusterNodeList = new Vector<ClusterNode>(created);
             StringBuilder hostnames = new StringBuilder();
             HashMap<String, ClusterNode> nodeMap = new HashMap<String, ClusterNode>(created);
-
+            int counter = 0;
             for (ClusterNode node : clusterNodes) {
-                String hostname = node.getHostname();
-                hosts.add(hostname);
+                String hostname = node.isExternallyVisible() ?
+                        node.getExternalHostname() : node.getHostname();
+                hostnameList.add(hostname);
                 nodeMap.put(hostname, node);
                 hostnames.append(hostname).append(' ');
                 clusterNodeList.add(node);
+                target.sfReplaceAttribute(hostPrefix + counter, hostname);
+                counter++;
             }
             //publish the attributes
-            sfReplaceAttribute(ATTR_CLUSTERNODES, clusterNodeList);
-            sfReplaceAttribute(ATTR_HOSTNAMES, hosts);
+            target.sfReplaceAttribute(ATTR_CLUSTERNODES, clusterNodeList);
+            target.sfReplaceAttribute(ATTR_HOSTNAMES, hostnameList);
+            
 
             //now validate the expected hostname list
             for (String hostname : expectedHostnames) {
@@ -227,7 +237,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
             }
 
             //now, if the toDeploy field is not empty, push something out to all of them
-            if (toDeploy != null) {
+            if (toDeploy != null && !toDeployName.isEmpty()) {
                 for (ClusterNode node : clusterNodes) {
                     NodeDeploymentService service = farmer.createNodeDeploymentService(node);
                     sfLog().info("Deploying application " + toDeployName + " to " + node.getHostname());

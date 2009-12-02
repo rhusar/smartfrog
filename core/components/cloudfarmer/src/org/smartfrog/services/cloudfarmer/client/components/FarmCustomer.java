@@ -51,6 +51,10 @@ public interface FarmCustomer extends Remote {
     /**
      * {@value}
      */
+    String ATTR_HOSTS = "hosts";
+    /**
+     * {@value}
+     */
     String ATTR_CLUSTERNODES = "clusterNodes";
     /**
      * {@value}
@@ -60,6 +64,14 @@ public interface FarmCustomer extends Remote {
      * {@value}
      */
     String ATTR_TO_DEPLOY = "toDeploy";
-    
+
+    /**
+     * Does ping check nodes: {@value} 
+     */
     String ATTR_PING_CHECKS_NODES = "pingChecksNodes";
+    
+    
+    String ATTR_TARGET = "target";
+    
+    String ATTR_HOST_ATTR_PREFIX = "hostPrefix";
 }

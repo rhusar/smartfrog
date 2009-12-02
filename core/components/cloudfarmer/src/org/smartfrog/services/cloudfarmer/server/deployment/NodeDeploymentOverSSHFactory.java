@@ -10,6 +10,7 @@ import org.smartfrog.services.ssh.AbstractSSHComponent;
 import org.smartfrog.services.ssh.SSHComponent;
 import org.smartfrog.services.ssh.ScpTo;
 import org.smartfrog.services.ssh.SshCommand;
+import org.smartfrog.services.ports.PortUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogLevel;
@@ -35,11 +36,15 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     public static final String ATTR_LOG_LEVEL = "logLevel";
     public static final String ATTR_TEMP_FILE_PREFIX = "tempfilePrefix";
     public static final String ATTR_KEEP_FILES = "keepFiles";
+    public static final String ATTR_SF_HOME_DIR = "sf.home.dir";
+    public static final String ATTR_PORT_CONNECT_TIMEOUT = "portConnectTimeout";
+    
     private int outputLogLevel;
     private String tempfilePrefix;
     private Random random = new Random();
-
+    private int portConnectTimeout;
     private boolean keepFiles = false;
+    private String sfHomeDir ;
 
 
     public NodeDeploymentOverSSHFactory() throws RemoteException {
@@ -62,6 +67,8 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         tempfilePrefix = sfResolve(ATTR_TEMP_FILE_PREFIX, "", true);
         outputLogLevel = sfResolve(ATTR_LOG_LEVEL, LogLevel.LOG_LEVEL_INFO, true);
         keepFiles = sfResolve(ATTR_KEEP_FILES, keepFiles, true);
+        sfHomeDir = sfResolve(ATTR_SF_HOME_DIR, "", true);
+        portConnectTimeout = sfResolve(ATTR_PORT_CONNECT_TIMEOUT, portConnectTimeout, true);
         try {
             jschInstance = createJschInstance();
         } catch (JSchException e) {
@@ -77,6 +84,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
         return new NodeDeploymentOverSSH(node);
     }
+
 
     /**
      * Create a session instance if one is needed
@@ -107,7 +115,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
 
         NodeDeploymentOverSSH(ClusterNode node) {
             super(node);
-            hostname = node.getHostname();
+            hostname = node.getExternalHostname();
         }
 
         /**
@@ -119,10 +127,25 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             throw new IllegalStateException("getSession not supported");
         }
 
+        private String makeSFCommand(String command) {
+            if(sfHomeDir.isEmpty()) {
+                return command;
+            }
+            return sfHomeDir + command;
+        }
+        /**
+         * {@inheritDoc}
+         * @param name application name
+         * @param cd component description
+         * @throws IOException IO problems
+         * @throws SmartFrogException SF problems
+         */
         @Override
         public synchronized void deployApplication(String name, ComponentDescription cd)
                 throws IOException, SmartFrogException {
-
+            if(!getClusterNode().isExternallyVisible()) {
+                sfLog().warn("This node is not externally visible. Unless we are in the cell, deployment will not work");
+            }
             File localtempfile = File.createTempFile(tempfilePrefix, SF_SUFFIX);
             String desttempfile = destDir + tempfilePrefix + getNextNumber() + SF_SUFFIX;
             SFExpandFully.saveCDtoFile(cd, localtempfile);
@@ -131,9 +154,15 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             sourceFiles.add(localtempfile);
             destFiles.add(desttempfile);
             String connectionDetails = getConnectionDetails();
+            log.info("Deploying application "+ name + " to " + connectionDetails);
+            
+            //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
+            
+            PortUtils.checkPort(hostname, getPort(), portConnectTimeout);
+            
+            
             Session session = null;
             try {
-                log.info("Deploying application "+ name + " to " + connectionDetails);
                 session = demandCreateSession(hostname);
                 ArrayList<String> commandsList = new ArrayList<String>(1);
                 commandsList.add("mkdir -p " + destDir);
@@ -144,7 +173,8 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
                 //copy up the temp files
                 log.info("copying " + localtempfile + " to " + desttempfile);
                 scp.doCopy(session, destFiles, sourceFiles);
-                String sshCommand = "sfStart " + "localhost" + " " + name + " " + desttempfile;
+                String sshCommand;
+                sshCommand = makeSFCommand("sfStart") + " " + "localhost" + " " + name + " " + desttempfile;
                 log.info("executing: " + sshCommand);
                 commandsList = new ArrayList<String>(1);
                 commandsList.add(sshCommand);
@@ -165,7 +195,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         }
 
         private String getConnectionDetails() {
-            return hostname + ":" + getPort();
+            return getUserName() +"@" +hostname + ":" + getPort() ;
         }
 
         /**
@@ -189,7 +219,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
             OutputStreamLog outputStreamLog = new OutputStreamLog(log, outputLogLevel);
             ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
             TeeOutputStream teeOut = new TeeOutputStream(outputStreamLog, byteOutputStream);
-            int exitCode = command.execute(session, commandsList, outputStreamLog, getTimeout());
+            int exitCode = command.execute(session, commandsList, teeOut, getTimeout());
             if (checkResponse && exitCode != 0) {
                 String output = byteOutputStream.toString(SSH_RESPONSE_CHARSET);
                 throw new SmartFrogException("Error response on command " + commandsList.get(0)
@@ -221,7 +251,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
                 log.info("Terminating application " + name + " for " + exitText);
                 session = demandCreateSession(hostname);
                 ArrayList<String> commandsList = new ArrayList<String>(1);
-                String sshCommand = "sfTerminate " + "localhost" + " " + name;
+                String sshCommand = makeSFCommand("sfTerminate") + " " + "localhost" + " " + name;
                 log.info("executing: " + sshCommand);
                 commandsList.add(sshCommand);
                 commandsList.add("exit");
