@@ -1654,6 +1654,12 @@ smartfrog.tasks.classpath=
         </syspropertyset>
       </sf-deploy>
     </presetdef>
+    <presetdef name="run" >
+      <sf-run-locally 
+          classpathref="tests.run.classpath">
+        <codebase url="${codebase}"/>
+      </sf-run-locally>
+    </presetdef>
   </target>
 
   <target name="ready-to-undeploy" depends="init-deploy-properties,init-codebase">
