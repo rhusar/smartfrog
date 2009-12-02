@@ -22,6 +22,7 @@ package org.smartfrog.services.ports;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 /**
  * Created 28-May-2008 15:22:20
@@ -32,9 +33,22 @@ public class PortUtils {
     private PortUtils() {
     }
 
+    /**
+     * probe a port for being open
+     *
+     * @param hostname hostname to resolve/check
+     * @param port port to check
+     * @param connectTimeout timeout
+     * @throws IOException failure to connect, including timeout
+     */
+    public static void checkPort(String hostname, int port, int connectTimeout) throws IOException {
+        InetSocketAddress address = new InetSocketAddress(hostname, port);
+        checkPort(address, connectTimeout);
+    }
+    
 
     /**
-     * Here is where the port gets probed
+     * probe a port for being open
      *
      * @param address        address to check
      * @param connectTimeout timeout
@@ -47,7 +61,10 @@ public class PortUtils {
             socket.connect(address, connectTimeout);
         } catch (SecurityException e) {
             throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
-        } finally {
+        } catch (SocketTimeoutException ste) {
+            throw (SocketTimeoutException)new SocketTimeoutException("Timeout connecting to "+ address).initCause(ste);
+        }
+        finally {
             if (socket != null) {
                 try {
                     socket.close();
