@@ -76,8 +76,6 @@ FarmCustomer extends AbstractFarmerClient {
   //-it is OK to have other hostnames too. 
   expectedHostnames [];
   
-  //after allocation, the hostnames attribute is set to the list of hosts
-  //hostnames
   
   //name of an application to deploy
   toDeployName "application"; 
@@ -86,6 +84,15 @@ FarmCustomer extends AbstractFarmerClient {
   
   //should a ping check the nodes
   pingChecksNodes true;
+ 
+  //component to give the results
+  target LAZY THIS;
+  //prefix to get every host followed by a number (0, 1, ... 10, ...). No leading zeros.
+  hostPrefix "host-";
+  //after allocation, the target:hostnames attribute is set to the list of hosts
+  //after allocation, the target:clusternodes attribute is set to the list of cluster node structures
+  //hostnames
+  
 }
 
 WorkflowFarmCustomer extends FarmCustomer {
