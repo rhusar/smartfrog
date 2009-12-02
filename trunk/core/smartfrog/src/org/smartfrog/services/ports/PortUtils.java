@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.common;
+package org.smartfrog.services.ports;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -27,9 +27,9 @@ import java.net.Socket;
  * Created 28-May-2008 15:22:20
  */
 
-public class HadoopUtils {
+public class PortUtils {
 
-    private HadoopUtils() {
+    private PortUtils() {
     }
 
 
