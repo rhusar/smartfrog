@@ -32,12 +32,10 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 
 /**
- * This is an abstract base class for test suites.
- * Its key feature is that it provides a thread local context variable that can be used to retrieve the current
- * context of a running test.
+ * This is an abstract base class for test suites. Its key feature is that it provides a thread local context variable
+ * that can be used to retrieve the current context of a running test.
  *
- * Because it extends ConditionCompound, it has the event workflow lifecycle
- * created 10-Oct-2006 11:39:29
+ * Because it extends ConditionCompound, it has the event workflow lifecycle created 10-Oct-2006 11:39:29
  */
 
 public abstract class AbstractTestSuite extends ConditionCompound implements TestSuite {
@@ -60,16 +58,14 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
     protected ComponentHelper helper;
 
     /**
-     * Error Text
-     * </p>
-     * {@value}
+     * Error Text </p> {@value}
      */
-    public static final String ERROR_OVERWRITING_CONTEXT = "Overwriting an existing thread-local configuration context.\n"
-        +"Multiple thread runners may be active in the same thread\n"
-        +"or the tests are themselves deploying tests.";
+    public static final String ERROR_OVERWRITING_CONTEXT =
+            "Overwriting an existing thread-local configuration context.\n"
+                    + "Multiple thread runners may be active in the same thread\n"
+                    + "or the tests are themselves deploying tests.";
     /**
-     * Error Text
-     * {@value}
+     * Error Text {@value}
      */
     public static final String ERROR_OVERWRITING_SELF = "The component is overwriting its own configuration";
 
@@ -79,6 +75,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * {@inheritDoc}
+     *
      * @return false
      */
     @Override
@@ -93,7 +90,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return true
      */
     @Override
-    protected boolean onEvaluateNoCondition()  {
+    protected boolean onEvaluateNoCondition() {
         return true;
     }
 
@@ -142,21 +139,21 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * bind to the configuration. A null parameter means 'stop binding'
      *
      * @param configuration config to bind to
-     * @throws RemoteException on network trouble
+     * @throws RemoteException    on network trouble
      * @throws SmartFrogException for other problems
      */
     public void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException {
-        boolean overwriting=false;
-        boolean overwritingourselves=false;
-        synchronized(getConfigurationContext()) {
+        boolean overwriting = false;
+        boolean overwritingourselves = false;
+        synchronized (getConfigurationContext()) {
             RunnerConfiguration current = getConfigurationContext().get();
-            if(current !=null && configuration!=null) {
-                overwriting=true;
-                overwritingourselves= current == configuration;
+            if (current != null && configuration != null) {
+                overwriting = true;
+                overwritingourselves = current == configuration;
             }
             getConfigurationContext().set(configuration);
             //set or reset the test suite context
-            if(configuration!=null) {
+            if (configuration != null) {
                 if (getTestSuiteContext().get() != null) {
                     overwriting = true;
                 }
@@ -170,7 +167,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
             //warn that something got overwritten. It is probably harmless, but can
             //cause interesting behaviour
             sfLog().info(ERROR_OVERWRITING_CONTEXT);
-            if(overwritingourselves) {
+            if (overwritingourselves) {
                 sfLog().info(ERROR_OVERWRITING_SELF);
             }
         }
@@ -186,6 +183,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Get the thread local configuration.
+     *
      * @return the configuration (may be null)
      */
     public static RunnerConfiguration getConfiguration() {
@@ -194,6 +192,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Get the thread local test suite
+     *
      * @return the configuration (may be null)
      */
     public static Prim getTestSuite() {
@@ -203,10 +202,11 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Decide whether or not to skip the suite; report it if true
-     * @see #reportSkippedTestSuite()
+     *
      * @return true if the test is to be skipped
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException other problems
+     * @see #reportSkippedTestSuite()
      */
     protected boolean maybeSkipTestSuite() throws RemoteException, SmartFrogException {
         if (!evaluate()) {
@@ -219,15 +219,17 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Report a skipped test
-     * @throws RemoteException network trouble
+     *
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException other problems
      */
-    protected void reportSkippedTestSuite () throws RemoteException, SmartFrogException {
+    protected void reportSkippedTestSuite() throws RemoteException, SmartFrogException {
         //TODO: any reporting
     }
 
     /**
      * Get the test listener factory from this configuration
+     *
      * @return the test listener factory
      */
     protected TestListenerFactory getTestListenerFactory() {
@@ -256,10 +258,11 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Create a new listener from the current factory.
+     *
      * @param suiteName name of the suite
      * @return a new listener
      * @throws SmartFrogException if needed
-     * @throws RemoteException on network trouble
+     * @throws RemoteException    on network trouble
      */
     protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException {
         TestListenerFactory listenerFactory = getTestListenerFactory();
@@ -273,11 +276,11 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
     }
 
     /**
-     * write all our state to the results order it so that we set the finished
-     * last
+     * write all our state to the results order it so that we set the finished last
+     *
      * @param finished finished flag
      * @throws SmartFrogRuntimeException if needed
-     * @throws RemoteException on network trouble
+     * @throws RemoteException           on network trouble
      */
     protected void updateResultAttributes(boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
@@ -286,17 +289,19 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Get the current configuration; create it if needed
+     *
      * @return the configuration context thread local
      */
     private static synchronized ThreadLocal<RunnerConfiguration> getConfigurationContext() {
-        if(configurationContext==null) {
-            configurationContext=new ThreadLocal<RunnerConfiguration>();
+        if (configurationContext == null) {
+            configurationContext = new ThreadLocal<RunnerConfiguration>();
         }
         return configurationContext;
     }
 
     /**
      * Get the current test suite context; create it if needed
+     *
      * @return the test suite context thread local
      */
     private static synchronized ThreadLocal<Prim> getTestSuiteContext() {

@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -52,9 +53,6 @@ import java.util.Properties;
 
 public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestSuite,
         junit.framework.TestListener {
-
-    /** our log */
-    private Log log;
 
     /** List of classes to test */
     private List<String> classes;
@@ -91,6 +89,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             + ATTR_SYSPROPS;
     /** {@value } */
     private static final String SUITE_METHOD_NAME = "suite";
+    /** {@value } */
     public static final String WARN_IGNORING_REMOTE_FAULT = "Ignoring remote fault";
 
     public JUnit3TestSuiteImpl() throws RemoteException {
@@ -108,7 +107,6 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        log=sfLog();
         readConfiguration();
     }
 
@@ -135,36 +133,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         singleTest = sfResolve(ATTR_SINGLE_TEST, singleTest, false);
 
         //properties. extract the list, flatten it and bind to sysproperties
-        List propList = (List) sfResolve(ATTR_SYSPROPS,
-                (List) null,
-                false);
-        //TODO: represent as tuples
-
-        if (propList != null && !propList.isEmpty()) {
-            List<String> properties = ListUtils.flattenStringList(propList, ATTR_SYSPROPS);
-            String[] values = new String[0];
-            values = properties.toArray(values);
-            int len = values.length;
-            if ((len % 2) != 0) {
-                //build up an error message with as much data as we can include
-                StringBuffer valuesBuffer = new StringBuffer(" [");
-                for (int i = 0; i < len; i++) {
-                    valuesBuffer.append(values[i]);
-                    valuesBuffer.append(' ');
-                }
-                valuesBuffer.append(']');
-                throw new SmartFrogInitException(ERROR_UNEVEN_PROPERTIES + valuesBuffer);
-            }
-
-            // system properties
-            sysproperties = new Properties();
-
-            for (int i = 0; i < len; i += 2) {
-                String key = values[i];
-                String value = values[i + 1];
-                sysproperties.setProperty(key, value);
-            }
-        }
+        sysproperties = ListUtils.resolveProperties(this, new Reference(ATTR_SYSPROPS), true); 
 
         //package attribute names a package
         packageValue = sfResolve(ATTR_PACKAGE, packageValue, false);
@@ -213,7 +182,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
                 || singleTest.equals(fullname);
 
         if (add && testClasses.get(fullname) == null) {
-            log.debug("adding test " + fullname);
+            sfLog().debug("adding test " + fullname);
             testClasses.put(fullname, fullname);
         }
     }
@@ -229,7 +198,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     }
 
     private void log(String message) {
-        log.info(message);
+        sfLog().info(message);
     }
 
 
@@ -254,7 +223,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     public boolean runTests() throws RemoteException, SmartFrogException {
 
 
-        log.info("Running junit3 test suite " + suitename);
+        sfLog().info("Running junit3 test suite " + suitename);
         checkConfigured();
         //bind to our listener
         TestListenerLog testLog = null;
@@ -273,10 +242,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             }
 
             //copy any system properties over
-            if (sysproperties != null) {
-                Utils.applySysProperties(sysproperties);
-
-            }
+            Utils.applySysProperties(sysproperties);
 
             // set up our context
             HashMap<String, Object> context = new HashMap<String, Object>();
@@ -296,7 +262,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
                     throw SmartFrogException.forward(e);
                 }
                 if (Thread.currentThread().isInterrupted()) {
-                    log.error("Interrupted test thread");
+                    sfLog().error("Interrupted test thread");
                     failed = true;
                 }
                 updateResultAttributes(false);
@@ -440,7 +406,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     private void injectTestContext(Test test, HashMap<String, Object> context) {
         if (test instanceof TestContextInjector) {
             TestContextInjector tci = (TestContextInjector) test;
-            tci.setTestContext(context);
+            tci.setTestContext((HashMap<String, Object>) context.clone());
         } else if (test instanceof TestSuite) {
             injectTestContext((TestSuite) test, context);
         }
@@ -476,7 +442,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @param e exception
      */
     private void IgnoreRemoteFault(Exception e) {
-        log.warn(WARN_IGNORING_REMOTE_FAULT, e);
+        sfLog().warn(WARN_IGNORING_REMOTE_FAULT, e);
     }
 
     /**
