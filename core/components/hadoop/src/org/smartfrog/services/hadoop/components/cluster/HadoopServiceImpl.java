@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
-import org.smartfrog.services.hadoop.common.HadoopUtils;
+import org.smartfrog.services.ports.PortUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.BindingTuple;
@@ -144,7 +144,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             InetSocketAddress address = port.address;
             if (address.getPort() > 0) {
                 try {
-                    HadoopUtils.checkPort(address, CONNECT_TIMEOUT);
+                    PortUtils.checkPort(address, CONNECT_TIMEOUT);
                     //this is bad, the port is open
                     ports.append("Open port: ").append(port).append("\n");
                 } catch (IOException connectFailure) {

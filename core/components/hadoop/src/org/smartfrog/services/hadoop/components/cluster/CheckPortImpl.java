@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.net.NetUtils;
-import org.smartfrog.services.hadoop.common.HadoopUtils;
+import org.smartfrog.services.ports.PortUtils;
 import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -206,7 +206,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         try {
             sfLog().info("Checking host:port " + address
                     + (checkPortOpen ? " is open" : " is closed"));
-            HadoopUtils.checkPort(address, connectTimeout);
+            PortUtils.checkPort(address, connectTimeout);
         } catch (IOException e) {
             if (checkPortOpen) {
                 throw e;
