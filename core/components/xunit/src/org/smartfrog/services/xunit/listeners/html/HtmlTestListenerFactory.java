@@ -31,30 +31,22 @@ public interface HtmlTestListenerFactory extends XmlListenerFactory {
 
 
     /**
-     * page title.
-     * <p/>
-     * {@value}
+     * page title. <p/> {@value}
      */
     String ATTR_TITLE = "title";
 
     /**
-     * Resource to the CSS to embed into every page
-     * <p/>
-     * {@value}
+     * Resource to the CSS to embed into every page <p/> {@value}
      */
     String ATTR_CSS_RESOURCE = "cssResource";
 
     /**
-     * remote CSS URL
-     * <p/>
-     * {@value}
+     * remote CSS URL <p/> {@value}
      */
     String ATTR_CSS_URL = "cssURL";
 
     /**
-     * inline CSS info
-     * <p/>
-     * {@value}
+     * inline CSS info <p/> {@value}
      */
     String ATTR_CSS_DATA = "cssData";
 }

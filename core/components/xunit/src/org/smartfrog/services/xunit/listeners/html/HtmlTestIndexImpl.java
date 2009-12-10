@@ -44,12 +44,11 @@ public class HtmlTestIndexImpl extends XmlTestIndexImpl implements HtmlTestIndex
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
-     * @throws SmartFrogException
-     *                                  failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -66,15 +65,16 @@ public class HtmlTestIndexImpl extends XmlTestIndexImpl implements HtmlTestIndex
 
     /**
      * notify indexer that a test suite has started
-     * @param suite test suite
-     * @param hostname host starting the tests
+     *
+     * @param suite       test suite
+     * @param hostname    host starting the tests
      * @param processname process of the tests
-     * @param suitename name of the suite
-     * @param timestamp when they started
-     * @param listener who is listening to it
-     * @param filename the file being created
+     * @param suitename   name of the suite
+     * @param timestamp   when they started
+     * @param listener    who is listening to it
+     * @param filename    the file being created
      * @throws SmartFrogException SmartFrog trouble
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
 
     public void testSuiteStarted(TestSuite suite,
