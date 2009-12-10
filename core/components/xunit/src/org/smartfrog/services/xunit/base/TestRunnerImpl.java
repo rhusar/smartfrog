@@ -201,6 +201,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @throws SmartFrogException failure deploying compound or sub-component
      * @throws RemoteException    In case of Remote/nework error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -234,7 +235,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
                     shouldTerminate,
                     false);
             listenerPrim = sfResolve(ATTR_LISTENER,
-                    (Prim) configuration.getListenerFactory(),
+                    (Prim) null,
                     true);
             if (!(listenerPrim instanceof TestListenerFactory)) {
                 throw new SmartFrogException("The attribute " +
@@ -279,7 +280,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
                 sendEvent(new TestStartedEvent(this));
                 skipped = true;
                 updateFlags(false);
-                String message = "Skipping test run " + getName();
+                String message = getName() + " skipping test run " +  description;
                 sfLog().info(message);
                 //send a test started event
                 //followed by a the closing results
@@ -331,9 +332,10 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     public synchronized void sfTerminateWith(TerminationRecord status) {
         sendEvent(new TerminatedEvent(this, status));
         super.sfTerminateWith(status);
-        WorkflowThread thread = getWorker();
-        thread.requestTerminationWithInterrupt();
-        WorkflowThread.requestThreadTerminationWithInterrupt(thread);
+        WorkflowThread.requestThreadTerminationWithInterrupt(getWorker());
+        if(listenerPrim != null) {
+            //do anything with the listener?
+        }
     }
 
     /**
@@ -384,6 +386,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
             TerminationRecord record = createTerminationRecord();
             sendEvent(createTestCompletedEvent(record));
 
+            //the workflow thread handles the inner work
 
             //now look at our termination actions
 /*            if (shouldTerminate) {

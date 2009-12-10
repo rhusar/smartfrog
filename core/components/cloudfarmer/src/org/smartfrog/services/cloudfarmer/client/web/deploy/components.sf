@@ -56,11 +56,11 @@ StrutsOnJetty extends Compound {
   //this is for commons logging, which allows the struts code to use the commons logging API
   //and not be restricted to running under SF only
   //commonsLogging extends BindCommonsLogging;
+  host CoreJettyServer:ANY_HOST;
 
   server extends CoreJettyServer {
-
     port PARENT:port;
-
+    host PARENT:host
     server "jetty";
 
   }
@@ -75,7 +75,10 @@ StrutsOnJetty extends Compound {
 
   listener extends JettySocketConnector {
     port PARENT:port;
+    host PARENT:host
     server LAZY PARENT:server;
+    //we want IPv4 only
+    allowIPv6 false;
   }
 
   servlets extends ServletContext {

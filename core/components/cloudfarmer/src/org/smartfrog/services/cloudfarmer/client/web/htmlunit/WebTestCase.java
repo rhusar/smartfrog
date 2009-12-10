@@ -53,11 +53,11 @@ public abstract class WebTestCase extends TestCaseWithContext {
     }
 
     protected String getClusterURL() {
-        return getProperty(TEST_WEB_URL + "/cluster", "");
+        return getRequiredProperty(TEST_WEB_URL) + "/cluster";
     }
 
     protected String getWorkflowURL() {
-        return getProperty(TEST_WEB_URL + "/workflow", "");
+        return getRequiredProperty(TEST_WEB_URL) + "/workflow";
     }
 
     protected WebClient getWebClient() {

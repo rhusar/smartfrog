@@ -33,7 +33,6 @@ import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -580,17 +579,19 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
     public static TestInfo createTestInfo(Test test, Throwable fault) {
         TestInfo testInfo = new TestInfo(fault);
         String classname = test.getClass().getName();
+        String testname = classname;
         String text;
         if (test instanceof TestCase) {
             //TestCase information is extracted specially
             TestCase testCase = (TestCase) test;
             text = testCase.getName();
+            testname = text;
         } else {
             //any other kind of test has no name, just
             //a string value
             text = test.toString();
         }
-        testInfo.setName(classname);
+        testInfo.setName(testname);
         testInfo.setText(text);
         return testInfo;
     }

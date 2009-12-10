@@ -73,7 +73,7 @@ public class OneHostXMLListener implements FileListener {
 
     protected OutputStream outstream = null;
     protected Writer out = null;
-
+    protected XmlListenerFactory owner;
 
     protected int testCount, errorCount, failureCount;
 
@@ -99,7 +99,7 @@ public class OneHostXMLListener implements FileListener {
      * Listen to stuff coming from a single host. opens the file for future messages
      *
      * @param hostname    hostname of the (possibly remote system)
-     * @param processname
+     * @param processname process name
      * @param suitename   name of the test suite
      * @param destFile    destination file
      * @param startTime   timestamp (in UTC) of the start of the tests
@@ -117,6 +117,7 @@ public class OneHostXMLListener implements FileListener {
         this.suitename = suitename;
         this.startTime = startTime;
         this.preamble = preamble;
+        
         tests = new HashMap<String, TestInfo>();
     }
 
@@ -126,6 +127,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @throws Throwable
      */
+    @Override
     protected void finalize() throws Throwable {
         assert outstream == null : ERROR_OUTPUT_FILE_OPEN;
         assert out == null : ERROR_OUTPUT_FILE_OPEN;
@@ -133,10 +135,19 @@ public class OneHostXMLListener implements FileListener {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOwner(XmlListenerFactory owner){
+        this.owner = owner;
+    }
+
+    /**
      * open the file for writing
      *
      * @throws IOException
      */
+    @Override
     public synchronized void open() throws IOException {
         assert !isOpen() : "file is already open";
         destFile.getParentFile().mkdirs();
@@ -147,6 +158,10 @@ public class OneHostXMLListener implements FileListener {
         flush();
     }
 
+    /**
+     * Override point: write out the document header
+     * @throws IOException IO problems
+     */
     protected synchronized void writeDocumentHeader() throws IOException {
         out.write(XML_DECLARATION);
         out.write("\n");
@@ -169,6 +184,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @throws IOException IO trouble
      */
+    @Override
     public synchronized void close() throws IOException {
         if (!isOpen()) {
             //harmless to close an already closed file.
@@ -190,6 +206,9 @@ public class OneHostXMLListener implements FileListener {
         out = null;
         outstream = null;
         destFile = null;
+        if (owner != null) {
+            owner.unregisterInstance(this);
+        }
     }
 
     /**
@@ -222,6 +241,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @return true iff the file is not null
      */
+    @Override
     public boolean isOpen() {
         return out != null;
     }
@@ -242,6 +262,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return destFile != null ? destFile.toString() : super.toString();
     }
@@ -253,18 +274,23 @@ public class OneHostXMLListener implements FileListener {
      *
      * @throws SmartFrogException containing a nested IOException
      */
-    public synchronized void endSuite() throws SmartFrogException {
+    @Override
+    public synchronized void endSuite() throws SmartFrogException, RemoteException {
         try {
             close();
-            tests = null;
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
+        } finally {
+            tests = null;
         }
     }
 
     /**
      * An error occurred.
      */
+    @Override
     public synchronized void addError(TestInfo test) {
         errorCount++;
         tests.put(test.getText(), test);
@@ -273,6 +299,7 @@ public class OneHostXMLListener implements FileListener {
     /**
      * A failure occurred.
      */
+    @Override
     public synchronized void addFailure(TestInfo test) {
         failureCount++;
         tests.put(test.getText(), test);
@@ -281,6 +308,7 @@ public class OneHostXMLListener implements FileListener {
     /**
      * A test ended.
      */
+    @Override
     public synchronized void endTest(TestInfo test) throws SmartFrogException {
         testCount++;
         TestInfo cached = tests.get(test.getText());
@@ -301,6 +329,7 @@ public class OneHostXMLListener implements FileListener {
     /**
      * A test started.
      */
+    @Override
     public void startTest(TestInfo test) {
         //do nothing
     }
@@ -311,6 +340,7 @@ public class OneHostXMLListener implements FileListener {
      * @param event
      * @throws RemoteException
      */
+    @Override
     public void log(LogEntry event) throws RemoteException {
         String tag = "log-" + event.levelToText();
         String attrs;
@@ -329,6 +359,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @param tag  element name
      * @param test test result to log
+     * @throws SmartFrogException IO problems
      */
     protected synchronized void add(String tag, TestInfo test) throws SmartFrogException {
         String entry = toXML(tag, test);
@@ -350,6 +381,8 @@ public class OneHostXMLListener implements FileListener {
      * @param tag   element name
      * @param attrs attributes (can be null)
      * @param body  text body (can be null)
+     * @param escape should the XML be escaped?
+     * @throws IOException on a failure to write something
      */
     protected synchronized void write(String tag,
                                       String attrs,
@@ -541,6 +574,7 @@ public class OneHostXMLListener implements FileListener {
      * @param that other instance
      * @return true for a match
      */
+    @Override
     public boolean equals(Object that) {
         if (this == that) {
             return true;
@@ -560,6 +594,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @return a hash code
      */
+    @Override
     public int hashCode() {
         return destFile.toString().hashCode();
     }
@@ -569,6 +604,7 @@ public class OneHostXMLListener implements FileListener {
      *
      * @return the filename used
      */
+    @Override
     public String getFilename() {
         return destFile.getAbsolutePath();
     }

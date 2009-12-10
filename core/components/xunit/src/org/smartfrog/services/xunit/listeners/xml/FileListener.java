@@ -40,6 +40,14 @@ public interface FileListener extends TestListener {
      */
     String ATTR_FILE = "file";
 
+
+    /**
+     * Define the owner; listeners should tell this when they are closed
+     * @param owner owning instance
+     * @throws RemoteException  network trouble
+     */
+    void setOwner(XmlListenerFactory owner) throws RemoteException;
+    
     /**
      * get the filename of this
      *

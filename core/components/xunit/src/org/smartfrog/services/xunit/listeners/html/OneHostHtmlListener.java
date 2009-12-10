@@ -66,6 +66,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      *
      * @throws IOException IO trouble
      */
+    @Override
     protected synchronized void writeDocumentHeader() throws IOException {
         writeln(XML_DECLARATION);
         //a strict HTML 1.1 document
@@ -113,6 +114,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @throws IOException IO trouble
      */
 
+    @Override
     protected synchronized void writeDocumentTail() throws IOException {
         writeSummary();
         exit("body");
@@ -187,6 +189,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @param event event
      * @throws RemoteException network trouble
      */
+    @Override
     public void log(LogEntry event) throws RemoteException {
 
         String type = style(event);
@@ -248,6 +251,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @param test test
      * @return xml variant
      */
+    @Override
     protected String toXML(String tag, TestInfo test) {
         StringBuilder body = new StringBuilder();
         enter(body, "div", style("testblock"));
@@ -279,6 +283,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @param fault fault cause
      * @return empty string if fault is null, else an xml declaration
      */
+    @Override
     protected String toXML(ThrowableTraceInfo fault) {
         String result;
         if (fault == null) {

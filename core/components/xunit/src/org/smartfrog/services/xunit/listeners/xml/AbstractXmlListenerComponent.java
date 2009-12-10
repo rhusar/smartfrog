@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * An abstract base class for XML Listeners
@@ -55,6 +57,10 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     protected String suffix = ".xml";
     protected String prefix = "";
     private boolean useProcessname;
+    /**
+     * Here are the instances
+     */
+    private List<FileListener> instances = new LinkedList<FileListener>();
 
     protected AbstractXmlListenerComponent() throws RemoteException {
     }
@@ -78,7 +84,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
 
     /**
      * thread-safe accessor to the suite-file mapping
-     *
+     * @param hostname host name to look up
      * @param suitename suite to lookup
      * @return absolute path of the output file, or null for no mapping.
      */
@@ -164,6 +170,41 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
+     * 
+     * register an instance in the instance list
+     * @param instance new instance
+     */
+    protected void registerInstance(FileListener instance) {
+        instances.add(instance);
+    }
+
+    /**
+    * Close and Unregister a listener instance. Harmless if the instance is not registered
+    *
+    * @param instance instance to unregister
+    * @throws RemoteException network problems
+    */
+    @Override
+    public void unregisterInstance(FileListener instance) throws RemoteException {
+        if (instance != null) {
+            boolean removed;
+            synchronized (this) {
+                removed = instances.remove(instance);
+            }
+            if(removed) {
+                try {
+                    instance.close();
+                } catch (IOException e) {
+                    log.error(e);
+                } catch (SmartFrogException e) {
+                    log.error(e);
+                }
+            }
+        }
+    }
+    
+    
+    /**
      * Start listening to a test suite
      *
      * @param suite       the test suite that is about to run. May be null, especially during testing.
@@ -209,19 +250,23 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
                     destpath);
         }
 
+        FileListener fileListener = null;
         try {
             Date start = new Date(timestamp);
-            FileListener fileLog;
-            fileLog = createNewSingleHostListener(hostname,
+            fileListener = createNewSingleHostListener(hostname,
                     destFile,
                     processname,
                     suitename,
                     start);
-            fileLog.open();
-            return fileLog;
+            fileListener.setOwner(this);
+            registerInstance(fileListener);
+            fileListener.open();
+            return fileListener;
         } catch (RemoteException e) {
+            unregisterInstance(fileListener);
             throw e;
         } catch (IOException e) {
+            unregisterInstance(fileListener);
             throw SmartFrogException.forward("Failed to open ", e);
         }
     }
