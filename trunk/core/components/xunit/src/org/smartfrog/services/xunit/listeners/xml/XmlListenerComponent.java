@@ -30,7 +30,8 @@ public class XmlListenerComponent
 
      * @throws IOException for problems
      */
-    protected FileListener createNewSingleHostListener(String hostname,
+    @Override
+    public FileListener createNewSingleHostListener(String hostname,
                                                              File destFile,
                                                              String processname, String suitename,
                                                              Date start) throws

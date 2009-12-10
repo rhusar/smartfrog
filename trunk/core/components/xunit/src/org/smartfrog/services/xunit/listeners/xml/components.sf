@@ -47,7 +47,9 @@ XmlTestIndex extends Prim {
 XmlListenerSchema extends DirectoryBasedTestListenerSchema {
     //outputFile extends Compulsory ;
     //XML preamble: comments, XSLT references, etc.
-    preamble extends OptionalString;
+    preamble extends String;
+    prefix extends String;
+    suffix extends String;
     indexFile extends OptionalString;
     useHostname extends Boolean;
     useProcessname extends Boolean;
@@ -64,5 +66,7 @@ XmlListener extends TestListener {
     useHostname true;
     useProcessname false;
     suffix ".xml";
+    prefix "";
+    preamble "";
     name "XmlListener";
 }

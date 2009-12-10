@@ -65,6 +65,11 @@ public interface XmlListenerFactory extends TestListenerFactory {
      */
     String ATTR_SUFFIX = "suffix";
     /**
+     * {@value}
+     */
+    String ATTR_PREFIX = "prefix";
+
+    /**
      * frequency of publish.
      * {@value}
      */

@@ -44,6 +44,7 @@ AntXmlTestListener extends XmlListener {
     htmlTestListenerSchema extends HtmlTestListenerSchema;
     name "AntXmlTestListener";
     suffix ".xml";
+    prefix "TEST-";
     useProcessname false;
     useHostname false;
     publishFrequency 30;
