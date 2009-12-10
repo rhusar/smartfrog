@@ -30,15 +30,15 @@
    * package tree with the matching pattern, and/or the named class
    */
   JUnit3TestSuite extends PackagedTestSuite {
-      junit3TestSuiteSchema extends Schema {
+    junit3TestSuiteSchema extends Schema {
         //deprecated: use a condition
         if extends OptionalBoolean;
         //deprecated: use a condition
         unless extends OptionalBoolean;
     }
-      sfClass "org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl";
-      if true;
-      unless false;
+    sfClass "org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl";
+    if true;
+    unless false;
   }
   
   
