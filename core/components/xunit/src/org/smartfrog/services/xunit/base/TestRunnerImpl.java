@@ -113,16 +113,17 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * Error text {@value}
      */
     public static final String ERROR_TESTS_IN_PROGRESS = "Component is already running tests";
+    private static final String TEST_FAILURE_IN = "Test failure in ";
     /**
      * Error text {@value}
      */
-    public static final String TESTS_FAILED = "Tests Failed";
+    public static final String TESTS_FAILED = TEST_FAILURE_IN;
     /**
      * Error text {@value}
      */
     public static final String TEST_WAS_INTERRUPTED = "Test was interrupted";
-    private Prim listenerPrim;
 
+    private Prim listenerPrim;
     private boolean skipped = false;
     private boolean failed;
     private boolean succeeded;
@@ -214,6 +215,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException    In case of Remote/nework error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         //
@@ -306,6 +308,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @param source source of ping
      * @throws SmartFrogLivenessException liveness failed
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         //check the substuff
@@ -324,6 +327,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         sendEvent(new TerminatedEvent(this, status));
         super.sfTerminateWith(status);
@@ -337,6 +341,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @throws RemoteException
      */
+    @Override
     public synchronized boolean startTests() throws RemoteException,
             SmartFrogException {
         if (getWorker() != null) {
@@ -345,7 +350,9 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         TestRunnerThread thread = new TestRunnerThread();
         thread.setName("tester");
         thread.setPriority(threadPriority);
-        log.info("Starting new tester at priority " + threadPriority);
+        if(log.isDebugEnabled()) {
+            log.info("Starting new tester at priority " + threadPriority);
+        }
         setWorker(thread);
         thread.start();
         return true;
@@ -355,12 +362,14 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * Run the tests in a new thread
      * @throws Throwable
      */
+    @Override
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public void execute() throws Throwable {
         setFinished(false);
         log.info("Beginning tests");
         try {
             if (!executeTests()) {
-                throw new TestsFailedException(TESTS_FAILED);
+                throw new TestsFailedException(TESTS_FAILED + description);
             }
         } catch (Throwable e) {
             catchException(e);
@@ -372,12 +381,12 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
             setFinished(true);
             //unset the worker field
             setWorker(null);
-            sendTestCompleteEvent();
+            TerminationRecord record = createTerminationRecord();
+            sendEvent(createTestCompletedEvent(record));
 
 
             //now look at our termination actions
- /*           if (shouldTerminate) {
-                TerminationRecord record;
+/*            if (shouldTerminate) {
                 if (!testFailed || !failOnError) {
                     record = TerminationRecord.normal(self);
                 } else {
@@ -399,22 +408,43 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         }
 
 
+        /**
+         * The termination record is created slighlty differently
+         * @return
+         */
+        @Override
+        protected TerminationRecord createTerminationRecord() {
+            return TestRunnerImpl.this.createTerminationRecord();
+        }
     }
 
     /**
      * send out a completion event
      */
     private void sendTestCompleteEvent() {
+        TerminationRecord record = createTerminationRecord();
+        sendEvent(createTestCompletedEvent(record));
+    }
+
+    protected TerminationRecord createTerminationRecord() {
         TerminationRecord record;
-        boolean succeeded = getCachedException() == null;
-        if (succeeded) {
+        if (getCachedException() == null) {
             record = TerminationRecord.normal(description, self);
         } else {
-            record = TerminationRecord.abnormal("Test failure in " + description,
+            record = TerminationRecord.abnormal(TEST_FAILURE_IN + description,
                     self,
                     getCachedException());
         }
-        sendEvent(new TestCompletedEvent(this, succeeded, false, false, record, description));
+        return record;
+    }
+
+    /**
+     * Create a test completion event from a term record
+     * @param record the record; the tests are assumed to have succeeded if the record is normal
+     * @return a new event
+     */
+    private TestCompletedEvent createTestCompletedEvent(TerminationRecord record) {
+        return new TestCompletedEvent(this, record.isNormal(), false, false, record, description);
     }
 
     /**
@@ -447,11 +477,11 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @param record  the TR of this test
      * @param success flag set to true to indicate success
-     * @param skipped skipped flag
+     * @param testSkipped skipped flag
      * @throws SmartFrogRuntimeException SmartFrog errors
      * @throws RemoteException           network errors
      */
-    private void noteEndOfTestRun(TerminationRecord record, boolean success, boolean skipped)
+    private void noteEndOfTestRun(TerminationRecord record, boolean success, boolean testSkipped)
             throws SmartFrogRuntimeException, RemoteException {
         if (!success) {
             sfLog().warn(record.toString());
@@ -462,7 +492,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
 /*        setStatus(record);
         actionTerminationRecord = record;
         updateFlags(success);*/
-        sendEvent(new TestCompletedEvent(this, success, false , skipped, record, description));
+        sendEvent(new TestCompletedEvent(this, success, false , testSkipped, record, description));
     }
 
         /**
