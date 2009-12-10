@@ -28,27 +28,28 @@ HtmlUnitTests extends ExpectJettyServerDeployed {
   test.data.dir PROPERTY test.data.dir;
   
   testSuite TBD;
- test.web.url TBD;
-
+  test.web.url "http://localhost:8081/";
+  
+  properties [
+    ["test.web.url",test.web.url]
+  ]
+  
   tests extends TestRunner {
-  
-  
-    
-    properties [
-      ["test.web.url",test.web.url]
-    ]
-    
+    description ("HtmlUnit tests against " ++ test.web.url);
+    sfShouldTerminate true;
 
-      listener extends AntXmlTestListener {
-          outputDirectory PARENT:ATTRIB test.data.dir;
-      }
-  
-      JUnitTestSuite testSuite;
+    listener extends AntXmlTestListener {
+      outputDirectory PARENT:ATTRIB test.data.dir;
+    }
+
+    JUnitTestSuite testSuite;
   }
   
 }
 
 testClusterWebapp extends HtmlUnitTests {
   description "Test the cluster application";
-  testSuite extends MombasaClusterTestSuite;
+  testSuite extends MombasaClusterTestSuite {
+    test.web.url PARENT:ATTRIB test.web.url;
+  }
 }

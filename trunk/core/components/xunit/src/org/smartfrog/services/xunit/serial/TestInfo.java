@@ -383,11 +383,14 @@ public final class TestInfo implements Serializable, Cloneable {
     public String getDetails() {
         StringBuilder buffer = new StringBuilder();
         buffer.append(getName());
-        buffer.append("\nOutcome : " + getOutcome());
-        buffer.append("\nDuration: " + getDuration());
-        buffer.append("\nOn hostname: " + getHostname() + " PID " + getProcessName());
+        buffer.append("\nOutcome : ").append(getOutcome());
+        buffer.append("\nDuration: ").append(getDuration());
+        buffer.append("\nOn host: ").append(getHostname());
+        if(getProcessName()!=null) {
+            buffer.append(" PID ").append(getProcessName());
+        }
         if(getDescription()!=null) {
-            buffer.append("\ndescription : " + getDescription());
+            buffer.append("\ndescription : ").append(getDescription());
         }
         return buffer.toString();
     }

@@ -26,6 +26,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Serializer;
 import org.smartfrog.services.xunit.listeners.xml.FileListener;
+import org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory;
 import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.TestInfo;
@@ -44,6 +45,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.HashMap;
 
 
 /**
@@ -91,8 +93,16 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * This is built up as we go along
      */
     private Element root, stdout, stderr;
+
+    protected XmlListenerFactory owner;
+    
     private SimpleDateFormat dateFormat;
 
+    /**
+     * log failed tests so we don't log them more than once
+     */
+    private HashMap<String, TestInfo> failedTests = new HashMap<String, TestInfo>();
+    
 
     public AntXmlListener(String hostname,
                           File destFile,
@@ -109,11 +119,20 @@ public class AntXmlListener implements FileListener, XMLConstants {
 
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOwner(XmlListenerFactory owner) {
+        this.owner = owner;
+    }
+
+    /**
      * get the filename of this
      *
      * @return the filename used
      * @throws RemoteException network trouble
      */
+    @Override
     public String getFilename() throws RemoteException {
         return destFile.getAbsolutePath();
     }
@@ -124,11 +143,12 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws IOException     for IO trouble
      * @throws RemoteException network trouble
      */
+    @Override
     public synchronized void open() throws IOException {
-        root = new Element(TESTSUITES);
+        root = new Element(TESTSUITE);
         document = new Document(root);
         stdout = new Element(SYSTEM_OUT);
-        stderr = new Element(SYSTEM_OUT);
+        stderr = new Element(SYSTEM_ERR);
         maybeAddAttribute(root, HOSTNAME, hostname);
         maybeAddAttribute(root, ATTR_NAME, suitename);
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -138,8 +158,11 @@ public class AntXmlListener implements FileListener, XMLConstants {
         String timestamp = dateFormat.format(startTime);
         maybeAddAttribute(root, TIMESTAMP, timestamp);
         log.info("logging to " + destFile);
+        logMessage("logging to" + destFile);
         touchDestFile();
     }
+    
+    
 
     /**
      * close the file. This call must be harmless if the file is already closed
@@ -147,21 +170,27 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws IOException     IO trouble
      * @throws RemoteException network trouble
      */
+    @Override
     public synchronized void close() throws IOException {
         if (document == null) {
             return;
         }
         //this is where we actually save the file to disk.
         try {
+            logError("Test finished");
             log.info("Creating the XML report file " + destFile);
             buildRootAttributes();
             addLogEntries();
             save();
+            document = null;
         } finally {
             //cleanup
             document = null;
             stdout = null;
             stderr = null;
+            if (owner != null) {
+                owner.unregisterInstance(this);
+            }
         }
     }
 
@@ -204,6 +233,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @return true iff we are building up a document
      * @throws RemoteException network trouble
      */
+    @Override
     public boolean isOpen() throws RemoteException {
         return document != null;
     }
@@ -257,8 +287,19 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
+    @Override
     public void endSuite() throws RemoteException, SmartFrogException {
         finishTime = new Date(System.currentTimeMillis());
+        try {
+            close();
+        } catch (RemoteException e) {
+            throw e;
+        } catch (IOException e) {
+            throw SmartFrogException.forward(e);
+        } finally {
+            //anything else?
+        }
+
     }
 
     /**
@@ -268,6 +309,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
+    @Override
     public void startTest(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incTestsStarted();
@@ -280,6 +322,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
+    @Override
     public void addError(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incErrors();
@@ -293,9 +336,11 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
+    @Override
     public void addFailure(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incFailures();
+        addFailedTest(test);
         recordResult(FAILURE, test);
     }
 
@@ -306,19 +351,41 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
      */
+    @Override
     public void endTest(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incTestsRun();
-        recordResult("end", test);
+        if(!isFailedTest(test)) {
+            recordResult("end", test);
+        }
+    }
+
+    protected void addFailedTest(TestInfo test) {
+        failedTests.put(test.getName(), test);
+    }
+
+    protected boolean isFailedTest(TestInfo test) {
+        return failedTests.get(test.getName())!=null;
+    }
+
+    protected void logMessage(String text) {
+        LogEntry entry = new LogEntry(LogEntry.LOG_LEVEL_STDOUT, text);
+        log(entry);
+    }
+
+    protected void logError(String text) {
+        LogEntry entry = new LogEntry(LogEntry.LOG_LEVEL_STDERR, text);
+        log(entry);
     }
 
     /**
-     * Log an event
-     *
-     * @param event what happened
-     * @throws RemoteException on network trouble
-     */
-    public void log(LogEntry event) throws RemoteException {
+    * Log an event
+    *
+    * @param event what happened
+    * @throws RemoteException on network trouble
+    */
+    @Override
+    public void log(LogEntry event) {
         String text = event.logString();
         Element target;
         target = (event.getLevel() == LogEntry.LOG_LEVEL_STDERR) ? stderr : stdout;
@@ -347,9 +414,9 @@ public class AntXmlListener implements FileListener, XMLConstants {
      */
     private Element addElement(Element parent, String name, String text) {
         Element nested = new Element(name);
-        nested.appendChild(text);
+        parent.appendChild(nested);
         if (text != null) {
-            parent.appendChild(nested);
+            nested.appendChild(text);
         }
         return nested;
     }
@@ -473,7 +540,8 @@ public class AntXmlListener implements FileListener, XMLConstants {
         //process the fault
         ThrowableTraceInfo fault = test.getFault();
         if (fault != null) {
-            Element thrown = addElement(testcase, type, fault.toString());
+            String stackTrace = fault.getStackString();
+            Element thrown = addElement(testcase, type, stackTrace);
             maybeAddAttribute(thrown,
                     ATTR_MESSAGE,
                     fault.getMessage());

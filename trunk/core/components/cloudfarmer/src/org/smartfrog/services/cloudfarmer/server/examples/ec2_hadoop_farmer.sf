@@ -32,8 +32,6 @@ timeout 10;
 
 EC2HadoopRoles extends Compound {
 
-
-
     master extends EC2ClusterRole {
       description "Hadoop Namenode and Job Tracker";
       min 1;
@@ -63,7 +61,6 @@ EC2HadoopFarmer extends EC2ClusterFarmer {
   deploymentFactory extends MockNodeDeploymentFactory {
   
   }
-  
   
 }
 

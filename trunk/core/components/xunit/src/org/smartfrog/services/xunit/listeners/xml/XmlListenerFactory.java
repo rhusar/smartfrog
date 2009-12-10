@@ -83,7 +83,13 @@ public interface XmlListenerFactory extends TestListenerFactory {
      * @return name of output file, or null for no match
      * @throws RemoteException network problems
      */
-    public String lookupFilename(String hostname,
+    String lookupFilename(String hostname,
                                  String suitename) throws RemoteException;
 
+    /**
+     * Unregister a listener instance. Harmless if the instance is not registered
+     * @param instance instance to unregister
+     * @throws RemoteException network problems
+     */
+    void unregisterInstance(FileListener instance) throws RemoteException;
 }
