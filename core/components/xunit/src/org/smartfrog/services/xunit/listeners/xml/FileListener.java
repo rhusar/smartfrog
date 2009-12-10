@@ -54,7 +54,7 @@ public interface FileListener extends TestListener {
      * @throws IOException for IO trouble
      * @throws RemoteException network trouble
      */
-    void open() throws IOException, RemoteException;
+    void open() throws IOException;
 
 
     /**
@@ -68,7 +68,7 @@ public interface FileListener extends TestListener {
      * @throws RemoteException network trouble
      * @throws SmartFrogException for anything else.
      */
-   void close() throws IOException, RemoteException, SmartFrogException;
+   void close() throws IOException, SmartFrogException;
 
 
     /**

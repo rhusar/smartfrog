@@ -80,7 +80,8 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
-    protected FileListener createNewSingleHostListener(String hostname,
+    @Override
+    public FileListener createNewSingleHostListener(String hostname,
                                                              File destFile,
                                                              String processname, 
                                                              String suitename,

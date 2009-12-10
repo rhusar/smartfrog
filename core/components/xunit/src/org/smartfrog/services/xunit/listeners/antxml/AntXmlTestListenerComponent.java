@@ -80,7 +80,8 @@ public class AntXmlTestListenerComponent
      * {@inheritDoc}
      * @throws IOException for problems
      */
-    protected FileListener createNewSingleHostListener(String hostname,
+    @Override
+    public FileListener createNewSingleHostListener(String hostname,
                                                       File destFile,
                                                       String processname,
                                                       String suitename,
