@@ -71,15 +71,15 @@ public class WorkflowThread extends SmartFrogThread {
 
     /**
      * Bind to the owner
-     * @param owner owner prim
-     * @param workflowTermination workflow policy
+     * @param prim owner prim
+     * @param useWorkflowTermination workflow policy
      */
-    private void bind(Prim owner, boolean workflowTermination) {
-        this.owner = owner;
-        this.workflowTermination = workflowTermination;
+    private void bind(Prim prim, boolean useWorkflowTermination) {
+        owner = prim;
+        workflowTermination = useWorkflowTermination;
         try {
-            ownerID = owner.sfCompleteName();
-        } catch (RemoteException e) {
+            ownerID = prim.sfCompleteName();
+        } catch (RemoteException ignored) {
             ownerID = null;
         }
     }
@@ -129,8 +129,8 @@ public class WorkflowThread extends SmartFrogThread {
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     protected void processRunResults() {
         //now analyse the result, create a term record and maybe terminate the owner
-        boolean isNormal = didThreadTerminateNormally();
         TerminationRecord tr = createTerminationRecord();
+        boolean isNormal = tr.isNormal();
         aboutToTerminate(tr);
         ComponentHelper helper = new ComponentHelper(owner);
         if (workflowTermination && isNormal) {
