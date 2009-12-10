@@ -110,7 +110,10 @@ ThreadPoolOptions extends  {
 CoreJettyServer extends ApplicationServer , ThreadPoolOptions{
    sfClass "org.smartfrog.services.jetty.JettyImpl";
    coreJettySchema extends CoreJettySchema;
-   host "localhost";
+   
+   LOCALHOST "localhost";
+   ANY_HOST "*";
+   host LOCALHOST;
 
    //deployment information
    supportsEAR false;
@@ -187,6 +190,10 @@ AbstractThreadPooledConnector extends AbstractConnector, ThreadPoolOptions {
 JettySocketConnector extends AbstractThreadPooledConnector {
     sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
     name "JettySocketThread";
+    //are IPv4 addresses allowed?
+    allowIPv4 true;
+    //are IPv6 addresses allowed?
+    allowIPv6 true;
 }
 
 

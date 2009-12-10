@@ -73,4 +73,14 @@ public interface JettyConnector extends Remote {
     String ATTR_HEADER_BUFFER_SIZE = "headerBufferSize";
     String ATTR_REQUEST_BUFFER_SIZE = "requestBufferSize";
     String ATTR_ACCEPTORS = "acceptors";
+
+    /**
+     * restrict/control IP settings
+     */
+    String ATTR_ALLOW_IPV4 = "allowIPv4";
+    /**
+     * restrict/control IP settings
+     */
+    String ATTR_ALLOW_IPV6 = "allowIPv6";
+
 }

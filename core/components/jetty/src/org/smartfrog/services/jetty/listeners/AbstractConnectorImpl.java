@@ -99,6 +99,16 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
         connector = createConnector();
         configureConnector();
         jettyHelper.addAndStartConnector(connector);
+        onConnectorStarted(connector);
+    }
+
+    /**
+     * Override point, something called after startup to do any port checking or similar
+     * @param startedConnector the connector
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    protected void onConnectorStarted(Connector startedConnector) throws SmartFrogException, RemoteException {
     }
 
     protected abstract void configureConnector() throws SmartFrogException, RemoteException;
@@ -115,9 +125,9 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
     protected void bindConnectorToPortAndHost(Connector conn) throws SmartFrogException, RemoteException {
         //now bind to the host and port
         int port = sfResolve(portRef, 0, true);
-        String host = sfResolve(hostRef, (String) null, false);
+        String host = sfResolve(hostRef, (String) null, true);
         conn.setPort(port);
-        if (host != null) {
+        if (host != null && host.length()>0 && !"*".equals(host)) {
             sfLog().info("Listening on " + host + ":" + port);
             conn.setHost(host);
         } else {
