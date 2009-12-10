@@ -30,5 +30,6 @@ public interface Executable {
      * Execute in a thread
      * @throws Throwable if something goes wrong
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     void execute() throws Throwable;
 }
