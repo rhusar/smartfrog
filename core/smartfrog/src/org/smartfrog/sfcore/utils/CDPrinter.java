@@ -124,61 +124,9 @@ public class CDPrinter {
      * @throws FileNotFoundException
      */
     public static String printURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-          return printURLSorted(url, params, false);  
-    }
-    
-    /**
-     * Method to take a URL, parse it, add the addtional key-value parameters to the top level, resolve and then create the
-     * print string on the resultant description. Option as to whether the final content is sorted lexicographically.
-     * @param url the file to parse
-     * @param params a context containing the parameter key-value pairs
-     * @param sort sort final description lexicographically?
-     * @return the resultant print string
-     * @throws SmartFrogException
-     * @throws FileNotFoundException
-     */
-    public static String printURLSorted(String url, Context params, boolean sort) throws SmartFrogException, FileNotFoundException {
-
         ComponentDescription cd = SFComponentDescriptionImpl.getDescriptionURL(url, params);
-        if (sort) {
-            cd = sort(cd);
-        }
         return print(cd);
     }
-    
-    
-    
-    //This should be moved...
-    /**
-     * Helper method for recursively lexicographically sorting attributes of a component description
-     * @param comp Description which is to have attributes sorted
-     * @return sorted component description
-     * @throws SmartFrogRuntimeException on failure
-     */
-	private static ComponentDescription sort(ComponentDescription comp) throws SmartFrogRuntimeException {
-		//Simple link resolve...
-		ComponentDescription newcomp = new ComponentDescriptionImpl(comp.sfParent(), null, comp.getEager());
-		List<String> keys = new ArrayList<String>();
-        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
-            keys.add(v.next().toString());
-        }
-		Collections.sort(keys);
-
-        for (Object key : keys) {
-            String nameS = key.toString();
-            Reference ref = new Reference(ReferencePart.here(nameS));
-            Object value = comp.sfResolve(ref);
-            if (value instanceof ComponentDescription) {
-                value = sort((ComponentDescription) value);
-            }
-
-            newcomp.sfAddAttribute(nameS, value);
-            newcomp.sfAddTags(nameS, comp.sfGetTags(nameS));
-        }     
-		return newcomp;
-	}
-	
-   
     
     /**
      * The main method takes a URL, parses it, resolves the structure and then displays the
