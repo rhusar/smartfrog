@@ -33,6 +33,9 @@ import java.rmi.RemoteException;
 
 public interface TestListenerFactory extends Remote {
 
+    /**
+     * Listener name: {@value}
+     */
     final String ATTR_NAME = "name";
 
     /**

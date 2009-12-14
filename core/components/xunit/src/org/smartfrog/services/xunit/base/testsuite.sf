@@ -24,7 +24,11 @@ TestSuiteSchema extends Schema {
     }
 
     properties extends Vector {
-        description "list of properties to pass to the test suite as name, value pairs [[name,value],[n2,v2]]";
+      description "list of properties to pass to the test suite as name, value pairs [[name,value],[n2,v2]]";
+    }
+    
+    propertySet extends Optional {
+      description "CD containing properties to pass to the test suite as name, value ";
     }
     tags extends OptionalVector{
       description "A list of text tags to describe the test suite";
@@ -56,6 +60,7 @@ TestSuite extends EventCompound {
     tags [];
     trackbacks [];
     properties [];
+    propertySet extends DATA { };
 }
 
 
