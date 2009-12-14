@@ -99,6 +99,11 @@ public interface TestRunner extends Remote, TestResultAttributes {
 
     TestListenerFactory getListenerFactory() throws RemoteException;
 
+    /**
+     * Set the listener factory
+     * @param listener the new listener factory
+     * @throws RemoteException if it could not be set
+     */
     void setListenerFactory(TestListenerFactory listener) throws RemoteException;
 
     /**
@@ -106,6 +111,7 @@ public interface TestRunner extends Remote, TestResultAttributes {
      *
      * @return true if the tests were started
      * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     boolean startTests() throws RemoteException, SmartFrogException;
 

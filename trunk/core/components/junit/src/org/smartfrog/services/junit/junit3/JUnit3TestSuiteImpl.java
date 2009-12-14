@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,6 +44,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Iterator;
 
 
 /**
@@ -134,6 +136,11 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         //properties. extract the list, flatten it and bind to sysproperties
         sysproperties = ListUtils.resolveProperties(this, new Reference(ATTR_SYSPROPS), true); 
 
+        //now pull in the propertySet
+        ComponentDescription propSet = null; 
+        propSet = sfResolve(ATTR_PROPERTY_SET, propSet, true);
+        CDtoProperties(sysproperties, propSet);
+        
         //package attribute names a package
         packageValue = sfResolve(ATTR_PACKAGE, packageValue, false);
         if (packageValue == null) {
@@ -153,6 +160,23 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         suitename = sfResolve(ATTR_NAME, suitename, suitename == null);
         log("Running JUnit3 test suite " + suitename + " on host " + getHostname());
     }
+
+
+    public static Properties CDtoProperties(ComponentDescription cd) throws SmartFrogResolutionException {
+        Properties props = new Properties();
+        CDtoProperties(props, cd);
+        return props;
+    }
+
+    private static void CDtoProperties(Properties props, ComponentDescription cd) throws SmartFrogResolutionException {
+        Iterator iterator = cd.sfAttributes();
+        while (iterator.hasNext()) {
+            Object key = iterator.next();
+            Object value = cd.sfResolveHere(key);
+            props.put(key.toString(), value.toString());
+        }
+    }
+
 
     /**
      * build the list of classes to run. At this point the list is already flat. If the user has asked for a single
@@ -333,7 +357,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
             tests = extractTest(clazz);
             injectTestContext(tests, context);
         } catch (Throwable e) {
-            //couldnt set up the tests, so we catch the exception and create a failure
+            //couldn't set up the tests, so we catch the exception and create a failure
             //test that reports the outcome
             tests = new Warning(classname, e);
         }
@@ -377,7 +401,9 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
                     + " in class " + clazz, e);
         } catch (InvocationTargetException e) {
             throw new SmartFrogInitException("Exception in " + SUITE_METHOD_NAME
-                    + " in class " + clazz, e.getCause());
+                    + " in class " + clazz 
+                    + " : " + e.toString(), 
+                    e.getCause());
         }
     }
 
