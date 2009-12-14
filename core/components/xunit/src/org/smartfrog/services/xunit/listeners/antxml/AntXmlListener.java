@@ -326,6 +326,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
     public void addError(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incErrors();
+        addFailedTest(test);
         recordResult(ERROR, test);
     }
 
