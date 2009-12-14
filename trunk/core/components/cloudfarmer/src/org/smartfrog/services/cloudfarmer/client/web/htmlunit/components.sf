@@ -21,12 +21,19 @@ For more information: www.smartfrog.org
 
 MombasaWebTestSuite extends JUnit3TestSuite {
 
-    test.web.url TBD;
-    
-    properties [
-      ["test.web.url",test.web.url]
-    ]
-    
+  testHost "localhost";
+  testPort "8081";
+  mombasa.url ("http://" ++ testHost ++ ":" ++ testPort );
+  test.web.url mombasa.url;
+  test.cluster.url (mombasa.url ++ ClusterActions:view);
+  test.workflow.url (mombasa.url ++ WorkflowActions:workflowView);
+  
+  propertySet extends DATA {
+    test.web.url PARENT:ATTRIB test.web.url;
+    test.workflow.url PARENT:ATTRIB test.workflow.url;
+    test.cluster.url PARENT:ATTRIB test.cluster.url;
+  }
+  
 
 }
 

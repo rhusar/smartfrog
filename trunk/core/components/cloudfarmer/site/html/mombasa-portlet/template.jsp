@@ -22,10 +22,7 @@ For more information: www.smartfrog.org
 <%@ include file="/html/mombasa-portlet/init.jsp" %>
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 <tiles:useAttribute id="tilesPortletContent" name="portlet_content" classname="java.lang.String" ignore="true"/>
-
 <div>
-<jsp:include page='<%= tilesPortletContent %>' flush="true"/>
+<jsp:include page='<%= tilesPortletContent %>' />
 </div>
-
-
-<jsp:include page="/html/mombasa-portlet/footer.jsp"/>
+<jsp:include page="/html/mombasa-portlet/footer.jsp" flush="true" />

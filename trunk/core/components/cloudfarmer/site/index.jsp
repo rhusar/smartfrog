@@ -11,19 +11,19 @@ If you can see this, the JSP page is not being executed
 Mombasa is the way to see the elephants
 <h2>Cluster</h2>
 <ul>
-    <li><a href="/mombasa-portlet/cluster/view.do">Cluster Links</a></li>
-    <li><a href="/mombasa-portlet/cluster/list.do">List the cluster</a></li>
+    <li><a href="/mombasa-portlet/cluster/view.do" id="cluster.root">Cluster Links</a></li>
+    <li><a href="/mombasa-portlet/cluster/list.do" id="cluster.list">List the cluster</a></li>
 </ul>
 
 <h2>Workflow</h2>
 <ul>
-    <li><a href="/mombasa-portlet/view.do">Workflow Links</a></li>
-    <li><a href="/mombasa-portlet/workflowList.do">List the workflow</a></li>
+    <li><a href="/mombasa-portlet/view.do" id="workflow.root">Workflow Links</a></li>
+    <li><a href="/mombasa-portlet/workflowList.do" id="workflow.list">List the workflow</a></li>
 </ul>
 
 <h2>Other</h2>
 <ul>
-    <li><a href="/index.jsp">Index.jsp</a></li>
+    <li><a href="/happy" id="happy.root">Happy pages</a></li>
 </ul>
 <h2>Errors</h2>
 <ul>
