@@ -19,31 +19,39 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.htmlunit;
 
-import junit.framework.TestCase;
-import org.smartfrog.services.xunit.base.TestContextInjector;
-import org.smartfrog.services.junit.junit3.TestCaseWithContext;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
+import org.smartfrog.services.junit.junit3.TestCaseWithContext;
+
+import java.io.IOException;
 
 /**
  * Base class for all web test cases; they take their URL from a system/context property
- * 
- * These tests are expected to be deployed and run against different targets, hence they are included in the
- * Main distributable, and their pattern *TestCase is designed to not be picked up by the *Test pattern.
+ *
+ * These tests are expected to be deployed and run against different targets, hence they are included in the Main
+ * distributable, and their pattern *TestCase is designed to not be picked up by the *Test pattern.
  */
 
 public abstract class WebTestCase extends TestCaseWithContext {
-    
-    /** {@value} */
-    public static final String TEST_WEB_URL ="test.web.url";
-    
-    
+
+    /**
+     * {@value}
+     */
+    public static final String TEST_WEB_URL = "test.web.url";
+    public static final String TEST_CLUSTER_URL = "test.cluster.url";
+    public static final String TEST_WORKFLOW_URL = "test.workflow.url";
+    protected static final String CLUSTER = "cluster/";
+    protected static final String WORKFLOW = "workflow/";
+
+
     protected WebTestCase(String name) {
         super(name);
     }
 
     /**
      * Get a required property, asserts it is not null
-     * @param key key to look for 
+     *
+     * @param key key to look for
      * @return the value
      */
     public String getRequiredProperty(String key) {
@@ -52,15 +60,38 @@ public abstract class WebTestCase extends TestCaseWithContext {
         return s;
     }
 
-    protected String getClusterURL() {
-        return getRequiredProperty(TEST_WEB_URL) + "/cluster";
+    public String getURL(String subpath) {
+        return getURL(TEST_WEB_URL, subpath);
     }
 
-    protected String getWorkflowURL() {
-        return getRequiredProperty(TEST_WEB_URL) + "/workflow";
+    protected String getURL(String baseURL, String subpath) {
+        String rootURL = getRequiredProperty(baseURL);
+        StringBuilder url = new StringBuilder(rootURL.length() + subpath.length() + 1);
+        url.append(rootURL);
+        if (!rootURL.endsWith("/")) {
+            url.append('/');
+        }
+        url.append(subpath);
+        return url.toString();
+    }
+
+    protected String getClusterURL(String page) {
+        return getURL(TEST_CLUSTER_URL, page);
+    }
+
+    protected String getWorkflowURL(String page) {
+        return getURL(TEST_WORKFLOW_URL, page);
     }
 
     protected WebClient getWebClient() {
         return new WebClient();
+    }
+
+    protected IOException extractError(FailingHttpStatusCodeException e) {
+        StringBuilder fullText = new StringBuilder();
+        fullText.append(e.toString()).append("\n");
+        fullText.append(e.getResponse().getContentAsString());
+        IOException ioException = new IOException(fullText.toString(), e);
+        return ioException;
     }
 }

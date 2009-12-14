@@ -17,10 +17,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/cloudfarmer/test/client/web/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/client/web/htmlunit/components.sf"
 #include "/org/smartfrog/services/xunit/listeners/antxml/components.sf"
 #include "/org/smartfrog/services/xunit/base/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/test/client/web/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/client/web/deploy/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/client/web/htmlunit/components.sf"
 
 
 HtmlUnitTests extends ExpectJettyServerDeployed {
@@ -28,14 +29,22 @@ HtmlUnitTests extends ExpectJettyServerDeployed {
   test.data.dir PROPERTY test.data.dir;
   
   testSuite TBD;
-  test.web.url "http://localhost:8081/";
+  testHost "localhost";
+  testPort "8081";
+  mombasa.url ("http://" ++ testHost ++ ":" ++ testPort );
+  test.cluster.url (mombasa.url ++ ClusterActions:view);
+  test.workflow.url (mombasa.url ++ WorkflowActions:workflowView);
   
-  properties [
-    ["test.web.url",test.web.url]
+  test.web.url test.cluster.url;
+  
+/*  properties [
+    ["test.web.url",test.web.url],
+    ["test.workflow.url",test.workflow.url],
+    ["test.cluster.url",test.cluster.url]
   ]
-  
+  */
   tests extends TestRunner {
-    description ("HtmlUnit tests against " ++ test.web.url);
+    description ("HtmlUnit tests ");
     sfShouldTerminate true;
 
     listener extends AntXmlTestListener {
@@ -49,7 +58,8 @@ HtmlUnitTests extends ExpectJettyServerDeployed {
 
 testClusterWebapp extends HtmlUnitTests {
   description "Test the cluster application";
+  test.web.url test.cluster.url;
   testSuite extends MombasaClusterTestSuite {
-    test.web.url PARENT:ATTRIB test.web.url;
+    test.web.url PARENT:ATTRIB test.web.url ;
   }
 }

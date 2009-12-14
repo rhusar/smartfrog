@@ -19,15 +19,11 @@ For more information: www.smartfrog.org
 
 */
 --%>
-
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
-
 <tiles:useAttribute id="content" name="content" classname="java.lang.String" ignore="true"/>
-
 <tiles:useAttribute id="title" name="title" classname="java.lang.String" ignore="true"/>
+<h2><%= title %></h2>
 
-<h2><%= title %>
-</h2>
 <logic:messagesPresent>
   <span class="portlet-msg-error">
   <html:errors/>
@@ -35,7 +31,7 @@ For more information: www.smartfrog.org
 </logic:messagesPresent>
 
 <div>
-<jsp:include page='<%= content %>' flush="true"/>
+<jsp:include page='<%= content %>' />
 </div>
 
 

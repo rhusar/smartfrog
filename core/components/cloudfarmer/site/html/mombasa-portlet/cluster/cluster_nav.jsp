@@ -28,19 +28,19 @@ For more information: www.smartfrog.org
   <tr>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/list" name="listHosts">List Hosts</html:link>
+          action="/mombasa-portlet/cluster/list" >List Hosts</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/listRoles" name="listRoles">List Roles</html:link>
+          action="/mombasa-portlet/cluster/listRoles" >List Roles</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/add" name="add">Add a Host</html:link>
+          action="/mombasa-portlet/cluster/add" >Add a Host</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/admin" name="admin">Administration</html:link>
+          action="/mombasa-portlet/cluster/admin" >Administration</html:link>
     </td>
   </tr>
 </table>

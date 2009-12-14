@@ -22,6 +22,7 @@ package org.smartfrog.services.cloudfarmer.client.web.htmlunit.cluster;
 import org.smartfrog.services.cloudfarmer.client.web.htmlunit.WebTestCase;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 
@@ -54,8 +55,14 @@ public class MombasaClusterWebTestCase extends WebTestCase implements ClusterAnc
     }
 
     protected HtmlPage getRootPage() throws IOException {
-        WebClient browser = getWebClient();
-        HtmlPage clusterPage = browser.getPage(getClusterURL());
-        return clusterPage;
+        try {
+            WebClient browser = getWebClient();
+            HtmlPage clusterPage = browser.getPage(getClusterURL(""));
+            return clusterPage;
+        } catch (FailingHttpStatusCodeException e) {
+            IOException ioException = extractError(e);
+            throw ioException;
+        }
     }
+
 }
