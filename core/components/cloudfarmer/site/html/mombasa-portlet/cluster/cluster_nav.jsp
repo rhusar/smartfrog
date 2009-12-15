@@ -18,29 +18,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 
 */
---%>
-
-<%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
-
+--%><%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 <div class="separator"></div>
-
 <table border="0" width="100%">
   <tr>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/list" >List Hosts</html:link>
+          action="/mombasa-portlet/cluster/list" styleId="listHosts">List Hosts</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/listRoles" >List Roles</html:link>
+          action="/mombasa-portlet/cluster/listRoles" styleId="listRoles">List Roles</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/add" >Add a Host</html:link>
+          action="/mombasa-portlet/cluster/add" styleId="add">Add a Host</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/admin" >Administration</html:link>
+          action="/mombasa-portlet/cluster/admin" styleId="admin">Administration</html:link>
     </td>
   </tr>
 </table>

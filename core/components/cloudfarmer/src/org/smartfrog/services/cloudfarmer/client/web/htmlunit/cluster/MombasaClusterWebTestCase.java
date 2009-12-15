@@ -40,24 +40,21 @@ public class MombasaClusterWebTestCase extends WebTestCase implements ClusterAnc
     }
 
     public void testRootPageListHosts() throws Throwable {
-        HtmlPage rootPage = getRootPage();
-        HtmlAnchor workflowList = rootPage.getAnchorByName(LIST_HOSTS);
+        HtmlAnchor anchor = getAnchorById(getRootPage(), LIST_HOSTS);
     }
 
     public void testRootPageListRoles() throws Throwable {
-        HtmlPage rootPage = getRootPage();
-        HtmlAnchor workflowList = rootPage.getAnchorByName(LIST_ROLES);
+        HtmlAnchor anchor = getAnchorById(getRootPage(), LIST_ROLES);
     }
 
     public void testRootPageAdd() throws Throwable {
-        HtmlPage rootPage = getRootPage();
-        HtmlAnchor workflowList = rootPage.getAnchorByName(ADD_HOST);
+        HtmlAnchor anchor = getAnchorById(getRootPage(),ADD_HOST);
     }
 
     protected HtmlPage getRootPage() throws IOException {
         try {
             WebClient browser = getWebClient();
-            HtmlPage clusterPage = browser.getPage(getClusterURL(""));
+            HtmlPage clusterPage = browser.getPage(getClusterURL("view.do"));
             return clusterPage;
         } catch (FailingHttpStatusCodeException e) {
             IOException ioException = extractError(e);

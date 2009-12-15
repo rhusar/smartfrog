@@ -32,8 +32,8 @@ HtmlUnitTests extends ExpectJettyServerDeployed {
   testHost "localhost";
   testPort "8081";
   mombasa.url ("http://" ++ testHost ++ ":" ++ testPort );
-  test.cluster.url (mombasa.url ++ ClusterActions:view);
-  test.workflow.url (mombasa.url ++ WorkflowActions:workflowView);
+  test.cluster.url (mombasa.url ++ ClusterActions:cluster);
+  test.workflow.url (mombasa.url ++ WorkflowActions:actionRoot);
   
   test.web.url test.cluster.url;
   

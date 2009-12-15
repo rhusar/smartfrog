@@ -25,8 +25,8 @@ MombasaWebTestSuite extends JUnit3TestSuite {
   testPort "8081";
   mombasa.url ("http://" ++ testHost ++ ":" ++ testPort );
   test.web.url mombasa.url;
-  test.cluster.url (mombasa.url ++ ClusterActions:view);
-  test.workflow.url (mombasa.url ++ WorkflowActions:workflowView);
+  test.cluster.url (mombasa.url ++ ClusterActions:cluster);
+  test.workflow.url (mombasa.url ++ WorkflowActions:actionRoot);
   
   propertySet extends DATA {
     test.web.url PARENT:ATTRIB test.web.url;

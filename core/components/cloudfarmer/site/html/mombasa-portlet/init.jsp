@@ -18,10 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 
 */
---%>
-
-
-<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+--%><%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://struts.apache.org/tags-nested" prefix="nested" %>
