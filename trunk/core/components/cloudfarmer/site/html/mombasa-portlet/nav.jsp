@@ -18,31 +18,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 
 */
---%>
-
-<%@ include file="/html/mombasa-portlet/init.jsp" %>
+--%><%@ include file="/html/mombasa-portlet/init.jsp" %>
 <div class="separator"></div>
-
 <table border="0" width="100%">
   <tr>
     <td>
-      <html:link action="/mombasa-portlet/workflowList" >List Workflows</html:link>
+      <html:link action="/mombasa-portlet/workflowList" styleId="workflowList">List Workflows</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/submitMRJob/view" >Queue a MapReduce Job</html:link>
+          action="/mombasa-portlet/submitMRJob/view" styleId="submitMRJob">Queue a MapReduce Job</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/submitTool/view" >Queue a Tool Job</html:link>
+          action="/mombasa-portlet/submitTool/view" styleId="submitTool">Queue a Tool Job</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/queueWorkflow/view" >Queue a Workflow</html:link>
+          action="/mombasa-portlet/queueWorkflow/view" styleId="queueWorkflow">Queue a Workflow</html:link>
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/workflowAdmin/view" >Administration</html:link>
+          action="/mombasa-portlet/workflowAdmin/view" styleId="workflowAdmin">Administration</html:link>
     </td>
   </tr>
 </table>

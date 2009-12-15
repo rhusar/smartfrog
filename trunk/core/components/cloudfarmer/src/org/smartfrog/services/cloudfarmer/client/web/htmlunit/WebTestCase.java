@@ -21,6 +21,8 @@ package org.smartfrog.services.cloudfarmer.client.web.htmlunit;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.smartfrog.services.junit.junit3.TestCaseWithContext;
 
 import java.io.IOException;
@@ -93,5 +95,9 @@ public abstract class WebTestCase extends TestCaseWithContext {
         fullText.append(e.getResponse().getContentAsString());
         IOException ioException = new IOException(fullText.toString(), e);
         return ioException;
+    }
+
+    protected HtmlAnchor getAnchorById(HtmlPage page, String id) {
+        return (HtmlAnchor)page.getElementById(id);
     }
 }

@@ -23,6 +23,6 @@ For more information: www.smartfrog.org
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 <tiles:useAttribute id="tilesPortletContent" name="portlet_content" classname="java.lang.String" ignore="true"/>
 <div>
-<jsp:include page='<%= tilesPortletContent %>' />
+<jsp:include page='<%= tilesPortletContent %>' flush="true"/>
 </div>
 <jsp:include page="/html/mombasa-portlet/footer.jsp" flush="true" />
