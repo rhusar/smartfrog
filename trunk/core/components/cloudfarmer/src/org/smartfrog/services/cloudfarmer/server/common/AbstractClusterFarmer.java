@@ -284,6 +284,9 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
      */
     @Override
     public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
+        if (deploymentFactory == null) {
+            throw new SmartFrogDeploymentException("No Deployment factory is defined for this farmer");
+        }
         return deploymentFactory.createInstance(node);
     }
 }
