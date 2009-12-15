@@ -94,7 +94,7 @@ public class FarmCheckRoles extends AbstractFarmWorkflowClient implements FarmCu
      * Check the roles
      * @param roles expected
      * @param actual actual
-     * @throws SmartFrogException
+     * @throws SmartFrogException any mismatch in roles
      */
     private void checkRoles(List<String> roles, List<String> actual) throws SmartFrogException {
         Collections.sort(roles);
