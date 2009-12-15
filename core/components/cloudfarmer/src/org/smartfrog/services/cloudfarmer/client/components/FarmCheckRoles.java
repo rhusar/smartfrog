@@ -71,11 +71,17 @@ public class FarmCheckRoles extends AbstractFarmWorkflowClient implements FarmCu
     private List<String> checkListClusterRoles(List<String> roles) throws IOException, SmartFrogException {
         ClusterRoleInfo[] clusterRoles = getFarmer().listClusterRoles();
         List<String> actual = new ArrayList<String>(clusterRoles.length);
-        for (ClusterRoleInfo role:clusterRoles) {
-            actual.add(role.getName());
+        for (ClusterRoleInfo role : clusterRoles) {
+            if (role == null) {
+                throw new SmartFrogException("Empty Role in Cluster Role list");
+            }
+            String name = role.getName();
+            if (name == null) {
+                throw new SmartFrogException("No name in role " + role);
+            }
+            actual.add(name);
         }
         return actual;
-
     }
 
     private List<String> checkListRoles(List<String> roles) throws IOException, SmartFrogException {
