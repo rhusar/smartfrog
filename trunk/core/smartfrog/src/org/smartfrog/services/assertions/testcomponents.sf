@@ -141,6 +141,8 @@ TestCompound extends ActionCompound {
   //this is a list of [classname, exception text] string tuples; each non-emtpy string is looked for in the classname
   //and exception text
   exceptions [];
+  //can we fail in the test sequence?
+  failInTestSequence false;
   forcePing false;
 
   EXIT_TYPE_NORMAL "normal";
