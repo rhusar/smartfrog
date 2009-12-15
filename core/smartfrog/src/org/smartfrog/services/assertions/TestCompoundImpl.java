@@ -64,6 +64,7 @@ public class TestCompoundImpl extends ConditionCompound
     private long undeployAfter;
     private long testTimeout;
     private boolean expectTerminate;
+    private boolean failInTestSequence;
     private DelayedTerminator actionTerminator;
     private DelayedTerminator testsTerminator;
     private Prim actionPrim;
@@ -144,6 +145,7 @@ public class TestCompoundImpl extends ConditionCompound
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
         undeployAfter = sfResolve(ATTR_UNDEPLOY_AFTER, 0L, true);
         expectTerminate = sfResolve(ATTR_EXPECT_TERMINATE, false, true);
+        failInTestSequence = sfResolve(ATTR_FAIL_IN_TEST_SEQUENCE, false, true);
         exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
         shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, true, true);

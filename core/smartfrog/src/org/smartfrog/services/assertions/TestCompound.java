@@ -108,6 +108,9 @@ public interface TestCompound extends TestBlock, Conditional {
     /** {@value} */
     String ATTR_EXCEPTIONS ="exceptions";
 
+    /** {@value} */
+    String ATTR_FAIL_IN_TEST_SEQUENCE = "failInTestSequence";
+
     /**
      * Get the termination record for this child; may be null
      * @return a termination record or null
