@@ -166,7 +166,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
     /**
      * Livneess factor. Initializer for liveness count. How many multiples of
-     * livenss delay to wait till a liveness failure of the parent is declared,
+     * liveness delay to wait till a liveness failure of the parent is declared,
      * Defaults to 2.
      */
     protected int sfLivenessFactor = 2;
@@ -1450,8 +1450,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         }
 
         if (fail) {
-            if (sfLog().isDebugEnabled()) {
-                sfLog().debug(
+            if (sfLog().isWarnEnabled()) {
+                sfLog().warn(
                         "failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
             }
             sfLivenessFailure(this, sfParent, null);
