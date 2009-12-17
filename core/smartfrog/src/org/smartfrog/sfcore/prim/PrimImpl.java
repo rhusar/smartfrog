@@ -1450,9 +1450,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         }
 
         if (fail) {
-            if (sfLog().isWarnEnabled()) {
-                sfLog().warn(
-                        "failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
+            if (sfLog().isInfoEnabled()) {
+                sfLog().info("LivenessFailure as parent liveness checking had counted down: in "
+                        + sfCompleteNameSafe());
             }
             sfLivenessFailure(this, sfParent, null);
         }
@@ -2053,7 +2053,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @param name attribute key for tags
      * @param tags a set of tags
      *
-     * @throws SmartFrogException the attribute does not exist;
+     * @throws SmartFrogRuntimeException the attribute does not exist;
      */
     public void sfSetTags(Object name, Set tags)
             throws RemoteException, SmartFrogRuntimeException {
