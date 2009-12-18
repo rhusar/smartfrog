@@ -295,6 +295,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
+    @Override
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
         log.info("Adding mime mapping " + extension + " maps to " + mimeType);
         MimeTypes mimes = getServletContext().getMimeTypes();
@@ -309,6 +310,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
+    @Override
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
         log.info("removing mime mapping " + extension);
         Map mimeMap = getServletContext().getMimeTypes().getMimeMap();
@@ -327,6 +329,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
+    @Override
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration)
             throws RemoteException, SmartFrogException {
         JettyServletDelegate servletDelegate = new JettyServletDelegate(this, (Prim) servletDeclaration);

@@ -67,6 +67,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         Server server = jettyHelper.bindToServer();
@@ -151,6 +152,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if (security != null) {

@@ -40,6 +40,7 @@ public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements
         return (SelectChannelConnector) getConnector();
     }
 
+    @Override
     protected void configureConnector() throws SmartFrogException, RemoteException {
         SelectChannelConnector channel = getSelectChannelConnector();
 
@@ -57,6 +58,7 @@ public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements
 
     }
 
+    @Override
     protected Connector createConnector() throws SmartFrogException, RemoteException {
         return new SelectChannelConnector();
     }

@@ -60,6 +60,8 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * The Http server
      */
     private Server server;
+
+    /** the server bridge */
     private JettyToSFLifecycle<Server> serverBridge = new JettyToSFLifecycle<Server>(SERVER, null);
 
     /**
@@ -75,6 +77,8 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * Error string raised when EARs are deployed {@value}
      */
     public static final String ERROR_EAR_UNSUPPORTED = "Jetty does not support EAR files";
+
+    /** server attribute which is wrapped then added to the graph: {@value} */
     private static final String SERVER = "server";
 
 
@@ -106,6 +110,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @throws RemoteException In case of network/rmi error
      * @see <a href="http://jetty.mortbay.org/xref/org/mortbay/jetty/example/LikeJettyXml.html">Example</a>
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         //create the server and store in in our bridge
@@ -153,6 +158,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -205,6 +211,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
     /**
      * Termination phase. Shut down the server, logging any errors that happen on the way
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
 
         try {
@@ -226,6 +233,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @throws SmartFrogLivenessException the server is  not started
      * @throws RemoteException network trouble
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         serverBridge.sfPing(source);
@@ -244,6 +252,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @throws SmartFrogException errors thrown by the delegate
      * @throws RemoteException network trouble
      */
+    @Override
     public JavaWebApplication deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {
 
@@ -260,6 +269,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @throws SmartFrogException always
      * @throws RemoteException network trouble
      */
+    @Override
     public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication)
             throws RemoteException, SmartFrogException {
         throw new SmartFrogException(ERROR_EAR_UNSUPPORTED);
@@ -273,6 +283,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @throws RemoteException network trouble
      * @throws SmartFrogException on any other problem
      */
+    @Override
     public ServletContextIntf deployServletContext(Prim servletContext) throws RemoteException, SmartFrogException {
 
         DelegateServletContext delegate = new DelegateServletContext(this, servletContext);

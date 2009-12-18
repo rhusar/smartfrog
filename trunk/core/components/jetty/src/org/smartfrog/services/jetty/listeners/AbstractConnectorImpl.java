@@ -67,6 +67,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         try {
@@ -82,6 +83,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      *
      * @param status exit record.
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         jettyHelper.terminateConnector(connector);
         connector = null;

@@ -54,6 +54,7 @@ public class HTAccess extends HandlerImpl implements HTAccessIntf {
      * @throws SmartFrogException In case of error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         accessFile = sfResolve(accessFileRef, accessFile, false);

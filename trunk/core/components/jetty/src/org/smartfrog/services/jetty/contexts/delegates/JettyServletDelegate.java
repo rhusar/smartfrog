@@ -180,6 +180,7 @@ public class JettyServletDelegate
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return "name=" + name
                 + "; className=" + className
@@ -193,6 +194,7 @@ public class JettyServletDelegate
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException    network problems
      */
+    @Override
     public void deploy() throws SmartFrogException, RemoteException {
 
     }
@@ -203,6 +205,7 @@ public class JettyServletDelegate
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException    network problems
      */
+    @Override
     public void start() throws SmartFrogException, RemoteException {
         try {
             log.info("Starting servlet on jetty; "
@@ -219,6 +222,7 @@ public class JettyServletDelegate
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException    network problems
      */
+    @Override
     public void terminate() throws RemoteException, SmartFrogException {
         try {
             if (holder != null) {
@@ -236,6 +240,7 @@ public class JettyServletDelegate
      * @throws SmartFrogLivenessException smartfrog problems
      * @throws RemoteException            network problems
      */
+    @Override
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (holder == null || !holder.isStarted()) {
             throw new SmartFrogLivenessException("Servlet " +

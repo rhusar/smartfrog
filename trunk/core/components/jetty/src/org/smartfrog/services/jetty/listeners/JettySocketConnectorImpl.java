@@ -40,6 +40,9 @@ import java.net.Inet6Address;
  */
 
 public class JettySocketConnectorImpl extends AbstractConnectorImpl implements JettySocketConnector {
+
+    /** {@value} */
+
     public static final String ERROR_WRONG_FAMILY = "Address is of the wrong IP Family ";
 
     /**
@@ -63,6 +66,7 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     protected void configureConnector() throws SmartFrogException, RemoteException {
 
         Server server = jettyHelper.getServer();

@@ -46,6 +46,7 @@ public class JettyLogger implements Logger {
         }
     }
 
+    @Override
     public boolean isDebugEnabled() {
         return log.isDebugEnabled();
     }
@@ -53,32 +54,38 @@ public class JettyLogger implements Logger {
     /**
      * Mutator used to turn debug on programatically.
      */
+    @Override
     public void setDebugEnabled(boolean enabled) {
         log.setLevel(enabled ? LogSF.LOG_LEVEL_DEBUG : LogSF.LOG_LEVEL_INFO);
     }
 
+    @Override
     public void info(String msg, Object arg0, Object arg1) {
         if (log.isInfoEnabled()) {
-            log.info(printf(msg, arg0, arg1));
+            log.info(Printf.printf(msg, arg0, arg1));
         }
     }
 
+    @Override
     public void debug(String msg, Throwable th) {
         log.debug(msg, th);
     }
 
+    @Override
     public void debug(String msg, Object arg0, Object arg1) {
         if (log.isDebugEnabled()) {
-            log.debug(printf(msg, arg0, arg1));
+            log.debug(Printf.printf(msg, arg0, arg1));
         }
     }
 
+    @Override
     public void warn(String msg, Object arg0, Object arg1) {
         if (log.isWarnEnabled()) {
-            log.warn(printf(msg, arg0, arg1));
+            log.warn(Printf.printf(msg, arg0, arg1));
         }
     }
 
+    @Override
     public void warn(String msg, Throwable th) {
         log.warn(msg, th);
     }
@@ -91,31 +98,10 @@ public class JettyLogger implements Logger {
      * @param name name to look up
      * @return the logger
      */
+    @Override
     public Logger getLogger(String name) {
         return new JettyLogger(name);
     }
 
 
-    /**
-     * This is from Jetty's StdErrLog class
-     *
-     * @param message text message
-     * @param arg0 first (optional) argument
-     * @param arg1 second (optional) argument
-     * @return a formated string
-     */
-    private String printf(String message, Object arg0, Object arg1) {
-        int i0 = message.indexOf("{}");
-        int i1 = i0 < 0 ? -1 : message.indexOf("{}", i0 + 2);
-        String result = message;
-
-
-        if (arg1 != null && i1 >= 0) {
-            result = result.substring(0, i1) + arg1 + result.substring(i1 + 2);
-        }
-        if (arg0 != null && i0 >= 0) {
-            result = result.substring(0, i0) + arg0 + result.substring(i0 + 2);
-        }
-        return result;
-    }
 }

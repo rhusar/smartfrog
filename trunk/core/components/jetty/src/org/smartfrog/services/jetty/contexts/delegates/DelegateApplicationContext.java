@@ -94,6 +94,7 @@ public abstract class DelegateApplicationContext
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public void deploy() throws SmartFrogException, RemoteException {
 
     }
@@ -104,6 +105,7 @@ public abstract class DelegateApplicationContext
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public void start() throws SmartFrogException, RemoteException {
         if (context != null) {
             ContextHandlerCollection contextHandler = getServerContextHandler();
@@ -140,6 +142,7 @@ public abstract class DelegateApplicationContext
      * @throws SmartFrogLivenessException In case of liveness failure
      * @throws RemoteException            In case of network/rmi error
      */
+    @Override
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (context == null) {
             throw new SmartFrogLivenessException(ERROR_NULL_CONTEXT);
@@ -156,6 +159,7 @@ public abstract class DelegateApplicationContext
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public void terminate() throws RemoteException, SmartFrogException {
         if (context != null) {
             try {
