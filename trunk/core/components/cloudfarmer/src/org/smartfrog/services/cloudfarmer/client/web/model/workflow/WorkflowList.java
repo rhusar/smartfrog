@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model.workflow;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
+import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,13 +32,13 @@ import java.util.List;
  */
 public class WorkflowList extends ArrayList<Workflow> implements Serializable {
 
-    private RemoteDaemon daemon;
+    private BaseRemoteDaemon daemon;
 
-    public WorkflowList(RemoteDaemon daemon) {
+    public WorkflowList(BaseRemoteDaemon daemon) {
         this.daemon = daemon;
     }
 
-    public WorkflowList(int initialCapacity, RemoteDaemon daemon) {
+    public WorkflowList(int initialCapacity, BaseRemoteDaemon daemon) {
         super(initialCapacity);
         this.daemon = daemon;
     }
@@ -46,11 +46,11 @@ public class WorkflowList extends ArrayList<Workflow> implements Serializable {
     public WorkflowList() {
     }
 
-    public RemoteDaemon getDaemon() {
+    public BaseRemoteDaemon getDaemon() {
         return daemon;
     }
 
-    protected void setDaemon(RemoteDaemon daemon) {
+    protected void setDaemon(BaseRemoteDaemon daemon) {
         this.daemon = daemon;
     }
 

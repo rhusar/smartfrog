@@ -38,17 +38,17 @@ import java.rmi.Remote;
 public interface ClusterFarmer extends Remote {
 
     /**
-     * Attribute used in deployments {@value}
+     * Attribute used in deployments: {@value}
      */
     String ATTR_ROLES = "roles";
 
     /**
-     * This is there to stop users accidentally running up large bills. If <0, it means ignore {@value}
+     * This is there to stop users accidentally running up large bills. If <0, it means ignore: {@value}
      */
     String ATTR_CLUSTER_LIMIT = "clusterLimit";
 
     /**
-     * {@value}
+     * reference to a deployment factory {@value}
      */
     String ATTR_DEPLOYMENT_FACTORY = "deploymentFactory";
     

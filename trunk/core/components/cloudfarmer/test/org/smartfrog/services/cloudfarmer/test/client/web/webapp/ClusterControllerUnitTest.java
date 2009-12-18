@@ -21,6 +21,7 @@ package org.smartfrog.services.cloudfarmer.test.client.web.webapp;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartFrogClusterController;
+import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 
 /**
  * Created 27-Oct-2009 13:22:28
@@ -32,7 +33,7 @@ public class ClusterControllerUnitTest extends TestCase {
     }
 
     String convert(String in) {
-        return DynamicSmartFrogClusterController.convertPath(in);
+        return BaseRemoteDaemon.convertPath(in);
     }
     
     void assertConverts(String expected, String in) {
