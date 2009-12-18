@@ -62,6 +62,7 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
      * @throws SmartFrogLivenessException the server is  not started
      * @throws RemoteException network trouble
      */
+    @Override
     public synchronized void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         if (lifecycle == null) {
             throw new SmartFrogLivenessException(name + LIVENESS_ERROR_NOT_STARTED);

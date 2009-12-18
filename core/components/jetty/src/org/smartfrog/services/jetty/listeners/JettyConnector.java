@@ -58,28 +58,36 @@ public interface JettyConnector extends Remote {
      */
     String ATTR_MIN_THREADS = "minThreads";
 
-
+    /** {@value} */
     String ATTR_SPAWN_OR_SHRINK_AT = "spawnOrShrinkAt";
+    /** {@value} */
     String ATTR_NAME = "name";
+    /** {@value} */
     String ATTR_PRIORITY = "priority";
 
     /**
      * Max time (millis) to wait for a socket <p/> {@value}
      */
     String ATTR_MAX_IDLE_TIME = "maxIdleTime";
+    /** {@value} */
     String ATTR_USE_DIRECT_BUFFERS = "useDirectBuffers";
+    /** {@value} */
     String ATTR_SOCKET_LINGER_TIME = "socketLingerTime";
+    /** {@value} */
     String ATTR_RESPONSE_BUFFER_SIZE = "responseBufferSize";
+    /** {@value} */
     String ATTR_HEADER_BUFFER_SIZE = "headerBufferSize";
+    /** {@value} */
     String ATTR_REQUEST_BUFFER_SIZE = "requestBufferSize";
+    /** {@value} */
     String ATTR_ACCEPTORS = "acceptors";
 
     /**
-     * restrict/control IP settings
+     * restrict/control IP settings : {@value}
      */
     String ATTR_ALLOW_IPV4 = "allowIPv4";
     /**
-     * restrict/control IP settings
+     * restrict/control IP settings : {@value}
      */
     String ATTR_ALLOW_IPV6 = "allowIPv6";
 
