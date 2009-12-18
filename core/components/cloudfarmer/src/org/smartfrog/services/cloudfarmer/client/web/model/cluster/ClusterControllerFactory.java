@@ -54,6 +54,15 @@ public class ClusterControllerFactory {
         return createClusterController(binding);
     }
 
+    /**
+     * Read in the preferences and create cluster controller from them. If loading fails, the default controller and
+     * settings are used
+     *
+     * @param binding the binding options
+     * @return a new cluster controller
+     * @throws IOException        IO problems
+     * @throws SmartFrogException other problems
+     */
     public ClusterController createClusterController(ClusterControllerBinding binding)
             throws IOException, SmartFrogException {
         switch (binding.getController()) {

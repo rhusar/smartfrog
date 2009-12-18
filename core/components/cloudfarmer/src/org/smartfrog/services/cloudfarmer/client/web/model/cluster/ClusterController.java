@@ -28,7 +28,7 @@ import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveExc
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
-import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.sfcore.common.SmartFrogException;

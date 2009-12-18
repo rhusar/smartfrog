@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model.workflow;
 
-import org.apache.struts.util.LabelValueBean;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnboundException;
-import org.smartfrog.services.cloudfarmer.client.web.model.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -44,9 +44,8 @@ public class Workflow extends AbstractEndpoint {
     private String description;
     private String exitText;
     private String classname;
-    private LabelValueBean label = new LabelValueBean();
     private Prim remoteApplication;
-    private RemoteDaemon owner;
+    private BaseRemoteDaemon owner;
 
     public Workflow() {
     }
@@ -55,7 +54,7 @@ public class Workflow extends AbstractEndpoint {
         super(baseURL);
     }
 
-    public Workflow(RemoteDaemon owner, Object key, Prim prim) throws RemoteException, SmartFrogException {
+    public Workflow(BaseRemoteDaemon owner, Object key, Prim prim) throws RemoteException, SmartFrogException {
         setOwner(owner);
         setName(key.toString());
         setRemoteApplication(prim);
@@ -63,11 +62,11 @@ public class Workflow extends AbstractEndpoint {
         description = prim.sfResolve("description", "", false);
     }
 
-    public RemoteDaemon getOwner() {
+    public BaseRemoteDaemon getOwner() {
         return owner;
     }
 
-    void setOwner(RemoteDaemon owner) {
+    void setOwner(BaseRemoteDaemon owner) {
         this.owner = owner;
     }
 
@@ -84,7 +83,6 @@ public class Workflow extends AbstractEndpoint {
      */
     public void setName(String name) {
         this.name = name;
-        label = new LabelValueBean(name, name);
     }
 
     public String getClassname() {
@@ -146,10 +144,6 @@ public class Workflow extends AbstractEndpoint {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public LabelValueBean getLabel() {
-        return label;
     }
 
 

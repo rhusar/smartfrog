@@ -66,6 +66,7 @@ public final class HostInstance implements Serializable {
     
     public HostInstance(String id, ClusterNode node, boolean canDelete) {
         this(id, node.getHostname(), canDelete);
+        this.clusterNode = node;
         role = node.getRole();
         details = node.getDetails();
     }
@@ -83,9 +84,8 @@ public final class HostInstance implements Serializable {
 
         HostInstance that = (HostInstance) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
 
-        return true;
     }
 
     @Override

@@ -25,11 +25,9 @@ import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
+import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.net.URL;
@@ -72,15 +70,15 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
     @Override
     public void bind() throws SmartFrogException, IOException {
         URL server = getTargetURL();
+        String path = server.getPath();
         RemoteDaemon daemon = new RemoteDaemon(getBaseURL());
         daemon.bindOnDemand();
-        //now work out the farmer reference using the path, or, if empty, the 
+        //now work out the farmer reference using the path, or, if empty, the
         //default path
-        String path = server.getPath();
 
         //bind to this reference
         try {
-            farmer = resolveFarmer(daemon.getBoundProcess(), path);
+            farmer = BaseRemoteDaemon.resolveFarmer(daemon.getBoundProcess(), path);
         } catch (SmartFrogResolutionException e) {
             log.error("Failed to bind to " + path + ": " + e, e);
             throw e;
@@ -108,48 +106,6 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         if (checkFarmer()) {
             farmer.stopCluster();
         }
-    }
-
-    /**
-     * code to resolve the farmer. This is kept separate just to make testing easier
-     * @param process process to work with
-     * @param path path to convert and resolve
-     * @return the resolve cluster farmer
-     * @throws SmartFrogResolutionException if the path does not resolve, or what it resolves to is something unexpected
-     * @throws IOException network trouble
-     */
-    private static ClusterFarmer resolveFarmer(ProcessCompound process, String path)
-            throws SmartFrogResolutionException, IOException {
-        String newpath = convertPath(path);
-        Reference ref = new Reference(newpath, true);
-        Prim farmerPrim;
-        farmerPrim = process.sfResolve(ref, (Prim) null, true);
-        if (!(farmerPrim instanceof ClusterFarmer)) {
-            throw new SmartFrogResolutionException(
-                    "There is no ClusterFarmer at " + newpath + " instead an instance of "
-                            + farmerPrim.getClass(), farmerPrim);
-        }
-        return (ClusterFarmer) farmerPrim;
-    }
-
-    /**
-     * Do any path conversion to make it easier to resolve references
-     * @param path path to convert
-     * @return processed path. Default expansion and / to : conversion will have taken place, leading / stripped
-     */
-    public static String convertPath(String path) {
-        String newpath;
-        newpath = path.replace('/', ':');
-        while (newpath.startsWith(":")) {
-            newpath = newpath.substring(1);
-        }
-        while (newpath.endsWith(":")) {
-            newpath = newpath.substring(0,newpath.length()-1);
-        }
-        if (newpath.isEmpty()) {
-            newpath = FARMER_PATH;
-        }
-        return newpath;
     }
 
     public ClusterFarmer getFarmer() {
