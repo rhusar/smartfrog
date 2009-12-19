@@ -32,8 +32,8 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
    public AndConnector() throws RemoteException {}
 
    public boolean isEnabled() {
-      for (Iterator d = dependencies.iterator(); d.hasNext();){ 
-            if (!((DependencyValidation) d.next()).isEnabled()) return false;
+      for ( DependencyValidation dep : dependencies){
+            if (!dep.isEnabled()) return false;
       }
       return true;
    }

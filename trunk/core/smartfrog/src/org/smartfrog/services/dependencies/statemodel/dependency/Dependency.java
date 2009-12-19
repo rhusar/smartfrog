@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.TRANSITION;
+
 
 /**
  * Class that implements the dependency between two StateDependencies-implementing objects.
@@ -38,10 +40,13 @@ import org.smartfrog.sfcore.reference.ReferencePart;
  * On creation will add the dependency, or termination will remove it.
  */
 public class Dependency extends PrimImpl implements Prim, DependencyValidation, RunSynchronisation {
+
+
    String transition = null;
    StateDependencies by = null;
    DependencyValidation on = null;
    String name="";
+   
 
    public Dependency() throws RemoteException {
    }
@@ -51,13 +56,12 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
       
       //System.out.println("&&&&& IN DEP DEPLOY &&&&&");
 	     
-      Object transition_obj = sfResolve("transition", false);
+      Object transition_obj = sfResolve(TRANSITION, false);
       if (transition_obj!=null && transition_obj instanceof String){
     	  transition = (String) transition_obj;
       } 
       
       name = this.sfParent().sfAttributeKeyFor(this).toString();
-      
    }
 
    public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -70,7 +74,7 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
 	   try { running = (Boolean) sfResolve(new Reference(ReferencePart.attrib("running"))); }
 	   catch (Exception e){}
 	   
-	   if (running!=null && running.booleanValue()) sfRun();  //pre-empt...
+	   if (running!=null && running) sfRun();  //pre-empt...
    }
    
    public synchronized void sfRun() throws SmartFrogException{

@@ -33,14 +33,10 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
 
    public boolean isEnabled() {
 	  boolean exists=false;
-	  System.out.println("InACE1");
-      for (Iterator d = dependencies.iterator(); d.hasNext();){
-    	  System.out.println("InACE2");
-            if (!((DependencyValidation) d.next()).isEnabled()) return false;
-            System.out.println("InACE3");
-            exists=true;
+       for (DependencyValidation dep : dependencies) {
+           if (!dep.isEnabled()) return false;
+           exists=true;
       }
-      System.out.println("InACE4");
       return exists;
    }
 }
