@@ -34,11 +34,9 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
    }
 
    public boolean isEnabled() {
-	  boolean exists=false;
-      for (Iterator d = dependencies.iterator(); d.hasNext();) {
-            if (((DependencyValidation) d.next()).isEnabled()) return true;
-            exists=true;
-      }
-      return !exists;
+       for (DependencyValidation dep : dependencies) {
+           if (dep.isEnabled()) return true;
+       }
+       return false;
    }
 }

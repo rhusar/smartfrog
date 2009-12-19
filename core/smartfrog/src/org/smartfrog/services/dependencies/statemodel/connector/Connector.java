@@ -22,6 +22,7 @@ package org.smartfrog.services.dependencies.statemodel.connector;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
+import java.util.Vector;
 
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
@@ -30,7 +31,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 public class Connector extends PrimImpl implements Prim, DependencyValidation, StateDependencies {
-       protected HashSet dependencies = new HashSet();
+       protected Vector<DependencyValidation> dependencies = new Vector<DependencyValidation>();
    
        public Connector() throws RemoteException {}
        

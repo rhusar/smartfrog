@@ -43,17 +43,6 @@ public class StateComponentTransitionException extends SmartFrogException {
     }
 	
 	public static final int g_NOCODEAVAILABLE=0xFFFF;
-	public static final int g_NOTRANSITIONS=0x0;
-	public static final int g_NOSUCHAVAILABLETRANSITION=0x1;
-	public static final int g_NOTRANSITIONSELECTED=0x2;
-	public static final int g_INVALIDSTATEFUNCTION=0x3;
-	public static final int g_ALLOWEDVALUEUNRESOLVABLE=0x4;
-	public static final int g_INVALIDALLOWEDVALUE=0x5;
-	public static final int g_MUSTSUPPLYVALUETOSET=0x6;
-	public static final int g_INVALIDSUPPLIEDVALUE=0x7;
-	public static final int g_VALUESLEFTTOSET=0x8;
-	public static final int g_VALUEALREADYSET=0x9;
-	public static final int g_NOTPERMITTED=0xA;
 	public static final int g_DEPENDENCYVALUEUNRESOLVABLE=0xB;
 	public static final int g_UNABLETOAPPLYEFFECTS=0xC;
 	public static final int g_COMPONENTNOTENABLED=0xD;
