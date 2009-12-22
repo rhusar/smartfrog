@@ -1,8 +1,8 @@
 package org.smartfrog.services.cloudfarmer.server.mock;
 
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
-import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.server.deployment.AbstractNodeDeployment;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -26,6 +26,14 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
         return new MockNodeDeploymentInstance(node);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return "MockNodeDeployment";
+    }
+
     /**
      * This is the mock node; actions are logged but not acted on
      */
@@ -46,18 +54,19 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
         @Override
         public boolean terminateApplication(String name, boolean normal, String exitText)
                 throws IOException, SmartFrogException {
-            sfLog().info("Terminating "+name+ (normal?"normally":"abnormally")+ " " + exitText + " at " + hostname);
+            sfLog().info(
+                    "Terminating " + name + (normal ? "normally" : "abnormally") + " " + exitText + " at " + hostname);
             return true;
         }
 
         @Override
         public void pingApplication(String name) throws IOException, SmartFrogException {
-            sfLog().info("Pinging " + name +" at " + hostname);
+            sfLog().info("Pinging " + name + " at " + hostname);
         }
 
         @Override
         public String getServiceDescription() throws IOException, SmartFrogException {
-            return "Mock to "+hostname;
+            return "Mock to " + hostname;
         }
 
         @Override
@@ -69,5 +78,7 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
         public void terminate() throws IOException, SmartFrogException {
 
         }
+
+
     }
 }

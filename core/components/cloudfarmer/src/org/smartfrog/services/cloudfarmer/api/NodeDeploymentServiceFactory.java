@@ -20,4 +20,12 @@ public interface NodeDeploymentServiceFactory extends Remote {
      */
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException;
 
+    /**
+     * Get some diagnostics text from a component
+     * @return text
+     * @throws IOException Network and other IO problems
+     * @throws SmartFrogException SmartFrog problems
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException;
+
 }

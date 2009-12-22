@@ -43,6 +43,11 @@ public class EC2ClusterRole extends ClusterRoleImpl implements EC2Instance {
     public EC2ClusterRole() throws RemoteException {
     }
 
+    /**
+     * extends the parent's startup actions by creating a launch configuration
+     * @throws SmartFrogException SF problems
+     * @throws RemoteException network problems
+     */
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -50,6 +55,14 @@ public class EC2ClusterRole extends ClusterRoleImpl implements EC2Instance {
     }
 
 
+    /**
+     * Create an EC2 launch configuration from a target role 
+     * @param role role name
+     * @param targetRole the prim defining the role. It is not required that this is an instance of EC2ClusterRole
+     * @return the launch configuration
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
+     */
     public static LaunchConfiguration createLaunchConfiguration(String role, Prim targetRole)
             throws SmartFrogResolutionException, RemoteException {
         String imageID = targetRole.sfResolve(ATTR_IMAGE_ID, "", true);
