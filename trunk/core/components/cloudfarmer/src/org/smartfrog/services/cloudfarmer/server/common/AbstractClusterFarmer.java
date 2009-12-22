@@ -25,6 +25,7 @@ import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentUnsupportedFactory;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -58,7 +59,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
 
     protected int clusterLimit = 1000;
     
-    private NodeDeploymentServiceFactory deploymentFactory;
+    private NodeDeploymentServiceFactory deploymentFactory = new NodeDeploymentUnsupportedFactory();
     
     
     protected AbstractClusterFarmer() throws RemoteException {
@@ -74,7 +75,8 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim)null, true);
+        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY, deploymentFactory, true);
+        resolveClusterLimit();
     }
 
     /**
@@ -179,10 +181,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
      */
     public boolean roleInRange(String role, int quantity) {
         ClusterRoleInfo info = lookupRoleInfo(role);
-        if (info == null) {
-            return false;
-        }
-        return info.isInRange(quantity);
+        return info != null && info.isInRange(quantity);
     }
 
     /**
@@ -249,7 +248,9 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     @Override
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return getDescription()
-                + "\nclusterLimit:" + clusterLimit;
+                + "\nclusterLimit:" + clusterLimit
+                + "\ndeployment factory: "
+                + (deploymentFactory == null ? "No deployment factory" : deploymentFactory.getDiagnosticsText());
     }
 
     /**
@@ -281,11 +282,20 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
      * {@inheritDoc}
      * <p/>
      * This is implemented by handing off to any declared deployment factory
+     * @throws SmartFrogDeploymentException if no deployment factory is defined, this includes diagnostics
      */
     @Override
     public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
         if (deploymentFactory == null) {
-            throw new SmartFrogDeploymentException("No Deployment factory is defined for this farmer");
+            String text;
+            try {
+                text = getDiagnosticsText();
+            } catch (IOException ignored) {
+                text = "";
+            } catch (SmartFrogException ignored) {
+                text = "";
+            }
+            throw new SmartFrogDeploymentException("No Deployment Factory is defined for this farmer " + text);
         }
         return deploymentFactory.createInstance(node);
     }

@@ -23,4 +23,12 @@ public class NodeDeploymentOverRMIFactory extends PrimImpl implements NodeDeploy
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
         return new NodeDeploymentOverRMI(node, NodeDeploymentOverRMI.DEFAULT_PORT);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return "NodeDeploymentOverRMI";
+    }
+
 }

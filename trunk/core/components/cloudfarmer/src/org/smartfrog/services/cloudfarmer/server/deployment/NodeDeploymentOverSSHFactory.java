@@ -76,6 +76,16 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return "NodeDeployment over SSH to " + getConnectionDetails() 
+                + "; Destdir: " + destDir
+                + "; sfHomeDir: " + sfHomeDir
+                ;
+    }
+
 
     /**
      * {@inheritDoc}

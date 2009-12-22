@@ -93,8 +93,6 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
      * @param startupDelay how long should it take per node to start up
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
-     * @throws SmartFrogException
-     * @throws RemoteException
      */
     public void initForMockUse(int size, String localDomain, String externalDomain, boolean isLive,
                                int startupDelay) throws SmartFrogException, RemoteException {

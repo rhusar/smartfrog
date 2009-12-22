@@ -25,4 +25,12 @@ public class NodeDeploymentUnsupportedFactory extends PrimImpl implements NodeDe
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
         throw new SmartFrogException(ERROR_UNSUPPORTED);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDiagnosticsText() throws IOException, SmartFrogException {
+        return "NodeDeploymentUnsupported";
+    }
+
 }
