@@ -34,7 +34,6 @@ import org.smartfrog.services.dependencies.statemodel.state.InvokeAsynchronousSt
 import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
 import org.smartfrog.services.dependencies.statemodel.state.StateComponentTransitionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
