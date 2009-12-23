@@ -22,13 +22,14 @@ package org.smartfrog.services.orchcomponent.model;
 import java.rmi.RemoteException;
 
 import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
+import org.smartfrog.services.dependencies.statemodel.state.StateComponentTransitionException;
 import org.smartfrog.sfcore.prim.Prim;
 
 public class OrchVol extends StateComponent implements Prim {
 			
 	public OrchVol() throws RemoteException {}  
 
-	public boolean threadBody(){
+	public boolean threadBody() throws RemoteException, StateComponentTransitionException {
 		selectSingleAndGo();  //ignore return value...
 		return true;
 	}

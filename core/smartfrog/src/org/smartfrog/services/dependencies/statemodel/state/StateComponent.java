@@ -164,7 +164,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   return state;
    }
    
-   public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException, RemoteException, SmartFrogResolutionException {
+   public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException, RemoteException {
 	   
 	   if (currentAction!=null) {
            throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.CURRENTACTION_ONGOING);  
@@ -173,8 +173,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   acquireLock();
 	   resetPossibleTransitions();
 	   iasc.actOn(this);
-	   handleDPEs();
-	   clean();
+       handleDPEs();
+       clean();
   }
    
    @SuppressWarnings("unchecked")
@@ -338,12 +338,17 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   return ret;
    }
    
-   public boolean handleDPEs() throws SmartFrogResolutionException, RemoteException {
+   public boolean handleDPEs() throws RemoteException, StateComponentTransitionException {
 	   sfLog().debug("IN: State("+name+").handleDPEs()");
 	   boolean progress=false;
 
        Constraint.lockUpdateContext();
-       progress = runDPEs();
+       try {
+           progress = runDPEs();
+       } catch (SmartFrogResolutionException e) {
+           sfLog().warn(e);
+           throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_HANDLEDPES, e);
+       }
        Constraint.applyUpdateContext();
 			  
 	   sfLog().debug("IN: State("+name+").handleDPEs() Progress"+progress);
