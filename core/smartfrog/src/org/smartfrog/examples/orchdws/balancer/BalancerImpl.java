@@ -34,6 +34,7 @@ import org.smartfrog.services.dependencies.statemodel.state.InvokeAsynchronousSt
 import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
 import org.smartfrog.services.dependencies.statemodel.state.StateComponentTransitionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
@@ -95,20 +96,25 @@ public class BalancerImpl extends StateComponent implements Balancer, DataSource
     	timer.schedule(new TimerTask(){
     		public void run(){
       	        //System.out.println ( "OK, It's time to do something!" ) ;
-    			try {
-	      	    invokeAsynchronousStateChange(new InvokeAsynchronousStateChange(){
-	            	public void actOn(StateComponent _lb) {
-	            		try {
-	            			_lb.go(TIMER);
-	            		}catch (StateComponentTransitionException scte){/*Shouldn't happen*/}
-	                }
-	           });      	      
-	      	  cancel() ; //Terminate the timer...
-    		  }catch (StateComponentTransitionException scte){/*Shouldn't happen*/}
+                try {
+                    invokeAsynchronousStateChange(new InvokeAsynchronousStateChange(){
+                      public void actOn(StateComponent _lb) {
+                          try {
+                              _lb.go(TIMER);
+                          }catch (StateComponentTransitionException scte){/*Shouldn't happen*/}
+                    }
+                    });
+                } catch (StateComponentTransitionException e) {
+                    sfLog().error(e);
+                    throw new RuntimeException(e);  //propagate up...
+                } catch (RemoteException e) {
+                    sfLog().error(e);
+                    throw new RuntimeException(e);
+                } 
+                cancel() ; //Terminate the timer...
       	    }
-    		
     	}, sleep);
-    	return false; 
+        return false;
     }
 	
     /** implementation of DataSource interface
