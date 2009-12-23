@@ -21,8 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dependencies.statemodel.connector;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
-
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 
 /**
@@ -31,10 +29,23 @@ import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValid
 
    public AndConnector() throws RemoteException {}
 
-   public boolean isEnabled() {
-      for ( DependencyValidation dep : dependencies){
-            if (!dep.isEnabled()) return false;
+   public boolean isEnabled() throws RemoteException {
+      boolean existsCheck = false;
+      boolean result=true;
+      for (DependencyValidation dep : dependencies){
+          existsCheck = true;
+          if (!dep.isEnabled()) {
+              result=false;
+              break;
+          }
       }
-      return true;
+
+      //If result is true, then ok subject to existence check, otherwise ok.
+      if (result && exists){
+           result = existsCheck;
+      }
+
+      //Either way, subsequently toggle result based on not
+      return (not? !result: result);
    }
 }
