@@ -47,7 +47,7 @@ public class StateComponentTransitionException extends SmartFrogException {
         this.code = code;
     }
 
-    public StateComponentTransitionException(final StateComponentExceptionCode code, Throwable t) {
+    public StateComponentTransitionException(final StateComponentExceptionCode code, final Throwable t) {
         super(t);
         this.code = code;
     }
@@ -55,6 +55,11 @@ public class StateComponentTransitionException extends SmartFrogException {
     public StateComponentTransitionException(final StateComponentExceptionCode code) {
         super();
         this.code = code;
+    }
+
+    public StateComponentTransitionException(final Throwable t) {
+        super(t);
+        this.code = GENERIC;
     }
 
     /*public static final int g_DEPENDENCYVALUEUNRESOLVABLE
