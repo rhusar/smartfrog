@@ -25,9 +25,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.smartfrog.services.dependencies.statemodel.connector.AndConnector;
-import org.smartfrog.services.dependencies.statemodel.connector.NXorConnector;
-import org.smartfrog.services.dependencies.statemodel.connector.NandConnector;
-import org.smartfrog.services.dependencies.statemodel.connector.NorConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.OrConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.XorConnector;
 import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
@@ -81,17 +78,18 @@ public class Resolver {
 		else if (functionClass.equals(StateComponent.class.getName())) return " & ";
 		else if (functionClass.equals(AndConnector.class.getName())) return " & ";
 		else if (functionClass.equals(OrConnector.class.getName())) return " | ";
-		else if (functionClass.equals(NandConnector.class.getName())) return " & ";
-		else if (functionClass.equals(NorConnector.class.getName())) return " | ";
+		//else if (functionClass.equals(NandConnector.class.getName())) return " & ";
+		//else if (functionClass.equals(NorConnector.class.getName())) return " | ";
 		else if (functionClass.equals(XorConnector.class.getName())) return " xor ";
-		else if (functionClass.equals(NXorConnector.class.getName())) return " xnor ";
+		//else if (functionClass.equals(NXorConnector.class.getName())) return " xnor ";
 		
 		throw new SmartFrogResolutionException("Unknown function class for model checker:"+functionClass);
 	}
 	
 	static public String getFinalFunctionRepresentation(String functionClass, String prefinal){
-		if (functionClass.equals(NandConnector.class.getName()) || functionClass.equals(NorConnector.class.getName())) return " !("+prefinal+") ";
-		else return prefinal;
+		//if (functionClass.equals(NandConnector.class.getName()) || functionClass.equals(NorConnector.class.getName())) return " !("+prefinal+") ";
+		//else return prefinal;
+        return "";  //quick hack to get to compile...
 	}
 	
 	static public String getBooleanRepresentation(boolean bool){

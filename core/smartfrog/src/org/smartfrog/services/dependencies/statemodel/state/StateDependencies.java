@@ -20,15 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dependencies.statemodel.state;
 
-
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
-import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
 
  */
-public interface StateDependencies {
-    public void register(DependencyValidation d) throws SmartFrogStateLifecycleException;
-    public void deregister(DependencyValidation d) throws SmartFrogStateLifecycleException;
+public interface StateDependencies extends Remote {
+    public void register(DependencyValidation d) throws RemoteException;
+    public void deregister(DependencyValidation d) throws RemoteException;
 }
 

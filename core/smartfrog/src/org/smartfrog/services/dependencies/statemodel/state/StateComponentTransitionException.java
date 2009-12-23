@@ -23,29 +23,43 @@ package org.smartfrog.services.dependencies.statemodel.state;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 public class StateComponentTransitionException extends SmartFrogException {
-	private int code;
-	
-	public StateComponentTransitionException(int code){
-        this.code = code;
-	}
-	
-	public StateComponentTransitionException(String msg, int code){
-		super(msg);
-		this.code = code;
-	}
-	
-	public StateComponentTransitionException(String msg){
-		this(msg, g_NOCODEAVAILABLE);
-	}
 
-    public StateComponentTransitionException(Throwable t) {
-        super(t);
+    public enum StateComponentExceptionCode {
+        GENERIC,
+        COMPONENT_NOTENABLED,
+        COMPONENT_NOTRUNNING,
+        CURRENTACTION_ONGOING,
+
+        FAILEDTO_ACQUIRELOCK,
+        FAILEDTO_EXECUTETRANSITIONSCRIPT,
+        FAILEDTO_FINDSINGLEDEPENDENCYENABLED,
+        FAILEDTO_GETNAMEDENABLEDTRANSITION,
+        FAILEDTO_RESOLVETRANSITIONEFFECTS,
+        FAILEDTO_RESOLVETRANSITIONGUARD
+
+
     }
-	
-	public static final int g_NOCODEAVAILABLE=0xFFFF;
+
+    private StateComponentExceptionCode code;
+    public StateComponentTransitionException(final StateComponentExceptionCode code, final String msg, Throwable t) {
+        super(msg, t);
+        this.code = code;
+    }
+
+    public StateComponentTransitionException(final StateComponentExceptionCode code, Throwable t) {
+        super(t);
+        this.code = code;
+    }
+
+    public StateComponentTransitionException(final StateComponentExceptionCode code) {
+        super();
+        this.code = code;
+    }
+
+    /*public static final int g_DEPENDENCYVALUEUNRESOLVABLE
 	public static final int g_DEPENDENCYVALUEUNRESOLVABLE=0xB;
 	public static final int g_UNABLETOAPPLYEFFECTS=0xC;
-	public static final int g_COMPONENTNOTENABLED=0xD;
+	public static final int g_COMPONENTNOTENABLED=0xD;*/
 	
-	public int getExceptionCode(){ return code; }	
+	public StateComponentExceptionCode getExceptionCode(){ return code; }
 }

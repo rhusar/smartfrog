@@ -17,41 +17,45 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
 package org.smartfrog.services.dependencies.statemodel.state;
 
-import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogUpdateException;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint;
-import org.smartfrog.sfcore.prim.Liveness;
-
 import java.rmi.RemoteException;
-import java.util.Enumeration;
+
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.RUNNING;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.RUN;
 
 /**
  *
  */
 public class SynchedComposite extends Composite {
 
-   public SynchedComposite() throws RemoteException {
-	   
+   public SynchedComposite() throws RemoteException {  
    }
 
-   public synchronized Object sfReplaceAttribute(Object name, Object value)
+    /**
+     * See super.sfReplaceAttribute() for more information (which is called).
+     * Will complete documentation... 
+     * @param key
+     * @param value value to add or replace
+     *
+     * @return
+     * @throws SmartFrogRuntimeException
+     * @throws RemoteException
+     */
+  public synchronized Object sfReplaceAttribute(Object key, Object value)
 	throws SmartFrogRuntimeException, RemoteException {
-
-	   Object result = super.sfReplaceAttribute(name,value);
-	   
-	   try {
-		   if (name.equals("run") && (value instanceof Boolean) && ((Boolean)value).booleanValue()) {
-			   this.sfRun();
-			   super.sfReplaceAttribute("running", new Boolean(true));
-		   }
-	   } catch (SmartFrogException e){throw new SmartFrogRuntimeException(e);}
+	   Object result = super.sfReplaceAttribute(key, value);
+       if (key.equals(RUN) && (value instanceof Boolean) && ((Boolean)value)) {
+           try {
+               this.sfRun();
+           } catch (SmartFrogException e) {
+               sfLog().error(e);
+               throw new SmartFrogRuntimeException(e);
+           }
+           super.sfReplaceAttribute(RUNNING, true);
+       }
 	   return result;
    }
 }

@@ -41,7 +41,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  */
 public class SimpleThreadPoolImpl extends PrimImpl implements ThreadPool, Remote, Prim, Serializable {
    private int numThreads=5;
-   private int busyThreads=0;
+   //private int busyThreads=0;
    private transient ExecutorService es;
    
    public SimpleThreadPoolImpl() throws RemoteException {
@@ -65,9 +65,9 @@ public class SimpleThreadPoolImpl extends PrimImpl implements ThreadPool, Remote
 	   }
 	   public void run(){
 		   toRun.run();
-		   synchronized(SimpleThreadPoolImpl.this){
+		   /*synchronized(SimpleThreadPoolImpl.this){
 		       busyThreads--;
-		   }
+		   }*/
 	   }
    }
    
@@ -77,9 +77,9 @@ public class SimpleThreadPoolImpl extends PrimImpl implements ThreadPool, Remote
     */
    public Future<?> addToQueue(Runnable run){
 	  sfLog().debug("IN: threadPool: addToQueue()");
-	  synchronized (this){
+	  /*synchronized (this){
 		  busyThreads++;  //we should increase before it's run...
-	  }
+	  }*/
 	  sfLog().debug("threadPool: addToQueue() SUBMITTING");
       Future<?> future = es.submit(new Runnable_(run));
       sfLog().debug("OUT: threadPool: addToQueue()");

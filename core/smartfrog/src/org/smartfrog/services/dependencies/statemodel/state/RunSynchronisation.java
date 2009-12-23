@@ -22,6 +22,9 @@ package org.smartfrog.services.dependencies.statemodel.state;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-public interface RunSynchronisation {
-	public void sfRun() throws SmartFrogException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface RunSynchronisation extends Remote {
+	public void sfRun() throws SmartFrogException, RemoteException;
 }

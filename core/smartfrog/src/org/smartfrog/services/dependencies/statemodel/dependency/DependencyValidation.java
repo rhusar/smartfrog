@@ -20,7 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dependencies.statemodel.dependency;
 
-public interface DependencyValidation {
-   public String getTransition();
-   public boolean isEnabled();
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface DependencyValidation extends Remote {
+   public String getTransition() throws RemoteException;
+   public boolean isEnabled() throws RemoteException;
 }

@@ -111,44 +111,22 @@ CompositeTerminator extends StateComponent {
     sfUniqueComponentID false;  //not a component for model checking purposes
 }
 
-AndConnector extends Prim {
+Connector extends Prim {
+  sfUpdatable true;
+  not false;
+  exists false;
+}
+
+AndConnector extends Connector {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnector";
-    sfUpdatable true;
 }
 
-OrConnector extends Prim {
+OrConnector extends Connector {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnector";
-    sfUpdatable true;
 }
 
-AndConnectorExists extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnectorExists";
-    sfUpdatable true;
-}
-
-OrConnectorExists extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnectorExists";
-    sfUpdatable true;
-}
-
-NorConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NorConnector";
-    sfUpdatable true;
-}
-
-NandConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NandConnector";
-    sfUpdatable true;
-}
-
-XorConnector extends Prim {
+XorConnector extends Connector {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.XorConnector";
-    sfUpdatable true;
-}
-
-NXorConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NXorConnector";
-    sfUpdatable true;
 }
 
 Transition extends {
