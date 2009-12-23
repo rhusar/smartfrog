@@ -25,6 +25,7 @@ import java.rmi.RemoteException;
 import org.smartfrog.services.dependencies.statemodel.state.RunSynchronisation;
 import org.smartfrog.services.dependencies.statemodel.state.StateDependencies;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -32,7 +33,9 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
 import static org.smartfrog.services.dependencies.statemodel.state.Constants.TRANSITION;
-
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.RUNNING;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.RELEVANT;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.ENABLED;
 
 /**
  * Class that implements the dependency between two StateDependencies-implementing objects.
@@ -41,92 +44,80 @@ import static org.smartfrog.services.dependencies.statemodel.state.Constants.TRA
  */
 public class Dependency extends PrimImpl implements Prim, DependencyValidation, RunSynchronisation {
 
-
    String transition = null;
    StateDependencies by = null;
    DependencyValidation on = null;
    String name="";
-   
 
    public Dependency() throws RemoteException {
    }
 
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
-      
-      //System.out.println("&&&&& IN DEP DEPLOY &&&&&");
-	     
-      Object transition_obj = sfResolve(TRANSITION, false);
-      if (transition_obj!=null && transition_obj instanceof String){
-    	  transition = (String) transition_obj;
-      } 
-      
+      transition = sfResolve(TRANSITION, (String) null, true);
       name = this.sfParent().sfAttributeKeyFor(this).toString();
    }
 
-   public synchronized void sfStart() throws SmartFrogException, RemoteException {
-	   //System.out.println("&&&&& IN DEP START &&&&&"+by);
-	  
+   public synchronized void sfStart() throws SmartFrogException, RemoteException { 
 	   super.sfStart();   
 	   
 	   //SHOULD BE A CHECK IN HERE ON RUNNING...
 	   Boolean running = null;
-	   try { running = (Boolean) sfResolve(new Reference(ReferencePart.attrib("running"))); }
-	   catch (Exception e){}
-	   
-	   if (running!=null && running) sfRun();  //pre-empt...
+       try {
+           running = (Boolean) sfResolve(new Reference(ReferencePart.attrib(RUNNING)));
+       } catch (SmartFrogResolutionException ignored) {
+           sfLog().ignore(ignored); //ok
+       }
+
+       if (running!=null && running) sfRun();  //set it up now ("run" it)...
    }
    
-   public synchronized void sfRun() throws SmartFrogException{
-	  //System.out.println("IN: sfRun: "+name+" registering...");
-	   try {by = (StateDependencies) sfResolve("by"); } catch(Exception e) {/*Elaborate*/}
-	   //System.out.println("1");
-	   try {on = (DependencyValidation) sfResolve("on"); } catch(Exception e) {/*Elaborate*/}
-	   //System.out.println("2:"+by);
-	   by.register(this);
-	   //System.out.println("OUT: sfRun: "+name+" registering...");
+   public synchronized void sfRun() throws SmartFrogException, RemoteException {
+
+	   by = (StateDependencies) sfResolve("by");
+       by.register(this);
+       try {
+           on = (DependencyValidation) sfResolve("on");
+       } catch (SmartFrogResolutionException ignored) {
+           sfLog().ignore(ignored); //ok
+       }
    }
 
    public synchronized void sfTerminateWith(TerminationRecord tr) {
-      try {
-         by.deregister(this);
-      } catch (Exception e) {
-      }
-      super.sfTerminateWith(tr);
+       try {
+           by.deregister(this);
+       } catch (RemoteException e) {
+           sfLog().error(e);
+           throw new RuntimeException(e); //force a hard reset, which should follow...
+       }
+       super.sfTerminateWith(tr);
    }
 
    public String toString(){
 	   return name;
    }
    
-   public boolean isEnabled() {
-	   boolean relevant;
-	   boolean enabled;
+   public boolean isEnabled() throws RemoteException {
+	   boolean relevant=true;
+	   boolean enabled=false;
 	   boolean isEnabled=true;
-	   //System.out.println("Dependency Enablement check:"+ name); 
       
-	  try {
-         relevant = sfResolve("relevant", true, false);
-         
-         if (relevant){
-        	 //System.out.println("I am relevant!");
-        	 boolean onEnabled;
-        	 enabled = sfResolve("enabled", false, false);
-             
-        	 //System.out.println("I am enabled?"+enabled);
-        	 
-        	 if (on!=null) onEnabled = ((!(on instanceof DependencyValidation)) || ((DependencyValidation) on).isEnabled());
-        	 else onEnabled=true;
-        	 
-        	//System.out.println("I am onEnabled?"+onEnabled);
-         
-        	 isEnabled = (enabled && onEnabled);
-         }
-         
-      } catch (Exception e) {/*Elaborate*/ isEnabled=false;}
+       try {
+           relevant = sfResolve(RELEVANT, true, false);
+       } catch (SmartFrogResolutionException ignored) {
+           sfLog().ignore(ignored); //ok
+       }
 
-      //System.out.println("Enabled:"+isEnabled);
-      return isEnabled;
+       if (relevant){
+           try {
+               enabled = sfResolve(ENABLED, false, false);
+           } catch (SmartFrogResolutionException ignored) {
+               sfLog().ignore(ignored); //ok
+           }
+
+           isEnabled = (enabled && (on == null || on.isEnabled()));
+       }
+       return isEnabled;
    }
 
    public String getTransition(){

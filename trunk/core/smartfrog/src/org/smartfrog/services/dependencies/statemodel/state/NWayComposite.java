@@ -37,8 +37,7 @@ public class NWayComposite extends Composite implements Compound, StateChangeNot
    ComponentDescription template;
    ComponentDescription instances;
    int instanceCount;
-   boolean numeric = true;
-
+   
 
    public NWayComposite() throws RemoteException {
    }
