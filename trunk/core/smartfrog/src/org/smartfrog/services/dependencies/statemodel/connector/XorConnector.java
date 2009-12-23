@@ -21,22 +21,30 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dependencies.statemodel.connector;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
-
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 
 public class XorConnector extends Connector {
-	   public XorConnector() throws RemoteException {
-		   
-	   }
+	public XorConnector() throws RemoteException {}
 
-    public boolean isEnabled() {
-        boolean any_enabled = false;
+    public boolean isEnabled() throws RemoteException {
+        boolean existsCheck = false;
+        boolean result = false;
         for (DependencyValidation dep : dependencies) {
+            existsCheck = true;
             boolean enabled = dep.isEnabled();
-            if (any_enabled && enabled) return false;
-            if (enabled) any_enabled = true;
+            if (result && enabled) {
+                result=false;
+                break;  //this is an xor after all, so one and only one should be enabled...
+            }
+            result=enabled;
         }
-        return any_enabled;
+
+        //If result is false, then ok subject to existence check, otherwise ok.
+        if (!result && exists) {
+            result = !existsCheck;
+        }
+
+        //Either way, subsequently toggle result based on not
+        return (not ? !result : result);
     }
 }

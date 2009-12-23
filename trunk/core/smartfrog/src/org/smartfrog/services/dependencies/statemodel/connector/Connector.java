@@ -21,33 +21,42 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dependencies.statemodel.connector;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Vector;
 
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
-import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
 import org.smartfrog.services.dependencies.statemodel.state.StateDependencies;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.EXISTS;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.NOT;
 
 public class Connector extends PrimImpl implements Prim, DependencyValidation, StateDependencies {
-       protected Vector<DependencyValidation> dependencies = new Vector<DependencyValidation>();
-   
-       public Connector() throws RemoteException {}
-       
-	   public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
-		      System.out.println("My dependencies:"+dependencies+" and me:"+d);
-		      dependencies.add(d);
-	   }
-	   public void deregister(DependencyValidation d) throws SmartFrogStateLifecycleException {
-	      dependencies.remove(d);
-	   }
+    protected Vector<DependencyValidation> dependencies = new Vector<DependencyValidation>();
+    protected boolean exists =false;
+    protected boolean not =false;
+
+    public Connector() throws RemoteException {}
+
+    @Override
+    public void sfStart() throws SmartFrogException, RemoteException {
+        exists = sfResolve(EXISTS, false, true);
+        not = sfResolve(NOT, false, true);
+        super.sfStart();
+    }
+
+    public void register(DependencyValidation d) {
+		 dependencies.add(d);
+	}
+	public void deregister(DependencyValidation d) {
+	     dependencies.remove(d);
+	}
 	   
-	   public String getTransition(){
-		   return null;
-	   }
-	   
-	   public boolean isEnabled(){ 
-		   return false;
-	   }
+    public String getTransition(){
+       return null;
+    }
+
+    public boolean isEnabled() throws RemoteException {
+       return false;
+    }
 }
