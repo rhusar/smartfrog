@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -68,7 +70,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
    public Composite() throws RemoteException {  
    }
    
-   public void waitOnQueuesCleared(){
+   public void waitOnQueuesCleared() throws IOException {
 	   sfLog().debug("IN: Composite: waitOnQueuesCleared()");
 	   CompositeQueueListener ccl = new CompositeQueueListener();
 	   synchronized (listeners){
@@ -81,8 +83,11 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 		    sfLog().debug("Sleeping...");
 			try {
                 Thread.sleep(WAIT_A_REASONABLE_PERIOD);
-            } catch(InterruptedException ignored){
-                sfLog().ignore(ignored);
+            } catch(InterruptedException e){
+                sfLog().debug(e);
+                InterruptedIOException ie = new InterruptedIOException(e.getMessage());
+                ie.setStackTrace(e.getStackTrace());
+                throw ie;
             }
 	   }
 	   sfLog().debug("OUT: Composite: waitOnQueuesCleared()");
@@ -214,7 +219,6 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 		  while (keys.hasNext()){
 			  String key = keys.next();
 			  sfLog().debug("Composite.hsc() "+name +"Deploying "+key);
-			  //try {
               try {
                   sfCreateNewChild(key, toDeploy.get(key), null);
               } catch (SmartFrogDeploymentException e) {
@@ -253,7 +257,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	   */
 	   class Notifier implements Runnable {
 	      public void run() {
-	    	  sfLog().debug("IN: Composite.Notifier.run()");    
+	    	  sfLog().debug("IN: Composite.Notifier.run()");
 	          while (!Composite.this.terminating){
 	        	  try{
                       handleStateChange();
@@ -264,7 +268,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
                       sfLog().warn(ignored);  //trying to be somewhat robust to the presence of these, just ignore and try again next time...
                   }
 	          }
-	          sfLog().debug("OUT: Composite.Notifier.run()");    
+	          sfLog().debug("OUT: Composite.Notifier.run()");
 	      }
 	   }
 	   

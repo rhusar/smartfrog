@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -297,7 +299,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     public interface DeployingAgent extends Remote {
     	public void addToDeploy(String name, ComponentDescription cd) throws SmartFrogException, RemoteException;
     	public void addToTerminate(String name) throws RemoteException;
-    	public void waitOnQueuesCleared() throws RemoteException;
+    	public void waitOnQueuesCleared() throws IOException;
     }
     
 }
