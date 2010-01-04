@@ -75,7 +75,14 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY, deploymentFactory, true);
+        Prim p = sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim)null, true);
+        if (!(p instanceof NodeDeploymentServiceFactory)) {
+            throw new SmartFrogResolutionException(new Reference(ATTR_DEPLOYMENT_FACTORY),
+                    sfCompleteName(),
+                    "Deployment factory is "+p.getClass()+" and not an instance of NodeDeploymentServiceFactory",
+                    p);
+        }
+        deploymentFactory = (NodeDeploymentServiceFactory) p;
         resolveClusterLimit();
     }
 

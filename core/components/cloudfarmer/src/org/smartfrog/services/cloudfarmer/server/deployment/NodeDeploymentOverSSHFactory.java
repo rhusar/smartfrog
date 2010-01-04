@@ -8,20 +8,14 @@ import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.ssh.AbstractSSHComponent;
 import org.smartfrog.services.ssh.SSHComponent;
-import org.smartfrog.services.ssh.ScpTo;
-import org.smartfrog.services.ssh.SshCommand;
-import org.smartfrog.services.ports.PortUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.LogLevel;
-import org.smartfrog.sfcore.logging.OutputStreamLog;
-import org.smartfrog.sfcore.utils.SFExpandFully;
-import org.apache.tools.ant.util.TeeOutputStream;
-import java.io.File;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogSF;
+
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -50,6 +44,55 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     public NodeDeploymentOverSSHFactory() throws RemoteException {
     }
 
+    
+    public String getDestDir() {
+        return destDir;
+    }
+
+    public JSch getJschInstance() {
+        return jschInstance;
+    }
+
+    public String getSfHomeDir() {
+        return sfHomeDir;
+    }
+
+    public boolean isKeepFiles() {
+        return keepFiles;
+    }
+
+    public int getPortConnectTimeout() {
+        return portConnectTimeout;
+    }
+
+    public String getTempfilePrefix() {
+        return tempfilePrefix;
+    }
+
+    public int getOutputLogLevel() {
+        return outputLogLevel;
+    }
+    
+    public LogSF getLog() {
+        return log;
+    }
+
+    /**
+     * Get a new number
+     *
+     * @return a new number for use in filenames
+     */
+    public synchronized int getNextNumber() {
+        return random.nextInt();
+    }    
+    
+    /**
+     * {@inheritDoc}
+     *
+     */
+    public SmartFrogLifecycleException forward(Throwable thrown, String connectionDetails) {
+        return super.forward(thrown, connectionDetails);
+    }
 
     /**
     * At startup, the jsch instance is created
@@ -92,7 +135,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      */
     @Override
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
-        return new NodeDeploymentOverSSH(node);
+        return new NodeDeploymentOverSSH(this, node);
     }
 
 
@@ -110,196 +153,16 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         return newSession;
     }
 
-
     /**
-     * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login
-     * <p/>
-     * This is an inner
-     * class and it uses the parent to do the work
+     * Create an SF command resolved to the target SF home directory
+     * @param command the command to be run
+     * @return the command to run at the far end
      */
-    final class NodeDeploymentOverSSH extends AbstractNodeDeployment implements NodeDeploymentService {
-
-        private String hostname;
-        private static final String SF_SUFFIX = ".sf";
-        private static final String SSH_RESPONSE_CHARSET = "ISO-8859-1";
-
-        NodeDeploymentOverSSH(ClusterNode node) {
-            super(node);
-            hostname = node.getExternalHostname();
-        }
-
-        /**
-         * This is here to stop any code even accidentally asking the superclass for a session
-         * @return nothing
-         * @throws IllegalStateException always
-         */
-        private Session getSession() {
-            throw new IllegalStateException("getSession not supported");
-        }
-
-        private String makeSFCommand(String command) {
-            if(sfHomeDir.isEmpty()) {
-                return command;
-            }
-            return sfHomeDir + command;
-        }
-        /**
-         * {@inheritDoc}
-         * @param name application name
-         * @param cd component description
-         * @throws IOException IO problems
-         * @throws SmartFrogException SF problems
-         */
-        @Override
-        public synchronized void deployApplication(String name, ComponentDescription cd)
-                throws IOException, SmartFrogException {
-            if(!getClusterNode().isExternallyVisible()) {
-                sfLog().warn("This node is not externally visible. Unless we are in the cell, deployment will not work");
-            }
-            File localtempfile = File.createTempFile(tempfilePrefix, SF_SUFFIX);
-            String desttempfile = destDir + tempfilePrefix + getNextNumber() + SF_SUFFIX;
-            SFExpandFully.saveCDtoFile(cd, localtempfile);
-            ArrayList<File> sourceFiles = new ArrayList<File>();
-            ArrayList<String> destFiles = new ArrayList<String>();
-            sourceFiles.add(localtempfile);
-            destFiles.add(desttempfile);
-            String connectionDetails = getConnectionDetails();
-            log.info("Deploying application "+ name + " to " + connectionDetails);
-            
-            //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
-            
-            PortUtils.checkPort(hostname, getPort(), portConnectTimeout);
-            
-            
-            Session session = null;
-            try {
-                session = demandCreateSession(hostname);
-                ArrayList<String> commandsList = new ArrayList<String>(1);
-                commandsList.add("mkdir -p " + destDir);
-                commandsList.add("exit");
-                sshExec(session, commandsList, true);
-                
-                ScpTo scp = new ScpTo(sfLog());
-                //copy up the temp files
-                log.info("copying " + localtempfile + " to " + desttempfile);
-                scp.doCopy(session, destFiles, sourceFiles);
-                String sshCommand;
-                sshCommand = makeSFCommand("sfStart") + " " + "localhost" + " " + name + " " + desttempfile;
-                log.info("executing: " + sshCommand);
-                commandsList = new ArrayList<String>(1);
-                commandsList.add(sshCommand);
-                if (!keepFiles) {
-                    commandsList.add("rm " + desttempfile);
-                }
-                commandsList.add("exit");
-                sshExec(session, commandsList, true);
-            } catch (JSchException e) {
-                log.error("Failed to upload to " + connectionDetails + " : " + e, e);
-                throw forward(e, connectionDetails);
-            } finally {
-                endSession(session);
-                if(!keepFiles) {
-                    localtempfile.delete();
-                }
-            }
-        }
-
-        private String getConnectionDetails() {
-            return getUserName() +"@" +hostname + ":" + getPort() ;
-        }
-
-        /**
-         * Get a new number
-         * @return a new number for use in filenames
-         */
-        private synchronized int getNextNumber() {
-            return random.nextInt();
-        }
-
-        private void sshExec(Session session, String commandString, boolean checkResponse)
-                throws JSchException, IOException, SmartFrogException {
-            ArrayList<String> commandsList = new ArrayList<String>(1);
-            commandsList.add(commandString);
-            sshExec(session, commandsList, checkResponse);
-        }
-
-        private int sshExec(Session session, ArrayList<String> commandsList, boolean checkResponse)
-                throws JSchException, IOException, SmartFrogException {
-            SshCommand command = new SshCommand(sfLog(), null);
-            OutputStreamLog outputStreamLog = new OutputStreamLog(log, outputLogLevel);
-            ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-            TeeOutputStream teeOut = new TeeOutputStream(outputStreamLog, byteOutputStream);
-            int exitCode = command.execute(session, commandsList, teeOut, getTimeout());
-            if (checkResponse && exitCode != 0) {
-                String output = byteOutputStream.toString(SSH_RESPONSE_CHARSET);
-                throw new SmartFrogException("Error response on command " + commandsList.get(0)
-                    +":-\n"
-                    + output);
-            }
-            return exitCode;
-        }
-
-        /**
-         * End a session
-         *
-         * @param session session, can be null
-         */
-        private void endSession(Session session) {
-            if (session != null && session.isConnected()) {
-                session.disconnect();
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean terminateApplication(String name, boolean normal, String exitText)
-                throws IOException, SmartFrogException {
-            Session session = null;
-            try {
-                log.info("Terminating application " + name + " for " + exitText);
-                session = demandCreateSession(hostname);
-                ArrayList<String> commandsList = new ArrayList<String>(1);
-                String sshCommand = makeSFCommand("sfTerminate") + " " + "localhost" + " " + name;
-                log.info("executing: " + sshCommand);
-                commandsList.add(sshCommand);
-                commandsList.add("exit");
-                return sshExec(session, commandsList, false) == 0;
-            } catch (JSchException e) {
-                String connectionDetails = getConnectionDetails();
-                log.error("Failed to terminate "+ name+ " on " + connectionDetails + " : " + e, e);
-                throw forward(e, connectionDetails);
-            } finally {
-                endSession(session);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void pingApplication(String name) throws IOException, SmartFrogException {
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getServiceDescription() throws IOException, SmartFrogException {
-            return "SSH to " + hostname;
-        }
-
-        @Override
-        public String getApplicationDescription(String name) throws IOException, SmartFrogException {
-            return "";
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void terminate() throws IOException, SmartFrogException {
+    public String makeSFCommand(String command) {
+        if (getSfHomeDir().isEmpty()) {
+            return command;
+        } else {
+            return getSfHomeDir() + command;
         }
     }
 
