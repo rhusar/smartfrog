@@ -61,6 +61,7 @@ public class ManualClusterFarmerImpl extends AbstractFarmNodeClusterFarmer {
         buildNodeFarm();
     }
 
+    
     /**
      * Build the node farm by looking for children of the hosts child
      *
@@ -69,9 +70,10 @@ public class ManualClusterFarmerImpl extends AbstractFarmNodeClusterFarmer {
      */
     @Override
     protected void buildNodeFarm() throws SmartFrogException, RemoteException {
-
         Prim child = sfResolve(ATTR_HOSTS, (Prim) null, true);
-        nodeFarm = new HashMap<String, FarmNode>(clusterLimit);
+        
+        nodeFarm = new HashMap<String, FarmNode>((clusterLimit>0)?clusterLimit:8);
+        
         StringBuilder names = new StringBuilder();
         Iterator attrs = child.sfAttributes();
         while (attrs.hasNext()) {
@@ -119,6 +121,20 @@ public class ManualClusterFarmerImpl extends AbstractFarmNodeClusterFarmer {
         }
         rebuildClusterLimit();
 
+    }
+
+    /**
+     * Check that the cluster limit is within range
+     * @throws SmartFrogResolutionException if it is not
+     * @throws RemoteException network problems
+     */
+    private void validateClusterLimit() throws SmartFrogResolutionException, RemoteException {
+        if (clusterLimit < 0) {
+            throw new SmartFrogResolutionException(new Reference(ATTR_CLUSTER_LIMIT),
+                    sfCompleteName(),
+                    "Manual Clusters need a cluster limit >= 0, not " + clusterLimit,
+                    clusterLimit);
+        }
     }
 
     /**

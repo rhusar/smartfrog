@@ -47,7 +47,7 @@ ManualHost extends Prim  {
 }
 
 /**
- * This is a manual cluster farmer that 
+ * This is a manual cluster farmer
  */
 
 ManualClusterFarmer extends AbstractClusterFarmer {
