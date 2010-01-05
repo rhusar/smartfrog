@@ -17,33 +17,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.cloudfarmer.client.components;
+package org.smartfrog.services.cloudfarmer.client.tasks;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
-import java.io.IOException;
-import java.rmi.RemoteException;
+import org.apache.tools.ant.BuildException;
 
 /**
- * Created 20-Nov-2009 11:34:09
+ * a farmer client with roles
  */
 
-public class DeleteByRole extends AbstractFarmWorkflowClient implements FarmCustomer {
+public abstract class AbstractRoleDrivenFarmerClientTask extends AbstractFarmerClientTask {
+    public static final String ERROR_NO_ROLE_DEFINED = "No role defined";
 
-    public DeleteByRole() throws RemoteException {
+    protected String role;
+
+    protected AbstractRoleDrivenFarmerClientTask() {
     }
 
-    protected String getSuccessText() {
-        return "Cluster started";
+    public String getRole() {
+        return role;
     }
 
-    protected void startupAction() throws IOException, SmartFrogException {
-        String role = sfResolve(ATTR_ROLE, (String) null, true);
-        if (!role.isEmpty()) {
-            getFarmer().deleteAllInRole(role);
-        } else {
-            getFarmer().deleteAll();
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
+     * check the role attribute is set
+     * @throws BuildException if not
+     */
+    protected void checkRoleDefined() {
+        if (role == null || role.isEmpty()) {
+            throw new BuildException(ERROR_NO_ROLE_DEFINED);
         }
     }
-
 }

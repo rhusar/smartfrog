@@ -28,25 +28,45 @@ import java.rmi.Remote;
  */
 
 public interface FarmCustomer extends Remote {
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_ROLE = "role";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_DELETE_ON_TERMINATE = "deleteOnTerminate";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_FARMER = "farmer";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_MIN = "min";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_MAX = "max";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_DEPLOYED = "deployed";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_EXPECTED = "expected";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_EXPECTED_HOSTNAMES = "expectedHostnames";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_HOSTNAMES = "hostnames";
     /**
      * {@value}
@@ -66,12 +86,12 @@ public interface FarmCustomer extends Remote {
     String ATTR_TO_DEPLOY = "toDeploy";
 
     /**
-     * Does ping check nodes: {@value} 
+     * Does ping check nodes: {@value}
      */
     String ATTR_PING_CHECKS_NODES = "pingChecksNodes";
-    
-    
+
+
     String ATTR_TARGET = "target";
-    
+
     String ATTR_HOST_ATTR_PREFIX = "hostPrefix";
 }
