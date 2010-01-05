@@ -19,6 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.hadoop;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
@@ -31,8 +33,6 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocatio
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 import java.io.IOException;
 
@@ -204,7 +204,11 @@ public class HadoopDeploymentCallback implements ClusterAllocationCompleted, Had
         } catch (IOException e) {
             LOG.error(e);
             throw e;
+        } catch (Throwable e) {
+            LOG.error(e);
+            throw new SmartFrogException(e);
         }
+
     }
 
     /**

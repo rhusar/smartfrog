@@ -11,7 +11,6 @@ import org.smartfrog.services.ssh.SSHComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.LogLevel;
-import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.IOException;
@@ -135,7 +134,8 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
      */
     @Override
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
-        return new NodeDeploymentOverSSH(this, node);
+        NodeDeploymentOverSSH nodeDirectSSH = new NodeDeploymentOverSSH(this, node);
+        return NodeDeploymentHelper.export(nodeDirectSSH);
     }
 
 
