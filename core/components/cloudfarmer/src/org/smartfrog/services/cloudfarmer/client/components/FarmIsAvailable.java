@@ -76,7 +76,7 @@ public class FarmIsAvailable extends AbstractConditionPrim implements FarmCustom
                 "the Farm is available",
                 sfCompleteName,
                 null);
-        
+
     }
 
 

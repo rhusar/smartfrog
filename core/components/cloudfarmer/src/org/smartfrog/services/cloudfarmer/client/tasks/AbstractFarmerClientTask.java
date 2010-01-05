@@ -40,6 +40,7 @@ abstract class AbstractFarmerClientTask extends Task {
     protected String password;
 
     private BaseRemoteDaemon daemon;
+    public static final String ERROR_NO_FARMER_URL = "No farmerURL defined";
 
     public String getFarmerURL() {
         return farmerURL;
@@ -48,7 +49,7 @@ abstract class AbstractFarmerClientTask extends Task {
     /**
      * Set the URL of the farmer.
      *
-     * @param farmerURL
+     * @param farmerURL URL of the farmer
      */
     public void setFarmerURL(String farmerURL) {
         this.farmerURL = farmerURL;
@@ -93,7 +94,7 @@ abstract class AbstractFarmerClientTask extends Task {
      */
     protected void validateFarmerURL() {
         if (noFarmerURL()) {
-            throw new BuildException("No farmerURL defined");
+            throw new BuildException(ERROR_NO_FARMER_URL);
         }
     }
 

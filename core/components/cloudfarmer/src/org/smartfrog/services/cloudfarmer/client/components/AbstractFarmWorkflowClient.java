@@ -66,7 +66,7 @@ public abstract class AbstractFarmWorkflowClient extends PrimImpl {
         } catch (IOException e) {
             throw SmartFrogLifecycleException.forward(e);
         }
-        
+
         //workflow termination
         ComponentHelper helper = new ComponentHelper(this);
         helper.sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,

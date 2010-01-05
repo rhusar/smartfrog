@@ -19,18 +19,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.components;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created 25-Nov-2009 14:41:35
@@ -39,7 +39,14 @@ import java.util.Iterator;
 public class FarmCheckRoles extends AbstractFarmWorkflowClient implements FarmCustomer {
 
     private String successText;
+
+    /**
+     * {@value}
+     */
     public static final String ATTR_ROLES = "roles";
+    /**
+     * {@value}
+     */
     public static final String ATTR_USE_LIST_CLUSTER_ROLES = "useListClusterRoles";
 
     public FarmCheckRoles() throws RemoteException {
@@ -57,9 +64,9 @@ public class FarmCheckRoles extends AbstractFarmWorkflowClient implements FarmCu
     @Override
     protected void startupAction() throws IOException, SmartFrogException {
         boolean useListClusterRoles = sfResolve(ATTR_USE_LIST_CLUSTER_ROLES, true, true);
-        List<String> roles = ListUtils.resolveStringList(this, new Reference(ATTR_ROLES),true);
+        List<String> roles = ListUtils.resolveStringList(this, new Reference(ATTR_ROLES), true);
         List<String> actual;
-        if(useListClusterRoles) {
+        if (useListClusterRoles) {
             actual = checkListClusterRoles(roles);
         } else {
             actual = checkListRoles(roles);
@@ -92,7 +99,8 @@ public class FarmCheckRoles extends AbstractFarmWorkflowClient implements FarmCu
 
     /**
      * Check the roles
-     * @param roles expected
+     *
+     * @param roles  expected
      * @param actual actual
      * @throws SmartFrogException any mismatch in roles
      */
@@ -102,22 +110,22 @@ public class FarmCheckRoles extends AbstractFarmWorkflowClient implements FarmCu
         String expectedString = stringify(roles);
         String actualString = stringify(actual);
         String expectedVsActual = "Expected " + expectedString + " actual " + actualString;
-        if(roles.size() != actual.size()) {
+        if (roles.size() != actual.size()) {
             throw new SmartFrogException(" Mismatch in role count."
                     + expectedVsActual);
         }
         Iterator<String> rolesIt = roles.iterator();
         Iterator<String> actualIt = actual.iterator();
-        for (String role: roles) {
-            if (!(role.equals(actualIt.next()))) {            
+        for (String role : roles) {
+            if (!(role.equals(actualIt.next()))) {
                 throw new SmartFrogException("Different roles than expected. " + expectedVsActual);
             }
         }
     }
-    
+
     String stringify(List<String> roles) {
         StringBuilder result = new StringBuilder("[ ");
-        for (String role:roles) {
+        for (String role : roles) {
             result.append(role);
             result.append(" ");
         }

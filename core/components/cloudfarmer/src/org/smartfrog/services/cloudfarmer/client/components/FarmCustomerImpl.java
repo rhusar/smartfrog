@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -62,10 +61,10 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     private static final int SHUTDOWN_TIMEOUT = 2000;
     private ComponentDescription toDeploy;
     private String toDeployName;
-    private AtomicInteger inAllocationOperation= new AtomicInteger(0); 
+    private AtomicInteger inAllocationOperation = new AtomicInteger(0);
     private Prim target;
     private String hostPrefix;
-    
+
     public FarmCustomerImpl() throws RemoteException {
     }
 
@@ -79,7 +78,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        
+
         hostPrefix = sfResolve(ATTR_HOST_ATTR_PREFIX, "", true);
         role = sfResolve(ATTR_ROLE, "", true);
         min = sfResolve(ATTR_MIN, 0, true);
@@ -110,12 +109,12 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
      *
      * @param source source of call
      * @throws SmartFrogLivenessException failure to find a node in that role
-     * @throws RemoteException network problems
+     * @throws RemoteException            network problems
      */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(!pingChecksNodes || inAllocationOperation()) {
+        if (!pingChecksNodes || inAllocationOperation()) {
             return;
         }
         try {
@@ -162,13 +161,13 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     }
 
     protected boolean inAllocationOperation() {
-        return inAllocationOperation.get()>0;
+        return inAllocationOperation.get() > 0;
     }
 
 
     /**
-    * This is the customer thread that pushed out the files
-    */
+     * This is the customer thread that pushed out the files
+     */
     public class CustomerThread extends WorkflowThread {
 
         /**
@@ -224,7 +223,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
             //publish the attributes
             target.sfReplaceAttribute(ATTR_CLUSTERNODES, clusterNodeList);
             target.sfReplaceAttribute(ATTR_HOSTNAMES, hostnameList);
-            
+
 
             //now validate the expected hostname list
             for (String hostname : expectedHostnames) {
