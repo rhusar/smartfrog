@@ -36,7 +36,7 @@ TestLocalhostClusterRMI extends LocalhostClusterRMIDeploy {
 }
 
 TestLocalhostClusterSSH extends LocalhostClusterSSHDeploy {
-
+  sfProcessName "PS-TestLocalhostClusterSSH";
   deploymentFactory:keepFiles true;
 
 }

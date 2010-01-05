@@ -4,6 +4,7 @@ import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.cloudfarmer.server.deployment.AbstractNodeDeployment;
+import org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -23,7 +24,7 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
      */
     @Override
     public NodeDeploymentService createInstance(ClusterNode node) throws IOException, SmartFrogException {
-        return new MockNodeDeploymentInstance(node);
+        return NodeDeploymentHelper.export(new MockNodeDeploymentInstance(node));
     }
 
 

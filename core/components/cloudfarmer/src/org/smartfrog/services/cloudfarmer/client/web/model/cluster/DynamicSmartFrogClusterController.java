@@ -24,8 +24,8 @@ import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
-import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
+import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
@@ -250,6 +250,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      */
     public NodeDeploymentService createNodeDeploymentService(HostInstance hostInstance)
             throws SmartFrogException, IOException {
-        return farmer.createNodeDeploymentService(hostInstance.getClusterNode());
+        ClusterNode clusterNode = hostInstance.getClusterNode();
+        return farmer.createNodeDeploymentService(clusterNode);
     }
 }

@@ -280,7 +280,7 @@ testLocalhostDeployCompound extends ExpectDeploy {
 
 
   tests extends Sequence {
-
+    sfProcessName "PS-testLocalhostDeployCompound"
     
     master extends WorkflowFarmCustomer {
     //this is the farmer

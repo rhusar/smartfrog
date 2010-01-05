@@ -16,14 +16,15 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.net.URL;
+import java.util.Enumeration;
 
 /**
  *
  */
-public class BaseRemoteDaemon extends AbstractEndpoint {//we have to reconnect when deserializing
+public class BaseRemoteDaemon extends AbstractEndpoint {
     private static final long serialVersionUID = -3102169331874193302L;
+    //we have to reconnect when deserializing
     protected transient NodeDeploymentOverRMI nodeDeploy;
 
     public BaseRemoteDaemon() {

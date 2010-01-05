@@ -21,10 +21,10 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.server.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
-import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
-import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
-import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentUnsupportedFactory;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -58,12 +58,12 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     protected Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
 
     protected int clusterLimit = 1000;
-    
+
     private NodeDeploymentServiceFactory deploymentFactory = new NodeDeploymentUnsupportedFactory();
-    
-    
+
+
     protected AbstractClusterFarmer() throws RemoteException {
-        
+
     }
 
     /**
@@ -75,11 +75,11 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim p = sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim)null, true);
+        Prim p = sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim) null, true);
         if (!(p instanceof NodeDeploymentServiceFactory)) {
             throw new SmartFrogResolutionException(new Reference(ATTR_DEPLOYMENT_FACTORY),
                     sfCompleteName(),
-                    "Deployment factory is "+p.getClass()+" and not an instance of NodeDeploymentServiceFactory",
+                    "Deployment factory is " + p.getClass() + " and not an instance of NodeDeploymentServiceFactory",
                     p);
         }
         deploymentFactory = (NodeDeploymentServiceFactory) p;
@@ -269,8 +269,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     }
 
     /**
-     * Stop the cluster by deleting every node
-     * {@inheritDoc}
+     * Stop the cluster by deleting every node {@inheritDoc}
      */
     @Override
     public void stopCluster() throws IOException, SmartFrogException {
@@ -286,9 +285,8 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     }
 
     /**
-     * {@inheritDoc}
-     * <p/>
-     * This is implemented by handing off to any declared deployment factory
+     * {@inheritDoc} <p/> This is implemented by handing off to any declared deployment factory
+     *
      * @throws SmartFrogDeploymentException if no deployment factory is defined, this includes diagnostics
      */
     @Override
@@ -304,6 +302,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
             }
             throw new SmartFrogDeploymentException("No Deployment Factory is defined for this farmer " + text);
         }
-        return deploymentFactory.createInstance(node);
+        NodeDeploymentService instance = deploymentFactory.createInstance(node);
+        return instance;
     }
 }
