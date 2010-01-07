@@ -37,14 +37,13 @@ public class Constants {
     public static final String NAME = "name";
     public static final String NORMALTERMINATION = "sfNormalTermination";
     public static final String NOT = "not";
-    public static final String ON = "on";
+    //public static final String ON = "on";
     public static final String ORCHMODEL = "sfIsOrchModel";
     public static final String PREPARE = "prepare";
     public static final String RELEVANT = "relevant";
     public static final String REQUIRES_THREAD = "requiresThread";
     public static final String RUN = "run";
     public static final String RUNNING = "running";
-    public static final String SCRIPT = "script";
     public static final String T_FINALIZE = "tFinalize";
     public static final String T_ONTERMINATION = "tOnTermination";
     public static final String T_PREPARE = "tPrepare";

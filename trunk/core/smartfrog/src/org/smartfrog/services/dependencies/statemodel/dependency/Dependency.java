@@ -105,14 +105,14 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
        try {
            relevant = sfResolve(RELEVANT, true, false);
        } catch (SmartFrogResolutionException ignored) {
-           sfLog().ignore(ignored); //ok
+           sfLog().debug(ignored); //ok
        }
 
        if (relevant){
            try {
                enabled = sfResolve(ENABLED, false, false);
            } catch (SmartFrogResolutionException ignored) {
-               sfLog().ignore(ignored); //ok
+               sfLog().debug(ignored); //ok
            }
 
            isEnabled = (enabled && (on == null || on.isEnabled()));
