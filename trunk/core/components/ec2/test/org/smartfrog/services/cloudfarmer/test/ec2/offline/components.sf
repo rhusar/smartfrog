@@ -1,0 +1,219 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.p
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/test/ec2/components.sf"
+
+BaseFarmer extends EC2ClusterFarmer {
+
+    clusterLimit 4;
+    id "";
+    key "";
+
+  }
+  
+Farmer extends BaseFarmer {
+
+    clusterLimit 4;
+    id "";
+    key "";
+    roles extends Compound {
+
+
+       worker extends EC2ClusterRole {
+         imageID "ami-0236";
+         instanceType SIZE_LARGE;
+         availabilityZone ZONE_US_EAST_1B;
+       }
+       
+       master extends EC2ClusterRole {
+         imageID "ami-0234";
+         instanceType SIZE_LARGE;
+         availabilityZone ZONE_US_EAST_1B;
+         securityGroup ["undefined"];
+       }
+
+
+    }
+
+  }
+
+ExpectFarmerDeploy extends ExpectDeploy {
+
+  action Farmer;
+
+  
+}
+
+testFarmHasRoles extends ExpectFarmerDeploy {
+
+  tests extends Sequence {
+
+
+    master extends FarmSupportsRoleWorkflow {
+    //this is the farmer
+      farmer LAZY action;
+      role "master";
+    }
+
+    worker extends FarmSupportsRoleWorkflow {
+    //this is the farmer
+      farmer LAZY action;
+      role "worker";
+    }
+
+
+ }
+}
+
+
+testFarmLacksRole extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a test for a role that isn't supported"
+
+    action extends Parallel {
+     farmer  BaseFarmer ;
+
+     master extends FarmSupportsRole {
+      farmer LAZY action:farmer;
+      role "server";
+     }
+   }
+}
+
+
+
+testMasterLacksImageID extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a test for a role that lacks an ID"
+
+    action extends Parallel {
+    
+    farmer extends Farmer {
+      roles:master:imageID "";
+    }
+    
+
+     master extends FarmSupportsRole {
+      farmer LAZY action:farmer;
+      role "server";
+     }
+   }
+}
+
+
+testFarmCreate extends ExpectFarmerDeploy {
+
+  tests extends Sequence {
+
+
+    master extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "master";
+      min 1;
+      expected 1;
+    }
+
+    worker extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "worker";
+      min 10;
+      expected 10;
+    }
+
+    worker2 extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "worker";
+      min 10;
+      expected 10;
+    }
+
+ }
+}
+
+
+testFarmCreateBounded extends ExpectFarmerDeploy {
+
+  tests extends Sequence {
+
+
+    master extends WorkflowFarmCustomer {
+    //this is the farmer
+      farmer LAZY action;
+      role "master";
+      min 1;
+      max 100;
+      expected farmer:clusterLimit;
+    }
+ }
+}
+
+testFarmCreateNoRoom extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a farm customer that demands too many items"
+
+    action extends Parallel {
+     farmer Farmer;
+
+     master extends WorkflowFarmCustomer {
+      farmer LAZY action:farmer;
+      role "master";
+      min 100;
+      max 100;
+     }
+   }
+}
+
+
+testFarmCreateNoRole extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a farm customer that tries to create something of an unknown role"
+
+    action extends Parallel {
+     farmer Farmer;
+
+     master extends WorkflowFarmCustomer {
+      farmer LAZY action:farmer;
+      role "server";
+      min 1;
+      max 10;
+     }
+   }
+}
+
+
+testFarmCreateNegativeNumber extends ExpectDeployFailure {
+
+    description "create a mock cluster, and, in parallel, a farm customer that demands less than 0 nodes"
+
+    action extends Parallel {
+     farmer Farmer;
+
+     master extends WorkflowFarmCustomer {
+      farmer LAZY action:farmer;
+      role "master";
+      min -10;
+      max 10;
+     }
+   }
+}
+
