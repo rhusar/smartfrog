@@ -38,12 +38,17 @@ CloudFarmerURLs extends DATA {
 
 /**
  * Deploy a compound containing jetty and servlets
+ * This is always forked
  */
 
 
 StrutsOnJetty extends Compound {
   //we always run this in its own JVM, as Jasper is trouble otherwise
   sfProcessName "StrutsOnJettyPS";
+  //and crank back the liveness factor; this deals with slow startup pain
+  sfLivenessFactor 10;
+
+  //port to use
   port 8081;
   sfSyncTerminate true;
   //set to true to keep JSP pages, do more debugging and logging etc.

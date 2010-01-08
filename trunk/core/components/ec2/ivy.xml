@@ -77,6 +77,14 @@
                 rev="latest.integration"
                 conf="test->default"/>
 
+
+    <dependency org="org.smartfrog"
+                name="sf-cloudfarmer"
+                changing="true"
+                rev="latest.integration"
+                conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+
+
     <dependency org="org.smartfrog"
                 name="sf-testharness"
                 changing="true"
