@@ -42,7 +42,7 @@ public interface TemplateNames extends MasterWorkerRoles {
      * Package containing the temlates
      * {@value}
      */
-    String TEMPLATE_PACKAGE = "/org/smartfrog/services/cloudfarmer/client/web/hadoop/descriptions/";
+    String TEMPLATE_PACKAGE = "/org/smartfrog/services/cloudfarmer/client/web/cluster/masterworker/hadoop/descriptions/";
 
     /**
      * This defines a master node. It will create a node given some predefined JVM properties {@value}

@@ -29,7 +29,7 @@ This is the initial
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 
 <div>
-Hadoop Portlet
+Cluster Portlet
 </div>
 <jsp:include page="/html/mombasa-portlet/footer.jsp"/>
 

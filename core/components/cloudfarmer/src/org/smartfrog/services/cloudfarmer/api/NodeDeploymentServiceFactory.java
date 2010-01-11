@@ -2,8 +2,8 @@ package org.smartfrog.services.cloudfarmer.api;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.Remote;
 import java.io.IOException;
+import java.rmi.Remote;
 
 /**
  *  This interface is primarily for SF components; its a factory
