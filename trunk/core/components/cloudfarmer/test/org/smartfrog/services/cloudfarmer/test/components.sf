@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/mock/components.sf"
-#include "/org/smartfrog/services/cloudfarmer/server/ec2/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/client/components/components.sf"
 
 
