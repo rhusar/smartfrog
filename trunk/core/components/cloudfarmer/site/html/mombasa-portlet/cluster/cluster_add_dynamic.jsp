@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
 
-<p>Add Hadooop hosts </p>
+<p>Add Hosts </p>
 
 <html:form action="/mombasa-portlet/cluster/add_dynamic/process" method="post" focus="minWorkers">
 
@@ -49,17 +49,6 @@ For more information: www.smartfrog.org
       </td>
     </tr>
     
- <%--   <tr>
-      <td>
-        Large size
-      </td>
-      <td style="padding-left: 10px;"></td>
-      <td>
-        <html:checkbox name="clusterAddDynamicForm" property="large" />
-      </td>
-    </tr>--%>
-
-
     <tr>
       <td>
         <html:submit>
@@ -76,7 +65,7 @@ For more information: www.smartfrog.org
 
   </table>
 
-
+<p>If a master node is needed, it will be added automatically</p>
 </html:form>
 
 

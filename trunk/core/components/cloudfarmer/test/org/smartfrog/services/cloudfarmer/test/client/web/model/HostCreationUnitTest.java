@@ -20,18 +20,18 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.test.client.web.model;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartFrogClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
-import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
-import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
-import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
-import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartFrogClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
+import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 
 import java.util.List;
 

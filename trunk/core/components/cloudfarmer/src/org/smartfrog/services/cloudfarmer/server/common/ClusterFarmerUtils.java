@@ -19,12 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.server.common;
 
+import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
+import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
-import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
-import org.smartfrog.services.cloudfarmer.api.ClusterNode;
-import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 
 import java.io.IOException;
 

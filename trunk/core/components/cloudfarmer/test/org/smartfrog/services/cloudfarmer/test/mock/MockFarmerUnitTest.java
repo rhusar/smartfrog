@@ -5,10 +5,10 @@ import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
-import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
+import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
