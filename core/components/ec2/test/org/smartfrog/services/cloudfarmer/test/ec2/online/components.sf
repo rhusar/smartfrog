@@ -28,27 +28,27 @@ BaseFarmer extends EC2ClusterFarmer {
 
   }
   
+LargeUSEastRole extends  EC2ClusterRole {
+  instanceType SIZE_LARGE;
+  availabilityZone ZONE_US_EAST_1B;
+}
+    
+  
 Farmer extends BaseFarmer {
 
     clusterLimit 4;
     id "";
     key "";
     roles extends Compound {
-
-
-       worker extends EC2ClusterRole {
-         imageID "ami-0236";
-         instanceType SIZE_LARGE;
-         availabilityZone ZONE_US_EAST_1B;
-       }
-       
-       master extends EC2ClusterRole {
-         imageID "ami-0234";
-         instanceType SIZE_LARGE;
-         availabilityZone ZONE_US_EAST_1B;
-         securityGroup ["undefined"];
-       }
-
+  
+      worker extends LargeUSEastRole {
+        imageID "ami-0236";
+      }
+      
+      master extends LargeUSEastRole {
+        imageID "ami-0234";
+        securityGroup ["undefined"];
+      }
 
     }
 
