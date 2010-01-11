@@ -8,13 +8,11 @@ import org.smartfrog.services.cloudfarmer.api.UnsupportedClusterRoleException;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * This walks the mock farmer through its life
@@ -23,8 +21,8 @@ import java.util.ArrayList;
 public class MockFarmerUnitTest extends TestCase {
 
     private MockClusterFarmerImpl farmer;
-    private static final String WORKER = HadoopRoles.WORKER;
-    private static final String MASTER = HadoopRoles.MASTER;
+    private static final String WORKER = MasterWorkerRoles.WORKER;
+    private static final String MASTER = MasterWorkerRoles.MASTER;
 
     private ClusterRoleInfo master, worker;
     private static final int CLUSTER_SIZE = 50;

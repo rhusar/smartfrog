@@ -20,8 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
 
 import java.io.IOException;
 

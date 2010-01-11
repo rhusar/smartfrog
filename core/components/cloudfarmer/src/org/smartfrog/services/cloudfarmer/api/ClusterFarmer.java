@@ -237,6 +237,15 @@ public interface ClusterFarmer extends Remote {
      */
     public void stopCluster() throws IOException, SmartFrogException;
 
+
+    /**
+     * query the deployment service for being present. 
+     * @return false if the service is not defined, or it says it is not functioning 
+     * @throws IOException IO problems
+     * @throws SmartFrogException Other problems
+     */
+    public boolean isDeploymentServiceAvailable() throws IOException, SmartFrogException;
+
     /**
      * Create a node deployment service for the specific node
      * @param node node to deploy to

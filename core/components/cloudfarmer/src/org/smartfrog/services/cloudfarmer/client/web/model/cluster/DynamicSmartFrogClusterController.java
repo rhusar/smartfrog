@@ -117,6 +117,10 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         return "SmartFrog cluster at " + getBaseURL();
     }
 
+    /**
+     * check for a farmer being present; logs at error if not
+     * @return true iff there is a farmer
+     */
     private boolean checkFarmer() {
         if (farmer == null) {
             log.error("Not bound to a farmer");
@@ -129,13 +133,22 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      * Query the farmer to see if it is live.
      *
      * @return true if the service considers itself available. If not, it can return false or throw an exception.
-     * @throws IOException        something went wrong
+     * @throws IOException        Network/IO problems
      * @throws SmartFrogException something different went wrong
      */
     public boolean isFarmerAvailable() throws IOException, SmartFrogException {
         return farmer != null && farmer.isFarmerAvailable();
     }
-    
+
+    /**
+     * check for the deployment service being available
+     * @return true iff the deployment service considers itself available
+     * @throws IOException        Network/IO problems
+     * @throws SmartFrogException something different went wrong
+     */
+    public boolean isDeploymentServiceAvailable() throws SmartFrogException, IOException {
+        return farmer != null && getFarmer().isDeploymentServiceAvailable();
+    }
     /**
      * {@inheritDoc}
      */

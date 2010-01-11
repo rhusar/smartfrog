@@ -21,9 +21,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.forms.cluster;
 
+import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerBinding;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerFactory;
-import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
 
 /**
  * @author slo

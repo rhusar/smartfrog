@@ -17,14 +17,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.cloudfarmer.client.web.hadoop;
+package org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker;
 
 /**
  * Created 18-Nov-2009 16:30:13
  */
 
 
-public interface HadoopRoles {
+public interface MasterWorkerRoles {
+    /**
+     * This is the hostname of the master, which hosts both the NN and JT binding.master.hostname PROPERTY
+     * binding.master.hostname;
+     */
+    String BINDING_MASTER_HOSTNAME = "binding.master.hostname";
     /** {@value} */
     String MASTER = "master";
     /** {@value} */

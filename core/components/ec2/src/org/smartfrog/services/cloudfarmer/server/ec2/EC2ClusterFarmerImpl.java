@@ -30,9 +30,10 @@ import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NoClusterSpaceException;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentServiceFactory;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
-import org.smartfrog.services.cloudfarmer.server.common.AbstractClusterFarmer;
+import org.smartfrog.services.cloudfarmer.server.common.ClusterFarmerUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -106,7 +107,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      * @throws SmartFrogException other problems
      */
     private List<ClusterNode> createNodes(String role, int min, int max) throws SmartFrogException, IOException {
-        AbstractClusterFarmer.validateClusterRange(min, max);
+        ClusterFarmerUtils.validateClusterRange(min, max);
         int limit = addNodes(min, max);
         LaunchConfiguration launch = createLaunchConfigFromRole(role);
         launch.setMaxCount(limit);
@@ -530,10 +531,20 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDeploymentServiceAvailable() throws IOException, SmartFrogException {
+        return ClusterFarmerUtils.isDeploymentServiceAvailable(deploymentFactory);
+    }
+
+    /**
      * {@inheritDoc} <p/> This is implemented by handing off to any declared deployment factory
+     *
+     * @throws SmartFrogDeploymentException if no deployment factory is defined, this includes diagnostics
      */
     @Override
     public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
-        return deploymentFactory.createInstance(node);
+        return ClusterFarmerUtils.createNodeDeploymentService(this, node, deploymentFactory);
     }
 }

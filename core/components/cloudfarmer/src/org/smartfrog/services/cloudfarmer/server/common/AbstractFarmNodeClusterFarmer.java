@@ -301,7 +301,7 @@ public abstract class AbstractFarmNodeClusterFarmer extends AbstractClusterFarme
     */
     @Override
     public synchronized ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
-        validateClusterRange(min, max);
+        ClusterFarmerUtils.validateClusterRange(min, max);
         String rejectionText = "Rejecting request for "
                 + "[" + min + ", " + max + "]"
                 + " nodes of role " + role;

@@ -10,9 +10,10 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- *
+ * Deploy over RMI
  */
 public class NodeDeploymentOverRMIFactory extends PrimImpl implements NodeDeploymentServiceFactory {
+    
     public NodeDeploymentOverRMIFactory() throws RemoteException {
     }
 
@@ -29,6 +30,14 @@ public class NodeDeploymentOverRMIFactory extends PrimImpl implements NodeDeploy
      */
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return "NodeDeploymentOverRMI";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNodeDeploymentSupported() throws IOException, SmartFrogException {
+        return true;
     }
 
 }

@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +75,7 @@ public final class HostInstanceList extends ArrayList<HostInstance> {
     }
 
     public HostInstance getMaster() {
-        List<HostInstance> masters = getListInRole(HadoopRoles.MASTER);
+        List<HostInstance> masters = getListInRole(MasterWorkerRoles.MASTER);
         if (masters.size() > 0) {
             return masters.get(0);
         } else {

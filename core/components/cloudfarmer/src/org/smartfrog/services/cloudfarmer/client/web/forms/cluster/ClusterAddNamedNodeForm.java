@@ -30,7 +30,7 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author slo
+ * Form for adding a node
  */
 public class ClusterAddNamedNodeForm extends AbstractMombasaActionForm {
 

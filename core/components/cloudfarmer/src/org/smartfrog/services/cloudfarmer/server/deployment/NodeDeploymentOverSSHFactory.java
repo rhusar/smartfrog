@@ -121,6 +121,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return "NodeDeployment over SSH to " + getConnectionDetails() 
                 + "; Destdir: " + destDir
@@ -128,6 +129,13 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
                 ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNodeDeploymentSupported() throws IOException, SmartFrogException {
+        return jschInstance != null;
+    }
 
     /**
      * {@inheritDoc}

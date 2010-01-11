@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
@@ -136,12 +136,12 @@ public final class HostInstance implements Serializable {
     }
 
     public boolean isMaster() {
-        return HadoopRoles.MASTER.equals(role);
+        return MasterWorkerRoles.MASTER.equals(role);
     }
 
 
     public boolean isWorker() {
-        return HadoopRoles.WORKER.equals(role);
+        return MasterWorkerRoles.WORKER.equals(role);
     }
 
     public String getDetails() {

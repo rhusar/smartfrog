@@ -42,7 +42,7 @@ For more information: www.smartfrog.org
 
     <tr>
       <td>
-        Hadoop worker
+        Worker
       </td>
       <td style="padding-left: 10px;"></td>
       <td>
@@ -52,7 +52,7 @@ For more information: www.smartfrog.org
 
     <tr>
       <td>
-        Hadoop master
+        Master
       </td>
       <td style="padding-left: 10px;"></td>
       <td>

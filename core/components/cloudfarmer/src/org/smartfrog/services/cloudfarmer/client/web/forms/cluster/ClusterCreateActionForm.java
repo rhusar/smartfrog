@@ -21,10 +21,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.forms.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
+import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
 
 import javax.servlet.http.HttpServletRequest;
 

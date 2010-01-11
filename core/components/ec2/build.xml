@@ -24,7 +24,7 @@
   -->
 
   <description>
-    Amazon EC2/S3 support.
+    Amazon EC2/S3 support, including a CloudFarmer implementation
 
     For testing, edit build.properties to add the secret login details for an AWS account
     test.awsid = id

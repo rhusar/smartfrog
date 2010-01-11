@@ -21,16 +21,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.forms.cluster;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionMapping;
 import org.smartfrog.services.cloudfarmer.client.web.actions.cluster.AbstractClusterAction;
+import org.smartfrog.services.cloudfarmer.client.web.forms.AbstractMombasaActionForm;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author slo
+ * Form for adding a node on a dynamic cluster
  */
 public class ClusterAddDynamicForm extends AbstractMombasaActionForm {
 
@@ -84,11 +84,6 @@ public class ClusterAddDynamicForm extends AbstractMombasaActionForm {
         try {
             ClusterController controller;
             controller = AbstractClusterAction.bindToClusterController(request);
-/*            controller.refreshHostList();
-            boolean hasMaster = controller.hasMaster();
-            if (!hasMaster) {
-                actionErrors = addError(actionErrors, "master", "error.no.master");
-            }*/
         } catch (Exception e) {
             actionErrors = addError(actionErrors, "name", "error.no.controller");
         }

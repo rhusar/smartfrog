@@ -32,15 +32,16 @@ public abstract class AbstractNodeDeployment implements NodeDeploymentService {
 
     protected ClusterNode clusterNode;
 
+    /**
+     * Store the cluster node data
+     * @param clusterNode the node we are deploying to
+     */
     protected AbstractNodeDeployment(ClusterNode clusterNode) {
         this.clusterNode = clusterNode;
     }
 
     /**
-     * Get the cluster node information
-     *
-     * @return the cluster node this deployment is bonded to
-     * @throws IOException for trouble
+     * {@inheritDoc}
      */
     @Override
     public ClusterNode getClusterNode() throws IOException {

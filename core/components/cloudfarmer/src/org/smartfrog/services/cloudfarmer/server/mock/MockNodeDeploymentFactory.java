@@ -35,6 +35,11 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
         return "MockNodeDeployment";
     }
 
+    @Override
+    public boolean isNodeDeploymentSupported() throws IOException, SmartFrogException {
+        return true;
+    }
+
     /**
      * This is the mock node; actions are logged but not acted on
      */
