@@ -26,7 +26,7 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceL
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.services.cloudfarmer.server.mock.MockClusterFarmerImpl;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
-import java.util.ArrayList;
 
 
 /**
@@ -45,8 +44,8 @@ public class HostCreationUnitTest extends TestCase {
 
     private MockClusterFarmerImpl farmer;
     DynamicSmartFrogClusterController controller;
-    private static final String WORKER = HadoopRoles.WORKER;
-    private static final String MASTER = HadoopRoles.MASTER;
+    private static final String WORKER = MasterWorkerRoles.WORKER;
+    private static final String MASTER = MasterWorkerRoles.MASTER;
 
     private ClusterRoleInfo master, worker;
     private static final int CLUSTER_SIZE = 50;

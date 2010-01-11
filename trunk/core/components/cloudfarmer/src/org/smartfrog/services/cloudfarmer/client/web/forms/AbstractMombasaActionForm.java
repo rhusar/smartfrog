@@ -20,13 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.forms;
 
-import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.upload.FormFile;
+import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
 
 public abstract class AbstractMombasaActionForm extends ActionForm implements AttributeNames {
     protected final Log log = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web.action." + getActionName());

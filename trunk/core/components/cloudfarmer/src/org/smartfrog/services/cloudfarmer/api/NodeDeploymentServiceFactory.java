@@ -28,4 +28,11 @@ public interface NodeDeploymentServiceFactory extends Remote {
      */
     public String getDiagnosticsText() throws IOException, SmartFrogException;
 
+    /**
+     * Test for node deployment being supported <i>at all</i>
+     * @return true if Node deployment instances can be created, false otherwise
+     * @throws IOException Network and other IO problems
+     * @throws SmartFrogException SmartFrog problems
+     */
+    public boolean isNodeDeploymentSupported() throws IOException, SmartFrogException;
 }

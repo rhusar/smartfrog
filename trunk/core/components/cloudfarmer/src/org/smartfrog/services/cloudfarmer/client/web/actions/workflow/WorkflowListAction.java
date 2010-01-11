@@ -20,11 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.actions.workflow;
 
-import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
-import org.smartfrog.services.cloudfarmer.client.web.model.workflow.WorkflowList;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
+import org.smartfrog.services.cloudfarmer.client.web.model.workflow.WorkflowList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

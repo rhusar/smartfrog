@@ -33,4 +33,12 @@ public class NodeDeploymentUnsupportedFactory extends PrimImpl implements NodeDe
         return "NodeDeploymentUnsupported";
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNodeDeploymentSupported() throws IOException, SmartFrogException {
+        return false;
+    }
 }

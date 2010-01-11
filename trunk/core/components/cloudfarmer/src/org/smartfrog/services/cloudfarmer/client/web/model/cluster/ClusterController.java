@@ -23,12 +23,12 @@ package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
+import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.ClusterControllerBusyException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.FarmerNotLiveException;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.HadoopRoles;
-import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -452,7 +452,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         switch (role) {
             case master:
                 resource = HADOOP_MASTER_SF;
-                rolename = HadoopRoles.MASTER;
+                rolename = MasterWorkerRoles.MASTER;
                 if (hasMaster) {
                     throw new SmartFrogException("Cluster already has the master " + master.hostname);
                 }
@@ -460,7 +460,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 break;
             case worker:
                 resource = HADOOP_WORKER_SF;
-                rolename = HadoopRoles.MASTER;
+                rolename = MasterWorkerRoles.MASTER;
                 if (!hasMaster) {
                     throw new SmartFrogException("Cluster has no master");
                 }
@@ -670,10 +670,10 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             return status;
         }
 
-        private void updateStatus(boolean error, String status) {
-            this.status = status;
-            statusEvents.addEvent(error, status);
-            log.info(status);
+        private void updateStatus(boolean error, String newStatus) {
+            status = newStatus;
+            statusEvents.addEvent(error, newStatus);
+            log.info(newStatus);
         }
 
         /**
@@ -739,8 +739,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             }
         }
 
-        private void requestHosts(RoleAllocationRequest request, 
-                                  ClusterAllocationCompleted clusterAllocationCompleted) throws IOException, SmartFrogException {
+        private void requestHosts(RoleAllocationRequest request,
+                                  ClusterAllocationCompleted completedCallback) throws IOException, SmartFrogException {
             updateStatus(false, "Requesting hosts " + request);
             request.requestStarted();
             try {
@@ -748,8 +748,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 request.requestSucceeded(newhosts);
                 addHosts(newhosts);
                 updateStatus(false, "Got " + newhosts.size() + " - " + newhosts);
-                if(clusterAllocationCompleted!=null) {
-                    clusterAllocationCompleted.allocationRequestSucceeded(request, newhosts);
+                if (completedCallback != null) {
+                    completedCallback.allocationRequestSucceeded(request, newhosts);
                 }
             } catch (IOException e) {
                 requestFailed(e, request);

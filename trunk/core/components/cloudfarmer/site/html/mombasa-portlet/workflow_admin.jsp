@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 
 <h2>
-  Hadoop Workflow Administration
+  Workflow Administration
 </h2>
 
 <logic:messagesPresent>

@@ -20,20 +20,18 @@ For more information: www.smartfrog.org
 
 
 
-package org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions;
+package org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hadoop.descriptions;
+
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 
 /**
  * Define the names of various resource templates. These are all things to deploy And the properties to set
  */
 
 
-public interface TemplateNames {
+public interface TemplateNames extends MasterWorkerRoles {
 
-    /**
-     * This is the hostname of the master, which hosts both the NN and JT binding.master.hostname PROPERTY
-     * binding.master.hostname;
-     */
-    String BINDING_MASTER_HOSTNAME = "binding.master.hostname";
+   
 
     /**
      * The number of slots for a tasktracker binding.tasktracker.slots IPROPERTY binding.tasktracker.slots;
@@ -75,5 +73,8 @@ public interface TemplateNames {
      */
     String FARMER_PATH = "farmer";
 
+    /**
+     * Default # of task slots in a cluster, {@value}
+     */
     int TASK_SLOTS = 4;
 }

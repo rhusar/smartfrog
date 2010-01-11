@@ -46,15 +46,6 @@ import java.util.Map;
  */
 public abstract class AbstractClusterFarmer extends CompoundImpl implements ClusterFarmer {
 
-    /**
-     * {@value}
-     */
-    public static final String WRONG_MACHINE_COUNT
-            = "The maximum number of machines requested was less than the minimum";
-    /**
-     * {@value}
-     */
-    public static final String NEGATIVE_VALUES_NOT_SUPPORTED = "Negative values not supported";
     protected Map<String, ClusterRoleInfo> roleInfoMap = new HashMap<String, ClusterRoleInfo>();
 
     protected int clusterLimit = 1000;
@@ -84,22 +75,6 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         }
         deploymentFactory = (NodeDeploymentServiceFactory) p;
         resolveClusterLimit();
-    }
-
-    /**
-     * check the min and max arguments
-     *
-     * @param min minimum number of nodes desired
-     * @param max maximumum number  desired
-     * @throws SmartFrogDeploymentException if the parameters are somehow invalid
-     */
-    public static void validateClusterRange(int min, int max) throws SmartFrogDeploymentException {
-        if (max < min) {
-            throw new SmartFrogDeploymentException(WRONG_MACHINE_COUNT);
-        }
-        if (min < 0) {
-            throw new SmartFrogDeploymentException(NEGATIVE_VALUES_NOT_SUPPORTED);
-        }
     }
 
 
@@ -285,24 +260,23 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
     }
 
     /**
-     * {@inheritDoc} <p/> This is implemented by handing off to any declared deployment factory
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDeploymentServiceAvailable() throws IOException, SmartFrogException {
+        return ClusterFarmerUtils.isDeploymentServiceAvailable(deploymentFactory);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     *  <p/> This is implemented by handing off to any declared deployment factory
      *
      * @throws SmartFrogDeploymentException if no deployment factory is defined, this includes diagnostics
      */
     @Override
     public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
-        if (deploymentFactory == null) {
-            String text;
-            try {
-                text = getDiagnosticsText();
-            } catch (IOException ignored) {
-                text = "";
-            } catch (SmartFrogException ignored) {
-                text = "";
-            }
-            throw new SmartFrogDeploymentException("No Deployment Factory is defined for this farmer " + text);
-        }
-        NodeDeploymentService instance = deploymentFactory.createInstance(node);
-        return instance;
+        return ClusterFarmerUtils.createNodeDeploymentService(this, node, deploymentFactory);
     }
+
 }

@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
+import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 
 import javax.servlet.http.HttpServletRequest;

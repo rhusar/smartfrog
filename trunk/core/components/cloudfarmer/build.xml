@@ -24,17 +24,10 @@
   -->
 
   <description>
-    Amazon EC2/S3 support.
-
-    For testing, edit build.properties to add the secret login details for an AWS account
-    test.awsid = id
-    test.awskey = secret key
-    test.ec2.enabled to true for EC2 work
-
-    test.ec2.instances.enabled  tests that create instances
-    test.ec2.farmer.enabled=    tests that create a farmer and instances through it
-    test.s3.enabled             tests that go up against S3
-
+    This provides 
+     * the base CloudFarmer API and the mock and manual implementations.
+     * the web, SF component and ant clients
+    Other CloudFarmer implementations are with the back ends 
   </description>
 
   <!--

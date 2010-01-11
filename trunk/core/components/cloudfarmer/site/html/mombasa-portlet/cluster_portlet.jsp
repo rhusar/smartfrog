@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 
 <div>
-From the Hadoop Workflow Manager, you can manage
+From the Workflow Manager, you can manage
 existing workflows, and queue new MapReduce jobs.
 </div>
 

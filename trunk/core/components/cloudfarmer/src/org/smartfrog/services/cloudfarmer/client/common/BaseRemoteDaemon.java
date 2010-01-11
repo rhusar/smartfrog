@@ -1,7 +1,7 @@
 package org.smartfrog.services.cloudfarmer.client.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
-import org.smartfrog.services.cloudfarmer.client.web.hadoop.descriptions.TemplateNames;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.WorkflowList;
 import org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMI;

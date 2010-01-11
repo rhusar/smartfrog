@@ -31,8 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * Submit a job to the workflow server. Some devious tricks are paid with overloaded methods, as whichever form is
- * received, it is routed over to the daemon to handle
+ * Delete a node
  */
 @SuppressWarnings({"RefusedBequest"})
 public class ClusterDeleteNodeProcessAction extends AbstractClusterAction {

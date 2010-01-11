@@ -20,10 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.cloudfarmer.client.web.model.workflow;
 
-import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnboundException;
 import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
-import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnboundException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
