@@ -112,6 +112,9 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         return farmer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDescription() {
         return "SmartFrog cluster at " + getBaseURL();
@@ -238,6 +241,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      * @throws IOException        something went wrong
      * @throws SmartFrogException something different went wrong
      */
+    @Override
     public String getRemoteDescription() throws IOException, SmartFrogException {
         return farmer.getDescription();
     }
@@ -250,6 +254,7 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
      * @throws IOException        something went wrong
      * @throws SmartFrogException something different went wrong
      */
+    @Override
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return farmer.getDiagnosticsText();
     }
@@ -265,5 +270,14 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
             throws SmartFrogException, IOException {
         ClusterNode clusterNode = hostInstance.getClusterNode();
         return farmer.createNodeDeploymentService(clusterNode);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean deleteHost(String hostID) throws IOException, SmartFrogException {
+        farmer.delete(hostID);
+        return true;
     }
 }

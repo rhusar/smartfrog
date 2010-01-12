@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterAllocationCompleted;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartFrogClusterController;
@@ -104,10 +105,9 @@ public abstract class ClusterAllocationHandler implements ClusterAllocationCompl
         try {
             if(!isDeploymentSupported()) {
                 if (deploymentRequired) {
-                    throw new SmartFrogException("The deployment service is not available");
-                } else {
-                    return false;
-                }
+                    checkDeploymentSupported();
+                } 
+                return false;
             }
             NodeDeploymentService deploymentService = createNodeDeploymentService(instance);
             deploymentService.deployApplication(name, descriptor.getComponentDescription());
@@ -121,9 +121,9 @@ public abstract class ClusterAllocationHandler implements ClusterAllocationCompl
 
     /**
      * Catch, log and rethrow any exception
-     * @param throwable
-     * @throws IOException
-     * @throws SmartFrogException
+     * @param throwable what was caught
+     * @throws IOException IO exception
+     * @throws SmartFrogException the caught SF exception, or a wrapped exception of any other type
      */
     protected void logAndRethrow(Throwable throwable) throws IOException, SmartFrogException {
         LOG.error(throwable);
@@ -144,12 +144,28 @@ public abstract class ClusterAllocationHandler implements ClusterAllocationCompl
      * @throws IOException IO/RMI trouble
      */
     protected boolean isDeploymentSupported() throws SmartFrogException, IOException {
-        if (controller instanceof DynamicSmartFrogClusterController) {
+        if (!(controller instanceof DynamicSmartFrogClusterController)) {
             return false;
         }
         DynamicSmartFrogClusterController clusterController = getSfController();
         return clusterController.isFarmerAvailable() && clusterController.getFarmer().isDeploymentServiceAvailable();
     }
+
+    protected void checkDeploymentSupported() throws SmartFrogException, IOException {
+        if (!(controller instanceof DynamicSmartFrogClusterController)) {
+            throw new SmartFrogException("Controller does not support deployment");
+        }
+        DynamicSmartFrogClusterController clusterController = getSfController();
+        if (!clusterController.isFarmerAvailable()) {
+            throw new SmartFrogException("Farmer is not available");
+        }
+        ClusterFarmer farmer = clusterController.getFarmer();
+        String diagnostics = farmer.getDiagnosticsText();
+        if (!farmer.isDeploymentServiceAvailable()) {
+            throw new SmartFrogException("No deployment service for " + diagnostics);
+        }
+    }
+
 
     /**
     * Create a node deployment service

@@ -253,5 +253,31 @@ public interface ClusterFarmer extends Remote {
      * @throws IOException IO problems
      * @throws SmartFrogException Other problems
      */
-    public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException; 
+    public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException;
+
+    /**
+     * Return the node deployment service factory; may be null
+     * @return a remote service interface
+     * @throws IOException IO problems
+     * @throws SmartFrogException Other problems
+     */
+/*
+    
+    public NodeDeploymentServiceFactory getNodeDeploymentServiceFactory() throws IOException, SmartFrogException;
+
+*/
+    /**
+     * Return the node deployment service factory; may be null
+     *
+     * @return diagnostics text
+     * @throws IOException        IO problems
+     * @throws SmartFrogException Other problems
+     */
+/*
+
+    public String getNodeDeploymentServiceDiagnostics() throws IOException, SmartFrogException;
+*/
+
 }
+
+

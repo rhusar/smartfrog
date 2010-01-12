@@ -202,7 +202,7 @@
     </action>
 
     <action path="/mombasa-portlet/cluster/delete"
-      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterDeleteNodeProcessAction">
       <forward name="success" path="portlet.mombasa.cluster.delete.success" redirect="true"/>
       <forward name="failure" path="portlet.mombasa.cluster.error"/>
       <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>

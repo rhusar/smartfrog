@@ -25,11 +25,15 @@ For more information: www.smartfrog.org
  * This defines the various factories for node deployment
  */
 
+NodeDeploymentFactory extends Prim {
+
+}
+
 /**
  * This component offers deployment over SmartFrog -LAN only; requires mutual trust
  */
  
-NodeDeploymentOverRMIFactory extends Prim {
+NodeDeploymentOverRMIFactory extends NodeDeploymentFactory {
   sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory";
   description "NodeDeploymentOverRMIFactory";
 }
@@ -73,7 +77,7 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
  * This raises an exception when a node service is requested
  */
 
-NodeDeploymentUnsupportedFactory extends Prim {
+NodeDeploymentUnsupportedFactory extends NodeDeploymentFactory {
   sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentUnsupportedFactory";
   description "NodeDeploymentUnsupportedFactory";
 }
@@ -82,7 +86,7 @@ NodeDeploymentUnsupportedFactory extends Prim {
 /**
  * This logs every action and pretends that it works
  */
-MockNodeDeploymentFactory extends Prim {
+MockNodeDeploymentFactory extends NodeDeploymentFactory {
   sfClass "org.smartfrog.services.cloudfarmer.server.mock.MockNodeDeploymentFactory";
   description "MockNodeDeploymentFactory";
 }

@@ -11,11 +11,13 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
 
 /**
  * Mock nodes
  */
 public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymentServiceFactory {
+    
     public MockNodeDeploymentFactory() throws RemoteException {
     }
 
@@ -35,6 +37,9 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
         return "MockNodeDeployment";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isNodeDeploymentSupported() throws IOException, SmartFrogException {
         return true;
@@ -46,15 +51,40 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
     private class MockNodeDeploymentInstance extends AbstractNodeDeployment implements NodeDeploymentService {
 
         private String hostname;
+        Hashtable<String, ComponentDescription> applications = new Hashtable<String, ComponentDescription>();
 
         private MockNodeDeploymentInstance(ClusterNode node) {
             super(node);
             hostname = node.getHostname();
         }
 
+
+        private ComponentDescription lookup(String app) {
+            return applications.get(app);
+        }
+
+        private boolean appExists(String name) {
+            return lookup(name) != null;
+        }
+
+        private void checkAppExists(String name) throws SmartFrogException {
+            if (!appExists(name)) {
+                throw new SmartFrogException("No application " + name);
+            }
+        }
+
+        private void checkAppDoesntExist(String name) throws SmartFrogException {
+            if (appExists(name)) {
+                throw new SmartFrogException("Application already deployed " + name);
+            }
+        }
+
+
         @Override
         public void deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
             sfLog().info("Deploying " + name + " at " + hostname);
+            checkAppDoesntExist(name);
+            applications.put(name, cd);
         }
 
         @Override
@@ -62,12 +92,17 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
                 throws IOException, SmartFrogException {
             sfLog().info(
                     "Terminating " + name + (normal ? "normally" : "abnormally") + " " + exitText + " at " + hostname);
+            if (!appExists(name)) {
+                return false;
+            }
+            applications.remove(name);
             return true;
         }
 
         @Override
         public void pingApplication(String name) throws IOException, SmartFrogException {
             sfLog().info("Pinging " + name + " at " + hostname);
+            checkAppExists(name);
         }
 
         @Override
@@ -77,6 +112,7 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
 
         @Override
         public String getApplicationDescription(String name) throws IOException, SmartFrogException {
+            checkAppExists(name);
             return "Mock application " + name + " at " + hostname;
         }
 
@@ -87,4 +123,5 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
 
 
     }
+
 }
