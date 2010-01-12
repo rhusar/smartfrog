@@ -65,7 +65,7 @@ This is driven by the "host" value, which maps to a host
   <tr>
     <td colspan="2"  bgcolor="grey">
       <html:link paramId="hostid" paramName="host" paramProperty="id"
-          action="/mombasa-portlet/cluster/host_terminate">Terminate the host
+          action="/mombasa-portlet/cluster/delete">Delete the host
       </html:link>
     </td>
   </tr>

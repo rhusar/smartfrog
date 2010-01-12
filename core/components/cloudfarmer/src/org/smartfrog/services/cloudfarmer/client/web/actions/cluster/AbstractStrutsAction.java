@@ -153,12 +153,40 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
         return val;
     }
 
+
     /**
-     * Retrieve attribute state, may integrate with persistent configuration mechanisms
-     * @param request http request
-     * @param key     key to retrieve on
-     * @return the value
+     * Convert a param to an attribute; return the trimmed value which must not be empty 
+     *
+     * @param request       request name
+     * @param parameter     name to retrieve on
+     * @param attributeName name to set for the attribute
+     * @return the value or null if not found and required==false
+     * @throws BadParameterException the parameter is bad or missing
      */
+    protected static String parameterToNonEmptyStringAttribute(HttpServletRequest request,
+                                                      String parameter,
+                                                      String attributeName) throws BadParameterException {
+        String val = request.getParameter(parameter);
+        if (val != null) {
+            val = val.trim();
+        } else {
+            val = "";
+        }
+        if (!val.isEmpty()) {
+            request.setAttribute(attributeName, val);
+        } else {
+            throw new BadParameterException(new ActionMessage("error.missingParameter", parameter).toString());
+        }
+        return val;
+    }
+
+
+    /**
+    * Retrieve attribute state, may integrate with persistent configuration mechanisms
+    * @param request http request
+    * @param key     key to retrieve on
+    * @return the value
+    */
     protected static Object getAttributeFromRequestState(HttpServletRequest request, String key) {
         Object o = request.getAttribute(key);
         if (o == null) {

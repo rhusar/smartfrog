@@ -23,8 +23,10 @@ package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddNamedNodeForm;
+import org.apache.struts.action.ActionMessage;
+import org.smartfrog.services.cloudfarmer.client.web.exceptions.BadParameterException;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,13 +53,23 @@ public class ClusterDeleteNodeProcessAction extends AbstractClusterAction {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {
-        ClusterAddNamedNodeForm addForm = (ClusterAddNamedNodeForm) form;
-        String hostname = addForm.getName();
-        log.info("Deleting a named node " + hostname);
+        String hostID = parameterToNonEmptyStringAttribute(request, ATTR_HOSTID, ATTR_HOSTID);
+        log.info("Deleting a named node " + hostID);
+        //refresh the lists
+        controller.refreshHostList();
+        HostInstance instance = controller.lookupHost(hostID);
+        if (instance==null) {
+            throw new BadParameterException(new ActionMessage("error.hostNotFound", hostID).toString());
+        }
+        String hostname = instance.getHostname();
         try {
-            controller.deleteHost(hostname);
+            controller.deleteHost(hostID);
+            //refresh the lists
+            controller.refreshHostList();
+            addClusterAttributes(request, controller);
             return success(mapping);
         } catch (Exception e) {
+            addClusterAttributes(request, controller);
             return failure(request, mapping, "Failed to delete the host " + hostname + " : " + e, e);
         }
 

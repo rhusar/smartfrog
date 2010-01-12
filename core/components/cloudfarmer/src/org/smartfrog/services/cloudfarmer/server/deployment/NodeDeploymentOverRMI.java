@@ -96,6 +96,11 @@ public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements Nod
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws IOException
+     * @throws SmartFrogException
+     */
     @Override
     public void terminate() throws IOException, SmartFrogException {
         unbind();

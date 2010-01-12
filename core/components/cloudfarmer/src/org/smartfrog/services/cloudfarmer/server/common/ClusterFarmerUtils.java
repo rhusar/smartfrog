@@ -86,4 +86,15 @@ public class ClusterFarmerUtils {
             throws IOException, SmartFrogException {
         return factory != null && factory.isNodeDeploymentSupported();
     }
+    
+    
+    
+
+    public static String getNodeDeploymentServiceDiagnostics(NodeDeploymentServiceFactory factory)
+            throws SmartFrogException, IOException {
+        if (factory==null) {
+            return "No Deployment Service defined";
+        }
+        return factory.getDiagnosticsText();
+    }
 }

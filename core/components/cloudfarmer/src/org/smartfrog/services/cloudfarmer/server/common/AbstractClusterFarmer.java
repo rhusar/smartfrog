@@ -232,7 +232,7 @@ public abstract class AbstractClusterFarmer extends CompoundImpl implements Clus
         return getDescription()
                 + "\nclusterLimit:" + clusterLimit
                 + "\ndeployment factory: "
-                + (deploymentFactory == null ? "No deployment factory" : deploymentFactory.getDiagnosticsText());
+                + ClusterFarmerUtils.getNodeDeploymentServiceDiagnostics(deploymentFactory);
     }
 
     /**
