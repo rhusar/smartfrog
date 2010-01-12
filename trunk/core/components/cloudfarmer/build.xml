@@ -84,12 +84,6 @@
 
   <target name="ready-to-test" depends="common.ready-to-test">
     <echo level="verbose">
-      test.ec2.enabled=${test.ec2.enabled}
-      test.ec2.instances.enabled=${test.ec2.instances.enabled}
-      test.ec2.farmer.enabled=${test.ec2.farmer.enabled}
-      test.s3.enabled=${test.s3.enabled}
-      
-      test.awsid=${test.awsid}
       system.tests=${system.tests}
     </echo>
   </target>
@@ -138,13 +132,6 @@
     </deploy>
   </target>
   
-  <target  name="ec2farmer" depends="ready-to-deploy"
-      description="Deploy an EC2 farmer" >
-    <deploy>
-      <application name="farmer"
-          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/ec2_hadoop_farmer.sf"/>
-    </deploy>
-  </target>
 
   <target  name="forkedcluster" depends="ready-to-deploy"
       description="Deploy a forked Hadoop cluster against a local farmer" >
