@@ -55,13 +55,12 @@ WaitForJSP extends WaitForJettyPage {
 }
 
 WaitForJSPError extends WaitForJettyPage {
-  page "/error.jsp";
+  page "/happy/error.jsp";
 }
 
 
-WaitForJSPErrorCode extends WaitForJettyPage {
+WaitForJSPErrorCode extends WaitForJSPError {
   errorCode 200;
-  page "/error.jsp";
   queries [
       ["status",errorCode]
       ];
