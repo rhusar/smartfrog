@@ -180,6 +180,9 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
         return val;
     }
 
+    protected boolean isEmptyOrNull(String s) {
+        return s==null || s.isEmpty();
+    }
 
     /**
     * Retrieve attribute state, may integrate with persistent configuration mechanisms

@@ -54,6 +54,13 @@ For more information: www.smartfrog.org
       <td><bean:write name="role" property="roleSize"/></td>
       <td style="padding-left: 10px;"></td>
       <td><bean:write name="role" property="recommendedSize"/></td>
+      <td style="padding-left: 10px;"></td>
+      <td>
+         <html:link action="/mombasa-portlet/cluster/create_role_instance"
+            paramId="role" paramName="role" paramProperty="name">
+           <bean:write name="role" property="name"/>
+         </html:link>
+      </td>
     </tr>
   </logic:iterate>
 </table>

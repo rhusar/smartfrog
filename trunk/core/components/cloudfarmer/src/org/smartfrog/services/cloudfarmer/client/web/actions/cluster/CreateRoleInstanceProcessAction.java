@@ -23,12 +23,12 @@ package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerAllocationHandler;
-import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
-import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hadoop.HadoopAllocationHandler;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.client.web.clusters.ClusterAllocationHandler;
 import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDynamicForm;
+import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterCreateRoleInstanceForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
 
@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
  * received, it is routed over to the daemon to handle
  */
 @SuppressWarnings({"RefusedBequest"})
-public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
-    
+public class CreateRoleInstanceProcessAction extends AbstractClusterAction {
+
     /**
      * Get the name of this action, used in logging and debugging
      *
@@ -51,7 +51,7 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
 
     @Override
     protected String getActionName() {
-        return "ClusterAddDynamicNodeProcessAction";
+        return "CreateRoleInstanceProcessAction";
     }
 
 
@@ -59,25 +59,26 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm aform, HttpServletRequest request,
                                  HttpServletResponse response, ClusterController controller) throws Exception {
-        ClusterAddDynamicForm form = (ClusterAddDynamicForm) aform;
+        ClusterCreateRoleInstanceForm form = (ClusterCreateRoleInstanceForm) aform;
         try {
-            log.info("Creating workers in range [" + form.getMinWorkers() + "-" + form.getMaxWorkers() + "]");
-            MasterWorkerAllocationHandler handler = new HadoopAllocationHandler(controller); 
-            //add a master automatically
-            RoleAllocationRequestList requests = new RoleAllocationRequestList(2);
-            HostInstance master = controller.getMaster();
-            if (master == null) {
-                log.info("Creating a master node");
-                requests.add(new RoleAllocationRequest(MasterWorkerRoles.MASTER, 0, 1, 1, null));
-                handler.setCreatingMaster(true);
-            } else {
-                handler.setCreatingMaster(false);
-                handler.setMaster(master);
+            String role = form.getRole();
+            if (isEmptyOrNull(role)) {
+                return failure(request, mapping, "No role provided");
             }
-            RoleAllocationRequest workers = new RoleAllocationRequest(MasterWorkerRoles.WORKER,
-                    -1,
-                    form.getMinWorkers(),
-                    form.getMaxWorkers(),
+            ClusterRoleInfo roleInfo = controller.getRole(role);
+            if (roleInfo == null) {
+                return failure(request, mapping, "Role " + role + " is not available");
+            }
+            HostInstanceList hil = controller.lookupHostsByRole(role);
+            log.info("Creating nodes of role " + role + "in range [" + form.getMinNodes() + "-" +
+                    form.getMaxNodes() + "]");
+            ClusterAllocationHandler
+                    handler = new ClusterAllocationHandler(controller);
+            RoleAllocationRequestList requests = new RoleAllocationRequestList(1);
+            RoleAllocationRequest workers = new RoleAllocationRequest(role,
+                    hil.size(),
+                    form.getMinNodes(),
+                    form.getMaxNodes(),
                     null);
             requests.add(workers);
 

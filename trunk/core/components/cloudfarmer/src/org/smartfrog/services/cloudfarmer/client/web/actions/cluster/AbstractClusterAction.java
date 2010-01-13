@@ -179,4 +179,13 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
         addMasterAttributes(request, controller);
         addHostAttributes(request, controller);
     }
+
+    /**
+     * The time to wait for a machine
+     * TODO, drive this from configuration properties
+     * @return the timeout in milliseconds
+     */
+    protected int getFarmCreationTimeout() {
+        return 10000;
+    }
 }

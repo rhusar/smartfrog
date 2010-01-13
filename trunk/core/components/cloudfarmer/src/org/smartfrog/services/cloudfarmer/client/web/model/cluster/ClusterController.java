@@ -172,6 +172,19 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
+     * Look up a role by name
+     * @param name role name
+     * @return the role or null for no match
+     */
+
+    public ClusterRoleInfo getRole(String name) {
+        if (roles == null) {
+            return null;
+        }
+        return roles.get(name);
+    }
+
+    /**
      * Get a list of the hosts. The list is a clone, no need to worry about synchronization problems, though hosts may
      * have been deleted by the time you get to them
      *
