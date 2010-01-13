@@ -32,26 +32,35 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Form for adding a node on a dynamic cluster
  */
-public class ClusterAddDynamicForm extends AbstractMombasaActionForm {
+public class ClusterCreateRoleInstanceForm extends AbstractMombasaActionForm {
 
 
-    private int minWorkers = 1;
-    private int maxWorkers = 1;
+    private int minNodes = 1;
+    private int maxNodes = 1;
+    private String role;
 
-    public int getMinWorkers() {
-        return minWorkers;
+    public int getMinNodes() {
+        return minNodes;
     }
 
-    public void setMinWorkers(int minWorkers) {
-        this.minWorkers = minWorkers;
+    public void setMinNodes(int minNodes) {
+        this.minNodes = minNodes;
     }
 
-    public int getMaxWorkers() {
-        return maxWorkers;
+    public int getMaxNodes() {
+        return maxNodes;
     }
 
-    public void setMaxWorkers(int maxWorkers) {
-        this.maxWorkers = maxWorkers;
+    public void setMaxNodes(int maxNodes) {
+        this.maxNodes = maxNodes;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     /**
@@ -63,7 +72,9 @@ public class ClusterAddDynamicForm extends AbstractMombasaActionForm {
     @Override
     public void reset(ActionMapping actionMapping, HttpServletRequest request) {
         super.reset(actionMapping, request);
-        minWorkers = 1;
+        minNodes = 1;
+        maxNodes = 1;
+        //role = "";
     }
 
     @Override

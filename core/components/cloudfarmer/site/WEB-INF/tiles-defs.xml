@@ -149,6 +149,11 @@
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_add_dynamic.jsp"/>
   </definition>
 
+  <definition name="portlet.mombasa.cluster.create_role_instance.success"
+      extends="portlet.mombasa.cluster">
+    <put name="title" value="Create Role Instances"/>
+    <put name="content" value="/html/mombasa-portlet/cluster/create_role_instance.jsp"/>
+  </definition>
 
   <definition name="portlet.mombasa.cluster.add_named.process.success"
       extends="portlet.mombasa.cluster.list">
@@ -167,10 +172,11 @@
 
   <definition name="portlet.mombasa.cluster.add_dynamic.status.success"
       extends="portlet.mombasa.cluster">
-    <put name="title" value="Add host operation in progress"/>
+    <put name="title" value="Adding new machines"/>
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_add_node_status.jsp"/>
     <put name="text" value="The request is in progress"/>
   </definition>
+
 
   <definition name="portlet.mombasa.cluster.viewhost.success"
       extends="portlet.mombasa.cluster">

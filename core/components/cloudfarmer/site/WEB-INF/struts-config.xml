@@ -25,7 +25,10 @@
       type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddNamedNodeForm"/>
 
     <form-bean name="clusterAddDynamicForm"
-      type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDynamicForm"/>
+               type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDynamicForm"/>
+
+    <form-bean name="clusterCreateRoleInstanceForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterCreateRoleInstanceForm"/>
 
     <form-bean name="clusterChangeManagerForm"
       type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterChangeManagerForm"/>
@@ -201,6 +204,24 @@
       <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
     </action>
 
+    <action path="/mombasa-portlet/cluster/create_role_instance"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.CreateRoleInstanceAction">
+      <forward name="success" path="portlet.mombasa.cluster.create_role_instance.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/create_role_instance/process"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.CreateRoleInstanceProcessAction"
+        name="clusterCreateRoleInstanceForm"
+        input="portlet.mombasa.cluster.create_role_instance.success"
+        scope="session"
+        validate="true">
+      <forward name="success" path="/mombasa-portlet/cluster/add_dynamic/status.do"  redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+    
     <action path="/mombasa-portlet/cluster/delete"
       type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterDeleteNodeProcessAction">
       <forward name="success" path="portlet.mombasa.cluster.delete.success" redirect="true"/>

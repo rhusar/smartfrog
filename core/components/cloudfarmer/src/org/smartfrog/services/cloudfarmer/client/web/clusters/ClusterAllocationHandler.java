@@ -1,4 +1,4 @@
-/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -30,15 +30,16 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartF
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
 
 /**
- * Created 11-Jan-2010 16:01:08
+ * Handler for cluster allocations
  */
 
-public abstract class ClusterAllocationHandler implements ClusterAllocationCompleted {
+public class ClusterAllocationHandler implements ClusterAllocationCompleted {
     protected static final Log LOG = LogFactory.getLog(ClusterAllocationHandler.class);
     protected ClusterController controller;
     protected String status;
@@ -46,7 +47,7 @@ public abstract class ClusterAllocationHandler implements ClusterAllocationCompl
 
     protected boolean deploymentRequired = false;
 
-    protected ClusterAllocationHandler(
+    public ClusterAllocationHandler(
             ClusterController controller) {
         this.controller = controller;
     }
@@ -193,6 +194,14 @@ public abstract class ClusterAllocationHandler implements ClusterAllocationCompl
      */
     protected DynamicSmartFrogClusterController getSfController() {
         return (DynamicSmartFrogClusterController) controller;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void allocationRequestSucceeded(RoleAllocationRequest request, HostInstanceList newhosts)
+            throws IOException, SmartFrogException {
     }
 
     /**
