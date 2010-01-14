@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 
 */
 --%><%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
+<jsp:include page="/html/mombasa-portlet/header.jsp"/>
 <tiles:useAttribute id="content" name="content" classname="java.lang.String" ignore="true"/>
 <tiles:useAttribute id="title" name="title" classname="java.lang.String" ignore="true"/>
 <h2><%= title %></h2>

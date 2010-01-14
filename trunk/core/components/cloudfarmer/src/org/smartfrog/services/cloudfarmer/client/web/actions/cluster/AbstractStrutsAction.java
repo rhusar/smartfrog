@@ -34,6 +34,9 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.ConnectException;
+import java.util.Map;
+import java.util.Enumeration;
+import java.lang.reflect.Array;
 
 /**
  * Created 02-Oct-2009 12:57:12
@@ -154,15 +157,48 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
     }
 
 
+    protected String listParameters(HttpServletRequest request) {
+        Map map = request.getParameterMap();
+        StringBuilder buffer = new StringBuilder();
+        for (Object key:map.keySet()) {
+            buffer.append(key);
+            buffer.append('=');
+            Object value = request.getParameter(key.toString());
+            buffer.append(value);
+            buffer.append('\n');
+        }
+        return buffer.toString();
+    }
+
+    protected String listAttributes(HttpServletRequest request) {
+        StringBuilder buffer = new StringBuilder();
+        Enumeration names = request.getAttributeNames();
+        while (names.hasMoreElements()) {
+            String key = (String) names.nextElement();
+            Object value = request.getAttribute(key);
+            buffer.append(key);
+            buffer.append('=');
+            buffer.append(value);
+            buffer.append('\n');
+        }
+        return buffer.toString();
+    }
+
+    protected void logParameters(HttpServletRequest request) {
+        log.info("Request Parameters: \n"+listParameters(request));
+        log.info("Request Attributes: \n" + listAttributes(request));
+        
+    }
+
     /**
-     * Convert a param to an attribute; return the trimmed value which must not be empty 
-     *
-     * @param request       request name
-     * @param parameter     name to retrieve on
-     * @param attributeName name to set for the attribute
-     * @return the value or null if not found and required==false
-     * @throws BadParameterException the parameter is bad or missing
-     */
+    * Convert a param to an attribute; return the trimmed value which must not be empty 
+    *
+    * @param request       request name
+    * @param parameter     name to retrieve on
+    * @param attributeName name to set for the attribute
+    * @return the value or null if not found and required==false
+    * @throws BadParameterException the parameter is bad or missing
+    */
     protected static String parameterToNonEmptyStringAttribute(HttpServletRequest request,
                                                       String parameter,
                                                       String attributeName) throws BadParameterException {

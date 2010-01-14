@@ -222,7 +222,7 @@
 
   <definition name="portlet.mombasa.cluster.host_terminate.success" extends="portlet.mombasa.cluster.text">
     <put name="title" value="Shut down the host"/>
-    <put name="text" value="This is not yet implemented"/>
+    <put name="text" value="The host has been terminated"/>
   </definition>
 
   <definition name="portlet.mombasa.cluster.diagnostics.success" extends="portlet.mombasa.cluster">

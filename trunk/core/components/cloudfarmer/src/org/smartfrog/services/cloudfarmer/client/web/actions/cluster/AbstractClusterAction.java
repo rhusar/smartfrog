@@ -29,6 +29,7 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerFactory;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -160,7 +161,7 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
     }
 
     /**
-     * Add the {@link #ATTR_HOSTS} and {@link #ATTR_HOSTCOUNT} attributes
+     * Get the host list then add the {@link #ATTR_HOSTS} and {@link #ATTR_HOSTCOUNT} attributes
      *
      * @param request    request to manipulate
      * @param controller controller to work from
@@ -170,14 +171,35 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
         addHostAttributes(request, hosts);
     }
 
+    /**
+     * Add the {@link #ATTR_HOSTS} and {@link #ATTR_HOSTCOUNT} attributes
+     * @param request    request to manipulate
+     * @param hosts list of hosts
+     */
     protected void addHostAttributes(HttpServletRequest request, HostInstanceList hosts) {
         request.setAttribute(ATTR_HOSTS, hosts);
         request.setAttribute(ATTR_HOSTCOUNT, hosts.size());
     }
 
+    /**
+     * Add info about the master and the hosts
+     * @param request    request to manipulate
+     * @param controller controller to work from
+     */
     protected void addClusterAttributes(HttpServletRequest request, ClusterController controller) {
         addMasterAttributes(request, controller);
         addHostAttributes(request, controller);
+    }
+
+    /**
+     * Add info about the master and the hosts
+     *
+     * @param request    request to manipulate
+     * @param roleInfo role information
+     */
+    protected void addRoleAttributes(HttpServletRequest request, ClusterRoleInfo roleInfo) {
+        request.setAttribute(ATTR_ROLE, roleInfo.getName());
+        request.setAttribute(ATTR_ROLEINFO, roleInfo);
     }
 
     /**

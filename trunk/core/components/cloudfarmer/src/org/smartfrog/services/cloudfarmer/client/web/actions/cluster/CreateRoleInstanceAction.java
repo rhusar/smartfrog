@@ -24,6 +24,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,7 +64,16 @@ public class CreateRoleInstanceAction extends AbstractClusterAction {
                                  HttpServletResponse response, ClusterController controller) throws Exception {
 
         addMasterAttributes(request, controller);
-
+        String role = parameterToAttribute(request, ATTR_ROLE, ATTR_ROLE, false);
+        if (isEmptyOrNull(role)) {
+            return failure(request, mapping, "No role provided");
+        }
+        controller.refreshRoleList();
+        ClusterRoleInfo roleInfo = controller.getRole(role);
+        if (roleInfo == null) {
+            return failure(request, mapping, "Role " + role + " is not available");
+        }
+        addRoleAttributes(request, roleInfo);
         if (controller.canCreateHost()) {
             return success(mapping);
         } else {

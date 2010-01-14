@@ -61,8 +61,11 @@ public class CreateRoleInstanceProcessAction extends AbstractClusterAction {
                                  HttpServletResponse response, ClusterController controller) throws Exception {
         ClusterCreateRoleInstanceForm form = (ClusterCreateRoleInstanceForm) aform;
         try {
-            String role = form.getRole();
+            String role;
+            //role = parameterToAttribute(request, ATTR_ROLE, ATTR_ROLE, false);
+            role = form.getRole();
             if (isEmptyOrNull(role)) {
+                logParameters(request);
                 return failure(request, mapping, "No role provided");
             }
             ClusterRoleInfo roleInfo = controller.getRole(role);
@@ -70,7 +73,7 @@ public class CreateRoleInstanceProcessAction extends AbstractClusterAction {
                 return failure(request, mapping, "Role " + role + " is not available");
             }
             HostInstanceList hil = controller.lookupHostsByRole(role);
-            log.info("Creating nodes of role " + role + "in range [" + form.getMinNodes() + "-" +
+            log.info("Creating nodes of role \"" + role + "\" in range [" + form.getMinNodes() + "-" +
                     form.getMaxNodes() + "]");
             ClusterAllocationHandler
                     handler = new ClusterAllocationHandler(controller);

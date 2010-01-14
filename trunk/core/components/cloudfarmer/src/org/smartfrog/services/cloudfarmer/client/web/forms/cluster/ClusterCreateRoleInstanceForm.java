@@ -74,8 +74,17 @@ public class ClusterCreateRoleInstanceForm extends AbstractMombasaActionForm {
         super.reset(actionMapping, request);
         minNodes = 1;
         maxNodes = 1;
-        //role = "";
+
+        Object rolename = request.getAttribute(AttributeNames.ATTR_ROLE);
+        log.info("Resetting create instance form to role " + rolename);
+        if (rolename != null) {
+            String s = rolename.toString().trim();
+            if (!s.isEmpty()) {
+                role = s;
+            }
+        }
     }
+
 
     @Override
     public ActionErrors validate(ActionMapping mapping, HttpServletRequest request) {

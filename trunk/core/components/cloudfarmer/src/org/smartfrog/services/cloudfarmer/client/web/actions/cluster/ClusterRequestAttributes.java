@@ -93,6 +93,12 @@ public interface ClusterRequestAttributes {
      * {@value}
      */
     String ATTR_ROLE = "role";
+
+    /**
+     * {@value}
+     */
+    String ATTR_ROLEINFO = "roleInfo";
+
     /**
      * {@value}
      */
