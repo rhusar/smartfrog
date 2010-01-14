@@ -33,9 +33,9 @@ For more information: www.smartfrog.org
     <th style="padding-left: 10px;"></th>
     <th>Hostname</th>
     <th style="padding-left: 10px;"></th>
-    <th>Application</th>
-    <th style="padding-left: 10px;"></th>
     <th>Role</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Application</th>
     <th style="padding-left: 10px;"></th>
     <th>Description</th>
   </tr>
@@ -58,13 +58,13 @@ For more information: www.smartfrog.org
         </html:link>
       </td>
       <td style="padding-left: 10px;"></td>
-      <td><bean:write name="host" property="application"/></td>
-      <td style="padding-left: 10px;"></td>
       <td>
         <logic:notEmpty name="host" property="role">
           <bean:write name="host" property="role"/>
         </logic:notEmpty>
       </td>
+      <td style="padding-left: 10px;"></td>
+      <td><bean:write name="host" property="application"/></td>
       <td style="padding-left: 10px;"></td>
       <td>
         <logic:notEmpty name="host" property="application">
@@ -85,7 +85,7 @@ For more information: www.smartfrog.org
     <td style="padding-left: 10px;"></td>
     <td><bean:write name="hostcount"/></td>
   </tr>  
-  <tr >
+<%--  <tr >
     <td>Master</td>
     <td style="padding-left: 10px;"></td>
     <td>    
@@ -93,12 +93,14 @@ For more information: www.smartfrog.org
           <bean:write name="cluster.master.hostname"/>
         </logic:notEmpty>
     </td>
-  </tr>  
+  </tr>  --%>
+<%--
   <tr >
     <td>Controller</td>
     <td style="padding-left: 10px;"></td>
     <td><bean:write name="cluster.controller" property="description"/></td>
   </tr>  
+--%>
   
   
   

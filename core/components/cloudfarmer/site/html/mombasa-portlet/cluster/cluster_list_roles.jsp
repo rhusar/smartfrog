@@ -36,6 +36,8 @@ For more information: www.smartfrog.org
     <th>Size</th>
     <th style="padding-left: 10px;"></th>
     <th>Recommended</th>
+    <th style="padding-left: 10px;"></th>
+    <th>Add</th>
   </tr>
   <logic:iterate id="role"
                  name="cluster.controller"
@@ -58,6 +60,7 @@ For more information: www.smartfrog.org
       <td>
          <html:link action="/mombasa-portlet/cluster/create_role_instance"
             paramId="role" paramName="role" paramProperty="name">
+           Add
            <bean:write name="role" property="name"/>
          </html:link>
       </td>

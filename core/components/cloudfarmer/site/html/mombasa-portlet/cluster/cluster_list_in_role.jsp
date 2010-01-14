@@ -68,6 +68,15 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
       </td>
     </tr>
   </logic:iterate>
+  <tr>
+    <td>
+      <html:link action="/mombasa-portlet/cluster/create_role_instance"
+                 paramId="role" paramName="role" >
+        Add
+        <bean:write name="role" />
+      </html:link>
+    </td>
+  </tr>
 </table>
 
 
