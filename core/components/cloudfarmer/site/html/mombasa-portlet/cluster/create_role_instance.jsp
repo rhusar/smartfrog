@@ -29,9 +29,6 @@ For more information: www.smartfrog.org
                     />
 --%>
 
-
-
-
 <html:form action="/mombasa-portlet/cluster/create_role_instance/process" method="post" focus="minNodes">
   <p>Add Hosts in Role "<bean:write name="role" />" </p>
   
