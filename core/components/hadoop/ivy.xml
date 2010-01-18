@@ -117,6 +117,8 @@
                 conf="hadoop-core->default">
       <exclude org="org.mortbay.jetty"/>
       <exclude org="net.sf.kosmosfs"/>
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="org.slf4j"/>
     </dependency>
     <dependency org="org.apache.hadoop"
                 name="hadoop-hdfs"
@@ -125,6 +127,8 @@
                 conf="hadoop-core->default">
       <exclude org="org.mortbay.jetty"/>
       <exclude org="net.sf.kosmosfs"/>
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="org.slf4j"/>
     </dependency>
     <dependency org="org.apache.hadoop"
                 name="hadoop-mapred"
@@ -133,6 +137,8 @@
                 conf="hadoop-core->default">
       <exclude org="org.mortbay.jetty"/>
       <exclude org="net.sf.kosmosfs"/>
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="org.slf4j"/>
     </dependency>
 
     <!-- client CLI. May also be used on the server to pass stuff to forked processes-->
@@ -153,7 +159,11 @@
     <dependency org="org.apache.hadoop"
                 name="avro"
                 rev="${avro.version}"
-                conf="redist->default"/>
+                conf="redist->default">
+      <exclude org="com.thoughtworks.paranamer" />
+      <exclude org="org.slf4j"/>
+      <exclude org="org.mortbay.jetty"/>
+    </dependency>
     <!-- used in Configuration now-->
     <dependency org="org.codehaus.jackson"
                 name="jackson-mapper-asl"
