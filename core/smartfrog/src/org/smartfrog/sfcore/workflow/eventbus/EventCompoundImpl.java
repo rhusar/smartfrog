@@ -138,7 +138,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param sink the EventSink
      * @see EventRegistration
      */
-    synchronized public void deregister(EventSink sink) {
+    public synchronized void deregister(EventSink sink) {
         registrar.deregister(sink);    }
 
     /**
