@@ -84,7 +84,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
     /**
     * Method that overwrites compoundImpl behavior and delays loading eager components to sfStart phase.
-    * If action or actions atributes are present then it behaves like compound and loads all eager components.
+    * If action or actions attributes are present then it behaves like compound and loads all eager components.
      * @throws SmartFrogDeploymentException for deployment problems
     */
     @Override
