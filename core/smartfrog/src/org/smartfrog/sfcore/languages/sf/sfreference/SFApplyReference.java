@@ -167,8 +167,18 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         
         if (Proposition.g_EvaluatingPropositions && !(function instanceof BaseOperator || 
         		function instanceof BaseUnaryOperator || function instanceof BaseBinaryOperator)) return null;
-        
-  	
+
+
+        if (comp.sfContext().get("sfSetFunctionClassStatus") != null) {
+            try {
+                //The foregoing attribute indicates that this function should be declared done early...
+                //This is used in the constraints work and has no impact otherwise!
+                comp.sfReplaceAttribute("sfFunctionClassStatus", "done");
+            } catch (SmartFrogRuntimeException e) {
+                throw new SmartFrogResolutionException(e);
+            }
+        }
+
     	Object result=null;
     	result= resolveWkr(rrcd, index, function);
     	if (orig) CoreSolver.getInstance().tidyConstraintBasedDescription((SFComponentDescription)rr);
