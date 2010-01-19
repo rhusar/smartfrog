@@ -1,33 +1,19 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import java.util.Iterator;
-
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
-import org.smartfrog.sfcore.languages.sf.functions.Aggregator;
 import org.smartfrog.sfcore.languages.sf.functions.BaseBinaryOperator;
 import org.smartfrog.sfcore.languages.sf.functions.BaseOperator;
 import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.reference.ApplyReference;
-import org.smartfrog.sfcore.reference.Function;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
+import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.security.SFClassLoader;
+
+import java.util.Iterator;
 
 /**
  * Representation of ApplyReference for the SF Language
@@ -125,8 +111,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
      */
     public Object resolve(ReferenceResolver rr, int index) throws SmartFrogResolutionException {
     	
-    	//System.out.println("sfApplyReference");
-    	
     	if (!eager) throw new SmartFrogLazyResolutionException("function is lazy (sfFunctionLazy)");
     	if (getData()) return this; 	
     	
@@ -137,13 +121,15 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         
     	ComponentDescription rrcd = (ComponentDescription) rr;
         comp.setParent(rrcd);
-           	
+
+        //***CONSTRAINTS stuff
         //Am I an array generator?, if so quit...
         try { if (comp.sfContext().get("sfIsGenerator")!=null) return this; } catch (Exception e){/*Do nothing!*/}
+        //***end: CONSTRAINTS stuff
     	
 		String functionClassStatus = (String) comp.sfContext().get("sfFunctionClassStatus");
         if (functionClassStatus!=null && functionClassStatus.equals("done")) return comp; //done already
-       
+
         String functionClass = null;
         
         try {
@@ -156,8 +142,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             throw new SmartFrogFunctionResolutionException("unknown function class ");
         }
         
-        //System.out.println(functionClass);
-        
         Function function;
         try {
             function = (Function) SFClassLoader.forName(functionClass).newInstance();
@@ -168,16 +152,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         if (Proposition.g_EvaluatingPropositions && !(function instanceof BaseOperator || 
         		function instanceof BaseUnaryOperator || function instanceof BaseBinaryOperator)) return null;
 
-
-        if (comp.sfContext().get("sfSetFunctionClassStatus") != null) {
-            try {
-                //The foregoing attribute indicates that this function should be declared done early...
-                //This is used in the constraints work and has no impact otherwise!
-                comp.sfReplaceAttribute("sfFunctionClassStatus", "done");
-            } catch (SmartFrogRuntimeException e) {
-                throw new SmartFrogResolutionException(e);
-            }
-        }
 
     	Object result=null;
     	result= resolveWkr(rrcd, index, function);
@@ -207,21 +181,31 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
     	Context forFunction = new ContextImpl();
         Object result=null;
         boolean isLazy = false;
-                
-        //In an Aggregator, we apply the function first, and then resolve the arguments
+
+        //***CONSTRAINTS stuff
+        //In an Aggregator, and some other constraints related functions, we apply the function first, and then resolve the arguments
         //Normally, other way around...
-        try {            
-            if (function instanceof Aggregator) {
-            	forFunction.setOriginatingDescr(comp);
-            	result = function.doit(forFunction, null, rrcd);
-            }          
-        } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to evaluate function class " + function + " with data " + forFunction, e);
-        } 
-        
+        Object _earlyEval = comp.sfContext().get("sfFunctionClassEvalEarly");
+        Object _earlyReturn = comp.sfContext().get("sfFunctionClassReturnEarly");
+        boolean earlyEval = (_earlyEval!=null && (Boolean)_earlyEval);
+        boolean earlyReturn = (_earlyEval != null && (Boolean) _earlyReturn);
+
+        if (earlyEval){
+            try {
+                    forFunction.setOriginatingDescr(comp);
+                    result = function.doit(forFunction, null, rrcd, this, rrcd.sfAttributeKeyFor(this));           
+            } catch (Exception e) {
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to evaluate function class " + function + " with data " + forFunction, e);
+            }
+        }
+        if (earlyEval && earlyReturn) return result;
+        //***end: CONSTRAINTS stuff
+
         comp.linkResolve();  // link resolve up front...
-        
-        if (function instanceof Aggregator) return result;
+
+        //***CONSTRAINTS stuff
+        if (earlyEval) return result;
+        //***end: CONSTRAINTS stuff
         
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
@@ -255,9 +239,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
 
-        //System.out.println("SFAR:Going in..."+function.getClass().toString());
-        
-       	forFunction.setOriginatingDescr(comp);
+        forFunction.setOriginatingDescr(comp);
     	try {
     		result = function.doit(forFunction, null, rrcd, this, rrcd.sfAttributeKeyFor(this));
     	} catch (SmartFrogException e){
