@@ -24,7 +24,8 @@ For more information: www.smartfrog.org
 
 
 <%--
-This is driven by the "host" value, which maps to a host
+This is driven by the "host" value, which maps to a 
+org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instance
 --%>
 
 <table border="2">
@@ -33,23 +34,32 @@ This is driven by the "host" value, which maps to a host
     <td><bean:write name="host" property="hostname"/></td>
   </tr>
   <tr>
-    <td>Application</td>
-    <td><bean:write name="host" property="application"/></td>
+    <td>External Hostname</td>
+    <td><bean:write name="host" property="externalHostname"/></td>
   </tr>
-    <tr>
-      <td>Description</td>
-      <td>
-        <logic:notEmpty name="host" property="application">
-          <logic:notEmpty name="host" property="application.description">
-            <bean:write name="host" property="application.description"/>
-          </logic:notEmpty>
-        </logic:notEmpty>
-      </td>
-    </tr>
     <tr>
       <td>Role</td>
       <td><bean:write name="host" property="role"/></td>
     </tr>
+  <tr>
+    <td>Application</td>
+    <td><bean:write name="host" property="application"/></td>
+  </tr>
+  <tr>
+    <td>State</td>
+    <td><bean:write name="host" property="state"/></td>
+  </tr>
+  <tr>
+    <td>Description</td>
+    <td>
+      <logic:notEmpty name="host" property="application">
+        <logic:notEmpty name="host" property="application.description">
+          <bean:write name="host" property="application.description"/>
+        </logic:notEmpty>
+      </logic:notEmpty>
+    </td>
+  </tr>
+
   <tr>
     <td colspan="2">
       <b>Actions</b> 

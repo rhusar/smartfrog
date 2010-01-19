@@ -38,6 +38,8 @@ public final class HostInstance implements Serializable {
 
     public String hostname;
 
+    public String externalHostname;
+    
     public String role;
     
     public boolean canDelete;
@@ -66,9 +68,10 @@ public final class HostInstance implements Serializable {
     
     public HostInstance(String id, ClusterNode node, boolean canDelete) {
         this(id, node.getHostname(), canDelete);
-        this.clusterNode = node;
+        clusterNode = node;
         role = node.getRole();
         details = node.getDetails();
+        externalHostname = node.getExternalHostname();
     }
 
     /**
@@ -117,6 +120,20 @@ public final class HostInstance implements Serializable {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    public String getExternalHostname() {
+        return externalHostname;
+    }
+
+    public void setExternalHostname(String externalHostname) {
+        this.externalHostname = externalHostname;
+    }
+
+    public String getState() {
+        return clusterNode != null? 
+                clusterNode.getState():
+                "";
     }
 
     public boolean isCanDelete() {

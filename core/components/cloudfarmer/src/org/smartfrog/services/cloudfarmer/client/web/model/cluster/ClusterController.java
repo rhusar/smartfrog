@@ -597,7 +597,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         isFarmerAvailable();
         //now look for the worker, and bail out if it is live
         if (isWorkerThreadWorking()) {
-            throw new ClusterControllerBusyException("The cluster controller is busy with an earlier request");
+            throw new ClusterControllerBusyException("The cluster controller is busy with an earlier request, " 
+                    + "its last status was "+workerThread.getStatus());
         }
         workerThread = new HostCreationThread(allocations,
                 farmerAvailabilityTimeout,
@@ -717,6 +718,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
         public long getFinishTime() {
             return finishTime;
+        }
+
+        @Override
+        public String toString() {
+            return status;
         }
 
         /**

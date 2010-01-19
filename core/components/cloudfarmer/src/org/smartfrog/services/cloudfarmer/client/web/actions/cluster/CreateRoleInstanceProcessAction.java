@@ -62,8 +62,10 @@ public class CreateRoleInstanceProcessAction extends AbstractClusterAction {
         ClusterCreateRoleInstanceForm form = (ClusterCreateRoleInstanceForm) aform;
         try {
             String role;
-            //role = parameterToAttribute(request, ATTR_ROLE, ATTR_ROLE, false);
-            role = form.getRole();
+            role = parameterToAttribute(request, ATTR_ROLE, ATTR_ROLE, false);
+            if (isEmptyOrNull(role)) {
+                role = form.getRole();
+            }
             if (isEmptyOrNull(role)) {
                 logParameters(request);
                 return failure(request, mapping, "No role provided");
