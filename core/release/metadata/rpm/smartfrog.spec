@@ -273,7 +273,7 @@ This includes Groovy and the components needed to embed Groovy scripts inside .s
 %package hadoop
 Group:         ${rpm.framework}
 Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty,  %{name}-jasper
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty
 
 %description hadoop
 
@@ -301,7 +301,7 @@ Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-ww
 
 %description jetty
 This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
-SmartFrog. It is incompatble with the Hadoop RPM.
+SmartFrog. 
 
 # -----------------------------------------------------------------------------
 
