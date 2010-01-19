@@ -81,13 +81,17 @@
     <property name="test.jobtracker" value="${targethost}" />
     <property name="test.datanode1" value="${targethost}" />
     <property name="test.tasktracker1" value="${test.datanode1}" />
+
+    <property name="binding.master.hostname" value="${targethost}" />
+    <property name="binding.tasktracker.slots" value="4" />
+    
     
     <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
     <property name="cluster.sf" value="${cluster}/cluster.sf" />
     <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
     <property name="cluster3.sf" value="${cluster}/cluster3.sf" />
     <property name="cluster4.sf" value="${cluster}/cluster4.sf" />
-    <property name="default.sf" value="/org/smartfrog/extras/hadoop/cluster/cluster4-default.sf" />
+    <property name="default.sf" value="${cluster}/cluster4-default.sf" />
     <property name="deploy.sf" value="${cluster4.sf}" />
     <!--this sets the name for the tests-->
     <property name="deploy.host" value="${test.namenode}" />
@@ -134,6 +138,9 @@
   <target name="cluster" depends="ready-to-deploy"
       description="deploy a cluster">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="cluster"
               descriptor="/${cluster.sf}"/>
     </deploy>
@@ -142,6 +149,9 @@
   <target name="cluster2" depends="ready-to-deploy"
           description="deploy a forked cluster">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="cluster"
                    descriptor="/${cluster2.sf}"/>
     </deploy>
@@ -150,6 +160,9 @@
   <target name="cluster4" depends="ready-to-deploy"
           description="deploy a full cluster">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="cluster"
                    descriptor="/org/smartfrog/extras/hadoop/cluster/cluster4.sf"/>
     </deploy>
@@ -159,6 +172,9 @@
   <target name="filesystem" depends="ready-to-deploy"
       description="deploy a filesystem">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="filesystem"
           descriptor="/org/smartfrog/extras/hadoop/cluster/filesystem.sf"/>
     </deploy>
@@ -166,6 +182,9 @@
   <target name="checksecurity" depends="ready-to-deploy"
           description="deploy a component to check the security settings">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="checksecurity"
                    descriptor="/org/smartfrog/extras/hadoop/cluster/checksecurity.sf"/>
     </deploy>
@@ -174,6 +193,9 @@
       description="deploy basic health checks">
     <property name="healthy.name" value="healthy"/>
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="${healthy.name}"
           descriptor="/org/smartfrog/extras/hadoop/cluster/healthy.sf"/>
     </deploy>
@@ -182,6 +204,9 @@
   <target name="hdfs" depends="ready-to-deploy"
       description="deploy a hdfs filesystem">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="hdfs"
           descriptor="/org/smartfrog/extras/hadoop/cluster/hdfs.sf"/>
     </deploy>
@@ -190,6 +215,9 @@
    <target name="namenode" depends="ready-to-deploy"
       description="deploy a namenode">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="namenode"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/namenode/default.sf"/>
     </deploy>
@@ -198,6 +226,9 @@
   <target name="datanode" depends="ready-to-deploy"
    description="deploy a namenode">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="datanode"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/datanode/default.sf"/>
     </deploy>
@@ -206,6 +237,9 @@
   <target name="jobtracker" depends="ready-to-deploy"
       description="deploy a jobtracker">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="jobtracker"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/jobtracker/default.sf"/>
     </deploy>
@@ -215,6 +249,9 @@
   <target name="tasktracker" depends="ready-to-deploy"
       description="deploy a tasktracker">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="tasktracker"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/tasktracker/default.sf"/>
     </deploy>
@@ -223,6 +260,9 @@
   <target name="simplejob" depends="ready-to-deploy"
           description="deploy a simple test job, requires cluster2 to point to live cluster">
     <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
       <application name="simplejob"
                    descriptor="/org/smartfrog/extras/hadoop/cluster/simplejob.sf"/>
     </deploy>
@@ -234,8 +274,14 @@
      <sf-expandfully
         resource="/${default.sf}"
         dest="${build.default.sf}"
-        classpathRef="tests.run.classpath"
-        />
+        classpathRef="tests.run.classpath">
+       <!--copy all relevant properties -->
+       <syspropertyset>
+         <propertyref prefix="test."/>
+         <propertyref prefix="run."/>
+         <propertyref prefix="binding."/>
+       </syspropertyset>
+     </sf-expandfully>
      <echo> file is ${build.default.sf}</echo>
   </target>
 
@@ -249,10 +295,11 @@
         >
         <jvmarg line="${daemon.jvmargs}" />
         <syspropertyset refid="proxy.settings"/>
-        <!--copy all properties beginning with test. or run.-->
+        <!--copy all relevant properties -->
         <syspropertyset>
           <propertyref prefix="test."/>
           <propertyref prefix="run."/>
+          <propertyref prefix="binding."/>
         </syspropertyset>
        </sf-expandfully>
      <echo> file is ${build.default.sf}</echo>
@@ -304,18 +351,18 @@
 
   </target>
 
-  <target  name="ready-to-ssh" depends="init-ssh,cluster2file"
+  <target name="ready-to-ssh" depends="init-ssh,cluster2file"
       description="be ready to ssh">
   </target>
 
   <!-- issue a mkdir command. This is a good test for the parameters being
   set up right.-->
-  <target  name="ssh-mkdir" depends="init-ssh"
+  <target name="ssh-mkdir" depends="init-ssh"
       description="create the remote destination directory">
     <sshcommand command="mkdir -p ${ssh.bin.dir}" />
   </target>
 
-  <target  name="ssh-cluster" depends="ready-to-ssh,ssh-mkdir" 
+  <target name="ssh-cluster" depends="ready-to-ssh,ssh-mkdir" 
       description="ssh the configuration to a remote machine">
     <scpfile remoteToDir="${ssh.path}">
       <fileset file="${build.default.sf}" />
@@ -324,28 +371,28 @@
     <sshcommand command="chmod a+x ${ssh.bin.dir}/*.sh" />
   </target>
 
-  <target  name="ssh-start" depends="init-ssh"
+  <target name="ssh-start" depends="init-ssh"
       description="start the remote daemon">
     <sshcommand command="${ssh.bin.dir}/remoteSfDaemon.sh" />
   </target>
 
-  <target  name="ssh-start-blocking" depends="init-ssh"
+  <target name="ssh-start-blocking" depends="init-ssh"
       description="start the remote daemon">
     <sshcommand command="nohup ${ssh.bin.dir}/sfDaemon&amp;" />
   </target>
 
   
-  <target  name="ssh-stop" depends="init-ssh"
+  <target name="ssh-stop" depends="init-ssh"
       description="stop the remote daemon">
     <sshcommand command="nohup ${ssh.bin.dir}/sfStopDaemon&amp;" />
   </target>
 
-  <target  name="ssh-ls-lib" depends="init-ssh"
+  <target name="ssh-ls-lib" depends="init-ssh"
       description="list the remote lib dir">
     <sshcommand command="ls -l ${ssh.lib.dir}" />
   </target>
 
-  <target  name="ssh-ls-bin" depends="init-ssh"
+  <target name="ssh-ls-bin" depends="init-ssh"
       description="list the remote bin dir">
     <sshcommand command="ls -l ${ssh.bin.dir}" />
   </target>
@@ -354,11 +401,7 @@
       depends="ready-to-deploy">
     <property name="binding.master.hostname" value="localhost"/>
     <property name="binding.tasktracker.slots" value="4"/>
-
-
     <echo>binding.master.hostname = ${binding.master.hostname}</echo>
-
-
   </target>
 
   <target name="master"
@@ -386,7 +429,7 @@
   </target>
 
 
-  <target  name="mockfarmer" depends="ready-to-deploy"
+  <target name="mockfarmer" depends="ready-to-deploy"
       description="Deploy a mock farm manager" >
     <property name="mockfarmer.sf" value="org/smartfrog/services/farmer/example.sf" />
     <deploy>
