@@ -64,8 +64,31 @@ public interface ClusterRole extends Remote {
 
     /**
      * CD of name, value pairs
+     * {@value}
      */
     String ATTR_OPTIONS = "options";
+
+    /**
+     * CD of something to deploy for the machine; node.name, node.external.ip and node.role are all set
+     * {@value}
+     */
+    String ATTR_ON_NODE_DEPLOY = "onNodeDeploy";
+
+    /**
+     * {@value}
+     */
+    String ATTR_NODE_NAME = "node.name";
+
+    /**
+     * {@value}
+     */
+    String ATTR_NODE_EXTERNAL_IP = "node.external.ip";
+
+    /**
+     * {@value}
+     */
+    String ATTR_NODE_ROLE = "node.role";
+
 
     /**
      * Build a new ClusterRoleInfo instance
@@ -75,5 +98,13 @@ public interface ClusterRole extends Remote {
      */
     ClusterRoleInfo buildClusterRoleInfo() throws RemoteException;
 
+    /**
+     * This will look up the role information
+     *
+     * @param name name to look for
+     * @return role information
+     * @throws RemoteException              network trouble
+     * @throws SmartFrogResolutionException resolution problems
+     */
     ClusterRoleInfo resolveRoleInfo(String name) throws RemoteException, SmartFrogResolutionException;
 }

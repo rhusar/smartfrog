@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
@@ -69,14 +68,15 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
     }
 
     /**
-     * This will build the role information
-     *
-     * @return role info -without any name
+     * This will look up the role information
+     * 
+     * @param name name to fill in
+     * @return role info 
      * @throws RemoteException              network trouble
      * @throws SmartFrogResolutionException resolution problems
      */
     public ClusterRoleInfo resolveRoleInfo(String name) throws RemoteException, SmartFrogResolutionException {
-        final ClusterRoleInfo roleInfo = resolveRoleInfo(this);
+        ClusterRoleInfo roleInfo = resolveRoleInfo(this);
         roleInfo.setName(name);
         return roleInfo;
     }
