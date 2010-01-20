@@ -3,6 +3,7 @@ package org.smartfrog.sfcore.reference;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 
 /**
@@ -41,5 +42,15 @@ public interface Function {
     public Object doit(Context c, Reference name, RemoteReferenceResolver container) throws SmartFrogException;
     
     public Object doit(Context ctx, Reference unused, RemoteReferenceResolver resolver, Reference ar, Object key) throws SmartFrogException; 
-    
+
+    public Object getReferenceObject();
+    public Object getReferenceKey();
+
+    public void setReferenceContext(Context context);
+    public Context getReferenceContext();
+
+    public ComponentDescription getReferenceCD();
+    public void setReferenceCD(ComponentDescription comp);
+
+
 }
