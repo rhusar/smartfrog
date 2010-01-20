@@ -123,5 +123,29 @@ public abstract class BaseFunction implements Function  {
         return doit(ctx, unused, resolver);
     }
 
+
+    public Object getReferenceObject(){
+        return ar;
+    }
+
+    public Object getReferenceKey(){
+        return arkey;
+    }
+
+    public void setReferenceContext(Context context){
+        this.context=context;
+    }
+
+    public Context getReferenceContext(){
+        return context;
+    }
+
+    public ComponentDescription getReferenceCD(){
+        return comp;
+    }
+
+    public void setReferenceCD(ComponentDescription comp){
+        this.comp=comp;
+    }
     
 }
