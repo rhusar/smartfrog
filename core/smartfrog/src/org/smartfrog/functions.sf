@@ -222,6 +222,7 @@ ArrayGenerator extends {
 
 Aggregator extends Function, AggregateSpecifierArrayPath {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+     sfFunctionClassEvalEarly true;
 }
 
 PrettyPrint extends Function, AggregateSpecifierArrayPath {
