@@ -77,9 +77,9 @@
     <property name="targethost" value="${localhost}" />
     <property name="test.targethost" value="${targethost}" />
     <property name="test.ipaddress" value="${localip}" />
-    <property name="test.namenode" value="${targethost}" />
-    <property name="test.jobtracker" value="${targethost}" />
-    <property name="test.datanode1" value="${targethost}" />
+    <property name="test.namenode" value="${test.targethost}" />
+    <property name="test.jobtracker" value="${test.targethost}" />
+    <property name="test.datanode1" value="${test.targethost}" />
     <property name="test.tasktracker1" value="${test.datanode1}" />
 
     <property name="binding.master.hostname" value="${targethost}" />
