@@ -65,6 +65,8 @@ public class ClusterViewHostAction extends AbstractClusterAction {
                                  ClusterController controller) throws Exception {
 
         try {
+            ClusterController cluster = bindToClusterController(request);
+            cluster.refreshHostList();
             //bind to the host
             bindHostInstance(request);
             return success(mapping);

@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.api.NodeLink;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.DynamicSmartFrogClusterController;
@@ -40,6 +41,7 @@ import java.util.List;
  * Created 30-Oct-2009 13:32:29
  */
 
+@SuppressWarnings({"ProhibitedExceptionThrown"})
 public class HostCreationUnitTest extends TestCase {
 
     private MockClusterFarmerImpl farmer;
@@ -49,8 +51,13 @@ public class HostCreationUnitTest extends TestCase {
 
     private ClusterRoleInfo master, worker;
     private static final int CLUSTER_SIZE = 50;
-    Log log = LogFactory.getLog(HostCreationUnitTest.class);
-
+    private static final Log log = LogFactory.getLog(HostCreationUnitTest.class);
+    private static final NodeLink[] MasterLinks = {
+            new NodeLink("root","http",8080,"/")
+    };
+    
+    
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -58,8 +65,10 @@ public class HostCreationUnitTest extends TestCase {
         farmer.initForMockUse(CLUSTER_SIZE, "internal", "external", true, 500);
         master = new ClusterRoleInfo(MASTER);
         master.setRoleSize(1, 1);
+        master.setLinks(MasterLinks);
         worker = new ClusterRoleInfo(WORKER);
         worker.setRoleSize(1, 100);
+        master.setLinks(MasterLinks);
         addTestRoles();
         controller = new DynamicSmartFrogClusterController(farmer);
     }
@@ -88,16 +97,23 @@ public class HostCreationUnitTest extends TestCase {
         //workerThread.waitForNotification(60000);
         long timeout = System.currentTimeMillis() + 60000;
         //spin for a bit
+        log.info("Main thread sleeping");
         while (!workerThread.isFinished() && System.currentTimeMillis() < timeout) {
             Thread.sleep(1000);
         }
+        log.info("Main thread finished sleeping");
         if (workerThread.isThrown()) {
+            log.info("rethrowing worker thread exception ", workerThread.getThrown());
             throw workerThread.getThrown();
         }
         assertTrue("Worker is not finished", workerThread.isFinished());
         HostInstanceList hosts = workerThread.getHostList();
         assertTrue("Host list is only " + hosts.size(), hosts.size() >= 6);
-        assertNotNull("Hosts have no master", hosts.getMaster());
+        HostInstance masterInstance = hosts.getMaster();
+        assertNotNull("Hosts have no master", masterInstance);
+        NodeLink[] nodeLinks = masterInstance.getLinks();
+        assertNotNull("master links are null", nodeLinks);
+        assertTrue("master links list is empty", nodeLinks.length > 0);
         List<HostInstance> workerList = hosts.getListInRole(WORKER);
         assertTrue("Worker list is only " + hosts.size(), workerList.size() >= 5);
 

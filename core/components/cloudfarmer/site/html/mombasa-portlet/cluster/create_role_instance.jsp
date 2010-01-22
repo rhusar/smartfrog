@@ -21,13 +21,7 @@ For more information: www.smartfrog.org
 --%>
 
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
-<%--
 
-<tiles:useAttribute id="roleInfo" 
-                    name="roleInfo" 
-                    classname="org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo " 
-                    />
---%>
 
 <html:form action="/mombasa-portlet/cluster/create_role_instance/process" method="post" focus="minNodes">
   <p>Add Hosts in Role "<bean:write name="role" />" </p>
@@ -52,7 +46,21 @@ For more information: www.smartfrog.org
         <html:text name="clusterCreateRoleInstanceForm" property="maxNodes" size="23"/>
       </td>
     </tr>
-    <%--<html:hidden name="clusterCreateRoleInstanceForm" property="role" value="${role}"/>--%>
+
+    <tr>
+      <td>
+        Role name
+      </td>
+      <td style="padding-left: 10px;"></td>
+      <td>
+        <html:text name="clusterCreateRoleInstanceForm"  property="rolename" value="${role}"/>
+      </td>
+    </tr>
+<%--
+    
+    <html:hidden name="clusterCreateRoleInstanceForm" property="rolename" value="${role}"/>
+--%>
+    
     <tr>
       <td>
         <html:submit>

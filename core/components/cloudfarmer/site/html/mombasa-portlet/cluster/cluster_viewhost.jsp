@@ -39,7 +39,13 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
   </tr>
     <tr>
       <td>Role</td>
-      <td><bean:write name="host" property="role"/></td>
+      <td>
+        <html:link action="/mombasa-portlet/cluster/listInRole"
+                   paramId="role" paramName="host" paramProperty="role">
+          <bean:write name="host" property="role"/>
+        </html:link>
+      
+      </td>
     </tr>
   <tr>
     <td>Application</td>
@@ -59,21 +65,32 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
       </logic:notEmpty>
     </td>
   </tr>
-
+    <logic:iterate id="link"
+         name="host"
+         property="links"
+         type="org.smartfrog.services.cloudfarmer.api.NodeLink">
+      <tr>
+        <td>
+          <a href="<bean:write name="link" property="externalLink"/>" target="_blank">
+              <bean:write name="link" property="name"/>
+          </a>
+        </td>
+      </tr>
+    </logic:iterate>
   <tr>
-    <td colspan="2">
+    <td colspan="2" bgcolor="grey">
       <b>Actions</b> 
     </td>
   </tr>
   <tr>
-    <td colspan="2"  bgcolor="grey">
+    <td colspan="2"  >
       <html:link paramId="hostid" paramName="host" paramProperty="id"
           action="/mombasa-portlet/cluster/host_ping">Ping the host
       </html:link>
     </td>
   </tr>
   <tr>
-    <td colspan="2"  bgcolor="grey">
+    <td colspan="2" >
       <html:link paramId="hostid" paramName="host" paramProperty="id"
           action="/mombasa-portlet/cluster/delete">Delete the host
       </html:link>

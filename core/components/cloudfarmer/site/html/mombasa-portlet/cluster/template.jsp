@@ -18,10 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 
 */
---%><%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
+--%>
+<%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 <jsp:include page="/html/mombasa-portlet/header.jsp"/>
 <tiles:useAttribute id="content" name="content" classname="java.lang.String" ignore="true"/>
 <tiles:useAttribute id="title" name="title" classname="java.lang.String" ignore="true"/>
+<html>
+<head>
+  <title><%= title %></title>
+</head>
+<body>
 <h2><%= title %></h2>
 <logic:messagesPresent>
   <span class="portlet-msg-error">
@@ -34,3 +40,6 @@ For more information: www.smartfrog.org
 <div>
 <jsp:include page="/html/mombasa-portlet/cluster/cluster_nav.jsp" flush="true"/>
 </div>
+</body>
+
+</html>

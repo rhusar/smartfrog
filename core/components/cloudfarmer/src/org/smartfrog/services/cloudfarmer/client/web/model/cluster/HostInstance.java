@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
+import org.smartfrog.services.cloudfarmer.api.NodeLink;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
@@ -51,7 +52,8 @@ public final class HostInstance implements Serializable {
     private String details;
 
     private ClusterNode clusterNode;
-    
+    private static final NodeLink[] NO_NODE_LINKS = new NodeLink[0];
+
     public HostInstance() {
     }
 
@@ -222,6 +224,18 @@ public final class HostInstance implements Serializable {
             } finally {
                 application = null;
             }
+        }
+    }
+
+    /**
+     * Get the node links if there is none
+     * @return
+     */
+    public NodeLink[] getLinks() {
+        if (clusterNode == null) {
+            return NO_NODE_LINKS;
+        } else {
+            return clusterNode.getLinks();
         }
     }
 }
