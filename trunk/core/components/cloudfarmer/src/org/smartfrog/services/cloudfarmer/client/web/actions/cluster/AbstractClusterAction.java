@@ -104,8 +104,8 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
      * @throws SmartFrogException SF problems
      */
     public static HostInstance bindHostInstance(HttpServletRequest request) throws IOException, SmartFrogException {
-        String hostID = parameterToAttribute(request, ATTR_HOSTID, ATTR_HOSTID, true);
         ClusterController cluster = bindToClusterController(request);
+        String hostID = parameterToAttribute(request, ATTR_HOSTID, ATTR_HOSTID, true);
         HostInstance host = cluster.lookupHost(hostID);
         if (host == null) {
             throw new BadParameterException("No Host with ID " + hostID + " in the cluster");

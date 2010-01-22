@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.api;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 
 /**
  * Serializable representation of a cluster node
@@ -72,6 +73,8 @@ public final class ClusterNode implements Serializable, Cloneable {
      */
     private String state;  
     
+    private NodeLink[] links = new NodeLink[0];
+    
     public ClusterNode() {
     }
 
@@ -79,7 +82,7 @@ public final class ClusterNode implements Serializable, Cloneable {
         return compound;
     }
 
-    public void setCompound(final boolean compound) {
+    public void setCompound(boolean compound) {
         this.compound = compound;
     }
     
@@ -87,7 +90,7 @@ public final class ClusterNode implements Serializable, Cloneable {
         return state;
     }
 
-    public void setState(final String state) {
+    public void setState(String state) {
         this.state = state;
     }
     
@@ -95,7 +98,7 @@ public final class ClusterNode implements Serializable, Cloneable {
         return children;
     }
 
-    public void setChildren(final ClusterNode[] children) {
+    public void setChildren(ClusterNode[] children) {
         this.children = children;
     }
     
@@ -155,6 +158,26 @@ public final class ClusterNode implements Serializable, Cloneable {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    /**
+     * Build the node links from the role's template links and their values
+     * @param role to work from
+     * @throws MalformedURLException if it is badly designed
+     */
+    public void buildLinks(ClusterRoleInfo role) throws MalformedURLException {
+        NodeLink[] roleLinks = role.getLinks();
+        if (roleLinks != null) {
+            links = NodeLink.instantiate(roleLinks, hostname, externalHostname);
+        }
+    }
+
+    /**
+     * Get any node-links.
+     * @return
+     */
+    public NodeLink[] getLinks() {
+        return links;
     }
 
     /**

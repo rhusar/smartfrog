@@ -89,6 +89,10 @@ public interface ClusterRole extends Remote {
      */
     String ATTR_NODE_ROLE = "node.role";
 
+    /**
+     * List of links to be turned into URLs
+     */
+    String ATTR_LINKS = "links";
 
     /**
      * Build a new ClusterRoleInfo instance

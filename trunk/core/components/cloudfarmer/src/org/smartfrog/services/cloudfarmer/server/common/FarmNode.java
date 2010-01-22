@@ -21,6 +21,10 @@ package org.smartfrog.services.cloudfarmer.server.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
+import java.net.MalformedURLException;
 
 /**
  * This is a class about a farm node that is expected to stay on the server, be extensible and hence not final; it will
@@ -34,8 +38,9 @@ public class FarmNode {
     public ClusterRoleInfo roleInfo;
 
     public Object extraData;
-
-
+    
+    private static LogSF log = LogFactory.getLog(FarmNode.class);
+    
     public FarmNode(ClusterNode clusterNode, ClusterRoleInfo roleInfo, Object extraData) {
         this.clusterNode = clusterNode;
         this.extraData = extraData;
@@ -62,6 +67,11 @@ public class FarmNode {
         this.roleInfo = roleInfo;
         if (roleInfo != null) {
             clusterNode.setRole(roleInfo.getName());
+            try {
+                clusterNode.buildLinks(roleInfo);
+            } catch (MalformedURLException e) {
+                log.warn(e);
+            }
         } else {
             clusterNode.setRole("");
         }

@@ -24,6 +24,7 @@ import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.services.cloudfarmer.api.NodeLink;
 import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -166,13 +167,19 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         for (ClusterNode node : clusterNodes) {
             //need to look it up in the existing list; if it is there we copy it over
             HostInstance existing = lookupHost(node.getId());
+            HostInstance instance;
             if (existing == null) {
-                HostInstance instance = new HostInstance(node.getId(), node, true);
-                //look for an application here?
-                newHostList.add(instance);
+                instance = new HostInstance(node.getId(), node, true);
             } else {
-                newHostList.add(existing);
+                instance = existing;
             }
+
+            String rolename = instance.getRole();
+            if (rolename!=null) {
+                ClusterRoleInfo clusterRole = getRole(rolename);
+                instance.getClusterNode().buildLinks(clusterRole);
+            }
+            newHostList.add(instance);
         }
         //now push out the new value
         replaceHostList(newHostList);
@@ -221,13 +228,13 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
     public HostInstanceList createHosts(String role, int min, int max)
             throws IOException, SmartFrogException {
         ClusterNode[] clusterNodes = farmer.create(role, min, max);
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             logClusterNodes(clusterNodes);
         }
         HostInstanceList newHostList = new HostInstanceList(clusterNodes);
         synchronized (this) {
-            for(HostInstance instance:newHostList) { 
-                
+            for (HostInstance instance : newHostList) {
+
                 addHostInstance(instance);
             }
         }

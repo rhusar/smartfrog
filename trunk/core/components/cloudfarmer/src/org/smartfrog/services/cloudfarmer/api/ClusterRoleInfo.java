@@ -34,6 +34,7 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
     private Range roleSize = Range.NO_LIMITS;
     private Range recommendedSize = Range.NO_LIMITS;
     private HashMap<String, String> options = new HashMap<String, String>();
+    private NodeLink[] links;
 
     public ClusterRoleInfo() {
     }
@@ -131,6 +132,14 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
         } else {
             options.put(optionKey, value);
         }
+    }
+
+    public NodeLink[] getLinks() {
+        return links;
+    }
+
+    public void setLinks(NodeLink[] links) {
+        this.links = links;
     }
 
     @Override

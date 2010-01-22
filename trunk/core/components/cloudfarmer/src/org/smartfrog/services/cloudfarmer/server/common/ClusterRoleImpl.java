@@ -21,13 +21,21 @@ package org.smartfrog.services.cloudfarmer.server.common;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.Range;
+import org.smartfrog.services.cloudfarmer.api.NodeLink;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
+
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 
 /**
@@ -104,6 +112,7 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
             String value = cd.sfResolve(optionKey).toString();
             role.replaceOption(optionKey, value);
         }
+        role.setLinks(resolveLinks(target));
         return role;
     }
 
@@ -125,5 +134,44 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
         return range;
     }
 
+    /**
+     * resolve the links; made static for reuse
+     * @param target target prim
+     * @return the list of links (unbound)
+     * @throws SmartFrogResolutionException failed to resolve 
+     * @throws RemoteException network 
+     */
+    public static NodeLink[] resolveLinks(Prim target) throws SmartFrogResolutionException, RemoteException {
+        Reference linksRef = new Reference(ATTR_LINKS);
+        ComponentDescription linksCD = target.sfResolve(linksRef, (ComponentDescription) null, true);
+        Context ctx = linksCD.sfContext();
+        int size = ctx.size();
+        ArrayList<NodeLink> links = new ArrayList<NodeLink>(size);
+        for (int i = 0; i < size; i++) {
+            String name = ctx.getKey(i).toString();
+            Object value = ctx.getVal(i);
+            if (value instanceof Vector) {
+                Vector vector = (Vector) value;
+                if (vector.size() != 3) {
+                    throw new SmartFrogResolutionException(target.sfCompleteName(),
+                            linksRef,
+                            "Wrong number of elements in links entry " + name);
+                }
+                String protocol = vector.get(0).toString();
+                Object o = vector.get(1);
+                if (!(o instanceof Integer)) {
+                    throw new SmartFrogResolutionException(target.sfCompleteName(),
+                            linksRef,
+                            "Not an integer '" + o + "' in link entry " + name);
+
+                }
+                int port = (Integer) o;
+                String path = vector.get(2).toString();
+                NodeLink link = new NodeLink(name, protocol, port, path);
+                links.add(link);
+            }
+        }
+        return links.toArray(new NodeLink[links.size()]);
+    }
 
 }
