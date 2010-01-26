@@ -20,6 +20,18 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/server/mock/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/server/mock/example.sf"
 #include "/org/smartfrog/services/cloudfarmer/client/components/components.sf"
+#include "/org/smartfrog/services/xunit/listeners/antxml/components.sf"
+#include "/org/smartfrog/services/xunit/base/components.sf"
 
 
+
+MockCluster extends MockHadoopCluster {
+
+}
+
+ExpectMockFarmerDeploy extends ExpectDeploy {
+  description "deploy a mock cluster for testing";
+  action MockCluster;
+}
