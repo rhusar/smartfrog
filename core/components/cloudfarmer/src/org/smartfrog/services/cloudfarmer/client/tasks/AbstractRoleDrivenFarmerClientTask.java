@@ -43,6 +43,7 @@ public abstract class AbstractRoleDrivenFarmerClientTask extends AbstractFarmerC
 
     /**
      * check the role attribute is set
+     *
      * @throws BuildException if not
      */
     protected void checkRoleDefined() {

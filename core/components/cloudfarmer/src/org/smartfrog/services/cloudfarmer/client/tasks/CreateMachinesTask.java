@@ -77,12 +77,12 @@ public class CreateMachinesTask extends AbstractRoleDrivenFarmerClientTask {
                 props.setProperty(propertyKey, propertyValue);
                 getProject().setNewProperty(propertyKey, propertyValue);
             }
-            
-            if(destFile!=null) {
+
+            if (destFile != null) {
                 OutputStream out = null;
                 try {
                     out = new FileOutputStream(destFile);
-                    props.store(out,"");
+                    props.store(out, "");
                 } finally {
                     FileUtils.close(out);
                 }
