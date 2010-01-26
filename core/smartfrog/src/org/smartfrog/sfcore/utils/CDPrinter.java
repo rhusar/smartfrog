@@ -21,10 +21,7 @@
 package org.smartfrog.sfcore.utils;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -73,21 +70,38 @@ public class CDPrinter {
      * printing its children.
      *
      * @param cd  the component description to print
+     * @param indent amount to indent every level
+     * @param incr indent increment
+     * @param indents records indent strings to avoid needing to remake them each time
      * @return  the string that is the result of printing
      */
-    public static String print(ComponentDescription cd) {
+    public static String print(ComponentDescription cd, int indent, int incr, HashMap<Integer, String> indents) {
         String nested = "";
         String CDPStart = "";
         String CDPEnd = "";
         String CDPSep = "";
+        String indentString = "";
 
-        
+        if (indents!=null){
+            indentString = indents.get(indent);
+            if (indentString==null){
+                StringBuilder sb= new StringBuilder();
+                for (int i=0; i<indent; i++){
+                    sb.append(" ");
+                }
+                indentString = sb.toString();
+                indents.put(indent, indentString);
+            }
+        }
+
+
         try {
             CDPStart = cd.sfResolve(new Reference(ReferencePart.here("CDPStart")), CDPStart, false);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
             log.error(e);
         }
+
         try {
             CDPEnd = cd.sfResolve(new Reference(ReferencePart.here("CDPEnd")), CDPEnd, false);
         } catch (SmartFrogResolutionException e) {
@@ -104,15 +118,36 @@ public class CDPrinter {
             Object next = i.next();
             Object value = cd.sfContext().get(next);
             if (value instanceof ComponentDescription) {
-                String resNext = print((ComponentDescription) value);
+                String resNext = print((ComponentDescription) value, indent+incr, incr, indents);
                 if (!resNext.isEmpty() && !nested.isEmpty()) {
                     nested += CDPSep;
                 }
                 nested += resNext;
             }
         }
-        return CDPStart + nested + CDPEnd;
+        return indentString + CDPStart + nested + (nested.equals("")? "" : indentString) + CDPEnd;
     }
+
+    /**
+     * See comments for print(cd, indent, incr, indents)
+     * @param cd  the component description to print
+     * @return the string that is the result of printing
+     */
+    public static String print(ComponentDescription cd) {
+        return print(cd, 0, 0, null);
+    }
+
+    /**
+     * See comments for print(cd, indent, incr, indents)
+     * @param cd  the component description to print
+     * @param incr indent increment
+     * @return the string that is the result of printing
+     */
+    public static String print(ComponentDescription cd, int incr) {
+        return print(cd, 0, incr, new HashMap<Integer, String>());
+    }
+
+
 
     /**
      * Method to take a URL, parse it, add the addtional key-value parameters to the top level, resolve and then create the
