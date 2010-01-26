@@ -33,14 +33,15 @@ import java.io.IOException;
  */
 abstract class AbstractFarmerClientTask extends Task {
 
+    /** {@value} */
+    public static final String ERROR_NO_FARMER_URL = "No farmerURL defined";
+
     protected String farmerURL = "";
 
     protected String username;
 
     protected String password;
-
     private BaseRemoteDaemon daemon;
-    public static final String ERROR_NO_FARMER_URL = "No farmerURL defined";
 
     public String getFarmerURL() {
         return farmerURL;
