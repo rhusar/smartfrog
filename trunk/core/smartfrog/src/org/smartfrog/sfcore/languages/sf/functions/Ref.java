@@ -30,7 +30,7 @@ public class Ref extends BaseFunction {
 	    }
 	    
 	    try {
-	    	lazy = ((Boolean) context.get("lazy")).booleanValue();
+	    	lazy = (Boolean) context.get("lazy");
 	    } catch (Exception e) {
 	    	lazy = false;
 	    }
