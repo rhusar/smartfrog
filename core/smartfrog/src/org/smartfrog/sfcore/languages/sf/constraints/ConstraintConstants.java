@@ -18,6 +18,10 @@ For more information: www.smartfrog.org
 
  */
 package org.smartfrog.sfcore.languages.sf.constraints;
+
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
 /**
  * Collection of constant literals used in 
  * @author andrew
@@ -59,9 +63,13 @@ public class ConstraintConstants {
 	
 	public static final String EXTENT="extent";
 	public static final String EXTENT_TAG="sfExtent";
+
+    public static final String SIZE = "size";
 	
 	public static final String GENERATOR="generator";
 	public static final String GENERATOR_TAG="sfGenerator";
+
+    public static final String TEMPLATE = "template";
 	
 	public static final String EFFECTS="effects";
 	public static final String EFFECTS_TAG="sfEffects";
@@ -104,5 +112,19 @@ public class ConstraintConstants {
 	public static final String DEFVAR="default";
 		
 	public static final String FunctionClassStatus="sfFunctionClassStatus";
+    public static final String FunctionClassEvalEarly = "sfFunctionClassEvalEarly";
+    public static final String FunctionClassReturnEarly = "sfFunctionClassReturnEarly";
 	public static final String FCS_DONE="done";
+
+    public static final String PREFIXMUSTBESTRING = " prefix must be a String...";
+    public static final String CANNOTRESOLVEPATH = " can not resolve path:";
+    public static final String VECTOREXTENTSTRING = " vector extent should be comprised of Strings";
+    public static final String EXTENTTYPE = "extent in Array should be an Integer or a Vector";
+    public static final String BADLYFORMEDEXTENT = "badly formed multi-dimensional extent";
+
+    public static SmartFrogFunctionResolutionException relay(Class cl, ComponentDescription comp, String msg){
+        return new SmartFrogFunctionResolutionException("In "+cl.getSimpleName()+" with context: "+comp+", "+msg);
+        
+    }
+
 }
