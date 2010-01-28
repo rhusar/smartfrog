@@ -122,7 +122,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
     	ComponentDescription rrcd = (ComponentDescription) rr;
         comp.setParent(rrcd);
 
-        //***CONSTRAINTS stuff
+        //***CONSTRAINTS stuff.  THIS CHECK IS SLATED FOR REMOVAL. 
         //Am I an array generator?, if so quit...
         try { if (comp.sfContext().get("sfIsGenerator")!=null) return this; } catch (Exception e){/*Do nothing!*/}
         //***end: CONSTRAINTS stuff

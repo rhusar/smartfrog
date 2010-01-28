@@ -20,22 +20,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.SFNull;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
+import static org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants.*;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.ComponentResolution;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+
+import java.util.Vector;
 
 /**
  * Defines the Constraint function.
@@ -50,46 +45,53 @@ public class Array extends BaseFunction implements MessageKeys {
      * @throws SmartFrogFunctionResolutionException if any of the parameters are not there or of the wrong type
      *  */
     protected Object doFunction()  throws SmartFrogFunctionResolutionException {
-    	Object result=null;
-    	try {result=doFunctionWkr();} catch (SmartFrogContextException e){/*Shouldn't happen*/}
-    	return result;
-    }
-    
-    /**
-     * Internal worker method for doFunction
-     * @return result of applying function
-     * @throws SmartFrogFunctionResolutionException
-     * @throws SmartFrogContextException
-     */
-    private Object doFunctionWkr()  throws SmartFrogFunctionResolutionException, SmartFrogContextException {
-     	Object dest = comp; 
+     	ComponentDescription dest = comp;
     	
     	CoreSolver.getInstance().setShouldUndo(true);
-    	
-    	String path=null;
+
+        String path=null;
     	String prefix=null;
-    	
+
     	//Get the prefix...
-    	try { prefix = (String) orgContext.get(ConstraintConstants.PREFIX);}
-    	catch (Exception e){throw new SmartFrogFunctionResolutionException("In Array: "+comp+", prefix must be a String...");}
-    	
+        try {
+            prefix = (String) orgContext.get(PREFIX);
+        } catch (Exception e) {
+            //sfLog().debug(e);
+            throw relay(this.getClass(), comp, PREFIXMUSTBESTRING);
+        }
+
+        if (prefix==null){
+            prefix=arkey.toString();
+        }
+
     	int cidx=prefix.lastIndexOf(":");
-    	if (cidx!=1){
+    	if (cidx!=-1){
     		path=prefix.substring(0,cidx);
     		prefix=prefix.substring(cidx+1);
     	}
     	
     	if (path!=null){
-    		try { dest = comp.sfResolve(Reference.fromString(path)); }
-    		catch(Exception e){throw new SmartFrogFunctionResolutionException("In Array: "+comp+", can not resolve path: "+path);}
+            try {
+                dest = (ComponentDescription) comp.sfResolve(Reference.fromString(path));
+            } catch (SmartFrogResolutionException e) {
+                //sfLog().debug(e);
+                throw relay(this.getClass(), comp, CANNOTRESOLVEPATH+path);
+            }
     	}
-    	
-    	Object extent = orgContext.get(ConstraintConstants.EXTENT);
-    	Object generator = orgContext.get(ConstraintConstants.GENERATOR);
-        	
+
+    	Object extent = orgContext.get(EXTENT);
+        if (extent==null) extent = orgContext.get(SIZE);
+
+    	Object generator = orgContext.get(GENERATOR);
+        if (generator == null) generator = orgContext.get(TEMPLATE);
+
     	if (extent!=null){
+
     		process_array_members(dest,prefix,extent,generator);
-    	} else {    	
+    	} /*
+    	IN THE TIDY OF THIS FUNCTION, THIS ASPECT HAS BEEN DISABLED FOR TIME BEING...
+
+    	else {
     		boolean first=true;
     		//Now do the tagged versions...
         	Enumeration key_enum = orgContext.keys();
@@ -98,12 +100,12 @@ public class Array extends BaseFunction implements MessageKeys {
 	    	while (key_enum.hasMoreElements()){		    		
     			key = key_enum.nextElement();
 	    		//System.out.println("key:"+key);
-    			if (!orgContext.sfContainsTag(key, ConstraintConstants.EXTENT_TAG)) continue; //around while...
+    			if (!orgContext.sfContainsTag(key, EXTENT_TAG)) continue; //around while...
 	    		extent = orgContext.get(key);
 	    		if (key_enum.hasMoreElements()) {
 		    		key = key_enum.nextElement();
 		    		//System.out.println("key:"+key);
-		    		if (!orgContext.sfContainsTag(key, ConstraintConstants.GENERATOR_TAG)) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", generator must follow extent...");     			
+		    		if (!orgContext.sfContainsTag(key, GENERATOR_TAG)) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", generator must follow extent...");
 		    		generator = orgContext.get(key);
 		    		boolean md = process_array_members(dest,prefix,extent,generator);
 		    		if (md && !first)  throw new SmartFrogFunctionResolutionException("In Array: "+comp+", multi-dimensional arrays can not define multiple extents...");
@@ -111,10 +113,15 @@ public class Array extends BaseFunction implements MessageKeys {
 	    		} 
 	    	}   
 	    	if (first) throw new SmartFrogFunctionResolutionException("In Array: "+comp+", extent & generator must follow prefix...");
-    	}
+
+    	}*/
     	
     	//Set sfFunctionClass to "done"
-    	orgContext.put("sfFunctionClassStatus", "done");
+    	orgContext.put(FunctionClassStatus, "done");
+        orgContext.remove(GENERATOR);
+        orgContext.remove(TEMPLATE); //this is the future...
+        orgContext.remove(FunctionClassEvalEarly);
+        orgContext.remove(FunctionClassReturnEarly);
     	
     	CoreSolver.getInstance().setShouldUndo(false);
         return comp;
@@ -132,8 +139,8 @@ public class Array extends BaseFunction implements MessageKeys {
     private boolean process_array_members(Object dest, String prefix_s, Object extent, Object generator) throws SmartFrogFunctionResolutionException {	    
     	boolean md=false;
     	if (extent instanceof Integer){	
-    		int ext_int = ((Integer)extent).intValue() + idx;
-    		for (int i=idx; i<ext_int; i++) putArrayEntry(dest, prefix_s+i, generator, new Integer(i));
+    		int ext_int = (Integer) extent + idx;
+    		for (int i=idx; i<ext_int; i++) putArrayEntry(dest, prefix_s+i, generator, i);
     		idx=ext_int;
     	} else if (extent instanceof Vector){
     		Vector ext_vec = (Vector)extent;
@@ -141,10 +148,9 @@ public class Array extends BaseFunction implements MessageKeys {
     		//Is it a multi-dimensional array?
     		if (ext_vec.get(0) instanceof String){
     			//no...
-    			for (int i=0; i<ext_vec.size(); i++) {
-        			Object suff = ext_vec.get(i);
-        			if (!(suff instanceof String)) throw new SmartFrogFunctionResolutionException("Vector extent in Array: "+comp+" should be comprised of Strings");
-        			putArrayEntry(dest, prefix_s+suff, generator, (String) suff);
+    			for (Object suff: ext_vec) {
+        			if (!(suff instanceof String)) throw relay(this.getClass(), comp, VECTOREXTENTSTRING);
+        			putArrayEntry(dest, prefix_s+suff, generator, suff);
         		}
     		} else {
     			md=true;
@@ -155,7 +161,7 @@ public class Array extends BaseFunction implements MessageKeys {
     			   putArrayEntry(dest, prefix_s, generator, el_idx);
     		   }
     		}
-    	} else throw new SmartFrogFunctionResolutionException("Extent in Array: "+dest+" should be an Integer or a Vector");    	
+    	} else throw relay(this.getClass(), comp, EXTENTTYPE);    	
     	return md;
     }
     
@@ -165,15 +171,15 @@ public class Array extends BaseFunction implements MessageKeys {
      * @return first index
      * @throws SmartFrogFunctionResolutionException
      */
+    @SuppressWarnings("unchecked")
     private Vector get_first_el_idx(Vector ref_vec) throws SmartFrogFunctionResolutionException{
     	Vector el_idx = new Vector();
-    	for (int i=0; i<ref_vec.size(); i++){
-    		Object ref = ref_vec.get(i);
+    	for (Object ref : ref_vec){
     		if (ref instanceof Integer){
-    			el_idx.add(new Integer(0));
+    			el_idx.add(0);
     		} else if (ref instanceof Vector){
     			el_idx.add(((Vector)ref).get(0));
-    		} else throw new SmartFrogFunctionResolutionException("In Array: "+comp+" badly formed multi-dimensional extent");
+    		} else throw relay(this.getClass(), comp, BADLYFORMEDEXTENT);
     	}
     	return el_idx;
     }
@@ -185,7 +191,7 @@ public class Array extends BaseFunction implements MessageKeys {
      * @return next index
      * @throws SmartFrogFunctionResolutionException
      */
-    
+    @SuppressWarnings("unchecked")
     private Vector next_el_idx(Vector el_idx, Vector ref_vec) throws SmartFrogFunctionResolutionException {
     	if (el_idx==null) return get_first_el_idx(ref_vec);
     	
@@ -199,14 +205,14 @@ public class Array extends BaseFunction implements MessageKeys {
     		   next_idx.add(el);
     	   } else {
 	    	   if (ref instanceof Integer){
-	    		   int ref_int = ((Integer)ref).intValue();
-	    		   int next_int = ((Integer)el_idx.get(idx)).intValue() + 1;
+	    		   int ref_int = (Integer)ref;
+	    		   int next_int = (Integer)el_idx.get(idx) + 1;
 	    		   
 	    		   if (ref_int>next_int) {
 	    			   next=true; //found...
-	    			   next_idx.add(new Integer(next_int));
+	    			   next_idx.add(next_int);
 	    		   } else {
-	    			   next_idx.add(new Integer(0));
+	    			   next_idx.add(0);
 	    		   }	    		   
 	    	   } else if (ref instanceof Vector){
 	    		   Vector ref_v = (Vector) ref;
@@ -222,7 +228,7 @@ public class Array extends BaseFunction implements MessageKeys {
 	    		   }
 	    		   
 	    		   
-	    	   } else throw new SmartFrogFunctionResolutionException("In Array: "+comp+" badly formed multi-dimensional extent");
+	    	   } else throw relay(this.getClass(), comp, BADLYFORMEDEXTENT);
     	   }
     	}
     	if (next) return next_idx;
@@ -238,8 +244,7 @@ public class Array extends BaseFunction implements MessageKeys {
      */
     private void putArrayEntry(Object dest, String el, Object generator, Object el_idx) {
      	ComponentDescription generator_cd=null;
-    	Object generator_copy=null;
-    	
+    	Object generator_copy=null;	
     	
     	if (generator instanceof ComponentDescription) {
     		generator_copy = generator_cd = (ComponentDescription) ((ComponentDescription) generator).copy();
@@ -248,18 +253,18 @@ public class Array extends BaseFunction implements MessageKeys {
     		generator_cd = ((SFApplyReference)generator_copy).getComponentDescription();
     	}    	
     	
-    	
+    	Context generator_context = generator_cd.sfContext();
+
     	if (el_idx instanceof Vector) {  //Multi-dimensional...
     	    Vector el_vec = (Vector) el_idx;
 	    	for (int i=0; i<el_vec.size(); i++) {
 	    		Object suff = el_vec.get(i);
 	    		el+="_"+suff;
-	    		generator_cd.sfContext().put(ConstraintConstants.INDEX+i, suff);
+	    		generator_context.put(INDEX+i, suff);
 	    	}
-    	} else generator_cd.sfContext().put(ConstraintConstants.INDEX, el_idx);
+    	} else generator_context.put(INDEX, el_idx);
     	
-    	generator_cd.sfContext().put(ConstraintConstants.TAG, el);
-    	generator_cd.sfContext().remove("sfIsGenerator");
+    	generator_context.put(TAG, el);
     	
     	if (dest instanceof ComponentDescription){
     		generator_cd.setParent((ComponentDescription) dest);
