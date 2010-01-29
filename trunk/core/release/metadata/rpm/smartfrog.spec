@@ -595,7 +595,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDetachAndTerminate
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiag
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiagnostics
-#%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfGui
+%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfList
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfManagementConsole
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfParse
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPing
@@ -1020,7 +1020,6 @@ fi
 * Fri Oct 02 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
 - Groovy RPM, does not depend on scripting
 - cloudfarmer RPM
-
 * Fri Jul 24 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.013-1.el5
 - Move up to the RHEL5 RPMs. 
 * Fri Jun 12 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.011-1.el4

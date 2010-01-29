@@ -80,6 +80,8 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final int LOAD = 9;
         public static final String ACT_DUMP = "DUMP";
         public static final int DUMP = 10;
+        public static final String ACT_LIST = "LIST";
+        public static final int LIST = 11;
 
         public static String[] type= {
                       ACT_DEPLOY,
@@ -92,7 +94,8 @@ public class ConfigurationDescriptor implements MessageKeys {
                       ACT_DIAGNOSTICS,
                       ACT_UPDATE,
                       ACT_LOAD,
-                      ACT_DUMP
+                      ACT_DUMP,
+                      ACT_LIST
         };
     }
 
@@ -621,7 +624,6 @@ public class ConfigurationDescriptor implements MessageKeys {
                 throw new SmartFrogInitException("Deployment URL: null");
             }
 
-            String item = null;
             deploymentURL = deploymentURL.trim();
             tempURL = deploymentURL;
 
@@ -692,7 +694,9 @@ public class ConfigurationDescriptor implements MessageKeys {
                 setName(field);
             } catch (Exception ex) {
                 SFSystem.sfLog().error(ex, ex);
-                throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException("Error parsing NAME in: " + deploymentURL 
+                        + "(" + ex.toString() + ")",
+                        ex);
             }
             if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this+"]");}
         } catch (Throwable thr){
@@ -957,9 +961,15 @@ public class ConfigurationDescriptor implements MessageKeys {
             } catch (Exception ex) {
               SFSystem.sfLog().trace(ex);
             }
-        } else resultType = type;
-        if (message!=null) resultMessage = message;
-        if (thr!=null) resultException = thr;
+        } else {
+            resultType = type;
+        }
+        if (message != null) {
+            resultMessage = message;
+        }
+        if (thr != null) {
+            resultException = thr;
+        }
     }
 
     /**
@@ -1009,6 +1019,9 @@ public class ConfigurationDescriptor implements MessageKeys {
             case Action.DUMP:
                 action = new ActionDump();
                 break;
+            case Action.LIST:
+                action = new ActionList();
+                break;
             default:
                 throw new SmartFrogInitException("Action type unknown");
         }
@@ -1023,8 +1036,8 @@ public class ConfigurationDescriptor implements MessageKeys {
      */
 
     public void setActionType(String type) throws SmartFrogInitException {
-        for (int i=0;i<Action.type.length;i++) {
-            if(Action.type[i].equals(type)) {
+        for (int i = 0; i < Action.type.length; i++) {
+            if (Action.type[i].equals(type)) {
                 setActionType(i);
                 return;
             }
@@ -1069,26 +1082,26 @@ public class ConfigurationDescriptor implements MessageKeys {
     public synchronized Object execute(ProcessCompound targetProcess) throws SmartFrogException,
             RemoteException {
         try {
-            if (action==null) {
+            if (action == null) {
                 throw new SmartFrogInitException("No valid action");
             }
-            if (targetProcess==null) {
+            if (targetProcess == null) {
                 resultObject = action.execute(this);
             } else {
                 resultObject = action.execute(targetProcess, this);
             }
-        } catch (SmartFrogException sex){
-             setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
-             throw sex;
-         } catch (RemoteException rex){
-             setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
-             throw rex;
+        } catch (SmartFrogException sex) {
+            setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
+            throw sex;
+        } catch (RemoteException rex) {
+            setResult(ConfigurationDescriptor.Result.FAILED, null, rex);
+            throw rex;
         }
         wasExecuted = true; //even if it failed. Should be reset by using resetExecute();
         return resultObject;
     }
 
-    public synchronized void resetExecute (){
+    public synchronized void resetExecute() {
         wasExecuted = false;
     }
 
@@ -1189,9 +1202,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      */
     public void setUrl(String url) {
         // Added to avoid problems with "" in shell scripts (Unix vs Windows)
-        url=url.trim();
-        if (url.startsWith("\"")&&(url.endsWith("\""))){
-           url=url.substring(1,url.length()-1);
+        url = url.trim();
+        if (url.startsWith("\"") && (url.endsWith("\""))) {
+            url = url.substring(1, url.length() - 1);
         }
         this.url = url;
     }
@@ -1247,8 +1260,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param hosts hostname
      */
     public void setHosts(String[] hosts) {
-        if (hosts==null || hosts.length == 0) return;
-
+        if (hosts == null || hosts.length == 0) return;
         this.hostsList = hosts;
     }
 
@@ -1261,15 +1273,17 @@ public class ConfigurationDescriptor implements MessageKeys {
      */
     public String[] getHostList (String hostUrlString) throws SmartFrogInitException {
         String[] hostList = null;
-        if (hostUrlString.startsWith("[")){
-            if (!hostUrlString.endsWith("]")) throw new SmartFrogInitException( "Error parsing HOST_URLString in: "+ hostUrlString +", missing ']'");
-            String newURLList = hostUrlString.substring(1, hostUrlString.length()-1).trim();
-            hostList= newURLList.split(",");
+        if (hostUrlString.startsWith("[")) {
+            if (!hostUrlString.endsWith("]")) {
+                throw new SmartFrogInitException("Error parsing HOST_URLString in: " + hostUrlString + ", missing ']'");
+            }
+            String newURLList = hostUrlString.substring(1, hostUrlString.length() - 1).trim();
+            hostList = newURLList.split(",");
         } else {
             //Remove [] and break the list in individual strings for separate hosts.
             // Assumes only one
             hostList = new String[1];
-            hostList[0]=hostUrlString;
+            hostList[0] = hostUrlString;
         }
         return hostList;
     }
@@ -1288,7 +1302,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param subProcess subProcess name
      */
     public void setSubProcess(String subProcess) {
-        if (subProcess==null || isEmpty(subProcess)) return;
+        if (subProcess == null || isEmpty(subProcess)) {
+            return;
+        }
         this.subProcess = subProcess;
     }
 
@@ -1350,8 +1366,8 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return Context
      */
     public Context setContextAttribute(Object name, Object value) {
-        if (context==null) {
-            context=new ContextImpl();
+        if (context == null) {
+            context = new ContextImpl();
         }
         context.put(name,value);
         return context;
@@ -1362,8 +1378,10 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param attributeName attribute name
      * @return Object attribute value
      */
-    public Object getContextAttribute(Object attributeName){
-       if (context==null)  return null;
-       return context.get(attributeName);
+    public Object getContextAttribute(Object attributeName) {
+        if (context == null) {
+            return null;
+        }
+        return context.get(attributeName);
     }
 }
