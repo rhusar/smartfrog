@@ -24,7 +24,6 @@ import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
-import org.smartfrog.services.cloudfarmer.api.NodeLink;
 import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -175,9 +174,11 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
             }
 
             String rolename = instance.getRole();
-            if (rolename!=null) {
+            if (rolename != null) {
                 ClusterRoleInfo clusterRole = getRole(rolename);
-                instance.getClusterNode().buildLinks(clusterRole);
+                if (clusterRole != null) {
+                    instance.getClusterNode().buildLinks(clusterRole);
+                }
             }
             newHostList.add(instance);
         }

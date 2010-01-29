@@ -86,7 +86,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         sourceFiles.add(localtempfile);
         destFiles.add(desttempfile);
         String connectionDetails = getConnectionDetails();
-        info("Deploying application " + name + " to " + connectionDetails);
+        info("Deploying application with SSH " + name + " to " + connectionDetails);
 
         //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
 
@@ -119,6 +119,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
             factory.getLog().error("Failed to upload to " + connectionDetails + " : " + e, e);
             throw factory.forward(e, connectionDetails);
         } finally {
+            info("Finished deploying application " + name + " to " + connectionDetails);
             endSession(session);
             if (!factory.isKeepFiles()) {
                 localtempfile.delete();

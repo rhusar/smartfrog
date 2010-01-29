@@ -142,8 +142,22 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
      * @throws RemoteException network 
      */
     public static NodeLink[] resolveLinks(Prim target) throws SmartFrogResolutionException, RemoteException {
-        Reference linksRef = new Reference(ATTR_LINKS);
-        ComponentDescription linksCD = target.sfResolve(linksRef, (ComponentDescription) null, true);
+        ComponentDescription linksCD = target.sfResolve(new Reference(ATTR_LINKS),
+                (ComponentDescription) null, true);
+        Reference targetRef = target.sfCompleteName();
+        return resolveLinks(targetRef, linksCD);
+    }
+
+    /**
+     * resolve the links; made static for reuse
+     * @param targetRef ref to the target
+     * @param linksCD CD of links
+     * @return the list of links (unbound)
+     * @throws SmartFrogResolutionException failed to resolve 
+     * @throws RemoteException network 
+     */
+    public static NodeLink[] resolveLinks(Reference targetRef, ComponentDescription linksCD)
+            throws SmartFrogResolutionException {
         Context ctx = linksCD.sfContext();
         int size = ctx.size();
         ArrayList<NodeLink> links = new ArrayList<NodeLink>(size);
@@ -153,15 +167,15 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
             if (value instanceof Vector) {
                 Vector vector = (Vector) value;
                 if (vector.size() != 3) {
-                    throw new SmartFrogResolutionException(target.sfCompleteName(),
-                            linksRef,
+                    throw new SmartFrogResolutionException(targetRef,
+                            new Reference(ATTR_LINKS),
                             "Wrong number of elements in links entry " + name);
                 }
                 String protocol = vector.get(0).toString();
                 Object o = vector.get(1);
                 if (!(o instanceof Integer)) {
-                    throw new SmartFrogResolutionException(target.sfCompleteName(),
-                            linksRef,
+                    throw new SmartFrogResolutionException(targetRef,
+                            new Reference(ATTR_LINKS),
                             "Not an integer '" + o + "' in link entry " + name);
 
                 }

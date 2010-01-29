@@ -58,16 +58,19 @@ public class HadoopAllocationHandler extends MasterWorkerAllocationHandler imple
 
     /**
      * {@inheritDoc}
-     * @return the resource {@link TemplateNames#HADOOP_MASTER_SF}
+     * @return the used for a master.
+     * @see TemplateNames
      */
     @Override
     protected String getMasterResourceName() {
-        return TemplateNames.HADOOP_MASTER_SF;
+        return TemplateNames.HADOOP_MASTER_WORKER_SF;
+        //return TemplateNames.HADOOP_MASTER_SF;
     }
 
     /**
      * {@inheritDoc}
-     * @return the resource {@link TemplateNames#HADOOP_WORKER_SF}
+     * @return the resource for a worker
+     * @see TemplateNames
      */
     @Override
     protected String getWorkerResourceName() {

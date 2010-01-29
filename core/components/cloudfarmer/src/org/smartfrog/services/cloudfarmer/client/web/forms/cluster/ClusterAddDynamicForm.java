@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 public class ClusterAddDynamicForm extends AbstractMombasaActionForm {
 
 
-    private int minWorkers = 1;
+    private int minWorkers = 0;
     private int maxWorkers = 1;
 
     public int getMinWorkers() {
