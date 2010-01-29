@@ -143,11 +143,11 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
         if (namesystem == null) {
             status.addThrowable(new LivenessException("No name system"));
         } else {
-            try {
+/*            try {
                 namesystem.ping();
             } catch (IOException e) {
                 status.addThrowable(e);
-            }
+            }*/
         }
         if (httpServer == null || !httpServer.isAlive()) {
             status.addThrowable(
