@@ -201,11 +201,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         if (earlyEval && earlyReturn) return result;
         //***end: CONSTRAINTS stuff
 
-        comp.linkResolve();  // link resolve up front...
-
-        //***CONSTRAINTS stuff
-        if (earlyEval) return result;
-        //***end: CONSTRAINTS stuff
+        comp.linkResolve();  // link resolve up front...   
         
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
@@ -238,6 +234,10 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         }
         
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
+
+        //***CONSTRAINTS stuff
+        if (earlyEval) return result;
+        //***end: CONSTRAINTS stuff
 
         forFunction.setOriginatingDescr(comp);
     	try {
