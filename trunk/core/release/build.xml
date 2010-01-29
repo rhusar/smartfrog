@@ -1657,7 +1657,8 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
   
   <target name="autorun-upload" depends="autorun-upload-scripts, autorun-upload-rpm"/>
   
-  <target name="autorun-install" depends="autorun-upload" >
+  <target name="autorun-install" depends="autorun-upload" 
+      description="Upload the RPM and install it in an automount volume">
     <!-- make a volume accessible -->
     <autorun.ssh command="${autorun.mount.command} ${autorun.mount.volume}" />
     <autorun.ssh command="mount" />
