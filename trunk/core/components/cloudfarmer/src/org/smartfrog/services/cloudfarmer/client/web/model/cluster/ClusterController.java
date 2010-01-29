@@ -75,8 +75,9 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
-     * Bind to the controller. If this fails, the controller must be considered invalid.
-     * The base class calls startCluster();
+     * Bind to the controller. If this fails, the controller must be considered invalid. The base class calls
+     * startCluster();
+     *
      * @throws IOException        network trouble
      * @throws SmartFrogException SF trouble
      */
@@ -173,6 +174,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Look up a role by name
+     *
      * @param name role name
      * @return the role or null for no match
      */
@@ -597,8 +599,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         isFarmerAvailable();
         //now look for the worker, and bail out if it is live
         if (isWorkerThreadWorking()) {
-            throw new ClusterControllerBusyException("The cluster controller is busy with an earlier request, " 
-                    + "its last status was "+workerThread.getStatus());
+            throw new ClusterControllerBusyException("The cluster controller is busy with an earlier request, "
+                    + "its last status was " + workerThread.getStatus());
         }
         workerThread = new HostCreationThread(allocations,
                 farmerAvailabilityTimeout,
@@ -687,7 +689,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         private void updateStatus(boolean error, String newStatus) {
             status = newStatus;
             statusEvents.addEvent(error, newStatus);
-            log.info(newStatus);
+            if(error) {
+                log.error(newStatus);
+            } else {
+                log.info(newStatus);
+            }
         }
 
         /**
@@ -742,16 +748,22 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                     }
                 } catch (Throwable throwable) {
                     //failure, notify and rethrow
+                    updateStatus(true, "Request failed " + throwable);
                     if (clusterAllocationCompleted != null) {
                         clusterAllocationCompleted
-                                .allocationFailed(allocationRequests, getHosts(), throwable, callbackData);
+                                .allocationFailed(allocationRequests, 
+                                        getHosts(), 
+                                        throwable, 
+                                        callbackData);
                     }
                     throw throwable;
                 }
                 updateStatus(false, "Completed cluster requests");
                 //notify of success
                 if (clusterAllocationCompleted != null) {
-                    clusterAllocationCompleted.allocationSucceeded(allocationRequests, getHosts(), callbackData);
+                    clusterAllocationCompleted.allocationSucceeded(allocationRequests, 
+                            getHosts(), 
+                            callbackData);
                 }
             } finally {
                 finished();

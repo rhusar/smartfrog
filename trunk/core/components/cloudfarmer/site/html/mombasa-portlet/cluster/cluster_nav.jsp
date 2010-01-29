@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
     </td>
     <td>
       <html:link
-          action="/mombasa-portlet/cluster/add" styleId="add">Add a Host</html:link>
+          action="/mombasa-portlet/cluster/add" styleId="add">Add a Hadoop node</html:link>
     </td>
     <td>
       <html:link

@@ -156,13 +156,15 @@ MasterNode extends BindableCluster {
  * the worker node
  */
 WorkerNode extends BindableCluster {
+  description mombasa.description;
   worker true;
   datanode:sfProcessName DATANODE1_PROCESS;
   tasktracker:sfProcessName TASKTRACKER1_PROCESS;
   mombasa.description "Hadoop Worker Node";
 }
 
-MasterAndWorker extends Compound {
+MasterAndWorker1 extends Compound {
+  description mombasa.description;
   master MasterNode;
   worker WorkerNode;
   
@@ -171,11 +173,24 @@ MasterAndWorker extends Compound {
   * Their presence indicates that 
   */
   mombasa.isMombasaNode true;
-  mombasa.description "Hadoop Node";
+  mombasa.description "Hadoop Master and Worker Node";
   mombasa.isMaster true;
   mombasa.isWorker true;
   mombasa.fs.default.name master:fs.default.name;
   mombasa.jobtracker.url ("ipc://" ++ master:job.tracker.binding);
   
+}
+
+/**
+ * This master and worker template works by re-enabling the worker options on 
+ * a master node.
+ * It's handy to have this setup for a small cluster, as it ensures that the service is immediately live, even 
+ * with a single machine. Just give this one less slots for work.
+ */
+MasterAndWorker extends MasterNode {
+  worker true;
+  datanode:sfProcessName DATANODE1_PROCESS;
+  tasktracker:sfProcessName TASKTRACKER1_PROCESS;
+  mombasa.description "Hadoop Master and Worker Node";
 }
 
