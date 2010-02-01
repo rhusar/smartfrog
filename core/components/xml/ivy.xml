@@ -82,9 +82,11 @@
         name="xalan"
         rev="${xalan.version}"
         conf="compile,xslt->master"/>
+    
     <dependency org="jdom"
         name="jdom"
         rev="${jdom.version}"
         conf="compile,redist->master"/>
+
   </dependencies>
 </ivy-module>
