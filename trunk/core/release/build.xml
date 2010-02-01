@@ -530,6 +530,11 @@
     <ln artifact="mx4j-jmx" version="${mx4j.version}"/>
     <ln artifact="mx4j-tools" version="${mx4j.version}"/>
 
+    <!-- json-->
+    <rpmpackage package="json"/>
+    <ln artifact="sf-json" version="${smartfrog.version}"/>
+    <ln artifact="json-lib" version="${json-lib.version}"/>
+    
     <!--logging-->
     <rpmpackage package="logging"/>
     <ln artifact="sf-loggingservices" version="${smartfrog.version}"/>

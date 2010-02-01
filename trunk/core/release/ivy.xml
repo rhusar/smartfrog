@@ -31,7 +31,7 @@
 <!--    <conf name="izpack" visibility="private"
         description="izpack libraries"/>-->
     <conf name="package-all" description="all the packages in one big dependency"
-      extends="package-core,package-examples,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp,package-restlet"/>
+      extends="package-core,package-examples,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp,package-restlet,package-json"/>
     <!-- From here on, every Package we bundle in Ivy contains its own configuration -->
     <conf name="package-core-install"
         description="The .zip file containing the complete base distribution of SmartFrog"/>
@@ -64,6 +64,8 @@
         description="hadoop components"/>
     <conf name="package-jmx"
         description="jmx components"/>
+    <conf name="package-json"
+        description="json components"/>
     <conf name="package-logging"
         description="logging components"/>
     <conf name="package-networking"
@@ -215,6 +217,13 @@
         rev="${ivy.smartfrog.version}"
         conf="package-jmx->master,redist,documentation"/>
 
+    <!--JSON -->
+    <dependency org="org.smartfrog"
+        name="sf-json"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-json->master,redist,documentation"/>
+    
     <!--logging-->
     <dependency org="org.smartfrog"
         name="sf-loggingservices"

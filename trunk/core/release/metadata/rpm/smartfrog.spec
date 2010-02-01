@@ -321,6 +321,15 @@ mx4j-jmx-${mx4j.version}.jar
 mx4j-tools-${mx4j.version}.jar
 
 
+# -----------------------------------------------------------------------------
+
+%package json
+Group:         ${rpm.framework}
+Summary:        JUnit testing
+Requires:       %{name} = %{version}-%{release} 
+#
+%description json
+This contains the components for working with JSON files
 
 # -----------------------------------------------------------------------------
 
@@ -427,6 +436,7 @@ Requires:       %{name} = %{version}-%{release}  , %{name}-xunit
 This contains the components for running JUnit ${junit.version} tests, and the
 junit-${junit.version}.jar.
 Prerequisite packages: xunit, Logging.
+
 # -----------------------------------------------------------------------------
 
 %package velocity
@@ -893,6 +903,12 @@ fi
 %{linkdir}/mx4j-jmx.jar
 %{linkdir}/mx4j-tools.jar
 
+%files json
+
+%{libdir}/sf-json-${smartfrog.version}.jar
+%{libdir}/json-lib-${json-lib.version}.jar
+%{linkdir}/sf-json.jar
+%{linkdir}/json-lib.jar
 
 %files logging
 
