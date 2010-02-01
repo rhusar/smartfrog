@@ -31,7 +31,7 @@
 <!--    <conf name="izpack" visibility="private"
         description="izpack libraries"/>-->
     <conf name="package-all" description="all the packages in one big dependency"
-      extends="package-core,package-examples,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp"/>
+      extends="package-core,package-examples,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp,package-restlet"/>
     <!-- From here on, every Package we bundle in Ivy contains its own configuration -->
     <conf name="package-core-install"
         description="The .zip file containing the complete base distribution of SmartFrog"/>
@@ -70,6 +70,8 @@
         description="networking components"/>
     <conf name="package-quartz"
         description="scheduling components"/>
+    <conf name="package-restlet"
+        description="restlet components"/>
     <conf name="package-rpmtools"
         description="rpm components"/>
     <conf name="package-scripting"
@@ -233,6 +235,13 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-quartz->master,redist,documentation"/>
+
+    <!--restlet-->
+    <dependency org="org.smartfrog"
+        name="sf-restlet"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-restlet->master,redist,documentation"/>
 
     <!--rpmtools-->
     <dependency org="org.smartfrog"
