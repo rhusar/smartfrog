@@ -80,6 +80,11 @@
         rev="latest.integration"
         conf="daemon,compile->default;runtime->runtime;redist->redist"/>
 
+    <dependency org="org.smartfrog"
+        name="sf-json"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon,compile->default,runtime;runtime->runtime;redist->redist"/>
 
     <dependency org="org.smartfrog"
                 name="sf-testharness"

@@ -8,10 +8,10 @@
   -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-jetty</artifactId>
+  <artifactId>sf-restlet</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>SmartFrog Jetty components</description>
+  <description>SmartFrog Restlet components</description>
   <dependencies>
     <dependency>
       <groupId>org.smartfrog</groupId>
@@ -28,68 +28,29 @@
       <artifactId>servlet-api</artifactId>
       <version>${servletapi.version}</version>
     </dependency>
+    <!--restlet api-->
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>${jetty.version}</version>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>${restlet.version}</version>
+    </dependency>
+    <!--this is the implementation and java.net integration-->
+    <dependency>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet</artifactId>
+      <version>${restlet.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-util</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
-
-
-    <!-- Jetty is used to serve up the application. It is marked as optional because
-clients do not need it. All server-side deployments will need
- all of these files.-->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>${servletapi.version}</version>
-      <scope>optional</scope>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet.ext.net</artifactId>
+      <version>${restlet.version}</version>
     </dependency>
     <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>org.mortbay.jetty</artifactId>
-      <version>${jetty.version}</version>
-      <scope>optional</scope>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commons-fileupload.version}</version>
     </dependency>
 
-
-    <!--JSP support -->
-
-
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-2.1</artifactId>
-      <version>${jetty.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-api-2.1</artifactId>
-      <version>${jetty.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-api-2.1</artifactId>
-      <version>${jetty.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.smartfrog</groupId>
-      <artifactId>sf-ant</artifactId>
-      <version>${smartfrog.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jdt</groupId>
-      <artifactId>core</artifactId>
-      <version>${org.eclipse.jdt.core.version}</version>
-      <optional>true</optional>
-    </dependency>
 
   </dependencies>
 </project>
