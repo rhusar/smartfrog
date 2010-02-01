@@ -147,18 +147,24 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      * @throws NoClusterSpaceException there is no room in the cluster
      */
     private synchronized int addNodes(int min, int max) throws NoClusterSpaceException {
-        int newCount = nodeCount + max;
+        int nodesToAskFor = max;
+        //assume we are going to create the max number
+        int newCount = nodeCount + nodesToAskFor;
 
+        //see if that puts us over the limit
         if (newCount > clusterLimit) {
-            max = clusterLimit - newCount;
-            newCount = clusterLimit;
-            if (max < min) {
+            //if so, redefine the max to create to be that limit
+            int available = clusterLimit - nodeCount;
+            nodesToAskFor = available;
+            if (available < min) {
                 throw new NoClusterSpaceException("Local cluster limit is blocking this operation");
             }
+            newCount = clusterLimit;
         }
-
+        //update the node count
         nodeCount = newCount;
-        return max;
+        //return the number we have asked for
+        return nodesToAskFor;
     }
 
 
@@ -234,7 +240,8 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      */
     @Override
     public int deleteAllInRole(String role) throws IOException, SmartFrogException {
-        return 0;
+        throw new SmartFrogEC2Exception("Role-based deletion not yet implemented");
+        //return 0;
     }
 
     /**
@@ -511,7 +518,7 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      */
     @Override
     public void startCluster() throws IOException, SmartFrogException {
-
+        //do nothing
     }
 
     /**

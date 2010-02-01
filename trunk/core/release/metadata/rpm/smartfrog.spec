@@ -252,11 +252,10 @@ commons-dbcp-${commons-dbcp.version}.jar
 %package ec2
 Group:         ${rpm.framework}
 Summary:        Amazon EC2 support
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-restlet
 
 %description ec2
 Components for working with S3 files and EC2 instances.
-Includes Restlet libraries (CDDL and GPL licensed)
 
 # -----------------------------------------------------------------------------
 
@@ -369,6 +368,18 @@ using Quartz to queue the jobs. A CPU monitor component provides information abo
 current system state, using the Unix/Linux vmstat command as a source of information.
 
 Contains the Quartz library version quartz-${quartz.version}.jar.
+
+
+# -----------------------------------------------------------------------------
+
+%package restlet
+Group:         ${rpm.framework}
+Summary:        Restlet support
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,
+
+%description restlet
+The Restlet libraries (CDDL and GPL licensed) and components to work with them
+
 
 # -----------------------------------------------------------------------------
 
@@ -811,18 +822,7 @@ fi
 %{libdir}/sf-ec2-${smartfrog.version}.jar
 %{linkdir}/typica.jar
 %{libdir}/typica-${typica.version}.jar
-%{linkdir}/org.restlet.jar
-%{libdir}/org.restlet-${restlet.version}.jar
-%{linkdir}/org.restlet.ext.fileupload.jar
-%{libdir}/org.restlet.ext.fileupload-${restlet.version}.jar
-%{linkdir}/com.noelios.restlet.jar
-%{libdir}/com.noelios.restlet-${restlet.version}.jar
-%{linkdir}/com.noelios.restlet.ext.httpclient.jar
-%{libdir}/com.noelios.restlet.ext.httpclient-${restlet.version}.jar
-%{linkdir}/com.noelios.restlet.ext.net.jar
-%{libdir}/com.noelios.restlet.ext.net-${restlet.version}.jar
-%{linkdir}/commons-fileupload.jar
-%{libdir}/commons-fileupload-${commons-fileupload.version}.jar
+
 
 
 %files groovy
@@ -941,6 +941,24 @@ fi
 
 %{linkdir}/sf-quartz.jar
 %{linkdir}/quartz.jar
+
+
+%files restlet
+%{libdir}/sf-restlet-${smartfrog.version}.jar
+%{linkdir}/sf-restlet.jar
+%{linkdir}/org.restlet.jar
+%{libdir}/org.restlet-${restlet.version}.jar
+%{linkdir}/org.restlet.ext.fileupload.jar
+%{libdir}/org.restlet.ext.fileupload-${restlet.version}.jar
+%{linkdir}/com.noelios.restlet.jar
+%{libdir}/com.noelios.restlet-${restlet.version}.jar
+%{linkdir}/com.noelios.restlet.ext.httpclient.jar
+%{libdir}/com.noelios.restlet.ext.httpclient-${restlet.version}.jar
+%{linkdir}/com.noelios.restlet.ext.net.jar
+%{libdir}/com.noelios.restlet.ext.net-${restlet.version}.jar
+%{linkdir}/commons-fileupload.jar
+%{libdir}/commons-fileupload-${commons-fileupload.version}.jar
+
 
 %files rpmtools
 

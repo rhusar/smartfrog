@@ -501,12 +501,6 @@
     <rpmpackage package="ec2"/>
     <ln artifact="sf-ec2" version="${smartfrog.version}"/>
     <ln artifact="typica" version="${typica.version}"/>
-    <ln artifact="org.restlet" version="${restlet.version}"/>
-    <ln artifact="org.restlet.ext.fileupload" version="${restlet.version}"/>
-    <ln artifact="com.noelios.restlet" version="${restlet.version}"/>
-    <ln artifact="com.noelios.restlet.ext.httpclient" version="${restlet.version}"/>
-    <ln artifact="com.noelios.restlet.ext.net" version="${restlet.version}"/>
-    <ln artifact="commons-fileupload" version="${commons-fileupload.version}"/>
 
     <!-- groovy -->
     <rpmpackage package="groovy"/>
@@ -562,6 +556,17 @@
     <rpmpackage package="quartz"/>
     <ln artifact="sf-quartz" version="${smartfrog.version}"/>
     <ln artifact="quartz" version="${quartz.version}"/>
+
+    <!-- Restlet -->
+    <rpmpackage package="restlet"/>
+    <ln artifact="sf-restlet" version="${smartfrog.version}"/>
+    <ln artifact="org.restlet" version="${restlet.version}"/>
+    <ln artifact="org.restlet.ext.fileupload" version="${restlet.version}"/>
+    <ln artifact="com.noelios.restlet" version="${restlet.version}"/>
+    <ln artifact="com.noelios.restlet.ext.httpclient" version="${restlet.version}"/>
+    <ln artifact="com.noelios.restlet.ext.net" version="${restlet.version}"/>
+    <ln artifact="commons-fileupload" version="${commons-fileupload.version}"/>
+
     <!-- quartz -->
     <rpmpackage package="rpmtools"/>
     <ln artifact="sf-rpmtools" version="${smartfrog.version}"/>
