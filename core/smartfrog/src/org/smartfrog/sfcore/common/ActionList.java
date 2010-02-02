@@ -92,24 +92,30 @@ public class ActionList extends ConfigurationAction implements Serializable {
         }
         long start, finish;
         start = System.currentTimeMillis();
-        StringBuilder message = new StringBuilder();
-        String name = "error no name";
         LogSF log = SFSystem.sfLog();
+        String name;
         try {
             name = targetC.sfCompleteName().toString();
         } catch (RemoteException e) {
-            if (log.isWarnEnabled()) log.warn(e);
+            log.warn(e);
+            name = "error no name";
         }
+        StringBuilder message = new StringBuilder();
         try {
             message.append(name).append(":\n");
             Context ctx = targetC.sfContext();
             Enumeration keys = ctx.keys();
             while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
-                Object value = ctx.get(key);
-                message.append(key.toString()).append("\t")
-                        .append(value.toString()).append("\t")
-                        .append(value.getClass()).append("\n");
+                try {
+                    Object key = keys.nextElement();
+                    message.append(key.toString()).append("\t");
+                    Object value = ctx.get(key);
+                    message.append(value.toString()).append("\t");
+                    message.append(value.getClass()).append("\n");
+                } catch (Exception e) {
+                    message.append(e.toString()).append("\n");
+                    log.warn(e);
+                }
             }
             log.out(message);
         } catch (Exception ex) {
