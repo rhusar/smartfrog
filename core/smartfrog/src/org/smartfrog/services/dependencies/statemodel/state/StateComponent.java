@@ -212,10 +212,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
            try {
                go = trans.sfResolve(ConstraintConstants.GUARD, false, true);
            } catch (SmartFrogResolutionException e) {
-
-			   enabled=null;
-			   throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_RESOLVETRANSITIONGUARD);
-			   
+                //actually ok...
+               go=true;
 		   }
 		   sfLog().debug("WITHIN: State("+name+").resetPossibleTransitions(). Key:"+key+":"+go);
 		   
