@@ -252,7 +252,7 @@ commons-dbcp-${commons-dbcp.version}.jar
 %package ec2
 Group:         ${rpm.framework}
 Summary:        Amazon EC2 support
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-restlet
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-restlet, %{name}-json
 
 %description ec2
 Components for working with S3 files and EC2 instances.
@@ -770,7 +770,7 @@ fi
 #and the etc stuff
 %defattr(0644,root,root,0755)
 %attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
-%attr(0644,root,root) /etc/sysconfig/smartfrog
+%config(noreplace) %attr(0644,root,root) /etc/sysconfig/smartfrog
 
 
 %files ant
@@ -1051,6 +1051,11 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Wed Feb 03 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
+- ec2 RPM depends on cloudfarmer
+- new json RPM; again ec2 depends upon it
+- /etc/sysconfig/smartfrog configuration file is now marked as a configuration point, it will
+  not be overwritten if someone chooses to patch it.
 * Fri Oct 02 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
 - Groovy RPM, does not depend on scripting
 - cloudfarmer RPM
