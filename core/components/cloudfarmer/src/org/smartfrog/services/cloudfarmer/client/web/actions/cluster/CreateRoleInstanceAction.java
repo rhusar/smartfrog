@@ -23,8 +23,8 @@ package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,7 +56,7 @@ public class CreateRoleInstanceAction extends AbstractClusterAction {
      * @param response   response to build up
      * @param controller the cluster controller
      * @return the next action
-     * @throws Exception
+     * @throws Exception if needed
      */
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override

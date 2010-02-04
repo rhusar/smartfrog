@@ -25,7 +25,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.ClusterAllocationHandler;
-import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDynamicForm;
 import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterCreateRoleInstanceForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;

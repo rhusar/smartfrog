@@ -34,16 +34,15 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.ConnectException;
-import java.util.Map;
 import java.util.Enumeration;
-import java.lang.reflect.Array;
+import java.util.Map;
 
 /**
  * Created 02-Oct-2009 12:57:12
  */
 
 public abstract class AbstractStrutsAction extends Action implements ClusterRequestAttributes {
-    protected static Log LOG = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web.action");
+    protected static final Log LOG = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web.action");
     protected Log log = LogFactory.getLog("org.smartfrog.services.cloudfarmer.client.web."
             + getActionName());
 
@@ -53,7 +52,7 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
      * @return the name of the action
      */
     protected String getActionName() {
-        return "AbstractMombasaAction";
+        return "AbstractStrutsAction";
     }
 
     /**

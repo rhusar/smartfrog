@@ -65,11 +65,18 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
       </logic:notEmpty>
     </td>
   </tr>
+  <tr>
+    <td colspan="2" bgcolor="grey">
+      <b>Linkss</b> 
+    </td>
+  </tr>
+
     <logic:iterate id="link"
          name="host"
          property="links"
          type="org.smartfrog.services.cloudfarmer.api.NodeLink">
       <tr>
+        <td></td>
         <td>
           <a href="<bean:write name="link" property="externalLink"/>" target="_blank">
               <bean:write name="link" property="name"/>

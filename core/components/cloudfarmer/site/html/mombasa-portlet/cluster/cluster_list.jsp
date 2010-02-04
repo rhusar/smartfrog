@@ -29,9 +29,9 @@ For more information: www.smartfrog.org
 </div>
 <table border="0">
   <tr bgcolor="grey">
-    <th>ID</th>
-    <th style="padding-left: 10px;"></th>
     <th>Hostname</th>
+    <th style="padding-left: 10px;"></th>
+    <th>ID</th>
     <th style="padding-left: 10px;"></th>
     <th>Role</th>
     <th style="padding-left: 10px;"></th>
@@ -47,14 +47,14 @@ For more information: www.smartfrog.org
       <td>
         <html:link action="/mombasa-portlet/cluster/viewhost"
                    paramId="hostid" paramName="host" paramProperty="id">
-          <bean:write name="host" property="id"/>
+          <bean:write name="host" property="hostname"/>
         </html:link>
       </td>
       <td style="padding-left: 10px;"></td>
       <td>
         <html:link action="/mombasa-portlet/cluster/viewhost"
             paramId="hostid" paramName="host" paramProperty="id">
-          <bean:write name="host" property="hostname"/>
+          <bean:write name="host" property="id"/>
         </html:link>
       </td>
       <td style="padding-left: 10px;"></td>

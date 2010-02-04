@@ -22,6 +22,7 @@ package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.BadParameterException;
 import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterChangeManagerForm;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
@@ -29,7 +30,6 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerFactory;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
-import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.servlet.http.HttpServletRequest;

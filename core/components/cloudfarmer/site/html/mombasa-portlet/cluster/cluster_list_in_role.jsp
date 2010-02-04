@@ -77,9 +77,16 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
       </html:link>
     </td>
   </tr>
+  <tr>
+    <td>
+      <html:link action="/mombasa-portlet/cluster/delete_all_in_role"
+                 paramId="role" paramName="role" >
+        Delete all machines in the role 
+        <bean:write name="role" />
+      </html:link>
+    </td>
+  </tr>  
 </table>
-
-
 
 
 

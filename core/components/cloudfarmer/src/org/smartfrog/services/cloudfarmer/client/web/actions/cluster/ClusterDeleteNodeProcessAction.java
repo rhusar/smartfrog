@@ -46,7 +46,7 @@ public class ClusterDeleteNodeProcessAction extends AbstractClusterAction {
 
     @Override
     protected String getActionName() {
-        return "QueueAnyWorkflow";
+        return "ClusterDeleteNode";
     }
 
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
