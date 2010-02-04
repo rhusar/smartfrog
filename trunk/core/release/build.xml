@@ -653,9 +653,18 @@
 
   <target name="copy-and-patch-rpm-scripts"
       depends="copy-scripts">
+    <property name="rpm.scripts.dir" location="scripts" />
     <expandingcopy todir="${build.rpm.dir}/root/">
-      <fileset dir="scripts" includes="etc/**/*"/>
+      <fileset dir="${rpm.scripts.dir}" includes="etc/rc.d/**/*"/>
+      <fileset dir="${rpm.scripts.dir}" includes="etc/profile.d/**/*"/>
     </expandingcopy>
+    
+    <!--copy the sysconfig file with an override point allowed-->
+    <property name="sysconfig.path" value="etc/sysconfig/smartfrog"/>
+    <property name="sysconfig.file" location="${rpm.scripts.dir}/${sysconfig.path}"/>
+    <expandingcopy tofile="${build.rpm.dir}/root/${sysconfig.path}"
+        file="${sysconfig.file}"/>
+    
   </target>
 
   <target name="prepare-other-root-dirs" depends="create-link-dir,symlink-signed-lib,create-link-dir,copy-and-patch-rpm-scripts,rpm-components">

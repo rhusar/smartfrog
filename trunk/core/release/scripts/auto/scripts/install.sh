@@ -40,10 +40,21 @@
 rpmdir=/auto/rpms
 initd=/etc/init.d
 
+# First install all the RPMs
 cd $rpmdir
-rpm --upgrade --force *.rpm >/tmp/install_rpms 2>&1  
+rpm --upgrade --force *.rpm >/tmp/install_rpms 2>&1
+
+#Now support an optional sysconfig script to set up the env variables
+if [ -f sysconfig ]; then
+	cp sysconfig /etc/sysconfig/smartfrog
+fi
+
+  
+# run the script
 cd $initd
-$initd/smartfrogd start >/tmp/install_smartfrog 2>&1  
+$initd/smartfrogd start >/tmp/install_smartfrog 2>&1
+  
+
 
 
 
