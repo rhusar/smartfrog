@@ -90,8 +90,12 @@ public interface FarmCustomer extends Remote {
      */
     String ATTR_PING_CHECKS_NODES = "pingChecksNodes";
 
-
+    /**
+     * {@value}
+     */
     String ATTR_TARGET = "target";
-
+    /**
+     * {@value}
+     */
     String ATTR_HOST_ATTR_PREFIX = "hostPrefix";
 }

@@ -337,6 +337,33 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
+     * Delete all nodes in a specific role. This is an async operation.
+     *
+     * @param role role of the nodes
+     * @return the number scheduled for deletion
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+    public int deleteAllInRole(String role)
+            throws IOException, SmartFrogException {
+        return 0;
+    }
+
+
+    /**
+     * Shut down everything. All nodes are shut down, regardless of role.
+     *
+     * @return the number scheduled for deletion
+     * @throws IOException        IO/network problems
+     * @throws SmartFrogException other problems
+     */
+
+    public int deleteAll()
+            throws IOException, SmartFrogException {
+        return 0;
+    }
+
+    /**
      * Look up a host by ID
      *
      * @param hostID ID
@@ -576,6 +603,20 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
      */
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return getRemoteDescription();
+    }
+
+    /**
+     * Diagnostics text or some failsafe string
+     * @return text always
+     */
+    public String getDiagnosticsTextSafe() {
+        try {
+            return getDiagnosticsText();
+        } catch (IOException e) {
+            return "";
+        } catch (SmartFrogException e) {
+            return "";
+        }
     }
 
     /**
@@ -822,7 +863,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 if (!isFarmerAvailable()) {
                     String message = "Failed to create hosts -"
                             + FarmerNotLiveException.ERROR_NOT_LIVE
-                            + " after " + farmerAvailabilityTimeout + " milliseconds";
+                            + " after " + farmerAvailabilityTimeout + " milliseconds"
+                            + ": " + getDiagnosticsTextSafe();
                     updateStatus(true, message);
                     FarmerNotLiveException liveException = new FarmerNotLiveException(message);
                     notifyFarmerAvailabilityException(true, liveException);

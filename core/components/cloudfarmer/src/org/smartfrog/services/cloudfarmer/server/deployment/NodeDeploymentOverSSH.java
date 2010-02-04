@@ -48,6 +48,12 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
     private NodeDeploymentOverSSHFactory factory;
     private static final String NOT_EXTERNAL
             = "This node is not externally visible. Unless we are in the cell, deployment will not work";
+    private static final int SLEEP_TIME = 15;
+    /** Time to sleep waiting for sfStart */
+    private static final int STARTUP_SLEEP_TIME = 15;
+    private static final int STARTUP_LOCATE_ATTEMPTS = 6;
+    private static final String SF_START = "sfStart";
+    private static final String ERROR_NO_EXECUTABLE = " Error: no executable ";
 
     public NodeDeploymentOverSSH(NodeDeploymentOverSSHFactory factory, ClusterNode node) {
         super(node);
@@ -60,23 +66,39 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         return factory.makeSFCommand(command);
     }
 
+    private void info(String text, StringBuilder builder) {
+        factory.getLog().info(text);
+        builder.append(text).append('\n');
+    }
+    
     private void info(String text) {
         factory.getLog().info(text);
     }
+    
+    private void error(String text) {
+        factory.getLog().error(text);
+    }
+
+    private void error(String text, Throwable t) {
+        factory.getLog().error(text, t);
+    }
+
 
     /**
      * {@inheritDoc}
      *
      * @param name application name
      * @param cd   component description
+     * @return a log of the operations
      * @throws IOException        IO problems
      * @throws SmartFrogException SF problems
      */
     @Override
-    public synchronized void deployApplication(String name, ComponentDescription cd)
+    public synchronized String deployApplication(String name, ComponentDescription cd)
             throws IOException, SmartFrogException {
+        StringBuilder messages=new StringBuilder();
         if (!getClusterNode().isExternallyVisible()) {
-            info(NOT_EXTERNAL);
+            info(NOT_EXTERNAL, messages);
         }
         File localtempfile = File.createTempFile(factory.getTempfilePrefix(), SF_SUFFIX);
         String desttempfile = factory.getDestDir() + factory.getTempfilePrefix() + getNextNumber() + SF_SUFFIX;
@@ -86,7 +108,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         sourceFiles.add(localtempfile);
         destFiles.add(desttempfile);
         String connectionDetails = getConnectionDetails();
-        info("Deploying application with SSH " + name + " to " + connectionDetails);
+        info("Deploying application with SSH " + name + " to " + connectionDetails, messages);
 
         //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
 
@@ -99,24 +121,36 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
             ArrayList<String> commandsList = new ArrayList<String>(1);
             commandsList.add("mkdir -p " + factory.getDestDir());
             commandsList.add("exit");
-            sshExec(session, commandsList, true);
+            sshExec(session, commandsList, true, messages, null);
 
             ScpTo scp = new ScpTo(factory.sfLog());
             //copy up the temp files
             info("copying " + localtempfile + " to " + desttempfile);
             scp.doCopy(session, destFiles, sourceFiles);
+            
             String sshCommand;
-            sshCommand = makeSFCommand("sfStart") + " " + "localhost" + " " + name + " " + desttempfile;
-            info("executing: " + sshCommand);
+            sshCommand = makeSFCommand(SF_START) + " " + "localhost" + " " + name + " " + desttempfile;
+            info("executing: " + sshCommand, messages);
             commandsList = new ArrayList<String>(1);
+            //make a few attempts to find the startup
+            for (int i = 0; i < STARTUP_LOCATE_ATTEMPTS; i++) {
+                commandsList.add("which " + SF_START + " || sleep " + STARTUP_SLEEP_TIME);
+            }
+            commandsList.add("which " + SF_START + " || echo " + ERROR_NO_EXECUTABLE + SF_START);
             commandsList.add(sshCommand);
+            commandsList.add("sleep "+ SLEEP_TIME);
             if (!factory.isKeepFiles()) {
                 commandsList.add("rm " + desttempfile);
             }
             commandsList.add("exit");
-            sshExec(session, commandsList, true);
+            StringBuilder outputBuilder = new StringBuilder();
+            sshExec(session, commandsList, true, messages, outputBuilder);
+            String output = outputBuilder.toString();
+            if (output.contains(ERROR_NO_EXECUTABLE)) {
+                error("Found " + ERROR_NO_EXECUTABLE + "in \n" + output);
+            }
         } catch (JSchException e) {
-            factory.getLog().error("Failed to upload to " + connectionDetails + " : " + e, e);
+            error("Failed to upload to " + connectionDetails + " : " + e, e);
             throw factory.forward(e, connectionDetails);
         } finally {
             info("Finished deploying application " + name + " to " + connectionDetails);
@@ -125,6 +159,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
                 localtempfile.delete();
             }
         }
+        return messages.toString();
     }
 
     private String getConnectionDetails() {
@@ -140,22 +175,29 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         return factory.getNextNumber();
     }
 
-    private void sshExec(Session session, String commandString, boolean checkResponse)
+    private void sshExec(Session session, String commandString, boolean checkResponse,
+                         StringBuilder builder, StringBuilder output)
             throws JSchException, IOException, SmartFrogException {
         ArrayList<String> commandsList = new ArrayList<String>(1);
         commandsList.add(commandString);
-        sshExec(session, commandsList, checkResponse);
+        sshExec(session, commandsList, checkResponse, builder, output);
     }
 
-    private int sshExec(Session session, ArrayList<String> commandsList, boolean checkResponse)
+    private int sshExec(Session session, ArrayList<String> commandsList, boolean checkResponse,
+                        StringBuilder builder, StringBuilder outputBuilder)
             throws JSchException, IOException, SmartFrogException {
         SshCommand command = new SshCommand(factory.sfLog(), null);
         OutputStreamLog outputStreamLog = new OutputStreamLog(factory.getLog(), factory.getOutputLogLevel());
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         TeeOutputStream teeOut = new TeeOutputStream(outputStreamLog, byteOutputStream);
         int exitCode = command.execute(session, commandsList, teeOut, factory.getTimeout());
+        String output = byteOutputStream.toString(SSH_RESPONSE_CHARSET);
+        builder.append(output);
+        builder.append("\n");
+        if (outputBuilder != null) {
+            outputBuilder.append(output);
+        }
         if (checkResponse && exitCode != 0) {
-            String output = byteOutputStream.toString(SSH_RESPONSE_CHARSET);
             throw new SmartFrogException("Error response on command " + commandsList.get(0)
                     + ":-\n"
                     + output,
@@ -190,7 +232,8 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
             info("executing: " + sshCommand);
             commandsList.add(sshCommand);
             commandsList.add("exit");
-            return sshExec(session, commandsList, false) == 0;
+            StringBuilder messages = new StringBuilder();
+            return sshExec(session, commandsList, false, messages, null) == 0;
         } catch (JSchException e) {
             String connectionDetails = getConnectionDetails();
             factory.getLog().error("Failed to terminate " + name + " on " + connectionDetails + " : " + e, e);

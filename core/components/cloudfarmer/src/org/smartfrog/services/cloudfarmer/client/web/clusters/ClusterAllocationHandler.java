@@ -111,7 +111,10 @@ public class ClusterAllocationHandler implements ClusterAllocationCompleted {
                 return false;
             }
             NodeDeploymentService deploymentService = createNodeDeploymentService(instance);
-            deploymentService.deployApplication(name, descriptor.getComponentDescription());
+            String messages = deploymentService.deployApplication(name, descriptor.getComponentDescription());
+            if (messages != null && !messages.isEmpty()) {
+                LOG.info(messages);
+            }
             return true;
         } catch (Throwable e) {
             logAndRethrow(e);

@@ -58,9 +58,8 @@
   <property name="test.web.dir" location="${site.dir}" />
   <!--<property name="application.name" value="ec2" />-->
   <property name="mockfarmer.sf" value="/org/smartfrog/services/cloudfarmer/server/mock/example.sf" />
-
-
-<!--  <property name="deploy.sf" value="${mockfarmer.sf}" />-->
+  <property name="mombasa.sf" value="/org/smartfrog/services/cloudfarmer/client/web/deploy/server.sf" />
+  <property name="deploy.sf" value="${mombasa.sf}" />
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
@@ -104,7 +103,8 @@
           descriptor="/org/smartfrog/services/cloudfarmer/server/examples/manual_localhost.sf"/>
     </deploy>
   </target>
-  <target  name="localfarmerssh" depends="ready-to-deploy"
+  
+  <target name="localfarmerssh" depends="ready-to-deploy"
       description="Deploy a farm manager that serves up the local hostover SSH" >
     <deploy>
       <application name="farmer"
@@ -116,7 +116,7 @@
        description="Deploy the mombasa web application" >
       <deploy>
         <application name="mombasa"
-            descriptor="/org/smartfrog/services/cloudfarmer/client/web/deploy/server.sf"/>
+            descriptor="${mombasa.sf}"/>
       </deploy>
   </target>
 
@@ -139,6 +139,19 @@
       <application name="forkedcluster"
           descriptor="/org/smartfrog/services/cloudfarmer/server/examples/forkedhadoopcustomer.sf"/>
     </deploy>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- start the daemon in the foreground                         -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-fg"
+      description="start a daemon in the foreground"
+      depends="declare-extended-smartfrog-tasks"
+      >
+    <sf-startdaemon-debug  spawn="false" timeout="-1">
+      <application name="mombasa"
+          descriptor="${mombasa.sf}"/>
+    </sf-startdaemon-debug>
   </target>
 
 </project>

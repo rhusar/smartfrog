@@ -240,7 +240,10 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                 for (ClusterNode node : clusterNodes) {
                     NodeDeploymentService service = farmer.createNodeDeploymentService(node);
                     sfLog().info("Deploying application " + toDeployName + " to " + node.getHostname());
-                    service.deployApplication(toDeployName, toDeploy);
+                    String messages = service.deployApplication(toDeployName, toDeploy);
+                    if(messages!=null && !messages.isEmpty()) {
+                        sfLog().info(messages);
+                    }
                 }
             }
 
