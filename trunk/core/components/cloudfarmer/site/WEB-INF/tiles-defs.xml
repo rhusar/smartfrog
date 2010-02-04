@@ -190,7 +190,13 @@
     <put name="title" value="Delete a Host"/>
     <put name="text" value="The host has been deleted"/>
   </definition>
-
+  
+  <definition name="portlet.mombasa.cluster.delete.all.in.role.success"
+      extends="portlet.mombasa.cluster.text">
+    <put name="title" value="Delete all hosts in a role"/>
+    <put name="text" value="The hosts have been deleted"/>
+  </definition>
+  
   <definition name="portlet.mombasa.cluster.terminate.success" extends="portlet.mombasa.cluster.text">
     <put name="title" value="Shut down the cluster"/>
     <put name="text" value="The cluster has been shut down"/>

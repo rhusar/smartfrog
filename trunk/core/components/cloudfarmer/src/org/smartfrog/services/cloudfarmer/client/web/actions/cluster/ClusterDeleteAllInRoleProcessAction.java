@@ -1,4 +1,4 @@
-/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+
 package org.smartfrog.services.cloudfarmer.client.web.actions.cluster;
 
 import org.apache.struts.action.ActionForm;
@@ -27,11 +28,12 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 /**
- * Created 27-Oct-2009 15:47:04
+ * Delete a node
  */
 @SuppressWarnings({"RefusedBequest"})
-public class ClusterListRolesAction extends AbstractClusterAction {
+public class ClusterDeleteAllInRoleProcessAction extends AbstractClusterAction {
 
     /**
      * Get the name of this action, used in logging and debugging
@@ -39,39 +41,28 @@ public class ClusterListRolesAction extends AbstractClusterAction {
      * @return the name
      */
 
+    @Override
     protected String getActionName() {
-        return "ClusterListRoles";
+        return "QueueAnyWorkflow";
     }
 
-    /**
-     * Lists the hosts to the "hosts" attribute
-     *
-     * @param mapping    mapping
-     * @param form       incoming form
-     * @param request    incoming request
-     * @param response   response to build up
-     * @param controller the cluster controller
-     * @return the follow-up action
-     * @throws Exception any exception to handle server-side
-     */
-    @Override
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
-    public ActionForward execute(ActionMapping mapping,
-                                 ActionForm form,
-                                 HttpServletRequest request,
-                                 HttpServletResponse response,
-                                 ClusterController controller) throws Exception {
-
+    @Override
+    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+                                 HttpServletResponse response, ClusterController controller) throws Exception {
+        String role = parameterToNonEmptyStringAttribute(request, ATTR_ROLE, ATTR_ROLE);
+        log.info("Deleting hosts in role " + role);
         try {
+            controller.deleteAllInRole(role);
             //refresh the lists
-            controller.refreshRoleList();
             controller.refreshHostList();
-            //get the values
             addClusterAttributes(request, controller);
             return success(mapping);
         } catch (Exception e) {
-            return failure(request, mapping, "Failed to list roles and hosts :" + e, e);
+            addClusterAttributes(request, controller);
+            return failure(request, mapping, "Failed to delete machines in the role " + role + " : " + e, e);
         }
+
     }
 
 }
