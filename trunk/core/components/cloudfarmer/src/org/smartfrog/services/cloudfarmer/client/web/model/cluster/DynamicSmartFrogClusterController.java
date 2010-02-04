@@ -235,7 +235,6 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
         HostInstanceList newHostList = new HostInstanceList(clusterNodes);
         synchronized (this) {
             for (HostInstance instance : newHostList) {
-
                 addHostInstance(instance);
             }
         }
@@ -287,5 +286,23 @@ public class DynamicSmartFrogClusterController extends DynamicClusterController 
     public boolean deleteHost(String hostID) throws IOException, SmartFrogException {
         farmer.delete(hostID);
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int deleteAllInRole(String role)
+            throws IOException, SmartFrogException {
+        return farmer.deleteAllInRole(role);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int deleteAll()
+            throws IOException, SmartFrogException {
+        return farmer.deleteAll();
     }
 }

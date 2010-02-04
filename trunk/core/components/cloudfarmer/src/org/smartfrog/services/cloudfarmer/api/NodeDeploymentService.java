@@ -16,10 +16,11 @@ public interface NodeDeploymentService extends Remote {
      *
      * @param name application name
      * @param cd component description
+     * @return output, which can be logged
      * @throws IOException network and IO problems
      * @throws SmartFrogException other problems
      */
-    public void deployApplication(String name, ComponentDescription cd)
+    public String deployApplication(String name, ComponentDescription cd)
             throws IOException, SmartFrogException;
 
     /**

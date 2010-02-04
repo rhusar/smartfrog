@@ -170,7 +170,7 @@ public class NodeDeploymentOverSSHFactory extends AbstractSSHComponent
         if (getSfHomeDir().isEmpty()) {
             return command;
         } else {
-            return getSfHomeDir() + command;
+            return getSfHomeDir() + "/bin/" + command;
         }
     }
 

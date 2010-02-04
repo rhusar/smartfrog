@@ -177,13 +177,14 @@ public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements Nod
      * {@inheritDoc }
      */
     @Override
-    public void deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
+    public String deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
         log.info("Deploying the application " + name + " at " + toString());
         ProcessCompound root = getBoundProcess();
-        if(root==null) {
-            throw new SmartFrogException("Not bound to SmartFrog daemon at "+getHostname());
+        if (root == null) {
+            throw new SmartFrogException("Not bound to SmartFrog daemon at " + getHostname());
         }
         Prim app = root.sfCreateNewApp(name, cd, null);
+        return "Deployed " + name + " as " + app.sfCompleteName()+ " :" +app.toString();
     }
 
 

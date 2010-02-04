@@ -81,10 +81,11 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
 
 
         @Override
-        public void deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
+        public String deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
             sfLog().info("Deploying " + name + " at " + hostname);
             checkAppDoesntExist(name);
             applications.put(name, cd);
+            return "Mock deployed "+name;
         }
 
         @Override

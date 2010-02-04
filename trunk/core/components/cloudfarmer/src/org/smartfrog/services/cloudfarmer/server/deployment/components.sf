@@ -76,6 +76,10 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   timeout (2 * MINUTE)
 }
 
+NodeDeploymentOverSSHtoRPMInstallationFactory  extends NodeDeploymentOverSSHFactory {
+  sf.home.dir "/opt/smartfrog"
+}
+
 /**
  * This raises an exception when a node service is requested
  */
