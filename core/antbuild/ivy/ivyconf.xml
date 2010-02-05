@@ -12,7 +12,7 @@
           http://www.ibiblio.net/pub/packages/maven2
   -->
   <property name="ivy.ibiblio.root"
-      value="http://repo1.maven.org/maven2/" override="false"/>
+      value="http://mirrors.ibiblio.org/pub/mirrors/maven2" override="false"/>
   <property name="maven.restlet.org"
       value="http://maven.restlet.org/" override="false"/>
   <property name="maven-repository.dev.java.net"
