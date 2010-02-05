@@ -6,7 +6,7 @@
   <property name="maven2.pattern"
     value="[organisation]/[module]/[revision]/[module]-[revision]"/>
   <property name="maven2.pattern.ext"
-    value="${maven2.pattern}.[ext]"/>
+    value="${maven2.pattern}(-[classifier]).[ext]"/>
 <!--  <properties file="${ivy.settings.dir}/ivysettings-file.properties"/>-->
 <!--
   <settings defaultCache="${cache.dir}" defaultResolver="ibiblio"
