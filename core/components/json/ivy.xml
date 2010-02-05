@@ -55,7 +55,7 @@
         rev="latest.integration"
         conf="test->default"/>
 
-    <dependency org="net.sf.json"
+    <dependency org="net.sf.json-lib" 
         name="json-lib"
         rev="${json-lib.version}"
         conf="redist->default"/>
