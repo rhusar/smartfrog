@@ -210,8 +210,9 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			}
 			if (value == null) {
 				throw new SmartFrogContextException(
-						MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'value'",
-								"sfAddAttribute name:'"+name+"'"));
+						MessageUtil.formatMessage(MessageKeys.MSG_NULL_VALUE_OF_KEY_IN, 
+                                name,
+                                "sfAddAttribute"));
 			}
 
 			return null;
@@ -266,7 +267,8 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			}
 			if (value == null) {
 				throw new SmartFrogContextException(
-						MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
+						MessageUtil.formatMessage(MSG_NULL_VALUE_OF_KEY_IN, 
+                        name,
 						"sfReplaceAttribute"));
 			}
 
