@@ -67,7 +67,7 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
   </tr>
   <tr>
     <td colspan="2" bgcolor="grey">
-      <b>Linkss</b> 
+      <b>Links</b> 
     </td>
   </tr>
 
