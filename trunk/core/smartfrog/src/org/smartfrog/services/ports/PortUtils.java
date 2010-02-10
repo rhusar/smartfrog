@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.net.InetAddress;
 
 /**
  * Created 28-May-2008 15:22:20
@@ -33,6 +35,31 @@ public class PortUtils {
     private PortUtils() {
     }
 
+    /**
+     * Wait for a hostname to resolve
+     * @param hostname hostname to look for
+     * @param resolveTimeout timeout
+     * @param sleep time in millis to sleep
+     * @return the address
+     * @throws UnknownHostException if the host did not resolve
+     * @throws InterruptedException if the wait was interrupted
+     */
+    public static InetAddress waitForHostnameToResolve(String hostname, int resolveTimeout, int sleep)
+            throws UnknownHostException, InterruptedException {
+        long timeout = System.currentTimeMillis() + (resolveTimeout * 1000);
+        UnknownHostException error;
+        do {
+            try {
+                InetAddress addr = InetAddress.getByName(hostname);
+                return addr;
+            } catch (UnknownHostException e) {
+                error = e;
+                Thread.sleep(sleep);
+            }
+        } while (System.currentTimeMillis() < timeout);
+        throw error;
+    }
+    
     /**
      * probe a port for being open
      *
@@ -56,13 +83,15 @@ public class PortUtils {
      */
     public static void checkPort(InetSocketAddress address, int connectTimeout) throws IOException {
         Socket socket = null;
+        socket = new Socket();
         try {
-            socket = new Socket();
             socket.connect(address, connectTimeout);
         } catch (SecurityException e) {
             throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
         } catch (SocketTimeoutException ste) {
             throw (SocketTimeoutException)new SocketTimeoutException("Timeout connecting to "+ address).initCause(ste);
+        } catch (UnknownHostException unknownHost) {
+            
         }
         finally {
             if (socket != null) {
