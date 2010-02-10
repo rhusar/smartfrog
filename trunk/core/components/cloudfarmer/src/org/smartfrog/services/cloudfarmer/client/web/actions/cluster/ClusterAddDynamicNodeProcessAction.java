@@ -31,6 +31,7 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
+import org.smartfrog.services.cloudfarmer.api.Range;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,7 +62,8 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
                                  HttpServletResponse response, ClusterController controller) throws Exception {
         ClusterAddDynamicForm form = (ClusterAddDynamicForm) aform;
         try {
-            log.info("Creating workers in range [" + form.getMinWorkers() + "-" + form.getMaxWorkers() + "]");
+            Range r = new Range(form.getMinWorkers() , form.getMaxWorkers());
+            log.info("Creating workers in range " + r);
             MasterWorkerAllocationHandler handler = new HadoopAllocationHandler(controller); 
             //add a master automatically
             RoleAllocationRequestList requests = new RoleAllocationRequestList(2);

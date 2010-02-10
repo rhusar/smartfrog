@@ -208,6 +208,6 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
      * @return the timeout in milliseconds
      */
     protected int getFarmCreationTimeout() {
-        return 10000;
+        return 15000;
     }
 }
