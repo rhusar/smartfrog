@@ -20,8 +20,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.api;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * This is a link to something on the node; it has a name, a protocol, a port and maybe a path
@@ -41,11 +41,10 @@ public final class NodeLink implements Serializable, Cloneable {
     }
 
     /**
-     * 
-     * @param name name of link
+     * @param name     name of link
      * @param protocol protocol that the URL handlers can handle
-     * @param port port, or -1 for protocol-default
-     * @param path path under the machine
+     * @param port     port, or -1 for protocol-default
+     * @param path     path under the machine
      */
     public NodeLink(String name, String protocol, int port, String path) {
         this.name = name;
@@ -70,7 +69,7 @@ public final class NodeLink implements Serializable, Cloneable {
     }
 
     public URL makeUrl(String hostname) throws MalformedURLException {
-        if(hostname==null) {
+        if (hostname == null) {
             return null;
         }
         URL url = new URL(protocol, hostname, port, path);
@@ -79,6 +78,7 @@ public final class NodeLink implements Serializable, Cloneable {
 
     /**
      * Bind to an (internal, external) pair
+     *
      * @param internalHostname internal hostname (can be null)
      * @param externalHostname external hostname (can be null)
      * @throws MalformedURLException if the URLs cannot be constructed
@@ -87,7 +87,7 @@ public final class NodeLink implements Serializable, Cloneable {
         externalLink = makeUrl(externalHostname);
         internalLink = makeUrl(internalHostname);
     }
-    
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -135,8 +135,9 @@ public final class NodeLink implements Serializable, Cloneable {
     }
 
     /**
-     * Take a template list of uninstantaited links and convert to a list of bound entries
-     * @param links source links
+     * Take a template list of uninstantiated links and convert to a list of bound entries
+     *
+     * @param links            source links
      * @param internalHostname internal name (can be null)
      * @param externalHostname (can be null)
      * @return a list of instantiated links
@@ -145,8 +146,8 @@ public final class NodeLink implements Serializable, Cloneable {
     public static NodeLink[] instantiate(NodeLink[] links, String internalHostname, String externalHostname)
             throws MalformedURLException {
         NodeLink[] result = new NodeLink[links.length];
-        for (int i=0; i<links.length; i++) {
-            result[i]=new NodeLink(links[i], internalHostname, externalHostname);   
+        for (int i = 0; i < links.length; i++) {
+            result[i] = new NodeLink(links[i], internalHostname, externalHostname);
         }
         return result;
     }

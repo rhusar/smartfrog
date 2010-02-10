@@ -28,13 +28,11 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 

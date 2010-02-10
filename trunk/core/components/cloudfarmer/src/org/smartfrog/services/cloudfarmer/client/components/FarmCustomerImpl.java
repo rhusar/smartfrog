@@ -120,15 +120,27 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
         try {
             ClusterNode[] listed = farmer.list(role);
             Map<String, ClusterNode> map = new HashMap<String, ClusterNode>(listed.length);
+            StringBuilder nodeList = new StringBuilder();
+            boolean hasDuplicate = false;
             for (ClusterNode node : listed) {
-                map.put(node.getId(), node);
+                String nodeID = node.getId();
+                if (map.get(nodeID) != null) {
+                    hasDuplicate = true;
+                }
+                map.put(nodeID, node);
+                nodeList.append(nodeID).append(" ");
+            }
+            if (hasDuplicate) {
+                throw new SmartFrogLivenessException("Duplicate nodes in the farm: " + nodeList);
             }
             for (ClusterNode node : nodes) {
                 if (map.get(node.getId()) == null) {
-                    throw new SmartFrogLivenessException("Cannot find entry for " + node);
+                    throw new SmartFrogLivenessException("Cannot find entry for " + node
+                    +" in "+ nodeList);
                 }
             }
         } catch (Exception e) {
+            sfLog().error(e);
             throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
         }
     }
@@ -213,6 +225,10 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
             for (ClusterNode node : clusterNodes) {
                 String hostname = node.isExternallyVisible() ?
                         node.getExternalHostname() : node.getHostname();
+                if (hostname == null) {
+                    //trouble, the host does not know what it is
+                    throw new SmartFrogException("Node doesn't know its hostname " + node.toString());
+                }
                 hostnameList.add(hostname);
                 nodeMap.put(hostname, node);
                 hostnames.append(hostname).append(' ');
