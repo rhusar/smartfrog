@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.utils.SFExpandFully;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
 
 /**
@@ -49,10 +50,21 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
     private static final String NOT_EXTERNAL
             = "This node is not externally visible. Unless we are in the cell, deployment will not work";
     private static final int SLEEP_TIME = 15;
-    /** Time to sleep waiting for sfStart */
+    /** Time to sleep waiting for sfStart : {@value} */
     private static final int STARTUP_SLEEP_TIME = 15;
+    /** #of times to proble for the start command {@value} */
     private static final int STARTUP_LOCATE_ATTEMPTS = 6;
+    /** command to start an app{@value} */
     private static final String SF_START = "sfStart";
+    /** ping command: {@value} */
+    private static final String SF_PING = "sfPing";
+
+    /** #of times to proble for the ping command {@value} */
+    private static final int STARTUP_PING_ATTEMPTS = 4;
+    /**
+     * Time to sleep waiting for sfPing : {@value}
+     */
+    private static final int STARTUP_PING_SLEEP_TIME = 30;
     private static final String ERROR_NO_EXECUTABLE = " Error: no executable ";
 
     public NodeDeploymentOverSSH(NodeDeploymentOverSSHFactory factory, ClusterNode node) {
@@ -108,10 +120,15 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         sourceFiles.add(localtempfile);
         destFiles.add(desttempfile);
         String connectionDetails = getConnectionDetails();
-        info("Deploying application with SSH " + name + " to " + connectionDetails, messages);
+        info("Deploying application with SSH to role '" + name + "' to " + connectionDetails, messages);
 
         //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
-
+        try {
+            PortUtils.waitForHostnameToResolve(hostname, factory.getPortConnectTimeout(), 500);
+        } catch (InterruptedException e) {
+            throw (InterruptedIOException) new InterruptedIOException("Interrupted waiting for "+ hostname)
+                    .initCause(e);
+        }
         PortUtils.checkPort(hostname, factory.getPort(), factory.getPortConnectTimeout());
 
 
@@ -137,6 +154,10 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
                 commandsList.add("which " + SF_START + " || sleep " + STARTUP_SLEEP_TIME);
             }
             commandsList.add("which " + SF_START + " || echo " + ERROR_NO_EXECUTABLE + SF_START);
+            String sfPing= makeSFCommand(SF_PING) + " " + "localhost";
+            for (int i = 0; i < STARTUP_PING_ATTEMPTS; i++) {
+                commandsList.add(sfPing + " || sleep " + STARTUP_PING_SLEEP_TIME);
+            }
             commandsList.add(sshCommand);
             commandsList.add("sleep "+ SLEEP_TIME);
             if (!factory.isKeepFiles()) {
