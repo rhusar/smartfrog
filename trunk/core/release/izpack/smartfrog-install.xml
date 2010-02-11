@@ -281,6 +281,7 @@ want izpack to see it, double escape the $$ symbol.-->
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiag" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfDiagnostics" failure="warn"/>
       <!--<executable stage="never" targetfile="$INSTALL_PATH/bin/sfGui" failure="warn"/>-->
+      <executable stage="never" targetfile="$INSTALL_PATH/bin/sfList" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfParse" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfPing" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfRun" failure="warn"/>
@@ -375,8 +376,6 @@ SmartFrog to deploy complex systems.
         The cloudfarmer package contains components and client code to assist in 
         deploying to cloud infrastructure.
 
-        To work with Amazon EC2, the EC2 package must be installed 
-
       </description>
       <file src="ivy/lib/package-cloudfarmer/sf-cloudfarmer-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -387,8 +386,6 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-cloudfarmer/sf-cloudfarmer-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
-      <file src="ivy/lib/package-cloudfarmer/commons-beanutils-${commons-beanutils.version}.jar"
-          targetdir="$INSTALL_PATH/lib"/>
       <file src="ivy/lib/package-cloudfarmer/commons-chain-${commons-chain.version}.jar"
           targetdir="$INSTALL_PATH/lib"/>
       <file src="ivy/lib/package-cloudfarmer/commons-digester-${commons-digester.version}.jar"
@@ -402,7 +399,8 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH/lib"/>
       <file src="ivy/lib/package-cloudfarmer/struts-tiles-${struts.version}.jar"
           targetdir="$INSTALL_PATH/lib"/>
-
+      <depends packname="Jetty"/>
+      <depends packname="JSON"/>
     </pack>
 
     <pack name="CSVfiles" required="no" preselected="no">
@@ -483,6 +481,7 @@ SmartFrog to deploy complex systems.
         targetdir="$INSTALL_PATH/lib"
         />
       <depends packname="Restlet"/>
+      <depends packname="CloudFarmer"/>
     </pack>
 
 
@@ -604,9 +603,36 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-jmx/mx4j-tools-${mx4j.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-
     </pack>
 
+    <pack name="JSON" required="no" preselected="no">
+      <description>
+        This package provides JSON support by way of json-lib and its dependencies.
+
+        Prerequisite packages: Logging.
+      </description>
+      <file src="ivy/lib/package-json/sf-json-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-json/sf-json-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-json/sf-json-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-json/commons-beanutils-${commons-beanutils.version}.jar"
+          targetdir="$INSTALL_PATH/lib"/>
+      <file src="ivy/lib/package-json/commons-collections-${commons-collections.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-json/commons-lang-${commons-lang.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />      
+      <depends packname="Logging"/>
+    </pack>
+
+    
+    
     <pack name="Logging" required="no" preselected="yes">
       <description>
         SmartFrog Logging services.
@@ -812,7 +838,7 @@ SmartFrog to deploy complex systems.
           unpack="true"/>
     </pack>
 
-    <pack name="xunit" required="no" preselected="no">
+    <pack name="XUnit" required="no" preselected="no">
       <description>The base testing components. This contains the sfunit test components
         for testing deployments, and the listeners/reporters for running tests.
         For JUnit 3 testing, include the JUnit package.
@@ -849,7 +875,7 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-testing/junit-${junit.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <depends packname="xunit"/>
+      <depends packname="XUnit"/>
     </pack>
 
 
@@ -862,8 +888,6 @@ SmartFrog to deploy complex systems.
 
         This package includes velocity-${velocity.version}.jar,
         velocity-dep-${velocity.version}.jar,
-        commons-collections-${commons-collections.version}.jar
-        commons-lang-${commons-lang.version}.jar
       </description>
       <file src="ivy/lib/package-velocity/sf-velocity-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -878,12 +902,7 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-velocity/velocity-${velocity.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-velocity/commons-collections-${commons-collections.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-velocity/commons-lang-${commons-lang.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
+      <depends packname="JSON"/>
     </pack>
 
 

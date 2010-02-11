@@ -71,21 +71,23 @@
         name="sf-xml" changing="true"
         rev="latest.integration"
         conf="redist->default"/>
-    <dependency org="org.smartfrog"
+<!--    <dependency org="org.smartfrog"
         name="sf-anubis" changing="true"
         rev="latest.integration"
-        conf="redist->default"/>    
+        conf="redist->default"/> -->   
     
     <dependency org="org.smartfrog"
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
         conf="redist->default,server"/>
+<!--
 
     <dependency org="org.smartfrog"
         name="sf-rpmtools" changing="true"
         rev="latest.integration"
         conf="runtime->default"/>
+-->
 
   </dependencies>
 </ivy-module>

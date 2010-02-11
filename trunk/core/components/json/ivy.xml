@@ -54,12 +54,28 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="runtime->master;redist->redist"/>
 
     <dependency org="net.sf.json-lib" 
         name="json-lib"
         rev="${json-lib.version}"
-        conf="redist->default"/>
+        conf="redist->master"/>
+    <dependency org="commons-collections"
+        name="commons-collections"
+        rev="${commons-collections.version}"
+        conf="redist->master"/>
 
-
+    <dependency org="commons-lang"
+        name="commons-lang"
+        rev="${commons-lang.version}"
+        conf="redist->master"/>
+    <dependency org="net.sf.ezmorph"
+        name="ezmorph"
+        rev="${ezmorph.version}"
+        conf="redist->master"/>
   </dependencies>
 </ivy-module>
