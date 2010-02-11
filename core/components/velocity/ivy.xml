@@ -62,15 +62,11 @@
         changing="true"
         rev="latest.integration"
         conf="redist->redist;runtime->default"/>
-    <dependency org="commons-collections"
-        name="commons-collections"
-        rev="${commons-collections.version}"
-        conf="redist->master"/>
-
-    <dependency org="commons-lang"
-        name="commons-lang"
-        rev="${commons-lang.version}"
-        conf="redist->master"/>
+    <dependency org="org.smartfrog"
+        name="sf-json"
+        changing="true"
+        rev="latest.integration"
+        conf="runtime->master;redist->redist"/>
     <!--for velocity <=1.4, use this template-->
     <dependency org="velocity"
         name="velocity"

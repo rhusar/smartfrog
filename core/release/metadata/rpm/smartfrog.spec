@@ -197,13 +197,12 @@ It does not contain any of the Ant optional libraries, or their dependencies.
 
 Group:         ${rpm.framework}
 Summary:        Cloud Infrastructure Management
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}, %{name}-jetty,  %{name}-json,  %{name}-jasper
 #
 %description cloudfarmer 
 Components and tools to deal with different cloud infrastructures.
 
-This RPM does not depend on the smartfrog-ec2 RPM, as that is not required for other infrastuctures, 
-but to manage Amazon EC2 systems, smartfrog-ec2 RPM must be installed
+This RPM includes everything needed to host struts 1.x under Jetty.
 
 # -----------------------------------------------------------------------------
 
@@ -252,7 +251,7 @@ commons-dbcp-${commons-dbcp.version}.jar
 %package ec2
 Group:         ${rpm.framework}
 Summary:        Amazon EC2 support
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-restlet, %{name}-json
+Requires:       %{name} = %{version}-%{release}, %{name}-cloudfarmer, %{name}-restlet,
 
 %description ec2
 Components for working with S3 files and EC2 instances.
@@ -272,7 +271,7 @@ This includes Groovy and the components needed to embed Groovy scripts inside .s
 %package hadoop
 Group:         ${rpm.framework}
 Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty
+Requires:       %{name} = %{version}-%{release}, %{name}-jetty
 
 %description hadoop
 
@@ -284,7 +283,7 @@ It does not contain the Apache Hadoop shell scripts
 #%package jasper
 #Group:         ${rpm.framework}
 #Summary:        Jasper JSP runtime
-#Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
+#Requires:       %{name} = %{version}-%{release}, %{name}-logging, %{name}-www
 
 #%description jasper
 #This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
@@ -296,7 +295,7 @@ It does not contain the Apache Hadoop shell scripts
 %package jetty
 Group:         ${rpm.framework}
 Summary:        Jetty integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-ant
+Requires:       %{name} = %{version}-%{release}, %{name}-www, %{name}-ant
 
 %description jetty
 This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
@@ -325,11 +324,17 @@ mx4j-tools-${mx4j.version}.jar
 
 %package json
 Group:         ${rpm.framework}
-Summary:        JUnit testing
-Requires:       %{name} = %{version}-%{release} 
+Summary:        JSON support
+Requires:       %{name} = %{version}-%{release}, %{name}-logging
 #
 %description json
 This contains the components for working with JSON files
+
+Redistributables:
+
+commons-beanutils-${commons-beanutils.version}.jar
+commons-collections-${commons-collections.version}.jar
+commons-lang-${commons-lang.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -384,7 +389,7 @@ Contains the Quartz library version quartz-${quartz.version}.jar.
 %package restlet
 Group:         ${rpm.framework}
 Summary:        Restlet support
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,
+Requires:       %{name} = %{version}-%{release} ,  %{name}-www,
 
 %description restlet
 The Restlet libraries (CDDL and GPL licensed) and components to work with them
@@ -414,12 +419,13 @@ Requires:      %{name} = %{version}-%{release}
 %description scripting
 Scripting support.
 Includes BeanShell bsh-${bsh.version}.jar
+
 # -----------------------------------------------------------------------------
 
 %package xunit
 Group:         ${rpm.framework}
 Summary:       Testing under SmartFrog
-Requires:       %{name} = %{version}-%{release} , %{name}-logging
+Requires:       %{name} = %{version}-%{release}, %{name}-logging
 #
 %description xunit
 The base testing components. This contains the sfunit test components
@@ -435,14 +441,14 @@ Requires:       %{name} = %{version}-%{release}  , %{name}-xunit
 %description junit
 This contains the components for running JUnit ${junit.version} tests, and the
 junit-${junit.version}.jar.
-Prerequisite packages: xunit, Logging.
+Prerequisite packages: xunit, logging.
 
 # -----------------------------------------------------------------------------
 
 %package velocity
 Group:         ${rpm.framework}
 Summary:        Velocity template engine
-Requires:       %{name} = %{version}-%{release}  , %{name}-logging
+Requires:       %{name} = %{version}-%{release},  %{name}-networking, %{name}-json,
 #
 %description velocity
 
@@ -454,10 +460,9 @@ text, HTML or XML files on the fly.
 It includes the files
 velocity-${velocity.version}.jar
 velocity-dep-${velocity.version}.jar
-commons-collections-${commons-collections.version}.jar
-commons-lang-${commons-lang.version}.jar
 
-Prerequisite packages: Logging.
+
+Prerequisite packages: logging, json and networking
 
 %package www
 Group:         ${rpm.framework}
@@ -743,6 +748,7 @@ else
    done
 fi
 
+# -----------------------------------------------------------------------------
 
 %preun daemon
 # shut down the daemon before the uninstallation
@@ -761,11 +767,7 @@ if [ "$1" = "0" ] ; then
   fi
 fi
 
-
-
-
-
-
+# -----------------------------------------------------------------------------
 %files daemon
 #and the etc stuff
 %defattr(0644,root,root,0755)
@@ -773,6 +775,7 @@ fi
 %config(noreplace) %attr(0644,root,root) /etc/sysconfig/smartfrog
 
 
+# -----------------------------------------------------------------------------
 %files ant
 
 %{libdir}/sf-ant-${smartfrog.version}.jar
@@ -782,6 +785,7 @@ fi
 %{linkdir}/ant.jar
 %{linkdir}/ant-launcher.jar
 
+# -----------------------------------------------------------------------------
 %files anubis
 
 %{libdir}/sf-anubis-${smartfrog.version}.jar
@@ -789,12 +793,11 @@ fi
 
 
 
+# -----------------------------------------------------------------------------
 %files cloudfarmer
 
 %{libdir}/sf-cloudfarmer-${smartfrog.version}.jar
 %{linkdir}/sf-cloudfarmer.jar
-%{libdir}/commons-beanutils-${commons-beanutils.version}.jar
-%{linkdir}/commons-beanutils.jar
 %{libdir}/commons-chain-${commons-chain.version}.jar
 %{linkdir}/commons-chain.jar
 %{libdir}/commons-digester-${commons-digester.version}.jar
@@ -808,6 +811,7 @@ fi
 %{libdir}/struts-tiles-${struts.version}.jar
 %{linkdir}/struts-tiles.jar
 
+# -----------------------------------------------------------------------------
 %files csvfiles
 
 %{libdir}/sf-csvfiles-${smartfrog.version}.jar
@@ -815,6 +819,7 @@ fi
 %{linkdir}/sf-csvfiles.jar
 %{linkdir}/opencsv.jar
 
+# -----------------------------------------------------------------------------
 %files database
 
 %{libdir}/sf-database-${smartfrog.version}.jar
@@ -827,6 +832,7 @@ fi
 %{linkdir}/commons-dbutils.jar
 
 
+# -----------------------------------------------------------------------------
 %files ec2
 %{linkdir}/sf-ec2.jar
 %{libdir}/sf-ec2-${smartfrog.version}.jar
@@ -835,6 +841,7 @@ fi
 
 
 
+# -----------------------------------------------------------------------------
 %files groovy
 %{linkdir}/sf-groovy.jar
 %{libdir}/sf-groovy-${smartfrog.version}.jar
@@ -843,6 +850,7 @@ fi
 %{linkdir}/groovy-engine.jar
 %{libdir}/groovy-engine-${groovy-engine.version}.jar
 
+# -----------------------------------------------------------------------------
 %files hadoop
 %{linkdir}/sf-hadoop.jar
 %{libdir}/sf-hadoop-${smartfrog.version}.jar
@@ -868,6 +876,7 @@ fi
 %{libdir}/xmlenc-${xmlenc.version}.jar
 %{linkdir}/xmlenc.jar
 
+# -----------------------------------------------------------------------------
 %files jetty
 
 %{libdir}/sf-jetty-${smartfrog.version}.jar
@@ -890,6 +899,7 @@ fi
 %{linkdir}/core.jar
 
 
+# -----------------------------------------------------------------------------
 %files jmx
 
 %{libdir}/sf-jmx-${smartfrog.version}.jar
@@ -903,13 +913,21 @@ fi
 %{linkdir}/mx4j-jmx.jar
 %{linkdir}/mx4j-tools.jar
 
+# -----------------------------------------------------------------------------
 %files json
 
 %{libdir}/sf-json-${smartfrog.version}.jar
-%{libdir}/json-lib-${json-lib.version}.jar
 %{linkdir}/sf-json.jar
+%{libdir}/json-lib-${json-lib.version}.jar
 %{linkdir}/json-lib.jar
+%{libdir}/commons-beanutils-${commons-beanutils.version}.jar
+%{linkdir}/commons-beanutils.jar
+%{libdir}/commons-collections-${commons-collections.version}.jar
+%{linkdir}/commons-collections.jar
+%{libdir}/commons-lang-${commons-lang.version}.jar
+%{linkdir}/commons-lang.jar
 
+# -----------------------------------------------------------------------------
 %files logging
 
 %{libdir}/sf-loggingservices-${smartfrog.version}.jar
@@ -924,7 +942,7 @@ fi
 %{linkdir}/slf4j-jcl.jar
 
 
-
+# -----------------------------------------------------------------------------
 %files networking
 
 %{libdir}/sf-dns-${smartfrog.version}.jar
@@ -950,6 +968,7 @@ fi
 %{linkdir}/oro.jar
 %{linkdir}/jsch.jar
 
+# -----------------------------------------------------------------------------
 %files quartz
 
 %{libdir}/sf-quartz-${smartfrog.version}.jar
@@ -959,6 +978,7 @@ fi
 %{linkdir}/quartz.jar
 
 
+# -----------------------------------------------------------------------------
 %files restlet
 %{libdir}/sf-restlet-${smartfrog.version}.jar
 %{linkdir}/sf-restlet.jar
@@ -976,11 +996,13 @@ fi
 %{libdir}/commons-fileupload-${commons-fileupload.version}.jar
 
 
+# -----------------------------------------------------------------------------
 %files rpmtools
 
 %{libdir}/sf-rpmtools-${smartfrog.version}.jar
 %{linkdir}/sf-rpmtools.jar
 
+# -----------------------------------------------------------------------------
 %files scripting
 %{libdir}/sf-scripting-${smartfrog.version}.jar
 %{libdir}/bsh-${bsh.version}.jar
@@ -988,11 +1010,13 @@ fi
 %{linkdir}/sf-scripting.jar
 %{linkdir}/bsh.jar
 
+# -----------------------------------------------------------------------------
 %files xunit
 %{libdir}/sf-xunit-${smartfrog.version}.jar
 
 %{linkdir}/sf-xunit.jar
 
+# -----------------------------------------------------------------------------
 %files junit
 %{libdir}/sf-junit-${smartfrog.version}.jar
 %{libdir}/junit-${junit.version}.jar
@@ -1001,19 +1025,17 @@ fi
 %{linkdir}/junit.jar
 
 
+# -----------------------------------------------------------------------------
 %files velocity
 %{libdir}/sf-velocity-${smartfrog.version}.jar
 %{libdir}/velocity-${velocity.version}.jar
 %{libdir}/velocity-dep-${velocity.version}.jar
-%{libdir}/commons-collections-${commons-collections.version}.jar
-%{libdir}/commons-lang-${commons-lang.version}.jar
 
 %{linkdir}/sf-velocity.jar
 %{linkdir}/velocity.jar
 %{linkdir}/velocity-dep.jar
-%{linkdir}/commons-collections.jar
-%{linkdir}/commons-lang.jar
 
+# -----------------------------------------------------------------------------
 %files www
 %{libdir}/sf-www-${smartfrog.version}.jar
 %{libdir}/commons-codec-${commons-codec.version}.jar
@@ -1024,6 +1046,7 @@ fi
 %{linkdir}/commons-httpclient.jar
 
 
+# -----------------------------------------------------------------------------
 %files xml
 %{libdir}/sf-xml-${smartfrog.version}.jar
 %{libdir}/jdom-${jdom.version}.jar
@@ -1039,6 +1062,7 @@ fi
 %{linkdir}/xercesImpl.jar
 %{linkdir}/xalan.jar
 
+# -----------------------------------------------------------------------------
 %files xmpp
 %{libdir}/sf-xmpp-${smartfrog.version}.jar
 %{libdir}/smack-${smack.version}.jar
@@ -1051,6 +1075,10 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Thu Feb 11 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
+- json RPM includes ezmorph and commons- libraries that json-lib depends on
+- velocity RPM now depends on json RPM
+- tune dependencies so more is handled transitively
 * Wed Feb 03 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
 - ec2 RPM depends on cloudfarmer
 - new json RPM; again ec2 depends upon it
