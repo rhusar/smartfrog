@@ -424,7 +424,7 @@ For more information: www.smartfrog.org
 
     <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.smartfrog.version" value="latest.integration" />
-    <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+    <property name="ivy.jar" location="antbuild/repository/org.apache.ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"/>
     <!--Ivy 2 uses some separate directories, that also need cleanup-->
     <property name="ivy2.user.dir" location="${artifactsCache.dir}/.ivy2" />
     <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
