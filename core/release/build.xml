@@ -534,7 +534,10 @@
     <rpmpackage package="json"/>
     <ln artifact="sf-json" version="${smartfrog.version}"/>
     <ln artifact="json-lib" version="${json-lib.version}"/>
-    
+    <ln artifact="commons-collections" version="${commons-collections.version}"/>
+    <ln artifact="commons-lang" version="${commons-lang.version}"/>
+    <ln artifact="ezmorph" version="${ezmorph.version}"/>
+
     <!--logging-->
     <rpmpackage package="logging"/>
     <ln artifact="sf-loggingservices" version="${smartfrog.version}"/>
@@ -593,8 +596,6 @@
     <ln artifact="sf-velocity" version="${smartfrog.version}"/>
     <ln artifact="velocity" version="${velocity.version}"/>
     <ln artifact="velocity-dep" version="${velocity.version}"/>
-    <ln artifact="commons-collections" version="${commons-collections.version}"/>
-    <ln artifact="commons-lang" version="${commons-lang.version}"/>
 
     <!-- WWW -->
     <rpmpackage package="www"/>

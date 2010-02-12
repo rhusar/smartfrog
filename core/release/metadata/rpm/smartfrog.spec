@@ -926,6 +926,8 @@ fi
 %{linkdir}/commons-collections.jar
 %{libdir}/commons-lang-${commons-lang.version}.jar
 %{linkdir}/commons-lang.jar
+%{libdir}/ezmorph-${ezmorph.version}.jar
+%{linkdir}/ezmorph.jar
 
 # -----------------------------------------------------------------------------
 %files logging
