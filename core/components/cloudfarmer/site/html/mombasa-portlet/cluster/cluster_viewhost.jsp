@@ -28,7 +28,14 @@ This is driven by the "host" value, which maps to a
 org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instance
 --%>
 
+<h2><bean:write name="host" property="hostname"/></h2>
+
 <table border="2">
+    <tr>
+    <td colspan="2" bgcolor="grey">
+      <b>Status</b> 
+    </td>
+  </tr>
   <tr>
     <td>Hostname</td>
     <td><bean:write name="host" property="hostname"/></td>
@@ -89,13 +96,13 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
       <b>Actions</b> 
     </td>
   </tr>
-  <tr>
+<%--  <tr>
     <td colspan="2"  >
       <html:link paramId="hostid" paramName="host" paramProperty="id"
           action="/mombasa-portlet/cluster/host_ping">Ping the host
       </html:link>
     </td>
-  </tr>
+  </tr>--%>
   <tr>
     <td colspan="2" >
       <html:link paramId="hostid" paramName="host" paramProperty="id"
