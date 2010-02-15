@@ -653,7 +653,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws IOException        hadoop or RMI issues
      * @throws SmartFrogException Smartfrog problems
      */
-    protected Service createTheService(ManagedConfiguration conf) throws IOException, SmartFrogException {
+    protected Service createTheService(ManagedConfiguration conf)
+        throws IOException, SmartFrogException, InterruptedException {
         return null;
     }
 

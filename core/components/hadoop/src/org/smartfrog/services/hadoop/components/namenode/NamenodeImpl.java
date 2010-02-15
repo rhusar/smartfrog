@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -78,8 +79,14 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        addDirectoriesToDelete(createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR));
-        addDirectoriesToDelete(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
+        try {
+            addDirectoriesToDelete(createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR));
+            addDirectoriesToDelete(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
+            addDirectoriesToDelete(createDirectoryListAttribute(DATA_DIRECTORIES, DFS_NAMENODE_NAME_DIR));
+            addDirectoriesToDelete(createDirectoryListAttribute(NAMENODE_EDIT_DIRECTORIES, DFS_NAMENODE_EDITS_DIR));
+        } catch (FileNotFoundException e) {
+            throw new SmartFrogException(e);
+        }
         logDir = FileSystem.lookupAbsoluteFile(this,
                 ATTR_LOG_DIR, null, null, true, null);
         logDir.mkdirs();

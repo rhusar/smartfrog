@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -73,7 +74,11 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        nameDirs = FileSystem.convertToFiles(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
+        try {
+            nameDirs = FileSystem.convertToFiles(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
+        } catch (FileNotFoundException e) {
+            throw new SmartFrogException(e);
+        }
         worker = new Formatter();
         worker.start();
     }

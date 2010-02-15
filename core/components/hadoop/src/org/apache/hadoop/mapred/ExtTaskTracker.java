@@ -46,11 +46,11 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     private ServiceStateChangeNotifier notifier;
     private final PingHelper pingHelper = new PingHelper(this);
     
-    public ExtTaskTracker(JobConf conf) throws IOException {
+    public ExtTaskTracker(JobConf conf) throws IOException, InterruptedException {
         this(null, conf);
     }
 
-    public ExtTaskTracker(ServiceStateChangeHandler owner, JobConf conf) throws IOException {
+    public ExtTaskTracker(ServiceStateChangeHandler owner, JobConf conf) throws IOException, InterruptedException {
         super(conf, false);
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
@@ -190,8 +190,13 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
     }
 
 
+  /**
+   * {@inheritDoc}
+   * @throws IOException IO problems
+   * @throws InterruptedException startup interrupted
+   */
     @Override
-    void initialize() throws IOException {
+    void initialize() throws IOException, InterruptedException {
         super.initialize();
         //now check that the JT address is/was valid, if not, bail out
         if(getJobTrackerAddress().getAddress().isAnyLocalAddress()) {

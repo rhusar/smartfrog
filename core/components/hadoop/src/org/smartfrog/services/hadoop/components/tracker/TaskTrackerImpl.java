@@ -78,7 +78,8 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
 
     /** {@inheritDoc} */
     @Override
-    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+    protected Service createTheService(ManagedConfiguration configuration)
+        throws IOException, SmartFrogException, InterruptedException {
         return new ExtTaskTracker(this, configuration);
     }
 

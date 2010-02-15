@@ -27,18 +27,13 @@ LocalHadoopCompound extends Compound {
   namenodeURL      NAME_NODE_URL;
   datanodeURL      DATA_NODE_URL ;
 
-  logDir extends TempDir {
+  logDir extends TempDir;
 
-  }
+  dataDir extends TempDir;
 
-  dataDir extends TempDir {
-
-  }
-
-  nameDir extends TempDir {
-
- }
-
+  nameDir extends TempDir;
+  
+  editsDir extends TempDir;
 }
 
 LocalNameNodeCompound extends LocalHadoopCompound {
@@ -52,6 +47,8 @@ LocalNameNodeCompound extends LocalHadoopCompound {
     dataDirectories [dataDir];
     nameDirectory LAZY PARENT:nameDir;
     nameDirectories [nameDirectory];
+    editsDir LAZY PARENT:editsDir:absolutePath;
+    editDirectories [editsDir];
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup IF (TEST_MODE) THEN ACTION_FORMAT ELSE ACTION_REGULAR FI;
     dfs.http.address namenodeURL;
