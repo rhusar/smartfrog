@@ -41,6 +41,8 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
             ATTR_DATA_DIRECTORIES);
     public static final Reference NAME_DIRECTORIES = new Reference(
             ATTR_NAME_DIRECTORIES);
+    public static final Reference NAMENODE_EDIT_DIRECTORIES = new Reference(
+            ATTR_EDIT_DIRECTORIES);
     public static final Reference TEST_MODE_DELETE_DIRECTORIES = new Reference(ATTR_TEST_MODE_DELETE_DIRECTORIES);
     protected boolean testModeDeleteDirectories = false;
 

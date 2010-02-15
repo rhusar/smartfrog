@@ -24,18 +24,45 @@ import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 
 
 /**
- *
+ * a filesystem node
  */
 public interface FileSystemNode extends HadoopConfiguration {
 
-    String ATTR_MIN_DISK_SPACE = "minDiskSpaceMB";
-    String ATTR_DATA_DIRECTORIES = "dataDirectories";
-    String ATTR_NAME_DIRECTORIES = "nameDirectories";
     /**
      * {@value}
      */
+    String ATTR_MIN_DISK_SPACE = "minDiskSpaceMB";
+    /**
+     * {@value}
+     */
+    String ATTR_DATA_DIRECTORIES = "dataDirectories";
+    /**
+     * {@value}
+     */
+    String ATTR_NAME_DIRECTORIES = "nameDirectories";
+    /**
+     * List of directories for the dfs.namenode.edits.dir attribute
+     * {@value}
+     */
+    String ATTR_EDIT_DIRECTORIES = "editDirectories";
+    /**
+     * Should ping check things are running?
+     * {@value}
+     */
     String ATTR_CHECK_RUNNING = "checkRunning";
+    /**
+     * Do you expect the node to terminate
+     * {@value}
+     */
     String ATTR_EXPECT_NODE_TERMINATION = "expectNodeTermination";
+    /**
+     * Where to log
+     * {@value}
+     */
     String ATTR_LOG_DIR = "logDir";
+    /**
+     * in test mode? Delete directories?
+     * {@value}
+     */
     String ATTR_TEST_MODE_DELETE_DIRECTORIES = "testModeDeleteDirectories";
 }

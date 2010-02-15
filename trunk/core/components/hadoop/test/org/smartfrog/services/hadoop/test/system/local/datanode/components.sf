@@ -39,9 +39,7 @@ LocalDataNodeTest extends ExpectDeploy {
  * Test the local name node
  */
 testLocalDataNode extends LocalDataNodeTest {
-  description "bring up a data node";
-
-
+  description "bring up a namenode and data node and check their ports";
 
   tests extends FileSystemLiveSequence {
     namenode LAZY action:namenode;

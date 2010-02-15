@@ -31,6 +31,8 @@ testDefaultConf extends TestCompound {
 
   action extends DefaultHadoopConfiguration  {
     conf.dump CONF_DUMP ;
+    io.sort.record.percent 0.05;
+    hadoop.native.lib true;
   }
 
   tests extends Sequence {
@@ -141,7 +143,7 @@ testFloatingPointValue extends testDefaultConf {
 
   tests extends Sequence {
 
-    fs.hdfs.impl extends AssertWorkflow {
+    io.sort.record.percent extends AssertWorkflow {
       equalityIgnoresCase true;
       equalsString1 "0.05";
       equalsString2 LAZY action:io.sort.record.percent;

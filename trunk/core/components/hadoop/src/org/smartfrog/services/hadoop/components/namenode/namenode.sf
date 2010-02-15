@@ -30,6 +30,8 @@ ClusteredNameNode extends ClusteredNameDirNode {
   //the data directories, again a list of directories
   dataDirectories TBD;
 
+  //edit directories, again a list of Dirs. Requird
+  editDirectories TBD;
   //log directory
   logDir TBD;
 

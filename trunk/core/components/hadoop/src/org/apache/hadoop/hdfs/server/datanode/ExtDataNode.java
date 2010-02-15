@@ -83,9 +83,9 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
      * @throws InterruptedException if the thread was interrupted on startup
      */
     @Override
-    public void innerStart() throws IOException, InterruptedException {
+    public void serviceStart() throws IOException, InterruptedException {
       try {
-          super.innerStart();
+          super.serviceStart();
       } catch (BindException e) {
           InetSocketAddress http = getHttpAddress(getConf());
           InetSocketAddress https = getHttpsAddress(getConf(), http.getHostName());
@@ -97,8 +97,6 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
                   + " IPC=" + ipc).initCause(e);
       }
       register();
-
-
       startWorkerThread();
     }
 
@@ -121,9 +119,9 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
      * Shut down this instance of the datanode. Returns only after shutdown is complete.
      */
     @Override
-    public synchronized void innerClose() throws IOException {
-        LOG.info("Terminating ExtDataNode");
-        super.innerClose();
+    public synchronized void serviceClose() throws IOException {
+        LOG.info("Closing ExtDataNode");
+        super.serviceClose();
     }
 
 
@@ -260,7 +258,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo, ConfigurationA
     }
 
 
-    /**
+  /**
      * This is a private worker thread that can be interrupted better
      */
     private class ExtDataNodeThread extends WorkflowThread {

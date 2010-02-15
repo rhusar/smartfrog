@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -111,20 +113,29 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @param createDirs create the directories?
      * @return the directories all converted to a list split by commas
      */
-    public static String createDirectoryList(Vector<String> dirs, boolean createDirs) {
+    public static String createDirectoryList(Vector<String> dirs, boolean createDirs) 
+      throws FileNotFoundException {
         StringBuilder path = new StringBuilder();
+        int failureCount = 0;
+        StringBuilder failureText = new StringBuilder();
         for (String dir : dirs) {
             File directory = new File(dir);
             if (createDirs) {
                 if(!directory.mkdirs() && !directory.exists()) {
+                    String message = "Failed to create directory " + directory;
                     LogFactory.getLog(HadoopComponentImpl.class.getName())
-                            .warn("Failed to create directory " + directory);
+                            .warn(message);
+                    failureCount++;
+                    failureText.append(message).append("\n");
                 }
             }
             if (path.length() > 0) {
                 path.append(',');
             }
             path.append(directory.getAbsolutePath());
+        }
+        if (failureCount == dirs.size()) {
+            throw new FileNotFoundException("Failed to create any of " + path.toString());
         }
         return path.toString();
     }
@@ -142,7 +153,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      */
     public static Vector<String> createDirectoryListAttribute(Prim prim, Reference sourceRef,
                                                               String replaceAttribute)
-            throws RemoteException, SmartFrogException {
+            throws RemoteException, SmartFrogException, FileNotFoundException {
         Vector<String> dirs;
         dirs = FileSystem.resolveFileList(prim, sourceRef, null, true, null);
         String value = createDirectoryList(dirs, true);
@@ -161,7 +172,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      */
     protected Vector<String> createDirectoryListAttribute(Reference sourceRef,
                                                           String replaceAttribute)
-            throws RemoteException, SmartFrogException {
+            throws RemoteException, SmartFrogException, FileNotFoundException {
         return createDirectoryListAttribute(this, sourceRef, replaceAttribute);
     }
 

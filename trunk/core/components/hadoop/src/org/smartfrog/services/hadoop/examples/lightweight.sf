@@ -100,6 +100,7 @@ TransientHadoopCompound extends HadoopCompoundBase {
   dataDir extends TempDir;
   nameDir extends TempDir;
   tmpDir extends TempDir;
+  editsDir extends TempDir;
 }
 
 /**
@@ -124,6 +125,8 @@ TransientNameNodeCompound extends TransientHadoopCompound {
     //dataDirectories [LAZY PARENT:dataDir];
     nameDirectory LAZY PARENT:nameDir:absolutePath;
     nameDirectories [nameDirectory];
+    editsDir LAZY PARENT:editsDir:absolutePath;
+    editDirectories [editsDir];
     //dfs.name.dir nameDirectories;
     hadoop.tmp.dir LAZY PARENT:tmpDir;
 

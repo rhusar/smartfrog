@@ -19,6 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
+import org.apache.hadoop.hdfs.DFSConfigKeys;
+
 import java.rmi.Remote;
 
 
@@ -36,6 +38,12 @@ public interface ConfigurationAttributes extends Remote {
     String DFS_DATA_DIR = "dfs.data.dir";
     /** {@value} */
     String DFS_NAME_DIR = "dfs.name.dir";
+
+    /** {@value} */
+    String DFS_NAMENODE_NAME_DIR = DFSConfigKeys.DFS_NAMENODE_NAME_DIR_KEY;
+    /** {@value} */
+    String DFS_NAMENODE_EDITS_DIR = DFSConfigKeys.DFS_NAMENODE_EDITS_DIR_KEY;
+  
     /** {@value} */
     String DFS_NAMENODE_STARTUP = "dfs.namenode.startup";
     /** {@value} */
