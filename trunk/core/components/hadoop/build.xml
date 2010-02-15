@@ -106,21 +106,59 @@
       <condition><equals arg1="${hadoop.version}" arg2="latest.integration"/> </condition>
       You need a proper hadoop.version number and not ${hadoop.version}
     </fail>
-    <property name="hadoop.target.dir"
-      location="${core.dir}/antbuild/repository/org.apache.hadoop/hadoop-core/${hadoop.version}" />
-    <mkdir dir="${hadoop.target.dir}" />
-    <property name="hadoop.artifact.name"
+    <property name="hadoop.repo.dir"
+              location="${core.dir}/antbuild/repository/org.apache.hadoop/" />
+    <property name="hadoop-core.target.dir"
+      location="${hadoop.repo.dir}/hadoop-core/${hadoop.version}" />
+    <mkdir dir="${hadoop-core.target.dir}" />
+    <property name="hadoop-core.artifact.name"
       value="hadoop-core-${hadoop.version}.jar" />
-    <property name="hadoop.artifact"
-      location="build/ivy/lib/redist/${hadoop.artifact.name}" />
+    <property name="hadoop-core.artifact"
+      location="build/ivy/lib/hadoop-jars/${hadoop-core.artifact.name}" />
     <fail>
-      <condition><not><available file="${hadoop.artifact}" /></not></condition>
-      Missing File: "${hadoop.artifact}"
+      <condition><not><available file="${hadoop-core.artifact}" /></not></condition>
+      Missing File: "${hadoop-core.artifact}"
       This could be due to the hadoop version expected "${hadoop.version}" not
       matching what is being built locally
     </fail>
-    <copy todir="${hadoop.target.dir}" file="${hadoop.artifact}"/>
-    <echo>Copied ${hadoop.artifact}</echo>
+    <copy todir="${hadoop-core.target.dir}" file="${hadoop-core.artifact}"/>
+    <echo>Copied ${hadoop-core.artifact}</echo>
+    <property name="hadoop-hdfs.target.dir"
+              location="${hadoop.repo.dir}/hadoop-hdfs/${hadoop.version}" />
+    <mkdir dir="${hadoop-hdfs.target.dir}" />
+    <property name="hadoop-hdfs.artifact.name"
+              value="hadoop-hdfs-${hadoop.version}.jar" />
+    <property name="hadoop-hdfs.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-hdfs.artifact.name}" />
+    <copy todir="${hadoop-hdfs.target.dir}" file="${hadoop-hdfs.artifact}"/>
+
+    <property name="hadoop-mapred.target.dir"
+              location="${hadoop.repo.dir}/hadoop-mapred/${hadoop.version}" />
+    <mkdir dir="${hadoop-mapred.target.dir}" />
+    <property name="hadoop-mapred.artifact.name"
+              value="hadoop-mapred-${hadoop.version}.jar" />
+    <property name="hadoop-mapred.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-mapred.artifact.name}" />
+    <copy todir="${hadoop-mapred.target.dir}" file="${hadoop-mapred.artifact}"/>
+
+    <property name="hadoop-mapred-examples.target.dir"
+              location="${hadoop.repo.dir}/hadoop-mapred-examples/${hadoop.version}" />
+    <mkdir dir="${hadoop-mapred-examples.target.dir}" />
+    <property name="hadoop-mapred-examples.artifact.name"
+              value="hadoop-mapred-examples-${hadoop.version}.jar" />
+    <property name="hadoop-mapred-examples.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-mapred-examples.artifact.name}" />
+    <copy todir="${hadoop-mapred-examples.target.dir}" file="${hadoop-mapred-examples.artifact}"/>
+
+    <property name="hadoop-mapred-tools.target.dir"
+              location="${hadoop.repo.dir}/hadoop-mapred-tools/${hadoop.version}" />
+    <mkdir dir="${hadoop-mapred-tools.target.dir}" />
+    <property name="hadoop-mapred-tools.artifact.name"
+              value="hadoop-mapred-tools-${hadoop.version}.jar" />
+    <property name="hadoop-mapred-tools.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-mapred-tools.artifact.name}" />
+    <copy todir="${hadoop-mapred-tools.target.dir}" file="${hadoop-mapred-tools.artifact}"/>
+    
   </target>
 
   <target name="loadclass" depends="ready-to-test">
