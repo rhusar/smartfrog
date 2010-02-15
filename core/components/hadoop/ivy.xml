@@ -52,7 +52,7 @@
           description="dependencies for KFS file system support"/>
     <conf name="ftp"
           description="dependencies for working with FTP file systems"/>
-
+    <conf name="hadoop-jars" extends="hadoop-core"/>
   </configurations>
 
   <publications>
@@ -111,7 +111,7 @@
     We declare dependencies only on the hadoop masters
     -->
     <dependency org="org.apache.hadoop"
-                name="hadoop-common"
+                name="hadoop-core"
                 rev="${hadoop.version}"
                 changing="true"
                 conf="hadoop-core->default">
@@ -140,7 +140,26 @@
       <exclude org="com.thoughtworks.paranamer"/>
       <exclude org="org.slf4j"/>
     </dependency>
-
+    <dependency org="org.apache.hadoop"
+                name="hadoop-mapred-examples"
+                rev="${hadoop.version}"
+                changing="true"
+                conf="hadoop-jars->default">
+      <exclude org="org.mortbay.jetty"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="org.slf4j"/>
+    </dependency>
+    <dependency org="org.apache.hadoop"
+                name="hadoop-mapred-tools"
+                rev="${hadoop.version}"
+                changing="true"
+                conf="hadoop-jars->default">
+      <exclude org="org.mortbay.jetty"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="org.slf4j"/>
+    </dependency>
     <!-- client CLI. May also be used on the server to pass stuff to forked processes-->
     <dependency org="commons-cli"
                 name="commons-cli"

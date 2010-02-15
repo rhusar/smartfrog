@@ -20,7 +20,7 @@
 
   <property name="smartfrog.sourceforge.repository"
       value="http://smartfrog.sourceforge.net/repository/" override="false"/>
-
+  <property name="m2.fs.repo.dir" value="${user.home}/.m2/repository"/>
     
     
   <property name="maven2.pattern"
@@ -52,6 +52,10 @@
       m2compatible="true" >
       <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
     </filesystem>
+    <filesystem name="fs-m2" m2compatible="true" force="true">
+      <artifact pattern="${m2.repo.dir}/org/apache/hadoop/[module]/[revision]/[module]-[revision].[ext]"/>
+      <ivy pattern="${m2.repo.dir}/org/apache/hadoop/[module]/[revision]/[module]-[revision].pom"/>
+    </filesystem>
     <ibiblio name="maven2"
         root="${ivy.ibiblio.root}"
         pattern="${maven2.pattern.ext}"
@@ -76,6 +80,7 @@
     <chain name="default" dual="true">
       <resolver ref="local"/>
       <resolver ref="team2"/>
+      <resolver ref="fs-m2"/>
       <resolver ref="maven2"/>
       <resolver ref="sun"/>
       <resolver ref="maven.restlet.org"/>
