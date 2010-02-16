@@ -50,16 +50,26 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
     private static final String NOT_EXTERNAL
             = "This node is not externally visible. Unless we are in the cell, deployment will not work";
     private static final int SLEEP_TIME = 15;
-    /** Time to sleep waiting for sfStart : {@value} */
+    /**
+     * Time to sleep waiting for sfStart : {@value}
+     */
     private static final int STARTUP_SLEEP_TIME = 15;
-    /** #of times to proble for the start command {@value} */
+    /**
+     * #of times to proble for the start command {@value}
+     */
     private static final int STARTUP_LOCATE_ATTEMPTS = 6;
-    /** command to start an app{@value} */
+    /**
+     * command to start an app{@value}
+     */
     private static final String SF_START = "sfStart";
-    /** ping command: {@value} */
+    /**
+     * ping command: {@value}
+     */
     private static final String SF_PING = "sfPing";
 
-    /** #of times to proble for the ping command {@value} */
+    /**
+     * #of times to proble for the ping command {@value}
+     */
     private static final int STARTUP_PING_ATTEMPTS = 4;
     /**
      * Time to sleep waiting for sfPing : {@value}
@@ -82,11 +92,11 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         factory.getLog().info(text);
         builder.append(text).append('\n');
     }
-    
+
     private void info(String text) {
         factory.getLog().info(text);
     }
-    
+
     private void error(String text) {
         factory.getLog().error(text);
     }
@@ -108,7 +118,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
     @Override
     public synchronized String deployApplication(String name, ComponentDescription cd)
             throws IOException, SmartFrogException {
-        StringBuilder messages=new StringBuilder();
+        StringBuilder messages = new StringBuilder();
         if (!getClusterNode().isExternallyVisible()) {
             info(NOT_EXTERNAL, messages);
         }
@@ -126,7 +136,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         try {
             PortUtils.waitForHostnameToResolve(hostname, factory.getPortConnectTimeout(), 500);
         } catch (InterruptedException e) {
-            throw (InterruptedIOException) new InterruptedIOException("Interrupted waiting for "+ hostname)
+            throw (InterruptedIOException) new InterruptedIOException("Interrupted waiting for " + hostname)
                     .initCause(e);
         }
         PortUtils.checkPort(hostname, factory.getPort(), factory.getPortConnectTimeout());
@@ -144,7 +154,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
             //copy up the temp files
             info("copying " + localtempfile + " to " + desttempfile);
             scp.doCopy(session, destFiles, sourceFiles);
-            
+
             String sshCommand;
             sshCommand = makeSFCommand(SF_START) + " " + "localhost" + " " + name + " " + desttempfile;
             info("executing: " + sshCommand, messages);
@@ -154,12 +164,12 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
                 commandsList.add("which " + SF_START + " || sleep " + STARTUP_SLEEP_TIME);
             }
             commandsList.add("which " + SF_START + " || echo " + ERROR_NO_EXECUTABLE + SF_START);
-            String sfPing= makeSFCommand(SF_PING) + " " + "localhost";
+            String sfPing = makeSFCommand(SF_PING) + " " + "localhost";
             for (int i = 0; i < STARTUP_PING_ATTEMPTS; i++) {
                 commandsList.add(sfPing + " || sleep " + STARTUP_PING_SLEEP_TIME);
             }
             commandsList.add(sshCommand);
-            commandsList.add("sleep "+ SLEEP_TIME);
+            commandsList.add("sleep " + SLEEP_TIME);
             if (!factory.isKeepFiles()) {
                 commandsList.add("rm " + desttempfile);
             }
