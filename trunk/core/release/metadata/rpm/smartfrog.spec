@@ -854,12 +854,17 @@ fi
 %files hadoop
 %{linkdir}/sf-hadoop.jar
 %{libdir}/sf-hadoop-${smartfrog.version}.jar
-%{libdir}/hadoop-common-${hadoop.version}.jar
-%{linkdir}/hadoop-common.jar
+%{libdir}/hadoop-core-${hadoop.version}.jar
+%{linkdir}/hadoop-core.jar
 %{libdir}/hadoop-hdfs-${hadoop.version}.jar
 %{linkdir}/hadoop-hdfs.jar
 %{libdir}/hadoop-mapred-${hadoop.version}.jar
 %{linkdir}/hadoop-mapred.jar
+%{libdir}/hadoop-mapred-tools-${hadoop.version}.jar
+%{linkdir}/hadoop-mapred-tools.jar
+%{libdir}/hadoop-mapred-examples-${hadoop.version}.jar
+%{linkdir}/hadoop-mapred-examples.jar
+
 
 %{libdir}/avro-${avro.version}.jar
 %{linkdir}/avro.jar

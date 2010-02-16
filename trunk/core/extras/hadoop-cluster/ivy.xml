@@ -80,7 +80,7 @@
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
-        conf="redist->default,server"/>
+        conf="redist->default,server,hadoop-jars"/>
 <!--
 
     <dependency org="org.smartfrog"
