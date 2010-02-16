@@ -154,7 +154,8 @@ public class ActionDeploy extends ConfigurationAction {
                 throw sfex;
             } else {
                 throw new SmartFrogDeploymentException(
-                        "deploying description '" + url + "' for '" + appName + "'",
+                        "deploying description '" + url + "' for '" + appName + "'"
+                        +" : " + sfex.toString(),
                         sfex,
                         null,
                         context);
