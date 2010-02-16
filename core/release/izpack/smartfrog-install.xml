@@ -516,7 +516,7 @@ SmartFrog to deploy complex systems.
         provide part of a Hadoop cluster, and on the client to work with a remote cluster.
 
         Includes:
-        hadoop-core-${hadoop.version}.jar
+        hadoop JARs version ${hadoop.version}
         commons-cli-${commons-cli.version}.jar
         jets3t-${jets3t.version}.jar
         xmlenc-${xmlenc.version}.jar
@@ -534,7 +534,7 @@ SmartFrog to deploy complex systems.
         targetdir="$INSTALL_PATH"
         unpack="true"/>
 
-      <file src="ivy/lib/package-hadoop/hadoop-common-${hadoop.version}.jar"
+      <file src="ivy/lib/package-hadoop/hadoop-core-${hadoop.version}.jar"
         targetdir="$INSTALL_PATH/lib"
         />
       <file src="ivy/lib/package-hadoop/hadoop-hdfs-${hadoop.version}.jar"
@@ -543,6 +543,12 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-hadoop/hadoop-mapred-${hadoop.version}.jar"
         targetdir="$INSTALL_PATH/lib"
         />
+      <file src="ivy/lib/package-hadoop/hadoop-mapred-examples-${hadoop.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-hadoop/hadoop-mapred-tools-${hadoop.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
       <file src="ivy/lib/package-hadoop/commons-cli-${commons-cli.version}.jar"
         targetdir="$INSTALL_PATH/lib"
         />
