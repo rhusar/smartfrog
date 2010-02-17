@@ -12,9 +12,16 @@ public class ClusterDrivenFilesystemTest extends HadoopTestBase {
         super(name);
     }
 
-   public void testClusteredJobTracker() throws Throwable {
+    public void testClusteredJobTracker() throws Throwable {
         checkMapRedCluster();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusteredJobTracker");
+        enableFailOnPortCheck();
+    }
+
+
+    public void testClusteredFilesystem() throws Throwable {
+        checkMapRedCluster();
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusteredFilesystem");
         enableFailOnPortCheck();
     }
 
