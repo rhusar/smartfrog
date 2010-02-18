@@ -20,32 +20,23 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.submitter;
 
 import org.smartfrog.services.hadoop.components.HadoopCluster;
-import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
 /**
  * Created 16-Apr-2008 14:28:09
  */
 
 
-public interface Submitter extends HadoopConfiguration, HadoopCluster, Job {
+public interface Submitter extends HadoopConfiguration, HadoopCluster {
 
     /**
      * {@value}
      */
-//    String ATTR_JOB = "job";
+    String ATTR_JOB = "job";
 
-    /**
-     * {@value}
-     */
     String ATTR_TERMINATEJOB = "terminateJob";
 
-    /**
-     * {@value}
-     */
     String ATTR_JOBID = "jobID";
-    /**
-     * {@value}
-     */
     String ATTR_JOBURL = "jobURL";
 
     /**
@@ -60,26 +51,8 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster, Job {
 
     /**
      * should we delete the output directory on startup?
-     * {@value}
      */
 
     String ATTR_DELETE_OUTPUT_DIR_ON_STARTUP = "deleteOutputDirOnStartup";
-
-    /**
-     * {@value}
-     */
-    String ATTR_RESULTS = "results";
-
-    /**
-     * {@value}
-     */
-    String ATTR_JOB_TIMEOUT = "jobTimeout";
-
-    /**
-     * {@value}
-     * ask for the job configuration to be dumped on a complete failure.
-     * useful when you get odd configuration errors
-     */
-    String ATTR_DUMP_ON_FAILURE = "dumpOnFailure";
 
 }

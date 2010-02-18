@@ -20,40 +20,35 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.smartfrog.services.hadoop.common.DfsUtils;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.smartfrog.services.filesystem.FileExists;
 import org.smartfrog.services.hadoop.components.cluster.CheckableCondition;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
+import java.net.URI;
 
 /**
  * Created 27-May-2008 15:42:48
  */
 
 public class DfsPathExistsImpl extends DfsPathOperationImpl
-        implements CheckableCondition, DfsPathExists {
+        implements CheckableCondition, DfsPathOperation, FileExists {
 
-    private boolean checkOnLiveness;
-    private boolean verbose;
     private boolean canBeFile = false;
     private boolean canBeDir = false;
     private long minFileSize = 0;
     private long maxFileSize = -1;
-    private long minTotalFileSize = 0;
-    private long maxTotalFileSize = -1;
-    private int minFileCount = 0;
-    private int maxFileCount = -1;
-    private int minReplication = 0;
-    private int maxReplication = -1;
 
-    private FileSystem dfs;
+    private boolean checkOnLiveness;
+    private boolean verbose;
+    public static final String ATTR_VERBOSE="verbose";
+
+    private DistributedFileSystem dfs;
 
 
     public DfsPathExistsImpl() throws RemoteException {
@@ -65,26 +60,16 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, false);
-        //bind to the fs
         dfs = createFileSystem();
 
-        canBeFile = sfResolve(ATTR_CAN_BE_FILE, true, true);
-        canBeDir = sfResolve(ATTR_CAN_BE_DIR, true, true);
-        minFileSize = sfResolve(ATTR_MIN_SIZE, minFileSize, true);
-        maxFileSize = sfResolve(ATTR_MAX_SIZE, maxFileSize, true);
-        minReplication = sfResolve(ATTR_MIN_REPLICATION_FACTOR, minReplication, true);
-        maxReplication = sfResolve(ATTR_MAX_REPLICATION_FACTOR, maxReplication, true);
-        minFileCount = sfResolve(ATTR_MIN_FILE_COUNT, minFileCount, true);
-        maxFileCount = sfResolve(ATTR_MAX_FILE_COUNT, maxFileCount, true);
-        minTotalFileSize = sfResolve(ATTR_MIN_TOTAL_FILE_SIZE, minTotalFileSize, true);
-        maxTotalFileSize = sfResolve(ATTR_MAX_TOTAL_FILE_SIZE, maxTotalFileSize, true);
+        canBeFile = sfResolve(FileExists.ATTR_CAN_BE_FILE, true, true);
+        canBeDir = sfResolve(FileExists.ATTR_CAN_BE_DIR, true, true);
+        minFileSize = sfResolve(FileExists.ATTR_MIN_SIZE, minFileSize, true);
+        maxFileSize = sfResolve(FileExists.ATTR_MAX_SIZE, maxFileSize, true);
         verbose = sfResolve(ATTR_VERBOSE, verbose, true);
-
-        //now maybe check
         if (checkOnStartup) {
             checkPathExists();
         }
@@ -125,14 +110,13 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      *
      * @param status termination status
      */
-    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         try {
-            if (closeFilesystem) {
-                DfsUtils.closeDfs(dfs);
+            if (dfs != null) {
+                dfs.close();
             }
-        } catch (SmartFrogRuntimeException e) {
+        } catch (IOException e) {
             sfLog().info("When closing the file system " + e, e);
         } finally {
             dfs = null;
@@ -166,7 +150,6 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            In case of network/rmi error
      */
-    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         super.sfPing(source);
@@ -175,11 +158,6 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
         }
     }
 
-    /**
-     * check that a path exists
-     *
-     * @throws SmartFrogLivenessException if it does not, or it is the wrong type/size
-     */
     private void checkPathExists() throws SmartFrogLivenessException {
         String filename = getPathName() + " in " + dfs.toString();
         try {
@@ -187,58 +165,13 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
                 throw new SmartFrogLivenessException("Missing path " + filename);
             }
             FileStatus status = dfs.getFileStatus(getPath());
-            if (verbose) {
-                sfLog().info("Path " + getPath() + " size " + status.getLen()
-                        + " last modified:" + status.getModificationTime());
+            if(verbose) {
+                sfLog().info("Path "+getPath() +" size "+status.getLen()
+                        +" last modified:"+status.getModificationTime());
             }
             if (status.isDir()) {
-                //it is a directory. Run the directory checks
-
-                FileStatus[] statuses = dfs.listStatus(getPath());
-                if (statuses == null) {
-                    throw new SmartFrogLivenessException("Unable to list the status of " + filename);
-                }
-                int fileCount = statuses.length;
-                StringBuilder filenames = new StringBuilder();
-
-                long totalFileSize = 0;
-                for (FileStatus fstat : statuses) {
-                    totalFileSize += fstat.getLen();
-                    filenames.append(fstat.getPath() + "\t").append('\t').append(fstat.getBlockSize()).append("\n");
-                    filenames.append('\n');
-                    if (verbose) {
-                        sfLog().info(fstat.getPath()+"\t"+ fstat.getBlockSize()+"\n");
-                    }
-                }
-
                 if (!canBeDir) {
-                    throw new SmartFrogLivenessException("Expected a file, got a directory: " + filename
-                    +" containing "+fileCount + " file(s):\n"
-                    + filenames);
-                }
-                if (fileCount < minFileCount) {
-                    throw new SmartFrogLivenessException("Not enough files under " + filename
-                            + " required " + minFileCount + " found " + fileCount
-                            + " :\n"
-                            + filenames);
-                }
-                if (maxFileCount >= 0 && fileCount > maxFileCount) {
-                    throw new SmartFrogLivenessException("Too many files under " + filename
-                            + " maximum " + maxFileCount + " found " + fileCount
-                            + " :\n"
-                            + filenames);
-                }
-                if (totalFileSize < minTotalFileSize) {
-                    throw new SmartFrogLivenessException("not enough file content " + filename
-                            + " required " + minTotalFileSize + " found " + totalFileSize
-                            + " :\n"
-                            + filenames);
-                }
-                if (maxTotalFileSize >= 0 && totalFileSize > maxTotalFileSize) {
-                    throw new SmartFrogLivenessException("too much enough file content " + filename
-                            + " maximum " + minTotalFileSize + " found " + totalFileSize
-                            + " :\n"
-                            + filenames);
+                    throw new SmartFrogLivenessException("Not allowed to be a directory: " + filename);
                 }
             } else {
                 if (!canBeFile) {
@@ -246,24 +179,14 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
                 }
                 long size = status.getLen();
                 if (size < minFileSize) {
-                    throw new SmartFrogLivenessException("File " + filename + " is too small at " + size
+                    throw new SmartFrogLivenessException(" File " + filename + " is too small at " + size
                             + " bytes for the minimum size " + minFileSize);
                 }
                 if (maxFileSize >= 0 && size > maxFileSize) {
-                    throw new SmartFrogLivenessException("File " + filename + " is too big at " + size
-                            + " bytes for the maximum size " + maxFileSize);
+                    throw new SmartFrogLivenessException(" File " + filename + " is too big at " + size
+                            + " bytes for the maximum size " + minFileSize);
                 }
-                short replication = status.getReplication();
-                if (replication < minReplication) {
-                    throw new SmartFrogLivenessException("File  " + filename + " has a replication factor of"
-                            + replication
-                            + " which is less than the minimum value of " + minReplication);
-                }
-                if (maxReplication >= 0 && replication > maxReplication) {
-                    throw new SmartFrogLivenessException("File  " + filename + " has a replication factor of"
-                            + replication
-                            + " which is less than the maximum value of " + maxReplication);
-                }
+
             }
         } catch (IOException e) {
             throw new SmartFrogLivenessException("Missing path " + filename, e);

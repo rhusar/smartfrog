@@ -21,10 +21,17 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
@@ -34,33 +41,51 @@ import java.rmi.RemoteException;
  * absent. It also has support for a worker thread (which get terminated during shutdown, if set)
  */
 public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
-    protected boolean closeFilesystem;
+
+  private WorkflowThread worker;
 
 
-    protected DfsOperationImpl() throws RemoteException {
+  protected DfsOperationImpl() throws RemoteException {
     }
 
-
-    /**
-     * start up, bind to the cluster
+  /**
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @param status termination status
      */
-    @Override
-    public void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        closeFilesystem = sfResolve(ATTR_CLOSE_FILESYSTEM, true, true);
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        //shut down any non-null worker
+        terminateWorker();
     }
 
     /**
+     * Shut down any worker if running
+     */
+    protected synchronized void terminateWorker() {
+        WorkflowThread w = worker;
+        worker = null;
+        SmartFrogThread.requestThreadTermination(w);
+    }
+
+    protected synchronized WorkflowThread getWorker() {
+        return worker;
+    }
+
+    protected synchronized void setWorker(WorkflowThread worker) {
+        this.worker = worker;
+    }
+
+
+  /**
      * For subclassing: this routine will be called by the default worker thread, if that thread gets started
      *
      * @param fileSystem the filesystem; this is closed afterwards
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf)
+    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf)
             throws Exception {
 
     }
@@ -72,19 +97,14 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
      */
     protected void performDfsOperation() throws Exception {
         ManagedConfiguration conf = createConfiguration();
-        FileSystem fileSystem = DfsUtils.createFileSystem(conf);
-        
+        DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
         try {
             performDfsOperation(fileSystem, conf);
         } catch (Exception e) {
-            if(closeFilesystem) {
-                DfsUtils.closeQuietly(fileSystem);
-            }
+            DfsUtils.closeQuietly(fileSystem);
             throw e;
         }
-        if (closeFilesystem) {
-            DfsUtils.closeDfs(fileSystem);
-        }
+        DfsUtils.closeDfs(fileSystem);
     }
 
     /**
@@ -117,7 +137,7 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
          *
          * @param workflowTermination is workflow termination expected?
          */
-        protected DfsWorkerThread(boolean workflowTermination) {
+        public DfsWorkerThread(boolean workflowTermination) {
             super(DfsOperationImpl.this, workflowTermination);
         }
 
@@ -127,7 +147,6 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
          *
          * @throws Throwable if anything went wrong
          */
-        @SuppressWarnings({"RefusedBequest"})
         public void execute() throws Throwable {
             performDfsOperation();
         }

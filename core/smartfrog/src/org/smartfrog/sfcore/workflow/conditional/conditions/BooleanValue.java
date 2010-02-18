@@ -19,9 +19,9 @@
  */
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
@@ -33,7 +33,7 @@ import java.rmi.RemoteException;
 
 public class BooleanValue extends PrimImpl implements Condition {
 
-    public static final String ATTR_VALUE = "value";
+    public static final String ATTR_VALUE="value";
 
 
     public BooleanValue() throws RemoteException {
@@ -43,10 +43,12 @@ public class BooleanValue extends PrimImpl implements Condition {
      * Evaluate the condition.
      *
      * @return true always
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        return sfResolve(ATTR_VALUE, false, true);
+        boolean value = sfResolve(ATTR_VALUE, false, true);
+        return value;
     }
 }

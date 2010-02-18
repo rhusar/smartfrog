@@ -24,15 +24,15 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.Version;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.security.ExitTrappingSecurityManager;
 
 /**
- * Exit error codes. *
+ * Exit error codes.
+ *
  */
 public final class ExitCodes {
 
     /** Core Log  */
-    private static LogSF sflog = null;
+    private LogSF sflog = null;
 
     /** Utility class */
     private ExitCodes() {
@@ -78,35 +78,24 @@ public final class ExitCodes {
     /**
      * Exits from the system.
      * This is the only place in the framework where System.exit() should be used.
-     * That way behaviour can be altered.
+     * That way a subjclass can change exit behaviour (within limits)
      * @param code int
      */
     public static void exit(int code) {
         try {
-            if (LogFactory.sfGetProcessLog().isDebugEnabled()) {
-                LogFactory.sfGetProcessLog().debug ("SmartFrog System.Exit code: "+ code
-                        + ", v" + Version.versionStringforrelease()); }
-        } catch (Throwable ignored) { /* ignore */ }
-        exitSilently(code);
-    }
+            if (LogFactory.sfGetProcessLog().isDebugEnabled()) { LogFactory.sfGetProcessLog().debug ("SmartFrog System.Exit code: "+ code +", v"+ Version.versionStringforrelease()); }
+        } catch (Throwable thr) { /* ignore */ }
 
-    /**
-     * Exits from the system. No log message is printed
-     *
-     * @param code integer exit code
-     */
-    public static void exitSilently(int code) {
-        ExitTrappingSecurityManager.setSystemExitPermitted(true);
         System.exit(code);
     }
 
     /**
-     * the log, creating the process log if needed
+     *
      * @return LogSF
      */
-    public static LogSF sfLog() {
+    public LogSF sfLog(){
          if (sflog==null) {
-             sflog = LogFactory.sfGetProcessLog();
+             sflog= LogFactory.sfGetProcessLog();
          }
          return sflog;
     }

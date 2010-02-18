@@ -20,16 +20,10 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.utils;
 
 /**
- * An execution interface. This is similar to Runnable, except that you can throw exceptions
+ * Created 11-Jun-2008 11:51:59
  */
 
 
 public interface Executable {
-
-    /**
-     * Execute in a thread
-     * @throws Throwable if something goes wrong
-     */
-    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     void execute() throws Throwable;
 }

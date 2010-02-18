@@ -36,13 +36,12 @@ import java.io.OutputStream;
 
 public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
 
-    public static final String ERROR_PREFIX_EMPTY = ATTR_PREFIX + " can not be an empty string";
+    public static final String ERROR_PREFIX_EMPTY = ATTR_PREFIX+ " can not be an empty string";
 
     private boolean createOnDeploy;
 
     /**
      * create a temporary file instance; do no real work (yet)
-     *
      * @throws RemoteException In case of network/rmi error
      */
     public TempFileImpl() throws RemoteException {
@@ -56,38 +55,37 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        createOnDeploy = sfResolve(ATTR_CREATE_ON_DEPLOY, createOnDeploy, true);
-        if (createOnDeploy) {
+        createOnDeploy= sfResolve(ATTR_CREATE_ON_DEPLOY, createOnDeploy, true);
+        if(createOnDeploy) {
             createTempFile();
         }
     }
 
     /**
      * Create the temporary file
-     *
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
     private void createTempFile() throws RemoteException, SmartFrogException {
         String prefix = sfResolve(ATTR_PREFIX, "", true);
-        if (prefix.isEmpty()) {
-            throw new SmartFrogException(ERROR_PREFIX_EMPTY, this);
+        if(prefix.length()==0) {
+            throw new SmartFrogException(ERROR_PREFIX_EMPTY,this);
         }
         String suffix = sfResolve(ATTR_SUFFIX, (String) null, false);
         String dir;
-        dir = FileSystem.lookupAbsolutePath(this, ATTR_DIRECTORY, null, null, false, null);
+        dir= FileSystem.lookupAbsolutePath(this,ATTR_DIRECTORY,null,null,false,null);
 
         String text = sfResolve(ATTR_TEXT, (String) null, false);
 
-        if (sfLog().isDebugEnabled()) {
-            sfLog().debug("Creating temp file in dir [" + dir + "], prefix=" + prefix
-                    + ", suffix=" + suffix + ", text=" + text);
+        if (sfLog().isDebugEnabled()){
+            sfLog().debug("Creating temp file in dir ["+dir+"], prefix="+prefix
+                           +", suffix="+suffix+", text="+text);
         }
 
         bind(FileSystem.createTempFile(prefix, suffix, dir));
 
         //Create File content if needed
-        if (text != null) {
+        if (text!=null) {
             String encoding = null;
             encoding = sfResolve(ATTR_TEXT_ENCODING, encoding, true);
             Writer wout = null;
@@ -100,7 +98,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
                 wout.close();
             } catch (IOException ioe) {
                 FileSystem.close(wout);
-                throw SmartFrogException.forward("When trying to write to " + getFile(), ioe);
+                throw SmartFrogException.forward("When trying to write to "+ getFile(),ioe);
             }
         }
         sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, file.toString());

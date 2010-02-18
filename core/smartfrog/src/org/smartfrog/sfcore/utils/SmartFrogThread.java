@@ -154,6 +154,7 @@ public class SmartFrogThread extends Thread implements Executable {
      * Internal initialization
      *
      * @param target what we want to run
+     * @param notify object to notify after the run. If null, it is set to <code>this</code>
      */
     private void init(Executable target) {
         executable = target;
@@ -302,7 +303,6 @@ public class SmartFrogThread extends Thread implements Executable {
      *
      * @throws Throwable if anything went wrong
      */
-    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public void execute() throws Throwable {
         if (runnable != null) {
             runnable.run();
@@ -339,9 +339,7 @@ public class SmartFrogThread extends Thread implements Executable {
     public synchronized void requestTermination() {
         if (!terminationRequested) {
             terminationRequested = true;
-            synchronized (terminationRequestNotifier) {
-                terminationRequestNotifier.notifyAll();
-            }
+            terminationRequestNotifier.notifyAll();
         }
     }
 
@@ -349,7 +347,7 @@ public class SmartFrogThread extends Thread implements Executable {
      * Add an interrupt to the thread termination
      */
     public synchronized void requestTerminationWithInterrupt() {
-        if (!isTerminationRequested() && isAlive()) {
+        if (!isTerminationRequested()) {
             requestTermination();
             //and interrupt
             interrupt();
@@ -379,8 +377,8 @@ public class SmartFrogThread extends Thread implements Executable {
         //not alive, so let's wait a bit
         try {
             join(timeout);
-        } catch (InterruptedException ignored) {
-            
+        } catch (InterruptedException e) {
+
         }
         //and try again
         return !isAlive();
@@ -439,29 +437,4 @@ public class SmartFrogThread extends Thread implements Executable {
             thread.requestTermination();
         }
     }
-
-    /**
-     * Request the thread to terminate -interrupting the thread if need be
-     *
-     * @param thread thread to terminate, can be null
-     */
-    public static void requestThreadTerminationWithInterrupt(SmartFrogThread thread) {
-        if (thread != null) {
-            thread.requestTerminationWithInterrupt();
-        }
-    }
-
-    /**
-     * Request the thread to terminate -interrupting the thread if need be
-     *
-     * @param thread  thread to terminate, can be null
-     * @param timeout time to wait
-     */
-    public static void requestAndWaitForThreadTerminationWithInterrupt(SmartFrogThread thread, long timeout) {
-        if (thread != null) {
-            thread.requestTerminationWithInterrupt();
-            thread.waitForThreadTermination(timeout);
-        }
-    }
-
 }

@@ -94,7 +94,7 @@ public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
     try {
       return new ImageIcon(org.smartfrog.SFSystem.getByteArrayForResource(path));
     } catch (SmartFrogException ex) {
-      if (sfLogStatic.isErrorEnabled()) sfLogStatic.error(ex, ex);
+      if (sfLogStatic.isErrorEnabled()) sfLogStatic.error(ex);
     }
     return null;
   }

@@ -23,7 +23,6 @@ For more information: www.smartfrog.org
  */
 #include "/org/smartfrog/services/www/webserver.sf"
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
-#include "/org/smartfrog/services/www/mimetypes.sf"
 
 /**
  * declare a base Java app server.
@@ -124,25 +123,14 @@ EarApplication extends ApplicationServerContext {
 ServletContext extends ApplicationServerContext {
 
     servletContextSchema extends Schema {
-        //location of resources in the filesystem -can be a URL
-        resourceBase extends OptionalString;
-
-        //resource package on classpath instead of a filename, such as
-        // /org/example/smartfrog/webapp
-        resourcePackage extends OptionalString;
-
+        //location of resources
+        resourceBase extends String;
         //url path on server
         contextPath extends String;
-        
-        //CD of options
-        options extends Compulsory;
     }
 
     //implementation class
     sfClass "org.smartfrog.services.www.context.ServletContextImpl";
-    
-    //CD of options
-    options extends DATA { };
 
 }
 
@@ -154,7 +142,7 @@ ServletContext extends ApplicationServerContext {
 ServletContextComponent extends Prim {
 
     servletContextComponentSchema extends Schema {
-        //this is the required (LAZY) reference to the component
+        //this is the (LAZY) reference to the component
         context extends Compulsory;
     }
 
@@ -193,10 +181,7 @@ Servlet extends ServletContextComponent {
     sfClass "org.smartfrog.services.www.context.ServletComponentImpl";
     //order of initialisation; -1 means on demand.
     initOrder -1;
-    //initial parameters
     initParams [];
-    //initialisation options name -> value mappings
-    initOptions extends DATA {}
 }
 
 
@@ -216,47 +201,4 @@ MimeType extends ServletContextComponent {
     }
 }
 
-/**
- * every attribute in the mappings CD gets turned into a mime type
- */
 
-MimeTypeMap extends ServletContextComponent {
-  sfClass "org.smartfrog.services.www.context.MimeTypeMapImpl";
-  map extends DATA {}
-
-}
-
-TextHtmlMimeType extends MimeType {
-  extension "html";
-  type MimeTypes:TEXT_HTML;
-}
-
-TextPlainMimeType extends MimeType {
-  extension "txt";
-  type MimeTypes:TEXT_PLAIN;
-}
-
-ApplicationXmlMimeType extends MimeType {
-  extension "xml";
-  type MimeTypes:APPLICATION_XML;
-}
-
-/**
- * Declare the core mime types for text and graphics
- */
-
-CoreMimeTypes extends MimeTypeMap {
-  map extends DATA {
-    json MimeTypes:APPLICATION_JSON;
-    html MimeTypes:TEXT_HTML;
-    txt MimeTypes:TEXT_PLAIN;
-    xml MimeTypes:APPLICATION_XML;
-    xhtml MimeTypes:APPLICATION_XHTML_XML;
-    css MimeTypes:TEXT_CSS;
-    gif MimeTypes:IMAGE_GIF;
-    ico MimeTypes:IMAGE_ICON;
-    jpg MimeTypes:IMAGE_JPEG;
-    png MimeTypes:IMAGE_PNG;
-    svg MimeTypes:IMAGE_SVG;
-  }
-}

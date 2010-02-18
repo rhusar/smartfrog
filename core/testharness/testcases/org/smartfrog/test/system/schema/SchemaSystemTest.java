@@ -46,7 +46,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_LINKRESOLUTION,
-		"in: HERE sfConfig:bar:myFoo attribute: schema cause: SmartFrogAssertionResolutionException:: error in schema: wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String");
+		"in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String");
     }
 
     /**
@@ -59,7 +59,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_LINKRESOLUTION,
-                "in: HERE sfConfig:bar:myFoo attribute: schema cause: SmartFrogAssertionResolutionException:: error in schema: non-reference value found for lazy attribute 'a'");
+                "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: non-reference value found for lazy attribute 'a'");
     }
 
     /**
@@ -85,6 +85,6 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_LINKRESOLUTION,
-                "in: HERE sfConfig:bar:myFoo attribute: schema cause: SmartFrogAssertionResolutionException:: error in schema: wrong class found for attribute 'x (optional integer attribute)', expected: java.lang.Integer, found: java.lang.String");
+                "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'x (optional integer attribute)', expected: java.lang.Integer, found: java.lang.String");
     }
 }

@@ -20,31 +20,18 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
-import org.smartfrog.services.hadoop.conf.ClusterBound;
-import org.smartfrog.services.hadoop.core.ServicePingStatus;
 
-import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
- * Interface for probing the state of a service
+ * Created 08-Jul-2008 13:28:24
  */
 
 
-public interface HadoopService extends Remote, ClusterBound {
+public interface HadoopService extends Remote {
 
-    /** {@value} */
-    String ATTR_ENABLED = "service.enabled";
-
-    /**
-     * Test for the service being enabled
-     *
-     * @return true if the service is not enabled
-     * @throws RemoteException for RMI problems
-     */
-    boolean isServiceEnabled() throws RemoteException;
-    
     /**
      * Test for the service being live
      * @return true if the service is live
@@ -65,13 +52,6 @@ public interface HadoopService extends Remote, ClusterBound {
      * @throws RemoteException for RMI problems
      * @throws IOException for pinging problems
      */
-    ServicePingStatus pingService() throws IOException;
-
-    /**
-     * Gets the description of a service
-     * @return a description string of the service
-     * @throws RemoteException network problems
-     */
-    String getDescription() throws RemoteException ;
+    Service.ServiceStatus pingService() throws IOException;
 
 }

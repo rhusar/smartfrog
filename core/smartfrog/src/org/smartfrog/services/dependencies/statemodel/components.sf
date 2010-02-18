@@ -1,88 +1,36 @@
-//phaseList [|"type", "place", "function", "sfConfig", "link", "modelcheck"|];
-
-SimpleStateComponent extends StateComponent {
-   sfClass "org.smartfrog.services.dependencies.statemodel.state.SimpleStateComponent";   
-   up false;
-   tstart extends Transition {
-      guard (!LAZY up);
-      effects extends PolicyEffects {
-	    key "up";
-	    update true;
-      }
-   }
-   tstop extends Transition {
-      guard (LAZY up);
-      effects extends PolicyEffects {
-	     key "up";
-	     update false;
-      }
-   }
-}
-
-DesiredObservedStateComponent extends StateComponent {
-   sfClass "org.smartfrog.services.dependencies.statemodel.state.SimpleStateComponent";   
-   dup false;
-   oup false;
-
-   tstart extends Transition {
-      guard ((!LAZY oup) && (LAZY dup));
-      effects extends PolicyEffects {
-	     key "oup"; 
-	     update true;
-      }
-   }
-   tstop extends Transition {
-      guard ((LAZY oup) && (!LAZY dup));
-      effects extends PolicyEffects {
-	    key "oup";
-	    update false;
-      }
-   }
-}
+phaseList [|"type", "place", "function", "sfConfig", "link", "modelcheck"|];
 
 Dependency extends Prim {
      sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
      sfUpdatable true;
+     on TBD; 
      by TBD;
      sfIsDependency;
-     relevant true;
-     enabled false;
 }
 
-StateComponent extends Prim {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
-     //sfUpdatable true;
+State extends Prim {
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.State";
+     sfUpdatable true;
      sfUniqueComponentID;
 	 [sfFinal] asAndConnector false;
 
-	 threadpool LAZY PARENT:ATTRIB threadpool; 
+     threadpool LAZY PROCESS:threadpool; // default place for the threadpool
+     model LAZY ROOT;
 }
-
-ThreadedCompositeBase extends {
-     threadpool extends SimpleThreadPool;
-}
-
-ThreadedComposite extends Composite, ThreadedCompositeBase;
-ThreadedCompositeWithSync extends CompositeWithSync, ThreadedCompositeBase;
 
 Composite extends Compound {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
      sfUpdatable true;
-     sfSyncTerminate true;
 
-     /*inputConnectors extends Compound {
+     threadpool LAZY PROCESS:threadpool; // default place for the threadpool
+
+     inputConnectors extends Compound {
         sfUpdatable true;
      }
      outputConnectors extends Compound {
         sfUpdatable true;     
-     }*/
+     }
 }
-
-CompositeWithSync extends Composite {
-   sfClass "org.smartfrog.services.dependencies.statemodel.state.SynchedComposite";
-   run false;
-   running false;
-} 
 
 NWayComposite extends Composite {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.NWayComposite";
@@ -93,46 +41,60 @@ NWayComposite extends Composite {
 }
 
 
-Model extends CompositeWithSync {
-     //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
-     running true;  //note this has changed in meaning from legacy versions
-     sfIsOrchModel;
+Model extends Composite {
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.Model";
+	 phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
+
+     threadpool LAZY PROCESS:threadpool; // default place for the threadpool
+     run true; // set to false if you do not want the model to generate new notification sweeps, true if do
 }
 
-CompositeTerminator extends StateComponent {
+CompositeTerminator extends State {
     sfClass "org.smartfrog.services.dependencies.statemodel.termination.CompositeTermination";
-    toTerminate LAZY PARENT;
-    detachFirst true;
+    toTerminate LAZY ROOT;
+    detachFirst false;
     terminateCond TBD;
     -- extends Transition {
-       guard terminateCond;
-       effects extends {}
+       dependency terminateCond;
+       statefunction extends {}
     }
     sfUniqueComponentID false;  //not a component for model checking purposes
 }
 
-Connector extends Prim {
-  sfUpdatable true;
-  not false;
-  exists false;
-}
-
-AndConnector extends Connector {
+AndConnector extends Prim {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnector";
+    sfUpdatable true;
 }
 
-OrConnector extends Connector {
+OrConnector extends Prim {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnector";
+    sfUpdatable true;
 }
 
-XorConnector extends Connector {
+NorConnector extends Prim {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NorConnector";
+    sfUpdatable true;
+}
+
+NandConnector extends Prim {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NandConnector";
+    sfUpdatable true;
+}
+
+XorConnector extends Prim {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.XorConnector";
+    sfUpdatable true;
+}
+
+NXorConnector extends Prim {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NXorConnector";
+    sfUpdatable true;
 }
 
 Transition extends {
     sfIsStateComponentTransition;
-    guard true;
-    requiresThread true;
+    dependency true;
+    statefunction TBD;
 }
 
 VerificationRecord extends {

@@ -168,7 +168,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
     /**
      * Equality test.
      * Uses the classname and message.
-     * @param that the other instance
+     * @param that
      * @return true if there is a match
      */
     public boolean equals(Object that) {
@@ -226,36 +226,11 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
             return "uninitialized";
         }
         String location;
-        if (hasStack()) {
+        if (stack != null && stack.length > 0 && stack[0] != null) {
             location = "@" + stack[0].toString();
         } else {
             location = "";
         }
         return classname + "::" + message + " " + location;
-    }
-
-    /**
-     * Does this exception have a stack?
-     * @return true if there is a non-empty stack
-     */
-    public boolean hasStack() {
-        return stack != null && stack.length > 0 && stack[0] != null;
-    }
-
-    /**
-     * Get the stack as a string
-     * @return the stack, or "" if ther eis no stack
-     */
-    public String getStackString() {
-        if(!hasStack()) {
-            return "";
-        }
-        StringBuilder builder = new StringBuilder(stack.length * 80);
-        for (StackTraceElement elt: stack) {
-            builder.append("at ");
-            builder.append(elt.toString());
-            builder.append('\n');
-        }
-        return builder.toString();
     }
 }

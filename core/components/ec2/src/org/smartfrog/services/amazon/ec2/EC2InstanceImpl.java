@@ -25,6 +25,7 @@ import com.xerox.amazonws.ec2.EC2Exception;
 import com.xerox.amazonws.ec2.InstanceType;
 import com.xerox.amazonws.ec2.ReservationDescription;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -40,7 +41,6 @@ import java.util.List;
 public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
 
     private String instanceType;
-    protected InstanceType size;
     private String imageID;
     private boolean shutdown;
     private String userData;
@@ -72,8 +72,8 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
@@ -84,26 +84,19 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         super.sfStart();
         minCount = sfResolve(ATTR_MIN_COUNT, 0, true);
         maxCount = sfResolve(ATTR_MAX_COUNT, 0, true);
-        instanceType = sfResolve(ATTR_INSTANCE_TYPE, "", true);
-        imageID = sfResolve(ATTR_IMAGE_ID, "", true);
+        instanceType = sfResolve(ATTR_INSTANCETYPE, "", true);
+        imageID = sfResolve(ATTR_IMAGEID, "", true);
         userData = sfResolve(ATTR_USER_DATA, "", true);
         shutdown = sfResolve(ATTR_SHUTDOWN, false, true);
         if (imageID.length() == 0) {
             throw new SmartFrogLifecycleException(ERROR_NO_IMAGE);
         }
-        size = InstanceType.getTypeFromString(instanceType);
-        if (size == null) {
-            throw new SmartFrogLifecycleException(
-                    ERROR_UNRECOGNISED_IMAGE_TYPE + instanceType);
-        }
-        sfLog().info("Deploying a " + instanceType + " image ID " + imageID);
-
         deployWorker(new Ec2InstanceThread());
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
-     * compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior.
+     * Deregisters component from local process compound (if ever registered)
      *
      * @param status termination status
      */
@@ -122,7 +115,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         InstanceList list = instances;
         if (list != null) {
             try {
-                sfLog().info("About to terminate " + list.size() + " instances");
+                sfLog().info("About to terminate "+list.size()+" instances");
                 List<TerminatingInstanceDescription> tid = list.terminate();
                 logTerminationInfo(tid);
             } catch (EC2Exception e) {
@@ -130,7 +123,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
             }
         } else {
             sfLog().info("No instances to terminate");
-            if (getWorker() != null) {
+            if(getWorker()!=null) {
                 sfLog().warn(WARNING_THE_WORKER_IS_STILL_BUSY);
             }
         }
@@ -165,19 +158,29 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
 
 
         /**
-         * Create a basic thread. Notification is bound to a local notification object.
+         * Create a basic thread. Notification is bound to a local notification
+         * object.
          */
         private Ec2InstanceThread() {
             super(EC2InstanceImpl.this, true);
         }
 
         /**
-         * Reserve instances within the range specified
+         * If this thread was constructed using a separate {@link Runnable} run
+         * object, then that <code>Runnable</code> object's <code>run</code>
+         * method is called; otherwise, this method does nothing and returns.
+         * <p> Subclasses of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */
         @Override
         public void execute() throws Throwable {
+            InstanceType size = InstanceType.getTypeFromString(instanceType);
+            if (size == null) {
+                throw new SmartFrogDeploymentException(
+                        ERROR_UNRECOGNISED_IMAGE_TYPE + instanceType);
+            }
+            sfLog().info("Deploying a " + instanceType + " image ID " + imageID);
             if (EC2_ENABLED) {
                 try {
                     reservation = getEc2binding().runInstances(
@@ -216,16 +219,17 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         }
     }
 
-    private class Ec2ConsoleThread extends WorkflowThread {
+        private class Ec2ConsoleThread extends WorkflowThread {
 
-        /**
-         * Create a basic thread. Notification is bound to a local notification object.
-         *
-         * @param workflowTermination is workflow termination expected
-         */
-        private Ec2ConsoleThread(boolean workflowTermination) {
-            super(EC2InstanceImpl.this, workflowTermination);
+            /**
+             * Create a basic thread. Notification is bound to a local notification
+             * object.
+             *
+             * @param workflowTermination is workflow termination expected
+             */
+            private Ec2ConsoleThread(boolean workflowTermination) {
+                super(EC2InstanceImpl.this, workflowTermination);
+            }
         }
-    }
 
-}
+    }

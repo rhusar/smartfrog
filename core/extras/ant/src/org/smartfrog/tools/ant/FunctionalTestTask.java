@@ -26,20 +26,32 @@ import org.apache.tools.ant.taskdefs.Parallel;
 import org.apache.tools.ant.taskdefs.Sequential;
 
 /**
- * This is an extension of &lt;junit&gt; that lets us integrate startup, a waitfor condition and a shutdown sequence
- * into the test case.
- *
- * This task is used for SmartFrog's internal testing purposes, and for testing components. There are no guarantees of
- * stability over time.
- *
- * <p/> It's based upon Ant's own JUnit task, and credits Cactus as showing what could be done. Apache Cactus is coded
- * around deploying to an application server; this task can deploy to anything for which we have setup and teardown
- * sequences. <p/> <p/> This is the workflow for testing <ol> <li>The startup sequence is run to completion</li> <li>In
- * parallel, ( a) the application is started</li> <li>and (b) the sequence of waitfor+tests is run.</li> <li>After the
- * tests run, the teardown operation is executed</li> <li>Any build exception thrown by testingis thrown</li> </ol>
- *
- * <p>No matter what goes wrong, once startup has succeeded, teardown gets invoked. </p>
- *
+ * 
+ * This is an extension of &lt;junit&gt; that lets us integrate startup, a waitfor
+ * condition and a shutdown sequence into the test case. 
+ * 
+ * This task is used for SmartFrog's internal testing purposes, and for 
+ * testing components. There are no guarantees of stability over time. 
+ * 
+ * <p/>
+ * It's based upon Ant's
+ * own JUnit task, and credits Cactus as showing what could be done. Apache
+ * Cactus is coded around deploying to an application server; this task can
+ * deploy to anything for which we have setup and teardown sequences.
+ * <p/>
+ * <p/>
+ * This is the workflow for testing 
+ * <ol> 
+ * <li>The startup sequence is run to
+ * completion</li> 
+ * <li>In parallel, ( a) the application is started</li> 
+ * <li>and (b) the sequence of waitfor+tests is run.</li> 
+ * <li>After the tests run, the teardown operation is executed</li>
+ * <li>Any build exception thrown by testingis thrown</li>
+ * </ol> 
+ * 
+ * <p>No matter what goes wrong, once startup has
+ * succeeded, teardown gets invoked. </p>
  * @ant.task category="SmartFrog" name="sf-functionaltest"
  */
 public class FunctionalTestTask extends Task {
@@ -54,13 +66,13 @@ public class FunctionalTestTask extends Task {
     private Sequential application;
     //reporting operation
     private Sequential reporting;
-    private String reportingIf, reportingUnless;
+    private String reportingIf,reportingUnless;
     //teardown operation
     private Sequential teardown;
     //waitfor operation
     private FaultingWaitForTask probe;
     private int timeout;
-    private int shutdownTime = 10;
+    private int shutdownTime=10;
     private TaskHelper helper = new TaskHelper(this);
     public static final String MESSAGE_NO_TESTS = "No tests defined";
     public static final String EXCEPTION_CAUGHT_ON_CLEANUP = "Exception caught on cleanup:";
@@ -76,8 +88,8 @@ public class FunctionalTestTask extends Task {
     }
 
     /**
-     * Define a sequence of operations to run at startup. After running these, the teardown sequence will be called to
-     * tear down the system.
+     * Define a sequence of operations to run at startup. After running these,
+     * the teardown sequence will be called to tear down the system.
      *
      * @param setupSequence setup operations
      */
@@ -107,20 +119,21 @@ public class FunctionalTestTask extends Task {
     }
 
     /**
-     * The sequence of tasks used to define the application. This is for hosting the server in a parallel thread to the
-     * test run.
+     * The sequence of tasks used to define the application. This is for hosting
+     * the server in a parallel thread to the test run.
      *
      * @param app application sequence
      */
     public void addApplication(Sequential app) {
-        if (application != null) {
+        if(application!=null) {
             log("Overriding previous definition of <application>");
         }
         application = app;
     }
 
     /**
-     * This is the timeout for testing; any timeouts in the probe are not covered under this.
+     * This is the timeout for testing; any timeouts in the probe are not
+     * covered under this.
      *
      * @param timeout in seconds.
      */
@@ -129,9 +142,8 @@ public class FunctionalTestTask extends Task {
     }
 
     /**
-     * Set the timeout allowed for a clean shutdown of the application. After this timeout, a more brutal operation is
-     * used.
-     *
+     * Set the timeout allowed for a clean shutdown of the application.
+     * After this timeout, a more brutal operation is used.
      * @param shutdownTime timeout in seconds
      */
     public void setShutdownTime(int shutdownTime) {
@@ -144,10 +156,10 @@ public class FunctionalTestTask extends Task {
      * @param waitFor test to probe
      */
     public void addProbe(FaultingWaitForTask waitFor) {
-        if (probe != null) {
+        if (this.probe != null) {
             log("Overriding previous definition of <probe>");
         }
-        probe = waitFor;
+        this.probe = waitFor;
     }
 
     /**
@@ -163,13 +175,14 @@ public class FunctionalTestTask extends Task {
     }
 
     /**
-     * Called by the project to let the task do its work. This method may be called more than once, if the task is
-     * invoked more than once. For example, if target1 and target2 both depend on target3, then running "ant target1
-     * target2" will run all tasks in target3 twice.
+     * Called by the project to let the task do its work. This method may be
+     * called more than once, if the task is invoked more than once. For
+     * example, if target1 and target2 both depend on target3, then running "ant
+     * target1 target2" will run all tasks in target3 twice.
      *
-     * @throws BuildException if something goes wrong with the build.
+     * @throws org.apache.tools.ant.BuildException
+     *          if something goes wrong with the build.
      */
-    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
 
         //set up the test and application in parallel; if
@@ -234,7 +247,7 @@ public class FunctionalTestTask extends Task {
                 try {
                     teardown.execute();
                 } catch (BuildException e) {
-                    teardownFault = e;
+                    teardownFault=e;
                 }
             }
         }
@@ -263,18 +276,18 @@ public class FunctionalTestTask extends Task {
         //look for an application fault
         BuildException applicationFault = backgroundApp.getException();
         if (applicationFault != null) {
-            if (testFault == null) {
+            if (testFault == null ) {
                 //copy any
                 testFault = applicationFault;
             } else {
-                log("Application Exception:" + applicationFault.toString(),
+                log("Application Exception:"+ applicationFault.toString(),
                         applicationFault,
                         Project.MSG_ERR);
             }
         }
 
         //now look for teardown faults
-        if (teardownFault != null) {
+        if(teardownFault!=null) {
             if (testFault == null) {
                 testFault = teardownFault;
             } else {
@@ -316,7 +329,7 @@ public class FunctionalTestTask extends Task {
 
         public synchronized void waitForTermination(int seconds)
                 throws InterruptedException {
-            wait(seconds * 1000);
+            wait(seconds*1000);
         }
 
         /**
@@ -347,7 +360,7 @@ public class FunctionalTestTask extends Task {
                 exception = e;
             } finally {
                 //wake up our owner, if it is waiting
-                synchronized (this) {
+                synchronized(this) {
                     notifyAll();
                 }
             }

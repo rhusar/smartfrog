@@ -20,9 +20,8 @@
 package org.smartfrog.sfcore.workflow.conditional.conditions;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -30,49 +29,41 @@ import java.rmi.RemoteException;
  * created 30-Nov-2006 12:48:34
  */
 
-public abstract class AbstractTargetedCondition extends AbstractConditionPrim implements TargetedCondition {
+public abstract class AbstractTargetedCondition extends PrimImpl implements TargetedCondition {
+
+    private Prim target;
 
     protected AbstractTargetedCondition() throws RemoteException {
     }
 
-    @Override
-    public void sfStart() throws SmartFrogException, RemoteException {
+    /**
+    * Can be called to start components. Subclasses should override to provide
+    * functionality Do not block in this call, but spawn off any main loops!
+    *
+    * @throws org.smartfrog.sfcore.common.SmartFrogException
+    *                                  failure while starting
+    * @throws java.rmi.RemoteException In case of network/rmi error
+    */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        boolean resolveTargetOnStartup = sfResolve(ATTR_RESOLVE_TARGET_ON_STARTUP,true,true);
-        if(resolveTargetOnStartup) {
-            resolveTargetOnStartup();
-        }
+        target = sfResolve(ATTR_TARGET, target,true);
     }
 
-    /**
-     * startup-time resolution
-     * @throws RemoteException              for network problems
-     * @throws SmartFrogResolutionException if the target does not resolve
-     */
-    protected void resolveTargetOnStartup() throws SmartFrogResolutionException, RemoteException {
-        getTarget();
+
+    public Prim getTarget() {
+        return target;
     }
 
-    /**
-     * Get the target.
-     * This resolves every time it is called, so conditions may call it repeatedly
-     *
-     * @return the target prim
-     * @throws RemoteException              for network problems
-     * @throws SmartFrogResolutionException if the target does not resolve
-     */
-    public Prim getTarget() throws SmartFrogResolutionException, RemoteException {
-        return sfResolve(ATTR_TARGET, (Prim) null, true);
-    }
 
     /**
      * Evaluate the condition.
      *
      * @return true if it is successful, false if not
-     * @throws RemoteException    for network problems
-     * @throws SmartFrogException for any other problem
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        throw new SmartFrogException("Not implemented" + getClass());
+        throw new SmartFrogException("Not implemented"+getClass().toString());
     }
 }

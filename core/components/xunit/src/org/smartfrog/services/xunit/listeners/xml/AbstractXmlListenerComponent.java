@@ -36,8 +36,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
 
 /**
  * An abstract base class for XML Listeners
@@ -55,26 +53,22 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      */
     private HashMap<String, String> testFiles = new HashMap<String, String>();
     protected String suffix = ".xml";
-    protected String prefix = "";
     private boolean useProcessname;
-    /**
-     * Here are the instances
-     */
-    private List<FileListener> instances = new LinkedList<FileListener>();
 
     protected AbstractXmlListenerComponent() throws RemoteException {
     }
 
     /**
-     * add a mapping of suite to file. </p> If the suitename is already registered, a warning is output, but the method
-     * still continues.
+     * add a mapping of suite to file.
+     * </p>
+     * If the suitename is already registered, a warning is output, but the method still continues.
      *
-     * @param hostname    hostname (ignored in the base class)
-     * @param suitename   suite to use
+     * @param hostname hostname (ignored in the base class)
+     * @param suitename suite to use
      * @param xmlFilename the XML filename being created
      */
-    protected synchronized void addMapping(String hostname, String suitename, String xmlFilename) {
-        if (getMapping(hostname, suitename) != null) {
+    protected synchronized void addMapping(String hostname,String suitename, String xmlFilename) {
+        if (getMapping(hostname,suitename) != null) {
             log.warn("A suite called " +
                     suitename
                     + " exists; its output will be overwritten");
@@ -84,25 +78,25 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
 
     /**
      * thread-safe accessor to the suite-file mapping
-     * @param hostname host name to look up
+     *
      * @param suitename suite to lookup
      * @return absolute path of the output file, or null for no mapping.
      */
-    private synchronized String getMapping(String hostname, String suitename) {
+    private synchronized String getMapping(String hostname,String suitename) {
         return testFiles.get(suitename);
     }
 
     /**
      * map from a test suite name to a filename
      *
-     * @param hostname  host name
+     * @param hostname host name
      * @param suitename test suite
      * @return name of output file, or null for no match
      * @throws RemoteException network problems
      */
     public String lookupFilename(String hostname,
                                  String suitename) throws RemoteException {
-        return getMapping(hostname, suitename);
+        return getMapping(hostname,suitename);
     }
 
     /**
@@ -110,7 +104,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      *
      * @return the dir that output is in
      * @throws SmartFrogResolutionException if it is not specified
-     * @throws RemoteException              network problems
+     * @throws RemoteException network problems
      */
     protected String lookupOutputDir() throws SmartFrogResolutionException,
             RemoteException {
@@ -124,11 +118,13 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * Called after instantiation for deployment purposed. Heart monitor is started and if there is a parent the
-     * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
+     * Called after instantiation for deployment purposed. Heart monitor is
+     * started and if there is a parent the deployed component is added to the
+     * heartbeat. Subclasses can override to provide additional deployment
+     * behavior.
      *
      * @throws SmartFrogException error while deploying
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -137,11 +133,11 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -154,66 +150,30 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             throw new SmartFrogInitException(
                     ERROR_UNABLE_TO_CREATE_DEST_DIR + destDir);
         }
-        preamble = sfResolve(XmlListenerFactory.ATTR_PREAMBLE, (String) null, true);
+        preamble = sfResolve(XmlListenerFactory.ATTR_PREAMBLE, (String) null, false);
         useHostname = sfResolve(XmlListenerFactory.ATTR_USE_HOSTNAME, true, true);
         useProcessname = sfResolve(XmlListenerFactory.ATTR_USE_PROCESSNAME, true, true);
-        suffix = sfResolve(XmlListenerFactory.ATTR_SUFFIX, suffix, true);
-        
-        prefix = sfResolve(XmlListenerFactory.ATTR_PREFIX, prefix, true);
-        if (log.isInfoEnabled()) {
+        suffix = sfResolve(XmlListenerFactory.ATTR_SUFFIX, suffix, false);
+        if(log.isInfoEnabled()) {
             log.info("output dir is " + outputDir
                     + "; hostname=" + useHostname
-                    + " ; useProcessname="
-                    + useProcessname);
+                    +" ; useProcessname="
+                    +useProcessname);
             log.info("preamble is " + (preamble != null ? preamble : "(undefined)"));
         }
     }
 
     /**
-     * 
-     * register an instance in the instance list
-     * @param instance new instance
-     */
-    protected void registerInstance(FileListener instance) {
-        instances.add(instance);
-    }
-
-    /**
-    * Close and Unregister a listener instance. Harmless if the instance is not registered
-    *
-    * @param instance instance to unregister
-    * @throws RemoteException network problems
-    */
-    @Override
-    public void unregisterInstance(FileListener instance) throws RemoteException {
-        if (instance != null) {
-            boolean removed;
-            synchronized (this) {
-                removed = instances.remove(instance);
-            }
-            if(removed) {
-                try {
-                    instance.close();
-                } catch (IOException e) {
-                    log.error(e);
-                } catch (SmartFrogException e) {
-                    log.error(e);
-                }
-            }
-        }
-    }
-    
-    
-    /**
      * Start listening to a test suite
      *
-     * @param suite       the test suite that is about to run. May be null, especially during testing.
-     * @param hostname    name of host
+     * @param suite     the test suite that is about to run. May be null,
+     *                  especially during testing.
+     * @param hostname  name of host
      * @param processname name of the process
-     * @param suitename   name of test suite
-     * @param timestamp   start timestamp (UTC)
+     * @param suitename name of test suite
+     * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      * @throws SmartFrogException code problems
      */
     public TestListener listen(TestSuite suite,
@@ -235,7 +195,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             destDir = new File(destDir, processname);
         }
 
-        String outputFile = prefix + suitename + suffix;
+        String outputFile = suitename + suffix;
         File destFile = new File(destDir, outputFile);
         log.info("Recording tests to " + destFile);
         String destpath = destFile.getAbsolutePath();
@@ -244,29 +204,23 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             //set the absolute path of the file
             log.debug(
                     "Setting " +
-                            FileListener.ATTR_FILE +
-                            "attribute on test suite");
-            ((Prim) suite).sfReplaceAttribute(FileListener.ATTR_FILE,
+                    FileListener.ATTR_FILE +
+                    "attribute on test suite");
+            ((Prim)suite).sfReplaceAttribute(FileListener.ATTR_FILE,
                     destpath);
         }
 
-        FileListener fileListener = null;
         try {
             Date start = new Date(timestamp);
-            fileListener = createNewSingleHostListener(hostname,
-                    destFile,
-                    processname,
-                    suitename,
-                    start);
-            fileListener.setOwner(this);
-            registerInstance(fileListener);
-            fileListener.open();
-            return fileListener;
-        } catch (RemoteException e) {
-            unregisterInstance(fileListener);
-            throw e;
+            FileListener fileLog;
+            fileLog = createNewSingleHostListener(hostname,
+                destFile, 
+                processname, 
+                suitename, 
+                start);
+            fileLog.open();
+            return fileLog;
         } catch (IOException e) {
-            unregisterInstance(fileListener);
             throw SmartFrogException.forward("Failed to open ", e);
         }
     }
@@ -274,18 +228,18 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     /**
      * Something for implementations to implement to create a listener for a single host.
      *
-     * @param hostname    hostname
-     * @param destFile    destination file
+     * @param hostname hostname
+     * @param destFile destination file
      * @param processname name of the process
-     * @param suitename   name of the suite
-     * @param start       timestamp the tests started
+     * @param suitename name of the suite
+     * @param start timestamp the tests started
      * @return a new XML listener
      * @throws IOException if the file cannot be created
      */
     protected abstract FileListener createNewSingleHostListener(String hostname,
-                                                                File destFile,
-                                                                String processname,
-                                                                String suitename,
-                                                                Date start) throws
+                                                                      File destFile,
+                                                                      String processname,
+                                                                      String suitename,
+                                                                      Date start) throws
             IOException;
 }

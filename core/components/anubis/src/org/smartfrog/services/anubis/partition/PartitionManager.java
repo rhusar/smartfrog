@@ -69,8 +69,6 @@ public class PartitionManager
             me                = Config.getIdentity(this, "identity");
             timer             = new ActiveTimeQueue("Anubis: Partition Manager timers (node " + me.id + ")");
             partitionProtocol = (PartitionProtocol)sfResolve("partitionProtocol");
-            notifiedView      = BitView.create(me, me.epoch);
-            notifiedLeader    = me.id;
         }
         catch (Exception ex) {
             throw (SmartFrogException)SmartFrogException.forward(ex);

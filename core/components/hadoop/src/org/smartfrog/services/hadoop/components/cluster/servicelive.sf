@@ -18,23 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
-
-
-IsHadoopServiceLive extends TargetedConditionPrim {
-  resolveTargetOnStartup false;
+IsHadoopServiceLive extends Prim {
   sfClass "org.smartfrog.services.hadoop.components.cluster.IsHadoopServiceLive";
   //define a service to look for
   service TBD;
-  target service;
-  
-  //flag, which if false, implies that a started service is OK. 
-  requireServiceLive true;
-  E_NOT_RESOLVED "reference is not resolved or the component is undefined";
-  //gets changed after evaluation to the service description
-  serviceDescription E_NOT_RESOLVED;
-  //gets changed after evaluation to the service state
-  serviceState E_NOT_RESOLVED;
+  //or an array of services
+  //services [];
+
 }
 
 /**

@@ -19,19 +19,23 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.common;
 
-import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
-import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -42,7 +46,7 @@ import java.net.URISyntaxException;
 public class DfsUtils {
     public static final String ERROR_INVALID_FILESYSTEM_URI = "Invalid " + HadoopConfiguration.FS_DEFAULT_NAME
             + " URI: ";
-    public static final String ERROR_FAILED_TO_INITIALISE_FILESYSTEM = "Failed to initialise filesystem: ";
+    public static final String ERROR_FAILED_TO_INITIALISE_FILESYSTEM = "Failed to initialise filesystem";
     public static final String ERROR_FAILED_TO_DELETE_PATH = "Failed to delete path ";
     public static final String ERROR_FAILED_TO_CLOSE = "Failed to close ";
     public static final String ERROR_MKDIR_FAILED = "Unable to create the destination directories for ";
@@ -57,14 +61,14 @@ public class DfsUtils {
   public static final String FAILED_TO_COPY = "Failed to copy ";
 
   private DfsUtils() {
-  }
+    }
 
     /**
      * Close the DFS quietly
      *
      * @param dfs the dfs reference; can be null
      */
-    public static void closeQuietly(FileSystem dfs) {
+    public static void closeQuietly(DistributedFileSystem dfs) {
         if (dfs != null) {
             try {
                 dfs.close();
@@ -80,22 +84,14 @@ public class DfsUtils {
      * @param dfs filesystem
      * @throws SmartFrogRuntimeException if the filesystem does not close
      */
-    public static void closeDfs(FileSystem dfs) throws SmartFrogRuntimeException {
+    public static void closeDfs(DistributedFileSystem dfs) throws SmartFrogRuntimeException {
         try {
             dfs.close();
         } catch (IOException e) {
-            if(isFilesystemClosedException(e)) {
-                LogFactory.getLog(DfsUtils.class).info("DFS has already closed", e);
-            } else {
-                throw (SmartFrogRuntimeException) SmartFrogRuntimeException
-                                    .forward(ERROR_FAILED_TO_CLOSE + dfs.getUri(),
-                                            e);
-            }
+            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
+                    .forward(ERROR_FAILED_TO_CLOSE + dfs.getUri(),
+                            e);
         }
-    }
-
-    private static boolean isFilesystemClosedException(IOException e) {
-        return "Filesystem closed".equals(e.getMessage());
     }
 
     /**
@@ -103,56 +99,34 @@ public class DfsUtils {
      *
      * @param conf configuration
      * @return a new DFS
-     * @throws SFHadoopException if things go wrong
+     * @throws SmartFrogRuntimeException if anything goes wrong
      */
-    public static FileSystem createFileSystem(ManagedConfiguration conf)
-            throws SFHadoopException {
+    public static DistributedFileSystem createFileSystem(ManagedConfiguration conf)
+            throws SmartFrogRuntimeException, SFHadoopException {
         String filesystemURL = conf.get(HadoopConfiguration.FS_DEFAULT_NAME);
-        if (filesystemURL == null) {
+        if(filesystemURL == null) {
             SFHadoopException hadoopException = new SFHadoopException(
                     "No filesystem URL " + HadoopConfiguration.FS_DEFAULT_NAME);
             hadoopException.addConfiguration(conf);
             throw hadoopException;
         }
-        return createFileSystem(filesystemURL, conf);
-    }
-
-    /**
-     * Create a DFS client instance from a given URL; initialize it from the configuration.
-     * 
-     * This method uses {@link FileSystem#newInstance(URI, Configuration)} to create a new
-     * instance, rather than return a cached one. This is to eliminate race conditions
-     * across threads of the kind that surfaced in 
-     * <a href="http://jira.smartfrog.org/jira/browse/SFOS-1208">SFOS-1208</a>.
-     * 
-     * Accordingly, filesystems should be closed unless you want to leak them
-     * @param filesystemURL the URL of the filesystem
-     * @param conf configuration used when constructing the FS
-     * @return a filesystem client
-     * @throws SFHadoopException if things go wrong
-     */
-    public static FileSystem createFileSystem(String filesystemURL, ManagedConfiguration conf)
-            throws SFHadoopException {
-        URI uri;
+        URI uri = null;
         try {
             uri = new URI(filesystemURL);
         } catch (URISyntaxException e) {
-            SFHadoopException hadoopException = SFHadoopException
+            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
                     .forward(ERROR_INVALID_FILESYSTEM_URI + filesystemURL,
                             e);
-            hadoopException.addConfiguration(conf);
-            throw hadoopException;
         }
+        DistributedFileSystem dfs = new DistributedFileSystem();
         try {
-            FileSystem dfs = FileSystem.newInstance(uri, conf);
             dfs.initialize(uri, conf);
-            return dfs;
         } catch (IOException e) {
-            SFHadoopException hadoopException = SFHadoopException
-                    .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM + filesystemURL, e);
-            hadoopException.addConfiguration(conf);
-            throw hadoopException;
+            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
+                    .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM, e);
+
         }
+        return dfs;
     }
 
     /**
@@ -161,17 +135,12 @@ public class DfsUtils {
      * @param conf      DFS configuration
      * @param dir       directory to delete
      * @param recursive recurseive delete?
-     * @throws SmartFrogRuntimeException failure to delete
-     * @throws SFHadoopException filesystem binding failures
+     * @throws SmartFrogRuntimeException if anything goes wrong
      */
     public static void deleteDFSDirectory(ManagedConfiguration conf, String dir, boolean recursive)
             throws SmartFrogRuntimeException, SFHadoopException {
-        FileSystem dfs = createFileSystem(conf);
-        try {
-            deleteDFSDirectory(dfs, dir, recursive);
-        } finally {
-            closeDfs(dfs);
-        }
+        DistributedFileSystem dfs = createFileSystem(conf);
+        deleteDFSDirectory(dfs, dir, recursive);
     }
 
     /**
@@ -182,7 +151,7 @@ public class DfsUtils {
      * @param recursive recurseive delete?
      * @throws SmartFrogRuntimeException if anything goes wrong
      */
-    public static void deleteDFSDirectory(FileSystem dfs, String dir, boolean recursive)
+    public static void deleteDFSDirectory(DistributedFileSystem dfs, String dir, boolean recursive)
             throws SmartFrogRuntimeException {
         URI dfsURI = dfs.getUri();
         Path path = new Path(dir);
@@ -194,6 +163,7 @@ public class DfsUtils {
                     .forward(ERROR_FAILED_TO_DELETE_PATH + path + " on " + dfsURI,
                             e);
         }
+        closeDfs(dfs);
     }
 
     /**
@@ -204,7 +174,7 @@ public class DfsUtils {
      * @return the status or null for no such path
      * @throws IOException for communications problems
      */
-    public static FileStatus stat(FileSystem fileSystem, Path path) throws IOException {
+    public static FileStatus stat(DistributedFileSystem fileSystem, Path path) throws IOException {
         try {
             if (fileSystem.exists(path)) {
                 return fileSystem.getFileStatus(path);
@@ -252,26 +222,13 @@ public class DfsUtils {
      * @param dest       file
      * @throws SmartFrogRuntimeException failure to create the directories
      */
-    public static void mkParentDirs(FileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
-        mkdirs(fileSystem, dest.getParent());
-    }
-
-      /**
-     * Create the parent directories of a given path
-     *
-     * @param fileSystem filesystem to work with
-     * @param dest       file
-     * @throws SmartFrogRuntimeException failure to create the directories
-     */
-    public static void mkdirs(FileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
+    public static void mkParentDirs(DistributedFileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
         try {
             if (!fileSystem.mkdirs(dest)) {
                 throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest);
             }
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest
-                    + " in " + fileSystem.getUri()
-                    + " : " + e, e);
+            throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest + " : " + e, e);
         }
     }
 
@@ -295,16 +252,15 @@ public class DfsUtils {
                                 int blocksize) throws SmartFrogRuntimeException {
         assertNotDependent(srcFS, src, dstFS, dst);
         FileStatus status;
-        URI fsuri = srcFS.getUri();
         try {
             status = srcFS.getFileStatus(src);
         } catch (FileNotFoundException fe) {
-            throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + src + " in " + fsuri, fe);
+            throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + src + " in " + srcFS.getUri(), fe);
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(ERROR_NO_STAT + src + " in " + fsuri + " : " + e, e);
+            throw new SmartFrogRuntimeException(ERROR_NO_STAT + src + " in " + srcFS.getUri() + " : " + e, e);
         }
         if (status.isDir()) {
-            throw new SmartFrogRuntimeException(ERROR_NO_DIRECTORY_COPY + src + " in " + fsuri);
+            throw new SmartFrogRuntimeException(ERROR_NO_DIRECTORY_COPY + src + " in " + srcFS.getUri());
         }
         InputStream in = null;
         OutputStream out = null;
@@ -319,7 +275,7 @@ public class DfsUtils {
         try {
             IOUtils.copyBytes(in, out, blocksize, true);
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(ERROR_COPY_FAILED + src + " in " + fsuri
+            throw new SmartFrogRuntimeException(ERROR_COPY_FAILED + src + " in " + srcFS.getUri()
                     + " to " + dst + " in " + dstFS.getUri()
                     + " : " + e,
                     e);
@@ -336,19 +292,18 @@ public class DfsUtils {
      * @param overwrite  should there be an overwrite?
      * @throws SmartFrogRuntimeException if the copy failed
      */
-    public static void copyLocalFileIn(FileSystem fileSystem, File source, Path dest, boolean overwrite)
+    public static void copyLocalFileIn(DistributedFileSystem fileSystem, File source, Path dest, boolean overwrite)
             throws SmartFrogRuntimeException {
         if (!source.exists()) {
             throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + source);
         }
         Path localSource = new Path(source.toURI().toString());
+        mkParentDirs(fileSystem, dest);
         try {
             fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
         } catch (IOException e) {
             throw new SmartFrogRuntimeException(
-                    FAILED_TO_COPY + source + " to " + dest
-                            + " on " + fileSystem.getUri(),
-                    e);
+                    FAILED_TO_COPY + source + " to " + dest, e);
         }
     }
 
@@ -364,7 +319,7 @@ public class DfsUtils {
      * @throws IOException for any problem
      * @see org.apache.hadoop.fs.FileSystem#globStatus(Path)
      */
-    public static void rename(FileSystem fileSystem, Path srcPath, Path dstPath) throws IOException {
+    public static void rename(DistributedFileSystem fileSystem, Path srcPath, Path dstPath) throws IOException {
         Path[] srcs = FileUtil.stat2Paths(fileSystem.globStatus(srcPath), srcPath);
         FileStatus destStatus = fileSystem.getFileStatus(dstPath);
         if (srcs.length > 1 && !destStatus.isDir()) {
@@ -379,25 +334,23 @@ public class DfsUtils {
                     srcFstatus = fileSystem.getFileStatus(src);
                 } catch (FileNotFoundException e) {
                   FileNotFoundException fnf = new FileNotFoundException(src +
-                          ": No such file or directory in " + fileSystem.getUri());
+                          ": No such file or directory");
                   fnf.initCause(e);
                   throw fnf;
                 }
                 try {
                     dstFstatus = fileSystem.getFileStatus(dstPath);
-                } catch (IOException ignored) {
+                } catch (IOException e) {
                     dstFstatus = null;
                 }
                 if ((srcFstatus != null) && (dstFstatus != null)) {
                     if (srcFstatus.isDir() && !dstFstatus.isDir()) {
                         throw new IOException("cannot overwrite non directory "
-                                + dstPath + " with directory " + srcPath
-                                + " in " + fileSystem.getUri());
+                                + dstPath + " with directory " + srcPath);
                     }
                 }
                 throw new IOException("Failed to rename '" + srcPath
-                        + "' to '" + dstPath + "'"
-                        + " in " + fileSystem.getUri());
+                        + "' to '" + dstPath + "'");
             }
         }
     }

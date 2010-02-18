@@ -41,10 +41,10 @@ Host extends Constraint, ArrayGenerator {
    
    caps [memory];
 
-   //sfIndex -- added in Array processing
+   //sfArrayIndex -- added in Array processing
 
-   [sfConstraint] -- "sfIndex eq 0 implies memory eq 4 and host_type eq ht0";
-   [sfConstraint] -- "sfIndex gt 0 implies memory eq 3 and host_type eq ht1";
+   [sfConstraint] -- "sfArrayIndex eq 0 implies memory eq 4 and host_type eq ht0";
+   [sfConstraint] -- "sfArrayIndex gt 0 implies memory eq 3 and host_type eq ht1";
 }
 
 
@@ -59,30 +59,30 @@ VM extends Constraint, ArrayGenerator {
 
    allocated VAR; 
 
-   //sfIndex -- added in Array processing
+   //sfArrayIndex -- added in Array processing
     
-   [sfConstraint] -- "sfIndex lt 2 implies memory eq 2 and vm_type eq vmt0";
-   [sfConstraint] -- "sfIndex gte 2 implies memory eq 3 and vm_type eq vmt1";
+   [sfConstraint] -- "sfArrayIndex lt 2 implies memory eq 2 and vm_type eq vmt0";
+   [sfConstraint] -- "sfArrayIndex gte 2 implies memory eq 3 and vm_type eq vmt1";
 }
 
 sfConfig extends ResourceAllocator {
    providers_array "hosts"; 
-   providers_attr "sfTag";
+   providers_attr "sfArrayTag";
    provider_caps_attr "caps";
    consumers_array "vms"; 
-   consumers_attr "sfTag";
+   consumers_attr "sfArrayTag";
    consumer_reqs_attr "reqs";
    allocation_attr "allocated";
 
    hosts extends Array {
-      sfExtent 3;
-      sfGenerator extends Host;  
-      sfPrefix "host";
+      sfArrayExtent 3;
+      sfArrayGenerator extends Host;  
+      sfArrayPrefix "host";
    }
 
    vms extends Array {
-      sfExtent 4;
-      sfGenerator extends VM;  
-      sfPrefix "vm";
+      sfArrayExtent 4;
+      sfArrayGenerator extends VM;  
+      sfArrayPrefix "vm";
    }
 }

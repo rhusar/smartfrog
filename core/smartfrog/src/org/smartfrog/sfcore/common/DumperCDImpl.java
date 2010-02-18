@@ -85,7 +85,7 @@ public class DumperCDImpl implements Dumper {
             rootRef = from.sfCompleteName();
             init();
         } catch (RemoteException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(), e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
         }
     }
 
@@ -102,7 +102,7 @@ public class DumperCDImpl implements Dumper {
                sfKeysToBeRemoved = configuration.sfResolve(ATR_SF_KEYS_TO_BE_REMOVED, sfKeysToBeRemoved ,false);
             }
         } catch (Exception ex){
-            if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(), ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
     }
 
@@ -139,6 +139,7 @@ public class DumperCDImpl implements Dumper {
 
             String name = ((HereReferencePart)(relativeRef.lastElement())).getValue().toString();
 
+            //relativeRef.removeElement(relativeRef.size()-1); // @todo OLD way, comment to be removed when removeLastElement is properly tested. 
             relativeRef.removeLastElement();
 
             //Place stateCopy in the right spot inside cd.
@@ -147,11 +148,11 @@ public class DumperCDImpl implements Dumper {
                 ComponentDescription child = createCDWithKeysRemoved(stateCopy,true);
                 placeHolder.sfReplaceAttribute(name, child);
             } catch (SmartFrogException ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(), ex);
+                if (sfLog().isErrorEnabled()) sfLog().error(ex);
             }
 
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(), e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
             throw e;
         }
     }
@@ -170,7 +171,7 @@ public class DumperCDImpl implements Dumper {
                     stateCopy.sfRemoveAttribute(aSfKeysToBeRemoved);
                 } catch (SmartFrogContextException e) {
                     if (sfLog().isWarnEnabled()) {
-                        sfLog().warn(e.getMessage(),e);
+                        sfLog().warn(e);
                     }
                 }
             }
@@ -202,7 +203,7 @@ public class DumperCDImpl implements Dumper {
                     stateCopy.sfReplaceAttribute(key, createCDWithKeysRemoved((Context)context.clone(), false) );
                 } catch (SmartFrogRuntimeException e) {
                     if (sfLog().isWarnEnabled()) {
-                           sfLog().warn(e.getMessage(),e);
+                           sfLog().warn(e);
                        }
                 }
             }
@@ -296,12 +297,12 @@ public class DumperCDImpl implements Dumper {
      * @param waitTimeout to get a valid result
      * @return a ComponentDescription in a deployable String format
      */
-    protected String getCDAsString(long waitTimeout) throws Exception {
+    protected String getCDAsString(long waitTimeout) {
         try {
             return "sfConfig extends {\n" + getComponentDescription(waitTimeout).toString() + "}";
         } catch (Exception e) {
-            if (sfLog().isDebugEnabled()) sfLog().warn(e.getMessage(),e);
-            throw e;
+            if (sfLog().isWarnEnabled()) sfLog().warn(e);
+            return e.getMessage();
         }
     }
 
@@ -333,7 +334,7 @@ public class DumperCDImpl implements Dumper {
     }
 
     /** This modifies the default set of sfKeys that are removed from every context.
-     * todo once the visits are started this method should not allow any updates. In any case,
+     * @todo once the visits are started this method should not allow any updates. In any case,
      * the updates are ignored once the visits start
      * @param keysToBeRemoved keys to pull
      */
@@ -366,8 +367,8 @@ public class DumperCDImpl implements Dumper {
          String cdStr = toString(timeout);
          return cdStr;
        } catch (Exception ex){
-           if (sfLog().isErrorEnabled()) sfLog().error(ex.getMessage(),ex);
-           return ( "NULL , error: " + ex.toString());
+           if (sfLog().isErrorEnabled()) sfLog().error(ex);
+           return (ex.toString());
        }
     }
 
@@ -385,14 +386,14 @@ public class DumperCDImpl implements Dumper {
                 out.write(e.getMessage());
             }
         } catch (IOException e) {
-            if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(), e);
+            if (sfLog().isErrorEnabled()) sfLog().error(e);
         } finally {
             try {
                 if( out != null ) {
                 	out.close();
                 }
             } catch (IOException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(e.getMessage(), e);
+                if (sfLog().isErrorEnabled()) sfLog().error(e);
             }
         }
     }

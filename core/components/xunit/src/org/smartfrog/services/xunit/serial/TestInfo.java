@@ -28,15 +28,14 @@ import java.util.List;
 /**
  * This is information about a test that is sent over the wire.
  *
- * One of the problems here is that even 'success' can be qualified, so that Prolog unit tests can say 'suceeded, but
- * with multiple solutions', or a timed test could have 'succeeded out of time'
+ * One of the problems here is that even 'success' can be qualified, so that Prolog unit tests can
+ * say 'suceeded, but with multiple solutions', or a timed test could have 'succeeded out of time'
  */
 
 public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * session info to use when forwarding
-     *
      * @serial
      */
     private String sessionID;
@@ -50,7 +49,6 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * A description of the test from any description attribute/metadata
-     *
      * @serial
      */
     private String description;
@@ -62,10 +60,9 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * A list of tags to file the test
-     *
      * @serial
      */
-    private ArrayList<String> tags = new ArrayList<String>();
+    private ArrayList<String> tags=new ArrayList<String>();
 
     /**
      * name of the test
@@ -97,8 +94,7 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * IP Address
-     *
-     * @serial
+     * @serial 
      */
     private String ipaddr;
 
@@ -118,17 +114,16 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * an array of messages, type LogEntry
-     *
      * @serial
      */
-    private ArrayList<LogEntry> messages = new ArrayList<LogEntry>();
+    private ArrayList<LogEntry> messages=new ArrayList<LogEntry>();
 
     /**
-     * The outcome of the test. This can be one of the outcomes, or something else
-     *
-     * @serial
+     * The outcome of the test. This can be one of the outcomes, or
+     * something else
+     * @serial 
      */
-    private String outcome = OUTCOME_SUCCESS;
+    private String outcome=OUTCOME_SUCCESS;
 
     public static final String OUTCOME_SUCCESS = "success";
     public static final String OUTCOME_FAILURE = "failure";
@@ -146,9 +141,8 @@ public final class TestInfo implements Serializable, Cloneable {
     }
 
     /**
-     * import the test information if something went wrong This also sets up the hostname and ip addr to the local
-     * values
-     *
+     * import the test information if something went wrong
+     * This also sets up the hostname and ip addr to the local values
      * @param fault something that caused a failure
      */
     public TestInfo(Throwable fault) {
@@ -230,7 +224,6 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * get the duration of the call in milliseconds
-     *
      * @return the duration (start time - end time)
      */
     public long getDuration() {
@@ -319,7 +312,7 @@ public final class TestInfo implements Serializable, Cloneable {
             cloned.fault = (ThrowableTraceInfo) cloned.fault.clone();
         }
         cloned.tags = new ArrayList<String>(tags);
-        cloned.messages = new ArrayList<LogEntry>(messages);
+        cloned.messages=new ArrayList<LogEntry>(messages);
         return cloned;
     }
 
@@ -359,7 +352,6 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * Get the list of messages, all of type LogEntry
-     *
      * @return a list
      */
     public List<LogEntry> getMessages() {
@@ -369,7 +361,6 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * add an entry to this test
-     *
      * @param entry entry to add
      */
     public void log(LogEntry entry) {
@@ -377,32 +368,12 @@ public final class TestInfo implements Serializable, Cloneable {
     }
 
     /**
-     * Get some test details for printing
-     * @return test details
-     */
-    public String getDetails() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(getName());
-        buffer.append("\nOutcome : ").append(getOutcome());
-        buffer.append("\nDuration: ").append(getDuration());
-        buffer.append("\nOn host: ").append(getHostname());
-        if(getProcessName()!=null) {
-            buffer.append(" PID ").append(getProcessName());
-        }
-        if(getDescription()!=null) {
-            buffer.append("\ndescription : ").append(getDescription());
-        }
-        return buffer.toString();
-    }
-    
-    /**
      * Create a skipped test message with the current start time/end time
-     *
      * @param name the name of the test
      * @return a skipped test
      */
     public static TestInfo skipped(String name) {
-        TestInfo info = new TestInfo();
+        TestInfo info=new TestInfo();
         info.setName(name);
         info.markStartTime();
         info.setEndTime(info.getStartTime());

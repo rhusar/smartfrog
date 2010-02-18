@@ -23,7 +23,7 @@ import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
- * tests that expect to log in
+ * Created 22-Jan-2008 16:42:12
  *
  */
 
@@ -37,11 +37,11 @@ public class SshExecFunctionalTest extends DeployingTestBase {
     public void testSshLogin() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testSshLogin");
     }
-    
-    public void testSshLoginPrivateKey() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testSshLoginPrivateKey");
+
+    public void testLoginBadPassword() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testLoginBadPassword");
     }
-
-
-
+    public void testLoginBadUser() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES,"testLoginBadUser");
+    }
 }

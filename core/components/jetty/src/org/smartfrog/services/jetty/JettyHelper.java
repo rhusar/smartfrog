@@ -22,20 +22,21 @@
 package org.smartfrog.services.jetty;
 
 import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.servlet.Context;
+import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
 /**
- * This helper class contains all the binding policy for use in contexts and servlets. Date: 21-Jun-2004 Time: 22:02:20
+ * This helper class contains all the binding policy for use in contexts and
+ * servlets. Date: 21-Jun-2004 Time: 22:02:20
  */
 public class JettyHelper extends WebApplicationHelper {
 
@@ -53,7 +54,8 @@ public class JettyHelper extends WebApplicationHelper {
 
 
     /**
-     * Error if we cannot locate an app server. {@value}
+     * Error if we cannot locate an app server.
+     * {@value}
      */
     public static final String ERROR_NO_APP_SERVER = "No Web Server found";
 
@@ -63,10 +65,10 @@ public class JettyHelper extends WebApplicationHelper {
 
     /**
      * bind to the server, cache it
-     *
      * @return the server binding
      * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
+     *
      */
     public Server bindToServer() throws SmartFrogException,
             RemoteException {
@@ -77,7 +79,6 @@ public class JettyHelper extends WebApplicationHelper {
 
     /**
      * Set the component acting as a server
-     *
      * @param serverComponent new value
      */
     public void setServerComponent(Prim serverComponent) {
@@ -85,10 +86,27 @@ public class JettyHelper extends WebApplicationHelper {
     }
 
     /**
-     * look for the jetty component by -looking for a server attribute
+     * locate jetty or throw an exception
      *
+     * @return the jetty binding
+     * @throws SmartFrogException smartfrog problems, including no server found
+     * @throws RemoteException network problems
+     */
+    private Server findJettyServer() throws SmartFrogException,
+            RemoteException {
+        assert serverComponent != null;
+        Server server = null;
+        server =
+                (Server) serverComponent.sfResolve(JettyIntf.ATTR_JETTY_SERVER,
+                        server,
+                        true);
+        return server;
+    }
+
+    /**
+     * look for the jetty component by -looking for a server attribute
      * @throws SmartFrogResolutionException if one is not found
-     * @throws RemoteException              network problems
+     * @throws RemoteException network problems
      */
     private void findJettyComponent() throws SmartFrogResolutionException,
             RemoteException {
@@ -104,29 +122,88 @@ public class JettyHelper extends WebApplicationHelper {
     }
 
     /**
-     * locate jetty or throw an exception
-     *
-     * @return the jetty binding
-     * @throws SmartFrogException smartfrog problems, including no server found
-     * @throws RemoteException    network problems
-     */
-    private Server findJettyServer() throws SmartFrogException,
-            RemoteException {
-        assert serverComponent != null;
-        return new WrappedJettyServer().resolve(serverComponent, JettyIntf.ATTR_JETTY_SERVER, true);
-    }
-
-    /**
-     * save the jetty info for retrieval. This is done by adding it as a (non-serializable) attribute
+     * save the jetty info for retrieval.
+     * This is done by adding it as a (non-serializable) attribute
      *
      * @param server the jetty instance
      * @throws SmartFrogException a failure of the operation to set the server
-     * @throws RemoteException    network problems
+     * @throws RemoteException network problems
      */
     public void cacheJettyServer(Server server)
             throws SmartFrogException, RemoteException {
-        getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_SERVER, new WrappedJettyServer(server));
+        getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_SERVER, server);
 
+    }
+
+
+    /**
+     * locate jettyhome
+     *
+     * @return jetty home or null if it is not there
+     * @throws SmartFrogException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public String findJettyHome() throws SmartFrogException, RemoteException {
+        assert serverComponent != null;
+        String jettyhome = null;
+        jettyhome =
+                serverComponent.sfResolve(JettyIntf.ATTR_JETTY_HOME,
+                        jettyhome,
+                        false);
+        return jettyhome;
+    }
+
+    /**
+     * save jetty home for retrieval
+     *
+     * @param jettyhome jetty home property
+     * @throws SmartFrogRuntimeException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public void cacheJettyHome(String jettyhome)
+            throws SmartFrogRuntimeException, RemoteException {
+        getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_HOME, jettyhome);
+    }
+
+    /**
+     * for servlets: get the servlet context.
+     *
+     * @param mandatory set this to true if you want an exception if there is no
+     *                  context
+     * @return context, or null if there is not one found
+     * @throws SmartFrogException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public Context getServletContext(boolean mandatory)
+            throws SmartFrogException, RemoteException {
+
+
+        Context jettyContext = null;
+
+        Prim contextImpl = findServletContext();
+        if (contextImpl != null) {
+            jettyContext = (Context) contextImpl.
+                    sfResolve(JettyServletContextIntf.ATTR_CONTEXT);
+        }
+        if (mandatory && jettyContext == null) {
+            throw new SmartFrogException(
+                    "Could not locate "
+                    +
+                    JettyServletContextIntf.ATTR_CONTEXT);
+        }
+        return jettyContext;
+    }
+
+
+    /**
+     * Find the servlet context.
+     * This is done by resolving the owner and looking for its server attribute
+     * @return the owner server, null if there is no server,
+     * @throws RemoteException network trouble
+     * @throws SmartFrogResolutionException failure to resolve
+     */
+    public Prim findServletContext() throws RemoteException, SmartFrogResolutionException {
+        return getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER,(Prim)null,false);
     }
 
 
@@ -137,6 +214,7 @@ public class JettyHelper extends WebApplicationHelper {
      */
     public void addConnector(Connector connector) {
         httpServer.addConnector(connector);
+        
     }
 
     /**
@@ -157,7 +235,6 @@ public class JettyHelper extends WebApplicationHelper {
 
     /**
      * remove a Connector
-     *
      * @param connector a Connector
      */
     public void removeConnector(Connector connector) {
@@ -211,48 +288,13 @@ public class JettyHelper extends WebApplicationHelper {
                             ex);
                 }
             } catch (Exception npe) {
-                getLogger().error(
-                        " Ignoring caught during connector teardown",
-                        npe);
+                    getLogger().error(
+                            " Ignoring caught during connector teardown",
+                            npe);
             }
             removeConnector(connector);
         }
     }
 
-    /**
-     * This is fairly complex as it patches a  handler in at the front of any handler collection. we cannot use {@link
-     * Server#addHandler(Handler)} because it patches it to the end
-     *
-     * @param handler handler
-     */
-    public synchronized void insertHandler(Handler handler) {
-        final Server server = getServer();
-        Handler baseHandler = server.getHandler();
-        Handler[] newHandlers;
-        Handler[] oldHandlers;
-        //extract the old handler list
-        if (baseHandler instanceof HandlerCollection) {
-            HandlerCollection handlers = (HandlerCollection) baseHandler;
-            oldHandlers = handlers.getHandlers();
-        } else {
-            oldHandlers = new Handler[]{baseHandler};
-        }
-        //create a larger array
-        newHandlers = new Handler[oldHandlers.length + 1];
-        newHandlers[0] = handler;
-        //copy the old handlers into the new array
-        System.arraycopy(oldHandlers, 0, newHandlers, 1, oldHandlers.length);
-        server.setHandlers(newHandlers);
-    }
-
-
-    private static class WrappedJettyServer extends WrappedInstance<Server> {
-        private WrappedJettyServer(Server instance) {
-            super(instance);
-        }
-
-        private WrappedJettyServer() {
-        }
-    }
 
 }

@@ -18,4 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/scripting/bsh/components.sf"
+#include "org/smartfrog/services/scripting/scriptPrim.sf"
+#include "org/smartfrog/services/scripting/functions.sf"
+#include "org/smartfrog/services/scripting/heartbeat.sf"
+//#include "org/smartfrog/services/scripting/button.sf"

@@ -394,7 +394,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
          try {
             printMsgImp.printMsg(msg + "");
          } catch (Exception ex) {
-             if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+             if (sfLog().isErrorEnabled()) sfLog().error(ex);
          }
       } else {
          //System.out.println("" + msg);
@@ -422,7 +422,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt, PrintErrMs
          try {
             printMsgImp.printMsg(msg + "");
          } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
          }
       } else {
          //System.out.println("" + msg);

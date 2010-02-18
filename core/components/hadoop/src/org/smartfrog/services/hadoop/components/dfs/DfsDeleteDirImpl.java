@@ -22,8 +22,8 @@
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -62,8 +62,7 @@ public class DfsDeleteDirImpl extends DfsPathOperationImpl {
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    @Override
-    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
         boolean recursive = sfResolve(ATTR_RECURSIVE, true, true);
         FileStatus status = DfsUtils.stat(fileSystem, path);

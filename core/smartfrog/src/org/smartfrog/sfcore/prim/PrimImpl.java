@@ -166,7 +166,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
     /**
      * Livneess factor. Initializer for liveness count. How many multiples of
-     * liveness delay to wait till a liveness failure of the parent is declared,
+     * livenss delay to wait till a liveness failure of the parent is declared,
      * Defaults to 2.
      */
     protected int sfLivenessFactor = 2;
@@ -792,7 +792,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
 
         } catch (Exception sfex) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(sfex, sfex);
+                sfLog().error(sfex);
             }
             //Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().start();
@@ -1156,11 +1156,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      */
     public void sfDumpState(Dump target) {
         try {
-            if (sfLog().isDebugEnabled()) { sfLog().debug("Dumping state to: " + target); };
             target.dumpState(sfContext, this);
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) {
-                sfLog().error(ex.getMessage(),ex);
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(ex);
             }
         }
     }
@@ -1450,9 +1449,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         }
 
         if (fail) {
-            if (sfLog().isInfoEnabled()) {
-                sfLog().info("LivenessFailure as parent liveness checking had counted down: in "
-                        + sfCompleteNameSafe());
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug(
+                        "failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
             }
             sfLivenessFailure(this, sfParent, null);
         }
@@ -1979,7 +1978,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             }
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(e,e);
+                sfLog().error(e);
             }
             try {
                 if (sfLog().isTraceEnabled()) {
@@ -2053,7 +2052,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @param name attribute key for tags
      * @param tags a set of tags
      *
-     * @throws SmartFrogRuntimeException the attribute does not exist;
+     * @throws SmartFrogException the attribute does not exist;
      */
     public void sfSetTags(Object name, Set tags)
             throws RemoteException, SmartFrogRuntimeException {

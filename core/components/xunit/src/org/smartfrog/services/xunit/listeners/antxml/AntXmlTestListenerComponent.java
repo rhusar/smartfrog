@@ -66,7 +66,6 @@ import java.util.Date;
 
 public class AntXmlTestListenerComponent
         extends AbstractXmlListenerComponent implements XmlListenerFactory {
-    
 
     /**
      * construct a base interface
@@ -81,8 +80,7 @@ public class AntXmlTestListenerComponent
      * {@inheritDoc}
      * @throws IOException for problems
      */
-    @Override
-    public FileListener createNewSingleHostListener(String hostname,
+    protected FileListener createNewSingleHostListener(String hostname,
                                                       File destFile,
                                                       String processname,
                                                       String suitename,

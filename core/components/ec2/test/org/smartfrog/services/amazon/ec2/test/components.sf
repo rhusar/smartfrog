@@ -154,8 +154,8 @@ testListEC2ImagesBadPassword extends  ExpectDeployFailureOnEC2  {
   }
 
   exceptions [
-    ["","Failed to talk to EC2"],
-    ["","The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method."]
+    ["",""],
+    ["","AWS was not able to validate the provided access credentials"]
   ];
 }
 
@@ -283,9 +283,7 @@ testCreateBadInstance extends ExpectDeployFailureOnEC2 {
 }
 
 testCreateEmptyImage extends ExpectDeployFailureOnEC2 {
-  description "try to deploy an image called '' -expect failure" ;
-  exitText CONSTANT org.smartfrog.services.amazon.ec2.EC2InstanceImpl.ERROR_NO_IMAGE;
-  
+  description "try to deploy an image called '' " ;
   action extends DeployedService {
     service extends ImageInstance {
        id login;
@@ -294,24 +292,25 @@ testCreateEmptyImage extends ExpectDeployFailureOnEC2 {
        key LAZY authentication;
     };
   }
+  exitText CONSTANT org.smartfrog.services.amazon.ec2.EC2InstanceImpl.ERROR_NO_IMAGE;
 }
 
 testCreateBadImageType extends ExpectDeployFailureOnEC2 {
   sfShouldTerminate true;
-  description "try to deploy an image of an unknown type -expect failure" ;
-  //"Unrecognised image type";
-  exitText CONSTANT org.smartfrog.services.amazon.ec2.EC2InstanceImpl.ERROR_UNRECOGNISED_IMAGE_TYPE;
+  description "try to deploy an image of an unknown type" ;
   action extends DeployedService {
     service extends ImageInstance {
        id login;
        imageID test.ec2.image.id;
        instanceType "unknown.image.type";
-       imageID  "arbitrary.image.id";
+       imageID  "";
        userData "test-data";
        key LAZY authentication;
     };
   }
-
+  action:service:imageID test.ec2.image.id;
+  action:service:imageType "unknown.image.type";
+  exitText CONSTANT org.smartfrog.services.amazon.ec2.EC2InstanceImpl.ERROR_NO_IMAGE;
 }
 
 

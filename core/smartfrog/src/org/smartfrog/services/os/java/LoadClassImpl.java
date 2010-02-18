@@ -28,15 +28,11 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.services.filesystem.FileSystem;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.io.InputStream;
 
 /**
  * Class to force load another class (and keep it in memory till we undeploy. Liveness checks verify that the class
@@ -44,13 +40,10 @@ import java.io.InputStream;
  * class gets loaded. created 20-Sep-2005 11:28:38
  */
 
-public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
+public class LoadClassImpl extends PrimImpl implements LoadClass {
     public static final String ERROR_NO_PUBLIC_CONSTRUCTOR = "No public empty constructor for class ";
     public static final String MESSAGE_CREATING_AN_INSTANCE = "Creating an instance of ";
     private static final Reference REF_CLASSES = new Reference(ATTR_CLASSES);
-    private static final Reference REF_RESOURCES = new Reference(ATTR_RESOURCES);
-    private ComponentHelper helper;
-    private String codebase;
 
     public LoadClassImpl() throws RemoteException {
     }
@@ -65,7 +58,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
     private Object[] objectInstances = new Object[0];
 
 
-    private List<String> classes, resources;
+    private List<String> classes;
 
     private boolean create = false;
 
@@ -90,59 +83,9 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
         super.sfStart();
         log = LogFactory.getOwnerLog(this);
         classes = ListUtils.resolveStringList(this, REF_CLASSES, true);
-        resources = ListUtils.resolveStringList(this, REF_RESOURCES, true);
         create = sfResolve(ATTR_CREATE, create, true);
         retain = sfResolve(ATTR_RETAIN, retain, true);
         message = sfResolve(ATTR_MESSAGE,"",true);
-
-        boolean isCondition = sfResolve(ATTR_IS_CONDITION, false, true);
-
-        helper = new ComponentHelper(this);
-        codebase = helper.getCodebase();
-
-        if(!isCondition) {
-            loadResourcesAndClasses();
-            new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                    null,
-                    null,
-                    null);
-        }
-    }
-
-    /**
-     * Attempt to load the resources and then the classes
-     * @throws SmartFrogException if a resource or class is not found.
-     */
-    private void loadResourcesAndClasses() throws SmartFrogException {
-        loadResources();
-        loadClasses();
-    }
-
-    /**
-     * Attempt to load the specific resources, fail if any is missing
-     * @throws SmartFrogException if a resource is not found.
-     */
-    private void loadResources() throws  SmartFrogException {
-        int failures = 0;
-        StringBuilder text = new StringBuilder();
-        for (String resource : resources) {
-            log.debug("Loading resource" + resource);
-            if (!doesResourceExist(resource, codebase)) {
-                failures++;
-                text.append("Resource not found: \"").append(resource).append("\"\n");
-            }
-            if (failures > 0) {
-                throw new SmartFrogException(message + "\n" + text.toString(), this);
-            }
-        }
-    }
-
-    /**
-     * Attempt to load the classes
-     * @throws SmartFrogException if a class does not load
-     */
-    private void loadClasses() throws SmartFrogException {
-        cleanup();
         int size = classes.size();
         classInstances = new Class[size];
         int instanceSize = size;
@@ -150,19 +93,13 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
             instanceSize = 0;
         }
         objectInstances = new Object[instanceSize];
+        ComponentHelper helper = new ComponentHelper(this);
 
-        String messageText = message != null && message.length() > 0 ? ('\n' + message) : "";
         int count = 0;
-        int failures = 0;
         for (String classname : classes) {
             log.debug("Loading class " + classname);
-            try {
-                classInstances[count] = SFClassLoader.forName(classname, codebase, true);
-            } catch (Throwable e) {
-                //failure.
-                failures++;
-                handleLoadFailure(classname, messageText, codebase, e);
-            }
+            Class clazz = helper.loadClass(classname,message);
+            classInstances[count] = clazz;
             count++;
         }
         if (create) {
@@ -175,78 +112,10 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
         if (!retain) {
             cleanup();
         }
-    }
-
-
-    /**
-     * Handle a load failure by doing more diagnostics and throwing a more meaningful message
-     *
-     * @param classname class being looked for
-     * @param message   any text message
-     * @param codebase  the coebase string
-     * @param thrown    what was thrown when the load failed
-     * @throws SmartFrogException always
-     */
-    private String handleLoadFailure(String classname, String message, String codebase, Throwable thrown)
-            throws SmartFrogException {
-
-        if (thrown.getCause() != null) {
-            return handleLoadFailure(classname, message, codebase, thrown.getCause());
-        } else {
-            StringBuilder text = new StringBuilder();
-            text.append("Failed to load ");
-            text.append(classname);
-            text.append(" - ");
-            text.append(message);
-            text.append("\n");
-            text.append(thrown.toString());
-            text.append("\n");
-            if (thrown instanceof ClassNotFoundException) {
-                ClassNotFoundException cnfe = (ClassNotFoundException) thrown;
-                text.append("ClassNotFoundException: the class or an import is missing");
-            } else if (thrown instanceof NoClassDefFoundError) {
-                NoClassDefFoundError ncdfe = (NoClassDefFoundError) thrown;
-                text.append("NoClassDefFoundError: A class definition is missing");
-            } else {
-                text.append("Class failed to load due to: ").append(thrown.getClass().getSimpleName());
-            }
-            if (doesClassExistAsResource(classname, codebase)) {
-                text.append("\n -the class was found on the classpath");
-            } else {
-                text.append("\n -the class is not on the classpath");
-            }
-            text.append("\ncodebase:");
-            text.append(codebase);
-            throw new SmartFrogException(text.toString(), thrown, this);
-        }
-//        return "";
-    }
-
-    /**
-     * Verify that a class exists as a resource
-     * @param classname class to look for
-     * @param cbase codebase
-     * @return true iff the .class file can be found
-     */
-    private boolean doesClassExistAsResource(String classname, String cbase) {
-        String resourcename = "/"+classname.replace('.','/')+".class";
-        return doesResourceExist(resourcename, cbase);
-    }
-
-    /**
-     * Test for a resource existing
-     * @param resourcename name of the resource
-     * @param cbase code base
-     * @return true iff the resource can be found
-     */
-    private boolean doesResourceExist(String resourcename, String cbase) {
-        InputStream in = SFClassLoader.getResourceAsStream(resourcename, cbase, true);
-        if (in == null) {
-            return false;
-        } else {
-            FileSystem.close(in);
-            return true;
-        }
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                null,
+                null,
+                null);
     }
 
     /**
@@ -258,22 +127,6 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         cleanup();
-    }
-
-    /**
-     * Evaluate the classload every time the request is made.
-     *
-     * @return true if it is successful, false if not
-     * @throws RemoteException    for network problems
-     * @throws SmartFrogException for any other problem
-     */
-    public boolean evaluate() throws RemoteException, SmartFrogException {
-        try {
-            loadResourcesAndClasses();
-            return true;
-        } catch (SmartFrogException e) {
-            return false;
-        }
     }
 
     /**
@@ -312,7 +165,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
      * @throws SmartFrogException if something went wrong
      * @throws RemoteException    for network trouble
      */
-    public static Object createInstance(Class clazz) throws SmartFrogException {
+    public static Object createInstance(Class clazz) throws SmartFrogException, RemoteException {
         return createInstance(clazz,null);
     }
     /**
@@ -324,7 +177,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
      * @throws SmartFrogException if something went wrong
      * @throws RemoteException    for network trouble
      */
-    public static Object createInstance(Class clazz, String message) throws SmartFrogException {
+    public static Object createInstance(Class clazz, String message) throws SmartFrogException, RemoteException {
         Object instance;
         String suffix = message != null && message.length() > 0 ? '\n' + message : "";
         Class params[] = new Class[0];

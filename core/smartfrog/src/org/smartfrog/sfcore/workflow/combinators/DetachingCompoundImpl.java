@@ -75,10 +75,14 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
      * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-        detachDownwards = sfResolve("detachDownwards", true, true);
-        detachUpwards = sfResolve("detachUpwards", true, true);
-        autoDestruct = sfResolve("autoDestruct", true, true);
+        try {
+            super.sfDeploy();
+            detachDownwards = ((Boolean) sfResolve("detachDownwards")).booleanValue();
+            detachUpwards = ((Boolean) sfResolve("detachUpwards")).booleanValue();
+            autoDestruct = ((Boolean) sfResolve("autoDestruct")).booleanValue();
+        } catch (Exception t) {
+            throw SmartFrogLifecycleException.sfDeploy("",t , this);
+        }
     }
 
     /**
@@ -96,8 +100,9 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
      * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
         try {
+            super.sfStart();
+
             if (detachDownwards || detachUpwards || autoDestruct) {
                 detacher = new Detacher(this);
                 detacher.start();
@@ -127,6 +132,7 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
          * Create a basic thread. Notification is bound to a local notification object.
          *
          * @param owner               owner thread
+         * @param workflowTermination is workflow termination expected
          */
         private Detacher(Prim owner) {
             super(owner, false);

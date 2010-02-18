@@ -23,7 +23,6 @@ For more information: www.smartfrog.org
   * adds ant XML output
   */
 #include "/org/smartfrog/services/xunit/listeners/xml/components.sf"
-#include "/org/smartfrog/services/xunit/listeners/html/components.sf"
 
 
 /**
@@ -44,7 +43,6 @@ AntXmlTestListener extends XmlListener {
     htmlTestListenerSchema extends HtmlTestListenerSchema;
     name "AntXmlTestListener";
     suffix ".xml";
-    prefix "TEST-";
     useProcessname false;
     useHostname false;
     publishFrequency 30;

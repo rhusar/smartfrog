@@ -19,26 +19,15 @@ For more information: www.smartfrog.org
 */
 
 /**
- * Any kind of node in the farm whose configuration is inline
+ * A clusternode represents any kind of node in the farm
  */
 
 
-InlineConfiguredNode extends HadoopConfiguration {
-  name "InlineConfiguredNode";
-  //boolean or a LAZY reference to a condition
-  node.enabled  true;
+ClusterNode extends HadoopConfiguration {
+
 }
 
-ManagerNode extends InlineConfiguredNode {
+ManagerNode extends ClusterNode {
   minWorkerCount 1;
 }
 
-/**
- * This is a cluster node where the configuration comes from
- * referenced attribute "cluster"; there are no defaults
- */
-ClusteredNode extends Prim {
-  name "ClusteredNode";
-  clusterRequired false;
-  node.enabled true;
-}

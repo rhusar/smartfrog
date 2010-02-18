@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
+#include "org/smartfrog/components.sf"
 
 sfConfig extends Prim {
     sfClass "org.smartfrog.test.system.prim.Dummy1";

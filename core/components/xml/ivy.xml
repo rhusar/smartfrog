@@ -66,9 +66,9 @@
         name="xercesImpl"
         rev="${xerces.version}"
         conf="parser->master"/>
-    <dependency org="xml-apis"
-        name="xml-apis"
-        rev="${xml-apis.version}"
+    <dependency org="xerces"
+        name="xmlParserAPIs"
+        rev="${xerces.version}"
         conf="parser->master"/>
     <!--xom depends on Jaxen, which is a mess. exclude it-->
     <dependency org="xom"
@@ -82,11 +82,9 @@
         name="xalan"
         rev="${xalan.version}"
         conf="compile,xslt->master"/>
-    
     <dependency org="jdom"
         name="jdom"
         rev="${jdom.version}"
         conf="compile,redist->master"/>
-
   </dependencies>
 </ivy-module>

@@ -61,9 +61,10 @@ public class CounterAction extends EventCompoundImpl implements Compound {
     /**
      * Constructs Try.
      *
-     * @throws RemoteException In case of RMI or network failure.
+     * @throws java.rmi.RemoteException In case of RMI or network failure.
      */
-    public CounterAction() throws RemoteException {
+    public CounterAction() throws java.rmi.RemoteException {
+        super();
     }
 
 
@@ -137,7 +138,7 @@ public class CounterAction extends EventCompoundImpl implements Compound {
                     sfLog().error(message, e);
                 }
                 //trigger our own abnormal termination
-                sfTerminate(TerminationRecord.abnormal(message, getName(), e));
+                sfTerminate(TerminationRecord.abnormal(message, name, e));
                 //and tell the container not to
                 return false;
             }

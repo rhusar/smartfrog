@@ -18,9 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/functions.sf"
-#include "/org/smartfrog/services/scripting/bsh/components.sf"
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/functions.sf"
+#include "org/smartfrog/services/scripting/components.sf"
 
 /**
  * This basic example shows how to set a variable in the interpreter,
@@ -203,7 +203,7 @@ sfConfig extends Compound {
         hostA "localhost";
         hostB "localhost";
 
-  myExample extends ScriptPrinter;
+   myExample extends ScriptPrinter;
 	myExample2 extends Verbose;
 	myExample3 extends DeathWish;
 	myExample4 extends MotherGoose;

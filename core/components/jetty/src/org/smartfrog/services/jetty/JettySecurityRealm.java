@@ -82,6 +82,4 @@ public interface JettySecurityRealm extends Remote {
      * {@value}
      */
     String ATTR_CONSTRAINTS = "constraints";
-    
-    String ATTR_CHECK_WELCOME_FILES = "checkWelcomeFiles";
 }

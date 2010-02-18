@@ -168,11 +168,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
          newDisplay = new Display(nameDisplay, null);
 
-        if (nameDisplay.startsWith("[rootProcess")||nameDisplay.startsWith("sfManagementConsole")) {
-          addFrogIcon(newDisplay, true);
-        } else {
-          addFrogIcon(newDisplay, false);
-        }
+         addFrogIcon(newDisplay);
 
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
@@ -194,7 +190,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                       newDisplay.cleanAddedPanels();
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                          LogFactory.getLog("SFManagementConsole").error(thr1, thr1);
+                          LogFactory.getLog("SFManagementConsole").error(thr1);
                         }
                      }
                      try {
@@ -204,7 +200,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                          if (scriptingTab!=null) newDisplay.tabPane.add(scriptingPanelName,scriptingTab);
                      } catch (Throwable ex) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                          LogFactory.getLog("SFManagementConsole").error(ex, ex);
+                          LogFactory.getLog("SFManagementConsole").error(ex);
                         }
                         //exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
                      }
@@ -226,7 +222,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         treePanel.refresh();
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                         LogFactory.getLog("SFManagementConsole").error(thr1, thr1);
+                         LogFactory.getLog("SFManagementConsole").error(thr1);
                         }
                      }
                   }
@@ -265,7 +261,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                    try {
                       addScriptingPanel (newDisplay.tabPane, null,null,hostname,port );
                    } catch (Exception e1) {
-                       if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1, e1);}
+                       if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1);}
                        WindowUtilities.showError(newDisplay,e1.toString());
                    }
                   //refreshButtonPanes.doClick();
@@ -299,7 +295,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
 
 
-   public static Display startParserConsole(String nameDisplay, int height, int width, String positionDisplay, ComponentDescription cd, boolean shouldSystemExit) throws Exception {
+   public static Display starParserConsole(String nameDisplay, int height, int width, String positionDisplay, ComponentDescription cd, boolean shouldSystemExit) throws Exception {
        final JButton refreshButtonPanes;
        final JButton refreshButtonNode;
        JMenu jMenuMng;
@@ -327,12 +323,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
          newDisplay = new Display(nameDisplay, null);
 
-//          if (nameDisplay.startsWith("[rootProcess")) {
-//            addFrogIcon(newDisplay, true);
-//          } else {
-//            addFrogIcon(newDisplay, false);
-//          }
-
+         addFrogIcon(newDisplay);
 
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
@@ -367,22 +358,16 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
      * @param newDisplay Display Object -can be null
      * @return true if the icon was found and added to the display
      */
-    private static boolean addFrogIcon(Display newDisplay, boolean root) {
+    private static boolean addFrogIcon(Display newDisplay) {
         if (newDisplay == null) {
             return false;
         }
         String imagesPath = SFDeployDisplay.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
         // imagesPath = imagesPath + "frogb.gif";
-        Image image = null;
-        if (root){
-                imagesPath = imagesPath + "SplodgeLightBlue32.gif";
-                image = Display.createImage(imagesPath);
-        } else {
-                imagesPath = imagesPath + "SplodgeBlue32.gif";
-                image = Display.createImage(imagesPath);
-        }
-        if(image!=null) {            
+        imagesPath = imagesPath + "SplodgeLightBlue32.gif";
+        Image image = Display.createImage(imagesPath);
+        if(image!=null) {
             newDisplay.setIconImage(image);
             return true;
         } else {
@@ -401,7 +386,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (str != null) {
          System.err.println(str);
       }
-      ExitCodes.exitSilently(exitCode);
+
+      System.exit(exitCode);
    }
 
 
@@ -586,7 +572,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
            tabPane.setSelectedIndex(tabIndex);
         }
       } catch (Throwable thr){
-          if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(thr, thr);}
+          if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(thr);}
           if (thr instanceof ClassNotFoundException) {
             WindowUtilities.showError(tabPane, "For the scripting panel to work BeanShell ('bsh-1.3.0.jar') \nneeds to be in the console's classpath or lib directory");
           } else {
@@ -640,7 +626,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                     createManagementPane();
                 } catch (Exception e) {
                    if (sfLog().isErrorEnabled()) {
-                      sfLog().error(e, e);
+                      sfLog().error(e);
                     }  //if
                 } //catch
               } //run
@@ -692,11 +678,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         panelTree = new DeployTreePanel(root, isObjCopy, isPC,true);
         ((DeployTreePanel)panelTree).setFontSize(sfResolve(SFDisplay.FONTSIZE_DISPLAY,12,false));
         panelTree.setEnabled(true);
-        if (display.getTitle().startsWith("[rootProcess")) {
-          addFrogIcon(display, true);
-        } else {
-          addFrogIcon(display, false);  
-        }
+        addFrogIcon(display);
         display.tabPane.add(panelTree, name, 0);
 
         // Button to Refresh view ...
@@ -730,7 +712,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                try {
                    addScriptingPanel (display.tabPane, "sfManagementConsole", this,"localhost",3800 );
                } catch (Exception e1) {
-                   if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1, e1); }
+                   if (sfLogStatic().isErrorEnabled()){ sfLogStatic().error(e1); }
                    WindowUtilities.showError(display,e1.toString());
                }
            }

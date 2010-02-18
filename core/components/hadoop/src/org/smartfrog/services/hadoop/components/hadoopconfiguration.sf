@@ -38,15 +38,13 @@ For more information: www.smartfrog.org
  */
 
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/services/hadoop/conf/hostnames.sf"
-
 
 /**
  * This is a hadoop configuration
  * Its values come from the hadoop source, and the file hadoop-default.xml, which is inside
  * hadoop-core.jar
  */
-HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
+HadoopConfiguration extends Prim {
 
   //Smartfrog custom properties
   smartfrog.dump.conf false;
@@ -90,7 +88,12 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   dfs.data.dir  (hadoop.tmp.dir ++ "/dfs/data");
 
 
-  
+  /**
+    The address where the datanode server will listen to.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.address  "0.0.0.0:50010";
+
   /**
   The name of the Network Interface from which a data node should
   report its IP address.
@@ -118,6 +121,21 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
 
 
 
+  /**
+    The datanode http server address and port.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.http.address  "0.0.0.0:50075";
+
+
+  dfs.datanode.https.address "0.0.0.0:50475";
+
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.ipc.address "0.0.0.0:50020";
+
   /**The number of bytes to view for a file on the browser.
   */
   dfs.default.chunk.view.size  32768;
@@ -143,8 +161,13 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   dfs.hosts.exclude  "";
 
 
+  /**
+    The address and the base port where the dfs namenode web ui will listen on.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.http.address  "0.0.0.0:50070";
 
-  
+  dfs.https.address "0.0.0.0:50470";
 
   /**
    The logging level for dfs namenode.
@@ -171,7 +194,7 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
       should store the name table.  If this is a comma-delimited list
       of directories then the name table is replicated in all of the
       directories, for redundancy. */
-  dfs.name.dir (LAZY hadoop.tmp.dir ++ "/dfs/name");
+  dfs.name.dir (hadoop.tmp.dir ++ "/dfs/name");
 
 
   /**Namenode periodicity in seconds to check if decommission is complete.*/
@@ -249,6 +272,14 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
 
 
   /**
+    The secondary namenode http server address and port.
+    If the port is 0 then the server will start on a free port.
+  */
+  dfs.secondary.http.address  "0.0.0.0:50090";
+
+
+
+  /**
   The user account used by the web interface.
   Syntax: USERNAME,GROUP1,GROUP2, ...
   */
@@ -257,13 +288,13 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
 
 /* file system properties */
 
-  fs.default.name  FS_FILE_URL;
+  fs.default.name  "file:///";
 
 
   /**Determines where on the local filesystem the DFS secondary
       name node should store the temporary images and edits to merge.
   */
-  fs.checkpoint.dir  (hadoop.tmp.dir ++ "/dfs/namesecondary");
+  fs.checkpoint.dir  "${hadoop.tmp.dir}/dfs/namesecondary";
 
   /**The number of seconds between two periodic checkpoints.
   */
@@ -273,6 +304,8 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
        a periodic checkpoint even if the fs.checkpoint.period hasn't expired.
   */
   fs.checkpoint.size  (65536 * 1024);
+
+
 
 
 
@@ -286,8 +319,6 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   If zero, the trash feature is disabled.
   */
   fs.trash.interval  0;
-
-  FS_FILE_URL "file:///";
 
   /**The FileSystem for file: uris.*/
   fs.file.impl  "org.apache.hadoop.fs.LocalFileSystem";
@@ -509,9 +540,8 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   of records collected before the collection thread must block is equal
   to (r * x) / 4
   */
-  //io.sort.record.percent 0.05;
-  io.sort.record.percent 0.1F;
-  
+  io.sort.record.percent 0.05;
+
   /*
   The soft limit in either the buffer or record collection
   buffers. Once reached, a thread will begin to spill the contents to disk
@@ -680,12 +710,12 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   /**
   The shared directory where MapReduce stores control files.
   */
-  mapred.system.dir  ("/tmp/hadoop/mapred/system");
+  mapred.system.dir  (hadoop.tmp.dir ++ "/mapred/system");
 
   /**
   A shared directory for temporary files.
   */
-  mapred.temp.dir  ("/mapred/temp");
+  mapred.temp.dir  (hadoop.tmp.dir ++ "/mapred/temp");
 
 
   /**
@@ -751,6 +781,13 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
 
 
   /**
+  The host and port that the MapReduce job tracker runs
+  at.  If "local", then jobs are run in-process as a single map
+  and reduce task.
+  */
+  mapred.job.tracker  "localhost:8012";
+
+  /**
   The maximum number of complete jobs per user to keep around before delegating them
   to the job history.
   */
@@ -762,8 +799,11 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   */
   mapred.job.tracker.handler.count  10;
 
-  //mapred.job.tracker  ("localhost:" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
-
+  /**
+  The job tracker http server address and port the server will listen on.
+  If the port is 0 then the server will start on a free port.
+  */
+  mapred.job.tracker.http.address  "0.0.0.0:50030";
 
 
   /**
@@ -997,13 +1037,24 @@ HadoopConfiguration extends Prim, HadoopHostnameConfiguration {
   */
   mapred.tasktracker.reduce.tasks.minimum  2;
 
-
+ /**
+  The interface and port that task tracker server listens on.
+  Since it is only connected to by the tasks, it uses the local interface.
+  EXPERT ONLY. Should only be changed if your host does not have the loopback
+  interface.*/
+  mapred.task.tracker.report.address  "127.0.0.1:0";
+  
   /**
   The number of worker threads that for the http server. This is
  used for map output fetching
   */
   tasktracker.http.threads  40;
 
+  /**
+  The task tracker http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  mapred.task.tracker.http.address  "0.0.0.0:50060";
 
 
   /**
@@ -1095,7 +1146,7 @@ TaskStatus extends  NULL {
   * Used to describe the priority of the running job.
   *
   */
-JobPriority  extends  NULL {
+JobPriority  extends  NULL{
   VeryHigh "VERY_HIGH";
   High     "HIGH";
   Normal   "NORMAL";

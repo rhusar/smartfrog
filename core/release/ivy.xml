@@ -22,7 +22,7 @@
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="default, package-all"
+    <conf name="test" extends="default"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
@@ -30,8 +30,6 @@
         extends="redist"/>
 <!--    <conf name="izpack" visibility="private"
         description="izpack libraries"/>-->
-    <conf name="package-all" description="all the packages in one big dependency"
-      extends="package-core,package-examples,package-ant,package-anubis,package-csvfiles,package-database,package-jmx,package-hadoop,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp,package-restlet,package-json"/>
     <!-- From here on, every Package we bundle in Ivy contains its own configuration -->
     <conf name="package-core-install"
         description="The .zip file containing the complete base distribution of SmartFrog"/>
@@ -50,32 +48,18 @@
         description="ant components"/>
     <conf name="package-anubis"
         description="anubis components"/>
-    <conf name="package-cloudfarmer"
-        description="Cloud management tools"/>
     <conf name="package-csvfiles"
         description="CSV File components"/>
     <conf name="package-database"
         description="database components"/>
-    <conf name="package-ec2"
-        description="EC2 components"/>
-    <conf name="package-groovy"
-        description="Groovy components"/>
-    <conf name="package-hadoop"
-        description="hadoop components"/>
     <conf name="package-jmx"
         description="jmx components"/>
-    <conf name="package-json"
-        description="json components"/>
     <conf name="package-logging"
         description="logging components"/>
     <conf name="package-networking"
         description="networking components"/>
     <conf name="package-quartz"
         description="scheduling components"/>
-    <conf name="package-restlet"
-        description="restlet components"/>
-    <conf name="package-rpmtools"
-        description="rpm components"/>
     <conf name="package-scripting"
         description="scripting components"/>
     <conf name="package-testing"
@@ -97,10 +81,6 @@
     <conf name="package-testharness"
         description="testharness"/>
 
-    <conf name="everything"
-        extends="default,package-core,package-ant,package-anubis,package-csvfiles,package-database,package-ec2,package-groovy,package-hadoop,package-jmx,package-logging,package-networking,package-quartz,package-rpmtools,package-scripting,package-testing,package-velocity,package-www,package-xml,package-xmpp,package-extras,package-gui,package-testharness"
-        description="all our dependencies in one place"/>
-
 
   </configurations>
 
@@ -118,19 +98,8 @@
     <dependency org="org.smartfrog"
         name="sf-tasks" changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="redist->redist;package-core->master;build->default"/>
+        conf="redist->redist;package-core->master"/>
 
-    
-    <!-- the testharness. This is not redistributed, it is used to test the RPMs-->
-
-    <dependency org="org.smartfrog"
-      name="sf-testharness"
-      changing="true"
-      rev="latest.integration"
-      conf="test->default,testjar"/>
-    
-    <!-- the ant build, which contains the zipped/tarred directory tree-->
-    
     <dependency org="org.smartfrog"
         name="sf-antbuild" changing="true"
         rev="${ivy.smartfrog.version}"
@@ -150,14 +119,6 @@
         rev="${ivy.smartfrog.version}"
         conf="package-anubis->master,redist,documentation"/>
 
-
-    <!--cloudfarmer-->
-    <dependency org="org.smartfrog"
-        name="sf-cloudfarmer"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-cloudfarmer->master,redist,documentation,webapp"/>
-
     <!--csvfiles-->
     <dependency org="org.smartfrog"
         name="sf-csvfiles"
@@ -173,63 +134,19 @@
 
         conf="package-database->master,redist,documentation"/>
 
-    <!--dns in networking-->
+    <!--dns-->
     <dependency org="org.smartfrog"
         name="sf-dns"
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
-
-
-    <!--email in networking -->
+    
+    <!--email -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
-
-
-    <!--ec2 -->
-    <dependency org="org.smartfrog"
-        name="sf-ec2"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-ec2->master,redist,documentation"/>
-
-    <!--groovy -->
-    <dependency org="org.smartfrog"
-        name="sf-groovy"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-groovy->master,redist,documentation"/>
-
-    <!--hadoop-->
-    <dependency org="org.smartfrog"
-        name="sf-hadoop"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-hadoop->master,redist,documentation,s3-server,hadoop-jars"/>
-
-    <!--JMX -->
-    <dependency org="org.smartfrog"
-        name="sf-jmx"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-jmx->master,redist,documentation"/>
-
-    <!--JSON -->
-    <dependency org="org.smartfrog"
-        name="sf-json"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-json->master,redist,documentation"/>
-    
-    <!--logging-->
-    <dependency org="org.smartfrog"
-        name="sf-loggingservices"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-logging->master,redist,documentation"/>
 
     <!--net-->
     <dependency org="org.smartfrog"
@@ -237,34 +154,6 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
-    
-    <!--quartz scheduling-->
-    <dependency org="org.smartfrog"
-        name="sf-quartz"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-quartz->master,redist,documentation"/>
-
-    <!--restlet-->
-    <dependency org="org.smartfrog"
-        name="sf-restlet"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-restlet->master,redist,documentation"/>
-
-    <!--rpmtools-->
-    <dependency org="org.smartfrog"
-        name="sf-rpmtools"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-rpmtools->master,redist,documentation"/>
-
-    <!--scripting -->
-    <dependency org="org.smartfrog"
-        name="sf-scripting"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-scripting->master,redist,documentation"/>
 
     <!--ssh-->
     <dependency org="org.smartfrog"
@@ -273,6 +162,34 @@
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
 
+    <!--logging-->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-logging->master,redist,documentation"/>
+
+    <!--scripting -->
+    <dependency org="org.smartfrog"
+        name="sf-scripting"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-scripting->master,redist,documentation"/>
+
+<!--JMX -->
+    <dependency org="org.smartfrog"
+        name="sf-jmx"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-jmx->master,redist,documentation"/>
+
+    <!--scheduling-->
+    <dependency org="org.smartfrog"
+        name="sf-quartz"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-quartz->master,redist,documentation"/>
+    <!--,documentation -->
 
     <!--SLP-->
     <!--
@@ -313,11 +230,16 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist,documentation,servletapi"/>
+<!--    <dependency org="org.smartfrog"
+        name="sf-tomcat"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-www->master,redist,documentation"/>-->
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist,jsp"/>
+        conf="package-www->master,redist"/>
     <!--
         <dependency org="org.smartfrog"
             name="sf-cargo"

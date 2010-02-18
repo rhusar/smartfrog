@@ -19,11 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
-import org.apache.hadoop.util.Service;
 import org.mortbay.util.MultiException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.apache.hadoop.util.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -84,19 +84,6 @@ public class SFHadoopException extends SmartFrogException {
     }
 
     /**
-     * Constructs a SmartFrogException with specified message. Also initializes the exception context with component
-     * details.
-     *
-     * @param message  exception message
-     * @param sfObject The Component that has encountered the exception
-     * @param conf the configuration at the time
-     */
-    public SFHadoopException(String message, Prim sfObject, ManagedConfiguration conf) {
-        super(message, sfObject);
-        addConfiguration(conf);
-    }
-
-    /**
      * Constructs a SmartFrogException with specified cause. Also initializes the exception context with component
      * details.
      *
@@ -118,31 +105,18 @@ public class SFHadoopException extends SmartFrogException {
     public SFHadoopException(String message, Throwable cause, Prim sfObject) {
         super(message, cause, sfObject);
     }
-    /**
-     * Constructs a SmartFrogException with specified message. Also initializes the exception context with component
-     * details.
-     *
-     * @param message  message
-     * @param cause    exception causing this exception
-     * @param sfObject The Component that has encountered the exception
-     * @param conf the configuration at the time
-     */
-    public SFHadoopException(String message, Throwable cause, Prim sfObject, ManagedConfiguration conf) {
-        super(message, cause, sfObject);
-        addConfiguration(conf);
-    }
 
     /**
      * Build an exception from a status object
      * @param status the status object
      * @param owner the owning Prim (can be null)
      */
-    public SFHadoopException(ServicePingStatus status, Prim owner) {
+    public SFHadoopException(Service.ServiceStatus status, Prim owner) {
       super(status.toString(), owner);
-        List<Throwable> causes = status.getThrowables();
-        if (!causes.isEmpty()) {
-            initCause(causes.get(0));
-        }
+      List<Throwable> causes = status.getThrowables();
+      if(!causes.isEmpty()) {
+          initCause(causes.get(0));
+      }
     }
 
     /**
@@ -151,7 +125,7 @@ public class SFHadoopException extends SmartFrogException {
      * @param conf configuration
      */
     public void addConfiguration(ManagedConfiguration conf) {
-        add(CONFIGURATION, conf.dump());
+        add(CONFIGURATION, conf.dumpQuietly());
     }
 
 
@@ -168,30 +142,25 @@ public class SFHadoopException extends SmartFrogException {
     @SuppressWarnings("unchecked")
     public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject,
                                             ManagedConfiguration conf) {
-        if(multiExcept == null) {
-            //no value, hand off to the other handler
-            return forward(message,(Throwable)null, sfObject, conf);
-        }
-        List<Throwable> exceptions = (List < Throwable >) multiExcept.getThrowables();
+        List<Throwable> exceptions = (List < Throwable >) multiExcept.getExceptions();
         int exCount = exceptions.size();
         if (exCount == 1) {
             //special case: one child.
-            Throwable e = multiExcept.getThrowable(0);
-            return new SFHadoopException(message + "\n" + e,
+            Throwable e = multiExcept.getException(0);
+            return new SFHadoopException(message + "\n"
+                    + e.getMessage(),
                     e,
                     sfObject);
         }
 
         String trace = dumpToString(exceptions);
-        SFHadoopException hadoopException = new SFHadoopException(message
+        return new SFHadoopException(message
                 + maybeDumpConfiguration(conf)
                 + "\nmultiple (" + exCount + ") nested exceptions: \n"
-                + multiExcept + "\n"
+                + multiExcept.getMessage() + "\n"
                 + trace,
                 multiExcept,
                 sfObject);
-        hadoopException.addConfiguration(conf);
-        return hadoopException;
     }
 
     /**
@@ -228,22 +197,13 @@ public class SFHadoopException extends SmartFrogException {
      */
     public static SFHadoopException forward(String message, Throwable throwable, Prim sfObject,
                                             ManagedConfiguration conf) {
-        if (throwable == null) {
-            SFHadoopException hadoopException = new SFHadoopException(message
-                    + maybeDumpConfiguration(conf),
-                    throwable, sfObject);
-            hadoopException.addConfiguration(conf);
-            return hadoopException;
-        }
         if (throwable instanceof MultiException) {
             return forward(message, (MultiException) throwable, sfObject, conf);
         } else {
-            SFHadoopException hadoopException = new SFHadoopException(message + ": "
-                    + throwable
-                    + maybeDumpConfiguration(conf),
-                    throwable, sfObject);
-            hadoopException.addConfiguration(conf);
-            return hadoopException;
+            return new SFHadoopException(message + ": "
+                        + throwable.getMessage()
+                        + maybeDumpConfiguration(conf),
+                        throwable,sfObject);
         }
 
     }
@@ -257,33 +217,11 @@ public class SFHadoopException extends SmartFrogException {
     private static String maybeDumpConfiguration(ManagedConfiguration conf) {
         try {
             if (conf != null && conf.getBoolean(SMARTFROG_DUMP_CONF, false)) {
-                return "\n" + conf.dump();
+                return "\n" + conf.dumpQuietly();
             }
         } catch (SFHadoopRuntimeException ignored) {
             //whatever got here, it won't let us dump things
         }
         return "";
     }
-
-
-    /**
-     * To forward SmartFrog exceptions instead of chain them. If thr is an instance of SmartFrogException then the
-     * exception is returned without any modification, if not a new SmartFrogException is created with message as a
-     * paramenter
-     *
-     * @param message String message
-     * @param thr     throwable object to be forwarded
-     * @return Throwable that is a SmartFrogException
-     */
-    public static SFHadoopException forward(String message, Throwable thr) {
-        if (thr instanceof SFHadoopException) {
-            if (message != null) {
-                ((SFHadoopException) thr).add("msg: ", message);
-            }
-            return (SFHadoopException) thr;
-        } else {
-            return new SFHadoopException(message, thr);
-        }
-    }
-
 }

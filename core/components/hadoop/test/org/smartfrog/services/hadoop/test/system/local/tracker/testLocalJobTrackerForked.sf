@@ -25,4 +25,4 @@
 /**
  * Test case
  */
-sfConfig testLocalJobTrackerForked ;
+sfConfig testLocalJobTracker ;

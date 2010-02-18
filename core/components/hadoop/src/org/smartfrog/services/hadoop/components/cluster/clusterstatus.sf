@@ -22,11 +22,8 @@ For more information: www.smartfrog.org
 /**
  * This component checks up on cluster status; can be used to validate a deployment without shipping any work its way
  * using JobClient#getClusterStatus()
- *
- * This status checker checks the job tracker, not the filesystem directly. It only works against a live jobtracker
- * And not a basic Hadoop FS. 
  */
-ClusterStatus extends WorkflowPrim {
+ClusterStatus extends JobTrackingWorkflowComponent {
   sfClass "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl";
 
   // mapred.job.tracker is required to point to a job tracker (i.e. a URL)
@@ -38,9 +35,9 @@ ClusterStatus extends WorkflowPrim {
   supportedFileSystem true;
 
   /**
-   * include a test for the job tracker
+   * Declares that the job tracker is live
    */
-  jobtrackerLive false;
+  jobTrackerLive true;
 
   /**
    For all the min/max values, <0 means 'dont check'
@@ -59,7 +56,6 @@ ClusterStatusCondition extends ClusterStatus {
 }
 
 JobTrackerRunning extends ClusterStatus {
-  jobtrackerLive true;
   supportedFileSystem false;
   minActiveMapTasks -1;
   minActiveReduceTasks -1;
@@ -72,7 +68,6 @@ JobTrackerRunning extends ClusterStatus {
  * actions until the job tracker is live
  */
 JobTrackerRunningCondition extends ClusterStatusCondition {
-  jobtrackerLive true;
   supportedFileSystem false;
   minActiveMapTasks -1;
   minActiveReduceTasks -1;

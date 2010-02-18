@@ -60,15 +60,12 @@ For more information: www.smartfrog.org
     commands [];
     exitCodeMax 0;
     exitCodeMin 0;
-    authentication SSHComponent:authenticate_password;
 
     SSHCmdExec extends SSHExec {
 
         host PARENT:ATTRIB host;
 
         username PARENT:ATTRIB username;
-
-        authentication PARENT:ATTRIB authentication;
         
         // reference to password provider
         passwordProvider LAZY PARENT:passwordProvider;
@@ -115,8 +112,6 @@ SSHSessionInlinePassword extends BaseSshSessionAuthPass {
 
 SSHSessionPublicKey extends BaseSshSessionAuthPass {
     keyFile TBD;
-    authentication SSHComponent:authenticate_key;
-    SSHCmdExec:keyFile LAZY PARENT:keyFile;
-    passwordProvider extends SSHEmptyPassword ;
-
+    SSHCmdExec:authentication SSHComponent:authenticate_key;
+    SSHCmdExec:keyFile LAZY keyFile;
 }

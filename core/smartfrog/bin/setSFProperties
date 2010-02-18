@@ -4,9 +4,6 @@
 # SF ENV PROPERTIES  - Please edit with your preferences
 # ------------------------------------------------------
 
-# Read in the environment variable override point
-. "$SFHOME/bin/setSFEnvVariables.sh"
-
 # Uncomment to enable Dynamic ClassLoading
 # export SFDYNAMICCLASSLOADING_ON=ENABLED
 

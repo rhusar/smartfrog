@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
-#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
+
 
 
 tcp19Test extends JettyTestCompound {
@@ -84,13 +84,13 @@ TestLivenessURL extends JettyTestCompound {
 
 TestSecurity extends JettyTestCompound {
 
-	action extends TempDirServer {
-	
-	
-	  port 5050;
+  password "secret";
+
+	action extends LocalJettyServer {
 
 	  security extends AdminSecurityRealm {
 	    server LAZY PARENT:server;
+	    adminPassword PARENT:PARENT:password;
     }
   }
 
@@ -98,11 +98,8 @@ TestSecurity extends JettyTestCompound {
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
     wait extends waitForAnyHttpResponse  {
-      host "localhost";
+      url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ "/");
       port action:port;
-      path "/"      
-      username "admin";
-      password "password";      
       minimumResponseCode HttpCodes:START_2XX;
       maximumResponseCode HttpCodes:END_2XX;
     }
@@ -111,6 +108,8 @@ TestSecurity extends JettyTestCompound {
 }
 
 testSecurityUnauth extends TestSecurity {
+
+
 
   //patch the login
   tests:wait extends waitForAnyHttpResponse  {
@@ -141,11 +140,15 @@ TestRealm extends JettyTestCompound {
   
   links [["http://jira.smartfrog.org/jira/browse/SFOS-628"]];
 
+  password "secret";
+
 	action extends LocalJettyServer {
 
-    testRealm extends AdminSecurityRealm {
+    testRealm extends JettySecurityRealm {
     	name "testRealm";
+    	users [["test", "password", "testRole"]];
     	server LAZY PARENT:server;
+    	contextPath "/";
     }
     
   }
@@ -154,7 +157,7 @@ TestRealm extends JettyTestCompound {
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
     wait extends waitForAnyHttpResponse  {
-      url ( "http://admin:password@localhost:" ++ test.jetty.port.1 ++ "/");
+      url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ "/");
       port action:port;
     }
   }
@@ -162,7 +165,7 @@ TestRealm extends JettyTestCompound {
 }
 
 ServerOnJetty extends Compound {
-  port TBD;
+    port TBD;
 	home TBD;
 
 	jettyServer extends CoreJettyServer {

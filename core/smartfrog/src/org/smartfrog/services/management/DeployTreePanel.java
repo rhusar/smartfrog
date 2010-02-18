@@ -94,7 +94,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
             treeInit(null,false , false,true);
             jbInit();
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
     }
 
@@ -113,7 +113,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
             jbInit();
             popupinit();
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
+            if (sfLog().isErrorEnabled()) sfLog().error (ex);
         }
     }
 
@@ -422,7 +422,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
                   ex.printStackTrace(pw);
                   stackTrace = ("\r\n"+sw.toString()+"\r\n");
               } catch (Exception e2) {
-                  if (sfLog().isErrorEnabled()) sfLog().error (e2, e2);
+                  if (sfLog().isErrorEnabled()) sfLog().error (e2);
               }
           }
           String tempString = "";

@@ -2,10 +2,10 @@
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
   <info organisation="org.smartfrog" module="sf-persistence">
+    <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-        persistence with solid
-        Created 08-Aug-2007 by slo
+        Persistence
     </description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
@@ -27,56 +27,27 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="rpm" description="everything wanted in the RPM"
-        extends="redist,master,documentation"/>
-    <conf name="documentation"
-        description="all documentation artifacts"/>            
+  <conf name="documentation"
+        description="all documentation artifacts"/>  
 </configurations> 
 
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-persistence-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-persistence-documentation" conf="documentation" ext="zip"/>
-    
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
       name="smartfrog"
       changing="true"
-      rev="${smartfrog.artifact.version}"
+      rev="latest.integration"
       conf="compile,runtime,daemon->services"/>
-
     <dependency org="org.smartfrog"
-        name="sf-tasks"
-        rev="${smartfrog.artifact.version}"
+        name="sf-tasks" changing="true"
+        rev="latest.integration"
         conf="build->default"/>
-        
-    <dependency org="commons-pool"
-        name="commons-pool"
-        rev="${commons-pool.version}"
-        conf="compile,redist,daemon->default"/>
-        
-    <dependency org="commons-dbcp"
-        name="commons-dbcp"
-        rev="${commons-dbcp.version}"
-        conf="compile,redist,daemon->default"/>
-
     <dependency org="org.smartfrog"
-        name="sf-testharness"
-        changing="true"
+        name="sf-testharness" changing="true"
         rev="latest.integration"
-        conf="test->default"/>
-
-    <dependency org="org.smartfrog"
-        name="sf-junit"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
-
-    <dependency org="hsqldb"
-    	  name="hsqldb" 
-        rev="${hsqldb.version}" 
         conf="test->default"/>
 
   </dependencies>

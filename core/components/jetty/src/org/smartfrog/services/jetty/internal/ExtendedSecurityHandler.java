@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jetty.internal;
 
 import org.mortbay.jetty.security.SecurityHandler;
-import org.smartfrog.sfcore.logging.Log;
 
 /**
  *
@@ -30,9 +29,5 @@ import org.smartfrog.sfcore.logging.Log;
 
 public class ExtendedSecurityHandler extends SecurityHandler {
 
-    private Log log;
 
-    public ExtendedSecurityHandler(Log log) {
-        this.log = log;
-    }
 }

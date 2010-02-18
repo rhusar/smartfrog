@@ -35,5 +35,6 @@ jetty_home LAZY PROPERTY jetty.home;
 
 sfConfig extends Compound {
    server extends JettyHttpServer {
+      jettyhome ROOT:jetty_home; // mandatory
    }
 }

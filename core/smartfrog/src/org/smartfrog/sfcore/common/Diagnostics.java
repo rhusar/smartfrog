@@ -164,8 +164,6 @@ public final class Diagnostics {
 
         header(out, "Network");
         if (Logger.testNetwork) {
-            doReportProxy(out);
-            out.append("\n");
             doReportLocalNetwork(out);
             out.append("\n");
             doReportRemoteNetwork(out, Logger.testURI);
@@ -511,6 +509,7 @@ public final class Diagnostics {
     public static void doReportThreadDump(StringBuffer out) {
       try {
         ThreadDump td = new ThreadDump();
+        StringBuffer reportTD = new StringBuffer();
         out.append("+++ Threads - [nane (id), state, priority, isDaemon, thread group]\n");
         for (Thread thread : td.getThreads()){
            out.append( thread.getName()+" ("+thread.getId()+")"+
@@ -883,64 +882,4 @@ public final class Diagnostics {
         out.append("\n");
     }
 
-    /**
-     * Get the value of a system property. If a security manager blocks access to a property it fills the result in with
-     * an error
-     *
-     * @param key
-     * @return the system property's value or error text
-     * @see #ERROR_PROPERTY_ACCESS_BLOCKED
-     */
-    private static String getProperty(String key) {
-        String value;
-        try {
-            value = System.getProperty(key);
-        } catch (SecurityException e) {
-            value = "Access to this property blocked by a security manager";
-        }
-        return value;
-    }
-
-    /**
-     * print a property name="value" pair if the property is set; print nothing if it is null
-     *
-     * @param out stream to print on
-     * @param key property name
-     */
-    private static void printProperty(StringBuffer out, String key) {
-        String value = getProperty(key);
-        if (value != null) {
-            out.append(key);
-            out.append(" = ");
-            out.append('"');
-            out.append(value);
-            out.append("\"\n");
-        }
-    }
-    /**
-     * Report proxy information
-     *
-     * @param out stream to print to
-     * Added by stevel to Ant1.7
-     */
-    private static void doReportProxy(StringBuffer out) {
-        printProperty(out, "http.proxyHost");
-        printProperty(out, "http.proxyPort");
-        printProperty(out, "http.proxyUser");
-        printProperty(out, "http.proxyPassword");
-        printProperty(out, "http.nonProxyHosts");
-        printProperty(out, "https.proxyHost");
-        printProperty(out, "https.proxyPort");
-        printProperty(out, "https.nonProxyHosts");
-        printProperty(out, "https.proxyUser");
-        printProperty(out, "https.proxyPassword");
-        printProperty(out, "ftp.proxyHost");
-        printProperty(out, "ftp.proxyPort");
-        printProperty(out, "ftp.nonProxyHosts");
-        printProperty(out, "socksProxyHost");
-        printProperty(out, "socksProxyPort");
-        printProperty(out, "java.net.socks.username");
-        printProperty(out, "java.net.socks.password");
-        printProperty(out, "java.net.useSystemProxies");
-    }
 }

@@ -11,7 +11,7 @@
   <artifactId>sf-ec2</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>SmartFrog EC2 components</description>
+  <description>SmartFrog EC2/Restlet components</description>
   <dependencies>
     <dependency>
       <groupId>org.smartfrog</groupId>
@@ -23,15 +23,27 @@
       <artifactId>sf-www</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
+    <!--restlet api-->
     <dependency>
-      <groupId>org.smartfrog</groupId>
-      <artifactId>sf-restlet</artifactId>
-      <version>${smartfrog.version}</version>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>${restlet.version}</version>
+    </dependency>
+    <!--this is the implementation and java.net integration-->
+    <dependency>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet</artifactId>
+      <version>${restlet.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.smartfrog</groupId>
-      <artifactId>sf-json</artifactId>
-      <version>${smartfrog.version}</version>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet.ext.net</artifactId>
+      <version>${restlet.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commons-fileupload.version}</version>
     </dependency>
 
     <!--typica-->

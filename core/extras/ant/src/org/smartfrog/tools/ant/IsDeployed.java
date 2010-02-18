@@ -42,7 +42,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * name of host
      */
-    private String host = "localhost";
+    private String host;
 
     /**
      * the name of the application
@@ -52,18 +52,12 @@ public class IsDeployed extends ProjectComponent implements Condition {
     /**
      * SmartFrog daemon connection port. org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
      */
-    protected int port = 3800;
+    protected Integer port;
 
 
     private void validate() throws BuildException {
         if (application == null) {
             throw new BuildException("Application is undefined");
-        }
-        if (host == null) {
-            throw new BuildException("Host is undefined");
-        }
-        if (port <= 0) {
-            throw new BuildException("Port out of range: " + port);
         }
     }
 
@@ -71,10 +65,10 @@ public class IsDeployed extends ProjectComponent implements Condition {
      * Is the application deployed
      *
      * @return true if the condition is true
-     * @throws BuildException if an error occurs
+     * @throws org.apache.tools.ant.BuildException
+     *          if an error occurs
      */
     public boolean eval() throws BuildException {
-        validate();
         //TODO: implement
         //plan is to use sfResolve, once we have a reference to a remote daemon.
         //all network exceptions should be caught and turned into simple failures.
@@ -102,7 +96,7 @@ public class IsDeployed extends ProjectComponent implements Condition {
     }
 
     /**
-     * set the hostname to deploy to (optional, defaults to localhost)
+     * set the hostname to deploy to (optional, defaults to localhost) Some tasks do not allow this to be set at all.
      *
      * @param host hostname
      */
@@ -112,10 +106,11 @@ public class IsDeployed extends ProjectComponent implements Condition {
     }
 
     /**
-     * port of daemon; optional -default is 3800 
+     * port of daemon; optional -default is 3800 Some tasks do not allow this to be set at all.
+     *
      * @param port port to use
      */
-    public void setPort(int port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 

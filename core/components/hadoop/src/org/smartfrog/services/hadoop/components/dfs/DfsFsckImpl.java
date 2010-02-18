@@ -19,14 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hdfs.tools.DFSck;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Deploy a filesystem check
@@ -43,8 +43,7 @@ public class DfsFsckImpl extends DfsOperationImpl {
      *
      * @throws Exception on any failure
      */
-    @Override
-    protected void performDfsOperation(FileSystem fileSystem,
+    protected void performDfsOperation(DistributedFileSystem fileSystem,
                                        ManagedConfiguration conf)
             throws Exception {
         DFSck fsck = new DFSck(conf);

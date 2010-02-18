@@ -95,7 +95,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @param message message
      * @param sfObject component that encountered exception
      */
-    public SmartFrogResolutionException(String message, Prim sfObject) {
+    public SmartFrogResolutionException(String message,Prim sfObject) {
         super(message, sfObject);
     }
 
@@ -114,8 +114,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     /**
      * Constructs a SmartFrogResolutionException with reference and reason.
      * @param ref reference causing the resolution exception
-     * @param reason message for exception 
-     */
+     * @param reason message for exception */
     public SmartFrogResolutionException(Reference ref, String reason) {
       this(ref, null , reason, null);
     }
@@ -134,27 +133,19 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     /**
      * Constructs a SmartFrogResolutionException with reference and reason and
      * additional data.
-     * @param ref reference causing the resolution exception
+     * @param ref reference causing the resolution exceptioh
      * @param source source that raised the exception
      * @param reason message for exception
      * @param data additional data for exception
      */
-    public SmartFrogResolutionException(Reference ref, Reference source,
-                                        String reason, Object data) {
-        super(reason);
-        bind(ref, source, data);
-    }
-
-    private void bind(Reference ref, Reference source, Object data) {
-        if ((ref != null)) {
-            put(REFERENCE, ref.copy());
-        }
-        if ((source != null)) {
-            put(SOURCE, source.copy().toString());
-        }
-        if (data != null) {
-            put(DATA, data.toString());
-        }
+    public SmartFrogResolutionException (Reference ref, Reference source,
+                               String reason, Object data) {
+      super(reason);
+      if ((ref!=null))put(REFERENCE,ref.copy());
+//      if ((source!=null)) put(SOURCE,source.copy());
+      if ((source!=null)) put(SOURCE,source.copy().toString());
+      if (data!=null) put(DATA,data.toString());
+      //addCallerInfo(4);
     }
 
     /**
@@ -167,12 +158,16 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @param cause exception causing this exception
      * @param sfObject component that encountered exception     *
      */
-    public SmartFrogResolutionException(Reference ref, Reference source,
-                                        String reason, Object data,
-                                        Throwable cause, Prim sfObject) {
-        super(reason, cause, sfObject);
-        bind(ref, source, data);
+    public SmartFrogResolutionException (Reference ref, Reference source,
+                                         String reason, Object data ,
+                                         Throwable cause,Prim sfObject) {
+      super(reason, cause, sfObject);
+      if ((ref!=null))put(REFERENCE,ref.copy());
+      if ((source!=null)) put(SOURCE,source.copy());
+      if (data!=null) put(DATA,data.toString());
+      //addCallerInfo(4);
     }
+
 
 
     /**
@@ -200,7 +195,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public static SmartFrogResolutionException generic(Reference ref,
                             Reference source, String message) {
-        return new SmartFrogResolutionException(ref, source, message);
+        return new SmartFrogResolutionException(ref ,source, message);
     }
 
     /**
@@ -229,8 +224,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public static SmartFrogResolutionException notFound(Reference ref,
                                                         Reference source, Throwable cause) {
-        return (new SmartFrogResolutionException(ref, source,
-                MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE), null, cause, null));
+        return (new SmartFrogResolutionException(ref ,source,
+                 MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE),null,cause,null));
     }
 
 
@@ -302,14 +297,12 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @return a resolution exception
      */
     public static SmartFrogResolutionException illegalClassType(Reference ref,
-                                                                Reference source, Object resolvedValue,
-                                                                String referenceValueType, String defaultValueType) {
-        SmartFrogResolutionException srex = new SmartFrogResolutionException(ref, source,
-                MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT, defaultValueType, resolvedValue,
-                        referenceValueType));
-        srex.put(REFERENCE_OBJECT_RESOLVED, resolvedValue.toString());
-        srex.put(REFERENCE_OBJECT_CLASS_TYPE, referenceValueType);
-        srex.put(DEFAULT_OBJECT_CLASS_TYPE, defaultValueType);
+        Reference source,Object resolvedValue, String referenceValueType, String defaultValueType) {
+        SmartFrogResolutionException srex = new SmartFrogResolutionException (ref, source,
+                MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT, defaultValueType, resolvedValue, referenceValueType));
+        srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue.toString());
+        srex.put(REFERENCE_OBJECT_CLASS_TYPE,referenceValueType);
+        srex.put(DEFAULT_OBJECT_CLASS_TYPE,defaultValueType);
         return srex;
     }
 
@@ -318,7 +311,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * To forward SmartFrog exceptions instead of chain them.
      * If thr is an instance of SmartFrogResolutionException then the exception is returned
      * without any modification, if not a new SmartFrogResolutionException is created
-     * with message as a parameter
+     * with message as a paramenter
      * @param message message
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogResolutionException
@@ -360,13 +353,13 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     public static SmartFrogException forward (String message, Reference r, Throwable thr){
         if (thr instanceof SmartFrogResolutionException) {
             // add message to data
-            if (r != null) {
-                //ADD: only added if not present.
-                ((SmartFrogResolutionException) thr).add(SmartFrogResolutionException.REFERENCE, r.copy());
+            if (r !=null){
+              //ADD: only added if not present.
+              ((SmartFrogResolutionException)thr).add(SmartFrogResolutionException.REFERENCE,r.copy());
             }
-            return (SmartFrogResolutionException) thr;
+            return (SmartFrogResolutionException)thr;
         } else {
-            return new SmartFrogResolutionException(r, null, message, null, thr, null);
+            return new SmartFrogResolutionException (r,null,message,null,thr,null);
         }
     }
 
@@ -378,14 +371,14 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      *
      * @return a resolution exception
      */
-      public int appendPath(String ref) {
-          if (!(containsKey(PATH)) || (get(PATH) == null)) {
-              put(PATH, new StringBuffer(ref));
-          } else {
-              ((StringBuffer) get(PATH)).append(ref);
-          }
-          return ((StringBuffer) get(PATH)).length();
-      }
+    public int appendPath (String ref){
+        if (!(this.containsKey(PATH))||(this.get(PATH)==null)){
+            this.put(PATH, new StringBuffer(ref));
+        } else {
+            ((StringBuffer)this.get(PATH)).append(ref);
+        }
+        return ((StringBuffer)this.get(PATH)).length();
+    }
 
 
     /**
@@ -396,8 +389,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     public int sizePath (){
         int length = -1;
         try {
-          if ( (containsKey(PATH)) || (get(PATH) != null)) {
-            return ((StringBuffer)get(PATH)).length();
+          if ( (this.containsKey(PATH)) || (this.get(PATH) != null)) {
+            return ((StringBuffer)this.get(PATH)).length();
           }
         } catch (Throwable thr){
         }
@@ -409,10 +402,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @param containerObj Object
      * @param failedReference Object
      */
-    public void setContainer(Object failedReference, Object containerObj) {
-        if (!(containsKey(CONTAINER_ERROR_MSG)) || (get(CONTAINER_ERROR_MSG) == null)) {
-            put(CONTAINER_ERROR_MSG,
-                    MessageUtil.formatMessage(MessageKeys.MSG_UNRESOLVED_REFERENCE_IN, failedReference, containerObj));
+    public void setContainer ( Object failedReference,Object containerObj){
+        if (!(this.containsKey(CONTAINER_ERROR_MSG))||(this.get(CONTAINER_ERROR_MSG)==null)){
+            put(CONTAINER_ERROR_MSG, MessageUtil.formatMessage(MessageKeys.MSG_UNRESOLVED_REFERENCE_IN,failedReference,containerObj));
         }
     }
 
@@ -424,69 +416,67 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @return string representation of the resolution exception
      */
     public String toString(String nm) {
-        StringBuilder strb = null;
-        strb = new StringBuilder();
-        try {
-            strb.append(shortClassName() + ":: ");
+      StringBuilder strb = null;
+      strb = new StringBuilder();
+      try {
+        strb.append (shortClassName() +":: ");
 
-            strb.append(((containsKey(REFERENCE) && (get(REFERENCE) != null)
-                    && (((Reference) get(REFERENCE)).size() != 0))) ? (//nm+
-                    MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE) + ": " + get(REFERENCE)) : "");
-            String separator = nm;
-            if (strb.toString().endsWith(":: ")) {
-                separator = "";
-            }
-            strb.append((((containsKey(CONTAINER_ERROR_MSG) && (get(CONTAINER_ERROR_MSG) != null)))
-                    ? (separator + get(CONTAINER_ERROR_MSG)) : ""));
+        strb.append(((this.containsKey(REFERENCE)&&(this.get(REFERENCE)!=null)
+            &&(((Reference)this.get(REFERENCE)).size()!=0))) ? (//nm+
+                MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE)+ ": " +  get(REFERENCE)) : "" );
+        String separator = nm;
+        if (strb.toString().endsWith(":: ")) {separator = "";}
+        strb.append((((this.containsKey(CONTAINER_ERROR_MSG)&&(this.get(CONTAINER_ERROR_MSG)!=null)))
+                               ? (separator+ get(CONTAINER_ERROR_MSG)) : "" ));
 
-            strb.append((((containsKey(SOURCE) && (get(SOURCE) != null)
-                    && ((get(SOURCE)).toString().length() != 0)))
-                    ? (nm + SOURCE + ": " + get(SOURCE)) : ""));
+        strb.append((((this.containsKey(SOURCE)&&(this.get(SOURCE)!=null)
+                             &&((this.get(SOURCE)).toString().length()!=0)))
+                               ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
 
-            strb.append((((containsKey(REFERENCE_OBJECT_RESOLVED))) ?
-                    (nm + REFERENCE_OBJECT_RESOLVED + ": '" + get(REFERENCE_OBJECT_RESOLVED) + "'") : ""));
-            strb.append((((containsKey(REFERENCE_OBJECT_CLASS_TYPE))) ?
-                    (nm + REFERENCE_OBJECT_CLASS_TYPE + ": " + get(REFERENCE_OBJECT_CLASS_TYPE)) : ""));
-            strb.append((((containsKey(DEFAULT_OBJECT_CLASS_TYPE))) ?
-                    (nm + DEFAULT_OBJECT_CLASS_TYPE + ": " + get(DEFAULT_OBJECT_CLASS_TYPE)) : ""));
-            if (Logger.logStackTrace) {
-                strb.append((((containsKey(PATH))) ?
-                        (nm + PATH + "(" + sizePath() + "): " + get(PATH)) : ""));
-                strb.append((((containsKey(DEPTH))) ?
-                        (nm + DEPTH + ": " + get(DEPTH)) : ""));
+        strb.append((((this.containsKey(REFERENCE_OBJECT_RESOLVED))) ?
+                    (nm+REFERENCE_OBJECT_RESOLVED+  ": '" + get(REFERENCE_OBJECT_RESOLVED)+"'") : "" ));
+        strb.append((((this.containsKey(REFERENCE_OBJECT_CLASS_TYPE))) ?
+                    (nm+REFERENCE_OBJECT_CLASS_TYPE+  ": " + get(REFERENCE_OBJECT_CLASS_TYPE)) : "" ));
+        strb.append((((this.containsKey(DEFAULT_OBJECT_CLASS_TYPE))) ?
+                    (nm+DEFAULT_OBJECT_CLASS_TYPE+  ": " + get(DEFAULT_OBJECT_CLASS_TYPE)) : "" ));
+        if (Logger.logStackTrace){
+            strb.append((((this.containsKey(PATH))) ?
+                         (nm+PATH+ "("+ this.sizePath() + "): " + get(PATH)) : "" ));
+            strb.append((((this.containsKey(DEPTH))) ?
+                         (nm+DEPTH+  ": " + get(DEPTH)) : "" ));
+        } else {
+          if (this.sizePath()>0)
+          strb.append((((this.containsKey(PATH))) ?
+                       (nm+PATH+ "("+ this.sizePath() + ") ") : "" ));
+        }
+        strb.append((((this.containsKey(PRIM_CONTEXT))) ?
+                    (nm+PRIM_CONTEXT+  ": " + "included") : "" ));
+        strb.append((((this.containsKey(DATA))) ?
+                    (nm+DATA+  ": " + get(DATA)) : ""));
+
+        boolean addSeparator = !strb.toString().endsWith(":: ");
+        if (getMessage()!=null) {
+            if ((getCause()!=null) &&(getCause().toString().equals(getMessage()))) {
+                strb.append (((((getCause() != null)&&addSeparator) ) ? nm : ""));
+                strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
             } else {
-                if (sizePath() > 0) {
-                    strb.append((((containsKey(PATH))) ?
-                            (nm + PATH + "(" + sizePath() + ") ") : ""));
-                }
+                //Only print message when message != cause
+                strb.append ((addSeparator ) ? nm : "");
+                strb.append (getMessage());
+                strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
             }
-            strb.append((((containsKey(PRIM_CONTEXT))) ?
-                    (nm + PRIM_CONTEXT + ": " + "included") : ""));
-            strb.append((((containsKey(DATA))) ?
-                    (nm + DATA + ": " + get(DATA)) : ""));
+        } else {
+            strb.append (((((getCause() != null)&&addSeparator) ) ? nm : ""));
+            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
+        }
 
-            boolean addSeparator = !strb.toString().endsWith(":: ");
-            if (getMessage() != null) {
-                if ((getCause() != null) && (getCause().toString().equals(getMessage()))) {
-                    strb.append(((((getCause() != null) && addSeparator)) ? nm : ""));
-                    strb.append((((getCause() == null)) ? "" : (getCauseMessage(nm))));
-                } else {
-                    //Only print message when message != cause
-                    strb.append((addSeparator) ? nm : "");
-                    strb.append(getMessage());
-                    strb.append((((getCause() == null)) ? "" : (nm + "cause: " + getCauseMessage(nm))));
-                }
-            } else {
-                strb.append(((((getCause() != null) && addSeparator)) ? nm : ""));
-                strb.append((((getCause() == null)) ? "" : (getCauseMessage(nm))));
-            }
-
-        } catch (Throwable thr) {
+      } catch (Throwable thr) {
             thr.printStackTrace();
             //ignore
-        }
-        return strb.toString();
+      }
+      return strb.toString();
     }
+
 
 
 }

@@ -210,9 +210,8 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			}
 			if (value == null) {
 				throw new SmartFrogContextException(
-						MessageUtil.formatMessage(MessageKeys.MSG_NULL_VALUE_OF_KEY_IN, 
-                                name,
-                                "sfAddAttribute"));
+						MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'value'",
+								"sfAddAttribute name:'"+name+"'"));
 			}
 
 			return null;
@@ -267,8 +266,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			}
 			if (value == null) {
 				throw new SmartFrogContextException(
-						MessageUtil.formatMessage(MSG_NULL_VALUE_OF_KEY_IN, 
-                        name,
+						MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
 						"sfReplaceAttribute"));
 			}
 
@@ -734,7 +732,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		attributeTags.remove(key);
 		attributeTagsWrappers.remove(key);
 		
-		if (r!=null) CoreSolver.getInstance().addUndoPut(this, key, r);
+		CoreSolver.getInstance().addUndoPut(this, key, r);
 		return r;
 	}
 

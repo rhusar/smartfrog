@@ -567,13 +567,11 @@ public class SFClassLoader {
 			getClassLoader(codebase).loadClass(className);
 
 			// don't know a case where this would be reached..
-			throw new ClassNotFoundException("forName: loading of " + className
-                    + " failed, but loading it without references succeeded. Check references.");
+			throw new ClassNotFoundException("forName: loading of " + className + " failed, but loading it without references succeeded. Check references.");
 		} catch (ClassNotFoundException e) {
-			throw new ClassNotFoundException("forName: Cannot find " + className + " : " + e, e);
+			throw new ClassNotFoundException("forName: Cannot find " + className);	
 		} catch (NoClassDefFoundError err) {
-			throw new ClassNotFoundException("forName: Error while loading "
-                    + className + ": " + err, err);
+			throw new ClassNotFoundException("forName: Error while loading " + className + ": " + err);
 		}
     }
 

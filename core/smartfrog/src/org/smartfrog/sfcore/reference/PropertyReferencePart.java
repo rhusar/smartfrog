@@ -118,11 +118,10 @@ public class PropertyReferencePart extends ReferencePart {
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
         try {
-            String v = SFSystem.getProperty((String) value, null);
-            if (v == null) {
-                throw SmartFrogResolutionException.notFound(r, null);
-            }
-            return v;
+          String v = SFSystem.getProperty((String) value, null);
+            if (v==null)
+                throw SmartFrogResolutionException.notFound (r,null);
+          return v;
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
         }

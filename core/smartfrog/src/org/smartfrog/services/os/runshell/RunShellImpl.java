@@ -426,7 +426,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                 subProcess = null;
             }
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
 
         super.sfTerminateWith(tr);
@@ -447,7 +447,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             try {
                 Thread.sleep(delayBetweenCmds * 1000);
             } catch (InterruptedException iex) {
-                if (sfLog().isErrorEnabled()) sfLog().error(iex, iex);
+                if (sfLog().isErrorEnabled()) sfLog().error(iex);
             }
         } else {
             if (sfLog().isTraceEnabled()) sfLog().trace("No delay between two consecutive cmds.");
@@ -460,7 +460,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                     dos.writeBytes(cmd);
                     dos.flush();
                 } catch (IOException ex) {
-                    sfLog().error(ex, ex);
+                    sfLog().error(ex);
                 }
             } else {
                sfLog().error("Error: Stream closed. Shell probably terminated.");
@@ -593,7 +593,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                         }
                     }
                 } catch (Exception ex) {
-                    if (sfLog().isErrorEnabled()) sfLog().error(ex, ex);
+                    if (sfLog().isErrorEnabled()) sfLog().error(ex);
                 }
             }
         }

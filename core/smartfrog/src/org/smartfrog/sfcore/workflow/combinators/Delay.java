@@ -63,9 +63,10 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
     /**
      * Constructs Delay object.
      *
-     * @throws RemoteException In case of RMI or network failure.
+     * @throws java.rmi.RemoteException In case of RMI or network failure.
      */
     public Delay() throws RemoteException {
+        super();
     }
 
     /**
@@ -149,11 +150,11 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
                             sfCreateNewChild("running", action, null);
                         } catch (Exception e) {
                             sfTerminate(TerminationRecord.abnormal(
-                                    "error in launching delayed component", getName(), e));
+                                    "error in launching delayed component", name, e));
                         }
                     } else {
                         //no work to do; terminate
-                        sfTerminate(TerminationRecord.normal(getName()));
+                        sfTerminate(TerminationRecord.normal(name));
                     }
                 }
             }

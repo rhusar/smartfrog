@@ -25,4 +25,4 @@
 /**
  * Test the local name node
  */
-sfConfig testLocalFormat ;
+sfConfig testLocalNameNodeCompound ;

@@ -25,8 +25,8 @@ import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 
 import java.rmi.RemoteException;
 
@@ -39,8 +39,9 @@ public abstract class DelegateApplicationContext
     public static final String ERROR_NOT_RUNNING = "Not started";
 
     /**
-     * @param server  jetty sever
-     * @param context jetty context
+     *
+     * @param server jetty sever
+     * @param context context
      */
     protected DelegateApplicationContext(JettyImpl server, Context context) {
         this.server = server;
@@ -94,7 +95,6 @@ public abstract class DelegateApplicationContext
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public void deploy() throws SmartFrogException, RemoteException {
 
     }
@@ -105,12 +105,11 @@ public abstract class DelegateApplicationContext
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public void start() throws SmartFrogException, RemoteException {
         if (context != null) {
             ContextHandlerCollection contextHandler = getServerContextHandler();
-            if (contextHandler == null) {
-                throw new SmartFrogLifecycleException("Cannot start " + this + " as the server is not yet deployed");
+            if(contextHandler==null) {
+                throw new SmartFrogLifecycleException("Cannot start "+this+" as the server is not yet deployed");
             }
             contextHandler.addHandler(context);
             try {
@@ -130,19 +129,18 @@ public abstract class DelegateApplicationContext
     protected ContextHandlerCollection getServerContextHandler() {
 
         Server httpServer = getJettyServer();
-        if (httpServer == null) {
+        if(httpServer==null) {
             return null;
         }
         return (ContextHandlerCollection) httpServer.getChildHandlerByClass(ContextHandlerCollection.class);
     }
 
     /**
-     * liveness check
-     *
-     * @throws SmartFrogLivenessException In case of liveness failure
-     * @throws RemoteException            In case of network/rmi error
-     */
-    @Override
+    * liveness check
+    *
+    * @throws SmartFrogLivenessException In case of liveness failure
+    * @throws RemoteException    In case of network/rmi error
+    */
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (context == null) {
             throw new SmartFrogLivenessException(ERROR_NULL_CONTEXT);
@@ -153,17 +151,19 @@ public abstract class DelegateApplicationContext
     }
 
     /**
-     * undeploy a context. If the server is already stopped, this the undeployment is skipped without an error. The
-     * context field is set to null, to tell the system to skip this in future.
+     * undeploy a context.
+     * If the server is already stopped, this the
+     * undeployment is skipped without an error. The context field is
+     * set to null, to tell the system to skip this in future.
      *
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException    In case of network/rmi error
+     *
      */
-    @Override
     public void terminate() throws RemoteException, SmartFrogException {
         if (context != null) {
             try {
-                ContextHandlerCollection handlers = getServerContextHandler();
+                ContextHandlerCollection handlers= getServerContextHandler();
                 if (handlers != null) {
                     handlers.removeHandler(context);
                 } else {

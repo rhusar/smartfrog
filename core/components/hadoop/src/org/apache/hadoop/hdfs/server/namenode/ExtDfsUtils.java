@@ -23,9 +23,8 @@ import org.apache.hadoop.conf.Configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.net.URI;
+import java.util.ArrayList;
 
 /**
  * Utility methods that need to be in the right package
@@ -44,12 +43,8 @@ public class ExtDfsUtils {
      * @throws IOException for formatting problems
      */
     public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
-        Collection<URI> editDirs = new ArrayList<URI>(0);
-        ArrayList<URI> dirs = new ArrayList<URI>(dirsToFormat.size());
-        for (File file:dirsToFormat) {
-            dirs.add(file.toURI());
-        }
-        FSNamesystem nsys = new FSNamesystem(new FSImage(dirs, editDirs), conf);
+        Collection<File> editDirs = new ArrayList<File>();
+        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat, editDirs), conf);
         nsys.dir.fsImage.format();
     }
 }

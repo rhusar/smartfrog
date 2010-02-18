@@ -22,26 +22,26 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
 /**
- * dataConsumer creates a sub process and starts 3 sub-
+ * dataConsumer creates a sub process named "subproc" and starts 3 sub-
  * components each with a Lazy reference for an attribute named "message".  
  * These references are resolved at runtime when dataProvider is started.
  */ 
 sfConfig extends Compound {
     /**
      * Smartfrog attribute for creating a sub-process.
-     * The Compound component will be deployed in a sub-process 
-     * If this sub-process already exists, that will be used, otherwise a new process 
+     * The Compound component will be deployed in sub-process named "sub-proc".
+     * If "sub-proc" already exists, that will be used, otherwise a new process 
      * will be created using this name.
      */ 
-    sfProcessName "dataConsumerSubProcess";
+    sfProcessName "subproc";
            
     event extends DoNothing {
-       message LAZY HOST localhost:dataProvider:step1:step2:step3:value;
+       message LAZY HOST localhost:foo:step1:step2:step3:value;
     }
     event2 extends DoNothing {
-       message LAZY HOST localhost:dataProvider:step1:step2:step4:value;
+       message LAZY HOST localhost:foo:step1:step2:step4:value;
     }
     event3 extends DoNothing {
-       message LAZY HOST localhost:dataProvider:step1:step2:step5:value;
+       message LAZY HOST localhost:foo:step1:step2:step5:value;
     }
 }

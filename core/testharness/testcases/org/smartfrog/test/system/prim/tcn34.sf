@@ -18,11 +18,10 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/test/system/prim/hostbindings.sf"
+#include "org/smartfrog/components.sf"
 
 sfConfig extends Prim {
-    sfProcessHost localHost;
+    sfProcessHost "eb96121";
     sfProcessComponentName "Foo";
 }
 

@@ -44,19 +44,14 @@ CheckPort extends WorkflowPrim {
   LOCALHOST "127.0.0.1";
 
   /** lazy reference to a cluster configuration */
-  //cluster TBD;
+  cluster NULL;
 
   /** name of the attribute to use for the address */
   attribute "";
-
-  /** should the port be open */
-  checkPortOpen true;
-
   checkOnStartup true;
   checkOnLiveness false;
   sfShouldTerminate true;
 }
-
 
 CheckPortCondition extends CheckPort {
   checkOnStartup false;
@@ -64,7 +59,7 @@ CheckPortCondition extends CheckPort {
 }
 
 CheckJobTrackerPort extends CheckPort {
-  attribute "live.mapred.job.tracker";
+  attribute "mapred.job.tracker";
 }
 
 CheckJobTrackerCondition extends CheckPortCondition {
@@ -73,7 +68,7 @@ CheckJobTrackerCondition extends CheckPortCondition {
 
 
 CheckJobTrackerHttpPort extends CheckPort {
-  attribute "live.mapred.job.tracker.http.address";
+  attribute "mapred.job.tracker.http.address";
 }
 
 CheckJobTrackerHttpPortCondition extends CheckPortCondition {
@@ -81,7 +76,7 @@ CheckJobTrackerHttpPortCondition extends CheckPortCondition {
 }
 
 CheckTaskTrackerHttpPort extends CheckPort {
-  attribute "live.mapred.task.tracker.http.address";
+  attribute "mapred.task.tracker.http.address";
 }
 
 CheckTaskTrackerHttpPortCondition extends CheckPortCondition {
@@ -89,7 +84,7 @@ CheckTaskTrackerHttpPortCondition extends CheckPortCondition {
 }
 
 CheckDataNodePort extends CheckPort {
-  attribute "live.dfs.datanode.address";
+  attribute "dfs.datanode.address";
 }
 
 CheckDataNodePortCondition extends CheckPortCondition {
@@ -97,7 +92,7 @@ CheckDataNodePortCondition extends CheckPortCondition {
 }
 
 CheckDataNodeHttpPort extends CheckPort {
-  attribute "live.dfs.datanode.http.address";
+  attribute "dfs.datanode.http.address";
 }
 
 CheckDataNodeHttpPortCondition extends CheckPortCondition {
@@ -106,7 +101,7 @@ CheckDataNodeHttpPortCondition extends CheckPortCondition {
 
 
 CheckNameNodePort extends CheckPort {
-  attribute "live.dfs.http.address";
+  attribute "dfs.http.address";
 }
 
 CheckNameNodePortCondition extends CheckPortCondition {

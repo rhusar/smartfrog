@@ -19,17 +19,13 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.sfcore.languages.sf.constraints;
 
-import java.util.HashMap;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.LRSRecord;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
-import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * Maintains state of constraint resolution, done as part of link resolution
@@ -52,14 +48,10 @@ public class ConstraintResolutionState {
      */
     private LinkHistoryRecord currentLHRecord;
     /**
-     * Indicates current constrain eval history record being used.
-     */
-    private ConstraintEvalHistoryRecord currentCEHRecord;
-    /**
      * Used to maintain whether backtracking -- as part of constraint solving -- has just occurred in processing current attribute. 
      */
-    private ConstraintContext backtrackedTo = null;
-    
+    private Context backtrackedTo = null;
+
     /**
      * Constructs ConstraintResolutionState, allocating a link history record
      */
@@ -67,11 +59,12 @@ public class ConstraintResolutionState {
         currentLHRecord = new LinkHistoryRecord();
         linkHistory.add(currentLHRecord);
     }
+
     /**
      * Gets whether backtracking has occurred recently
      * @return backtracking flag
      */
-    public ConstraintContext hasBacktrackedTo() {
+    public Context hasBacktrackedTo() {
         return backtrackedTo;
     }
 
@@ -94,39 +87,7 @@ public class ConstraintResolutionState {
         constraintsShouldUndo = shouldUndo;
     }
 
-    /**
-     * Maintains labelling records for automatic variables
-     */
-    private HashMap<Object, Vector<FreeVar>> labellingRecord = new HashMap<Object, Vector<FreeVar>>(); 
-     
-    
-    /**
-     * Add a labelling record against key for entry; when key is reached in link resolution, recorded autos are assigned
-     * @param key against which FreeVar entry is recorded
-     * @param entry automatic variable requiring labelling
-     */
-    public void addLabellingRecord(Object key, FreeVar entry){
-    	Vector<FreeVar> vec = labellingRecord.get(key);
-    	if (vec==null) {
-    		vec = new Vector<FreeVar>();
-    		labellingRecord.put(key, vec);
-    		addUndoLRVector(key);
-    	}
-    	vec.add(entry);
-    	addUndoLREntry(vec, entry);
-    }
-    
-    /**
-     * Removes labelling record vector for key
-     * @param key vector to be removed
-     * @return removed vector
-     */
-    public Vector<FreeVar> removeLabellingRecordVector(Object key){
-    	Vector<FreeVar> vec=labellingRecord.remove(key);
-    	if (vec!=null) addUndoLRVector(key, vec);
-    	return vec;
-    }
-    
+
     /**
      * Maintains a record pertaining to a single constraint evaluation
      * @author anfarr
@@ -145,13 +106,7 @@ public class ConstraintResolutionState {
         /**
          * The context of the component description being processed
          */
-        ConstraintContext cc;
-     
-        /**
-         * Assigned freevars with autoeffects
-         */
-        Vector<FreeVar> fvs = new Vector<FreeVar>();
-        
+        Context cxt;
     }
 
     /**
@@ -264,82 +219,6 @@ public class ConstraintResolutionState {
             fv.resetConsEvalInfo();
         }
     }
-    
-    /**
-     * Undo on FreeVar info setting
-     */
-    private class LRSUndoFVAutoVarEffect extends LRSUndoRecord {
-
-        /**
-         * FreeVar to undo information setting on...
-         */
-        FreeVar fv;
-
-        Vector<Reference> autoEffects;
-        
-        /**
-         * Constructs single undo action for undoing FreeVar manipulation
-         * @param fv  FreeVar
-         * @param type What type of undoing should we do?  Either undo type setting (g_LRSUndo_PUTFVTYPESTR) or cons eval info (g_LRSUndo_PUTFVINFO)
-         */
-        LRSUndoFVAutoVarEffect(FreeVar fv) {
-            this.fv = fv;
-        }
-        
-        /**
-         * Constructs single undo action for undoing FreeVar manipulation
-         * @param fv  FreeVar
-         * @param type What type of undoing should we do?  Either undo type setting (g_LRSUndo_PUTFVTYPESTR) or cons eval info (g_LRSUndo_PUTFVINFO)
-         */
-        LRSUndoFVAutoVarEffect(FreeVar fv, Vector<Reference> autoEffects) {
-            this.fv = fv;
-        }
-
-        /**
-         * Does the undo!
-         *
-         */
-        void undo() {
-        	if (autoEffects!=null){
-        		fv.setAutoEffects(autoEffects);
-        	} else {
-        		fv.removeAutoEffects();
-        	}
-        }
-    }
-    
-    /**
-     * Undo on FreeVar info setting
-     */
-    private class LRSUndoCEHRFVPut extends LRSUndoRecord {
-
-        /**
-         * FreeVar to undo information setting on...
-         */
-        FreeVar fv;
-
-        ConstraintEvalHistoryRecord cehr;
-        
-        /**
-         * Constructs single undo action for undoing FreeVar manipulation
-         * @param fv  FreeVar
-         * @param type What type of undoing should we do?  Either undo type setting (g_LRSUndo_PUTFVTYPESTR) or cons eval info (g_LRSUndo_PUTFVINFO)
-         */
-        LRSUndoCEHRFVPut(ConstraintEvalHistoryRecord cehr, FreeVar fv) {
-            this.fv = fv;
-            this.cehr = cehr;
-        }
-
-        /**
-         * Does the undo!
-         *
-         */
-        void undo() {
-        	cehr.fvs.remove(fv);
-        }
-    }
-
-    
 
     /**
      * Undo on FreeVar type string setting
@@ -369,85 +248,6 @@ public class ConstraintResolutionState {
         }
     }
 
-
-    /**
-     *
-     */
-    private class LRSUndoLRVector extends LRSUndoRecord {
-
-        /**
-         * Key for undo action
-         */
-        Object key;
-        /**
-         * 
-         */
-        Vector<FreeVar> vec;
-                
-        /**
-         * 
-         * @param key  
-         */
-        LRSUndoLRVector(Object key, Vector<FreeVar> vec) {
-            this.key = key;
-            this.vec = vec;
-        }
-        
-        /**
-         * 
-         * @param key  
-         */
-        LRSUndoLRVector(Object key) {
-            this.key = key;
-        }
-        
-        
-        /**
-         * Does the undo!
-         *
-         */
-        void undo() {
-            if ( vec != null ) {
-                labellingRecord.put(key, vec);
-            } else {
-                labellingRecord.remove(key);
-            }
-        }
-    }
-    
-    /**
-    *
-    */
-   private class LRSUndoLREntry extends LRSUndoRecord {
-
-       /**
-        * 
-        */
-	   Vector<FreeVar> vec;
-	   
-       /**
-        * 
-        */
-       FreeVar entry;
-               
-       /**
-        * 
-        * @param key  
-        */
-       LRSUndoLREntry(Vector<FreeVar> vec, FreeVar entry) {
-           this.vec = vec;
-           this.entry = entry;
-       }
-       
-       /**
-        * Does the undo!
-        *
-        */
-       void undo() {
-           vec.remove(entry);
-       }
-   }
-    
     /**
      * Adds single undo action to current lhr for undo attribute setting in a Context
      * @param ctxt context for undo action
@@ -458,27 +258,6 @@ public class ConstraintResolutionState {
         if ( constraintsShouldUndo ) {
             currentLHRecord.addUndo(new LRSUndoPut(ctxt, key, value));
         }
-    }
-    
-    public void addUndoLRVector(Object key, Vector<FreeVar> vec) {
-        currentLHRecord.addUndo(new LRSUndoLRVector(key,vec));
-    }
-    
-    public void addUndoLRVector(Object key) {
-        currentLHRecord.addUndo(new LRSUndoLRVector(key));
-    }
-    
-    public void addUndoFVAutoVarEffect(FreeVar fv, Vector<Reference> autoEffects){
-    	currentLHRecord.addUndo(new LRSUndoFVAutoVarEffect(fv, autoEffects));
-    }
-    
-    public void addUndoFVAutoVarEffect(FreeVar fv){
-    	currentLHRecord.addUndo(new LRSUndoFVAutoVarEffect(fv));
-    }
-    
-    
-    public void addUndoLREntry(Vector<FreeVar> vec, FreeVar fv) {
-        currentLHRecord.addUndo(new LRSUndoLREntry(vec, fv));
     }
 
     /**
@@ -503,8 +282,12 @@ public class ConstraintResolutionState {
      * @param types Vector of type references representing typing
      */
     public void setTyping(String attr, Vector types) {
+        //Get current constraint context record
+        int last_cidx = constraintEvalHistory.size() - 1;
+        ConstraintEvalHistoryRecord cehr = constraintEvalHistory.get(last_cidx);
+
         //Get value object for attribute
-        Object val = currentCEHRecord.cc.comp.sfContext().get(attr);
+        Object val = cehr.cxt.get(attr);
         if ( val instanceof FreeVar ) {
             //And if FreeVar...
             FreeVar fv = (FreeVar) val;
@@ -524,8 +307,12 @@ public class ConstraintResolutionState {
      * resolves to a component description, then returns value of said attribute
      */
     public Object adjustSetValue(Object key) {
+        //Get current constraint context record
+        int last_cidx = constraintEvalHistory.size() - 1;
+        ConstraintEvalHistoryRecord cehr = constraintEvalHistory.get(last_cidx);
+
         //Is the key an attribute?
-        Object val = currentCEHRecord.cc.comp.sfContext().get(key);
+        Object val = cehr.cxt.get(key);
 
         //If so, and component description then return val else return key...
         if ( val != null && val instanceof ComponentDescription ) {
@@ -548,7 +335,7 @@ public class ConstraintResolutionState {
         ConstraintEvalHistoryRecord cehr = constraintEvalHistory.get(cidx);
 
         //Get typing information for attribute to be set...
-        Object cur_val = cehr.cc.comp.sfContext().get(key);
+        Object cur_val = cehr.cxt.get(key);
         Vector types = null;
         if ( cur_val instanceof FreeVar ) {
             types = ((FreeVar) cur_val).getTyping();        //If value to be set is not of correct type then bail...
@@ -558,29 +345,8 @@ public class ConstraintResolutionState {
             return false;        //set the value prescribed
         }
         constraintsShouldUndo = true;
-        if ( cur_val instanceof FreeVar && ((FreeVar) cur_val).getRange() instanceof Boolean){
-        	if (val instanceof Integer) {
-        		int ival = ((Integer) val).intValue();
-        		if (ival==0 || ival==1){
-        			Boolean bval = new Boolean((ival==1?true:false));
-        			try{cehr.cc.comp.sfReplaceAttribute(key, bval);}catch (SmartFrogRuntimeException e){/**/}
-        			
-        		} else throw new SmartFrogResolutionException("Trying set Boolean value for key: "+key+" in: "+cehr.cc.comp+" when value to set is not 1 or 0");
-        	} else throw new SmartFrogResolutionException("Trying set Boolean value for key: "+key+" in: "+cehr.cc.comp+" when value to set is not 1 or 0");
-        } else { 
-            try{cehr.cc.comp.sfReplaceAttribute(key, val);}catch (SmartFrogRuntimeException e){/**/}
-        }
-        
-        if ( cur_val instanceof FreeVar ) {
-        	
-        	FreeVar cur_fv = (FreeVar) cur_val;
-        	if ( cur_fv.isAutoEffects() && !currentCEHRecord.fvs.contains(cur_val) ) {
-        		currentCEHRecord.fvs.add(cur_fv);
-        		cur_fv.setAssignedValue(val);
-        	}
-        }
-        
-        //System.out.println("Setting "+key+":"+cehr.cc.comp.sfContext().get(key)+" in "+cidx);
+        cehr.cxt.put(key, val);
+        //System.out.println("Setting "+key+":"+cehr.cxt.get(key)+" in "+cidx);
         constraintsShouldUndo = false;
 
         return true;
@@ -607,24 +373,20 @@ public class ConstraintResolutionState {
     }
 
     public void backtrackConstraintAss(int idx, int cidx) {
-	    //Get constraint record pertaining to current position in constraint solving
+        //Get constraint record pertaining to current position in constraint solving
         ConstraintEvalHistoryRecord cehr = constraintEvalHistory.get(cidx);
 
         //Have we backtracked?
-        if (backtrackedTo==null) backtrackedTo = (cehr==currentCEHRecord? null:cehr.cc);
-        
-        //System.out.println("CIDX STATUS:"+cidx+":"+constraintEvalHistoryLastIdx);
-        for ( int i = constraintEvalHistory.size()-1; i > cidx; i-- ) {
+        int constraintEvalHistoryLastIdx = constraintEvalHistory.size() - 1;
+        if ( backtrackedTo == null && cidx < constraintEvalHistoryLastIdx ) {
+            backtrackedTo = cehr.cxt;        //Backtrack constraint record history as appropriate...
+        }
+        for ( int i = constraintEvalHistoryLastIdx; i > cidx; i-- ) {
             constraintEvalHistory.remove(i);
         }
-        
-        currentCEHRecord = cehr;
-        
-        if (CoreSolver.getInstance().getRootDescription()!=null){
-        	CoreSolver.getInstance().getRootDescription().setLRSIdx(cehr.idx);
-        	CoreSolver.getInstance().getRootDescription().setLRSRecord(cehr.lrsr);
-        }
-        
+        CoreSolver.getInstance().getRootDescription().setLRSIdx(cehr.idx);
+        CoreSolver.getInstance().getRootDescription().setLRSRecord(cehr.lrsr);
+
         //Backtrack histroy as approp...
         for ( int i = linkHistory.size() - 1; i > idx; i-- ) {
             linkHistory.remove(i).undoAll();        //Create new history...
@@ -635,20 +397,16 @@ public class ConstraintResolutionState {
 
     /**
      * Add a record to cons eval history
-     * @param cc Given constraint context
+     * @param cxt Given context
      * @return Latest record index
      */
-    public int addConstraintEval(ConstraintContext cc) {
-    	int idx = constraintEvalHistory.size();
+    public int addConstraintEval(Context cxt) {
+        int idx = constraintEvalHistory.size();
         ConstraintEvalHistoryRecord cehr = new ConstraintEvalHistoryRecord();
-        if (CoreSolver.getInstance().getRootDescription()!=null){
-        	cehr.lrsr = CoreSolver.getInstance().getRootDescription().getLRSRecord();
-        	cehr.idx = CoreSolver.getInstance().getRootDescription().getLRSIdx();
-        }
-        cehr.cc = cc;
-        cc.cehr = cehr;
+        cehr.lrsr = CoreSolver.getInstance().getRootDescription().getLRSRecord();
+        cehr.idx = CoreSolver.getInstance().getRootDescription().getLRSIdx();
+        cehr.cxt = cxt;
         constraintEvalHistory.add(cehr);
-        currentCEHRecord = cehr;
         return idx;
     }
 
@@ -658,25 +416,5 @@ public class ConstraintResolutionState {
      */
     public int getConsEvalIdx() {
         return constraintEvalHistory.size() - 1;
-    }
-    
-    public static class ConstraintContext {
-    	public ConstraintContext(ComponentDescription p, ComponentDescription comp, Object key, Reference ar, Object ret_key){
-    		this.p=p; this.comp=comp; this.key=key; this.ar=ar; this.ret_key=ret_key;
-    	}
-    	Reference ar;   
-    	ComponentDescription p;
-    	ComponentDescription comp;
-    	Object key;
-    	Object ret_key;
-    	ConstraintEvalHistoryRecord cehr;
-    	
-    	
-    	public Reference getAR(){return ar;}    
-    	public ComponentDescription getParent(){return p;}
-    	public ComponentDescription getCD(){return comp;}
-    	public Object getKey(){return key;}
-    	public Vector<FreeVar> getFVs(){return cehr.fvs;}
-    	public Object getRetKey(){return ret_key; }
     }
 }

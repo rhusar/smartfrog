@@ -22,7 +22,6 @@ package org.smartfrog.test.system.exceptions;
 
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
@@ -48,6 +47,6 @@ public class JvmExit extends PrimImpl implements Prim {
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         sfLog().warn("Going to exit....");
-        ExitCodes.exit(10);
+        System.exit(10);
     }
 }

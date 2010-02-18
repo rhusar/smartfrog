@@ -266,9 +266,9 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         try {
             sfRemoveChild(comp);
         } catch (SmartFrogRuntimeException e) {
-            sfLog().error(e, e);
+            sfLog().error(e);
         } catch (RemoteException e) {
-            sfLog().error(e, e);
+            sfLog().error(e);
         }
     }
 

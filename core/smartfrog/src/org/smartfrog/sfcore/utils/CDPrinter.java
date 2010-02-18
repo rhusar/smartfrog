@@ -1,4 +1,4 @@
-/** (C) Copyright 1996-2009 Hewlett-Packard Development Company, LP
+/** (C) Copyright Hewlett-Packard Development Company, LP
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,21 +20,21 @@
 
 package org.smartfrog.sfcore.utils;
 
-import java.io.FileNotFoundException;
-import java.util.*;
-
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.security.SFClassLoader;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * This class provides a single static method - print - which takes a ComponentDescription
@@ -43,9 +43,6 @@ import org.smartfrog.sfcore.logging.LogFactory;
  * It also contains a main method used for testing...
  */
 public class CDPrinter {
-    
-    private static LogSF log = LogFactory.getLog(CDPrinter.class);
-    
     /**
      * The method looks for three optional attributes: CDPStart, CDPEnd, CPDSep and returns
      * the following print string
@@ -70,84 +67,44 @@ public class CDPrinter {
      * printing its children.
      *
      * @param cd  the component description to print
-     * @param indent amount to indent every level
-     * @param incr indent increment
-     * @param indents records indent strings to avoid needing to remake them each time
      * @return  the string that is the result of printing
      */
-    public static String print(ComponentDescription cd, int indent, int incr, HashMap<Integer, String> indents) {
+    public static String print(ComponentDescription cd) {
         String nested = "";
         String CDPStart = "";
         String CDPEnd = "";
         String CDPSep = "";
-        String indentString = "";
-
-        if (indents!=null){
-            indentString = indents.get(indent);
-            if (indentString==null){
-                StringBuilder sb= new StringBuilder();
-                for (int i=0; i<indent; i++){
-                    sb.append(" ");
-                }
-                indentString = sb.toString();
-                indents.put(indent, indentString);
-            }
-        }
-
 
         try {
             CDPStart = cd.sfResolve(new Reference(ReferencePart.here("CDPStart")), CDPStart, false);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
-            log.error(e);
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
         try {
             CDPEnd = cd.sfResolve(new Reference(ReferencePart.here("CDPEnd")), CDPEnd, false);
         } catch (SmartFrogResolutionException e) {
-            log.error(e);
+            //shouldn't happen
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         try {
             CDPSep = cd.sfResolve(new Reference(ReferencePart.here("CDPSep")), CDPSep, false);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
-            log.error(e);
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         for (Iterator i = cd.sfAttributes(); i.hasNext(); ) {
             Object next = i.next();
             Object value = cd.sfContext().get(next);
             if (value instanceof ComponentDescription) {
-                String resNext = print((ComponentDescription) value, indent+incr, incr, indents);
-                if (!resNext.isEmpty() && !nested.isEmpty()) {
-                    nested += CDPSep;
-                }
+                String resNext = print((ComponentDescription) value);
+                if (!resNext.equals("") && !nested .equals("")) nested += CDPSep;
                 nested += resNext;
             }
         }
-        return indentString + CDPStart + nested + (nested.equals("")? "" : indentString) + CDPEnd;
+        return CDPStart + nested + CDPEnd;
     }
-
-    /**
-     * See comments for print(cd, indent, incr, indents)
-     * @param cd  the component description to print
-     * @return the string that is the result of printing
-     */
-    public static String print(ComponentDescription cd) {
-        return print(cd, 0, 0, null);
-    }
-
-    /**
-     * See comments for print(cd, indent, incr, indents)
-     * @param cd  the component description to print
-     * @param incr indent increment
-     * @return the string that is the result of printing
-     */
-    public static String print(ComponentDescription cd, int incr) {
-        return print(cd, 0, incr, new HashMap<Integer, String>());
-    }
-
-
 
     /**
      * Method to take a URL, parse it, add the addtional key-value parameters to the top level, resolve and then create the
@@ -159,14 +116,22 @@ public class CDPrinter {
      * @throws FileNotFoundException
      */
     public static String printURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-        ComponentDescription cd = SFComponentDescriptionImpl.getDescriptionURL(url, params);
-        return print(cd);
+            Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
+            // add params
+            if (params != null) {
+                for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
+                    Object k = keys.nextElement();
+                    p.sfReplaceAttribute(k, params.get(k));
+                }
+            }
+            p = p.sfResolvePhases();
+            return print(p.sfAsComponentDescription());
     }
-    
+
+
     /**
      * The main method takes a URL, parses it, resolves the structure and then displays the
      * print string on the resultant description of sfConfig. Used for debugging descriptions.
-     * @param args any arguments
      */
     public static void main(String [] args) {
         String url = args[0];

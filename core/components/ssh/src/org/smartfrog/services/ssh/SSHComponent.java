@@ -21,45 +21,81 @@ package org.smartfrog.services.ssh;
 
 import java.rmi.Remote;
 
-/** Interface with common connection options Created 22-Oct-2007 16:10:09 */
+/**
+ * Interface with common connection options
+ * Created 22-Oct-2007 16:10:09
+ */
 
 
 public interface SSHComponent extends Remote {
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_PASSWORD_PROVIDER = "passwordProvider";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_HOST = "host";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_PORT = "port";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_USER = "username";
-    /** {@value} */
-    String ATTR_KEYFILE = "keyFile";
-    /** {@value} */
+    /**
+     * {@value}
+     */
+    String ATTR_KEYFILE = "keyfile";
+    /**
+     * {@value}
+     */
     String ATTR_PASSWORD = "password";
-    /** Waits at most millis milliseconds for this operation to finish. A timeout of 0 means to wait forever. {@value} */
+    /**
+     * Waits at most millis milliseconds for this operation to finish.
+     * A timeout of 0 means to wait forever.
+     * {@value}
+     */
     String ATTR_TIMEOUT = "timeout";
-    /** Waits at most millis milliseconds for this operation to finish. A timeout of 0 means to wait forever. {@value} */
+    /**
+     * Waits at most millis milliseconds for this operation to finish. A timeout
+     * of 0 means to wait forever. {@value}
+     */
     String ATTR_CONNECT_TIMEOUT = "connectTimeout";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_TRUST_ALL_CERTIFICATES = "trustAllCertificates";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_KNOWN_HOSTS = "knownHostsFile";
-    /** How to authenticate: {@value} */
-    String ATTR_AUTHENTICATION = "authentication";
+    /**
+     * How to authenticate: {@value}
+     */
+    String ATTR_AUTHENTICATION ="authentication";
 
-    /** Use password based authentication: {@value} */
-    String AUTHENTICATION_PASSWORD = "password";
+    /**
+     * Use password based authentication: {@value}
+     */
+    String AUTHENTICATION_PASSWORD ="password";
 
-    /** Use a key file: {@value} */
+    /**
+     * Use a key file: {@value}
+     */
     String AUTHENTICATION_PUBLICKEY = "key";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
 
     String ATTR_LOG_FILE = "logFile";
 
-    /** Default SSH Port */
+    /**
+     * Default SSH Port
+     */
     int SSH_PORT = 22;
 }

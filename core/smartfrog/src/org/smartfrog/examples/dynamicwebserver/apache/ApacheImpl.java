@@ -166,7 +166,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
             if (manageDaemon)
                 p = Runtime.getRuntime().exec(apachectlLocation + " start");
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error (e, e);
+            if (sfLog().isErrorEnabled()) sfLog().error (e);
         }
 
         if (sfLog().isInfoEnabled()) sfLog().info( "httpd started");
@@ -179,7 +179,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                         p = Runtime.getRuntime().exec(apachectlLocation + " start");
                     needRestart = false;
                 } catch (IOException e) {
-                    if (sfLog().isErrorEnabled()) sfLog().error (e, e);
+                    if (sfLog().isErrorEnabled()) sfLog().error (e);
                 }
             }
             //end if (needRestart)
@@ -250,7 +250,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 }
             }
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error (e, e);
+            if (sfLog().isErrorEnabled()) sfLog().error (e);
         }
     }
 

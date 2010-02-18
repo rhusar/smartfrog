@@ -20,18 +20,14 @@
 
 package org.smartfrog.services.jetty.listeners;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.thread.QueuedThreadPool;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.Connector;
+import org.mortbay.thread.BoundedThreadPool;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
-import java.net.ServerSocket;
-import java.net.InetAddress;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 
 /**
  * Socketlistner class for SocketListener for Jetty http server.
@@ -40,10 +36,6 @@ import java.net.Inet6Address;
  */
 
 public class JettySocketConnectorImpl extends AbstractConnectorImpl implements JettySocketConnector {
-
-    /** {@value} */
-
-    public static final String ERROR_WRONG_FAMILY = "Address is of the wrong IP Family ";
 
     /**
      * constructor
@@ -64,18 +56,21 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
      * and port.
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
-    @Override
     protected void configureConnector() throws SmartFrogException, RemoteException {
 
         Server server = jettyHelper.getServer();
         // set up all the threads;
-        QueuedThreadPool pool = createBoundedThreadPool();
+        int threads = sfResolve(ATTR_THREADS, 0, true);
+        BoundedThreadPool pool = new BoundedThreadPool();
+        pool.setMinThreads(threads);
+        pool.setMaxThreads(threads);
         SocketConnector socketConnector = getSocketConnector();
-        socketConnector.setAcceptors(sfResolve(ATTR_ACCEPTORS, 2, true));
-        //bind to the thread pool
-        socketConnector.setThreadPool(pool);
+        socketConnector.setAcceptors(threads);
+        //connector.setThreadPool(pool);
+        //bind to the main thread pool
+        socketConnector.setThreadPool(server.getThreadPool());
         setMaxIdleTime(connector);
         bindConnectorToPortAndHost(connector);
     }
@@ -86,47 +81,10 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
      *
      * @return a new connector (or subclass), with any config other than that done by the parent
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     @Override
     protected Connector createConnector() throws SmartFrogException, RemoteException {
         return new SocketConnector();
-    }
-
-    /**
-     * Override point, something called after startup to do any port checking or similar
-     *
-     * @param startedConnector the connector
-     * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    @Override
-    protected void onConnectorStarted(Connector startedConnector) throws SmartFrogException, RemoteException {
-        boolean allowIPv4= sfResolve(ATTR_ALLOW_IPV4, true, true);
-        boolean allowIPv6 = sfResolve(ATTR_ALLOW_IPV6, true, true);
-        ServerSocket sock = getServerSocket();
-        if (sock==null) {
-            return;
-        }
-        InetAddress address = sock.getInetAddress();
-        if((address instanceof Inet4Address) && !allowIPv4) {
-            throw new SmartFrogDeploymentException(ERROR_WRONG_FAMILY + address);
-        }
-        if ((address instanceof Inet6Address) && !allowIPv6) {
-            throw new SmartFrogDeploymentException(ERROR_WRONG_FAMILY + address);
-        }
-    }
-
-    /**
-     * Get the server socket or null
-     * @return the socket if there is one
-     */
-    protected ServerSocket getServerSocket() {
-        SocketConnector socketconn = getSocketConnector();
-        if (socketconn == null) {
-            return null;
-        }
-        Object connInstance = socketconn.getConnection();
-        return (ServerSocket) connInstance;
     }
 }

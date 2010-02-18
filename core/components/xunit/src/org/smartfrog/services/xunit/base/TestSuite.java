@@ -21,12 +21,12 @@ package org.smartfrog.services.xunit.base;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.workflow.conditional.Conditional;
-
 import java.rmi.RemoteException;
 
 
 /**
- * A test suite is anything that is testable. It extends Conditional as all test suites are inherently conditional.
+ * A test suite is anything that is testable. It extends Conditional as all
+ * test suites are inherently conditional.
  * 15-Apr-2004 11:51:51
  */
 
@@ -35,58 +35,60 @@ public interface TestSuite extends TestResultAttributes, Conditional {
 
 
     /**
-     * Non-marked up text description {@value}
+     * Non-marked up text description
+     * {@value}
      */
-    String ATTR_DESCRIPTION = "description";
+    public String ATTR_DESCRIPTION = "description";
 
     /**
-     * A list of URLs to link to {@value}
+     * A list of URLs to link to
+     * {@value}
      */
-    String ATTR_LINKS = "links";
+    public String ATTR_LINKS = "links";
 
     /**
      * {@value}
      */
-    String ATTR_NAME = "name";
+    public String ATTR_NAME = "name";
 
     /**
-     * list in name, value pairs [[name,value],[n2,v2]] {@value}
+     * list in name, value pairs [[name,value],[n2,v2]]
+     * {@value}
      */
-    String ATTR_SYSPROPS = "properties";
-
-
-    /**
-     * properties as a nested CD: {@value}
-     */
-    String ATTR_PROPERTY_SET = "propertySet";
-
-    /**
-     * A list of text tags to describe the test suite {@value}
-     */
-    String ATTR_TAGS = "tags";
-
-    /**
-     * A list of URLs to track back on {@value}
-     */
-    String ATTR_TRACKBACKS = "trackbacks";
+    public String ATTR_SYSPROPS="properties";
 
 
     /**
-     * A list of issues, such as defect IDs {@value}
+     * A list of text tags to describe the test suite
+     * {@value}
      */
-    String ATTR_ISSUES = "issues";
+    public String ATTR_TAGS = "tags";
 
     /**
-     * The name of another test suite that must have succeeded before this test runs. If this component failed to deploy
-     * or succeed, then this test suite is skipped.
+     * A list of URLs to track back on
+     * {@value}
      */
-    String ATTR_MUST_SUCCEED = "mustSucceed";
+    public String ATTR_TRACKBACKS = "trackbacks";
+
+
+    /**
+     * A list of issues, such as defect IDs
+     * {@value}
+     */
+    public String ATTR_ISSUES = "issues";
+
+    /**
+     * The name of another test suite that must have succeeded
+     * before this test runs. If this component failed to deploy or
+     * succeed, then this test suite is skipped.
+     */
+    public String ATTR_MUST_SUCCEED = "mustSucceed";
 
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      *
      * @param configuration configuration to bind to
-     * @throws RemoteException    for network problems
+     * @throws RemoteException for network problems
      * @throws SmartFrogException for other problems
      */
     void bind(RunnerConfiguration configuration) throws RemoteException,
@@ -94,12 +96,11 @@ public interface TestSuite extends TestResultAttributes, Conditional {
 
     /**
      * run the tests
-     *
      * @return true if they worked
-     * @throws RemoteException      for network problems
-     * @throws SmartFrogException   for other problems
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for other problems
      * @throws InterruptedException if the thread got interrupted while the tests were running
      */
-    boolean runTests() throws RemoteException, SmartFrogException, InterruptedException;
+    boolean runTests() throws RemoteException, SmartFrogException,InterruptedException;
 
 }

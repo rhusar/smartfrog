@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.rmi.RemoteException;
 
@@ -52,7 +53,7 @@ public class WorkflowThread extends SmartFrogThread {
      * @param workflowTermination should workflow (optional) termination rules be used? If false, this thread
      * always terminates the parent when finished
      */
-    public WorkflowThread(Prim owner, boolean workflowTermination, Object notifyObject) {
+    public WorkflowThread(Prim owner, boolean workflowTermination,Object notifyObject) {
         super(notifyObject);
         bind(owner, workflowTermination);
     }
@@ -71,15 +72,15 @@ public class WorkflowThread extends SmartFrogThread {
 
     /**
      * Bind to the owner
-     * @param prim owner prim
-     * @param useWorkflowTermination workflow policy
+     * @param owner owner prim
+     * @param workflowTermination workflow policy
      */
-    private void bind(Prim prim, boolean useWorkflowTermination) {
-        owner = prim;
-        workflowTermination = useWorkflowTermination;
+    private void bind(Prim owner, boolean workflowTermination) {
+        this.owner = owner;
+        this.workflowTermination = workflowTermination;
         try {
-            ownerID = prim.sfCompleteName();
-        } catch (RemoteException ignored) {
+            ownerID = owner.sfCompleteName();
+        } catch (RemoteException e) {
             ownerID = null;
         }
     }
@@ -117,20 +118,10 @@ public class WorkflowThread extends SmartFrogThread {
         processRunResults();
     }
 
-    /**
-     * Analyse the results of the run -assume a thrown run means failure,
-     * and decide whether or not to terminate normally.
-     * {@link #didThreadTerminateNormally()} is called to make that assessment,
-     * the {@link #aboutToTerminate(TerminationRecord)} method is called, then
-     * if either the termination was normal and this is a workflow thread,
-     * or if the thread terminated abnormally, then the owner is terminated
-     * with a termination record created by {@link #createTerminationRecord()} 
-     */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     protected void processRunResults() {
         //now analyse the result, create a term record and maybe terminate the owner
+        boolean isNormal = getThrown() == null;
         TerminationRecord tr = createTerminationRecord();
-        boolean isNormal = tr.isNormal();
         aboutToTerminate(tr);
         ComponentHelper helper = new ComponentHelper(owner);
         if (workflowTermination && isNormal) {
@@ -144,26 +135,14 @@ public class WorkflowThread extends SmartFrogThread {
     }
 
     /**
-     * This is an override point -did the thread terminate normally.
-     * The base class assumes that a non-empty value from {@link #getThrown()} implies
-     * that the thread failed.
-     * @return true if the the thread was considered to have terminated normally.
-     */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    protected boolean didThreadTerminateNormally() {
-        return getThrown() == null;
-    }
-
-    /**
      * Create a TR from the termination message of {@link #getTerminationMessage()}
      * and any exception thrown -the latter determines whether or not the TR
      * is considered normal or not
      * @return a termination record
      */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     protected TerminationRecord createTerminationRecord() {
         TerminationRecord tr = new TerminationRecord(
-                didThreadTerminateNormally() ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
+                getThrown() == null ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
                 getTerminationMessage(),
                 ownerID,
                 getThrown());
@@ -184,7 +163,7 @@ public class WorkflowThread extends SmartFrogThread {
      * @return {@link #WORKER_THREAD_COMPLETED} or {@link #WORKER_THREAD_FAILED} depending on the outcome
      */
     protected String getTerminationMessage() {
-        return didThreadTerminateNormally() ? WORKER_THREAD_COMPLETED : WORKER_THREAD_FAILED;
+        return getThrown() == null ? WORKER_THREAD_COMPLETED : WORKER_THREAD_FAILED;
     }
     
 }

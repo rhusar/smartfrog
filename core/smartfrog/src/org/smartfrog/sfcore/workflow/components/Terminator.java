@@ -49,6 +49,7 @@ public class Terminator extends EventPrimImpl implements Prim {
      * @throws RemoteException The exception description.
      */
     public Terminator() throws RemoteException {
+        super();
     }
 
     /**
@@ -61,10 +62,11 @@ public class Terminator extends EventPrimImpl implements Prim {
         super.sfStart();
 
         Reference id = sfCompleteName();
-        String type = sfResolve(TYPE, "", true);
-        String selftype = sfResolve(SELFTYPE, TerminationRecord.NORMAL, false);
-        String description = sfResolve(DESCRIPTION, "", true);
-        boolean detachFirst = sfResolve(DETACH_FIRST, false, true);
+        String type = (String) sfResolve(TYPE);
+        String selftype = sfResolve(SELFTYPE,TerminationRecord.NORMAL,false);
+        String description = (String) sfResolve(DESCRIPTION);
+        boolean detachFirst = ((Boolean) sfResolve(DETACH_FIRST)).
+                                                            booleanValue();
         term = new TerminationRecord(selftype,description,id);
         Prim kill = sfResolve(KILL, (Prim) null, false);
         if (kill != null) {
@@ -82,7 +84,7 @@ public class Terminator extends EventPrimImpl implements Prim {
                     kill.sfTerminate(targetRecord);
                 }
                 if (sfLog().isTraceEnabled()) {
-                    sfLog().trace("Terminated: " + killName + " by terminator: " + id, null,
+                    sfLog().trace("Terminated: " + killName + " by terminator: " + sfCompleteNameSafe(), null,
                             targetRecord);
                 }
             } catch (Exception e) {

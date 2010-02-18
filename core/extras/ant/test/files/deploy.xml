@@ -42,45 +42,45 @@ ant -lib dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHO
 
   <target name="testDatalessApplication">
     <sf-deploy>
-      <application name="testDatalessApplication"/>
+      <application name="app"/>
     </sf-deploy>
   </target>
 
 
   <target name="testBadFile">
     <sf-deploy>
-      <application name="testBadFile" file="missing-file.sf"/>
+      <application name="app" file="missing-file.sf"/>
     </sf-deploy>
   </target>
 
 
   <target name="testBadHost">
     <sf-deploy host="no-such-hostname" logStackTraces="true">
-      <application name="testBadHost" descriptor="${resource.sf}"/>
+      <application name="app" descriptor="${resource.sf}"/>
     </sf-deploy>
   </target>
 
   <target name="testConnectionRefused">
     <sf-deploy host="www.google.com" logStackTraces="true">
-      <application name="testConnectionRefused" descriptor="${resource.sf}"/>
+      <application name="app" descriptor="${resource.sf}"/>
     </sf-deploy>
   </target>
 
   <target name="testResource">
     <sf-deploy>
-      <application name="testResource" descriptor="${resource.sf}"/>
+      <application name="app" descriptor="${resource.sf}"/>
     </sf-deploy>
   </target>
 
   <target name="testStackTrace">
     <sf-deploy logStackTraces="true">
-      <application name="testStackTrace" file="invalid.sf"/>
+      <application name="app" file="invalid.sf"/>
     </sf-deploy>
   </target>
 
   <target name="testRunFile">
     <sf-deploy>
-      <application name="testRunFile" file="${valid.sf}"/>
+      <application name="app" file="${valid.sf}"/>
     </sf-deploy>
   </target>
 
@@ -127,7 +127,7 @@ ant -lib dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHO
 
   <target name="testInline">
     <sf-deploy>
-      <application name="inline2">
+      <application name="inline">
         #include "/org/smartfrog/components.sf"
 
         Server extends Compound {

@@ -40,6 +40,7 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="false" />
   <property name="system.tests" value="true" /> 
 
   <echo message="==================================================================="/>
@@ -49,7 +50,7 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
   
   <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
-  <property name="deploy.sf" value="org/smartfrog/services/jetty/examples/war/secureWarServer.sf"/>
+  <property name="deploy.sf" value="${example.path}/example1.sf"/>
 
 
   
@@ -74,9 +75,7 @@ For more information: www.smartfrog.org
     </target>
 
 
-  <target name="ready-to-deploy" depends="common.ready-to-deploy,testwar">
-    <echo >tests.run.classpath=${toString:tests.run.classpath}</echo>
-  </target>
+
 
 
   <target name="ready-to-test" depends="common.ready-to-test,testwar">
@@ -84,11 +83,10 @@ For more information: www.smartfrog.org
         location="${test.src.dir}/files/jettyhome"/>
     <property name="test.demo.webapp"
         location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
-    <echo >
+    <echo level="verbose" >
       test.jetty.home=${test.jetty.home}
       test.demo.webapp=${test.demo.webapp}
       test.testwar.war=${test.testwar.war}
-      run.failing.tests=${run.failing.tests}
     </echo>
   </target>
 

@@ -19,9 +19,8 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
 
-
 /**
- * Machine and JSP tests
+ * name node tests
  */
 
 
@@ -76,71 +75,3 @@ testBasicDiskSpaceSkipMissingDir extends ExpectTerminate {
     skipAbsentDirectories true;
   }
 }
-
-testJvmHealth extends ExpectTerminate {
-  description "check the jvm health";
-  action:sfShouldTerminate true;
-  action extends HealthCheck;
-}
-
-testJSPHealth extends ExpectTerminate {
-  description "check for JSP pages";
-}
-
-
-testCheckNamenodeJspClasses extends testJSPHealth {
-  action extends CheckNamenodeJspClasses {
-    sfShouldTerminate true;
-  }
-}
-
-testCheckDatanodeJspClasses extends testJSPHealth {
-  action extends CheckDatanodeJspClasses {
-    sfShouldTerminate true;
-  }
-}
-testCheckJobtrackerJspClass extends testJSPHealth {
-  action extends CheckJobtrackerJspClasses {
-    sfShouldTerminate true;
-  }
-}
-testCheckJasperClasses extends testJSPHealth {
-  action extends CheckJasperClasses {
-    sfShouldTerminate true;
-  }
-}
-testHadoopJspClasses extends testJSPHealth {
-  action extends HadoopJspClasses {
-    sfShouldTerminate true;
-  }
-}
-
-testCheckJspHelperClasses extends testJSPHealth {
-  action extends CheckJspHelperClasses {
-    sfShouldTerminate true;
-  }
-}
-
-testCheckJspHelperClass extends testJSPHealth {
-  description "Load the JSP helper class only";
-  action extends CheckJspHelperClasses {
-       classes [
-        nn_jsphelper
-      ];
-    sfShouldTerminate true;
-  }
-
-}
-
-testHadoopDefaultResources extends testJSPHealth {
-  action extends HadoopDefaultResources {
-    sfShouldTerminate true;
-  }
-}
-
-testHadoopSiteResources extends testJSPHealth {
-  action extends HadoopSiteResources {
-    sfShouldTerminate true;
-  }
-}
-

@@ -44,9 +44,7 @@
   <target name="ivy-init" depends="ivy-init-antlib" >
     <!--copy ivy artifacts -->
     <property name="ivy.lib.dir" location="${build.dir}/ivy/lib" />
-    <property name="ivysettings.xml" location="${ivy.dir}/ivysettings.xml"/>
-    <ivy:configure file="${ivysettings.xml}" override="false"/>
-
+    <ivy:settings file="${ivy.dir}/ivyconf.xml" override="false"/>
     <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]"/>
     <property name="ivy.publish.pattern"

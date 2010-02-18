@@ -22,16 +22,9 @@ For more information: www.smartfrog.org
  * A datanode represents a worker in the farm
  */
 
-ClusteredDataNode extends ClusteredFileSystemNode {
-  name "DataNode"
+
+DataNode extends FileSystemNode {
   sfClass "org.smartfrog.services.hadoop.components.datanode.DatanodeImpl";
-}
-
-DataNode extends ClusteredDataNode, FileSystemNode {
-
-
-  //hadoop configuration values below
-  
   dfs.balance.bandwidthPerSec (1024 * 1024);
 
   dfs.blockreport.intervalMsec  (60 * 60 * 1000);
@@ -52,7 +45,7 @@ DataNode extends ClusteredDataNode, FileSystemNode {
 
   //dfs.datanode.bindAddress TBD;
   //dfs.datanode.port TBD;
-  //dfs.datanode.address TBD;
+  dfs.datanode.address TBD;
   //dfs.datanode.info.bindAddress TBD;
   //dfs.datanode.info.port TBD;
   //dfs.datanode.http.address TBD;
@@ -77,4 +70,3 @@ DataNode extends ClusteredDataNode, FileSystemNode {
   io.file.buffer.size 4096;
 
 }
-

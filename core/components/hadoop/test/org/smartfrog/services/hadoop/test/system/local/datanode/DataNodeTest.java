@@ -22,39 +22,32 @@
 package org.smartfrog.services.hadoop.test.system.local.datanode;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
 /**
  *
  */
-public class DataNodeTest extends HadoopTestBase {
+public class DataNodeTest extends DeployingTestBase {
     public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
 
     public DataNodeTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture,by extracting the hostname and classes dir
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        checkDataNode();
-    }
-
     public void testLocalDataNode() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalDataNode");
-        enableFailOnPortCheck();
     }
 
     public void testClusterShutDownCleanly() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-        enableFailOnPortCheck();
     }
 
-    public void testOrphanDatanode() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanDatanode");
-        enableFailOnPortCheck();
+
+    public void NotestDataNodeForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testDataNodeForked");
     }
+
+    public void NotestClusterShutDownCleanly2() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+    }
+
 }

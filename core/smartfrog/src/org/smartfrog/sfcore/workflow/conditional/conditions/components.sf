@@ -105,15 +105,6 @@ StringEquals extends TwoArgumentCondition {
 }
 
 /**
- * Test for string length
- */
-StringLength extends ConditionPrim {
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.StringLength";
-  string TBD;
-  length TBD;
-}
-
-/**
  * A test for a property being set and true
  */
 IsPropertySet extends ConditionPrim {
@@ -168,19 +159,6 @@ Or extends CompoundCondition {
 Xor extends CompoundCondition {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.XorCompoundCondition";
 }
-
-/**
- * try to resolve a reference. Failure returns false. LAZY References are re-resolved every
- * time this is called
- */
-ReferenceResolves extends ConditionPrim {
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.ReferenceResolvesImpl"
-  reference TBD;
-  /*
-  set on success: value
-  */
-}
-
 
 
 

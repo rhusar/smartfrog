@@ -93,63 +93,34 @@ SshTestServer extends SSHSessionInlinePassword {
     timeout SshTestProperties:timeout;
  }
 
-SSHTestKeySession extends SSHSessionPublicKey {
-  sfShouldTerminate true;
-  keyFile SshTestProperties:privateKeyPath;
-  host SshTestProperties:host;
-  username SshTestProperties:username;
-  timeout SshTestProperties:timeout;
-}
-
 testSshLogin extends ExpectTerminate {
   description "this logs in and prints 'hello' out";
   condition extends SshTestPropertiesSet;
   exitType EXIT_TYPE_NORMAL;
-  commandList [
+  action extends SshTestServer {
+    commands [
       "echo hello",
       "exit"];
-  action extends SshTestServer {
-    commands commandList;
   }
 }
-
-testSshLoginPrivateKey extends testSshLogin {
-  description "this logs in and prints 'hello' out using a private key";
-  condition extends SshTestPrivateKeySet;
-  action extends SSHTestKeySession {
-    commands commandList;
-  }
-}
-
-
-AUTH_FAIL "Auth fail";
-AUTH_CANCEL "Auth cancel";
-//the error seems to vary, but auth is always there
-BAD_LOGIN_FAILURE "Auth";
 
 testLoginBadUser extends testSshLogin {
   description "set an invalid user and expect to get a diagnostics message";
   action:username "Not a valid user";
   exitType EXIT_TYPE_ABNORMAL;
   exceptions [
-//    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
-    ["com.jcraft.jsch.JSchException",BAD_LOGIN_FAILURE ]
+    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
+    ["com.jcraft.jsch.JSchException","Auth cancel"]
   ];
 }
 
-testLoginBadPassword extends testSshLogin {
+testLoginBadUser extends testSshLogin {
   description "set an invalid password and expect to get a diagnostics message";
   action:password "Not a valid password";
   exitType EXIT_TYPE_ABNORMAL;
   exceptions [
-//    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
-    ["com.jcraft.jsch.JSchException",BAD_LOGIN_FAILURE ]
+    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
+    ["com.jcraft.jsch.JSchException","Auth cancel"]
   ];
 }
 
-testLoginBadAuthType extends testSshLogin {
-  description "set an invalid user and expect to get a diagnostics message";
-  action:username "Not a valid user";
-  exitType EXIT_TYPE_ABNORMAL;
-  action:authentication "something-unexpected";
-}

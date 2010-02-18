@@ -51,7 +51,6 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_FILE_NOT_FOUND, "Cannot find file {0}" },
         { MSG_NON_REP_ATTRIB, "Compound has a non-replaceable attribute {0}" },
         { MSG_NULL_DEF_METHOD, "{0} is null during {1}"},
-        { MSG_NULL_VALUE_OF_KEY_IN, "The value of \"{0}\" is null during {1}"},
         { MSG_CLASS_NOT_FOUND, "Class {0} could not be found" },
         { MSG_INSTANTIATION_ERROR, "Class {0} cannot be instantiated" },
         { MSG_ILLEGAL_ACCESS, "Class {0} had illegal access on method {1}" },

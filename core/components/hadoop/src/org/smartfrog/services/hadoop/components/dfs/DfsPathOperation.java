@@ -34,9 +34,4 @@ public interface DfsPathOperation extends DfsOperation {
      */
     String ATTR_IDEMPOTENT = "idempotent";
 
-    String ATTR_MIN_FILE_COUNT = "minFileCount";
-    String ATTR_MAX_FILE_COUNT = "maxFileCount";
-    String ATTR_MIN_TOTAL_FILE_SIZE = "minTotalFileSize";
-    String ATTR_MAX_TOTAL_FILE_SIZE = "maxTotalFileSize";
 }
-

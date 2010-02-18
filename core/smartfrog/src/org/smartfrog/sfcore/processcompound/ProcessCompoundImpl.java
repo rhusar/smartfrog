@@ -751,7 +751,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @return reference of attribute names to this component
      *
      * @throws RemoteException In case of network/rmi error
-     * TODO: clean cache when re-parenting
+     * @TODO: clean cache when re-parenting
      */
 
     public Reference sfCompleteName() throws RemoteException {
@@ -815,12 +815,8 @@ public class ProcessCompoundImpl extends CompoundImpl
     public synchronized Object sfRegister(Object name, Prim comp) throws SmartFrogException, RemoteException {
 
         if ((name != null) && (sfContext.containsKey(name))) {
-            throw new SmartFrogResolutionException(sfCompleteNameSafe(),
-                    (Reference) null,
-                    "Name '" + name + "' already used",
-                    (Object) null,
-                    (Throwable) null,
-                    comp);
+            throw SmartFrogResolutionException.generic(sfCompleteNameSafe(),
+                    "Name '" + name + "' already used");
         }
 
         Object compName = name;
@@ -941,35 +937,18 @@ public class ProcessCompoundImpl extends CompoundImpl
     public ProcessCompound sfResolveProcess(Object name,
                                             ComponentDescription cd)
             throws Exception {
-        ProcessCompound pc = null;
+        ProcessCompound pc;
 
         if (sfParent() == null) { // I am the root
-            Reference reference = new Reference(new HereReferencePart(
-                    name));
-            Object resolvedObject;
             try {
-                resolvedObject = sfResolve(reference);
+                pc = (ProcessCompound) sfResolve(new Reference(new HereReferencePart(
+                        name)));
             } catch (SmartFrogResolutionException e) {
-                //the reference failed to resolve 
-                resolvedObject = null;
                 if (sfLog().isTraceEnabled()) {
-                    sfLog().trace(" Creating a new ProcessCompound: " + name.toString(), e);
+                    sfLog().trace(" Creating a new ProcessCompound: " + name.toString(),e);
                 }
                 pc = addNewProcessCompound(name, cd);
                 pc.sfParentageChanged();
-            }
-            if (resolvedObject != null) {
-                //this branch is only executed if the resolution succeeded. 
-                //check it for being a valid type
-                if (!(resolvedObject instanceof ProcessCompound)) {
-                    //wrong type: throw a relevant exceptions
-                    throw SmartFrogResolutionException.illegalClassType(reference,
-                            sfCompleteNameSafe(),
-                            resolvedObject,
-                            resolvedObject.getClass().toString(),
-                            "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl");
-                }
-                pc = (ProcessCompound) resolvedObject;
             }
         } else { // I am a child process - find in the parent
             pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
@@ -1020,7 +999,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                                 ap,
                                 ap.getClass().getName(),
                                 "java.lang.Boolean");
-                sfLog().error(srex,srex);
+                sfLog().error(srex);
             }
         }
 
@@ -1076,7 +1055,8 @@ public class ProcessCompoundImpl extends CompoundImpl
                     sfLog().debug("New ProcessCompound " + name + " created: " + newPc
                             .sfCompleteName());
                 } catch (Throwable thr) {
-                    sfLog().error("New ProcessCompound " + name + " create failed " +thr,thr);
+                    sfLog().debug("New ProcessCompound " + name + " created.");
+                    sfLog().error(thr);
                 }
             }
             return newPc;
@@ -1485,8 +1465,9 @@ public class ProcessCompoundImpl extends CompoundImpl
                     }
                 }
             } catch (Exception ex) {
+                //Logger.log(ex);
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error(ex, ex);
+                    sfLog().error(ex);
                 }
             }
         }

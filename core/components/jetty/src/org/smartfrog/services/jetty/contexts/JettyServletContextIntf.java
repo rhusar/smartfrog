@@ -29,5 +29,14 @@ import org.smartfrog.services.www.ServletContextIntf;
 
 public interface JettyServletContextIntf extends ServletContextIntf {
 
+    /**
+     * secret context.
+     * This is the attribute that is used to dynamically patch up with the
+     * the jetty context. only for intra-jetty implementation use, no stability
+     * guarantees, etc, etc. 
+     * {@value}
+     */
+    String ATTR_CONTEXT = "_context";
+
 
 }

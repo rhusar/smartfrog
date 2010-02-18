@@ -148,10 +148,10 @@ public class DefaultParser {
                               + " : " +
                               tex.getMessage(),
                               tex.errorCode);
-    } catch (Throwable ex) {
+    } catch (Exception ex) {
       ParseException pe=new ParseException("Parsing include file " + fName
                 +(codebase != null? ("in code base "+ codebase):"")
-                + " : " + ex);
+                + " : " + ex.getMessage());
       pe.initCause(ex);
       throw pe;
     }

@@ -18,6 +18,7 @@
 
  */
 
+//#include "org/smartfrog/components.sf";
 #include "org/smartfrog/sfcore/workflow/components.sf";
 #include "org/smartfrog/services/utils/concat/components.sf"
 #include "org/smartfrog/services/filesystem/components.sf"
@@ -38,7 +39,7 @@
  * the http listener
  */
 
-CompleteJettyHttpServer extends Compound {
+JettyHttpServer extends Compound {
 
    jettyhome TBD;
 
@@ -57,7 +58,7 @@ CompleteJettyHttpServer extends Compound {
   /**
    * this listens on a direct port
    */
-  connector extends JettySocketConnector {
+  directPortListener extends JettySocketConnector {
     server LAZY PARENT:server;
     port PARENT:port;
   }
@@ -67,7 +68,7 @@ CompleteJettyHttpServer extends Compound {
 /**
  * add the example contexts
  */
-CompleteJettyHttpServerWithContexts extends JettyHttpServer {
+FullJettyServer extends JettyHttpServer {
    contexts extends Compound {
      server LAZY PARENT:server;
    }

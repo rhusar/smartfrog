@@ -30,5 +30,5 @@ public interface JavaWebApplication extends ApplicationServerContext {
     /**
      * run time attribute: the full URL to the component {@value}
      */
-    String ATTR_APPLICATION_URL = "applicationURL";
+    public static final String ATTR_APPLICATION_URL = "applicationURL";
 }

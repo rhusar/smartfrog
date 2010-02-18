@@ -2,10 +2,6 @@
 # Environment Variables for Smartfrog startup
 #
 
-# This script is copied with property expansion at build time, which can be 
-# used to force in dynamic values. Because of this, use $ and braced {} strings
-# carefully
-
 # Home Directory
 SFHOME=${rpm.install.dir}
 export SFHOME
@@ -13,7 +9,7 @@ export SFHOME
 #
 # The following settings run to the virtual desktop for root
 #
-if test -z "$HOME";
+if test -z "$$HOME";
 then
 	HOME=/root
 fi

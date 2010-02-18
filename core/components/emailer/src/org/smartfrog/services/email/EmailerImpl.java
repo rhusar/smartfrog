@@ -182,9 +182,9 @@ public class EmailerImpl extends PrimImpl implements Emailer {
             try {
                 sendConfiguredMessage();
             } catch (SmartFrogException e) {
-                log.error(e, e);
+                log.error(e);
             } catch (RemoteException e) {
-                log.error(e, e);
+                log.error(e);
             }
         }
         super.sfTerminateWith(tr);

@@ -50,9 +50,10 @@ public class Finally extends EventCompoundImpl implements Compound {
     /**
      * Constructs Try.
      *
-     * @throws RemoteException In case of RMI or network failure.
+     * @throws java.rmi.RemoteException In case of RMI or network failure.
      */
-    public Finally() throws RemoteException {
+    public Finally() throws java.rmi.RemoteException {
+        super();
     }
 
     /**
@@ -89,7 +90,7 @@ public class Finally extends EventCompoundImpl implements Compound {
         super.sfStart();
 
         //Copies component description before deploying it!
-        finallyPrim = deployComponentDescription(FINALLY_CHILD_NAME, action);
+        finallyPrim= deployComponentDescription(FINALLY_CHILD_NAME, action);
     }
 
     /**
@@ -97,14 +98,14 @@ public class Finally extends EventCompoundImpl implements Compound {
      * @param status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        if (finallyPrim != null) {
+        if(finallyPrim!=null) {
             if (sfLog().isDebugEnabled()) {
                 sfLog().debug("Starting the Finally Action");
             }
             try {
                 finallyPrim.sfStart();
             } catch (SmartFrogException e) {
-                sfLog().error("When starting the finally action", e);
+                sfLog().error("When starting the finally action",e);
             } catch (RemoteException e) {
                 sfLog().error("When starting the finally action", e);
             }

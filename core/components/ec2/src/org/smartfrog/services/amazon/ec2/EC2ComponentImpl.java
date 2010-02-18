@@ -21,16 +21,15 @@ package org.smartfrog.services.amazon.ec2;
 
 import com.xerox.amazonws.ec2.Jec2;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
-import com.xerox.amazonws.ec2.LaunchConfiguration;
 import org.smartfrog.services.amazon.workflow.CompletableWork;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import java.util.List;
  * Created 25-Mar-2008 13:36:29
  */
 
-public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component, CompletableWork {
+public class EC2ComponentImpl extends PrimImpl implements EC2Component, CompletableWork {
 
     private Jec2 ec2binding;
     private String id;
@@ -59,7 +58,7 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     @Override
     public synchronized void sfStart()
@@ -71,11 +70,12 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
     }
 
     /**
-     * Liveness call in to check if this component is still alive. Any work exception gets forwarded up here.
-     *
+     * Liveness call in to check if this component is still alive.
+     * Any work exception gets forwarded up here.
      * @param source source of call
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException for consistency with the {@link Liveness} interface
+     * @throws RemoteException for consistency with the {@link Liveness}
+     * interface
      */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
@@ -111,8 +111,8 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
     }
 
     /**
-     * record that the work has completed. If an exception is passed in, assume the work failed
-     *
+     * record that the work has completed. If an exception
+     * is passed in, assume the work failed
      * @param exception an optional exception.
      */
     protected synchronized void workCompleted(Throwable exception) {
@@ -137,16 +137,18 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
     }
 
     /**
-     * Poll for the work being successful. This is defined as the exception being null
+     * Poll for the work being successful.
+     * This is defined as the exception being null
      *
      * @return true if nothing went wrong and we have completed
      */
     public synchronized boolean isWorkSuccessful() {
-        return workCompleted && workException == null;
+        return workCompleted && workException==null;
     }
 
     /**
-     * Return any exception raised when the work failed. If this is non-null, then isWorkSuccessful() must be false
+     * Return any exception raised when the work failed.
+     * If this is non-null, then isWorkSuccessful() must be false
      *
      * @return an exception or null
      */
@@ -203,7 +205,6 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
 
     /**
      * Log any termination records
-     *
      * @param terminating list of terminating entries
      */
     protected void logTerminationInfo(List<TerminatingInstanceDescription> terminating) {
@@ -220,14 +221,4 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
     protected void logInstances(InstanceList instanceList) {
         sfLog().info(instanceList.toString());
     }
-
-    /**
-     * Print any launch configuration out at the info level
-     * @param launch the configuration
-     */
-    protected void logLaunchConfiguration(LaunchConfiguration launch) {
-        String configString = EC2Utils.convertToString(launch);
-        sfLog().info(configString);
-    }
-
 }

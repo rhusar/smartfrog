@@ -19,14 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.languages.sf.sfcomponentdescription;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
@@ -52,17 +49,11 @@ import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.CoreSolverFatalError;
-import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 /**
  * Defines the context class used by Components. Context implementations
@@ -717,12 +708,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
        //reset link resolution state
        resetLRSState();  
-              
+       
        //Set description in Constraint Solver logic
        CoreSolver.getInstance().setDescriptionMarkers(this);
-       
-       //Compile list of propositions for cardinality constraint checking
-       Proposition.compilePropositions(this);
        
        while (true){
     	   //Get current description being processed...
@@ -745,16 +733,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     	   //Get value
     	   Object value = sfcd.sfContext().getVal(currentLRSIndex);  	   
     	    	   
-    	   //System.out.println("key:"+key+", value:"+value);
-    	  
-    	   //Do we need to do some additional constraints work?
-    	   try {
-    	      CoreSolver.getInstance().doConstraintsWork(key);  
-    	   } catch (SmartFrogConstraintBacktrackError sfbe){
-    		   if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
-        	   else continue; //need to try the latest again... 
-    	   }
-    	      
+    	   //System.out.println("key:"+key+", value:"+value+", cd:"+this.hashCode());
+    	   
     	   //Is value SFComponentDescription?
            if (value instanceof SFComponentDescription) {
         	   sfcd = (SFComponentDescription) value;
@@ -768,9 +748,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          	   //Is value a Reference?
            } else if (value instanceof Reference) {
                Reference rv = (Reference)value;
-               if (!rv.getData() && !Constraint.leaveResolve(sfcd, key)){
+               if (!rv.getData()) {
+                   
             	   try {
-            		   
             		   //Resolve reference
             		   Object result = sfcd.sfResolve((Reference) value);
             		   
@@ -778,7 +758,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             		   CoreSolver.getInstance().setShouldUndo(true);
             		   
             		   //Set key to have value
-            		   //System.out.println("Putting..."+key+":"+result);
             		   sfcd.sfContext().put(key, result);
             		   
             		   //No more should we undo
@@ -790,7 +769,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                            if (res_sfcd.sfParent() == null) res_sfcd.setParent(sfcd);
                            continue; //round while to resolve it...
                        } 
-                       
 
                    } catch (SmartFrogConstraintBacktrackError sfbe){ 
                 	   if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
@@ -800,7 +778,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                    } catch (Exception resex) {
                        resState.addUnresolved(value, sfcd.sfCompleteName(), key.toString(), resex);
                    } catch (Throwable thr){
-                	  if (thr instanceof CoreSolverFatalError) throw (CoreSolverFatalError) thr;
                       throw new SmartFrogLinkResolutionException(
                     		   "Failed to resolve '"+key+" "+value+"'"+
                    	   		       (thr instanceof StackOverflowError || thr instanceof java.lang.OutOfMemoryError?
@@ -815,33 +792,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        } //while
    }   
 
-   /**
-    * Link resolution is exclusively an SFComponentDescription phenomenon.  But it is possible that we 
-    * would like to do simple link resolution dynamically on deployed cds which at run-time are plain 
-    * ComponentDescriptions. Hence this method which does a "simple" link resolution. 
-    * @param comp  input cd
-    * @return  link resolved cd
-    * @throws SmartFrogException
-    */
-    public static ComponentDescription simpleLinkResolve(ComponentDescription comp) throws SmartFrogException {
-		//Simple link resolve...
-		ComponentDescription newcomp = new SFComponentDescriptionImpl();
-		newcomp.setParent(comp.sfParent());
-		newcomp.setEager(comp.getEager());
-		
-		for (Iterator v = comp.sfAttributes(); v.hasNext();) {
-			Object name = v.next();
-           String nameS = name.toString();
-           Reference ref = new Reference(ReferencePart.here(name));
-           Object value=comp.sfResolve(ref);
-           if (value instanceof ComponentDescription) value=simpleLinkResolve((ComponentDescription)value);           
-          
-           newcomp.sfAddAttribute(name, value);
-           newcomp.sfAddTags(name, comp.sfGetTags(name));     
-       }     
-		return newcomp;
-	}
-   
    /**
     *  Returns a string representation of the component. This will give a
     *  description of the component which is parseable, and deployable again...
@@ -965,32 +915,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
        return res;
    }
-   
-   
-   /**
-    * Method to take a URL, parse it, add the addtional key-value parameters to the top level, and then resolve it.
-    * @param url the file to parse
-    * @param params a context containing the parameter key-value pairs
-    * @return the resultant component description
-    * @throws SmartFrogException on parsing problems
-    * @throws FileNotFoundException if the resource does not resolve
-    */
-   public static ComponentDescription getDescriptionURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-       InputStream instream = SFClassLoader.getResourceAsStream(url);
-       if (instream == null) {
-           throw new FileNotFoundException("Unable to load " + url);
-       }
-       Phases p = new SFParser().sfParse(instream);
-	   	   
-	   	   // add params
-           if (params != null) {
-               for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
-                   Object k = keys.nextElement();
-                   p.sfReplaceAttribute(k, params.get(k));
-               }
-           }
-           return p.sfResolvePhases().sfAsComponentDescription();
-   }
+
 
     protected Object copyValue(Object v) throws SmartFrogCompilationException {
         if (v instanceof Number) return v;

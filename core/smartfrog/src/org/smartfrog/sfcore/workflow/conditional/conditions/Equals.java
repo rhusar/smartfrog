@@ -38,8 +38,9 @@ public class Equals extends AbstractTwoArgumentCondition implements TwoArgumentC
      * Evaluate the condition.
      *
      * @return true if it is successful, false if not
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         return getLeft().equals(getRight());

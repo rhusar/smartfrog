@@ -26,18 +26,18 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 import java.rmi.RemoteException;
 
 /**
- * This component validates EC2 settings and the workflow process itself. It stays off line
+ * This component validates EC2 settings and the workflow
+ * process itself. It stays off line
  * <p/>
  * Created: 09-Apr-2008
  */
 public class ValidateEC2SettingsImpl extends EC2ComponentImpl {
 
-    private int delay = 0;
+    private int delay=0;
     private boolean simulateFailure;
     public static final String ATTR_SIMULATE_FAILURE = "simulateFailure";
     public static final String ATTR_DELAY = "delay";
     public static final String SIMULATED_EXCEPTION = "Simulated EC2 exception";
-
     public ValidateEC2SettingsImpl() throws RemoteException {
     }
 
@@ -52,7 +52,7 @@ public class ValidateEC2SettingsImpl extends EC2ComponentImpl {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        delay = sfResolve(ATTR_DELAY, 0, true);
+        delay=sfResolve(ATTR_DELAY,0,true);
         simulateFailure = sfResolve(ATTR_SIMULATE_FAILURE, true, true);
         sfLog().info("Starting worker thread");
         deployWorker(new WorkerThread());
@@ -64,24 +64,26 @@ public class ValidateEC2SettingsImpl extends EC2ComponentImpl {
     private class WorkerThread extends WorkflowThread {
 
 
+
         /**
-         * Create a basic thread. Notification is bound to a local notification object.
+         * Create a basic thread. Notification is bound to a local notification
+         * object.
          */
         private WorkerThread() {
             super(ValidateEC2SettingsImpl.this, true);
         }
 
         /**
-         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
-         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
-         * of <code>Thread</code> should override this method.
+         * If this thread was constructed using a separate {@link Runnable} run
+         * object, then that <code>Runnable</code> object's <code>run</code>
+         * method is called; otherwise, this method does nothing and returns.
+         * <p> Subclasses of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */
-        @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
-            sfLog().info("worker thread sleeping for " + delay + " ms");
+            sfLog().info("worker thread sleeping for "+delay+" ms");
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -89,7 +91,7 @@ public class ValidateEC2SettingsImpl extends EC2ComponentImpl {
                 throw e;
             }
             sfLog().info("worker finishing");
-            if (simulateFailure) {
+            if(simulateFailure) {
                 sfLog().info("worker thread simulating failure");
                 throw new SmartFrogEC2Exception(SIMULATED_EXCEPTION);
             }
@@ -102,7 +104,7 @@ public class ValidateEC2SettingsImpl extends EC2ComponentImpl {
          */
         @Override
         protected void aboutToTerminate(TerminationRecord tr) {
-            sfLog().info("Work is completed: " + tr);
+            sfLog().info("Work is completed: "+tr);
             workCompleted(tr.getCause());
         }
     }

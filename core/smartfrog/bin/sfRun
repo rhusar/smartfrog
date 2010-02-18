@@ -15,8 +15,16 @@ if [ "$1" = "-?" ];then
 echo "Usage: sfRun URL [-p port] [-e]"
 exit 0
 fi 
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
 
 . "$SFHOME/bin/setSFProperties"
+
+#if test "$SFDEFAULTSF"; then
+#   export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+#fi
+
+#java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
 
 if [ "$1" = "-p" ];then
 	echo "Insufficent arguments to use sfRun"

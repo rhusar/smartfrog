@@ -47,7 +47,7 @@ public class ProjectHelper {
      * @return a new property name that is currently unique
      */
     public synchronized String createUniquePropertyName() {
-        String prefix = toString() + "_";
+        String prefix = this.toString() + "_";
         String name;
         do {
             name = prefix + counter++;

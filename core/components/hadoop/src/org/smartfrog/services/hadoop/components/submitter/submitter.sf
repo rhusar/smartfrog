@@ -19,31 +19,14 @@ For more information: www.smartfrog.org
 */
 
 
-HadoopJobRunner extends WorkflowPrim  {
-
-
-  //the cluster reference is optional
-  //cluster TBD;
-
-
-  fileRequired true;
-
-
-}
-
 /**
  * A component that takes a job and submits it.
  */
-JobSubmitter extends HadoopJobRunner  {
+JobSubmitter extends JobTrackingWorkflowComponent  {
   sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 
 
-  //the cluster reference is optional
-  //cluster TBD;
-
-
-  fileRequired true;
-
+  job TBD;
   /**
   terminate on shutdown
   */
@@ -63,36 +46,6 @@ JobSubmitter extends HadoopJobRunner  {
    */
   deleteOutputDirOnStartup true;
 
-  /**
-   * Job timeout in seconds; used when tracking jobs and measured from
-   * start of submission.
-   * Warning: unstable; may be split in future to time to wait for submission,
-   * and time to wait for completion once a job is submitted
-   */
-  jobTimeout 0;
-
-  /**
-   * ask for the job configuration to be dumped on a complete failure.
-   * useful when you get odd configuration errors
-   */
-  dumpOnFailure false;
-
-  /**
-   * A LAZY reference to a component that is to get all the results as they happen: jobID, test results, etc
-   * this is intended to outlast the workflow job runs
-   */
- //results
-
- /**
-  * turn off complaints about parsing
-  */
-  mapred.used.genericoptionsparser true;
-
-  /**
-   * use the new API
-   */
-  mapred.mapper.new-api true;
-
 }
 
 /**
@@ -102,17 +55,5 @@ BlockingJobSubmitter extends JobSubmitter {
   terminateJob true;
   terminateWhenJobFinishes true;
   //this disables an auto terminate after submitting
-  sfShouldTerminate false;
-}
-
-
-
-Job extends BlockingJobSubmitter {
-  //do we need a filename attribute?
-  fileRequired true;
-
-}
-
-JobWithoutJARFile extends Job {
-  fileRequired false;
+  sfShouldTerminate true;
 }

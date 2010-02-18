@@ -55,7 +55,7 @@ public class Deployer  extends Run implements Compound {
 
     String newComponentCodebase = null;
     String newComponentDescription = null;
-    Vector newComponentExtraAttributes = null;
+    Vector newComponentExtraAtributes = null;
 
     /**
      * Constructs Deployer.
@@ -72,7 +72,7 @@ public class Deployer  extends Run implements Compound {
 
         newComponentDescription = sfResolve(ATTR_DESCRIPTION,newComponentDescription,true);
         newComponentCodebase = sfResolve(ATTR_HCODEBASE,newComponentCodebase,false);
-        newComponentExtraAttributes = sfResolve(ATTR_EXTRA_ATTRIBUTES, newComponentExtraAttributes,false);
+        newComponentExtraAtributes = sfResolve(ATTR_EXTRA_ATTRIBUTES,newComponentExtraAtributes,false);
     }
 
 
@@ -82,7 +82,7 @@ public class Deployer  extends Run implements Compound {
             InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(newComponentDescription);
             SFParser parser = new SFParser(SFParser.getLanguageFromUrl(newComponentDescription));
             phases = parser.sfParse(descriptionStream,newComponentCodebase);
-            addAttributesToCD(newComponentExtraAttributes, phases);
+            addAttributesToCD(newComponentExtraAtributes, phases);
         } catch (Exception e) {
              sfLog().err("", e);
              throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
@@ -100,8 +100,8 @@ public class Deployer  extends Run implements Compound {
                 Vector attribute_value = (Vector)e.next();
                 String key = (String) attribute_value.elementAt(0);
                 Object value = attribute_value.elementAt(1);
-                Reference keyRef = Reference.fromString(key);
-                if (sfLog().isTraceEnabled())  sfLog().trace("Attribute : KeyRef:" + keyRef + "  ; value:" + value);
+                Reference keyRef = Reference.fromString(key.toString());
+                if (sfLog().isTraceEnabled())  sfLog().trace("Attribute : KeyRef:" + keyRef.toString() + "  ; value:" + value.toString());
                 phases.sfReplaceAttribute(keyRef, value);
             }
         }

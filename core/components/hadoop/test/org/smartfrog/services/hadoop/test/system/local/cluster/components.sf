@@ -22,19 +22,24 @@
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
 
 
+
 testLocalCluster extends ExpectDeploy {
   description "bring up a full cluster";
 
-  action extends LocalClusterCompound {
 
+
+  action extends LocalClusterCompound {
+    tracker "localhost:8014";
+    mapred.job.tracker tracker;
+    jobTracker:mapred.job.tracker tracker;
+    //jobTracker:mapred.job.tracker.http.address  "localhost:50032";
   }
 
-  tests extends JobTrackerSequence {
+
+  tests extends FileSystemTestSequence {
 
     namenode LAZY action:namenode;
-    datanode LAZY action:datanode;
-    jobtracker LAZY action:jobtracker;
-    tasktracker LAZY action:tasktracker;
+    datanode LAZY action:datanode;;
   }
   
 
@@ -43,9 +48,11 @@ testLocalCluster extends ExpectDeploy {
 
 
 testLocalClusterForked extends testLocalCluster {
-  condition IsForkTestsSet;
-  action:namenode:sfProcessName "testLocalClusterForked-namenode";
   action:datanode:sfProcessName "testLocalClusterForked-datanode";
-  action:jobtracker:sfProcessName "testLocalClusterForked-jobtracker";
-  action:tasktrackerSequence:tasktracker:sfProcessName "testLocalClusterForked-tasktracker";
+  action:namenode:sfProcessName "testLocalClusterForked-namenode";
+  action:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
+  action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
+  action:jobTracker:mapred.job.tracker  "localhost:8016";
+  //action:jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50033";
 }
+

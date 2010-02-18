@@ -21,6 +21,12 @@
 #include "/org/smartfrog/services/restlet/components.sf"
 
 
+
+
+
+
+
+
 /**
  * Resources extends Services with a stable HTTP interface. You can also
  * Control their policy w.r.t whether they should execute common operations

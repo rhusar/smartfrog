@@ -24,8 +24,8 @@ import org.smartfrog.services.filesystem.files.Files;
 
 
 /**
- * SmartFrog Interface for SCP component. Used to upload/download files to/from a remote machine securely over SSH.
- *
+ * SmartFrog Interface for SCP component. Used to upload/download files
+ * to/from a remote machine securely over SSH.
  * @author Ashish Awasthi
  */
 public interface ScpBulkUpload extends SSHComponent, Files {

@@ -21,8 +21,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 /**
- * Implements a simple timer. Useful classes subclass from this and override the {@link #timerTick()} method to provide
- * functional behaviour on every tick.
+ * Implements a simple timer. Useful classes subclass from this and override
+ * the {@link #timerTick()} method to provide functional behaviour on every tick.
+ *
  */
 public class Timer implements Runnable {
     /** Delay between ticks in milliseconds. */
@@ -32,13 +33,13 @@ public class Timer implements Runnable {
     protected Thread timerThread;
 
     /** Flag indicating whether this timer has been stopped. */
-    protected volatile boolean stopped = false;
+    protected boolean stopped = false;
 
     /** Flag indicating that thread is currently waiting. */
-    protected volatile boolean waiting = false;
+    protected boolean waiting = false;
 
     /** Thread name. */
-    protected String name = "TimerThread";
+    protected String name= "TimerThread";
 
     /**
      * Constructor.
@@ -49,7 +50,9 @@ public class Timer implements Runnable {
         tickDelay = delay;
     }
 
-    /** Starts the timer off (ie starts the timer thread). */
+    /**
+     * Starts the timer off (ie starts the timer thread).
+     */
     public synchronized void start() {
         if (tickDelay <= 0) {
             return;
@@ -66,15 +69,19 @@ public class Timer implements Runnable {
     }
 
     /**
-     * Stops the thread indirectly by setting the stopped flag. This prevents condition where terminating timer thread
-     * terminates the thread calling stop since they are the same!
+     * Stops the thread indirectly by setting the stopped flag. This prevents
+     * condition where terminating timer thread terminates the thread calling
+     * stop since they are the same!
      */
     public void stop() {
         stopped = true;
         reschedule();
     }
 
-    /** Reschedules the timer thread. This is only done if the timer thread is currently waiting. */
+    /**
+     * Reschedules the timer thread. This is only done if the timer thread is
+     * currently waiting.
+     */
     public void reschedule() {
         if (waiting) {
             timerThread.interrupt();
@@ -122,7 +129,9 @@ public class Timer implements Runnable {
         reschedule();
     }
 
-    /** Does the actual wait. */
+    /**
+     * Does the actual wait.
+     */
     protected synchronized void timerWait() {
         try {
             waiting = true;
@@ -133,7 +142,10 @@ public class Timer implements Runnable {
         }
     }
 
-    /** Does the tick. Will call timertick, but does the stopped check first. Ignores any errors during timertick. */
+    /**
+     * Does the tick. Will call timertick, but does the stopped check first.
+     * Ignores any errors during timertick.
+     */
     protected synchronized void doTick() {
         if (stopped) {
             return;
@@ -148,8 +160,9 @@ public class Timer implements Runnable {
     }
 
     /**
-     * Creates a thread on given runnable interface. Default just creaates a new thread. Subclasses can override to, for
-     * example put thread in a particular thread group.
+     * Creates a thread on given runnable interface. Default just creaates a
+     * new thread. Subclasses can override to, for example put thread in a
+     * particular thread group.
      *
      * @param run runnable object
      *
@@ -159,11 +172,15 @@ public class Timer implements Runnable {
         return new Thread(run);
     }
 
-    /** Subclasses should implement this message. */
+    /**
+     * Subclasses should implement this message.
+     */
     protected void timerTick() {
     }
 
-    /** Thread entry point. */
+    /**
+     * Thread entry point.
+     */
     public void run() {
         while (!stopped) {
             timerWait();
@@ -173,10 +190,9 @@ public class Timer implements Runnable {
 
     /**
      * Sets the name
-     *
-     * @param name String name
+     * @param name  String name
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name){
+        this.name=name;
     }
 }

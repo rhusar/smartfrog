@@ -40,18 +40,22 @@
 
 package org.smartfrog.services.ssh;
 
+import com.jcraft.jsch.ChannelShell;
+import com.jcraft.jsch.Session;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.OutputStreamLog;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.utils.WorkflowThread;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -101,7 +105,6 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * {@inheritDoc}
      *
      * @param source source of call
-     *
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
@@ -117,18 +120,10 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * @param tr Termination record
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-        shutdownExecutor();
+        SmartFrogThread.requestAndWaitForThreadTermination(executorThread,
+                THREAD_SHUTDOWN_TIME);
         //this will close the session, so we hope that the thread has finished.
         super.sfTerminateWith(tr);
-    }
-
-    private void shutdownExecutor() {
-        SSHExecImpl.CommandExecutor worker = executorThread;
-        if (worker != null) {
-            worker.haltCommand();
-            SmartFrogThread.requestAndWaitForThreadTermination(worker,
-                                                               THREAD_SHUTDOWN_TIME);
-        }
     }
 
     /**
@@ -141,78 +136,124 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             throws SmartFrogException, RemoteException {
         // Mandatory attributes
         commandsList = ListUtils.resolveStringList(this,
-                                                   new Reference(ATTR_COMMANDS),
-                                                   true);
+                new Reference(ATTR_COMMANDS),
+                true);
 
         //optional attributes
         logFile = FileSystem.lookupAbsoluteFile(this,
-                                                ATTR_LOG_FILE,
-                                                logFile,
-                                                null,
-                                                false,
-                                                null);
+                ATTR_LOG_FILE,
+                logFile,
+                null,
+                false,
+                null);
 
         exitCodeMax = sfResolve(ATTR_EXIT_CODE_MAX, exitCodeMax, true);
         exitCodeMin = sfResolve(ATTR_EXIT_CODE_MIN, exitCodeMin, true);
     }
 
 
-    /** This thread executes commands down an SSH channel */
-    private class CommandExecutor extends WorkflowThread {
+    /**
+     * This thread executes commands down an SSH channel
+     */
+    private class CommandExecutor extends SmartFrogThread {
 
-        private volatile SshCommand command;
+        private static final int SPIN_DELAY_MILLIS = 500;
 
-        CommandExecutor() {
-            super(SSHExecImpl.this, true);
-        }
 
-        /** Halt the command if non null */
-        void haltCommand() {
-            SshCommand cmd = command;
-            if (cmd != null) {
-                cmd.haltOperation();
-            }
-        }
-
-        @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
-            OutputStream outputStream;
+            ChannelShell channel = null;
+            OutputStream outputStream = null;
+            ComponentHelper helper = new ComponentHelper(SSHExecImpl.this);
             String sessionInfo = "SSH Session to " + getConnectionDetails();
-            if (logFile != null) {
-                try {
-                    outputStream = new FileOutputStream(logFile, false);
-                } catch (FileNotFoundException e) {
-                    throw new SmartFrogException(
-                            sessionInfo + " failed to create log file "
-                            + logFile,
-                            e);
-                }
-            } else {
-                outputStream = new OutputStreamLog(log, LogLevel.LOG_LEVEL_INFO);
-            }
             try {
                 //start the logging
+                if (logFile != null) {
+                    try {
+                        outputStream = new FileOutputStream(logFile, false);
+                    } catch (FileNotFoundException e) {
+                        throw new SmartFrogLifecycleException(
+                                sessionInfo + " failed to create log file "
+                                        + logFile,
+                                e);
+                    }
+                } else {
+                    outputStream = new OutputStreamLog(log, LogLevel.LOG_LEVEL_INFO);
+                }
                 // open ssh session
                 logDebugMsg(sessionInfo);
-                openSession();
+                Session newsession = openSession();
 
-                command = new SshCommand(sfLog(), null);
-                int exitCode = command.execute(getSession(), commandsList, outputStream, getTimeout());
+                // Execute commands
 
-
-                if (exitCode < exitCodeMin || exitCode > exitCodeMax) {
-                    String msg = sessionInfo
-                                 + " failed with exit status " + exitCode
-                                 + " out of the range ["
-                                 + exitCodeMin
-                                 + ','
-                                 + exitCodeMax + ']';
-                    throw new SmartFrogException(msg);
+                StringBuilder buffer = new StringBuilder();
+                for (Object aCommandsList : commandsList) {
+                    String cmd = aCommandsList.toString();
+                    buffer.append(cmd);
+                    buffer.append('\n');
                 }
 
+                byte[] bytes = buffer.toString().getBytes();
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+
+                channel = (ChannelShell) getSession().openChannel("shell");
+                channel.setOutputStream(outputStream);
+                channel.setExtOutputStream(outputStream);
+                channel.setInputStream(bais);
+                channel.connect();
+
+                log.info("Executing commands:" + buffer.toString());
+
+                // wait for it to finish. This is pretty ugly
+                long timeLimit = System.currentTimeMillis() + timeout;
+                while (!channel.isClosed() && !isTerminationRequested()) {
+                    long now = System.currentTimeMillis();
+                    if (timeout > 0 && now > timeLimit) {
+                        //we have a timeout
+                        String message = TIMEOUT_MESSAGE + getConnectionDetails();
+                        log.error(message);
+                        throw new SmartFrogLifecycleException(message);
+                    }
+                    sleep(SPIN_DELAY_MILLIS);
+                }
+
+                if (isTerminationRequested()) {
+                    //we've been asked to die
+                    return;
+                }
+
+                int exitCode = channel.getExitStatus();
+                if (exitCode < exitCodeMin || exitCode > exitCodeMax) {
+                    String msg = sessionInfo
+                            + " failed with exit status " + exitCode
+                            + " out of the range ["
+                            + exitCodeMin
+                            + ','
+                            + exitCodeMax + ']';
+                    throw new SmartFrogLifecycleException(msg);
+                }
+
+                // check if it should terminate by itself
+                log.info("Normal termination :" + sfCompleteNameSafe());
+                TerminationRecord termR = TerminationRecord.normal(
+                        sessionInfo + " finished: ",
+                        sfCompleteName());
+                helper.sfSelfDetachAndOrTerminate(termR);
+            } catch (Throwable ex) {
+                SmartFrogLifecycleException lifecycleException = forward(ex);
+                log.error(sessionInfo, lifecycleException);
+                TerminationRecord tr = helper.createTerminationRecord(null,
+                        sessionInfo, sfCompleteName(), lifecycleException);
+                helper.targetForWorkflowTermination(tr);
+                throw lifecycleException;
             } finally {
-                command = null;
+                //clean up time
+                if (channel != null) {
+                    channel.disconnect();
+                } else {
+                    //if there's no channel, we may not have closed the output stream
+                    FileSystem.close(outputStream);
+                }
             }
         }
     }

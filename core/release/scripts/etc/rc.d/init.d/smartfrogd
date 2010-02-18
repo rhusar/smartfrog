@@ -24,43 +24,14 @@
 ### END INIT INFO
 
 
-# This script is copied with property expansion at build time, which can be 
-# used to force in dynamic values. Because of this, use $ and braced {} strings
-# carefully
-
 # Source function library.
-#. /etc/rc.d/init.d/functions
-
-# Look for LSB and RHEL function scripts
-
-if [ -f /lib/lsb/init-functions ]; then
-  . /lib/lsb/init-functions
-  STOP_SUPPORTED=0
-  alias START_DAEMON=start_daemon
-#  alias STOP_DAEMON=echo "ignoring stop daemon request"
-  alias STATUS=MyStatus
-  alias LOG_SUCCESS=log_success_msg
-  alias LOG_FAILURE=log_failure_msg
-  alias LOG_WARNING=log_warning_msg
-elif [ -f /etc/init.d/functions ]; then
-  . /etc/init.d/functions
-  STOP_SUPPORTED=1
-  #alias START_DAEMON=daemon
-  alias START_DAEMON=start
-  alias STOP_DAEMON=stop
-  alias STATUS=status
-  alias LOG_SUCCESS=success
-  alias LOG_FAILURE=failure
-  alias LOG_WARNING=passed
-else
-  echo "Error: your platform is not supported by $0" > /dev/stderr
-  exit 1
-fi
+. /etc/rc.d/init.d/functions
 
 RETVAL=0
 
 # Set Envrionment
-if [ -f /etc/sysconfig/smartfrog ]; then
+if [[ -f /etc/sysconfig/smartfrog ]]
+then
 	. /etc/sysconfig/smartfrog
 fi
 
@@ -71,53 +42,44 @@ PATH="$${PATH-}:$${SFHOME}/bin"
 export DISPLAY
 
 ProgName="SmartFrog Daemon"
-ProgDir="$SFHOME/bin"
+ProgDir="$$SFHOME/bin"
 ProgBin="sfDaemon"
-ProgPing="sfPing"
 Filename="smartfrogd"
-LockFile="/var/lock/subsys/$ProgBin"
-RunFile=/var/run/$ProgBin.pid
+LockFile="/var/lock/subsys/$$ProgBin"
+RunFile=/var/run/$$ProgBin.pid
 ProgStop="smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit"
-ProgLog="${rpm.log.dir}/$Filename.log"
+ProgLog="${rpm.log.dir}/$$Filename.log"
 
 ##exit if the program is not there
-if [ ! -f $ProgDir/$ProgBin ]; then
-  echo "Error: $0 cannot find $ProgDir/$ProgBin" > /dev/stderr
-	exit 5
-fi
+test -x $$ProgDir/$$ProgBin || exit 5
 
-##exit if Java is not on the path
-java -version >/dev/null
-if [ $? -ne 0 ]; then
-  echo "Error: $0 cannot find java. Either it is not installed or the PATH is incomplete" > /dev/stderr
-	exit 6
-fi
+
 
 # Start routine is an idempotent startup operation
 function start() {     
 
 	# is it already running
-	status $ProgBin >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
-    return 0
+	status $$ProgBin >/dev/null 2>&1
+	if [ $$? -eq 0 ]; then
+	    return 0
 	fi;
 
-	echo -n "Starting $ProgName: "
+	echo -n "Starting $$ProgName: "
 
 	ulimit -S -c 0 >/dev/null 2>&1
 
-	echo "" >> $ProgLog
-	echo "---- Starting $ProgName -----" >> $ProgLog
-	nohup $ProgDir/$ProgBin -headless >>$ProgLog  2>&1 &
-	RETVAL=$?
-	if [ $RETVAL -eq 0 ]; then
-    $LOG_SUCCESS
-    touch $LockFile
+	echo "" >> $$ProgLog
+	echo "---- Starting $$ProgName -----" >> $$ProgLog
+	nohup $$ProgDir/$$ProgBin -headless >>$$ProgLog  2>&1 &
+	RETVAL=$$?
+	if [ $$RETVAL -eq 0 ]; then
+	    success
+	    touch $$LockFile
 	else
-    $LOG_FAILURE
-    fi;
+	    failure
+	    fi;
 	echo
-	return $RETVAL
+	return $$RETVAL
 }
 
 #stop the program running by invoking the 
@@ -125,87 +87,79 @@ function start() {
 # Again, this is meant be idempotent.
 
 function stop() {
-	echo -n "Stopping $ProgName: "
+	echo -n "Stopping $$ProgName: "
 
-	echo "" >> $ProgLog
-	echo "---- Stopping $ProgName -----" >> $ProgLog
-	$ProgDir/$ProgStop >>$ProgLog 2>&1
+	echo "" >> $$ProgLog
+	echo "---- Stopping $$ProgName -----" >> $$ProgLog
+	$$ProgDir/$$ProgStop >>$$ProgLog 2>&1
 	
-	RETVAL=$?
-	[ $RETVAL -eq 0 ] && rm -f $LockFile $RunFile
-	$LOG_SUCCESS
-  RETVAL=0
+	RETVAL=$$?
+	[ $$RETVAL -eq 0 ] && rm -f $$LockFile $$RunFile
+	success
+    RETVAL=0
 	echo
-	return $RETVAL
+	return $$RETVAL
 }
 
 #check the status and return the LSB-standard exit codes
 function status_check() {
-#  echo -n "checking status of $ProgName: "
-#  $STATUS $ProgBin 
-#  RETVAL=$?
-#	if [ $RETVAL -eq 0 ]; then
-#    $ProgDir/sfPing localhost
-#    RETVAL=$?
-#	fi;
-  $ProgDir/$ProgPing localhost
-  RETVAL=$?
-  #failure of the ping
-	if [ $RETVAL -eq 0 ]; then
-    return 0
-  elif [ -x $RunFile ]; then
+    echo -n "checking status of $$ProgName: "
+    status $$ProgBin 
+    RETVAL=$$?
+	if [ $$RETVAL -eq 0 ]; then
+        $$ProgDir/sfPing localhost
+        RETVAL=$$?
+	fi;
+#failure of the ping
+	if [ $$RETVAL -eq 0 ]; then
+        return 0
+    elif [ -x $$RunFile ]; then
     #program is dead and /var/run pid file exists
-    RETVAL=1
-    return 1
-  elif [ -x $LockFile ]; then
+        RETVAL=1
+        return 1
+    elif [ -x $$LockFile ]; then
     #program is dead and /var/lock lock file exists
-    RETVAL=2
-    return 2
-  else
+        RETVAL=2
+        return 2
+    else
     #assume ps is not running
-    RETVAL=3
-    return 3
-  fi
+        RETVAL=3
+        return 3
+    fi
 }
 
 #restart operation just does a stop and a start
 function restart() {
-  stop
+    stop
 	start
 }
 
 # See how we were called.
-case "$1" in
+case "$$1" in
   start)
-    echo start
-	  start
+	start
 	;;
   stop)
-    echo stop
-  	stop
+	stop
 	;;
   status)
-    echo status
     status_check
-	  ;;
+	;;
   restart)
-    echo restart
-  	restart
-	  ;;
+	restart
+	;;
   reload)
-    echo reload
-	  restart
-	  ;;
+	restart
+	;;
   force-reload)
-    echo force-reload 
-    restart
-    ;;
+	restart
+	;;
   *)
-	  echo $"Usage: $PROG {start|stop|restart|status|restart|reload|force-reload}"
+	echo $$"Usage: $$PROG {start|stop|restart|status|restart|reload|force-reload}"
     #invalid or excess argument(s)
-	  RETVAL=2
+	RETVAL=2
 esac
 
-exit $RETVAL
+exit $$RETVAL
 
 

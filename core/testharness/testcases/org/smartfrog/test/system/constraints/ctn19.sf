@@ -35,9 +35,9 @@ sfConfig extends {
    theList genList:theList; 
 
    elements extends Array {
-      prefix "foo";
-      extent 3;
-      generator extends ArrayGenerator {
+      sfArrayPrefix "foo";
+      sfArrayExtent 3;
+      sfArrayGenerator extends ArrayGenerator {
 
          element extends Constraint{
             val VAR theList;

@@ -21,45 +21,28 @@
 
 package org.smartfrog.services.hadoop.test.system.local.datanode;
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
  */
-public class FileSystemOperationsTest extends HadoopTestBase {
+public class FileSystemOperationsTest extends DeployingTestBase {
     public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
 
     public FileSystemOperationsTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture,by extracting the hostname and classes dir
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        checkFileSystem();
-    }
-
     public void testClusterShutDownCleanly() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-        enableFailOnPortCheck();
     }
     
     public void testFileSystemOperations() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemOperations");
-        enableFailOnPortCheck();
     }
 
     public void testClusterShutDownCleanly2() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-        enableFailOnPortCheck();
-    }
-
-    public void testFileSystemCopyFileInAndOut() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemCopyFileInAndOut");
-        enableFailOnPortCheck();
     }
 
 }

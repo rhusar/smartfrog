@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<project name="faultingwaitfor" default="teardown">
+<project name="parse" default="teardown">
 
   <description>
-    Tests for the waitfor
+    Tests for the parse.
 
     command line invocation
     ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib -f faultingwaitfor.xml testTimeout

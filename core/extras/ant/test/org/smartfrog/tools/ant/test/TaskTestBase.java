@@ -75,6 +75,11 @@ public abstract class TaskTestBase extends BuildFileTest {
         configureProject(basedir + "/" + filename);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     /**
      * assert that a property is null.
      *
@@ -197,15 +202,4 @@ public abstract class TaskTestBase extends BuildFileTest {
         return project.getProperty(property);
     }
 
-    /**
-     * assert that a property ends with a value
-     *
-     * @param property property name
-     * @param ending   ending
-     */
-    protected void assertPropertyEndsWith(String property, String ending) {
-        String result = getProperty(property);
-        String substring = result.substring(result.length() - ending.length());
-        assertEquals(ending, substring);
-    }
 }

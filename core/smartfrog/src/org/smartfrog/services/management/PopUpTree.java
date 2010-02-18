@@ -119,7 +119,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDumpContext.setText("Diagnostics Report");
         menuItemParentageChanged.setText("sfParentageChanged()");
         menuItemAddScriptingPanel.setText("Add Scripting Panel");
-        menuItemIntrospector.setText("Introspector");
+        menuItemIntrospector.setText("Instrospector");
         menuItemDumpState.setText("Dump State");
         menuItemDumpStateToFile.setText("Dump State to File");
         menuItemEditTags.setText("Edit Tags");
@@ -262,7 +262,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 try {
                     ((Prim)node).sfParentageChanged();
                 } catch (RemoteException ex1) {
-                    if (sfLog().isErrorEnabled()) sfLog().error (ex1, ex1);
+                    if (sfLog().isErrorEnabled()) sfLog().error (ex1);
                 }
             } else if (node instanceof ComponentDescription){
                 ((ComponentDescriptionImpl)node).sfParentageChanged();
@@ -272,7 +272,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             diagnosticsReport(node, source);
         } else if (source == menuItemIntrospector) {
 
-            introspect(node, source);
+            instrospect(node, source);
         }  else if (source == menuItemAddScriptingPanel) {
             addScriptingPanel(node);
 
@@ -313,12 +313,12 @@ public class PopUpTree extends JComponent implements ActionListener {
             Object obj = (parent.getParent());
             SFDeployDisplay.addScriptingPanel(((JTabbedPane)(obj)) ,name ,node, hostname ,port );
         } catch (Exception e1) {
-            if (sfLog().isErrorEnabled()) sfLog().error (e1, e1);
+            if (sfLog().isErrorEnabled()) sfLog().error (e1);
             WindowUtilities.showError(this,e1.toString());
         }
     }
 
-    private void introspect(Object node, Object source) {
+    private void instrospect(Object node, Object source) {
         StringBuffer message=new StringBuffer();
         String name = "error";
         if (node instanceof Prim) {
@@ -366,7 +366,6 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     private void dumpState (Object node, Object source) {
         StringBuffer message=new StringBuffer();
-        Long timeout = 32 * 1000L;      //32 secs to test the timeout as well
         String name = "error";
         //Only works for Prims.
         if (node instanceof Prim) {
@@ -375,10 +374,10 @@ public class PopUpTree extends JComponent implements ActionListener {
                 message.append ("\n*************** State *****************\n");
                 Dumper dumper = new DumperCDImpl(objPrim);
                 objPrim.sfDumpState(dumper.getDumpVisitor());
-                message.append (dumper.toString(timeout));
+                message.append (dumper.toString());
                 name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error (ex.getMessage(), ex);
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
                 StringWriter sw = new StringWriter();
                 PrintWriter pr = new PrintWriter(sw,true);
                 ex.printStackTrace(pr);
@@ -405,7 +404,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                 if (fileName == null) return;
                 ((DumperCDImpl)dumper).getCDtoFile(fileName);
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
+                if (sfLog().isErrorEnabled()) sfLog().error (ex);
                 WindowUtilities.showError(this,ex.toString());
             }
         }

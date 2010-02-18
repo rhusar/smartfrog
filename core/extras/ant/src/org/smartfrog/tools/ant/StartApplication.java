@@ -38,21 +38,6 @@ import org.apache.tools.ant.BuildException;
 public class StartApplication extends DeployingTaskBase {
     public static final String ERROR_COULD_NOT_DEPLOY = "Could not deploy";
 
-    boolean update = false;
-
-    /**
-     * Set this to true to update existing deployments, rather than fail when there already
-     * is an application running 
-     * @param update flag to enable an update
-     */
-    public void setUpdate(boolean update) {
-        this.update = update;
-    }
-
-    /**
-     * Initialise and bind to the local host
-     * @throws BuildException on any faiure
-     */
     public void init() throws BuildException {
         super.init();
         setFailOnError(true);
@@ -64,12 +49,11 @@ public class StartApplication extends DeployingTaskBase {
      *
      * @throws BuildException on failure
      */
-    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         enableFailOnError();
         checkApplicationsDeclared();
-        deployApplications(update);
+        deployApplications();
         addExitFlag();
         execSmartFrog(ERROR_COULD_NOT_DEPLOY);
     }

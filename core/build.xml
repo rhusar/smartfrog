@@ -21,17 +21,7 @@ For more information: www.smartfrog.org
 
 */
 -->
-  <fail>
-    <condition>
-      <not>
-        <available classname="java.util.ServiceLoader"/>
-      </not>
-    </condition>
-    This build requires Java1.6 or later, but the current JVM is not recognised as
-    such.
-    Please upgrade to Java1.6+, or correct any paths/symbolic links that are pointing
-    to an older version of Java.
-  </fail>
+
 
   <target name="help" description="help information">
     <echo>
@@ -47,23 +37,10 @@ For more information: www.smartfrog.org
   <target name="init">
     <property file="build.properties" />
     <property environment="env" />
-	  <property name="core.dir" location="."/>
-    <property name="root.dir" location="."/>
-    <tstamp>
-      <format property="build.timestamp" pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ" />
-    </tstamp>
-
-	
-  	<!-- where the ivy/maven artifacts are stored -->
-    
-    <property name="artifactsCache.dir" location="${user.home}"/>
-	
-    <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
-	
+    <!-- look for a feature that only came in in ant 1.7alpha -->
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
     <property name="toplevel.dir" location=".." />
-    <property name="build.dir" location="build" />
     <property name="main.project" location="smartfrog" />
     <property name="test.project" location="testharness" />
     <property name="components.project" location="components" />
@@ -84,18 +61,20 @@ For more information: www.smartfrog.org
     <echo message="  ${Name.Company}"/>
     <echo message="   Java: ${java.version} ${java.vendor} "/>
     <echo message="         ${java.home} "/>
-	<echo message="         ${java.vm.name} "/>
     <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
-    <echo message="   Build dir: ${basedir}"/>
-    <echo message="   Core dir: ${core.dir}"/>
-    <echo message="   Root dir: ${root.dir}"/>		
-    <echo message="   ArtifactsCache dir: ${artifactsCache.dir}"/>
-    <echo message="   Ant: ${ant.version}"/>		
+	<echo message="   Build dir: ${basedir}"/>
+	<echo message="   Ant: ${ant.version}"/>		
     <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
-    <echo message="   Build started: ${build.timestamp}" />
     <echo message=" ======================================================="/>
     <echo message="  "/>
 
+    <!-- work out our java version by introspection -->
+    <condition property="java1.5+">
+      <available classname="java.lang.Readable"/>
+    </condition>
+    <condition property="java1.6+">
+      <available classname="javax.lang.model"/>
+    </condition>
     <macrodef name="forward2">
       <attribute name="dir"/>
       <attribute name="target"/>
@@ -285,23 +264,15 @@ For more information: www.smartfrog.org
     <!-- Cruise control test suite                                           -->
     <!-- =================================================================== -->
     <target name="cc-test"
-        depends="clean,tested"/>
+        depends="tested"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- this is not cutting a release as "release" is not in the list-->
   <!-- =================================================================== -->
-  <target name="cc-dist"
-      depends="clean,ivy-list-order,dist"
-      description="CI clean distribution build"/>
-  
-  <!-- =================================================================== -->
-  <!-- full clean Cruise Control build without Checkout                    -->
-  <!-- this is not cutting a release as "release" is not in the list-->
-  <!-- =================================================================== -->
   <target name="cc-core"
-      depends="cc-dist,cc-test"
-      description="CI full build, with NO checkout"/>
+      depends="clean,ivy-list-order,dist,cc-test"
+      description="cruise control full build, with NO checkout"/>
 
   
   <!-- =================================================================== -->
@@ -324,15 +295,8 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     <target name="ccClover"
         depends="with.clover,cc,clover.report,clover.summary"
-        description="cruise control full build with clover, with NO checkout"/>
+        description="cruise control full build with clover, with NO checkout"/>		
 
-  <!-- =================================================================== -->
-  <!-- cruise control/hudson test of hadoop                   -->
-  <!-- =================================================================== -->
-  <target name="cc-hadoop-test"
-      depends="clean, ivy-hadoop-tested"
-      description="CI test run of Hadoop"/>
-  
   <!-- =================================================================== -->
   <!-- Start cruise control from inside ant  -->
   <!-- Currently we fork and use whichever version of ant is in CC, not -->
@@ -405,6 +369,30 @@ For more information: www.smartfrog.org
      >
   </target>
 
+  <!-- =================================================================== -->
+  <!-- Luntbuild target for distribution -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-clean" depends="clean,luntbuild-incremental"/>
+
+
+  <!-- =================================================================== -->
+  <!-- incremental build                                    -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-incremental"
+      depends="dist,tasks,components"/>
+
+  <!-- =================================================================== -->
+  <!-- luntbuild test suite                                           -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-test"
+      depends="tested"/>
+
+  <!-- =================================================================== -->
+  <!-- luntbuild release process-->
+  <!-- =================================================================== -->
+  <target name="luntbuild-release"
+      depends="clean,release" />
+
 
   <!-- =================================================================== -->
   <!-- Gump target for distribution -->
@@ -417,22 +405,27 @@ For more information: www.smartfrog.org
   <target name="gump-test" depends="test" />
 
 
-  <target name="ivy-properties" depends="init">
-    <property name="ivy.user.dir" location="${artifactsCache.dir}/.ivy" />
+  <!-- =================================================================== -->
+  <!-- cddlm compile is handed down-->
+  <!-- =================================================================== -->
+  <target name="cddlm" depends="ivy-cddlm" />
+
+  <target name="bamboo-build-all" depends="published"
+    description="entry point for Bamboo CI system" />
+
+
+  <target name="ivy-properties">
+    <property name="ivy.user.dir" location="${user.home}/.ivy" />
     <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
     <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
 
     <property name="ivy.package.name" value="org.smartfrog" />
     <property name="ivy.smartfrog.version" value="latest.integration" />
-    <property name="ivy.jar" location="antbuild/repository/org.apache.ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"/>
+    <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
     <!--Ivy 2 uses some separate directories, that also need cleanup-->
-    <property name="ivy2.user.dir" location="${artifactsCache.dir}/.ivy2" />
+    <property name="ivy2.user.dir" location="${user.home}/.ivy2" />
     <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
     <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
-    <echo level="verbose">
-      ivy.user.dir  = ${ivy.user.dir}
-      ivy2.user.dir = ${ivy2.user.dir}
-    </echo>
   </target>
 
   <target name="ivy-dirs" depends="ivy-properties">
@@ -445,7 +438,7 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <target name="ivy-probe-antlib" depends="ivy-dirs">
+  <target name="ivy-probe-antlib" depends="init,ivy-dirs">
     <condition property="ivy.found">
       <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
     </condition>
@@ -473,8 +466,7 @@ For more information: www.smartfrog.org
     </typedef>
     <!--create the external dir if it is missing-->
     <mkdir dir="external" />
-    <property name="ivysettings.xml" location="antbuild/ivy/ivysettings.xml" />
-    <ivy:configure file="${ivysettings.xml}" override="true"/>
+    <ivy:settings file="antbuild/ivy/ivyconf.xml" override="true"/>
   </target>
 
   <!-- =================================================================== -->
@@ -486,7 +478,7 @@ For more information: www.smartfrog.org
   <target name="ivy-init" depends="ivy-init-antlib"
           xmlns:ivy="antlib:org.apache.ivy.ant">
     <presetdef name="ivy-projects">
-      <ivy:buildlist onMissingDescriptor="skip">
+      <ivy:buildlist skipbuildwithoutivy="true">
         <fileset file="smartfrog/build.xml" />
         <fileset file="testharness/build.xml" />
         <fileset file="antbuild/build.xml" />
@@ -506,14 +498,17 @@ For more information: www.smartfrog.org
           <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
           <!--not really that useful-->
           <exclude name="releasetest/build.xml"/>
-          <!--cargo support is on hold -->
+          <!--cargo support is on hold until 3.12-->
           <exclude name="cargo/build.xml" unless="cargo.enabled"/>
           <!--lacks the artifacts to compile-->
           <exclude name="constraints/build.xml" unless="constraints.enabled"/>
 
-          <!-- temporarily excluded -->
-          <exclude name="persistence/build.xml"/>
-          
+          <!--Java 1.6+ code-->
+          <exclude name="vmware/build.xml" unless="java1.6+"/>
+          <exclude name="ec2/build.xml" unless="java1.6+"/>
+
+          <!--Not yet functional -->
+          <exclude name="hadoop/build.xml" />
 
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
@@ -531,6 +526,7 @@ For more information: www.smartfrog.org
     <presetdef name="ivy-delegate" description="Delegate the build">
       <subant verbose="true">
         <buildpath refid="child.projects"/>
+        <!--<property file="master.properties"/>-->
       </subant>
     </presetdef>
 
@@ -566,7 +562,7 @@ For more information: www.smartfrog.org
   <target name="published" depends="ivy-publish"/>
 
   <target name="ivy-list-order" depends="ivy-init">
-    <echo>java1.6+=${java1.6+}</echo>
+    <echo>java1.5+=${java1.5+}</echo>
     <pathconvert pathsep="&#10;" refid="child.projects"
       property="child.projects.list" />
     <echo>
@@ -590,7 +586,7 @@ ${child.projects.list}
     </exec>
   </target>
 
-  <target name="ivy-clean" depends="ivy-init,ivy-dirs"
+  <target name="ivy-clean" depends="ivy-init"
     description="pass clean down to all the ivy-managed projects">
     <ivy-delegate target="clean" />
   </target>
@@ -601,22 +597,12 @@ ${child.projects.list}
 
   <target name="ivy-purge-published" depends="ivy-dirs"
     description="purge all locally published artifacts from the local repository">
-    <echo level="verbose">
-      Deleting files under
-    ${ivy.local.dir}/${ivy.package.name}
-    ${ivy2.local.dir}/${ivy.package.name}
-    </echo>
     <delete dir="${ivy.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
     <delete dir="${ivy2.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
   </target>
 
   <target name="ivy-purge-cache" depends="ivy-dirs"
     description="purge all smartfrog artifacts from the cache">
-    <echo  level="verbose">
-      Deleting files under
-      ${ivy.cache.dir}/${ivy.package.name}
-      ${ivy2.cache.dir}/${ivy.package.name}
-    </echo>
     <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
@@ -632,12 +618,14 @@ ${child.projects.list}
     <ivy-delegate target="pdf-doc-folder" />
   </target>
 
-  <target name="ivy-hadoop-tested" depends="ivy-init">
-    <ivy-projects reference="hadoop.projects" root="sf-citerank">
+  <target name="ivy-cddlm" depends="ivy-init">
+    <ivy-projects reference="cddlm.projects" root="sf-deployapi">
+      <fileset file="components/deployapi/build.xml" />
+      <fileset file="extras/cdl/build.xml"/>
     </ivy-projects>
-    <subant target="test" verbose="true">
-      <buildpath refid="hadoop.projects"/>
-      <property name="system.tests" value="true" />
+    <subant  target="published" verbose="true">
+      <buildpath refid="cddlm.projects"/>
+      <!--<property file="master.properties"/>-->
     </subant>
   </target>
 
@@ -690,18 +678,17 @@ ${child.projects.list}
   <!-- CLOVER -->
   <target name="init.clover" depends="init">
     <property name="clover.dir" location="clover" />
-    <property name="clover.jar" location="${clover.dir}/clover.jar" />
-    <property name="build.clover.dir" location="${build.dir}/clover" />
+    <property name="build.clover.dir" location="build/clover" />
     <property name="build.clover.history.dir" location="${build.clover.dir}/history" />
     <property name="build.clover.html.dir" location="${build.clover.dir}/html" />
     <property name="build.clover.pdf" location="${build.clover.dir}/coverage.pdf" />
     <mkdir dir="${build.clover.history.dir}" />
     <mkdir dir="${build.clover.html.dir}" />
-    <available property="clover.jar.present" file="${clover.jar}" />
+    <available property="clover.jar.present" file="${clover.dir}/clover.jar" />
   </target>
 
   <target name="declare-clover" depends="init.clover" if="clover.jar.present">
-    <taskdef resource="cloverlib.xml" classpath="${clover.jar}" uri="http://cenqua.com/clover"/>
+    <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar" uri="http://cenqua.com/clover"/>
     <available property="clover.installed" classname="com.cenqua.clover.CloverInstr"/>
   </target>
 

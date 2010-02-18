@@ -23,7 +23,7 @@
     It requires
       -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 2.0 or later from ant.apache.org
+      -Ivy 2.0 beta 2 or later from ant.apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
@@ -48,8 +48,7 @@
       <format property="year" pattern="yyyy"/>
     </tstamp>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company"
-      value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
     <echo message="  "/>
     <echo message="  "/>
@@ -59,12 +58,9 @@
     <echo message="      Java: ${java.version} ${java.vendor} "/>
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
-    <echo message="      Build dir: ${basedir} "/>
-	<echo message="      Core dir: ${core.dir}"/>
-	<echo message="      Root dir: ${root.dir}"/>				    	
+	<echo message="      Build dir: ${basedir} "/>
     <echo message=" --------------------------------------------------------"/>
-    <echo
-      message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
+    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
     <echo message="  "/>
     <echo level="verbose">
@@ -195,7 +191,7 @@
     
   <!--use the forking compiler with tuned memory use and profiling diagnostics-->
   <property name="rmic.compiler" value="forking"/>
-  <property name="rmic.max.memory" value="512m" />
+  <property name="rmic.max.memory" value="192m" />
   <property name="rmic.forking.commandline.extras" value="" />
   <property name="rmic.forking.commandline" 
     value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
@@ -386,12 +382,6 @@
        compiled project-->
   <!-- =================================================================== -->
   <target name="rmi" depends="compile-source" description="create the RMI classes">
-      <echo>RMIC version 1.2, 
-        base="${build.classes.dir}"
-        verify="true"
-        compiler="${rmic.compiler}"
-        compilerarg line="${rmic.forking.commandline}"
-        compiler="forking"</echo> 
       <rmic
         stubversion="1.2"
         base="${build.classes.dir}"
@@ -799,8 +789,6 @@
   <!-- sfParse parsertargets                                                -->
   <!-- =================================================================== -->
   <target name="sfParseTest" depends="build,jars" description="runs sfParser for 'parsertargets' file">
-    <!--change this for different verbosity-->
-    <property  name="sfParseQuietOption" value="-q" />
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
       <classpath>
         <pathelement location="${smartfrog.jar}"/>
@@ -810,9 +798,9 @@
       </classpath>
       <arg value="-R"/>
       <!--<arg value="-r"/> -->
-      <arg value="${sfParseQuietOption}"/>
+      <arg value="-q"/>
       <arg value="-f"/>
-	    <arg value="-D"/>
+	  <arg value="-D"/>
       <arg file="parsertargets"/>
     </java>
   </target>
@@ -982,7 +970,7 @@
   <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="2.0.0" />
+    <property name="ivy.version" value="2.0.0-beta1" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="../antbuild" />
@@ -1004,15 +992,6 @@
       ${ivy.jar}
       Artifacts created in this build will not be published.
     </echo>
-  </target>
-
-  <target name="ivy-require-ivy" depends="ivy-properties" unless="ivy.found">
-    <fail >
-      No Ivy file found:
-      ${ivy.jar}
-      Either ivy.version is inconsistent with the artifacts in ${ivy.lib.dir}, or that directory
-      and/or the file inside it is missing
-    </fail>
   </target>
 
   <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">

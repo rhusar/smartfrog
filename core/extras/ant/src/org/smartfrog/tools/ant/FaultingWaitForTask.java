@@ -41,21 +41,25 @@ import org.apache.tools.ant.taskdefs.condition.IsFalse;
 import org.apache.tools.ant.taskdefs.condition.IsReference;
 
 /**
- * An unsupported, potentially unstable derivative of waitfor that will made to fail on timeout.
- *
- * This task is used for SmartFrog's internal testing purposes, and for testing components. There are no guarantees of
- * stability over time.
- *
+ * An unsupported, potentially unstable derivative of waitfor that will 
+ * made to fail on timeout.
+ * 
+ * This task is used for SmartFrog's internal testing purposes, and for 
+ * testing components. There are no guarantees of stability over time. 
+ * 
  * <p/>
- *
- * An extension/delegate of WaitFor with two features <ol> <li>Extends Task so that parallel/sequential containers can
- * use it straight off</li> <li>Throws a built exception if something failed</li> </ol> The class delegates rather than
- * extends WaitFor for ease of insertion into a sequence, though using an ant.TaskAdapter would fix that. It also limits
- * the number of things you can set directly with it to those in Ant1.6. To use later stuff you need to declare the
- * ant1.7+ conditions using the xmlns:c="antlib:org.apache.tools.ant.tasks.conditions" antlib declaration, then insert
- * conditions in their new namespace.
- *
- * @ant.task category="SmartFrog" name="sf-faultingwaitfor"
+
+ * An extension/delegate of WaitFor with two features
+ * <ol>
+ * <li>Extends Task so that parallel/sequential containers can use it straight off</li>
+ * <li>Throws a built exception if something failed</li>
+ * </ol>
+ * The class delegates rather than extends WaitFor for ease of insertion into a sequence, though
+ * using an ant.TaskAdapter would fix that. It also limits the number of things you can set
+ * directly with it to those in Ant1.6. To use later stuff you need to declare the
+ * ant1.7+ conditions using the xmlns:c="antlib:org.apache.tools.ant.tasks.conditions" antlib
+ * declaration, then insert conditions in their new namespace.
+ *  @ant.task category="SmartFrog" name="sf-faultingwaitfor"
  */
 
 public class FaultingWaitForTask extends Task {
@@ -65,7 +69,7 @@ public class FaultingWaitForTask extends Task {
     public static final String ERROR_TIMEOUT = "Timeout while waiting for conditions to be met";
     private int maxWait;
     private int checkEvery;
-    private String message = ERROR_TIMEOUT;
+    private String message=ERROR_TIMEOUT;
     public static final int DEFAULT_MAX_WAIT = 30;
     public static final int DEFAULT_CHECK_TIME = 1;
 
@@ -81,11 +85,10 @@ public class FaultingWaitForTask extends Task {
 
     /**
      * Set the maximum length of time to wait, in seconds.
-     *
      * @param time maxium time to wait for success.
      */
     public void setMaxWait(int time) {
-        maxWait = time;
+        maxWait=time;
         waitFor.setMaxWait(time);
     }
 
@@ -99,7 +102,7 @@ public class FaultingWaitForTask extends Task {
      * @param time between checks in seconds
      */
     public void setCheckEvery(int time) {
-        checkEvery = time;
+        checkEvery=time;
         waitFor.setCheckEvery(time);
     }
 
@@ -113,7 +116,6 @@ public class FaultingWaitForTask extends Task {
 
     /**
      * Add an arbitrary condition
-     *
      * @param c condition
      */
     public void add(Condition c) {
@@ -121,19 +123,19 @@ public class FaultingWaitForTask extends Task {
     }
 
     /**
-     * Called by the project to let the task do its work. This method may be called more than once, if the task is
-     * invoked more than once. For example, if target1 and target2 both depend on target3, then running "ant target1
-     * target2" will run all tasks in target3 twice.
+     * Called by the project to let the task do its work. This method may be
+     * called more than once, if the task is invoked more than once. For
+     * example, if target1 and target2 both depend on target3, then running "ant
+     * target1 target2" will run all tasks in target3 twice.
      *
      * @throws BuildException if something goes wrong with the build.
      */
-    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         String property = helper.createUniquePropertyName();
         waitFor.setProject(getProject());
         waitFor.setTimeoutProperty(property);
         waitFor.execute();
-        if (getProject().getProperty(property) != null) {
+        if(getProject().getProperty(property)!=null) {
             throw new BuildException(message);
         }
     }
@@ -142,6 +144,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;available&gt; condition.
      *
      * @param a an available condition
+     *
      * @since 1.1
      */
     public void addAvailable(Available a) {
@@ -152,6 +155,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;checksum&gt; condition.
      *
      * @param c a Checksum condition
+     *
      * @since 1.4, Ant 1.5
      */
     public void addChecksum(Checksum c) {
@@ -162,6 +166,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;uptodate&gt; condition.
      *
      * @param u an UpToDate condition
+     *
      * @since 1.1
      */
     public void addUptodate(UpToDate u) {
@@ -172,6 +177,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;not&gt; condition "container".
      *
      * @param n a Not condition
+     *
      * @since 1.1
      */
     public void addNot(Not n) {
@@ -182,6 +188,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;and&gt; condition "container".
      *
      * @param a an And condition
+     *
      * @since 1.1
      */
     public void addAnd(And a) {
@@ -192,6 +199,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;or&gt; condition "container".
      *
      * @param o an Or condition
+     *
      * @since 1.1
      */
     public void addOr(Or o) {
@@ -202,6 +210,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;equals&gt; condition.
      *
      * @param e an Equals condition
+     *
      * @since 1.1
      */
     public void addEquals(Equals e) {
@@ -212,6 +221,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;os&gt; condition.
      *
      * @param o an Os condition
+     *
      * @since 1.1
      */
     public void addOs(Os o) {
@@ -222,6 +232,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;isset&gt; condition.
      *
      * @param i an IsSet condition
+     *
      * @since Ant 1.5
      */
     public void addIsSet(IsSet i) {
@@ -232,6 +243,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;http&gt; condition.
      *
      * @param h an Http condition
+     *
      * @since Ant 1.5
      */
     public void addHttp(Http h) {
@@ -242,6 +254,7 @@ public class FaultingWaitForTask extends Task {
      * Add a &lt;socket&gt; condition.
      *
      * @param s a Socket condition
+     *
      * @since Ant 1.5
      */
     public void addSocket(Socket s) {
@@ -252,6 +265,7 @@ public class FaultingWaitForTask extends Task {
      * Add a &lt;filesmatch&gt; condition.
      *
      * @param test a FilesMatch condition
+     *
      * @since Ant 1.5
      */
     public void addFilesMatch(FilesMatch test) {
@@ -262,6 +276,7 @@ public class FaultingWaitForTask extends Task {
      * Add a &lt;contains&gt; condition.
      *
      * @param test a Contains condition
+     *
      * @since Ant 1.5
      */
     public void addContains(Contains test) {
@@ -272,6 +287,7 @@ public class FaultingWaitForTask extends Task {
      * Add a &lt;istrue&gt; condition.
      *
      * @param test an IsTrue condition
+     *
      * @since Ant 1.5
      */
     public void addIsTrue(IsTrue test) {
@@ -282,6 +298,7 @@ public class FaultingWaitForTask extends Task {
      * Add a &lt;isfalse&gt; condition.
      *
      * @param test an IsFalse condition
+     *
      * @since Ant 1.5
      */
     public void addIsFalse(IsFalse test) {
@@ -292,6 +309,7 @@ public class FaultingWaitForTask extends Task {
      * Add an &lt;isreference&gt; condition.
      *
      * @param i an IsReference condition
+     *
      * @since Ant 1.6
      */
     public void addIsReference(IsReference i) {

@@ -43,9 +43,7 @@ public class NoProcessTest extends TestCase {
             process = locator.getRootProcessCompound(self);
             fail("we should have got an error");
         } catch (Exception e) {
-            if(!e.getMessage().contains("Connection refused")) {
-                throw e;
-            }
+            assert(e.getMessage().contains("Connection refused"));
         } finally {
             //TODO: clean up?
         }

@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.amazon.s3.test;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.amazon.aws.AWSTestBase;
 
 /**
  *
@@ -28,7 +27,9 @@ import org.smartfrog.services.amazon.aws.AWSTestBase;
  *
  */
 
-public class AwsKeysTest extends AWSTestBase {
+public class AwsKeysTest extends DeployingTestBase {
+    public static final String AWSID = "test.awsid";
+    public static final String AWSKEY = "test.awskey";
 
 
     public AwsKeysTest(String name) {
@@ -36,13 +37,13 @@ public class AwsKeysTest extends AWSTestBase {
     }
 
     public void testAwsId() throws Throwable {
-        if (isEC2OrS3Enabled() && getAwsID() == null) {
+        if (System.getProperty(AWSID) == null) {
             fail("not set: " + AWSID);
         }
     }
 
     public void testAwsKey() throws Throwable {
-        if (isEC2OrS3Enabled() && getAwsKey() == null) {
+        if (System.getProperty(AWSKEY) == null) {
             fail("not set: " + AWSKEY);
         }
     }

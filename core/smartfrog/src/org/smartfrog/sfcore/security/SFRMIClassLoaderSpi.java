@@ -84,10 +84,10 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      * @throws ClassNotFoundException if a definition for the class could not
      *         be found at the specified location
      */
-    public Class<?> loadClass(String codebase, String name,
+    public Class loadClass(String codebase, String name,
         ClassLoader defaultLoader)
         throws MalformedURLException, ClassNotFoundException {
-        Class<?> result = defaultProviderInstance.loadClass(codebase, name,
+        Class result = defaultProviderInstance.loadClass(codebase, name,
                 defaultLoader);
 
         if (debug != null) {

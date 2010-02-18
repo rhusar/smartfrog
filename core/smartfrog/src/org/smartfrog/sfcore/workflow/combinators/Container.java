@@ -35,7 +35,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * or fails it simply removes the child and continues to run.
  * <p>
  * The file parallel.sf contains the SmartFrog configuration file for the base
- * Parallel combinator. This file contains the details of the attributes which
+ * Parallel combinator. This file conatins the details of the attributes which
  * may be passed to Parallel.
  * </p>
  */
@@ -44,9 +44,9 @@ public class Container extends Parallel implements Compound {
     /**
      * Constructs Container.
      *
-     * @throws RemoteException In case of network or RMI failure.
+     * @throws java.rmi.RemoteException In case of network or RMI failure.
      */
-    public Container() throws RemoteException {
+    public Container() throws java.rmi.RemoteException {
     }
 
 
@@ -57,7 +57,6 @@ public class Container extends Parallel implements Compound {
      * @param status termination status of sender
      * @param comp sender of termination
      */
-
     /**
      * If normal termination, Parallel behaviour is to terminate
      * that component but leave the others running if it is the last -
@@ -74,7 +73,7 @@ public class Container extends Parallel implements Compound {
             sfRemoveChild(comp);
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(sfCompleteNameSafe() + " - error handling child termination ", e);
+                sfLog().error(this.sfCompleteNameSafe() + " - error handling child termination ", e);
             }
         }
         return false;
@@ -97,7 +96,7 @@ public class Container extends Parallel implements Compound {
         } else {
             try {
                 ((Prim)target).sfTerminate(TerminationRecord.abnormal("liveness error", sfCompleteNameSafe(), failure));
-            } catch (Exception ignored) { // expected since it is supposedly dead
+            } catch (Exception e) { // expected since it is supposedly dead
             }
             try {
                 sfRemoveChild((Prim)target);

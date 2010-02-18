@@ -20,8 +20,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -35,6 +35,10 @@ import java.util.Date;
  */
 
 public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOperation {
+    private int minFileCount;
+    private int maxFileCount;
+    public static final String ATTR_MIN_FILE_COUNT = "minFileCount";
+    public static final String ATTR_MAX_FILE_COUNT = "maxFileCount";
 
     public DfsListDirImpl() throws RemoteException {
     }
@@ -46,9 +50,10 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        minFileCount = sfResolve(ATTR_MIN_FILE_COUNT, 0, true);
+        maxFileCount = sfResolve(ATTR_MAX_FILE_COUNT, 0, true);
         startWorkerThread();
     }
 
@@ -59,24 +64,12 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    @Override
-    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
-        if (path == null) {
-            throw new SmartFrogLivenessException("No path for the DfsListDir operation", this);
-        }
-        int minFileCount = sfResolve(ATTR_MIN_FILE_COUNT, 0, true);
-        int maxFileCount = sfResolve(ATTR_MAX_FILE_COUNT, 0, true);
-        long minTotalFileSize = sfResolve(ATTR_MIN_TOTAL_FILE_SIZE, 0L, true);
-        long maxTotalFileSize = sfResolve(ATTR_MAX_TOTAL_FILE_SIZE, 0L, true);
         try {
             long size = 0;
-            FileStatus[] stats = fileSystem.listStatus(path);
-            if (stats == null) {
-                throw new SmartFrogLivenessException("Path not found in the remote filesystem: " + path, this);
-            }
+            FileStatus[] stats = fileSystem.listStatus(getPath());
             StringBuilder builder = new StringBuilder();
-            builder.append("Listing of ").append(path).append("/\n");
             for (FileStatus file : stats) {
                 size += file.getLen();
                 builder.append(file.getPath().getName());
@@ -87,33 +80,18 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
                 builder.append("\n  group=").append(file.getGroup());
                 builder.append("\n  permissions=").append(file.getPermission()).append('\n');
             }
-            String listing = builder.toString();
-            sfLog().info(listing);
+            sfLog().info(builder.toString());
             int count = stats.length;
             sfLog().info("Files: " + count + "  total size=" + size);
             if (count < minFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is below the minFileCount value of " + minFileCount
-                                + "\n" + listing,
-                        this);
+                                + "\n" + builder.toString());
             }
             if (maxFileCount > -1 && count > maxFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is above the maxFileCount value of " + minFileCount
-                                + "\n" + listing,
-                        this);
-            }
-            if (size < minTotalFileSize) {
-                throw new SmartFrogLivenessException(
-                        "File size " + size + " is below the minTotalFileSize value of " + minTotalFileSize
-                                + "\n" + listing,
-                        this);
-            }
-            if (maxFileCount > -1 && size > maxFileCount) {
-                throw new SmartFrogLivenessException(
-                        "File size " + size + " is above the maxTotalFileSize value of " + maxTotalFileSize
-                                + "\n" + listing,
-                        this);
+                                + "\n" + builder.toString());
             }
 
         } catch (IOException e) {

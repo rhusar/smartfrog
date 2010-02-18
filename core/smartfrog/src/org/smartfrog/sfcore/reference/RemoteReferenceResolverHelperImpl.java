@@ -735,19 +735,16 @@ import java.rmi.RemoteException;
 
         try {
             Object referenceObj = sfResolve(reference);
-            if (referenceObj instanceof SFNull) {
-                return null;
-            }
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Reference) {
                 return ((Reference) referenceObj);
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                                    sfCompleteNameSafe(),
-                                    referenceObj,
-                                    referenceObj.getClass().toString(),
-                                    "org.smartfrog.sfcore.reference.Reference");
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , "org.smartfrog.sfcore.reference.Reference");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -806,10 +803,9 @@ import java.rmi.RemoteException;
             }
             //any other class type
             throw SmartFrogResolutionException.illegalClassType(reference,
-                                sfCompleteNameSafe(),
-                                referenceObj,
-                                referenceObj.getClass().toString(),
-                                "org.smartfrog.sfcore.prim.Prim");
+                                sfCompleteNameSafe()
+                                , referenceObj , referenceObj.getClass().toString()
+                                , "org.smartfrog.sfcore.prim.Prim");
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
                 throw e;
@@ -851,10 +847,9 @@ import java.rmi.RemoteException;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                                    sfCompleteNameSafe(),
-                                    referenceObj,
-                                    referenceObj.getClass().toString(),
-                                    "org.smartfrog.sfcore.compound.Compound");
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , "org.smartfrog.sfcore.compound.Compound");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -900,17 +895,16 @@ import java.rmi.RemoteException;
                     return (java.net.InetAddress.getByName((String) referenceObj));
                 } catch (Exception ex) {
                     SmartFrogResolutionException resEx = SmartFrogResolutionException.generic(reference,
-                            sfCompleteNameSafe(), ex.toString());
+                            this.sfCompleteNameSafe(), ex.toString());
                     resEx.put(SmartFrogException.DATA, ex);
                     throw resEx;
                 }
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                                    sfCompleteNameSafe(),
-                                    referenceObj,
-                                    referenceObj.getClass().toString(),
-                                    "java.net.InetAddress/java.lang.String");
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , "java.net.InetAddress/java.lang.String");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -956,17 +950,16 @@ import java.rmi.RemoteException;
                     return new java.net.URL((String) referenceObj);
                 } catch (Exception ex) {
                     SmartFrogResolutionException resEx = SmartFrogResolutionException.generic(reference,
-                            sfCompleteNameSafe(), ex.toString());
+                            this.sfCompleteNameSafe(), ex.toString());
                     resEx.put(SmartFrogException.DATA, ex);
                     throw resEx;
                 }
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                                    sfCompleteNameSafe(),
-                                    referenceObj,
-                                    referenceObj.getClass().toString(),
-                                    "java.net.URL/java.lang.String");
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , "java.net.URL/java.lang.String");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -1005,14 +998,13 @@ import java.rmi.RemoteException;
             } else {
                 illegalClassType = true;
                 String defaultValueClass="";
-                                if (defaultValue!=null) {
+                                if (defaultValue!=null){
                                    defaultValueClass=defaultValue.getClass().toString();
                                 }
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                                    sfCompleteNameSafe(),
-                                    referenceObj,
-                                    referenceObj.getClass().toString(),
-                                    defaultValueClass);
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , defaultValueClass);
 
             }
         } catch (SmartFrogResolutionException e) {

@@ -47,7 +47,6 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
         private ProcessCompound parent;
         private static final String ERROR_BAD_PARENT = "Not a ProcessCompound";
     */
-    /** attribute used to indicate this was deployed from a dir: {@value} */
     public static final String ATTR_DEPLOYED_DIRECTORY_INFO = "sfDeployedDirectoryInfo";
 
     public DeployingDirectoryWatcherImpl() throws RemoteException {
@@ -105,33 +104,26 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
             try {
                 undeploy(app);
             } catch (SmartFrogException e) {
-                sfLog().warn("When terminating " + name + "from " + app, e);
+                sfLog().warn("When terminating " + "name" + "from " + app, e);
             } catch (RemoteException e) {
-                sfLog().warn("When terminating " + name + "from " + app, e);
+                sfLog().warn("When terminating " + "name" + "from " + app, e);
             }
         }
     }
 
 
-    /**
-     * Undeploy the component
-     * @param application application to undeploy/terminate
-     * @return true if it was terminated
-     * @throws SmartFrogException SmartFrog problems
-     * @throws RemoteException    network problems
-     */
     protected boolean undeploy(File application) throws SmartFrogException, RemoteException {
         String name = name(application);
         String subprocess = subprocess(application, name);
         ProcessCompound targetProcess = SFProcess.sfSelectTargetProcess((InetAddress) null, subprocess);
-        Object child;
+        Object child = null;
         try {
             child = targetProcess.sfResolve(name);
-        } catch (SmartFrogResolutionException ignored) {
+        } catch (SmartFrogResolutionException e) {
             sfLog().info("Not currently deployed: " + name);
             return false;
         } catch (RemoteException e) {
-            sfLog().info("Network problems when undeploying: " + name, e);
+            sfLog().info("Network problems when undeploying: " + name);
             return false;
         }
         if (child instanceof Prim) {
@@ -154,7 +146,6 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
      * Determine the subprocess of an application
      *
      * @param application application to work with
-     * @param name of app
      * @return currently, null
      */
     private String subprocess(File application, String name) {

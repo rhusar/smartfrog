@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.passwords;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
@@ -47,7 +47,7 @@ public class PropertyPasswordProvider extends PrimImpl implements PasswordProvid
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -59,7 +59,7 @@ public class PropertyPasswordProvider extends PrimImpl implements PasswordProvid
      *
      * @return a password
      * @throws SmartFrogException If unable to get the password
-     * @throws RemoteException in case of network or RMI error
+     * @throws RemoteException    in case of network or RMI error
      */
     public String getPassword() throws SmartFrogException, RemoteException {
 

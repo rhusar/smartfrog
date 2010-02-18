@@ -378,7 +378,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
                     queuedFile.execute(DeployByCopyServerImpl.this);
                 } catch (SmartFrogDeploymentException e) {
                     //log the error. which is stored in the queuedFile
-                    sfLog().error(e, e);
+                    sfLog().error(e);
                 }
             }
             thread=null;

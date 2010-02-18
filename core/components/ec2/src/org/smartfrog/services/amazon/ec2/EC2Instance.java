@@ -25,78 +25,30 @@ package org.smartfrog.services.amazon.ec2;
  */
 public interface EC2Instance extends EC2Component {
 
-
-    /**
-     * this is the AMI of an image. Empty string is don't care
-     * {@value}
-     */
-    String ATTR_IMAGE_ID = "imageID";
-
-    /**
-     * {@value}
-     */
+    String ATTR_IMAGEID = "imageID";
     String ATTR_INSTANCE = "instance";
-
-    /**
-     * {@value}
-     */
     String ATTR_SHUTDOWN = "shutdown";
+    String ATTR_INSTANCETYPE = "instanceType";
 
-    /**
-     * {@value}
-     */
-    String ATTR_INSTANCE_TYPE = "instanceType";
-
-    /**
-     * {@value}
-     */
-    String ATTR_AVAILABILITY_ZONE = "availabilityZone";
-
-    /**
-     * {@value}
-     */
-    String ATTR_SECURITY_GROUP = "securityGroup";
-
-
-    /**
-     * {@value}
-     */
     String ATTR_USER_DATA = "userData";
-
-    /**
-     * Key to use for SSH-ing
-     */
-    String ATTR_KEY_NAME = "keyName";
-    
-    /** string list of instances. Can be empty {@value} */
+    //this is the AMI of an image. Empty string is don't care
+    //string list of instances. Can be empty
     String ATTR_INSTANCES = "instances";
-    
-    /** minimum number of instances {@value} */
+    //minimum number of instances
     String ATTR_MIN_COUNT = "minCount";
-    
-    /** max number {@value} */
+    //max number
     String ATTR_MAX_COUNT = "maxCount";
 
-    /**
-     * machine state attribute {@value}
-     */
+    /** machine state attribute {@value} */
     String ATTR_STATE = "state";
 
-    /**
-     * machine state {@value}
-     */
+    /** machine state {@value} */
     String STATE_RUNNING = "running";
-    /**
-     * machine state {@value}
-     */
+    /** machine state {@value} */
     String STATE_PENDING = "pending";
-    /**
-     * machine state {@value}
-     */
+    /** machine state {@value} */
     String STATE_SHUTTING_DOWN = "shutting-down";
-    /**
-     * machine state {@value}
-     */
+    /** machine state {@value} */
     String STATE_TERMINATED = "terminated";
 
 }

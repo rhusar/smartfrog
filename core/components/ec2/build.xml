@@ -24,17 +24,12 @@
   -->
 
   <description>
-    Amazon EC2/S3 support, including a CloudFarmer implementation
+    Amazon EC2/S3 support.
 
     For testing, edit build.properties to add the secret login details for an AWS account
     test.awsid = id
     test.awskey = secret key
     test.ec2.enabled to true for EC2 work
-
-    test.ec2.instances.enabled  tests that create instances
-    test.ec2.farmer.enabled=    tests that create a farmer and instances through it
-    test.s3.enabled             tests that go up against S3
-    
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>
@@ -42,15 +37,16 @@
 
   <!-- override point -->
   <property file="build.properties"/>
-  <property name="system.tests" value="true"/>
+  <property name="system.tests" value="false"/>
   <!--very long test timeout to allow for startup delays-->
   <property name="test.timeout.execute" value="120000" />
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
-  <!--<property name="application.name" value="ec2" />-->
+  <property name="application.name" value="ec2-demo" />
+  <property name="deploy.sf" value="org/smartfrog/services/amazon/demo.sf" />
+  
 
-
-
-  <echo message="==================================================================="/>
+  <echo
+      message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
@@ -58,27 +54,31 @@
 
 
 
-  <target name="ready-to-test" depends="common.ready-to-test">
+  <target name="ready-to-test" depends="common.ready-to-test,testwar">
+    <property name="test.jetty.home"
+        location="${test.src.dir}/files/jettyhome"/>
+    <property name="test.demo.webapp"
+        location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
     <echo level="verbose">
       test.ec2.enabled=${test.ec2.enabled}
-      test.ec2.instances.enabled=${test.ec2.instances.enabled}
-      test.ec2.farmer.enabled=${test.ec2.farmer.enabled}
-      test.s3.enabled=${test.s3.enabled}
-      
+      test.jetty.home=${test.jetty.home}
+      test.demo.webapp=${test.demo.webapp}
+      test.testwar.war=${test.testwar.war}
       test.awsid=${test.awsid}
       test.awskey=${test.awskey}
       system.tests=${system.tests}
     </echo>
   </target>
 
-
-  <target  name="ec2farmer" depends="ready-to-deploy"
-      description="Deploy an EC2 farmer" >
-    <deploy>
-      <application name="farmer"
-          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/ec2_hadoop_farmer.sf"/>
-    </deploy>
+  <!--pick up the test war from Ivy-->
+  <target name="testwar" depends="ivy-retrieve">
+    <property name="test.testwar.war"
+        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war"/>
+    <fail>
+      <condition>
+        <not><available file="${test.testwar.war}"/></not>
+      </condition>
+      Not found: ${test.testwar.war}
+    </fail>
   </target>
-
-
 </project>

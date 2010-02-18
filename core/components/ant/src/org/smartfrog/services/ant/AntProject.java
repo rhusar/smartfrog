@@ -192,7 +192,7 @@ public class AntProject {
                     getElement(newElement, attribute, (ComponentDescription) value);
                 }
             } else {
-                // add attribute but resolve first if it is a reference.
+                // add attribute but relsove first if it is a reference.
                 if ((value instanceof Reference) && (owner != null)) {
                     try {
                         value = owner.sfResolve((Reference) value);
@@ -251,7 +251,7 @@ public class AntProject {
                     }
                     // May need for type conversion
                     if (!ptypes[0].equals(value.getClass())) {
-                        value = convType(value.toString(), ptypes[0]);
+                        value = convType((String) value, ptypes[0]);
                     }
                     ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
                     method.invoke(task, value);

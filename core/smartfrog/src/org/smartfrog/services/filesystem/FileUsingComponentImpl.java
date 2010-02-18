@@ -258,8 +258,6 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      *
      * @return string form for this component
      */
-    @SuppressWarnings({"RefusedBequest"})
-    @Override
     public String toString() {
         return file != null ? file.getAbsolutePath() : "uninitialized component";
     }

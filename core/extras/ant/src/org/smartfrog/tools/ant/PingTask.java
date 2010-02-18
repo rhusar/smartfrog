@@ -37,15 +37,8 @@ public class PingTask extends SmartFrogTask {
 
     protected String successProperty;
 
-    /**
-     * {@value}
-     */
     public static final String ERROR_FAILED_TO_PING = "Failed to ping ";
 
-    /**
-     * bind to the local host when initialising 
-     * @throws BuildException
-     */
     public void init() throws BuildException {
         super.init();
         bindToLocalhost();
@@ -76,12 +69,11 @@ public class PingTask extends SmartFrogTask {
     }
 
     /**
-     * ping the host
+     * execution logic
      *
-     * @throws BuildException if a ping fails
+     * @throws org.apache.tools.ant.BuildException
      *
      */
-    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyApplicationName(application);

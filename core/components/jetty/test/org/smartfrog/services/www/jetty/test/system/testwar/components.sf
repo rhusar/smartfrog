@@ -30,79 +30,74 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/services/jetty/examples/war/components.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
+#include "/org/smartfrog/services/filesystem/file.sf"
 
-
- 
-  TestWarServer extends JettyWarServer ;
-
-
-  
-  FilesystemWar extends WebApplication {
-   contextPath "/";
-   filename ROOT:test.demo.webapp;
+//the war file must be present
+  TestWar extends FileMustExist {
+    filename PROPERTY test.testwar.war;
   }
-  
-  
 
 
-  
-    /**
-     * deploy into a new process
-     */
-    
-    JettyServerFilesystemWar extends Compound {
-        description ("A jetty server with the war deployed to " ++ context:contextPath ++ " as a filesystem");
-        
-        server LocalJettyServer;
-    
-    
-        context extends FilesystemWar {
-           contextPath "/filesystemwar";
-           server LAZY PARENT:server:server;
-        }
-    
+  RunFailingTests extends IsPropertySet {
+    property "run.failing.tests";
+  }
+
+
+
+  TestWarServer extends LocalJettyServer {
+
+    contextPath "/testwar";
+
+    testwar extends TestWar;
+
+    deployedWar extends WebApplication {
+        server LAZY PARENT:server;
+        filename LAZY testwar:absolutePath;
+        contextPath PARENT:contextPath;
     }
-      
-  
-  tcp27 extends JettyServerFilesystemWar;
-
-  WarTest extends JettyTestCompound {
-
-  
-      action extends TestWarServer;
-
-
   }
 
 
-  TestWarDeployed extends WarTest  {
+    WarTest extends JettyTestCompound {
 
-      contextPath TestWarServer:contextPath;
+    
+        action extends TestWarServer;
 
-      action extends TestWarServer {
-          contextPath PARENT:contextPath;
-      }
 
-      tests extends Sequence {
-          wait extends waitForPage {
-              port PARENT:PARENT:action:port;
-              path PARENT:PARENT:action:contextPath;
-              maximumResponseCode HttpCodes:OK;
-              minimumResponseCode HttpCodes:OK;
-          }
-      }
-  }
+    }
+
+
+    TestWarDeployed extends WarTest  {
+
+        contextPath TestWarServer:contextPath;
+
+        action extends TestWarServer {
+            contextPath PARENT:contextPath;
+        }
+
+        tests extends Sequence {
+            wait extends waitForPage {
+                port PARENT:PARENT:action:port;
+                path PARENT:PARENT:action:contextPath;
+                maximumResponseCode HttpCodes:OK;
+                minimumResponseCode HttpCodes:OK;
+            }
+        }
+    }
 
 TestSecurity extends TestWarDeployed {
   contextPath "/testwar";
+  password "secret";
 
   action extends TestWarServer {
       contextPath PARENT:contextPath;
 
-      security extends AdminSecurityRealm {
+	    security extends AdminSecurityRealm {
         server LAZY PARENT:server;
+        adminPassword PARENT:ATTRIB password;
+        name "testRealm";
+      	contextPath PARENT:contextPath;
     }
   }
 
@@ -114,8 +109,8 @@ TestSecurity extends TestWarDeployed {
       host "localhost";
       port test.jetty.port.1;
       path contextPath;
-      username "admin";
-      password "password";
+      //username "admin";
+      password PARENT:ATTRIB password;
       minimumResponseCode HttpCodes:START_2XX;
       maximumResponseCode HttpCodes:END_2XX;
     }
@@ -124,6 +119,7 @@ TestSecurity extends TestWarDeployed {
 }
 
 testSecurityUnauth extends TestSecurity {
+  if extends RunFailingTests;
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
   //patch the wait operation
@@ -146,10 +142,10 @@ TestRealm extends TestWarDeployed {
     contextPath PARENT:contextPath;
 
     //security here is applied to the whole realm
-    testRealm extends AdminSecurityRealm {
+    testRealm extends JettySecurityRealm {
     	name "testRealm";
     	users [
-    	  ["test", PARENT:ATTRIB password, name]
+    	  ["test", PARENT:ATTRIB password, "testRole"]
     	];
     	server LAZY PARENT:server;
     	contextPath "/";
@@ -161,14 +157,15 @@ TestRealm extends TestWarDeployed {
   tests extends Sequence {
 
     sleep extends Delay {
-      time 1000;
+      time 10000;
     }
 
     wait extends waitForPage  {
+      //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
       host "localhost";
       port test.jetty.port.1;
       path contextPath;
-      username "test";
+      //username "admin";
       password PARENT:ATTRIB password;
       minimumResponseCode HttpCodes:START_2XX;
       maximumResponseCode HttpCodes:END_2XX;
@@ -183,62 +180,11 @@ testRealmUnauth extends TestRealm {
 
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
+  if extends RunFailingTests;
   
   //patch the wait operation
-  tests:wait:username "no-such-user";
   tests:wait:password "wrong-password";
   tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
   tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
 
-}
-
-
-
-
-tcp27testFilesystemWar extends JettyTestCompound {
-
-	action extends tcp27;
-
-
-
-  tests extends Sequence {
-      wait extends waitForPage {
-          port action:server:port;
-          page action:context:contextPath;
-      }
-  }
-
-}
-
-
-
-testErrorPage extends TestWarDeployed  {
-
-    contextPath tests:wait:contextPath;
-
-    tests extends Sequence {
-        wait extends waitForPage {
-            port PARENT:PARENT:action:port;
-            contextPath "/errors";
-            page (  contextPath ++ "/error");
-            checkFrequency 1;
-            errorCode 419;
-            queries [["status",errorCode]];
-            maximumResponseCode errorCode;
-            minimumResponseCode errorCode;
-        }
-    }
-
-}
-
-testWarAtRoot extends TestWarDeployed  {
-
-	contextPath "/";
-
-}
-
-
-
-testContextPathFixup extends TestWarDeployed {
-    contextPath "missingForwardSlash";
 }

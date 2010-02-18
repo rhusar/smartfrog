@@ -91,6 +91,8 @@ For more information: www.smartfrog.org
       //connect timeout in milliseconds
      connectTimeout extends Integer;
 
+
+
  }
 
  /**

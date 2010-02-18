@@ -1,5 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
-
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -22,14 +21,7 @@ package org.smartfrog.services.persistence.storage;
 
 import java.io.Serializable;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-
-/**
- * StorageException is a generic exception type that is used for all 
- * runtime Storage exceptions. It extends SmartFrogRuntimeException
- * so it can be passed through SmartFrog methods that throw this exception.
- */
-public class StorageException extends SmartFrogRuntimeException implements Serializable {
+public class StorageException extends Exception implements Serializable {
 
     public StorageException(String string) {
         super(string);
@@ -41,6 +33,14 @@ public class StorageException extends SmartFrogRuntimeException implements Seria
 
     public StorageException(String string, Throwable cause) {
         super(string, cause);
+    }
+
+    public static StorageException forward(Throwable cause) {
+        return new StorageException(cause);
+    }
+
+    public static StorageException forward(String string, Throwable cause) {
+        return new StorageException(string, cause);
     }
 
 }

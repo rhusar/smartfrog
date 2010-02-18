@@ -29,61 +29,94 @@ import org.smartfrog.services.www.JavaWebApplicationServer;
 
 public interface JettyIntf extends JavaWebApplicationServer {
 
+    /**
+     * jetty home attribute
+     * {@value}
+     */
+    String ATTR_JETTY_HOME = "jettyhome";
+
 
     /**
-     * cached jetty server {@value}
+     * cached jetty server
+     * {@value}
      */
     String ATTR_JETTY_SERVER = "Jetty Server";
 
     /**
-     * logging flag. {@value}
+     * logging flag.
+     * {@value}
      */
 
-    String ATTR_ENABLE_LOGGING = "enableLogging";
+    String ATTR_ENABLE_LOGGING="enableLogging";
 
     /**
-     * log dir. {@value}
+     * log dir.
+     * {@value}
      */
 
-    String ATTR_LOGDIR = "logDir";
+    String ATTR_LOGDIR="logDir";
 
 
     /**
-     * log pattern. {@value}
+     * log pattern.
+     * {@value}
      */
 
     String ATTR_LOGIGNOREPATHS = "logIgnorePaths";
     /**
-     * log pattern. {@value}
+     * log pattern.
+     * {@value}
      */
 
-    String ATTR_LOGPATTERN = "logPattern";
+    String ATTR_LOGPATTERN="logPattern";
 
     /**
-     * timezone for log data. {@value}
+     * timezone for log data.
+     * {@value}
      */
 
     String ATTR_LOG_TZ = "logTimezone";
 
     /**
      * should log data be appended?
-     * <p/>
+     *
      * {@value}
      */
 
     String ATTR_LOG_APPEND = "logAppend";
 
     /**
-     * days to keep for log data. {@value}
+     * days to keep for log data.
+     *  {@value}
      */
 
     String ATTR_LOG_KEEP_DAYS = "logKeepDays";
 
     /**
-     * is the log extended? {@value}
+     * is the log extended?
+     *  {@value}
      */
 
     String ATTR_LOG_EXTENDED = "logExtended";
+
+    /**
+     * max# of threads in the pool.
+     * {@value}
+     */
+    String ATTR_MAXTHREADS="maxThreads";
+
+    /**
+     * min# of threads in the pool.
+     * {@value}
+     */
+    String ATTR_MINTHREADS = "minThreads";
+
+    /**
+     * max idle time for a thread before it is closed
+     * {@value}
+     */
+
+    String ATTR_MAXIDLETIME = "maxIdleTime";
 
 
     /**

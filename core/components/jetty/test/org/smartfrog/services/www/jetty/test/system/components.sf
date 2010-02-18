@@ -25,9 +25,10 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/filesystem/components.sf";
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
-#include "/org/smartfrog/services/jetty/examples/war/waitforpages.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/htmlpage.sf"
+
+
 
 
  /*
@@ -36,6 +37,13 @@ For more information: www.smartfrog.org
 TempDirServletContext extends JettyServletContext {
  contextPath "/";
  resourceBase ROOT:test.tempdir;
+}
+
+
+
+FilesystemWar extends WebApplication {
+ contextPath "/";
+ filename ROOT:test.demo.webapp;
 }
 
 
@@ -58,6 +66,7 @@ TempDirServer extends Compound {
     logging extends IntegrateJettyLogging;
 
     server extends CoreJettyServer {
+        jettyhome ROOT:jetty_home;
     }
 
     listener extends JettySocketConnector {
@@ -65,7 +74,6 @@ TempDirServer extends Compound {
         server LAZY PARENT:server;
     }
 
-    
     tempDir extends TempDirWithCleanup {
         prefix "jetty";
     }
@@ -82,32 +90,24 @@ TempDirServer extends Compound {
         resourceBase LAZY tempDir:absolutePath;
         server LAZY PARENT:server;
     }
-    
-    servlets LAZY tempDirServletContext;
-    
-  
-    mimemap extends CoreMimeTypes {
-      context LAZY servlets;
-    }
+}
 
-/*
-    jasper extends JettyJSPServlet {
-      context LAZY server;
-      pathSpec "*.jsp";
-      mappings [];
-      initOptions:sendErrorToClient true;
-    }
-  */
-  
-    /**
-     * default HTML pages &c. For dev, everything HTML is served up
-     */
-    defaultContent extends DefaultContentServlet {
-      context LAZY servlets;
-      pathSpec "/";
-      initOptions:dirAllowed true;
-    }
-    
+/**
+ * a component to wait for a page and fail if it is  not found
+ */
+
+
+
+waitForPage extends WaitForPage {
+    fetchErrorText true;
+    checkOnLiveness true;
+    checkFrequency waitForInterval;
+    timeout waitForTimeout;
+}
+
+waitForAnyHttpResponse extends waitForPage {
+    maximumResponseCode HttpCodes:NOT_FOUND;
+    minimumResponseCode HttpCodes:OK;
 }
 
 /**
@@ -118,9 +118,3 @@ JettyTestCompound extends TestCompound {
     testTimeout test.timeout;
 
 }
-
-
-  RunFailingTests extends IsPropertySet {
-    property "run.failing.tests";
-  }
-

@@ -86,8 +86,8 @@ public class ActionDeploy extends ConfigurationAction {
         //Protect system if people use this as entry point
         try {
             SFSystem.initSystem();
-        } catch (Throwable thrown) {
-            throw SmartFrogException.forward(thrown);
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
         }
 
 
@@ -127,20 +127,11 @@ public class ActionDeploy extends ConfigurationAction {
             target = (Compound) parent;
         }
 
-        //Check that there is not a null target at this point
-        if (target == null) {
-            throw new SmartFrogDeploymentException(
-                    "Unable to deploy  '" + url + "' for '" + appName + "' -null target parent component/process",
-                    null,
-                    null,
-                    context);
-        }
-
         //select the language first from the context, then from the URL itself
         String language;
-        language = (String) context.get(SmartFrogCoreKeys.KEY_LANGUAGE);
-        if (language == null) {
-            language = url;
+        language=(String) context.get(SmartFrogCoreKeys.KEY_LANGUAGE);
+        if(language==null) {
+            language=url;
         }
 
 
@@ -154,10 +145,9 @@ public class ActionDeploy extends ConfigurationAction {
                 throw sfex;
             } else {
                 throw new SmartFrogDeploymentException(
-                        "deploying description '" + url + "' for '" + appName + "'"
-                        +" : " + sfex.toString(),
+                        "deploying description '" + url + "' for '" + appName + "'",
                         sfex,
-                        null,
+                        comp,
                         context);
             }
         }

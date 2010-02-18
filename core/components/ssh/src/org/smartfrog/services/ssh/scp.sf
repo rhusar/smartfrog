@@ -121,7 +121,6 @@ ScpSessionPublicKey extends ScpSessionAuthPass {
     keyFile TBD;
     SCP:authentication SSHComponent:authenticate_key;
     SCP:keyFile PARENT:ATTRIB keyFile;
-    passwordProvider extends SSHEmptyPassword ;
 }
 
 /**

@@ -1,5 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
-
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -21,281 +20,477 @@
 package org.smartfrog.services.persistence.storage;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.rmi.RemoteException;
+import java.util.Vector;
 
+import org.smartfrog.services.persistence.storage.nullstorage.NullStorageImpl;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.Prim;
+
 
 /**
- * Storage is an abstract class for a storage object. Each recoverable component has
- * its own storage object that acts as an adapter to the actual storage implementation.
+ * Defines the methods a simple and sequential storage
+ * space should have.
+ *
  */
-public abstract class Storage {
+public abstract class Storage implements Serializable {
 
-	/**
-	 * Attribute defining the class used to access the storage - the storage implementation
-	 */
-    public static final String STORAGE_CLASS_ATTR = "sfStorageClass";
+    public static final String UNKNOWN_CLASS = "unknown class";
+    public static final String CLASS_ATTRIB = "wfStorageClass";
+    public static final String CONFIG_DATA = "wfStorageConfigData";
+    public static final String NAME_ATTRIB = "wfStorageDatabaseName";
+    public static final String REPO_ATTRIB = "wfStorageRepository";
+    public static final String DBNAME_ATTRIB = "wfStorageDatabaseName";
+    public static final String REGISTER_ATTRIB = "recoveryRegister";
 
-    /**
-     * Attribute defining the unique name for this component
-     */
-    public static final String COMPONENT_NAME_ATTR = "sfUniqueComponentName";
-
-    /**
-     * The default name used to locate a connection pool
-     */
-    public static final String CONNECTION_POOL_ATTR = "ConnectionPool";
+    protected ComponentDescription configData;
     
+ 
     /**
-     * This value is used to indicate that the component is an orphan. If the component
-     * had a parent value of null it would be considered the root of a deployment. It
-     * must have a parent that is missing to be an orphan - this value is used as a
-     * "universally missing parent".
+     * Obtains a vector of the stores in the appropriate repository.
+     * If the context does not contain a storage description or there is
+     * a null in its place then this will use the NullStorageImpl implementation.
+     *
+     * @param context Context
+     * @return Vector
+     * @throws StorageException
      */
-    public static final String NO_PARENT_PENDING_TERMINATION = "noParent";
+    public static Vector getStores(Context context) throws StorageException {
 
-    /**
-     * This method constructs the storage class defined in a storage description
-     * and opens it for access to its backing store. If successful he storage object is 
-     * returned. 
-     * 
-     * @param config a storage description
-     * @return the opened storage object
-     * @throws StorageException failed to construct the storage class or open the storage
-     */
-    public static Storage openStorage(ComponentDescription config) throws StorageException {
-
-        if (config == null) {
-            throw new StorageException("Storage config is null");
+        /**
+         * configObj will be null if the value not present or SFNull if
+         * set to null in the SF description.
+         * If either are the case construct a NullStorageImpl implementation.
+         * Otherwise continue with the configured implementation.
+         */
+        Object configObj = context.get(CONFIG_DATA);
+        if (configObj == null || configObj instanceof SFNull ) {
+        	return NullStorageImpl.getStores(context);
+//            throw new StorageException("Storage config missing");
         }
+        if (!(configObj instanceof ComponentDescription)) {
+            throw new StorageException(
+                    "Storage config is not a component description");
+        }
+        return getStores((ComponentDescription) configObj);
+    }
 
+
+    /**
+     * Obtains a vector of the stores in the appropriate repository.
+     * If the configData has null value then the NullStorageImpl 
+     * implementation will be used.
+     *
+     * @param configData ComponentDescription
+     * @return Vector
+     * @throws StorageException
+     */
+    public static Vector getStores(ComponentDescription configData) throws
+            StorageException {
+
+    	/**
+    	 * If configData is null use the NullStorageImpl implementation
+    	 */
+    	if( configData == null ) {
+    		return NullStorageImpl.getStores(configData);
+    	}
+    	
+        String className = UNKNOWN_CLASS;
         try {
-
-            String className = config.sfResolve(STORAGE_CLASS_ATTR, (String) null, true);
-            Storage storage = (Storage) Class.forName(className).newInstance();
-            storage.openStorage0(config);
-            return storage;
-
-        } catch (SmartFrogResolutionException e) {
-            throw new StorageException("Storage configuration is invalid: " + config, e);
-        } catch (InstantiationException e) {
-            throw new StorageException("Failed to construct storage class: " + config, e);
-        } catch (IllegalAccessException e) {
-            throw new StorageException("Failed to access storage class: " + config, e);
-        } catch (ClassNotFoundException e) {
-            throw new StorageException("Storage class not found: " + config, e);
+            className = configData.sfResolve(CLASS_ATTRIB, (String)null, true);
+            Class storageclass = Class.forName(className);
+            Class[] methodParams = new Class[1];
+            methodParams[0] = ComponentDescription.class;
+            Method getStores0Method = storageclass.getMethod("getStoresImpl",
+                    methodParams);
+            Object[] params = new Object[1];
+            params[0] = configData;
+            return (Vector) getStores0Method.invoke(null, params);
+        } catch (InvocationTargetException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (IllegalArgumentException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (IllegalAccessException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (SecurityException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (NoSuchMethodException ex) {
+            throw (StorageException) StorageException.forward(
+                    "getStoresImpl method for " + className + " not found", ex);
+        } catch (ClassNotFoundException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (SmartFrogResolutionException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage class is missing, config " + configData, ex);
         }
 
     }
 
-    /**
-     * This method is used by the storage implementation class to open its storage.
-     * 
-     * @param config a storage description
-     * @throws StorageException failed to open the storage
-     */
-    public abstract void openStorage0(ComponentDescription config) throws StorageException;
-    
-    /**
-     * Setter for storage exception notifications. This is used to indicate the object
-     * that should be informed if the storage component hits a storage exception.
-     * 
-     * @param notify the target to notify
-     */
-    public abstract void exceptionNotifications(StorageExceptionNotification notify);
 
     /**
-     * Opens a new transaction against the storage.
-     * 
-     * @return the transaction
-     * @throws StorageException failed to open a transaction
-     */
-    public abstract Transaction getTransaction() throws StorageException;
-
-    /**
-     * Setup component register
-     * 
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void initialiseRegister(Transaction xact) throws StorageException;
-    
-    /**
-     * Setup attributes table
-     * 
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void initialiseAttributes(Transaction xact) throws StorageException;    
-    
-    /**
-     * Returns a set of storage descriptions for components that are the roots
-     * of a local tree fragment to be recovered.
-     * 
-     * @param xact transaction to use
-     * @return recovery root components
-     * @throws StorageException
-     */
-    public abstract Set getRecoveryRoots(Transaction xact) throws StorageException;
-    
-    /**
-     * Returns a set of storage descriptions for components that are the roots of
-     * local tree fragments that have been orphaned due to failure during asynchronous
-     * termination.
-     * 
-     * @param xact transaction to use
-     * @return orphan root components
-     * @throws StorageException
-     */
-    public abstract Set getOrphanRoots(Transaction xact) throws StorageException;
-    
-    /**
-     * Constructs the component in the storage without any attributes. The
-     * component must not already exist. If xact is null this will be done as a
-     * seperate transaction. If xact is not null it will be done within that
-     * transaction. The localParent attribute is the storage name of the local
-     * parent of this component if it has one. If there is no local parent this
-     * should be null to indicate that this is the root of the local tree fragment.
-     * 
-     * @param localParent unique storage name of parent
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void createComponent(String localParent, Transaction xact) throws StorageException;
-
-    /**
-     * Remove the component storage. If xact is null this will be done as a
-     * seperate transaction. If xact is not null it will be done within that
-     * transaction.
-     * 
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void deleteComponent(Transaction xact) throws StorageException;
-    
-    /**
-     * Change the parentage of this component. A null entry for the parent indicates
-     * that this component is the root of a local tree fragment.
-     * 
-     * @param parent unique name of new parent
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void reparentComponent(String parent, Transaction xact) throws StorageException;
-
-    /**
-     * Add the given attribute to the storage. If xact is null this will be done
-     * as a separate transaction. If xact is not null it will be done within
-     * that transaction.
-     * 
-     * @param name unique name of attribute
-     * @param tags component tags
-     * @param value component value
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void addAttribute(String name, Serializable tags, Serializable value, Transaction xact)
-            throws StorageException;
-
-    /**
-     * Remove the given attribute from storage. If xact is null this will be
-     * done as a separate transaction. If xact is not null it will be done
-     * within that transaction.
-     * 
-     * @param name of attribute
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void removeAttribute(String name, Transaction xact) throws StorageException;
-
-    /**
-     * Remove all attributes from storage. If xact is null this will be
-     * done as a separate transaction. If xact is not null it will be done
-     * within that transaction.
-     * 
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void removeAllAttributes(Transaction xact) throws StorageException;
-
-    /**
-     * Replace the given attribute value in storage. This method will retain the
-     * old tags field, changing just the value of the attribute. If xact is null
-     * this will be done as a separate transaction. If xact is not null it will
-     * be done within that transaction.
-     * 
-     * @param name name of attribute
-     * @param value new value
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void replaceAttribute(String name, Serializable value, Transaction xact) throws StorageException;
-
-    /**
-     * Replace the given attribute tags in storage. This method will retain the
-     * old value field, changing just the tags of the attribute. If xact is null
-     * this will be done as a separate transaction. If xact is not null it will
-     * be done within that transaction.
-     * 
-     * @param name name of attribute
-     * @param tags new tags
-     * @param xact transaction to use
-     * @throws StorageException
-     */
-    public abstract void setTags(String name, Serializable tags, Transaction xact) throws StorageException;
-    
-    /**
-     * Returns true if the storage object represents an existing stored 
-     * component. This returns true if the storage represents a component
-     * that exists and can be accessed through the store, and false otherwise.
-     * Note that a storage object can be constructed before the component is
-     * created, and that it remains after a component has been deleted, so
-     * it is valid for a storage object to represent a component that does not
-     * exist.
-     * 
-     * @param xact transaction to use
-     * @return true if the component exists in the storage
-     * @throws StorageException
-     */
-    public abstract boolean exists(Transaction xact) throws StorageException;
-
-    /**
-     * Populate the context with the contents of the storage object as a single
-     * transaction. If xact is null this will be done as a separate transaction.
-     * If xact is not null it will be done within that transaction.
-     * 
-     * @param xact transaction to use
-     * @return the context
-     * @throws StorageException
-     */
-    public abstract Context getContext(Transaction xact) throws StorageException;
-
-    /**
-     * Close the storage without removing it. Open transactions obtained are not 
-     * affected storage closure, but further calls to the storage object 
-     * will be invalid after this method.
+     * Implementation of getStores method - static method over-ridden by the
+     * implementation class. This method is called from the static method
+     * getStores, which obtains the appropriate implementation.
      *
+     * @param configData ComponentDescription
+     * @return Vector
      * @throws StorageException
      */
-    public abstract void close() throws StorageException;
+    public static Vector getStoresImpl(ComponentDescription configData) throws
+            StorageException {
+        throw new StorageException(
+                "getStoresImpl method implementation missing from storage class");
+    }
 
     /**
-     * Tests to see if the object is a storage component description. The object
+     * Constructs the storage implementation specified in the context. This
+     * version uses the constructor that expects to find a pre-existing persisted
+     * component. If the context does not include the storage description or
+     * it includes a null value in place of for the stroage description it
+     * will create a NullStorageImpl implementation of the storage.
+     *
+     * @param context Context
+     * @return Storage
+     * @throws SmartFrogDeploymentException
+     */
+    public static Storage createExistingStorage(Context context) throws
+            StorageException {
+
+        /**
+         * configObj will be null if the value is null or it is not present.
+         * If either are the case construct a NullStorageImpl implementation.
+         * Otherwise continue with the configured implementation.
+         */
+        Object configObj = context.get(CONFIG_DATA);
+        if (configObj == null || configObj instanceof SFNull ) {
+        	// @TODO: log creation of null storage
+        	return new NullStorageImpl();
+//            throw new StorageException("Storage config missing");
+        }
+        if (!(configObj instanceof ComponentDescription)) {
+            throw new StorageException(
+                    "Storage config is not a component description");
+        }
+        return createExistingStorage((ComponentDescription) configObj);
+    }
+
+
+    /**
+     * Constructs the storage implementation specified by name and config. This
+     * version uses the constructor that expects to find a pre-existing persisted
+     * component. If the configData parameter is a null value in place of for the 
+     * stroage description it will create a NullStorageImpl implementation of the 
+     * storage.
+     *
+     * @param configData ComponentDescription
+     * @return Storage
+     * @throws StorageException
+     */
+    public static Storage createExistingStorage(ComponentDescription configData) throws
+            StorageException {
+
+    	/**
+    	 * If the configData is null construct a NullStorageImpl implementation.
+    	 * Otherwise continue with the configured storage.
+    	 */
+    	if( configData == null ) {
+    		return new NullStorageImpl();
+    	}
+        String className = UNKNOWN_CLASS;
+        try {
+            className = configData.sfResolve(CLASS_ATTRIB, (String)null, true);
+            String storageName = configData.sfResolve(NAME_ATTRIB, (String)null, true);
+            Class storageclass = Class.forName(className);
+            Class[] constparam = new Class[2];
+            constparam[0] = String.class;
+            constparam[1] = ComponentDescription.class;
+            Constructor storageconstructor = storageclass.getConstructor(
+                    constparam);
+            Object[] params = new Object[2];
+            params[0] = storageName;
+            params[1] = configData;
+            return (Storage) storageconstructor.newInstance(params);
+        } catch (SmartFrogResolutionException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage name or storage class missing from config " +
+                    configData, ex);
+        } catch (ClassNotFoundException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage class " + className + " not found", ex);
+        } catch (NoSuchMethodException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage constructor for " + className + " not found", ex);
+        } catch (InvocationTargetException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (IllegalArgumentException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (IllegalAccessException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (InstantiationException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        }
+    }
+
+
+    /**
+     * Constructs the storage implementation specified in the context.
+     * This version uses the constructor that expects to create a new persisted
+     * component storage. If the context does not include the storage description or
+     * it includes a null value in place of for the stroage description it
+     * will create a NullStorageImpl implementation of the storage.
+     *
+     * @param context Context
+     * @return Storage
+     * @throws SmartFrogDeploymentException
+     */
+    public static Storage createNewStorage(Context context) throws StorageException {
+    	
+    	Storage newStorage = null;
+
+        /**
+         * configObj will be null if the value is null or it is not present.
+         * If either are the case construct a NullStorageImpl implementation.
+         * Otherwise continue with the configured implementation.
+         */
+    	Object configObj = context.get(CONFIG_DATA);
+    	if (configObj == null || configObj instanceof SFNull ) {
+    		// @TODO: log creation of null storage
+    		return new NullStorageImpl();
+//    		throw new StorageException("Storage config missing");
+    	}
+
+    	if (!(configObj instanceof ComponentDescription)) {
+    		throw new StorageException(
+    		"Storage config is not a component description");
+    	}
+    	
+    	ComponentDescription config = (ComponentDescription)configObj;
+    	
+    	registerIfRequired(config);
+    	
+    	try {
+    		newStorage = createNewStorage(config);
+    	} catch (StorageException ex) {
+    		try { deregisterIfRequired(config); }
+    		catch(Exception e) { e.printStackTrace(); }
+    		throw ex;
+    	}
+    	
+    	return newStorage;
+    }
+
+
+    /**
+     * Constructs the storage implementation specified by name and config.
+     * This version uses the constructor that expects to create a new persisted
+     * component storage. If the configData parameter is a null value in place of for the 
+     * stroage description it will create a NullStorageImpl implementation of the 
+     * storage.
+     *
+     * @param configData Context
+     * @throws SmartFrogDeploymentException
+     */
+    public static Storage createNewStorage(ComponentDescription configData) throws
+            StorageException {
+
+    	/**
+    	 * If the configData is null construct a NullStorageImpl implementation.
+    	 * Otherwise continue with the configured storage.
+    	 */
+    	if( configData == null ) {
+    		return new NullStorageImpl();
+    	}
+    	
+        String className = UNKNOWN_CLASS;
+        try {
+            className = configData.sfResolve(CLASS_ATTRIB, (String)null, true);
+            Class storageclass = Class.forName(className);
+            Class[] constparam = new Class[1];
+            constparam[0] = ComponentDescription.class;
+            Constructor storageconstructor = storageclass.getConstructor(
+                    constparam);
+            Object[] params = new Object[1];
+            params[0] = configData;
+            return (Storage) storageconstructor.newInstance(params);
+        } catch (ClassNotFoundException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage class " + className + " not found", ex);
+        } catch (NoSuchMethodException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage constructor for " + className + " not found", ex);
+        } catch (InvocationTargetException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (IllegalArgumentException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (IllegalAccessException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (InstantiationException ex) {
+            throw (StorageException) StorageException.forward("Storage " +
+                    className + ", config " + configData, ex);
+        } catch (SmartFrogResolutionException ex) {
+            throw (StorageException) StorageException.forward(
+                    "Storage class is missing, config " + configData, ex);
+        }
+
+    }
+    
+    
+    /**
+     * Registers the storage description with a recovery register if one is defined.
+     * The recoveryRegister is defined if the description contains it as an attribute.
+     * 
+     * @param config - the storage description
+     * @throws StorageException - failed to register
+     */
+    protected static void registerIfRequired(ComponentDescription config) throws StorageException {
+    	
+    	Prim register;
+    	try {
+    		register = config.sfResolve(Storage.REGISTER_ATTRIB, (Prim)null, false);
+    	} catch(Exception e) {
+    		return;
+    	}
+
+    	try {
+    		String dbname = (String)config.sfResolve(Storage.DBNAME_ATTRIB);
+    		if( register != null ) {
+    			ComponentDescription cd = new ComponentDescriptionImpl(null, (Context)config.sfContext().copy(), false);
+    			register.sfAddAttribute(dbname, cd);
+    		}
+    	} catch(Exception e) {
+    		throw new StorageException("Failed to register storage with recovery register", e);
+    	}
+    }
+    
+    
+    /**
+     * Deregisters the storage description from a recovery register if one is defined.
+     * The recoveryRegister is defined if the description contains it as an attribute.
+     * 
+     * @param config - the storage description
+     * @throws StorageException - failed to deregister
+     */
+    protected static void deregisterIfRequired(ComponentDescription config) throws StorageException {
+    	Prim register;
+    	try {
+    		register = config.sfResolve(Storage.REGISTER_ATTRIB, (Prim)null, false);
+    	} catch(Exception e) {
+    		return;
+    	}
+
+    	try {
+    		String dbname = (String)config.sfResolve(Storage.DBNAME_ATTRIB);
+    		if( register != null ) {
+    			register.sfRemoveAttribute(dbname);
+    		}
+    	} catch(Exception e) {
+    		throw new StorageException("Failed to deregister storage from recovery register", e);
+    	}	
+    	
+    	
+    }
+    
+    
+    /**
+     * Tests to see if the object is a storage component description.
+     * The object
      * must be a component description containing a storage class attribute.
      * 
-     * @param obj the object to check
+     * @param obj object to test
      * @return true if storage description false if not
      */
-    public static boolean isStorageDescription(Object obj) {
-        if (!(obj instanceof ComponentDescription)) {
-            return false;
-        } else {
-            return ((ComponentDescription) obj).sfContainsAttribute(Storage.STORAGE_CLASS_ATTR);
-        }
-    }
-    
+	public static boolean isStorageDescription(Object obj) {
+		if( !(obj instanceof ComponentDescription ) ) {
+			return false;
+		} else {
+			return ((ComponentDescription)obj).sfContainsAttribute(Storage.CLASS_ATTRIB);
+		}
+	}
 
+
+
+    /**
+     * Inserts a new record in the storage space for the specified entry.
+     * The entry must have been created before, otherwise an exception is thrown.
+     *
+     * @param entryname Object value that should be written
+     * @param value new value
+     *
+     * @throws StorageException In case some failure happens
+     */
+    public abstract void addEntry(String entryname, Serializable value) throws
+            StorageException;
+
+    /**
+     * Inserts a new record in the storage space for the specified entry.
+     * The entry must have been created before, otherwise an exception is thrown.
+     *
+     * @param entryname Object value that should be written
+     * @param value new value
+     *
+     * @throws StorageException In case some failure happens
+     */
+    public abstract void replaceEntry(String entryname, Serializable value) throws
+            StorageException;
+
+    /**
+     * Recovers an entry from stable storage
+     *
+     * @param entryname index of the required entry
+     * @return the entry
+     */
+    public abstract Serializable getEntry(String entryname) throws
+            StorageException;
+
+    /**
+     * Deletes an indexed record of the given entry from the storage space
+     *
+     * @param entryname the internal object that should be deleted
+     *
+     * @throws StorageException In case some failure happens
+     */
+    public abstract void removeEntry(String entryname) throws StorageException;
+
+
+    public abstract void commit() throws StorageException;
+
+    public abstract void abort() throws StorageException;
+
+    public void delete() throws StorageException {
+    	deregisterIfRequired(configData);
+    }
+
+    public abstract void disableCommit();
+
+    public abstract void enableCommit();
+
+    public abstract Object[] getEntries() throws
+            StorageException;
+
+    public abstract StorageRef getStorageRef() throws StorageException;
+
+    public abstract String getAgentUrl();
+
+    public abstract void close() throws StorageException;
 
 }

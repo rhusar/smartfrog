@@ -70,7 +70,7 @@ public class TraceTreePanel extends JPanel implements TreeSelectionListener {
         try {
             jbInit();
         } catch (Exception ex) {
-            sfLog().error(ex, ex);
+            sfLog().error(ex);
         }
     }
 
@@ -85,7 +85,7 @@ public class TraceTreePanel extends JPanel implements TreeSelectionListener {
         try {
             jbInit();
         } catch (Exception ex) {
-            sfLog().error(ex, ex);
+            sfLog().error(ex);
         }
     }
 

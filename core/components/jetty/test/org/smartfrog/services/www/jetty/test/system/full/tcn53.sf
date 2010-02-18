@@ -17,20 +17,22 @@
  For more information: www.smartfrog.org
 
  */
+//#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 #include "/org/smartfrog/services/jetty/jetty-complete.sf";
-#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
-sfConfig extends CompleteJettyHttpServer {
+sfConfig extends JettyHttpServer {
     //integrate logging with smartfrog
     logging extends IntegrateJettyLogging;
     port test.jetty.port.1;
 
     jettyhome ROOT:jetty_home; // mandatory
 
-    connector:host "no-hostname";
+    directPortListener:host "no-hostname";
 
-    connector2 extends JettySocketConnector {
+    list1 extends JettySocketConnector {
         port test.jetty.port.2;
+        //serverHost "localhost";
         server LAZY PARENT:server;
     }
 }

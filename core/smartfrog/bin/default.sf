@@ -86,7 +86,7 @@ DefaultTraceCompound extends DefaultCompound {
 //    trace extends TraceDebugger;
 // }
 
-
+sfConfig extends DefaultCompound;
 
 // Daemon Display with management console
  sfConfig extends DefaultManagementCompound;

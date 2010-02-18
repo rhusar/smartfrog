@@ -68,11 +68,6 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     private boolean diagnostics = false;
 
-    /**
-     * This is the classname of the security manager to run with.
-     */
-    protected String securityManager = DUMMY_SECURITY_OPTION;
-
     public static final String MESSAGE_SPAWNED_DAEMON = "Spawned SmartFrog daemon started";
     public static final String MESSAGE_IGNORING_FAILONERROR = "Ignoring failonerror setting for spawned application";
     public static final String MESSAGE_IGNORING_TIMEOUT = "Ignoring timeout setting for spawned application";
@@ -88,15 +83,6 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     public static final String LOCALHOST_IPV4 = "127.0.0.1";
     public static final String EXIT_AFTER_STARTING = "-e";
     public static final String SF_DIAGNOSTICS = "-d";
-    private static final String DEFINE_JAVA_SECURITY_MANAGER = "-Djava.security.manager";
-    private static final String SMARTFROG_SECURITY_MANAGER
-            = "org.smartfrog.sfcore.security.ExitTrappingRealSecurityManager";
-    public static final String SMARTFROG_SECURITY_OPTION = "smartfrog";
-    public static final String DEFAULT_SECURITY_OPTION = "default";
-    public static final String SUN_SECURITY_OPTION = "sun";
-    public static final String NONE_SECURITY_OPTION = "none";
-    protected static final String DUMMY_SECURITY_MANAGER = "org.smartfrog.sfcore.security.ExitTrappingSecurityManager";
-    public static final String DUMMY_SECURITY_OPTION = "dummy";
 
     protected SmartFrogTask() {
 
@@ -303,6 +289,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
                 throw new BuildException(ERROR_UNEXPECTED_FILE_TYPE + initialSmartFrogFile);
             }
         }
+
         this.initialSmartFrogFile = initialSmartFrogFile;
     }
 
@@ -363,6 +350,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     public void addSecurity(Security security) {
         securityHolder.addSecurity(security);
+
     }
 
     /**
@@ -418,6 +406,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
+
     }
 
 
@@ -469,7 +458,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
     /**
      * set the diagnostics flag
-     * @param diagnostics flag to set to true for extra diagnostics
+     * @param diagnostics
      */
     public void setDiagnostics(boolean diagnostics) {
         this.diagnostics = diagnostics;
@@ -562,7 +551,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @param argument JVM argument
      */
     public void defineJVMArg(String argument) {
-        createJVMarg().setValue(argument);
+        smartfrog.createJvmarg().setValue(argument);
     }
 
     /**
@@ -588,14 +577,6 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * Set the directory for the SmartFrog process.
-     * @param dir the directory to use
-     */
-    public void setDir(File dir) {
-        smartfrog.setDir(dir);
-    }
-
-    /**
      * run smartfrog and throw an exception if something went awry. failure texts are for when smartfrog ran and failed;
      * errorTexts when smartfrog wouldnt run.
      *
@@ -612,13 +593,11 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         //delayed setting only when the flag is true reduces the need to flip the bit
         propagateSpawnIncompatibleSettings();
         //do any security configurations we need
-        if(bindToSecurityManager()) {
-            if (securityHolder.isDefined()) {
-                securityHolder.applySecuritySettings(this);
-            } else {
-                //use the default or simpler settings
-                securityPolicy.applySecurityPolicy(this, smartfrog);
-            }
+        if (securityHolder.isDefined()) {
+            securityHolder.applySecuritySettings(this);
+        } else {
+            //use the default or simpler settings
+            // securityPolicy.applySecurityPolicy(this,smartfrog);
         }
 
         //last minute logging
@@ -782,54 +761,4 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         setHost(LOCALHOST);
     }
 
-    /**
-     * Set the security manager
-     * <ol>
-     * <li>"" : no security manager</li>
-     * <li>"none" : no security manager</li>
-     * <li>"sun" : the built in security manager</li>
-     * <li>"smartfrog" : the smartfrog security manager</li>
-     * <li>"default" : the default security manager (currently smartfrog)</li>
-     * <li> "classname" : any security manager defined by a full classname. This manager must be on the classpath</li>
-     * @param securityManager the new security manager
-     */
-    public void setSecurityManager(String securityManager) {
-        this.securityManager = securityManager;
-    }
-
-    /**
-     * Bind to the chosen security manager.
-     * @return true if there is a security manager at work
-     */
-    public boolean bindToSecurityManager() {
-        String message;
-        String jvmarg;
-        
-        if (securityManager == null || securityManager.length()==0 || NONE_SECURITY_OPTION.equals(securityManager)) {
-            message = "No Security Manager";
-            jvmarg = null;
-        } else if (SUN_SECURITY_OPTION.equals(securityManager)) {
-            message = "Using Sun Security Manager";
-            jvmarg = DEFINE_JAVA_SECURITY_MANAGER;
-        } else if (DUMMY_SECURITY_OPTION.equals(securityManager)) {
-            message = "Using Dummy Security Manager";
-            jvmarg = DEFINE_JAVA_SECURITY_MANAGER + "=" + DUMMY_SECURITY_MANAGER;
-        } else if (SMARTFROG_SECURITY_OPTION.equals(securityManager) || 
-                DEFAULT_SECURITY_OPTION.equals(securityManager)) {
-            message = "Using SmartFrog Security Manager";
-            jvmarg = DEFINE_JAVA_SECURITY_MANAGER + "=" + SMARTFROG_SECURITY_MANAGER;
-        } else {
-            //it is a class of its own
-            message = "Using Security Manager " + securityManager;
-            jvmarg = DEFINE_JAVA_SECURITY_MANAGER + "=" + securityManager;
-        }
-        log(message, Project.MSG_VERBOSE);
-        if (jvmarg != null) {
-            defineJVMArg(jvmarg);
-            return true;
-        } else {
-            //no security manager
-            return false;
-        }
-    }
 }

@@ -37,7 +37,7 @@ public class ConditionalTest extends DeployingTestBase {
      * @throws Throwable on failure
      */
     public void testParseConditionFile() throws Throwable {
-        runTestsToCompletion(FILES, "testParseConditionFile");
+        runTestsToCompletion(FILES,"testParseConditionFile");
     }
 
     /**
@@ -72,7 +72,4 @@ public class ConditionalTest extends DeployingTestBase {
         expectSuccessfulTestRun(FILES, "testOneIf");
     }
 
-    public void testReferenceResolvesWorks() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testReferenceResolvesWorks");
-    }
 }

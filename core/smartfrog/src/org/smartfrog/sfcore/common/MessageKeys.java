@@ -74,12 +74,7 @@ public interface MessageKeys {
      */
     String MSG_NULL_DEF_METHOD = "MSG_NULL_DEF_METHOD";
 
-    /**
-     * A null value was passed with a key to a method call {@value}
-     */
-    String MSG_NULL_VALUE_OF_KEY_IN = "MSG_NULL_VALUE_OF_KEY_IN";
-
-    /**
+        /**
      * Message key: class cannot be found.
      */
     String MSG_CLASS_NOT_FOUND = "MSG_CLASS_NOT_FOUND";

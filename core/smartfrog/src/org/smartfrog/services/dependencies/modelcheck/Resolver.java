@@ -1,23 +1,3 @@
-/** (C) Copyright 1998-2009 Hewlett-Packard Development Company, LP
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-For more information: www.smartfrog.org
-
-*/
-
 package org.smartfrog.services.dependencies.modelcheck;
 
 import java.util.Enumeration;
@@ -25,10 +5,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.smartfrog.services.dependencies.statemodel.connector.AndConnector;
+import org.smartfrog.services.dependencies.statemodel.connector.NXorConnector;
+import org.smartfrog.services.dependencies.statemodel.connector.NandConnector;
+import org.smartfrog.services.dependencies.statemodel.connector.NorConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.OrConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.XorConnector;
-import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.services.dependencies.statemodel.state.State;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -75,21 +57,20 @@ public class Resolver {
 		else if (functionClass.equals(Implies.class.getName())) return " -> ";
 		else if (functionClass.equals(Xor.class.getName())) return " xor ";
 		
-		else if (functionClass.equals(StateComponent.class.getName())) return " & ";
+		else if (functionClass.equals(State.class.getName())) return " & ";
 		else if (functionClass.equals(AndConnector.class.getName())) return " & ";
 		else if (functionClass.equals(OrConnector.class.getName())) return " | ";
-		//else if (functionClass.equals(NandConnector.class.getName())) return " & ";
-		//else if (functionClass.equals(NorConnector.class.getName())) return " | ";
+		else if (functionClass.equals(NandConnector.class.getName())) return " & ";
+		else if (functionClass.equals(NorConnector.class.getName())) return " | ";
 		else if (functionClass.equals(XorConnector.class.getName())) return " xor ";
-		//else if (functionClass.equals(NXorConnector.class.getName())) return " xnor ";
+		else if (functionClass.equals(NXorConnector.class.getName())) return " xnor ";
 		
 		throw new SmartFrogResolutionException("Unknown function class for model checker:"+functionClass);
 	}
 	
 	static public String getFinalFunctionRepresentation(String functionClass, String prefinal){
-		//if (functionClass.equals(NandConnector.class.getName()) || functionClass.equals(NorConnector.class.getName())) return " !("+prefinal+") ";
-		//else return prefinal;
-        return "";  //quick hack to get to compile...
+		if (functionClass.equals(NandConnector.class.getName()) || functionClass.equals(NorConnector.class.getName())) return " !("+prefinal+") ";
+		else return prefinal;
 	}
 	
 	static public String getBooleanRepresentation(boolean bool){
@@ -119,15 +100,14 @@ public class Resolver {
     		String result = resolver.toMCString((SFApplyReference)arg, comp);
     		resolver.addInOtherComponents(otherComponents);
     		return result;
-    	} else if (arg instanceof SFReference){
-    		Reference ref = null;
+    	} else if (arg instanceof Reference){
+    		Reference ref = (Reference) arg;
     		
-    		try {ref = ((SFReference) arg).sfAsReference();}
-    		catch(SmartFrogCompilationException sfce){throw new SmartFrogResolutionException(sfce); }
-    		
+			SFReference.resolutionForceEager=true;
 			ReferencePart.maintainResolutionHistory=true;
 			Object result = comp.sfResolve(ref);
 			ComponentDescription ref_comp = (ComponentDescription) ReferencePart.resolutionParentDescription;
+			SFReference.resolutionForceEager=false;
 			ReferencePart.maintainResolutionHistory=false;
 			
 			//Get Component Id for component containing referred to attribute

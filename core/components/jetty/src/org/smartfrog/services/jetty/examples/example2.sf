@@ -18,11 +18,11 @@ sfConfig extends Compound {
          listenerPort 8081; // mandatory
    } 
    server1 extends JettyHttpServer {
-      jettyhome ROOT:jetty_home;
+      jettyhome ROOT:jetty_home; // mandatory
    }
 
    server2 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home;
+      jettyhome ROOT:jetty_home; // mandatory
       serverHost "localhost"; //mandatory
       contexts extends JettySampleContexts {
          server LAZY PARENT;

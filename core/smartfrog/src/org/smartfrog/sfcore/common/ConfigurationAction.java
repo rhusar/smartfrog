@@ -106,10 +106,10 @@ public abstract class ConfigurationAction {
         ProcessCompound targetProcess;
         Object result = null;
         if (configuration.getHosts()==null) {
-            targetProcess = bindTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            targetProcess = selectTargetProcess(configuration.getHost(), configuration.getSubProcess());
             return execute(targetProcess,configuration);
         } else if (configuration.getHosts().length<=1) {
-            targetProcess = bindTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            targetProcess = selectTargetProcess(configuration.getHost(), configuration.getSubProcess());
             return execute(targetProcess,configuration);
         } else {
             //Select the first available from the list where action is executed successfully
@@ -117,28 +117,24 @@ public abstract class ConfigurationAction {
             ProcessCompound pc = null;
             Throwable thr = null;
             for (String host : hosts) {
-                try {
-                    pc = bindTargetProcess(host, configuration.getSubProcess());
-                    return execute(pc, configuration);
-                } catch (Throwable ex) {
-                    //keep trying
-                    thr = ex;
-                    String resultMessage = "Fail to execute " + configuration.getActionType() + "on target host: " + host + " , cause: " + ex.getCause();
-                    if (SFSystem.sfLog().isDebugEnabled()) {
-                        SFSystem.sfLog().debug(resultMessage, ex);
-                    }
-                    try {
-                        Object resultMultiHostObj = configuration.getContextAttribute("ResultMultiHost");
-                        if (resultMultiHostObj == null) {
-                            resultMultiHostObj = "";
-                        }
-                        String resultMultiHost = resultMultiHostObj + "; " + resultMessage;
-                        configuration.setContextAttribute("ResultMultihost", resultMultiHost);
-                    } catch (Exception exception) {
-                        SFSystem.sfLog().warn(resultMessage, ex);
-                    }
+              try {
+                pc = SFProcess.sfSelectTargetProcess(host,configuration.getSubProcess());
+                return execute(pc,configuration);
+              } catch (Throwable ex){
+                //keep trying
+                thr = ex;
+                String resultMessage = "Fail to execute "+configuration.getActionType()+ "on target host: "+ host+" , cause: "+ex.getCause();
+                if (SFSystem.sfLog().isDebugEnabled()) {SFSystem.sfLog().debug(resultMessage, ex); }
+                  try {
+                      Object resultMultiHostObj = configuration.getContextAttribute("ResultMultiHost");
+                      if (resultMultiHostObj==null) {resultMultiHostObj = "";}
+                      String resultMultiHost = resultMultiHostObj +"; "+ resultMessage;
+                      configuration.setContextAttribute("ResultMultihost", resultMultiHost);
+                  } catch ( Exception exception) {
+                      exception.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                  }
 
-                }
+              }
             }
             if ((thr!=null)) {   //Throw the last exception
                 throw SmartFrogException.forward(thr);
@@ -148,27 +144,6 @@ public abstract class ConfigurationAction {
 
 
         }
-    }
-
-    /**
-     * Locate the target process and 
-     * @param host host to look at
-     * @param subProcess optional sub process
-     * @return a non-null target process
-     * @throws SmartFrogException target process location problems
-     * @throws SmartFrogDeploymentException on a failure to bind
-     * @throws RemoteException network problems
-     */
-    private ProcessCompound bindTargetProcess(String host, String subProcess)
-            throws SmartFrogException, RemoteException {
-        ProcessCompound targetProcess;
-        targetProcess = selectTargetProcess(host, subProcess);
-        if (targetProcess == null) {
-            throw new SmartFrogDeploymentException("Failed to locate target process on " +
-                    (host != null ? host : "the local system")
-                    + (subProcess != null ? ("/" + subProcess) : ""));
-        }
-        return targetProcess;
     }
 
     /**

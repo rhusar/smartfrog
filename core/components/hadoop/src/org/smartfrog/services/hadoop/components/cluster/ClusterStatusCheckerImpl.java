@@ -19,27 +19,25 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobTracker;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.hadoop.components.submitter.SubmitterImpl;
-import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractConditionPrim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 
 /**
@@ -47,11 +45,11 @@ import java.rmi.RemoteException;
  */
 
 
-public class ClusterStatusCheckerImpl extends AbstractConditionPrim
+public class ClusterStatusCheckerImpl extends PrimImpl
         implements HadoopConfiguration, HadoopCluster, ClusterStatusChecker, Condition {
     private JobClient client;
     private boolean checkOnLiveness;
-    private boolean jobtrackerLive;
+    private boolean jobTrackerLive;
 
     //declares that we can handle the filesystem
     private boolean supportedFileSystem;
@@ -65,7 +63,7 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
     private int maxActiveReduceTasks;
     private int maxSupportedMapTasks;
     private int maxSupportedReduceTasks;
-    private String jobtracker;
+    private String jobTracker;
     public static final String STATUS_CHECKED = "Hadoop Cluster status checked against ";
     public static final String ERROR_CANNOT_CONNECT = "Cannot connect to ";
 
@@ -80,12 +78,11 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        jobtracker = SubmitterImpl.resolveJobTracker(this, new Reference(MAPRED_JOB_TRACKER));
+        jobTracker = SubmitterImpl.resolveJobTracker(this, new Reference(MAPRED_JOB_TRACKER));
         supportedFileSystem = sfResolve(ATTR_SUPPORTEDFILESYSTEM, false, true);
-        jobtrackerLive = sfResolve(ATTR_JOBTRACKERLIVE, false, true);
+        jobTrackerLive = sfResolve(ATTR_JOBTRACKERLIVE, false, true);
         minActiveMapTasks = sfResolve(ATTR_MIN_ACTIVE_MAP_TASKS, 0, true);
         maxActiveMapTasks = sfResolve(ATTR_MAX_ACTIVE_MAP_TASKS, 0, true);
         maxSupportedMapTasks = sfResolve(ATTR_MAX_SUPPORTED_MAP_TASKS, 0, true);
@@ -99,7 +96,7 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
             checkClusterStatus();
             new ComponentHelper(this)
                     .sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
-                            STATUS_CHECKED + jobtracker, null, null);
+                            STATUS_CHECKED + jobTracker, null, null);
         }
     }
 
@@ -108,22 +105,19 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
      *
      * @return a client which may exist already
      * @throws SFHadoopException if the connection cannot be made
-     * @throws RemoteException for network problems
      */
 
-    private synchronized JobClient createClientOnDemand() throws SmartFrogException, RemoteException {
+    private synchronized JobClient createClientOnDemand() throws SFHadoopException {
         if (client != null) {
             return client;
         }
         try {
-            ManagedConfiguration conf = ManagedConfiguration.createConfiguration(this, false, false, true);
-            sfLog().info("Connecting to Job Tracker at " + jobtracker);
+            ManagedConfiguration conf = new ManagedConfiguration(this);
+            sfLog().info("Connecting to " + jobTracker);
             client = new JobClient(conf);
             return client;
-        } catch (RemoteException e) {
-            throw e;
         } catch (IOException e) {
-            throw new SFHadoopException(ERROR_CANNOT_CONNECT + jobtracker, e, this);
+            throw new SFHadoopException(ERROR_CANNOT_CONNECT + jobTracker, e, this);
         }
     }
 
@@ -135,21 +129,14 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
-    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (checkOnLiveness) {
             try {
                 checkClusterStatus();
-            } catch (SmartFrogException e) {
+            } catch (SFHadoopException e) {
                 throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
             }
-        }
-    }
-
-    private void maybeDumpConfiguration(ManagedConfiguration conf) {
-        if(sfLog().isDebugEnabled()) {
-            sfLog().debug(conf.dump());
         }
     }
 
@@ -157,74 +144,40 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
      * Check the cluster status
      *
      * @throws SFHadoopException on any problem with the checks
-     * @return a cluster status string
      */
-    private String checkClusterStatus() throws SmartFrogException {
+    private void checkClusterStatus() throws SFHadoopException {
 
         try {
             JobClient cluster = createClientOnDemand();
             ClusterStatus status = cluster.getClusterStatus();
-            StringBuilder result = new StringBuilder();
 
             if (supportedFileSystem) {
-                Path sysDir = cluster.getSystemDir();
-                URI uri = sysDir.toUri();
-                sfLog().info("Checking filesystem " + uri);
-                ManagedConfiguration conf = (ManagedConfiguration) cluster.getConf();
-                String impl = "fs." + uri.getScheme() + ".impl";
-                String classname = conf.get(impl);
-                if(classname == null) {
-                    maybeDumpConfiguration(conf);
-                    throw new SFHadoopException("File system " + uri + " will not load "
-                            +" - no configuration mapping for " + impl
-                            +" in "+ conf.dump(),
-                            this,
-                            conf);
-                }
                 try {
-                    conf.getClassByName(classname);
-                } catch (ClassNotFoundException e) {
-                    throw new SFHadoopException("File system " + uri + " will not load "
-                            + " - unable to locate class " + impl + " : "+e,
-                            e,
-                            this,
-                            conf);
-                }
-                try {
-                    result.append("Filesystem: ").append(uri).append(" ; ");
                     FileSystem fs = cluster.getFs();
                 } catch (IOException e) {
-                    throw new SFHadoopException("File system "+ uri + " will not load "
-                            + e,
+                    throw new SFHadoopException("File system will not load "
+                            + e.getMessage(),
                             e,
-                            this,
-                            conf);
+                            this);
                 } catch (IllegalArgumentException e) {
                     throw new SFHadoopException("Bad File system URI"
-                            + e,
+                            + e.getMessage(),
                             e,
-                            this,
-                            conf);
+                            this);
                 }
             }
-            if (jobtrackerLive) {
-                sfLog().info("Checking jobTracker ");
+            if (jobTrackerLive) {
                 JobTracker.State state = status.getJobTrackerState();
                 if (!state.equals(JobTracker.State.RUNNING)) {
-                    throw new SFHadoopException("Job Tracker at " + jobtracker
-                            + " is not running. It is in the state " + state, this);
+                    throw new SFHadoopException("Job Tracker at " + jobTracker + " is not running", this);
                 }
-                result.append("Job tracker is in state ").append(status);
             }
             checkRange(minActiveMapTasks, maxActiveMapTasks, status.getMapTasks(), "map task");
             checkRange(minActiveReduceTasks, maxActiveReduceTasks, status.getReduceTasks(), "reduce task");
             checkMax(maxSupportedMapTasks, status.getMaxMapTasks(), "supported max map task");
             checkMax(maxSupportedReduceTasks, status.getMaxReduceTasks(), "supported max reduce task");
-            result.append(" Map Tasks = ").append(status.getMapTasks());
-            result.append(" Reduce Tasks = ").append(status.getReduceTasks());
-            return result.toString();
         } catch (IOException e) {
-            throw new SFHadoopException("Cannot connect to" + jobtracker, e, this);
+            throw new SFHadoopException("Cannot connect to" + jobTracker, e, this);
         }
     }
 
@@ -262,21 +215,13 @@ public class ClusterStatusCheckerImpl extends AbstractConditionPrim
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
-    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        boolean live;
-        String description;
         try {
-            description = checkClusterStatus();
-            live = true;
+            checkClusterStatus();
+            return true;
         } catch (SFHadoopException e) {
-            setFailureCause(e);
-            description = e.toString();
             sfLog().debug(e);
-            live = false;
-            
+            return false;
         }
-        sfReplaceAttribute(IsHadoopServiceLive.ATTR_SERVICE_DESCRIPTION, description);
-        return live;
     }
 }

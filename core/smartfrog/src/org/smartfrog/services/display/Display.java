@@ -19,44 +19,19 @@
  */
 package org.smartfrog.services.display;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.JarUtil;
+import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.Reference;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -79,35 +54,39 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.text.Document;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
-import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.ExitCodes;
-import org.smartfrog.sfcore.common.JarUtil;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
 
 /**
@@ -206,7 +185,7 @@ public class Display extends JFrame
      */
     JMenuItem jMenuItemExit = new JMenuItem();
     /**
-     * Menu help -- protected as sub class may add menu items
+     * Menu help.
      */
     JMenu jMenuHelp = new JMenu();
     /**
@@ -224,10 +203,10 @@ public class Display extends JFrame
     /**
      * Menu item - about.
      */
-    JMenuItem jMenuItemAbout = new JMenuItem();   
+    JMenuItem jMenuItemAbout = new JMenuItem();
     /**
      * File name.
-     */    
+     */
     String currFileName = null;
     /**
      * File chooser.
@@ -280,13 +259,9 @@ public class Display extends JFrame
     private Prim sfObj = null;
     private boolean systemExit = true;
     Display mngConsole = null;
-    /**
-     * 
-     */
     private JMenuItem jMenuItemMngConsole = new JMenuItem();
-   
-    private int fontSize = 12;   
-    
+    private int fontSize = 12;
+
     /**
      * Constructs Display object with title.
      *
@@ -961,7 +936,7 @@ public class Display extends JFrame
                                             "User termination", null);
                                     sfObj.sfDetachAndTerminate(tr);
                                 } catch (Exception ex) {
-                                    sfLog().error(ex, ex);
+                                    sfLog().error(ex);
                                 }
                             }
                         }
@@ -982,13 +957,13 @@ public class Display extends JFrame
                         this.sfObj.sfDetachAndTerminate(tr);
                     } catch (Exception ex) {
                         if (sfLog().isErrorEnabled()) {
-                            sfLog().error(ex, ex);
+                            sfLog().error(ex);
                         }
                     }
                 }
             } else if (systemExit) {
                 sfLog().out("Exiting console");
-                ExitCodes.exit(0);
+                System.exit(0);
             }
 
             // Dispose consoles!
@@ -1147,6 +1122,7 @@ public class Display extends JFrame
             return;
         }
         //End option dialog
+        int port = 3800;
         String hostName = null;
 
         try {
@@ -1165,32 +1141,24 @@ public class Display extends JFrame
             return;
         }
 
-        startMngConsole(hostName);
-    }
-    
-    public void startMngConsole(String hostName) {
-    	int port = 3800;
         try {
             java.net.InetAddress.getByName(hostName);
             SFProcess.getRootLocator()
                     .getRootProcessCompound(java.net.InetAddress.getByName(
                             hostName), port);
         } catch (java.net.UnknownHostException uex) {
-        	System.out.println("111"+uex.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName +
                             ". Unknown host.");
             return;
         } catch (java.rmi.ConnectException cex) {
-        	System.out.println("222"+cex.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName + ". " + cex
                             .getMessage());
             return;
         } catch (Exception e) {
-        	System.out.println("333"+e.getMessage());
             this.modalErrorDialog("startMngConsole",
-                    "Couldn't start SFMngConsole for resource " + hostName + ". " + e);
+                    "Couldn't start SFMngConsole for resource " + hostName);
             return;
         }
 
@@ -1244,7 +1212,6 @@ public class Display extends JFrame
                 mngConsole.dispose();
                 mngConsole = null;
             }
-            System.out.println("444"+e.getMessage());
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName);
         }
@@ -1429,21 +1396,19 @@ public class Display extends JFrame
     void jMenuItemProcessComp_actionPerformed(ActionEvent e) {
         this.infoProcessCompound();
     }
-    
-    
-    
-    
-    
+
+
     /**
      * Widjets initialization
      *
      * @throws Exception If unable to initialize
      */
-    protected void jbInit() throws Exception {
+    private void jbInit() throws Exception {
+
         String imagesPath = Display.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
         //imagesPath = imagesPath + "frog.gif";
-        imagesPath = imagesPath + "SplodgeGreen32.gif";
+        imagesPath = imagesPath + "SplodgeGreen32.ico";
         this.setIconImage(createImage(imagesPath));
 
         documentScreen = screen.getDocument();
@@ -1526,9 +1491,7 @@ public class Display extends JFrame
         jCheckBoxMenuItemAskSaveChanges.setText("Ask Save Changes?");
         jCheckBoxMenuItemAskSaveChanges.setSelected(true);
 
-        
-        
-        
+
         jMenuItemMngConsole.setText("SF Management Console");
         jMenuItemMngConsole.addActionListener(
                 new ActionListener() {
@@ -1536,8 +1499,6 @@ public class Display extends JFrame
                         jMenuItemMngConsole_actionPerformed(e);
                     }
                 });
-        
-        
         jMenuBarDisplay.add(jMenuDisplayOptions);
         jMenuBarDisplay.add(jMenuHelp);
         jMenuDisplayOptions.add(jCheckBoxMenuItemPause);
@@ -1558,23 +1519,6 @@ public class Display extends JFrame
         jMenuHelp.add(jMenuItemMngConsole);
         jMenuHelp.addSeparator();
         jMenuHelp.add(jMenuItemAbout);
-        
-        //Custom menu items for display and help menus...
-        //Feature added if extra menu features are desirable in particular contexts...
-        Vector items=null;
-        try { items = (Vector) sfObj.sfResolve("extraMenuItems"); } catch (Exception e){/*Intentionally ZIP*/}
-        if (items!=null){
-        	DisplayMenus menus = new DisplayMenus(this);
-        	for (Object item: items){
-	        	Class itemClass = SFClassLoader.forName(item.toString());
-	        	if (itemClass==null) continue;
-	        	Object instance = itemClass.newInstance();
-                if (!(instance instanceof DisplayHelpMenuItem)) continue;
-                ((DisplayHelpMenuItem)instance).registerItem(menus);
-	        }
-        }
-        //
-        
         this.setJMenuBar(jMenuBarDisplay);
 
         //end Menus
@@ -1589,38 +1533,8 @@ public class Display extends JFrame
                         GridBagConstraints.NORTH, GridBagConstraints.BOTH,
                         new Insets(0, 8, 8, 8), 1, 1));
         mainToolBar.add(stopResume, null);
-        
-        
     }
-    
-    public interface DisplayHelpMenuItem {
-    	void registerItem(DisplayMenus menus);
-    }
-    
-    static public class DisplayMenus {
-    	private Display display;
-    	
-    	DisplayMenus(Display display){
-    		this.display=display;
-    	}
-    	
-    	public JMenu getMenuOtions(){
-        	return display.jMenuDisplayOptions;
-        }
-        
-        public JMenu getMenuHelp(){
-        	return display.jMenuHelp;
-        }
-        
-        public Prim getPrim(){
-        	return display.sfObj;
-        }
-        
-        public void startMngConsole(String hostName){
-        	display.startMngConsole(hostName);
-        }
-    }
-    
+
     public void setFontSize(int fontSize) {
         Object selected = getSelectedInTab();
         if (selected instanceof JTextArea) {
@@ -2172,9 +2086,4 @@ public class Display extends JFrame
         }
         return logStatic;
     }
-    
-    public Prim getDisplayPrim(){
-    	return sfObj;
-    }
-    
 }

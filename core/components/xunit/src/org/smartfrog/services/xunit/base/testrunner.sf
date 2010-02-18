@@ -56,7 +56,6 @@ TestRunnerSchema extends Schema {
  */
 TestRunner extends Compound {
     sfClass "org.smartfrog.services.xunit.base.TestRunnerImpl";
-    description "testrunner";
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;
     failOnError true;

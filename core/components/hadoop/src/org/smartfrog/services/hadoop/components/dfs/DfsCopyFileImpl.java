@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.RemoteException;
 
 /**
- * Component to copy a file within DFS Created 17-Jun-2008 15:06:23
+ * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
  */
 
 public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
@@ -45,7 +45,6 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         startWorkerThread();
@@ -58,8 +57,7 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    @Override
-    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path source = resolveDfsPath(ATTR_SOURCE);
         Path dest = resolveDfsPath(ATTR_DEST);
         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
@@ -67,6 +65,6 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
         int blocksize = sfResolve(ATTR_BLOCKSIZE, 0, true);
         DfsUtils.assertNotDependent(fileSystem,source, fileSystem, dest);
         DfsUtils.mkParentDirs(fileSystem, dest);
-        DfsUtils.copyFile(fileSystem, source, fileSystem, dest, overwrite, blocksize);
+        DfsUtils.copyFile(fileSystem,source, fileSystem, dest, overwrite, blocksize);
     }
 }

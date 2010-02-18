@@ -19,14 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.sfcore.workflow.conditional.conditions.ConditionWithFailureCause;
-
 /**
  * Created 12-May-2008 16:06:08
  */
 
 
-public interface CheckDiskSpace extends CheckableCondition, ConditionWithFailureCause {
+public interface CheckDiskSpace extends CheckableCondition {
 
     /**
      * Vector of directories: {@value}

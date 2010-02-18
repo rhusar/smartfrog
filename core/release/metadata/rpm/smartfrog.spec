@@ -43,6 +43,8 @@
 
 
 
+# TODO: menu entries
+
 # if menu entries are created, define Summary here, and use it in the summary
 # tag, and the menu entries' descriptions
 
@@ -77,8 +79,10 @@
 %{!?_private_rpm:%define security_text This is an unsigned distribution}
 %{?_private_rpm:%define security_text This is a signed distribution with private information in the smartfrog-private rpm}
 
-%{echo: %{security_text}}
-%{echo: }
+%{?_private_rpm:%{error: this is a private rpm}}
+%{!?_private_rpm:%{error: this is not a private rpm}}
+
+
 
 # -----------------------------------------------------------------------------
 
@@ -193,19 +197,6 @@ It does not contain any of the Ant optional libraries, or their dependencies.
 
 # -----------------------------------------------------------------------------
 
-%package cloudfarmer
-
-Group:         ${rpm.framework}
-Summary:        Cloud Infrastructure Management
-Requires:       %{name} = %{version}-%{release}, %{name}-jetty,  %{name}-json,  %{name}-jasper
-#
-%description cloudfarmer 
-Components and tools to deal with different cloud infrastructures.
-
-This RPM includes everything needed to host struts 1.x under Jetty.
-
-# -----------------------------------------------------------------------------
-
 %package csvfiles
 Group:         ${rpm.framework}
 Summary:        Components to work with CSV files
@@ -240,69 +231,7 @@ This package does not include any JDBC drivers. The appropriate JDBC driver for 
 target system must be installed/added to the sfCodeBase attribute of the components,
 in order for JDBC connectivity to work.
 
-Includes:
-commons-dbutils-${commons-dbutils.version}.jar
-commons-pool-${commons-pool.version}.jar
-commons-dbcp-${commons-dbcp.version}.jar
-
-
 # -----------------------------------------------------------------------------
-
-%package ec2
-Group:         ${rpm.framework}
-Summary:        Amazon EC2 support
-Requires:       %{name} = %{version}-%{release}, %{name}-cloudfarmer, %{name}-restlet,
-
-%description ec2
-Components for working with S3 files and EC2 instances.
-
-# -----------------------------------------------------------------------------
-
-%package groovy
-Group:         ${rpm.framework}
-Summary:        Groovy Script Support
-Requires:       %{name} = %{version}-%{release}
-
-%description groovy
-This includes Groovy and the components needed to embed Groovy scripts inside .sf files
-
-# -----------------------------------------------------------------------------
-
-%package hadoop
-Group:         ${rpm.framework}
-Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release}, %{name}-jetty
-
-%description hadoop
-
-This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
-It does not contain the Apache Hadoop shell scripts
-
-# -----------------------------------------------------------------------------
-
-#%package jasper
-#Group:         ${rpm.framework}
-#Summary:        Jasper JSP runtime
-#Requires:       %{name} = %{version}-%{release}, %{name}-logging, %{name}-www
-
-#%description jasper
-#This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
-#application server, such as Jetty.
-
-
-# -----------------------------------------------------------------------------
-
-%package jetty
-Group:         ${rpm.framework}
-Summary:        Jetty integration
-Requires:       %{name} = %{version}-%{release}, %{name}-www, %{name}-ant
-
-%description jetty
-This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
-SmartFrog. 
-
-# -----------------------------------------------------------------------------
-
 
 %package jmx
 Group:         ${rpm.framework}
@@ -319,23 +248,6 @@ mx4j-remote-${mx4j.version}.jar
 mx4j-jmx-${mx4j.version}.jar
 mx4j-tools-${mx4j.version}.jar
 
-
-# -----------------------------------------------------------------------------
-
-%package json
-Group:         ${rpm.framework}
-Summary:        JSON support
-Requires:       %{name} = %{version}-%{release}, %{name}-logging
-#
-%description json
-This contains the components for working with JSON files
-
-Redistributables:
-
-commons-beanutils-${commons-beanutils.version}.jar
-commons-collections-${commons-collections.version}.jar
-commons-lang-${commons-lang.version}.jar
-
 # -----------------------------------------------------------------------------
 
 %package logging
@@ -345,10 +257,7 @@ Requires:       %{name} = %{version}-%{release}
 #
 %description logging
 This package integrates SmartFrog with Apache Log4j. It includes the Apache
-commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries,
-and the slf4j-${slf4j.version} libraries to bind to commons-logging.
-SmartFrog Logging can fit in behind commons-logging, so that it can handle
-all the output. Log4J can be used as a back end for SmartFrog itself.
+commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
 
 # -----------------------------------------------------------------------------
 
@@ -373,8 +282,7 @@ oro-${oro.version}.jar
 %package quartz
 Group:         ${rpm.framework}
 Summary:        Work scheduling with Quartz
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging,
-
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging
 #
 %description quartz
 Work scheduling. These components can be used to schedule work to a pool of machines,
@@ -382,32 +290,6 @@ using Quartz to queue the jobs. A CPU monitor component provides information abo
 current system state, using the Unix/Linux vmstat command as a source of information.
 
 Contains the Quartz library version quartz-${quartz.version}.jar.
-
-
-# -----------------------------------------------------------------------------
-
-%package restlet
-Group:         ${rpm.framework}
-Summary:        Restlet support
-Requires:       %{name} = %{version}-%{release} ,  %{name}-www,
-
-%description restlet
-The Restlet libraries (CDDL and GPL licensed) and components to work with them
-
-
-# -----------------------------------------------------------------------------
-
-%package rpmtools
-Group:         ${rpm.framework}
-Summary:        Components to aid RPM generation and deployment
-Requires:       %{name} = %{version}-%{release},  %{name}-networking,
-
-#
-%description rpmtools
-This RPM contains components to work with RPMs.
-
-There are no explicit dependencies, but any remote installation services
-will require the SSH package to be installed
 
 # -----------------------------------------------------------------------------
 
@@ -419,13 +301,12 @@ Requires:      %{name} = %{version}-%{release}
 %description scripting
 Scripting support.
 Includes BeanShell bsh-${bsh.version}.jar
-
 # -----------------------------------------------------------------------------
 
 %package xunit
 Group:         ${rpm.framework}
 Summary:       Testing under SmartFrog
-Requires:       %{name} = %{version}-%{release}, %{name}-logging
+Requires:       %{name} = %{version}-%{release} , %{name}-logging
 #
 %description xunit
 The base testing components. This contains the sfunit test components
@@ -441,14 +322,13 @@ Requires:       %{name} = %{version}-%{release}  , %{name}-xunit
 %description junit
 This contains the components for running JUnit ${junit.version} tests, and the
 junit-${junit.version}.jar.
-Prerequisite packages: xunit, logging.
-
+Prerequisite packages: xunit, Logging.
 # -----------------------------------------------------------------------------
 
 %package velocity
 Group:         ${rpm.framework}
 Summary:        Velocity template engine
-Requires:       %{name} = %{version}-%{release},  %{name}-networking, %{name}-json,
+Requires:       %{name} = %{version}-%{release}  , %{name}-logging
 #
 %description velocity
 
@@ -460,15 +340,16 @@ text, HTML or XML files on the fly.
 It includes the files
 velocity-${velocity.version}.jar
 velocity-dep-${velocity.version}.jar
+commons-collections-${commons-collections.version}.jar
+commons-lang-${commons-lang.version}.jar
 
-
-Prerequisite packages: logging, json and networking
+Prerequisite packages: Logging.
 
 %package www
 Group:         ${rpm.framework}
 Summary:        WWW components
 Requires:       %{name} = %{version}-%{release} , %{name}-logging
-
+#
 %description www
 This package contains components to deploy web applications on different
 Java web servers, from Jetty ${jetty.version} to JBoss. It also contains a LivenessPage
@@ -477,6 +358,8 @@ component that can monitor the health of a remote site.
 The bundled libraries are
 commons-httpclient-${commons-httpclient.version}.jar
 commons-codec-${commons-codec.version}.jar
+servlet-api-${servletapi.version}.jar
+jetty-${jetty.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -527,37 +410,37 @@ make a privately generated key package publicly available.
 # -----------------------------------------------------------------------------
 
 %prep
-#First, create a user or a group (see SFOS-180 and SFOS-1255 for why this code is off) 
+#First, create a user or a group (see SFOS-180) 
 USERNAME="${rpm.username}"
 GROUPNAME="${rpm.groupname}"
 
-# Maybe create a new group
-# getent group $${GROUPNAME} > /dev/null
-#  if [ $$? -ne 0 ]; then
-#   groupadd $${GROUPNAME}> /dev/null 2>&1
-#   if [ $$? -ne 0 ]; then
-#     logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
-#     exit 1
-#   fi
-# else
-#   logger -p auth.info -t %{name} $${GROUPNAME} group already exists
-# fi
+# Mabye create a new group
+getent group $${GROUPNAME} > /dev/null
+if [ $$? -ne 0 ]; then
+  groupadd $${GROUPNAME}> /dev/null 2>&1
+  if [ $$? -ne 0 ]; then
+    logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
+    exit 1
+  fi
+else
+  logger -p auth.info -t %{name} $${GROUPNAME} group already exists
+fi
 
 # Maybe create a new user
 # Creation of smartfrog user account
 # UID value will be fetched from the system
 # Any free least numeric number will get assigned to UID
 # User deletion is left to the System Administartor
-# getent passwd $${USERNAME} > /dev/null 2>&1
-# if [ $$? -ne 0 ]; then
-#   useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
-#   if [ $$? -ne 0 ]; then
-#     logger -p auth.err -t %{name} $${USERNAME} user could not be created
-#     exit 2
-#   fi
-# else
-#   logger -p auth.info -t %{name} $${USERNAME} user already exists
-# fi
+getent passwd $${USERNAME} > /dev/null 2>&1
+if [ $$? -ne 0 ]; then
+  useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
+  if [ $$? -ne 0 ]; then
+    logger -p auth.err -t %{name} $${USERNAME} user could not be created
+    exit 2
+  fi
+else
+  logger -p auth.info -t %{name} $${USERNAME} user already exists
+fi
 
 #Now run the big setup
 %setup -q -c
@@ -572,7 +455,7 @@ GROUPNAME="${rpm.groupname}"
 %build
 rm -rf $RPM_BUILD_ROOT
 pwd
-cp -PpR . $RPM_BUILD_ROOT
+cp -dpr . $RPM_BUILD_ROOT
 
 
 # -----------------------------------------------------------------------------
@@ -609,23 +492,20 @@ rm -rf $RPM_BUILD_ROOT
 #option
 %config(noreplace) %{bindir}/default.ini
 %config(noreplace) %{bindir}/default.sf
-%config(noreplace) %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFEnvVariables.sh
 
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/smartfrog
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDefaultProperties
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDynamicClassLoadingProperties
-
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFProperties
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFSecurityProperties
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDaemon
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDetachAndTerminate
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiag
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfDiagnostics
-%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfList
+#%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfGui
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfManagementConsole
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfParse
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPing
-%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfPrintSettings
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfRun
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStart
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfStop
@@ -748,7 +628,6 @@ else
    done
 fi
 
-# -----------------------------------------------------------------------------
 
 %preun daemon
 # shut down the daemon before the uninstallation
@@ -767,15 +646,18 @@ if [ "$1" = "0" ] ; then
   fi
 fi
 
-# -----------------------------------------------------------------------------
+
+
+
+
+
 %files daemon
 #and the etc stuff
 %defattr(0644,root,root,0755)
 %attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
-%config(noreplace) %attr(0644,root,root) /etc/sysconfig/smartfrog
+%attr(0644,root,root) /etc/sysconfig/smartfrog
 
 
-# -----------------------------------------------------------------------------
 %files ant
 
 %{libdir}/sf-ant-${smartfrog.version}.jar
@@ -785,33 +667,12 @@ fi
 %{linkdir}/ant.jar
 %{linkdir}/ant-launcher.jar
 
-# -----------------------------------------------------------------------------
+
 %files anubis
 
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 %{linkdir}/sf-anubis.jar
 
-
-
-# -----------------------------------------------------------------------------
-%files cloudfarmer
-
-%{libdir}/sf-cloudfarmer-${smartfrog.version}.jar
-%{linkdir}/sf-cloudfarmer.jar
-%{libdir}/commons-chain-${commons-chain.version}.jar
-%{linkdir}/commons-chain.jar
-%{libdir}/commons-digester-${commons-digester.version}.jar
-%{linkdir}/commons-digester.jar
-%{libdir}/commons-validator-${commons-validator.version}.jar
-%{linkdir}/commons-validator.jar
-%{libdir}/struts-core-${struts.version}.jar
-%{linkdir}/struts-core.jar
-%{libdir}/struts-taglib-${struts.version}.jar
-%{linkdir}/struts-taglib.jar
-%{libdir}/struts-tiles-${struts.version}.jar
-%{linkdir}/struts-tiles.jar
-
-# -----------------------------------------------------------------------------
 %files csvfiles
 
 %{libdir}/sf-csvfiles-${smartfrog.version}.jar
@@ -819,92 +680,11 @@ fi
 %{linkdir}/sf-csvfiles.jar
 %{linkdir}/opencsv.jar
 
-# -----------------------------------------------------------------------------
 %files database
 
 %{libdir}/sf-database-${smartfrog.version}.jar
 %{linkdir}/sf-database.jar
-%{libdir}/commons-dbcp-${commons-dbcp.version}.jar
-%{linkdir}/commons-dbcp.jar
-%{libdir}/commons-pool-${commons-pool.version}.jar
-%{linkdir}/commons-pool.jar
-%{libdir}/commons-dbutils-${commons-dbutils.version}.jar
-%{linkdir}/commons-dbutils.jar
 
-
-# -----------------------------------------------------------------------------
-%files ec2
-%{linkdir}/sf-ec2.jar
-%{libdir}/sf-ec2-${smartfrog.version}.jar
-%{linkdir}/typica.jar
-%{libdir}/typica-${typica.version}.jar
-
-
-
-# -----------------------------------------------------------------------------
-%files groovy
-%{linkdir}/sf-groovy.jar
-%{libdir}/sf-groovy-${smartfrog.version}.jar
-%{linkdir}/groovy-all-minimal.jar
-%{libdir}/groovy-all-minimal-${groovy.version}.jar
-%{linkdir}/groovy-engine.jar
-%{libdir}/groovy-engine-${groovy-engine.version}.jar
-
-# -----------------------------------------------------------------------------
-%files hadoop
-%{linkdir}/sf-hadoop.jar
-%{libdir}/sf-hadoop-${smartfrog.version}.jar
-%{libdir}/hadoop-core-${hadoop.version}.jar
-%{linkdir}/hadoop-core.jar
-%{libdir}/hadoop-hdfs-${hadoop.version}.jar
-%{linkdir}/hadoop-hdfs.jar
-%{libdir}/hadoop-mapred-${hadoop.version}.jar
-%{linkdir}/hadoop-mapred.jar
-%{libdir}/hadoop-mapred-tools-${hadoop.version}.jar
-%{linkdir}/hadoop-mapred-tools.jar
-%{libdir}/hadoop-mapred-examples-${hadoop.version}.jar
-%{linkdir}/hadoop-mapred-examples.jar
-
-
-%{libdir}/avro-${avro.version}.jar
-%{linkdir}/avro.jar
-%{libdir}/commons-cli-${commons-cli.version}.jar
-%{linkdir}/commons-cli.jar
-%{libdir}/jackson-core-asl-${jackson-asl.version}.jar
-%{linkdir}/jackson-core-asl.jar
-%{libdir}/jackson-mapper-asl-${jackson-asl.version}.jar
-%{linkdir}/jackson-mapper-asl.jar
-%{libdir}/jets3t-${jets3t.version}.jar
-%{linkdir}/jets3t.jar
-%{libdir}/paranamer-${paranamer.version}.jar
-%{linkdir}/paranamer.jar
-%{libdir}/xmlenc-${xmlenc.version}.jar
-%{linkdir}/xmlenc.jar
-
-# -----------------------------------------------------------------------------
-%files jetty
-
-%{libdir}/sf-jetty-${smartfrog.version}.jar
-%{libdir}/jetty-${jetty.version}.jar
-%{libdir}/jetty-util-${jetty.version}.jar
-%{libdir}/servlet-api-${servletapi.version}.jar
-%{linkdir}/sf-jetty.jar
-%{linkdir}/servlet-api.jar
-%{linkdir}/jetty.jar
-%{linkdir}/jetty-util.jar
-
-# these are the Jasper components
-%{libdir}/jsp-2.1-${jetty.version}.jar
-%{linkdir}/jsp-2.1.jar
-%{libdir}/jsp-api-2.1-${jetty.version}.jar
-%{linkdir}/jsp-api-2.1.jar
-%{libdir}/commons-el-${commons-el.version}.jar
-%{linkdir}/commons-el.jar
-%{libdir}/core-${org.eclipse.jdt.core.version}.jar
-%{linkdir}/core.jar
-
-
-# -----------------------------------------------------------------------------
 %files jmx
 
 %{libdir}/sf-jmx-${smartfrog.version}.jar
@@ -918,38 +698,18 @@ fi
 %{linkdir}/mx4j-jmx.jar
 %{linkdir}/mx4j-tools.jar
 
-# -----------------------------------------------------------------------------
-%files json
 
-%{libdir}/sf-json-${smartfrog.version}.jar
-%{linkdir}/sf-json.jar
-%{libdir}/json-lib-${json-lib.version}.jar
-%{linkdir}/json-lib.jar
-%{libdir}/commons-beanutils-${commons-beanutils.version}.jar
-%{linkdir}/commons-beanutils.jar
-%{libdir}/commons-collections-${commons-collections.version}.jar
-%{linkdir}/commons-collections.jar
-%{libdir}/commons-lang-${commons-lang.version}.jar
-%{linkdir}/commons-lang.jar
-%{libdir}/ezmorph-${ezmorph.version}.jar
-%{linkdir}/ezmorph.jar
-
-# -----------------------------------------------------------------------------
 %files logging
 
 %{libdir}/sf-loggingservices-${smartfrog.version}.jar
 %{libdir}/commons-logging-${commons-logging.version}.jar
 %{libdir}/log4j-${log4j.version}.jar
-%{libdir}/slf4j-api-${slf4j.version}.jar
-%{libdir}/slf4j-jcl-${slf4j.version}.jar
 %{linkdir}/sf-loggingservices.jar
 %{linkdir}/commons-logging.jar
 %{linkdir}/log4j.jar
-%{linkdir}/slf4j-api.jar
-%{linkdir}/slf4j-jcl.jar
 
 
-# -----------------------------------------------------------------------------
+
 %files networking
 
 %{libdir}/sf-dns-${smartfrog.version}.jar
@@ -975,7 +735,6 @@ fi
 %{linkdir}/oro.jar
 %{linkdir}/jsch.jar
 
-# -----------------------------------------------------------------------------
 %files quartz
 
 %{libdir}/sf-quartz-${smartfrog.version}.jar
@@ -985,31 +744,6 @@ fi
 %{linkdir}/quartz.jar
 
 
-# -----------------------------------------------------------------------------
-%files restlet
-%{libdir}/sf-restlet-${smartfrog.version}.jar
-%{linkdir}/sf-restlet.jar
-%{linkdir}/org.restlet.jar
-%{libdir}/org.restlet-${restlet.version}.jar
-%{linkdir}/org.restlet.ext.fileupload.jar
-%{libdir}/org.restlet.ext.fileupload-${restlet.version}.jar
-%{linkdir}/com.noelios.restlet.jar
-%{libdir}/com.noelios.restlet-${restlet.version}.jar
-%{linkdir}/com.noelios.restlet.ext.httpclient.jar
-%{libdir}/com.noelios.restlet.ext.httpclient-${restlet.version}.jar
-%{linkdir}/com.noelios.restlet.ext.net.jar
-%{libdir}/com.noelios.restlet.ext.net-${restlet.version}.jar
-%{linkdir}/commons-fileupload.jar
-%{libdir}/commons-fileupload-${commons-fileupload.version}.jar
-
-
-# -----------------------------------------------------------------------------
-%files rpmtools
-
-%{libdir}/sf-rpmtools-${smartfrog.version}.jar
-%{linkdir}/sf-rpmtools.jar
-
-# -----------------------------------------------------------------------------
 %files scripting
 %{libdir}/sf-scripting-${smartfrog.version}.jar
 %{libdir}/bsh-${bsh.version}.jar
@@ -1017,13 +751,11 @@ fi
 %{linkdir}/sf-scripting.jar
 %{linkdir}/bsh.jar
 
-# -----------------------------------------------------------------------------
 %files xunit
 %{libdir}/sf-xunit-${smartfrog.version}.jar
 
 %{linkdir}/sf-xunit.jar
 
-# -----------------------------------------------------------------------------
 %files junit
 %{libdir}/sf-junit-${smartfrog.version}.jar
 %{libdir}/junit-${junit.version}.jar
@@ -1032,44 +764,51 @@ fi
 %{linkdir}/junit.jar
 
 
-# -----------------------------------------------------------------------------
 %files velocity
 %{libdir}/sf-velocity-${smartfrog.version}.jar
 %{libdir}/velocity-${velocity.version}.jar
 %{libdir}/velocity-dep-${velocity.version}.jar
+%{libdir}/commons-collections-${commons-collections.version}.jar
+%{libdir}/commons-lang-${commons-lang.version}.jar
 
 %{linkdir}/sf-velocity.jar
 %{linkdir}/velocity.jar
 %{linkdir}/velocity-dep.jar
+%{linkdir}/commons-collections.jar
+%{linkdir}/commons-lang.jar
 
-# -----------------------------------------------------------------------------
 %files www
 %{libdir}/sf-www-${smartfrog.version}.jar
+%{libdir}/sf-jetty-${smartfrog.version}.jar
+%{libdir}/jetty-${jetty.version}.jar
+%{libdir}/jetty-util-${jetty.version}.jar
+%{libdir}/servlet-api-${servletapi.version}.jar
 %{libdir}/commons-codec-${commons-codec.version}.jar
 %{libdir}/commons-httpclient-${commons-httpclient.version}.jar
 
 %{linkdir}/sf-www.jar
+%{linkdir}/sf-jetty.jar
+%{linkdir}/servlet-api.jar
+%{linkdir}/jetty.jar
+%{linkdir}/jetty-util.jar
 %{linkdir}/commons-codec.jar
 %{linkdir}/commons-httpclient.jar
 
-
-# -----------------------------------------------------------------------------
 %files xml
 %{libdir}/sf-xml-${smartfrog.version}.jar
 %{libdir}/jdom-${jdom.version}.jar
 %{libdir}/xom-${xom.version}.jar
-%{libdir}/xml-apis-${xml-apis.version}.jar
+%{libdir}/xmlParserAPIs-${xerces.version}.jar
 %{libdir}/xercesImpl-${xerces.version}.jar
 %{libdir}/xalan-${xalan.version}.jar
 
 %{linkdir}/sf-xml.jar
 %{linkdir}/jdom.jar
 %{linkdir}/xom.jar
-%{linkdir}/xml-apis.jar
+%{linkdir}/xmlParserAPIs.jar
 %{linkdir}/xercesImpl.jar
 %{linkdir}/xalan.jar
 
-# -----------------------------------------------------------------------------
 %files xmpp
 %{libdir}/sf-xmpp-${smartfrog.version}.jar
 %{libdir}/smack-${smack.version}.jar
@@ -1082,33 +821,10 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
-* Thu Feb 11 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
-- json RPM includes ezmorph and commons- libraries that json-lib depends on
-- velocity RPM now depends on json RPM
-- tune dependencies so more is handled transitively
-* Wed Feb 03 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
-- ec2 RPM depends on cloudfarmer
-- new json RPM; again ec2 depends upon it
-- /etc/sysconfig/smartfrog configuration file is now marked as a configuration point, it will
-  not be overwritten if someone chooses to patch it.
-* Fri Oct 02 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
-- Groovy RPM, does not depend on scripting
-- cloudfarmer RPM
-* Fri Jul 24 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.013-1.el5
-- Move up to the RHEL5 RPMs. 
-* Fri Jun 12 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.011-1.el4
-- Include Hadoop 0.21-alpha-13
-- New configuration file, bin/setSFEnvVariables.sh, which can be used
-  to set the environment in which the JVM runs. 
-* Fri Feb 13 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.17.006-1.el4
-- Move up Xerces version, changing the xml-apis JAR name in the process
-* Wed Nov 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.15.001-1.el4
-- Jetty and Hadoop RPMs
-- slf4j libraries in the loggingservices RPM
-* Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4
-- changes to the security model so that signedLib is a symlink.
-* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4
-- changes to the security model so that signedLib is a symlink.
+* Fri Jul 24 2009 Steve Loughran <smartfrog@hpl.hp.com> 3.16.004-2.el5
+- Move up to RHEL5 RPMs. 
+* Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4 changes to the security model so that signedLib is a symlink.
+* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4 changes to the security model so that signedLib is a symlink.
 * Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.027-2.el4
 - add velocity template
 * Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.018-2.el4
@@ -1146,3 +862,18 @@ fi
 - fixing permissions of the log directory; creating a new user on demand
 * Tue May 22 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.000-1
 - Built from contributions and the JPackage template
+
+
+# install statements
+#%install
+#mkdir -p ${RPM_BUILD_ROOT}/%{prefix}
+#cd SmartFrog.${smartfrog.version}
+#cd ..
+#cp -R SmartFrog.${smartfrog.version} ${RPM_BUILD_ROOT}/%{prefix}
+
+#%clean
+#rm -rf ${RPM_BUILD_ROOT}
+
+
+
+

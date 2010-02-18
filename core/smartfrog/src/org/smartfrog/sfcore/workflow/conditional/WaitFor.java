@@ -19,9 +19,7 @@
  */
 package org.smartfrog.sfcore.workflow.conditional;
 
-/**
- * created 30-Nov-2006 11:33:25
- */
+/** created 30-Nov-2006 11:33:25 */
 
 
 public interface WaitFor extends If {
@@ -31,7 +29,7 @@ public interface WaitFor extends If {
      */
     String ATTR_INTERVAL = "interval";
     /**
-     * time in milliseconds after which the test is deemed to have failed.
+     *  time in milliseconds after which the test is deemed to have failed.
      * {@value}
      */
     String ATTR_TIMEOUT = "timeout";

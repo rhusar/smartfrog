@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="security"  >
+<project name="security" default="init-security" >
 
 <description>
  Tests for starting security

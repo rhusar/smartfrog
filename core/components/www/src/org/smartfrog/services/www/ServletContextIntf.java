@@ -38,19 +38,13 @@ public interface ServletContextIntf extends ApplicationServerContext {
     /**
      * {@value}
      */
-    String ATTR_RESOURCE_PACKAGE = "resourcePackage";
-
+    String ATTR_CLASSPATH = "classpath";
 
     /**
      * host ip address. The IPAddr is returned for ease of use on networks where
      * DNS is not there
      */
     String ATTR_HOST_ADDRESS = "ipaddr";
-
-    /**
-     * Initial options for the context
-     */
-    String ATTR_OPTIONS = "options";
 
     /**
      * Add a mime mapping

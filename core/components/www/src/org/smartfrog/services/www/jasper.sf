@@ -36,16 +36,14 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 /**
  * declare a jasper servlet for JSP processing
  * This needs to be bound to a servlet context for deployment
- * The correct JSP files need to be included too.
  */
 
 
 ApacheJasperServlet extends Servlet {
    name "ApacheJasperServlet";
-   pathSpec "/*.jsp";
-   mappings ["*.JSP","*.jsp","*.jspx","*.JSPX"];
+   pathSpec "/jsp";
+   mappings ["*.JSP","*.jsp"];
    className "org.apache.jasper.servlet.JspServlet";
-   errorText "This servlet needs the jsp-api and jsp implementation JARs on the classpath";
 }
 
 

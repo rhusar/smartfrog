@@ -37,57 +37,10 @@ public final class FreeVar implements Copying, Cloneable, Serializable {
     static final long serialVersionUID = -2618542538185314519L;
 
     /**
-     * Auto Var effects
-     */
-    private Vector<Reference> autoEffects;
-    
-    private ComponentDescription autoEffectCD;
-    
-    public void setAutoEffectCD(ComponentDescription autoEffectCD){
-    	this.autoEffectCD = autoEffectCD;
-    }
-    
-    public boolean isAutoEffects(){
-    	return this.autoEffects!=null;
-    }
-    
-    /**
-     * 
-     */
-    public void setAutoEffects(Vector<Reference> autoEffects){
-    	this.autoEffects=autoEffects;
-    	CoreSolver.getInstance().addUndoFVAutoVarEffect(this);
-    }
-    
-    public void removeAutoEffects(){
-    	this.autoEffects=null;
-    	CoreSolver.getInstance().addUndoFVAutoVarEffect(this, autoEffects);
-    }
-    
-    public void applyAutoEffects() throws SmartFrogResolutionException {
-    	if (autoEffects==null) return;
-    	autoEffectCD.sfContext().put("sfVarAssignment", assVal);
-    	for (Reference effect : autoEffects) autoEffectCD.sfResolve(effect);
-    	autoEffects=null;
-    }
-    
-    /**
      * Default value for VAR
      */
     private Object defVal;
 
-    /**
-     * Assigned value...
-     */
-    private Object assVal;
-    
-    /**
-     * 
-     */
-    public void setAssignedValue(Object assVal){
-    	this.assVal = assVal;
-    }
-    
     /**
      * Get the VAR's default value
      *
@@ -97,10 +50,6 @@ public final class FreeVar implements Copying, Cloneable, Serializable {
         return defVal;
     }
 
-    public void setDefVal(Object defVal){
-    	this.defVal=defVal;
-    }
-    
     /**
      * The constraint evaluation index that originates this FreeVar The constraint strings in a single description get
      * aggregated, but there are potentially multiple descriptions whose aggregated constraint strings get evaluated one at
@@ -127,7 +76,7 @@ public final class FreeVar implements Copying, Cloneable, Serializable {
      * @return integer index
      */
     public int getConsEvalIdx() {
-    	return cidx;
+        return cidx;
     }
 
     /**
@@ -223,26 +172,16 @@ public final class FreeVar implements Copying, Cloneable, Serializable {
     public Object getRange() {
         return range;
     }
-    
-    public void setRange(Object range) {
-    	this.range=range;
-    }
-    
-    public void setRangeRef(Object range) {
-    	if (range instanceof Reference) {
-            rangeRef = (Reference) range;
-        } /**else throw**/
-    }
 
     /**
-     * Construct range of VAR, given component description which contains it
+     * Set range of VAR, given component description which contains it
      *
      * @param comp ComponentDescription containing local VAR
      * @return Object range of VAR
      * @throws SmartFrogFunctionResolutionException if resolution fails
      *
      */
-    public Object constructRange(ComponentDescription comp) throws SmartFrogFunctionResolutionException {
+    public Object setRange(ComponentDescription comp) throws SmartFrogFunctionResolutionException {
         if (rangeRef != null) {
             try {
                 range = comp.sfResolve(rangeRef);

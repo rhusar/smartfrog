@@ -67,6 +67,15 @@ public class JettyTCNTest
                 "java.lang.StackOverflowError");
     }
 
+    public void testCaseTCN55() throws Exception {
+        deployExpectingException(FULL_FILES + "tcn55.sf",
+                "tcn55",
+                EXCEPTION_DEPLOYMENT,
+                "unnamed component",
+                EXCEPTION_LINKRESOLUTION,
+                "jettyhome");
+    }
+
     public void testCaseTCN56() throws Exception {
         deployExpectingException(FULL_FILES + "tcn56.sf",
                 "tcn56",

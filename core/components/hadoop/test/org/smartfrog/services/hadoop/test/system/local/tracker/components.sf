@@ -30,95 +30,37 @@ testLocalJobTracker extends ExpectDeploy {
   action extends LocalJobTrackerCompound {
   }
 
-  tests extends JobTrackerLiveSequence {
-    jobtracker LAZY PARENT:action:jobtracker;
-    cluster LAZY PARENT:action:cluster;
-    datanode LAZY PARENT:action:datanode;
-    namenode LAZY PARENT:action:namenode;
-    live extends Sleep;
-  }
-
 }
 
 
 testLocalJobTrackerForked extends testLocalJobTracker {
-  condition IsForkTestsSet;
-  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:datanode:sfProcessName "testDataNodeForkedProcess";
-  action:jobtracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
-//  action:clusterActions:then:tasktracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
+  //action:datanode:sfProcessName "testDataNodeForkedProcess";
+  //action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
 }
 
 /**
  * Test the local node
  */
-testJobSubmission extends ExpectDeploy {
-  description "Submit a job to a cluster and copy out the result";
+testLocalTaskTracker extends ExpectDeploy {
+  description "bring up a Task Tracker";
+
+
 
   action extends LocalClusterCompound {
-  
   }
 
   tests extends MapReduceTestSequence {
-    jobtracker LAZY PARENT:action:jobtracker;
-    cluster LAZY PARENT:action:cluster;
-    datanode LAZY PARENT:action:datanode;
-    namenode LAZY PARENT:action:namenode;
-  }
-
-
-}
-
-testJobSetup extends ExpectDeploy {
-  description "test that the job setup works";
-
-  action extends LocalClusterCompound {
-
-  }
-
-  tests extends JobTrackerSequence {
-    jobtracker LAZY PARENT:action:jobtracker;
-    cluster LAZY PARENT:action:cluster;
-    datanode LAZY PARENT:action:datanode;
-    namenode LAZY PARENT:action:namenode;
+    jobTracker LAZY action:jobTracker;
+    cluster PARENT:action:cluster;
   }
 
 
 }
 
 
-
-
-testJobSubmissionForked extends testJobSubmission {
-  condition IsForkTestsSet;
-  action:namenode:sfProcessName "testJobSubmission-namenode";
-  action:datanode:sfProcessName "testJobSubmission-datanode";
-  action:jobtracker:sfProcessName "testJobSubmission-jobtracker";
-  //action:tasktracker:sfProcessName "testJobSubmission-tasktracker";
+testLocalTaskTrackerForked extends testLocalTaskTracker {
+  //action:LocalDataNode:sfProcessName "testDataNodeForkedProcess";
+  //action:LocalInProcessNameNode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:taskTracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
 }
-
-
-/**
- * Start an orphan task tracker. We expect it to be dead afterwards
- */
-testOrphanTracker extends ExpectDeployFailure {
-  description "bring up an orphan Task Tracker, see what happens.";
-
-
-
-  action extends OrphanTaskTrackerCompound {
-  
-  }
-
-  //for our test we sleep; that's all.
-  tests extends Sequence {
-    Sleep extends Delay {
-      time ORPHAN_SLEEP_TIME;
-    }
-  }
-
-  exceptions [["java.net.ConnectException","Connection refused"]];
-
-}
-
-

@@ -191,7 +191,6 @@
     <include name="smartfrog"/>
     <include name="set*Properties"/>
     <include name="sf*"/>
-    <include name="*.sh"/>
     <include name="*.pl"/>
     <include name="*.py"/>
     <exclude name="*.bat"/>
@@ -215,7 +214,6 @@
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
     <exclude name="set*Properties"/>
-    <exclude name="*.sh"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
     <exclude name="*.bat"/>

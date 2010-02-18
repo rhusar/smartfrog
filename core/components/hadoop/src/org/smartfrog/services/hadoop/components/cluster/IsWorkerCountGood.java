@@ -29,6 +29,7 @@ import java.rmi.RemoteException;
 
 public class IsWorkerCountGood extends IsHadoopServiceLive {
 
+    private ClusterManager manager;
     private int minCount;
 
     public IsWorkerCountGood() throws RemoteException {
@@ -39,6 +40,7 @@ public class IsWorkerCountGood extends IsHadoopServiceLive {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         minCount = sfResolve("minCount", 0, true);
+        manager = (ClusterManager) getService();
     }
 
     /**
@@ -50,10 +52,6 @@ public class IsWorkerCountGood extends IsHadoopServiceLive {
      */
     @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        if(!super.evaluate()) {
-            return false;
-        }
-        int workerCount = ((ClusterManager) getService()).getLiveWorkerCount();
-        return evalOrFail(workerCount >= minCount, "worker count is "+ workerCount);
+        return super.evaluate() && manager.getLiveWorkerCount() >= minCount;
     }
 }

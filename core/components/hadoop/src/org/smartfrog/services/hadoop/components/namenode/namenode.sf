@@ -18,32 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-
-
-/**
- * Extend NameDirNode with dataDirectories and a log directory
- */
-ClusteredNameNode extends ClusteredNameDirNode {
-  sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
-  name "NameNode";
-
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //edit directories, again a list of Dirs. Requird
-  editDirectories TBD;
-  //log directory
-  logDir TBD;
-
-  //check the name node is live when we ping the component
-  checkRunning true;
-  //should we expect the node to terminate itself
-  expectNodeTermination false;
-  sfShouldTerminate false;
-
-}
-
-
 /**
  * A name node is one of the most critical part of an HDFS cluster; it is
  * the directory server.
@@ -61,23 +35,31 @@ ClusteredNameNode extends ClusteredNameDirNode {
  */
 
 
+NameNode extends NameDataLogNode {
+  sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
 
-NameNode extends ClusteredNameNode, FileSystemNode {
+
 
   //startup mode
   dfs.namenode.startup ACTION_REGULAR;
 
-  //dfs.http.address "http://localhost:8021";
-
+  dfs.http.address "http://localhost:8021";
+/*
+  dfs.info.bindAddress NULL;
+  dfs.info.port NULL;
+  */
 
   //this is set from logDir
   //hadoop.log.dir TBD
 
 
   //how many handler threads
+  dfs.namenode.handler.count 10;
   //fs.default.name
 
   dfs.namenode.decommission.interval (5 * 60);
+
+  //dfs.name.dir TBD: directory for the names
 
   dfs.permissions.supergroup "supergroup";
   dfs.upgrade.permission "0777"
@@ -104,5 +86,11 @@ NameNode extends ClusteredNameNode, FileSystemNode {
   dfs.safemode.extension 0;
 
 
-}
 
+
+  //check the name node is live when we ping the component
+  checkRunning true;
+  //should we expect the node to terminate itself
+  expectNodeTermination false;
+  sfShouldTerminate false;
+}

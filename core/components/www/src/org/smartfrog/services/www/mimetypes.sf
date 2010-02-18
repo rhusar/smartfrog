@@ -26,7 +26,7 @@
  */
 
 
-MimeTypes extends DATA {
+MimeTypes extends {
 
   APPLICATION_ATOM_XML "application/atom+xml";
   APPLICATION_JSON "application/json";
@@ -45,6 +45,3 @@ MimeTypes extends DATA {
   IMAGE_PNG "image/png";
   IMAGE_SVG "image/svg+xml";
 }
-
-
-

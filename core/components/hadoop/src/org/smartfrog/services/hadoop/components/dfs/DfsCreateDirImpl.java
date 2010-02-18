@@ -21,9 +21,8 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -34,7 +33,6 @@ import java.rmi.RemoteException;
  * Create a directory
  */
 public class DfsCreateDirImpl extends DfsPathOperationImpl {
-    public static final String E_CANNOT_CREATE = "Cannot create ";
 
 
     public DfsCreateDirImpl() throws RemoteException {
@@ -47,7 +45,6 @@ public class DfsCreateDirImpl extends DfsPathOperationImpl {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         startWorkerThread();
@@ -60,20 +57,12 @@ public class DfsCreateDirImpl extends DfsPathOperationImpl {
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    @SuppressWarnings({"RefusedBequest"})
-    @Override
-    protected void performDfsOperation(FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
         if (!fileSystem.exists(path)) {
             fileSystem.mkdirs(path);
         } else if (!isIdempotent()) {
-            throw new SmartFrogDeploymentException(E_CANNOT_CREATE + path.toString() + " as it already exists");
-        } else {
-            FileStatus fileStatus = fileSystem.getFileStatus(path);
-            if (!fileStatus.isDir()) {
-                throw new SmartFrogDeploymentException(
-                        E_CANNOT_CREATE + path.toString() + " as there is a file of that name");
-            }
+            throw new SmartFrogDeploymentException("Cannot create " + path.toString() + " as it already exists");
         }
     }
 }

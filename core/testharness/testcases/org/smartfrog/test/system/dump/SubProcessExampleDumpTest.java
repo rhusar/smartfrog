@@ -43,8 +43,6 @@ public class SubProcessExampleDumpTest
     private static final String FILES = "org/smartfrog/test/system/deploy/";
     private static final Log log = LogFactory.getLog(SubProcessExampleDumpTest.class);
 
-    static long timeout = 1 * 31 * 1000L;
-
     /**
      * Constructor
      * @param s name
@@ -59,9 +57,6 @@ public class SubProcessExampleDumpTest
      */
 
     public void testCaseSubProcessExDump01() throws Throwable {
-        System.out.println("\n*********************************************************" +
-                           "\n    Testing: testCaseSubProcessExDump01."+
-                           "\n*********************************************************");
 
         application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
         assertNotNull(application);
@@ -83,148 +78,18 @@ public class SubProcessExampleDumpTest
         assertNotNull("No Diagnostics report", cd);
         log.info("Diagnostics report: \n" + cd);
         //Testing Dump now
-        try {
-          StringBuffer message = new StringBuffer();
-          message.append ( application.sfCompleteName().toString() );
-          message.append ("\n");
-          message.append ( dumpState(application));
-          System.out.println(message);
-          log.info(message);
-        } catch (Exception ex){
-            System.err.println("Error: "+ex.getMessage());
-            ex.printStackTrace();
-        }
-        System.out.println("testCaseSubProcessExDump01 Success.");
+        log.info(dumpState(application));
 
 
     }
 
-	    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
-    public void testCaseSubProcessExDump02() throws Throwable {
-            System.out.println("\n*********************************************************" +
-                               "\n    Testing: testCaseSubProcessExDump02."+
-                               "\n*********************************************************");
-        application =null;
-        application = deployExpectingSuccess(FILES + "subprocessSimple.sf", "tcSPEDump02");
-        assertNotNull(application);
-
-        //Testing Dump now
-        try {
-          StringBuffer message = new StringBuffer();
-          message.append ( application.sfCompleteName().toString() );
-          message.append ("\n");
-          message.append ( dumpState(application));
-
-          System.out.println(message);
-          log.info(message);
-        } catch (Exception ex){
-            System.err.println("Error: "+ex.getMessage());
-            ex.printStackTrace();
-        }
-        System.out.println("testCaseSubProcessExDump02 Success.");
-    }
-	
-	    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
-    public void testCaseSubProcessExDump03() throws Throwable {
-            System.out.println("\n*********************************************************" +
-                               "\n    Testing: testCaseSubProcessExDump03."+
-                               "\n*********************************************************");
-
-        application = deployExpectingSuccess(FILES + "subprocessNo.sf", "tcSPEDump03");
-        assertNotNull(application);
-
-        //Testing Dump now
-        try {
-          StringBuffer message = new StringBuffer();
-          message.append ( application.sfCompleteName().toString() );
-          message.append ("\n");
-          message.append ( dumpState(application));
-          System.out.println(message);
-          log.info(message);
-        } catch (Exception ex){
-            System.err.println("Error: "+ex.getMessage());
-            ex.printStackTrace();
-        }
-        System.out.println("testCaseSubProcessExDump03 Success.");
-    }
-
-
-/**
-     * test case
-     * @throws Throwable on failure
-     */
-
-    public void testCaseSubProcessExDump04() throws Throwable {
-
-        System.out.println("\n*********************************************************" +
-                           "\n    Testing: testCaseSubProcessExDump04. (Should fail, you cannot dump root daemon)"+
-                            "\n*********************************************************");
-
-        application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump04");
-        assertNotNull(application);
-
-        String actualSfClass = (String) application.sfResolveHere("sfClass");
-        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
-
-        //Some basic check
-        Prim sys = (Prim) application.sfResolveHere("system");
-        assertEquals("first", sys.sfDeployedProcessName());
-
-        Prim foo = (Prim) sys.sfResolveHere("foo");
-        assertEquals("test", foo.sfDeployedProcessName());
-
-        Prim bar = (Prim) foo.sfResolveHere("bar");
-        assertEquals("test2", bar.sfDeployedProcessName());
-
-        ComponentDescription cd = application.sfDiagnosticsReport();
-        assertNotNull("No Diagnostics report", cd);
-//        log.info("Diagnostics report: \n" + cd);
-//        System.out.println("Diagnostics report: \n" + cd);
-        //Testing Dump now with rootProcess (This will fail until loop references are solved)
-        Prim root = (Prim) application.sfResolveWithParser("HOST localhost");
-        StringBuffer message = new StringBuffer();
-        assertNotNull(root);
-        boolean success = false;
-        String messageEx = null;
-        try {
-          message.append ( root.sfCompleteName().toString() );
-          message.append ("\n");
-          message.append ( dumpState(root));
-          System.out.println(message);
-          log.info(message);
-
-        } catch (Throwable ex){
-            messageEx =  ex.getMessage().toString();
-            //String messageS =  "Error: "+message+"\n"+messageEx;
-            String messageS = " Test successful: It failed to dump description of root daemon when circular having references" + "; "+ messageEx+"\n"+ message;
-            //log.info(messageS);
-            //ex.printStackTrace();
-            System.out.println("\n **** testCaseSubProcessExDump04: Success. **** "+ messageS);
-            success = true;
-        }
-        if (success!=true) {
-            String messageS = " Test unsuccessful: It should failed to dump description of root daemon when circular having references" + "; "+ messageEx;
-            log.info(messageS);
-            throw new Exception (messageS);
-        }
-
-    }
-	
 
     /**
      * Cast the parameter toa prim and dump it
      * @param node node to dump
      * @return the dup
      */
-    public String dumpState(Object node) throws Exception {
+    public String dumpState(Object node) {
         StringBuffer message = new StringBuffer();
         String name = "error";
         //Only works for Prims.
@@ -234,18 +99,17 @@ public class SubProcessExampleDumpTest
                 message.append("\n*************** State *****************\n");
                 Dumper dumper = new DumperCDImpl(objPrim);
                 objPrim.sfDumpState(dumper.getDumpVisitor());
-				name = (objPrim).sfCompleteName().toString();
-                message.append(dumper.toString(timeout));
+                message.append(dumper.toString());
+                name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
                 log.error(ex);
                 StringWriter sw = new StringWriter();
                 PrintWriter pr = new PrintWriter(sw, true);
                 ex.printStackTrace(pr);
                 pr.close();
-                message.append("\n **** Error: \n" + ex.toString() + "\n StackTrace: \n" + sw.toString());
-                System.out.println(message);
+                message.append("\n Error: " + ex.toString() + "\n" + sw.toString());
                 fail(message.toString());
-                throw ex;
+                return null;
             }
         }
         return ("State for " + name + "\n" + message.toString());

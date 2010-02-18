@@ -18,17 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-ClusteredTaskTracker extends ClusteredNode {
+TaskTracker extends ClusterNode {
   sfClass "org.smartfrog.services.hadoop.components.tracker.TaskTrackerImpl"
-  name "TaskTracker";
-  expectNodeTermination false;
-
 }
-
-TaskTracker extends ClusteredTaskTracker, InlineConfiguredNode {
-  /** when deployed
-  live.mapred.task.tracker.http.address
-  */
-}
-
-

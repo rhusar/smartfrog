@@ -27,19 +27,27 @@ package org.smartfrog.services.jetty.listeners;
 public interface SSLJettySocketConnector extends JettySocketConnector {
 
     /**
-     * Component Attribute <p/> value: {@value}
+     * Component Attribute
+     * <p/>
+     * value: {@value}
      */
-    String ATTR_KEYSTORE = "keystore";
+    String ATTR_KEYSTORE="keystore";
     /**
-     * Component Attribute <p/> value: {@value}
+     * Component Attribute
+     * <p/>
+     * value: {@value}
      */
     String ATTR_KEYSTORETYPE = "keystoreType";
     /**
-     * Component Attribute <p/> value: {@value}
+     * Component Attribute
+     * <p/>
+     * value: {@value}
      */
-    String ATTR_PASSWORD = "passwordProvider";
+    String ATTR_PASSWORD="passwordProvider";
     /**
-     * Component Attribute <p/> value: {@value}
+     * Component Attribute
+     * <p/>
+     * value: {@value}
      */
-    String ATTR_PROTOCOL = "protocol";
+    String ATTR_PROTOCOL="protocol";
 }

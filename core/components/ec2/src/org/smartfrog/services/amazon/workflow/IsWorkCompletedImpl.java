@@ -19,11 +19,12 @@
  */
 package org.smartfrog.services.amazon.workflow;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.workflow.conditional.Conditional;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 import java.rmi.RemoteException;
 
@@ -34,7 +35,6 @@ import java.rmi.RemoteException;
 public class IsWorkCompletedImpl
         extends PrimImpl implements Condition {
     private CompletableWork work;
-    public static final String TARGET = "target";
 
     public IsWorkCompletedImpl() throws RemoteException {
     }
@@ -49,7 +49,7 @@ public class IsWorkCompletedImpl
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim target = sfResolve(TARGET, (Prim) null, true);
+        Prim target = sfResolve("target", (Prim) null, true);
         work = (CompletableWork) target;
     }
 

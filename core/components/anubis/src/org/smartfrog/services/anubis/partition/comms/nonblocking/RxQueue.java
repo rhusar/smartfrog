@@ -49,7 +49,7 @@ public class RxQueue {
     /**
      * indicates if the queue is open
      * 
-     * @return true iff the queue is open
+     * @return
      */
     public synchronized boolean isOpen() {
         return open;

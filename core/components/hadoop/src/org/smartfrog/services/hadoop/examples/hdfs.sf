@@ -17,23 +17,59 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/hadoop/components/components.sf"
 
-#include "/org/smartfrog/services/hadoop/examples/waitforservices.sf"
+debugMode false;
+
+LightweightJobTracker extends JobTracker {
+  smartfrog.dump.conf debugMode ;
+//  jobtracker.http.threads 4;
+}
+
+LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
+  smartfrog.dump.conf debugMode ;
+  tasktracker.http.threads 4;
+}
+
+LightweightNameNode extends NameNode {
+  smartfrog.dump.conf debugMode ;
+//  namenode.http.threads 4;
+}
+
+LightweightDataNode extends DataNode {
+  dfs.heartbeat.interval 1;
+//  datanode.http.threads 4;
+  localhost_any  "127.0.0.1:0";
+  dfs.datanode.http.address localhost_any;
+  dfs.datanode.https.address localhost_any;
+  dfs.datanode.ipc.address localhost_any;
+
+  dfs.blockreport.intervalMsec (10 * 60* 1000);
+  //delay is in seconds
+  dfs.blockreport.initialDelay 60;
+  smartfrog.dump.conf debugMode;
+}
 
 LocalHadoopCompound extends Compound {
-  //ordered startup/shutdown of child components
-  //sfSyncTerminate true;
-  fs.default.name  FS.DEFAULT.NAME;
-  namenodeURL      NAME_NODE_URL;
-  datanodeURL      DATA_NODE_URL ;
+  fs.default.name "hdfs://localhost:8020/";
+  nameNodeURL     "http://localhost:8021";
+  dataNodeURL     "http://localhost:0";
 
-  logDir extends TempDir;
+  logDir extends TempDirWithCleanup {
 
-  dataDir extends TempDir;
+  }
 
-  nameDir extends TempDir;
-  
-  editsDir extends TempDir;
+  dataDir extends TempDirWithCleanup {
+
+  }
+
+  nameDir extends TempDirWithCleanup {
+
+  }
+
 }
 
 LocalNameNodeCompound extends LocalHadoopCompound {
@@ -42,196 +78,47 @@ LocalNameNodeCompound extends LocalHadoopCompound {
   cluster LAZY namenode;
 
   namenode extends LightweightNameNode {
+    sfProcessName "namenode";
     fs.default.name PARENT:fs.default.name;
-    dataDir LAZY PARENT:dataDir;
-    dataDirectories [dataDir];
-    nameDirectory LAZY PARENT:nameDir;
-    nameDirectories [nameDirectory];
-    editsDir LAZY PARENT:editsDir:absolutePath;
-    editDirectories [editsDir];
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
     logDir LAZY PARENT:logDir;
-    dfs.namenode.startup IF (TEST_MODE) THEN ACTION_FORMAT ELSE ACTION_REGULAR FI;
-    dfs.http.address namenodeURL;
+    dfs.namenode.startup ACTION_FORMAT;
+    dfs.http.address nameNodeURL;
     dfs.permissions false;
     minWorkerCount 0;
   }
 }
 
-LocalDataNodeCompound extends LocalNameNodeCompound {
+OneNodeHDFS extends LocalNameNodeCompound {
   description "A data node bound to a temporary directory";
 
-  localDataDir extends TempDir {
+  localDataDir extends TempDirWithCleanup {
 
   }
 
-
-  datanode extends  LightweightDataNode {
+  datanode extends LightweightDataNode {
+    sfProcessName "datanode1";
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
+    dfs.datanode.address dataNodeURL  ;
   }
-
-
-
 
 }
 
-FilesystemWithActions extends LocalDataNodeCompound {
-
-
-  clusterActions extends WaitForServiceLive {
-    service LAZY PARENT:datanode;
-    //sfShouldTerminate false;
-
-    then extends Compound {
-      //sfShouldTerminate false;
-    }
-
-  }
-
-
-}
-
-
-
-TwoDataNodeCluster extends LocalDataNodeCompound {
-  localDataDir2 extends TempDir {
+TwoNodeHDFS extends OneNodeHDFS {
+  localDataDir2 extends TempDirWithCleanup {
 
   }
 
   datanode2 extends datanode {
+    sfProcessName "datanode2";
     dataDirectories [LAZY localDataDir2];
-    dfs.datanode.https.port ANY_PORT;
+    dfs.datanode.https.address "https://localhost:0";
   }
 }
 
-/**
- * A complete filesystem
- */
-LocalFileSystemCompound extends FilesystemWithActions {
-
+sfConfig extends TwoNodeHDFS {
 
 }
-
-
-LocalJobTrackerCompound extends LocalFileSystemCompound {
-  description "A cluster with a job tracker";
-
-
-
-  jobtracker extends LightweightJobTracker {
-    fs.default.name PARENT:ATTRIB fs.default.name;
-    dataDir LAZY PARENT:ATTRIB dataDir;
-    dataDirectories [dataDir];
-    nameDir LAZY PARENT:ATTRIB nameDir;
-    nameDirectories [nameDir];
-    logDir LAZY PARENT:ATTRIB logDir;
-  }
-}
-
-
-
-
-/**
- * A full tasktracker compound is slightly problematic as we have to block until
- * the job tracker is started and it knows what its hostname is. This
- * could be determined by looking at its state, but as we want to get the url from
- * the live.mapred.job.tracker value, we just spin until that resolves. 
- */
-LocalTaskTrackerCompound extends LocalJobTrackerCompound {
-  description "A cluster with a task tracker";
-
-  /*
-   * to deal with this, we run a sequence
-   */
-  tasktrackerSequence extends Sequence {
-
-    blockForNamenode extends WaitForNameNodeLive  {
-      service LAZY ATTRIB namenode;
-    }
-
-    blockForJobTrackerStarted extends WaitForNameNodeLive {
-      service LAZY ATTRIB jobtracker;
-    }
-
-    blockForJobTrackerReference extends WaitForHadoopLiveWorkflow  {
-      condition extends ReferenceResolves {
-        reference LAZY ATTRIB jobtracker:live.mapred.job.tracker;
-        serviceDescription "waiting for jobtracker:live.mapred.job.tracker";
-      }
-    }
-    
-    tasktracker extends LightweightTaskTracker {
-      fs.default.name PARENT:ATTRIB fs.default.name;
-      mapred.job.tracker LAZY ATTRIB jobtracker:live.mapred.job.tracker;
-    }
-  }
-}
-
-
-LocalClusterCompound extends LocalTaskTrackerCompound {
-
-  description "a full cluster";
-
-
-}
-
-
-
-/**
-Test sequence that checks that when a namenode is shut down, it goes away
-*/
-NamenodeShutdownSequence extends Sequence {
-  namenode TBD;
-
-  waitForNameNode extends WaitForNameNodeLive {
-    service LAZY PARENT:namenode;
-  }
-
-
-  //detach and terminate
-  terminateNameNode extends Terminator {
-    kill LAZY PARENT:namenode;
-    detachFirst true;
-  }
-
-  //now assert that it is dead
-  assertIPCClosed extends AssertNameNodeIPCClosed;
-  assertHttpClosed extends AssertNameNodeHttpClosed;
-}
-
-FileSystemLiveSequence extends Sequence {
-
-    namenode TBD;
-    datanode TBD;
-    datanodeCount 1;
-    //the cluster for all the tests
-    cluster namenode;
-
-    waitForNameNode extends WaitForNameNodeLive {
-      service LAZY PARENT:namenode;
-    }
-
-    waitForDataNode extends WaitForDataNodeLive {
-      service LAZY PARENT:datanode;
-    }
-
-
-}
-
-
-
-
-
-LocalClusterStatus extends ClusterStatus {
-  jobtracker TBD;
-
-  fs.default.name jobtracker:fs.default.name;
-  mapred.job.tracker jobtracker;
-  hadoop.job.ugi jobtracker:hadoop.job.ugi;
-  sfShouldTerminate true;
-  supportedFileSystem true;
-}
-
-
-

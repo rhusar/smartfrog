@@ -30,32 +30,27 @@ public interface ServletComponent extends ServletContextComponent {
     /**
      * {@value}
      */
-    String ATTR_NAME = "name";
+    final static String ATTR_NAME = "name";
     /**
      * {@value}
      */
-    String ATTR_PATH_SPEC = "pathSpec";
+    final static String ATTR_PATH_SPEC = "pathSpec";
     /**
      * {@value}
      */
-    String ATTR_CLASSNAME = "className";
+    final static String ATTR_CLASSNAME = "className";
     /**
      * {@value}
      */
-    String ATTR_INIT_PARAMS = "initParams";
-    
+    final static String ATTR_INIT_PARAMS = "initParams";
     /**
      * {@value}
      */
-    String ATTR_INIT_OPTIONS = "initOptions";
+    final static String ATTR_MAPPINGS = "mappings";
     /**
      * {@value}
      */
-    String ATTR_MAPPINGS = "mappings";
-    /**
-     * {@value}
-     */
-    String ATTR_ABSOLUTE_PATH = ApplicationServerContext.ATTR_ABSOLUTE_PATH;
+    final static String ATTR_ABSOLUTE_PATH = ApplicationServerContext.ATTR_ABSOLUTE_PATH;
     /**
      * Initialisation order.
      * {@value}

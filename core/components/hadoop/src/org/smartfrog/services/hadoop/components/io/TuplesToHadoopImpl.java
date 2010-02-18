@@ -20,16 +20,16 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.io;
 
 import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.TupleDataSource;
 import org.smartfrog.services.filesystem.TupleReaderThread;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.components.dfs.DfsClusterBoundImpl;
+import org.smartfrog.services.hadoop.components.dfs.DfsPathOperation;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -43,7 +43,7 @@ import java.rmi.RemoteException;
 public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToHadoop {
 
     private TupleUploadThread worker;
-    private FileSystem fileSystem;
+    private DistributedFileSystem fileSystem;
     private Path dest;
     private String lineBegin;
     private String lineEnd;
@@ -65,7 +65,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -91,38 +90,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
 
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
-     * compound (if ever registered)
-     *
-     * @param status termination status
-     */
-    @Override
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        try {
-            closeFileSystem();
-        } catch (SFHadoopException e) {
-            sfLog().warn(e);
-        }
-    }
-
-    /**
-     * Close the filesystem if non-null
-     * @throws SFHadoopException if it would not close
-     */
-    protected synchronized void closeFileSystem() throws SFHadoopException {
-        try {
-            if (fileSystem != null) {
-                fileSystem.close();
-                fileSystem = null;
-            }
-        } catch (IOException e) {
-            throw SFHadoopException.forward("failed to close filesystem", e,
-                    this, null);
-        }
-    }
-
-    /**
      * This is the worker thread that gets invoked whenever
      * a tuple is to be uploaded. It opens the file for writing
      * and whenever it gets a tuple, it pushes out every line
@@ -143,7 +110,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
          * @throws SmartFrogException SmartFrog problems
          * @throws RemoteException    network problems
          */
-        @Override
         protected void onStarted() throws SmartFrogException, RemoteException {
             super.onStarted();
             try {
@@ -160,7 +126,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
             }
         }
 
-        
         /**
          * Process one line of the data source
          *
@@ -168,8 +133,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
          * @throws SmartFrogException SmartFrog problems
          * @throws RemoteException    network problems
          */
-        @SuppressWarnings({"RefusedBequest"})
-        @Override
         protected void processOneLine(String[] line)
                 throws SmartFrogException, RemoteException {
             //upload the line
@@ -192,14 +155,16 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
          * @throws SmartFrogException SmartFrog problems
          * @throws RemoteException    network problems
          */
-        @Override
         protected void onFinished() throws SmartFrogException, RemoteException {
             super.onFinished();
-            output.close();
-            output = null;
-            closeFileSystem();
+            try {
+                output.close();
+                fileSystem.close();
+            } catch (IOException e) {
+                throw SFHadoopException.forward("failed to close " + dest, e,
+                        TuplesToHadoopImpl.this, null);
+            }
         }
-
 
 
     }

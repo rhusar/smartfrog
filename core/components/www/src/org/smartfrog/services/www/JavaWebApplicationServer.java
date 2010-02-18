@@ -39,23 +39,23 @@ public interface JavaWebApplicationServer extends Remote {
      * Port attribute (from WebServer)
      * {@value}
      */
-    String ATTR_PORT ="port";
+    public static final String ATTR_PORT ="port";
 
     /**
      * attribute that is to be set only if WAR deployment is supported.
      * {@value}
      */
-    String ATTR_SUPPORTS_WAR = "supportsWAR";
+    public static final String ATTR_SUPPORTS_WAR = "supportsWAR";
     /**
      * attribute true iff servlet contexts are supported.
      * {@value}
      */
-    String ATTR_SUPPORTS_SERVLET_CONTEXT = "supportsServletContext";
+    public static final String ATTR_SUPPORTS_SERVLET_CONTEXT = "supportsServletContext";
     /**
      * attribute true iff EAR deployment is supported.
      * {@value}
      */
-    String ATTR_SUPPORTS_EAR = "supportsEAR";
+    public static final String ATTR_SUPPORTS_EAR = "supportsEAR";
 
     /**
      * deploy a web application.

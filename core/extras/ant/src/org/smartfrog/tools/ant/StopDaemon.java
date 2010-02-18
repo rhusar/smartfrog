@@ -39,10 +39,6 @@ public class StopDaemon extends SmartFrogTask {
     public StopDaemon() {
     }
 
-    /**
-     * Initialise and bind to the local host.
-     * @throws BuildException on any failure
-     */
     public void init() throws BuildException {
         super.init();
         bindToLocalhost();
@@ -54,7 +50,6 @@ public class StopDaemon extends SmartFrogTask {
      * @throws org.apache.tools.ant.BuildException
      *
      */
-    @SuppressWarnings({"RefusedBequest"})
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyHostDefined();

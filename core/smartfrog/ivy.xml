@@ -52,6 +52,7 @@
 
   </publications>
   <dependencies>
+
     <!--javacc is used for the javacc task-->
     <!-- this has been disabled so that the core always builds, even if the network is missing-->
 <!--    <dependency org="net.java.dev.javacc" name="javacc" rev="3.2"

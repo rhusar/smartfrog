@@ -92,12 +92,4 @@ public class SFDebug {
     public void println() {
         println("");
     }
-
-    /**
-     * Print an exception to the debug output stream
-     * @param t the throwable
-     */
-    public void println(Throwable t) {
-        t.printStackTrace(System.err);
-    }
 }

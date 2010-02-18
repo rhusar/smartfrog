@@ -20,24 +20,26 @@
 
 package org.smartfrog.services.jetty;
 
-import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.RequestLogHandler;
+import org.mortbay.thread.BoundedThreadPool;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateWebApplicationContext;
-import org.smartfrog.services.jetty.internal.ThreadPoolFactory;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -51,34 +53,26 @@ import java.util.Vector;
 
 public class JettyImpl extends PrimImpl implements JettyIntf {
 
-    /**
-     * A jetty helper
-     */
+    private final Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
+
+    /** Jetty home path */
+    private String jettyHome;
+
+
+    /** A jetty helper */
     private JettyHelper jettyHelper = new JettyHelper(this);
 
-    /**
-     * The Http server
-     */
+    /** The Http server */
     private Server server;
-
-    /** the server bridge */
     private JettyToSFLifecycle<Server> serverBridge = new JettyToSFLifecycle<Server>(SERVER, null);
 
-    /**
-     * log pattern. {@value}
-     */
+    /** log pattern. {@value} */
     public static final String LOG_PATTERN = "yyyy_mm_dd.request.log";
-    /**
-     * log subdirectory. {@value}
-     */
+    /** log subdirectory. {@value} */
     public static final String LOG_SUBDIR = "/logs/";
 
-    /**
-     * Error string raised when EARs are deployed {@value}
-     */
+    /** Error string raised when EARs are deployed {@value} */
     public static final String ERROR_EAR_UNSUPPORTED = "Jetty does not support EAR files";
-
-    /** server attribute which is wrapped then added to the graph: {@value} */
     private static final String SERVER = "server";
 
 
@@ -102,15 +96,14 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
 
     /**
      * Configure and deploy the Jetty component
-     * <p/>
-     * There's a good example on the mortbay site on how to set Jetty up to match the base configuration; what we have
-     * here is not that dissimilar, only configurable via .sf files.
      *
+     * There's a good example on the mortbay site
+     * on how to set Jetty up to match the base configuration; what we have here is not that dissimilar, only
+     * configurable via .sf files.
+     * @see  <a href="http://jetty.mortbay.org/xref/org/mortbay/jetty/example/LikeJettyXml.html">Example</a>
      * @throws SmartFrogException In case of error while deploying
-     * @throws RemoteException In case of network/rmi error
-     * @see <a href="http://jetty.mortbay.org/xref/org/mortbay/jetty/example/LikeJettyXml.html">Example</a>
+     * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         //create the server and store in in our bridge
@@ -119,7 +112,11 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
         server.setStopAtShutdown(sfResolve(ATTR_STOP_AT_SHUTDOWN, false, true));
 
         //create the pool
-        server.setThreadPool(ThreadPoolFactory.createThreadPool(this));
+        BoundedThreadPool pool = new BoundedThreadPool();
+        pool.setMaxThreads(sfResolve(ATTR_MAXTHREADS, 0, true));
+        pool.setMinThreads(sfResolve(ATTR_MINTHREADS, 0, true));
+        pool.setMaxIdleTimeMs(sfResolve(ATTR_MAXIDLETIME, 0, true));
+        server.setThreadPool(pool);
 
         //tune the response policy
         server.setSendServerVersion(sfResolve(ATTR_SEND_SERVER_VERSION, false, true));
@@ -128,13 +125,15 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
 
         //set the jetty helper up
         jettyHelper.cacheJettyServer(server);
+        jettyHome = sfResolve(jettyhomeRef, jettyHome, true);
+        jettyHelper.cacheJettyHome(jettyHome);
 
 
         //this holds all the server contexts
         ContextHandlerCollection contexts = new ContextHandlerCollection();
 
         //now look at logging; add one if needed
-        RequestLogHandler logHandler = null;
+        RequestLogHandler logHandler=null;
         if (sfResolve(ATTR_ENABLE_LOGGING, false, true)) {
             logHandler = configureLogging();
         }
@@ -143,8 +142,8 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
         DefaultHandler raise404 = new DefaultHandler();
 
         Handler[] handlerArray;
-        if (logHandler != null) {
-            handlerArray = new Handler[]{contexts, raise404, logHandler};
+        if(logHandler!=null) {
+            handlerArray=new Handler[] {contexts, raise404,logHandler};
         } else {
             handlerArray = new Handler[]{contexts, raise404};
         }
@@ -156,9 +155,8 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * sfStart: starts Jetty Http server.
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -173,21 +171,22 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
     }
 
 
+
     /**
      * Create a log handler...this is not bound to the server yet
      *
-     * @return the log handler
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
+     * @return the log handler
      */
     public RequestLogHandler configureLogging() throws SmartFrogException, RemoteException {
-        String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, null, null, true, null);
+        String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyHome, null, true, null);
         String logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", true);
 
         NCSARequestLog requestlog = new NCSARequestLog();
         requestlog.setFilename(logDir + File.separatorChar + logPattern);
         //commented out as this is deprecated/ignored.
-        requestlog.setRetainDays(sfResolve(ATTR_LOG_KEEP_DAYS, 0, true));
+        requestlog.setRetainDays(sfResolve(ATTR_LOG_KEEP_DAYS,0,true));
         requestlog.setAppend(sfResolve(ATTR_LOG_APPEND, false, true));
         requestlog.setExtended(sfResolve(ATTR_LOG_APPEND, false, true));
         requestlog.setLogTimeZone(sfResolve(ATTR_LOG_TZ, "", true));
@@ -209,9 +208,9 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
     }
 
     /**
-     * Termination phase. Shut down the server, logging any errors that happen on the way
-     */
-    @Override
+     * Termination phase.
+     * Shut down the server, logging any errors that happen on the way
+     * */
     public synchronized void sfTerminateWith(TerminationRecord status) {
 
         try {
@@ -231,9 +230,8 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      *
      * @param source caller
      * @throws SmartFrogLivenessException the server is  not started
-     * @throws RemoteException network trouble
+     * @throws RemoteException            network trouble
      */
-    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         serverBridge.sfPing(source);
@@ -246,13 +244,12 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * server.
      *
      * @param webApplication the web application. this must be a component whose attributes include the mandatory set of
-     * attributes defined for a JavaWebApplication component. Application-server specific attributes (both mandatory and
-     * optional) are also permitted
+     *                       attributes defined for a JavaWebApplication component. Application-server specific
+     *                       attributes (both mandatory and optional) are also permitted
      * @return an entry
      * @throws SmartFrogException errors thrown by the delegate
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
-    @Override
     public JavaWebApplication deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {
 
@@ -267,9 +264,8 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      * @param enterpriseApplication the application
      * @return an entry referring to the application
      * @throws SmartFrogException always
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
-    @Override
     public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication)
             throws RemoteException, SmartFrogException {
         throw new SmartFrogException(ERROR_EAR_UNSUPPORTED);
@@ -280,13 +276,12 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
      *
      * @param servletContext the servlet context
      * @return a token referring to the application
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      * @throws SmartFrogException on any other problem
      */
-    @Override
     public ServletContextIntf deployServletContext(Prim servletContext) throws RemoteException, SmartFrogException {
 
-        DelegateServletContext delegate = new DelegateServletContext(this, servletContext);
+        DelegateServletContext delegate = new DelegateServletContext(this, null,servletContext);
         delegate.deploy();
         return delegate;
     }

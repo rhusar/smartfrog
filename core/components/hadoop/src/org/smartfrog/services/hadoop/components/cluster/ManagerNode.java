@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
 /**
  * Manager nodes have children

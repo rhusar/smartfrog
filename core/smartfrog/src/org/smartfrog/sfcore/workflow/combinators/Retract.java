@@ -41,6 +41,7 @@ public class Retract extends EventCompoundImpl implements Compound {
      * @throws RemoteException In case of RMI or network error.
      */
     public Retract() throws RemoteException {
+        super();
     }
 
     /**
@@ -67,7 +68,6 @@ public class Retract extends EventCompoundImpl implements Compound {
         try {
             sfTerminateWithHooks.applyHooks(this, status);
         } catch (Exception e) {
-            sfLog().ignore(e);
         }
     }
 }

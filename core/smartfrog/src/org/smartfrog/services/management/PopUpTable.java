@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.*;
 import org.smartfrog.services.display.WindowUtilities;
@@ -57,9 +59,9 @@ public class PopUpTable extends JComponent implements ActionListener {
    /** Item for Tree popup menu - remove attribute. */
    JMenuItem menuItemRemoveAttribute = new JMenuItem();
     /** Item for Tree popup menu - remove attribute. */
-   JMenuItem menuItemIntrospectValue = new JMenuItem();
+   JMenuItem menuItemInstrospectValue = new JMenuItem();
 
-    /**
+   /**
     *  Constructs PopUpTable object
     */
    public PopUpTable() {
@@ -74,14 +76,14 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       menuItemRemoveAttribute.setText("Remove Attribute");
       menuItemModifyAttribute.setText("Add/Modify Attribute");
-      menuItemIntrospectValue.setText("Introspect Value");
+      menuItemInstrospectValue.setText("Introspect Value");
 
       popupTable.add(menuItemRemoveAttribute);
       popupTable.add(menuItemModifyAttribute);
-      popupTable.add(menuItemIntrospectValue);
+      popupTable.add(menuItemInstrospectValue);
       menuItemRemoveAttribute.addActionListener(this);
       menuItemModifyAttribute.addActionListener(this);
-      menuItemIntrospectValue.addActionListener(this);
+      menuItemInstrospectValue.addActionListener(this);
    }
 
 
@@ -163,7 +165,7 @@ public class PopUpTable extends JComponent implements ActionListener {
          modifyAttribute(name, value, tags);
 
          // Entry pointed in the tree
-      } else if (source== menuItemIntrospectValue){
+      } else if (source==menuItemInstrospectValue){
          String name = null;
          Object value = null;
          if (row == -1) {
@@ -178,11 +180,11 @@ public class PopUpTable extends JComponent implements ActionListener {
                    value = ((ComponentDescription)node).sfResolve(name,false);
                  }
              } catch (SmartFrogResolutionException e1) {
-                 if (sfLog().isErrorEnabled()) sfLog().error ("Failed to resolve value during introspect '"+name,e1);
-                 WindowUtilities.showError(this,"Failed to resolve value during introspect '"+name+"'. \n"+e1.toString());
+                 if (sfLog().isErrorEnabled()) sfLog().error ("Failed to resolve value during instrospect '"+name,e1);
+                 WindowUtilities.showError(this,"Failed to resolve value during instrospect '"+name+"'. \n"+e1.toString());
              } catch (RemoteException e1) {
-                 if (sfLog().isErrorEnabled()) sfLog().error ("Failed to introspect '"+name,e1);
-                 WindowUtilities.showError(this,"Failed to introspect '"+name+"'. \n"+e1.toString());
+                 if (sfLog().isErrorEnabled()) sfLog().error ("Failed to instrospect '"+name,e1);
+                 WindowUtilities.showError(this,"Failed to instrospect '"+name+"'. \n"+e1.toString());
              }
          }
          modalDialog("Introspection "+ name ,  PopUpTree.introspect(value), "", source);

@@ -21,37 +21,29 @@
 
 package org.apache.hadoop.hdfs.server.namenode;
 
-import org.apache.hadoop.util.NodeUtils;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.BindingTuple;
-import org.smartfrog.services.hadoop.core.ServiceInfo;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
-import org.smartfrog.services.hadoop.core.PingHelper;
-import org.smartfrog.services.hadoop.core.InnerPing;
-import org.smartfrog.services.hadoop.core.ServicePingStatus;
-import org.smartfrog.services.hadoop.core.LivenessException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  */
-public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationAttributes, InnerPing {
+public class ExtNameNode extends NameNode {
 
     private boolean checkRunning;
     private Prim owner;
     private ManagedConfiguration conf;
     public static final String NAME_NODE_IS_STOPPED = "NameNode is stopped";
     public static final String NO_FILESYSTEM = "Filesystem is not running";
+    private boolean expectNodeTermination;
+    private boolean terminationInitiated;
+    private final Reference completeName;
+    private static final String NAME_NODE_HAS_HALTED = "Name node has halted";
     private int minWorkerCount;
-    private ServiceStateChangeNotifier notifier;
-    private final PingHelper pingHelper = new PingHelper(this);
 
     /**
      * Create a new name node and deploy it.
@@ -64,7 +56,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     public static ExtNameNode createAndDeploy(Prim owner, ManagedConfiguration conf)
             throws IOException {
         ExtNameNode nameNode = new ExtNameNode(owner, conf);
-        startService(nameNode);
+        deploy(nameNode);
         return nameNode;
     }
 
@@ -79,7 +71,8 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     public static ExtNameNode create(Prim owner,
                                      ManagedConfiguration conf)
             throws IOException {
-        return new ExtNameNode(owner, conf);
+        ExtNameNode enn = new ExtNameNode(owner, conf);
+        return enn;
     }
 
     /**
@@ -95,98 +88,71 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
         this.owner = owner;
         //any other config here.
         checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
-        minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT, 0);
-        notifier = new ServiceStateChangeNotifier(this, owner);
+        expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
+        completeName = owner.sfCompleteName();
+        minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT,0);
     }
-
-    /**
-     * Return an extended service name
-     *
-     * @return new service name
-     */
-    @Override
-    public String getServiceName() {
-        return "ExtNameNode";
-    }
-
 
     /**
      * Get the stopped exception
      *
      * @return true if we have stopped
      */
-    public boolean isStopped() {
-        return getServiceState() == ServiceState.CLOSED;
+    public synchronized boolean isStopped() {
+        return getServiceState() == ServiceState.TERMINATED;
     }
 
     /**
-     * Ping: checks that a component considers itself live.
-     *
-     * This method makes the ping public
-     *
-     * @return the current service state.
-     * @throws IOException for any ping failure
+     * If the name node is terminated, we optionally terminate the owning component
+     * @param oldState old service state
+     * @param newState new service state
      */
+/*
     @Override
-    public ServicePingStatus ping() throws IOException {
-        return pingHelper.ping();
-    }
+    protected void onStateChange(ServiceState oldState, ServiceState newState) {
+        super.onStateChange(oldState, newState);
+        if (newState == ServiceState.TERMINATED) {
+            TerminationRecord tr;
+            if (expectNodeTermination) {
+                tr = TerminationRecord.normal(NAME_NODE_HAS_HALTED, completeName);
+            } else {
+                tr = TerminationRecord.abnormal(NAME_NODE_HAS_HALTED, completeName);
+            }
+            ComponentHelper helper = new ComponentHelper(owner);
+            helper.targetForWorkflowTermination(
+                    tr);
+        }
+    }*/
 
     /**
      * Ping the node
      *
      * @throws IOException if the node is unhappy @param status
      */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     @Override
-    public void innerPing(ServicePingStatus status) throws IOException {
-        if (namesystem == null) {
-            status.addThrowable(new LivenessException("No name system"));
-        } else {
-/*            try {
-                namesystem.ping();
-            } catch (IOException e) {
-                status.addThrowable(e);
-            }*/
-        }
-        if (httpServer == null || !httpServer.isAlive()) {
-            status.addThrowable(
-                    new LivenessException("NameNode HttpServer is not running"));
-        }
+    public synchronized void innerPing(ServiceStatus status)
+            throws IOException {
         if (checkRunning) {
             int workers = getLiveWorkerCount();
-            if (workers < minWorkerCount) {
-                status.addThrowable(new LivenessException("The number of worker nodes is only "
-                        + workers
-                        + "\n - less than the minimum of " + minWorkerCount));
-            }
+            if(workers < minWorkerCount ){
+              throw new LivenessException("The number of worker nodes is only "
+                      + workers
+                      +"\n - less than the minimum of " + minWorkerCount);
+            };
         }
     }
 
     /**
-     * Get the current number of workers
-     * @return the worker count
+     * Get the current number of datanodes
+     * @return the datanode count
      */
-    /* @Override
     public int getLiveWorkerCount() {
-        return getNamesystem().heartbeats.size();
-    }*/
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return the binding information
-     */
-    @Override
-    public List<BindingTuple> getBindingInformation() {
-        List<BindingTuple> bindings = new ArrayList<BindingTuple>();
-        bindings.add(NodeUtils.toBindingTuple(FS_DEFAULT_NAME, "hdfs", getNameNodeAddress()));
-        bindings.add(NodeUtils.toBindingTuple(DFS_HTTP_ADDRESS, "http", getHttpAddress()));
-        return bindings;
+        return namesystem.heartbeats.size();
     }
 
+
     /**
-     * Override point - method called whenever there is a state change.
+     * Override point - aethod called whenever there is a state change.
      *
      * The base class logs the event.
      *
@@ -196,39 +162,6 @@ public class ExtNameNode extends NameNode implements ServiceInfo, ConfigurationA
     @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
-        LOG.info("State change: NameNode is now " + newState);
-        //when we go live, we also push out our new URL
-
-        //tell anyone listening
-        notifier.onStateChange(oldState, newState);
-    }
-
-    /**
-     * Get the port used for IPC communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    @Override
-    public int getIPCPort() {
-        return getNameNodeAddress().getPort();
-    }
-
-    /**
-     * Get the port used for HTTP communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    @Override
-    public int getWebPort() {
-        return getHttpAddress().getPort();
-    }
-
-    public void setNotifier(ServiceStateChangeNotifier notifier) {
-        this.notifier = notifier;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
+        LOG.info("State change: NameNode is now "+ newState);
     }
 }

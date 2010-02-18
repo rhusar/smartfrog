@@ -28,7 +28,6 @@ import java.rmi.Remote;
 
 public interface HadoopCluster extends Remote {
 
-    
     /**
      * {@value}
      */
@@ -37,5 +36,5 @@ public interface HadoopCluster extends Remote {
     /**
      * {@value}
      */
-    String ATTR_JOBTRACKER = "jobtracker";
+    String ATTR_JOBTRACKER = "jobTracker";
 }

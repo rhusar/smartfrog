@@ -30,13 +30,14 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 #include "org/smartfrog/components.sf"
-#include "/org/smartfrog/test/system/components/logger/components.sf"
+#include "org/smartfrog/services/logger/logger.sf"
 
 Example extends Compound {
     logger extends Logger {
 	      logFile "tcp36.log";
     }
-    Foo extends LoggerTest {
+    Foo extends Prim {
+        sfClass "org.smartfrog.services.logger.LoggerTest";
         sfProcessHost "localhost";
         sfProcessComponentName "Foo";
         mylogger LAZY PARENT:logger;

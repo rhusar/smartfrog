@@ -20,7 +20,6 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -50,39 +49,14 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         //now write the string value if needed.
-        String text = buildText();
+        String text = sfResolve(ATTR_TEXT, (String) null, false);
         String encoding = null;
         if (text != null) {
             encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
-            File textFile = getFile();
-            File parentDir = textFile.getParentFile();
-            if (!parentDir.exists()) {
-                boolean createParentDirs = sfResolve(ATTR_CREATE_PARENT_DIRS, true, true);
-                if (createParentDirs) {
-                    parentDir.mkdirs();
-                } else {
-                    throw new SmartFrogException("No parent directory for " + textFile
-                            + " and " + ATTR_CREATE_PARENT_DIRS + "is false");
-                }
-                if (!parentDir.exists()) {
-                    throw new SmartFrogException("Unable to create the parent directory " + parentDir
-                            + "for the text file " + textFile);
-                }
-            }
-            FileSystem.writeTextFile(textFile, text, encoding);
+            FileSystem.writeTextFile(getFile(), text, encoding);
         }
         //call the superclass. this may trigger deletion.
         super.sfStart();
-    }
-
-    /**
-     * Build the text to output
-     * @return a string
-     * @throws SmartFrogException resolution problems
-     * @throws RemoteException networking
-     */
-    protected String buildText() throws SmartFrogException, RemoteException {
-        return sfResolve(ATTR_TEXT, (String) null, false);
     }
 
 }

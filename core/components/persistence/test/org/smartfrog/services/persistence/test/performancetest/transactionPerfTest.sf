@@ -1,6 +1,0 @@
-#include "org/smartfrog/services/persistence/rcomponent/components.sf"
-
-
-sfConfig extends RComponent {
-       sfClass "tests.TransactionPerfTestImpl";
-}

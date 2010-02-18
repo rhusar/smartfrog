@@ -53,7 +53,7 @@ public class ConnectionOpenCondition extends AbstractJdbcOperation implements Co
             ping(connection);
             return true;
         } catch(SmartFrogException e) {
-            if(getLog().isDebugEnabled()) getLog().debug("Could not connect or ping",e);
+            if(getLog().isDebugEnabled()) getLog().debug("Could not connect",e);
             return false;
         } finally {
             close(connection);

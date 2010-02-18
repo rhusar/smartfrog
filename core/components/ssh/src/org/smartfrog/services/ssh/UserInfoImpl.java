@@ -1,35 +1,36 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
- For more information: www.smartfrog.org
+For more information: www.smartfrog.org
 
- */
+*/
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.UserInfo;
-import com.jcraft.jsch.UIKeyboardInteractive;
 import org.smartfrog.sfcore.logging.LogSF;
 
 /**
- * Implements UserInfo interface required by Jsch. 
- *
- * @author Ashish Awasthi
- * @see com.jcraft.jsch.UserInfo
+ *  Implements UserInfo interface required by Jsch.
+ *  Some of these methods are not in the current version of UserInfo; they are retained
+ *  for historical compatibility, and, as they return false, incur no development/maintenance
+ *  costs. At some point they may be deleted.
+ *  @see com.jcraft.jsch.UserInfo
+ *  @author Ashish Awasthi
  */
-public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
+public class UserInfoImpl implements UserInfo {
 
     private String name;
     private String password = null;
@@ -39,25 +40,48 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
 
 
     public UserInfoImpl(LogSF log, boolean trustAllCertificates) {
-        this.log = log;
+        this.log=log;
         this.trustAllCertificates = trustAllCertificates;
     }
 
     /**
-     * @return the password
      */
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
     public String getName() {
         return name;
     }
 
     /**
+     * @return pass phrase
+     */
+    public String getPassphrase(String message) {
+        return passphrase;
+    }
+
+    /**
+     * 
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * prompt for a string
+     * @return false always
+     */
+    public boolean prompt(String str) {
+        return false;
+    }
+
+    /**
+     * Retry
+     * @return false always
+     */
+    public boolean retry() {
+        return false;
+    }
+
+    /**
      * Sets the name.
-     *
      * @param name The name to set
      */
     public void setName(String name) {
@@ -66,7 +90,6 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
 
     /**
      * Sets the passphrase.
-     *
      * @param passphrase The passphrase to set
      */
     public void setPassphrase(String passphrase) {
@@ -75,7 +98,6 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
 
     /**
      * Sets the password.
-     *
      * @param password The password to set
      */
     public void setPassword(String password) {
@@ -84,7 +106,6 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
 
     /**
      * Sets the trust.
-     *
      * @param trust whether to trust or not.
      */
     public void setTrust(boolean trust) {
@@ -100,10 +121,8 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
 
     /**
      * Returns the passphrase.
-     *
      * @return String
      */
-    @Override
     public String getPassphrase() {
         return passphrase;
     }
@@ -111,49 +130,20 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
     /**
      * @see com.jcraft.jsch.UserInfo#promptPassphrase(String)
      */
-    @Override
     public boolean promptPassphrase(String message) {
-        return passphrase!=null;
+        return true;
     }
 
     /**
      * @see com.jcraft.jsch.UserInfo#promptPassword(String)
      */
-    @Override
     public boolean promptPassword(String passwordPrompt) {
-        return password!=null;
+        return false;
     }
-
-    
-    /**
-     * Ant's Implementation of UIKeyboardInteractive#promptKeyboardInteractive.
-     *
-     * @param destination not used.
-     * @param username        not used.
-     * @param instruction not used.
-     * @param prompt      the method checks if this is one in length.
-     * @param echo        the method checks if the first element is false.
-     * @return the password in an size one array if there is a password and if the prompt and echo checks pass.
-     */
-    @Override
-    public String[] promptKeyboardInteractive(String destination,
-                                              String username,
-                                              String instruction,
-                                              String[] prompt,
-                                              boolean[] echo) {
-        if (prompt.length != 1 || echo[0] || password == null) {
-            return null;
-        }
-        String[] response = new String[1];
-        response[0] = password;
-        return response;
-    }
-
 
     /**
      * @see com.jcraft.jsch.UserInfo#promptYesNo(String)
      */
-    @Override
     public boolean promptYesNo(String message) {
         return trustAllCertificates;
     }
@@ -161,7 +151,6 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
     /**
      * @see com.jcraft.jsch.UserInfo#showMessage(String)
      */
-    @Override
     public void showMessage(String message) {
         log.info(message);
     }
@@ -172,9 +161,8 @@ public class UserInfoImpl implements UserInfo, UIKeyboardInteractive {
      *
      * @return a string representation of the object.
      */
-    @Override
     public String toString() {
-        return "user " + name + " [trustsEveryone:" + trustAllCertificates + ", authentication:"
-                + (password == null ? "no password" : "password set") + "]";
+        return "user "+ name +" [trustsEveryone:"+trustAllCertificates+", authentication:"
+                +(password==null?"public key":"password")+"]";
     }
 }

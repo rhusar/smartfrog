@@ -31,16 +31,13 @@
   <property name="timeout" value="${timeout.seconds}000"/>
   <property name="long.timeout.seconds" value="20"/>
   <property name="long.timeout" value="${long.timeout.seconds}000"/>
-  <property name="medium.timeout.seconds" value="15"/>
+  <property name="medium.timeout.seconds" value="10000"/>
   <property name="medium.timeout" value="${medium.timeout.seconds}000"/>
-  <property name="short.timeout.seconds" value="10"/>
+  <property name="short.timeout.seconds" value="5"/>
   <property name="short.timeout" value="${short.timeout.seconds}000"/>
-
   <property name="new.port" value="3805"/>
   <property name="shutdown.time.seconds" value="5"/>
 
-  <property name="test.work.dir" location="." />
-  
   <presetdef name="sf-waitfor">
     <waitfor maxwait="10" maxwaitunit="second"
         checkevery="1" checkeveryunit="second"
@@ -68,8 +65,7 @@
         <sf-startdaemon >
         </sf-startdaemon>
       </application>
-      <probe maxwait="${medium.timeout.seconds}"
-              message="Timeout waiting for app server on ${smartfrog.daemon.port}">
+      <probe>
         <socket port="${smartfrog.daemon.port}" server="localhost"/>
       </probe>
       <teardown>
@@ -80,14 +76,13 @@
 
   <presetdef name="sf-system-test2">
     <sf-functionaltest
-        testTimeout="${medium.timeout.seconds}"
+        testTimeout="${short.timeout.seconds}"
         shutdownTime="${shutdown.time.seconds}">
       <application>
         <sf-startdaemon port="${new.port}">
         </sf-startdaemon>
       </application>
-      <probe maxwait="${medium.timeout.seconds}"
-          message="Timeout waiting for app server on ${new.port}">
+      <probe maxwait="${short.timeout.seconds}">
         <socket port="${new.port}" server="localhost"/>
       </probe>
       <teardown>
