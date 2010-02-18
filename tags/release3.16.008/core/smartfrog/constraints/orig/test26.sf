@@ -1,0 +1,51 @@
+#include "/org/smartfrog/functions.sf"
+
+Host extends Constraint {
+   host_type VAR host_types "ht0";
+   host_types ["ht0", "ht1"];
+
+   memory VAR memory_types 4;
+   memory_types [3, 4];
+   
+   caps [memory];
+
+   //sfArrayIndex -- added in Array processing
+
+   [sfConstraint] -- "(sfArrayIndex>0 --> memory=3, host_type=ht1)";
+}
+
+VM extends Constraint {
+   vm_type VAR vm_types "vmt0";
+   vm_types ["vmt0", "vmt1"];
+
+   memory VAR memory_types 2;
+   memory_types [2, 3];
+
+   caps [memory];
+
+   allocated VAR; 
+
+   //sfArrayIndex -- added in Array processing
+    
+   [sfConstraint] -- "(sfArrayIndex>=2 --> memory=3, vm_type=vmt1)";
+}
+
+sfConfig extends ResourceAllocator {
+   providers "hosts:sfArrayTag";
+   provider_caps "hosts:caps";
+   consumers "vms:sfArrayTag";
+   consumer_caps "vms:caps";	
+   allocation "vms:allocated";
+
+   hosts extends Array {
+      sfArrayExtent 3;
+      sfArrayGenerator extends Host;  
+      sfArrayPrefix "host";
+   }
+
+   vms extends Array {
+      sfArrayExtent 4;
+      sfArrayGenerator extends VM;  
+      sfArrayPrefix "vm";
+   }
+}

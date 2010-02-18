@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<!--
+  /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  For more information: www.smartfrog.org
+  */
+-->
+<!DOCTYPE project [
+     <!ENTITY security SYSTEM "private/buildSecurity.xml">
+]>
+<project name="Security" default="all" basedir=".">
+  <description>
+    Introduction
+    ============
+    The build script for SmartFrog framework.
+    To run the build script ant must be installed
+    and ant executable should be in the system path.
+    A copy of JavaCC is needed if the language itself is changed.
+
+    Installing the build tools
+    ==========================
+    Please go though the installation guide and install ant 1.6.5 or later.
+    Reference URL:http://ant.apache.org
+
+    For JavaCC, download it from https://javacc.dev.java.net/ and install the
+    relevant JAR files into the javacc subdirectory
+</description>
+<import file="build.xml"/>
+
+<property name="private" value="private"/>
+  <!-- Include here the security-related ant file -->
+  <!-- End of security-related ant file -->
+  <target name="signExtraJars">
+	  <property name="avalanche.dir" value="${dist.lib.dir}/avalanche"/>
+	  <property name="client.signedLib.dir" value="${dist.signedLib.dir}/client"/>
+	 <antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-quartz.jar"/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-quartz.jar"/>
+        </antcall>
+	 
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-vmware.jar"/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-vmware.jar"/>
+        </antcall>
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-emailer.jar"/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-emailer.jar"/>
+        </antcall>
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-xmpp.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-xmpp.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sfXmppClient.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/sfXmppClient.jar "/>
+    	</antcall>
+
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/shared.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/shared.jar "/>
+    	</antcall>
+
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-ant.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-ant.jar "/>
+    	</antcall>
+
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-anubis.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-anubis.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-installer.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-installer.jar "/>
+    	</antcall>
+	
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-jmx.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-jmx.jar "/>
+    	</antcall>
+	
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-loggingservices.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-loggingservices.jar "/>
+    	</antcall>
+	
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-net.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-net.jar "/>
+    	</antcall>
+	
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-ssh.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-ssh.jar "/>
+    	</antcall>
+
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-rest.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-rest.jar "/>
+    	</antcall>
+
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/avalanche.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/avalanche.jar "/>
+    	</antcall>
+
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/avalanche-types.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/avalanche-types.jar "/>
+    	</antcall>
+	
+	<!--antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sf-avalanche-core.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/sf-avalanche-core.jar "/>
+    	</antcall-->
+
+    	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/quartz.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/quartz.jar "/>
+    	</antcall>
+		<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/mail.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/mail.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/je.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/je.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/smack.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/smack.jar "/>
+    	</antcall>
+    	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/smackx.jar "/>
+            <param name="signedjarname" value="${dist.signedLib.dir}/smackx.jar "/>
+    	</antcall>
+    	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/ca.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/ca.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/clientutils.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/compressComponent.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/diskutils.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/diskutils.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/ftpComponent.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/ftpComponent.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gnubuild.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gnubuild.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gridftp.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gridftp.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4build.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4build.jar "/>
+    	</antcall>
+
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4exec.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4exec.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4javawscore.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4javawscore.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4prereqs.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4prereqs.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4security.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4security.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4WsCoreComponent.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4WsCoreComponent.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/gt4wsgram.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/gt4wsgram.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/jboss.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/jboss.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/rpmComponent.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/rpmComponent.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sfAnt.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/sfAnt.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/sfUninstall.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/sfUninstall.jar "/>
+    	</antcall>
+	
+	<antcall target="signjarbuild">
+            <param name="jarname" value="${avalanche.dir}/simpleExecComponent.jar "/>
+            <param name="signedjarname" value="${client.signedLib.dir}/simpleExecComponent.jar "/>
+	</antcall>
+	    
+</target>
+</project>

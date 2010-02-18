@@ -1,0 +1,114 @@
+bePkg.lo bePkg.o: bePkg.c be.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/limits.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/syslimits.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/limits.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/_mingw.h \
+  beRbcManager.h ../utils/utils.h ../../config.h \
+  ../../../cudd-2.4.1.0/include/util.h ../../config.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/unistd.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/io.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/sys/types.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stddef.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/process.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/getopt.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdio.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdarg.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/ctype.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdlib.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/string.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/assert.h \
+  ../utils/defs.h /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdbool.h \
+  ../utils/list.h ../utils/list.h beInt.h ../utils/assoc.h ../node/node.h \
+  ../utils/defs.h ../../../cudd-2.4.1.0/include/util.h \
+  ../../../cudd-2.4.1.0/include/st.h beManagerInt.h ../rbc/rbc.h \
+  ../../config.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/malloc.h \
+  ../dag/dag.h ../../config.h ../utils/utils.h ../utils/list.h \
+  ../../../cudd-2.4.1.0/include/util.h ../../../cudd-2.4.1.0/include/st.h \
+  ../utils/list.h
+
+be.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/limits.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/syslimits.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/limits.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/_mingw.h:
+
+beRbcManager.h:
+
+../utils/utils.h:
+
+../../config.h:
+
+../../../cudd-2.4.1.0/include/util.h:
+
+../../config.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/unistd.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/io.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/sys/types.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stddef.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/process.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/getopt.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdio.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdarg.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/ctype.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdlib.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/string.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/assert.h:
+
+../utils/defs.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdbool.h:
+
+../utils/list.h:
+
+../utils/list.h:
+
+beInt.h:
+
+../utils/assoc.h:
+
+../node/node.h:
+
+../utils/defs.h:
+
+../../../cudd-2.4.1.0/include/util.h:
+
+../../../cudd-2.4.1.0/include/st.h:
+
+beManagerInt.h:
+
+../rbc/rbc.h:
+
+../../config.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/malloc.h:
+
+../dag/dag.h:
+
+../../config.h:
+
+../utils/utils.h:
+
+../utils/list.h:
+
+../../../cudd-2.4.1.0/include/util.h:
+
+../../../cudd-2.4.1.0/include/st.h:
+
+../utils/list.h:

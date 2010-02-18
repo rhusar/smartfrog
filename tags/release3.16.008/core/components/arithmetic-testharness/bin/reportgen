@@ -1,0 +1,35 @@
+#!/bin/bash
+export TOP=$PWD
+export DEST=$1
+export RELNAME=$2
+shift
+shift
+count=0
+res=0
+num=0
+cnst=2
+for x in $@;
+  do
+   	if [ -e "$DEST/daemons/$x/nohup.out" ]; then
+		 echo Daemon Started at host $x >> report
+                 num=$((num + `grep -c "SFStart" $DEST/daemons/$x/nohup.out`))
+		 echo $num
+		 if [ $num -eq $cnst ]; then
+			echo Test Passed Successfully at host $x >> report
+			num=0
+		 else
+			echo Test Failed at host $x >> report
+			num=0
+		 fi
+		 count=$((count + `grep -c "SFStart" $DEST/daemons/$x/nohup.out`))
+		 res=$((res + 1))
+	fi
+ done
+res=$((res * 2))
+echo $count
+echo $res
+if [ $count  -eq $res ]; then
+	echo Final Result: TEST PASSED >> report
+else
+	echo Final Result: TEST FAILED >> report
+fi

@@ -1,0 +1,82 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+#include "/org/smartfrog/test/system/workflow/sequence/components.sf"
+
+/**
+ * test a sequence
+ */
+
+HistorySequence extends TestCompound {
+
+    expectTerminate false;
+    sfShouldTerminate true;
+    
+    history LAZY action:history;
+
+
+    action extends Compound {
+      history extends History;
+    }
+
+    tests extends Sequence {
+      log1 extends HistoryLog {
+        history LAZY PARENT:PARENT:history;
+        deployMessage "log1:deploy";
+        startMessage "log1:start";
+        terminateMessage "log1:terminate";
+      }
+      log2 extends HistoryLog {
+        history LAZY PARENT:PARENT:history;
+        deployMessage "log2:deploy";
+        startMessage "log2:start";
+        terminateMessage "log2:terminate";
+      }
+
+      log1assert extends HistoryLogAssertion {
+        history LAZY PARENT:PARENT:history;
+        message "log1:deploy";
+      }
+
+      log1assert2 extends log1assert {
+        message "log1:start";
+      }
+
+      log1assert3 extends log1assert {
+        message "log1:terminate";
+      }
+
+      assertStartOrder extends HistoryAssertOrderedMessages {
+        history LAZY PARENT:PARENT:history;
+        message1 "log1:start";
+        message2 "log2:start";
+      }
+
+      assertTerminateThenStart extends HistoryAssertOrderedMessages {
+        history LAZY PARENT:PARENT:history;
+        message1 "log1:terminate";
+        message2 "log2:deploy";
+      }
+    }
+}
+
+
+sfConfig extends HistorySequence;

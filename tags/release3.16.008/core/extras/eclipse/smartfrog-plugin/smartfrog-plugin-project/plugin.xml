@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.smartfrog.tools"
+   name="%pluginName"
+   version="1.0.1"
+   provider-name="Hewlett-Packard Company"
+   class="org.smartfrog.tools.eclipse.SmartFrogPlugin">
+
+   <runtime>
+    <!--library name="bin/">
+      <library name="smart_frog_plugin.jar">
+         <export name="*"/>
+      </library-->
+   </runtime>
+
+   <requires>
+     <import plugin="org.eclipse.core.runtime"/>  
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.filebuffers"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+      <import plugin="org.eclipse.jdt.debug.ui"/>  
+      <import plugin="org.eclipse.jdt.ui"/>      
+      <import plugin="org.eclipse.jdt.debug"/>    
+      <import plugin="org.eclipse.ui.ide"/>  
+   </requires>
+
+<!-- =========================================================================== -->
+<!-- SmartFrog creation wizard                                                            -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="%smartFrogCategoryName"
+            id="org.smartfrog.tools.ui.project">
+      </category>
+      <!-- SmartFrog project creation wizard -->
+      <wizard
+            name="%projectWizardName"
+            icon="icons/OpenProject.gif"
+            category="org.smartfrog.tools.ui.project"
+            class="org.smartfrog.tools.eclipse.ui.project.SmartFrogProject"
+            project="true"
+            finalPerspective="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective"
+            
+            id="org.smartfrog.tools.ui.project.smartfrogproject">
+         <description>
+            Create a new SmartFrog project
+         </description>            
+      </wizard>
+      
+      <!-- Descritpion creation wizard -->
+      <wizard
+            name="%descriptionWizardName"
+            icon="icons/create_description_file.gif"
+            category="org.smartfrog.tools.ui.project"
+            class="org.smartfrog.tools.eclipse.ui.project.document.DescriptionCreationWizard"
+            project="false"
+            id="org.smartfrog.tools.eclipse.ui.project.document.DescriptionCreationWizard">
+         <description>
+            %descriptionWizardDescription
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+
+
+  <!-- SmartFrog Prim Component creation wizard -->
+      <wizard
+            name="%compomentWizardName"
+            icon="icons/create_prim_component.gif"
+            category="org.smartfrog.tools.ui.project"
+            class="org.smartfrog.tools.eclipse.ui.project.document.ComponentCreationWizard"
+            project="false"
+            id="org.smartfrog.tools.eclipse.ui.project.document.ComponentCreationWizard">
+         <description>
+            %compomentWizardDescription
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+      
+	<!-- SmartFrog Compound Component creation wizard -->
+      <wizard
+            name="Compound Component"
+            icon="icons/create_compount_component.gif"
+            category="org.smartfrog.tools.ui.project"
+            class="org.smartfrog.tools.eclipse.ui.project.document.ComponentCompundCreationWizard"
+            project="false"
+            id="org.smartfrog.tools.eclipse.ui.project.document.ComponentCompundCreationWizard">
+         <description>
+            Create a new SmartFrog compound component
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>      
+   </extension>
+
+
+	<!-- Actions shortcuts  -->
+	<extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%actionLabel"
+            visible="true"
+            id="org.smartfrog.tools.eclipse.ui">
+        <menu
+               label="SmartFrog"
+               id="smartFrogMenu">
+            <separator
+                  name="wizard">
+            </separator>
+            <separator
+                  name="tools">
+            </separator>     
+       
+         </menu>
+         
+         <action
+               label="%projectActionName"
+               icon="icons/OpenProject.gif"
+               class="org.smartfrog.tools.eclipse.ui.project.SmartFrogProjectAction"
+               tooltip="%projectActionTooltip"
+               toolbarPath="SmartFrogGrp"
+               id="org.smartfrog.tools.eclipse.ui.project.SmartFrogProjectAction">
+         </action>
+
+         <action
+               label="%descriptionActionLabel"
+               icon="icons/create_description_file.gif"
+               class="org.smartfrog.tools.eclipse.ui.project.document.DescriptionCreationAction"
+               tooltip="%descriptionActionTooltip"
+               toolbarPath="SmartFrogGrp"
+               id="org.smartfrog.tools.eclipse.ui.project.document.DescriptionCreationtAction">
+         </action>
+
+         <action
+               label="%componentActionLabel"
+               icon="icons/create_prim_component.gif"
+               class="org.smartfrog.tools.eclipse.ui.project.document.ComponentCreationAction"
+               tooltip="%componentActionTooltip"
+               toolbarPath="SmartFrogGrp"
+               id="org.smartfrog.tools.eclipse.ui.project.document.ComponentCreationAction">
+         </action>
+
+         <action
+               label="Compound Component"
+               icon="icons/create_compount_component.gif"
+               class="org.smartfrog.tools.eclipse.ui.project.document.ComponentCompundCreationAction"
+               tooltip="New Compound Component"
+               toolbarPath="SmartFrogGrp"
+               id="org.smartfrog.tools.eclipse.ui.project.document.ComponentCompundCreationAction">
+         </action>
+         
+
+		<!-- tools -->
+
+         <action
+               label="Management Console"
+               icon="icons/sfManagementConsole.gif"
+               class="org.smartfrog.tools.eclipse.ui.runner.SfConsoleRunnerAction"
+               tooltip="Management Console"
+               toolbarPath="SmartFrogTools"
+               menubarPath="smartFrogMenu/tools"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfConsoleRunnerAction">
+         </action>
+         
+         
+         <action
+               label="Stop SmartFrog Daemon"
+               icon="icons/sfStopDaemon.gif"
+               class="org.smartfrog.tools.eclipse.ui.runner.SfDaemonStopperAction"
+               tooltip="Stop SmartFrog Daemon"
+               toolbarPath="SmartFrogTools"
+               menubarPath="smartFrogMenu/tools"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfDaemonStopperAction">
+         </action>
+
+		 <action
+               label="SmartFrog Daemon"
+               icon="icons/sfDaemon.gif"
+               class="org.smartfrog.tools.eclipse.ui.runner.SfDaemonRunnerAction"
+               tooltip="SmartFrog Daemon"
+               toolbarPath="SmartFrogTools"
+               menubarPath="smartFrogMenu/tools"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfDaemonRunnerAction">
+         </action>
+         
+         <action
+               label="Stop"
+               icon="icons/Stop.gif"
+               class="org.smartfrog.tools.eclipse.ui.runner.SfProcessStopperAction"
+               tooltip="Stop Application"
+               toolbarPath="SmartFrogTools"
+               menubarPath="smartFrogMenu/tools"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfProcessStopperAction"> 
+               
+         </action>
+         
+         <action
+               label="%exceuteApplicationLabel"
+               icon="icons/ExecuteProject.gif"
+               class="org.smartfrog.tools.eclipse.ui.runner.SfProcessRunnerAction"
+               tooltip="%exceuteApplicationTooltip"
+               toolbarPath="SmartFrogTools"
+               menubarPath="smartFrogMenu/tools"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfProcessRunnerAction">
+         </action>
+         <action
+               class="org.smartfrog.tools.eclipse.ui.runner.SfParseAction"
+               icon="icons/sfparse.GIF"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfParseAction"
+               label="SF Parse"
+               menubarPath="smartFrogMenu/tools"
+               toolbarPath="SmartFrogTools"
+               tooltip="SF Parse">
+         </action>
+         <action
+               class="org.smartfrog.tools.eclipse.ui.runner.SfPingAction"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfPingAction"
+               label="SF Ping"
+               menubarPath="smartFrogMenu/tools"
+               toolbarPath="SmartFrogTools"
+               tooltip="SF Ping">
+         </action>
+      </actionSet>
+   </extension>
+
+
+<!-- =========================================================================== -->
+<!-- SmartFrog Perspective                                                           -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="%perspectivesName"
+            icon="icons/Frog_16.gif"
+            class="org.smartfrog.tools.eclipse.ui.perspective.SmartFrogPerspective"
+            id="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+      </perspective>
+   </extension>
+   <!-- perspective shortcuts -->
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <perspectiveShortcut
+               id="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <perspectiveShortcut
+               id="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      
+      <perspectiveExtension
+            targetID="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+         <perspectiveShortcut
+               id="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <perspectiveShortcut
+               id="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      
+      <perspectiveExtension
+            targetID="org.smartfrog.tools.eclipse.ui.perspective.smartfrogperspective">
+         <newWizardShortcut
+               id="org.eclipse.jdt.ui.wizards.NewInterfaceCreationWizard">
+         </newWizardShortcut>
+         <newWizardShortcut
+               id="org.eclipse.jdt.ui.wizards.NewClassCreationWizard">
+         </newWizardShortcut>
+         <newWizardShortcut
+               id="org.eclipse.ui.wizards.new.folder">
+         </newWizardShortcut>
+      </perspectiveExtension>
+   </extension>      
+
+
+<!-- =========================================================================== -->
+<!-- SmartFrog Editor                                                            -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="%descriptionEditorName"
+            icon="icons/create_description_file.gif"
+            extensions="sf"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            
+            class="org.smartfrog.tools.eclipse.ui.editor.DescriptionEditor"
+            id="org.smartfrog.tools.eclipse.ui.editor.DescriptionEditor">
+      </editor>
+   </extension>
+   
+   <extension
+         id="SmartFrogDescriptionSetupParticipant"
+         name="SmartFrogDescriptionSetupParticipant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="sf"
+            class="org.smartfrog.tools.eclipse.ui.editor.DescriptionDocumentSetupParticipant">
+      </participant>
+   </extension>
+   
+<!-- =========================================================================== -->
+<!-- Preference page                                                            -->
+<!-- =========================================================================== -->
+   
+   <extension 
+     point="org.eclipse.ui.preferencePages">
+  	   <page 
+  	      name="%preferencePageName" 
+  	      class="org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage" 
+  	      id="org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage" /> 
+   </extension>
+   
+   
+   <extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferenceInit"/>
+   </extension>
+   
+<!-- =========================================================================== -->
+<!-- Console view                                                         -->
+<!-- =========================================================================== -->
+      
+   <extension
+      point="org.eclipse.ui.views">
+      <category
+            name="SmartFrog View"
+            id="org.smartfrog.tools.eclipse.ui.console">
+      </category>
+      <view
+            name="SmartFrog Console"
+            icon="icons/Frog_16.gif"
+            fastViewWidthRatio="0.75"
+            category="org.smartfrog.tools.eclipse.ui.console"
+            class="org.smartfrog.tools.eclipse.ui.console.ConsoleView"
+            id="org.smartfrog.tools.eclipse.ui.console.ConsoleView">
+      </view>
+   </extension>
+   
+<!-- =========================================================================== -->
+<!-- Builder                                                         -->
+<!-- =========================================================================== -->
+   <extension
+         id="ComponentBuilder"
+         name="SmartFrog Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="org.smartfrog.tools.eclipse.model.builder.SmartFrogProjectBuilder">
+         </run>
+      </builder>
+   </extension>
+</plugin>

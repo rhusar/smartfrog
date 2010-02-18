@@ -1,0 +1,16 @@
+#include "/org/smartfrog/services/slp/slpadvertiser.sf"
+
+/**
+ * This extension of SLPAdvertiser advertises the root process compound of this host.
+ * An 'sfServiceType' attribute is added to this ProcessCompound's context, its value being
+ * the advertised service type.
+ */
+ProcessCompoundAdvertiser extends SLPAdvertiser{
+	sfClass "org.smartfrog.services.slp.ProcessCompoundAdvertiser";
+	sfDeployerType "smartfrogDeployer";
+		// in this case the root ProcessCompound is added the 'sfServiceType' "smartfrogDeployer" attribute-value pair.
+	advertiseOnStart true;
+	oneShot true;	// terminates once the advertisement is completed
+}
+
+sfConfig extends ProcessCompoundAdvertiser;

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#################################################################
+# This file is run only when SFSECURITY_ON is defined
+#################################################################
+
+
+# set default values if the user doesn't provide them
+if ! test $SFPRIVATE; then export SFPRIVATE="$SFHOME/private"; fi
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
+
+#------------------------------------------------------
+# SF SECURITY ENV PROPERTIES  - Please edit with your preferences
+# ------------------------------------------------------
+
+# -- Security properties --
+export SFSECURITY="-Djava.security.policy==$SFPRIVATE/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties"
+
+if test "$SFSECURERESOURCES_OFF"; then
+	export SFSECURITY="$SFSECURITY -Dorg.smartfrog.sfcore.security.secureResourcesOff=true"
+fi 
+
+# -- default.ini and default.sf with security. These files need to be inside a jar file--
+export SFDEFAULTINI=-Dorg.smartfrog.iniFile=org/smartfrog/default.ini
+export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf
+
+# -------------------End user properties---------------
+

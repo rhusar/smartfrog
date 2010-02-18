@@ -1,0 +1,18 @@
+#!/bin/sh
+
+###################################################################
+# This file is run only when SFDYNAMICCLASSLOADING_ON is defined
+###################################################################
+
+#------------------------------------------------------
+# SF ENV PROPERTIES  - Please edit with your preferences
+# ------------------------------------------------------
+
+# -- Dynamic classloading: CODEBASE --
+export SERVER=http://localhost:8080
+export CODEBASE="$SERVER/sfExamples.jar"
+
+export SFCODEBASE="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager -Dorg.smartfrog.codebase=$CODEBASE"
+
+# -------------------End user properties---------------
+

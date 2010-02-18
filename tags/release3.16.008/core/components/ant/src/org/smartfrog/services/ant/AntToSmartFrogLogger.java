@@ -1,0 +1,52 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+package org.smartfrog.services.ant;
+
+import org.apache.tools.ant.DefaultLogger;
+import org.smartfrog.sfcore.logging.LogSF;
+
+/**
+ *
+ * This is a logger that bridges from the Ant logs to SmartFrog.
+ * Created 26-Sep-2007 15:18:19
+ *
+ */
+
+public class AntToSmartFrogLogger extends DefaultLogger {
+
+
+
+    private LogSF realLog;
+
+    public AntToSmartFrogLogger(LogSF realLog) {
+        this.realLog = realLog;
+    }
+
+    /**
+     * Empty implementation which allows subclasses to receive the same output that is generated here.
+     *
+     * @param message Message being logged. Should not be <code>null</code>.
+     */
+    protected void log(String message) {
+        realLog.info(message);
+    }
+
+
+}

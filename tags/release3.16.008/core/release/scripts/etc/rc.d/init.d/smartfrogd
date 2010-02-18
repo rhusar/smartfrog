@@ -1,0 +1,165 @@
+#!/bin/bash
+#
+# smartfrogd:    Start/stop smartfrog services
+#
+# chkconfig:    35 25 90
+# description:  The SmartFrog deployment daemon
+#
+
+# Startup script for the SmartFrog daemon
+#
+# processname: sfDaemon
+# pidfile: /var/run/sfdaemon.pid
+
+### BEGIN INIT INFO
+# Provides:          smartfrogd
+# Required-Start:    
+# Required-Stop:     
+# Should-Start:      $local_fs $remote_fs $network 
+# Should-Stop:       $local_fs $remote_fs $network 
+# Default-Start:     3 5
+# Default-Stop:      0 1 2 4 6
+# Short-Description: The smartfrog daemon
+# Description:       Runs the SmartFrog deployment daemon
+### END INIT INFO
+
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+# Set Envrionment
+if [[ -f /etc/sysconfig/smartfrog ]]
+then
+	. /etc/sysconfig/smartfrog
+fi
+
+# Add Smartfrog to the path
+PATH="$${PATH-}:$${SFHOME}/bin"
+
+# Export the Display Variable
+export DISPLAY
+
+ProgName="SmartFrog Daemon"
+ProgDir="$$SFHOME/bin"
+ProgBin="sfDaemon"
+Filename="smartfrogd"
+LockFile="/var/lock/subsys/$$ProgBin"
+RunFile=/var/run/$$ProgBin.pid
+ProgStop="smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit"
+ProgLog="${rpm.log.dir}/$$Filename.log"
+
+##exit if the program is not there
+test -x $$ProgDir/$$ProgBin || exit 5
+
+
+
+# Start routine is an idempotent startup operation
+function start() {     
+
+	# is it already running
+	status $$ProgBin >/dev/null 2>&1
+	if [ $$? -eq 0 ]; then
+	    return 0
+	fi;
+
+	echo -n "Starting $$ProgName: "
+
+	ulimit -S -c 0 >/dev/null 2>&1
+
+	echo "" >> $$ProgLog
+	echo "---- Starting $$ProgName -----" >> $$ProgLog
+	nohup $$ProgDir/$$ProgBin -headless >>$$ProgLog  2>&1 &
+	RETVAL=$$?
+	if [ $$RETVAL -eq 0 ]; then
+	    success
+	    touch $$LockFile
+	else
+	    failure
+	    fi;
+	echo
+	return $$RETVAL
+}
+
+#stop the program running by invoking the 
+#predefined shutdown command
+# Again, this is meant be idempotent.
+
+function stop() {
+	echo -n "Stopping $$ProgName: "
+
+	echo "" >> $$ProgLog
+	echo "---- Stopping $$ProgName -----" >> $$ProgLog
+	$$ProgDir/$$ProgStop >>$$ProgLog 2>&1
+	
+	RETVAL=$$?
+	[ $$RETVAL -eq 0 ] && rm -f $$LockFile $$RunFile
+	success
+    RETVAL=0
+	echo
+	return $$RETVAL
+}
+
+#check the status and return the LSB-standard exit codes
+function status_check() {
+    echo -n "checking status of $$ProgName: "
+    status $$ProgBin 
+    RETVAL=$$?
+	if [ $$RETVAL -eq 0 ]; then
+        $$ProgDir/sfPing localhost
+        RETVAL=$$?
+	fi;
+#failure of the ping
+	if [ $$RETVAL -eq 0 ]; then
+        return 0
+    elif [ -x $$RunFile ]; then
+    #program is dead and /var/run pid file exists
+        RETVAL=1
+        return 1
+    elif [ -x $$LockFile ]; then
+    #program is dead and /var/lock lock file exists
+        RETVAL=2
+        return 2
+    else
+    #assume ps is not running
+        RETVAL=3
+        return 3
+    fi
+}
+
+#restart operation just does a stop and a start
+function restart() {
+    stop
+	start
+}
+
+# See how we were called.
+case "$$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+    status_check
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	restart
+	;;
+  force-reload)
+	restart
+	;;
+  *)
+	echo $$"Usage: $$PROG {start|stop|restart|status|restart|reload|force-reload}"
+    #invalid or excess argument(s)
+	RETVAL=2
+esac
+
+exit $$RETVAL
+
+

@@ -1,0 +1,406 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+#include "/org/smartfrog/services/hadoop/test/system/components.sf"
+
+DUMP_CONF false;
+
+LightweightJobTracker extends JobTracker {
+  smartfrog.dump.conf DUMP_CONF;
+//  jobtracker.http.threads 4;
+}
+
+LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
+  smartfrog.dump.conf DUMP_CONF;
+  tasktracker.http.threads 4;
+}
+
+LightweightNameNode extends NameNode {
+  smartfrog.dump.conf DUMP_CONF;
+//  namenode.http.threads 4;
+}
+
+LightweightDataNode extends DataNode {
+  smartfrog.dump.conf DUMP_CONF;
+  dfs.heartbeat.interval 1;
+//  datanode.http.threads 4;
+  localhost_any  "127.0.0.1:0";
+  dfs.datanode.http.address localhost_any;
+  dfs.datanode.https.address localhost_any;
+
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.ipc.address localhost_any;
+
+  dfs.blockreport.intervalMsec 10000;
+  dfs.blockreport.initialDelay 0;
+}
+
+LocalHadoopCompound extends Compound {
+  fs.default.name "hdfs://localhost:8020/";
+  nameNodeURL     "http://localhost:8021";
+  dataNodeURL     "http://localhost:0";
+
+  logDir extends TempDirWithCleanup {
+
+  }
+
+  dataDir extends TempDirWithCleanup {
+
+  }
+
+  nameDir extends TempDirWithCleanup {
+
+ }
+
+}
+
+LocalNameNodeCompound extends LocalHadoopCompound {
+  description "A name node";
+
+  cluster LAZY namenode;
+
+  namenode extends LightweightNameNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+    dfs.namenode.startup ACTION_FORMAT;
+    dfs.http.address nameNodeURL;
+    dfs.permissions false;
+    minWorkerCount 0;
+  }
+}
+
+LocalDataNodeCompound extends LocalNameNodeCompound {
+  description "A data node bound to a temporary directory";
+
+  localDataDir extends TempDirWithCleanup {
+
+  }
+
+  
+  datanode extends  LightweightDataNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+    dfs.datanode.address dataNodeURL  ;
+  }
+
+
+
+
+}
+
+TwoDataNodeCluster extends LocalDataNodeCompound {
+  localDataDir2 extends TempDirWithCleanup {
+
+  }
+
+  datanode2 extends datanode {
+    dataDirectories [LAZY localDataDir2];
+    dfs.datanode.https.address "https://localhost:0";
+  }
+}
+
+/**
+ * A complete filesystem
+ */
+LocalFileSystemCompound extends LocalDataNodeCompound {
+
+
+}
+
+
+LocalJobTrackerCompound extends LocalHadoopCompound {
+  description "A job tracker";
+
+  jobTracker extends LightweightJobTracker {
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+  }
+}
+
+
+
+
+LocalTaskTrackerCompound extends LocalJobTrackerCompound {
+  description "A task tracker";
+
+  taskTracker extends LightweightTaskTracker {
+  }
+}
+
+
+LocalClusterCompound extends LocalDataNodeCompound {
+
+  description "a full cluster";
+
+  jobTracker extends LightweightJobTracker {
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+  }
+
+  taskTracker extends LightweightTaskTracker {
+    mapred.job.tracker jobTracker:mapred.job.tracker;
+  }
+}
+
+
+CLUSTER_STARTUP_TIMEOUT 30000;
+CLUSTER_POLL_INTERVAL 200;
+CLUSTER_SHUTDOWN_TIMEOUT 10000;
+
+WaitForHadoopLive extends FailingWaitFor {
+  interval CLUSTER_POLL_INTERVAL;
+  timeout CLUSTER_STARTUP_TIMEOUT ;
+}
+
+
+WaitForFilesystemLive extends WaitForHadoopLive  {
+  jobTracker TBD;
+  jobTrackerLive false;
+  message "filesystem not live";
+  condition extends ClusterStatusCondition {
+    mapred.job.tracker PARENT:jobTracker:mapred.job.tracker;
+  }
+}
+
+WaitForJobTrackerLive extends WaitForFilesystemLive {
+  message "job tracker or filesystem not live";
+  jobTrackerLive true;
+}
+
+
+WaitForServiceLive extends WaitForHadoopLive  {
+  service TBD;
+  message "hadoop service not live";
+  condition extends IsHadoopServiceLive {
+    service LAZY PARENT:service;
+  }
+  else extends Sequence {
+    ping extends PingTarget {
+      target LAZY PARENT:ATTRIB service;
+      sfShouldTerminate true;
+    }
+    exit extends Terminator {
+      description PARENT:ATTRIB message;
+      selftype Terminator:ABNORMAL;
+    }
+  }
+}
+
+WaitForWorkersLive extends WaitForHadoopLive  {
+  service TBD;
+  message "not enough workers for this service";
+  minCount 1;
+  condition extends IsWorkerCountGood {
+    service LAZY PARENT:service;
+    minCount PARENT:minCount;
+  }
+}
+
+WaitForPortFree extends FailingWaitFor {
+  interval CLUSTER_POLL_INTERVAL;
+  timeout CLUSTER_SHUTDOWN_TIMEOUT;
+  port "8020";
+  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
+  condition extends Not {
+    condition extends CheckPortCondition {
+      address PARENT:PARENT:address;
+    }
+  }
+}
+
+
+
+/**
+ * A sequence of operations on a cluster */
+FileSystemTestSequence extends Sequence {
+
+    //the cluster for all the tests
+    cluster namenode;
+    namenode TBD;
+    datanode TBD;
+    datanodeCount 1;
+
+    waitForNameNode extends WaitForServiceLive {
+     message "namenode not live";
+     service LAZY PARENT:namenode;
+    }
+/*
+
+    waitForDataNode extends WaitForServiceLive {
+     message "datanode not live";
+     service LAZY PARENT:datanode;
+    }
+
+*/
+    //now wait for the bonding
+    waitForCluster extends WaitForWorkersLive {
+     message "cluster workers not live";
+     service LAZY PARENT:namenode;
+     minCount datanodeCount;
+    }
+
+    rootDirExists extends DfsPathExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path "/";
+    }
+
+    touch extends DfsCreateFile {
+      cluster LAZY PARENT:cluster;
+      path "/test-filename";
+      text "this is a very small file for Hadoop";
+    }
+
+    assertFileExists extends DfsPathExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path touch:path;
+    }
+
+  }
+
+  FileCreation extends Compound  {
+    cluster TBD;
+    dest TBD;
+
+    sfShouldTerminate true;
+
+    sourceFile extends InlineTupleSource {
+      data [
+        ["one",43],
+        ["two", "43"],
+        ["one",12]
+      ]
+
+    }
+
+    UploadHadoopCsvFile extends TuplesToHadoop {
+      cluster LAZY PARENT:cluster;
+      source LAZY sourceFile;
+      dest testFile;
+
+    }
+  }
+
+TestJob extends Job {
+  name TBD;
+  cluster TBD;
+  jobTracker TBD;
+  fs.default.name cluster:fs.default.name;
+  mapred.job.tracker jobTracker:mapred.job.tracker;
+  hadoop.tmp.dir "/tmp";
+
+  //mapred.system.dir "/tmp/hadoop/mapred/system";
+
+  mapred.child.java.opts "-Xmx512m -d64 -server";
+  mapred.tasktracker.map.tasks.maximum 5;
+  mapred.tasktracker.reduce.tasks.maximum 1;
+  mapred.working.dir (hadoop.tmp.dir ++ "/" ++ name ++ "/working");
+  mapred.local.dir (hadoop.tmp.dir ++ "/" ++ name ++ "local");
+  //hadoop.job.ugi ;
+}
+
+TestJobNoFile extends TestJob {
+  mapred.input.dir testDirIn;
+  mapred.output.dir testDirOut;
+}
+
+
+LocalClusterStatus extends ClusterStatus {
+  jobTracker TBD;
+
+  fs.default.name jobTracker:fs.default.name;
+  mapred.job.tracker jobTracker;
+  hadoop.job.ugi jobTracker:hadoop.job.ugi;
+  sfShouldTerminate true;
+  supportedFileSystem true;
+}
+
+
+/**
+ * this is a complete MR workflow
+ */
+MapReduceTestSequence extends Sequence {
+
+  testDir "/tests/mrtestsequence";
+  testDirIn  (testDir ++ "/in");
+  testDirOut (testDir ++ "/out");
+  testDirWorking (testDir ++ "/working");
+  testFile (testDirIn ++ "/test.csv");
+
+  jobTracker TBD;
+  cluster TBD;
+
+  waitForCluster extends WaitForWorkersLive {
+   service LAZY PARENT:cluster;
+   minCount 1;
+  }
+
+  waitForTracker extends WaitForJobTrackerLive {
+    jobTracker LAZY PARENT:jobTracker;
+  }
+
+  files extends FileCreation {
+    cluster LAZY PARENT:cluster;
+    dest testFile;
+  }
+
+  MRCompound extends Compound {
+    job extends TestJob  {
+          //this is the job information
+      jobTracker LAZY PARENT:PARENT:jobTracker;
+      cluster LAZY PARENT:PARENT:cluster;
+      name "testsubmission";
+      mapred.input.dir testDirIn;
+      mapred.output.dir testDirOut;
+      mapred.working.dir testDirWorking;
+      mapred.local.dir (testDir ++ "/local");
+      mapred.job.split.file (testDir ++ "/split");
+      mapred.job.tracker jobTracker:mapred.job.tracker;
+      keep.failed.task.files true;
+      filename "";
+
+
+      fs.default.name cluster:fs.default.name;
+    }
+
+    submission extends BlockingJobSubmitter {
+      //get our settings from ourselves.
+      job LAZY PARENT:job;
+      cluster LAZY PARENT:PARENT:cluster;
+      fileRequired false;
+    }
+
+    sleep extends Delay {
+    //cleanup delay
+      time 10000;
+    }
+
+  }
+
+}

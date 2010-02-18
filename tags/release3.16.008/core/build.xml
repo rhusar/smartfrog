@@ -1,0 +1,724 @@
+<?xml version="1.0"?>
+<project name="root" default="help" basedir="." >
+<!--
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+
+  <target name="help" description="help information">
+    <echo>
+    This is a primary build file for SmartFrog, which delegates down to
+    specific components to do the work. It also contains support for
+    cruise control
+    </echo>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- any common initialisations                                          -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <property file="build.properties" />
+    <property environment="env" />
+    <!-- look for a feature that only came in in ant 1.7alpha -->
+    <available property="nice.task.present"
+      classname="org.apache.tools.ant.taskdefs.Nice" />
+    <property name="toplevel.dir" location=".." />
+    <property name="main.project" location="smartfrog" />
+    <property name="test.project" location="testharness" />
+    <property name="components.project" location="components" />
+    <property name="extras.dir" location="extras" />
+    <property name="ant.project" location="${extras.dir}/ant" />
+    <property file="${components.project}/libraries.properties" />
+    <property name="maven.enabled" value="false" />
+
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="ALL"/>
+    <echo message="  "/>
+    <echo message=" ======================================================="/>
+    <echo message=" Build info - Project: ${Name.System} ${version}"/>
+    <echo message="  ${Name.Company}"/>
+    <echo message="   Java: ${java.version} ${java.vendor} "/>
+    <echo message="         ${java.home} "/>
+    <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
+	<echo message="   Build dir: ${basedir}"/>
+	<echo message="   Ant: ${ant.version}"/>		
+    <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
+    <echo message=" ======================================================="/>
+    <echo message="  "/>
+
+    <!-- work out our java version by introspection -->
+    <condition property="java1.5+">
+      <available classname="java.lang.Readable"/>
+    </condition>
+    <condition property="java1.6+">
+      <available classname="javax.lang.model"/>
+    </condition>
+    <macrodef name="forward2">
+      <attribute name="dir"/>
+      <attribute name="target"/>
+      <attribute name="inheritAll" default="false"/>
+      <attribute name="antfile" default="build.xml"/>
+      <sequential>
+        <subant
+            antfile="@{antfile}"
+            target="@{target}" inheritAll="@{inheritAll}"
+            inheritrefs="false">
+          <buildpathelement location="@{dir}"/>
+        </subant>
+      </sequential>
+    </macrodef>
+    <macrodef name="forward">
+      <attribute name="dir"/>
+      <attribute name="target"/>
+      <attribute name="inheritAll" default="false"/>
+      <sequential>
+        <forward2 dir="@{dir}" target="@{target}" inheritAll="@{inheritAll}"/>
+      </sequential>
+    </macrodef>
+  </target>
+  
+
+
+  
+  <!-- =================================================================== -->
+  <!-- build a distribution of smartfrog.jar, sfExamples.jar               -->
+  <!-- =================================================================== -->
+  <target name="main-dist" depends="ivy-init" description="build a distribution">
+    <ivy-delegate target="published-distribution" />
+  </target>
+  
+  <!-- tracking down quirks in subant -->
+   <target name="diag2" depends="init" >
+    <forward2 dir="${components.project}" target="diag2"  /> 
+  </target>
+  
+  <!-- =================================================================== -->
+  <!-- clean all sub-projects                                              -->
+  <!-- =================================================================== -->
+  <target name="clean" depends="ivy-clean" description="clean up">
+    <delete dir="build" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- ant tasks distribution                                              -->
+  <!-- =================================================================== -->
+
+  <target name="tasks" depends="ivy-init"
+      description="create everything up to the ant tasks">
+    <ivy-build module="sf-tasks" target="published-distribution" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- ant tasks distribution                                              -->
+  <!-- =================================================================== -->
+
+  <target name="testharness" depends="ivy-init"
+      description="create everything up to the test harness">
+    <ivy-build module="sf-testharness" target="published-distribution" />
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- components distribution                                            -->
+  <!-- =================================================================== -->
+
+  <target name="components" depends="ivy-init"
+    description="components distributions">
+    <ivy-delegate target="published-distribution" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- install components distribution                                     -->
+  <!-- =================================================================== -->
+
+  <target name="install" depends="ivy-init"
+    description="install components distribution(s)">
+    <ivy-delegate target="installed" />
+  </target>
+  
+
+  <!-- =================================================================== -->
+  <!-- main distribution                                                    -->
+  <!-- =================================================================== -->
+
+  <target name="dist" depends="main-dist" description="distributables">
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- test in the ant project                                            -->
+  <!-- =================================================================== -->
+  <target name="test-ant" depends="tasks" description="test the Ant tasks">
+    <forward2 dir="${ant.project}" target="test"  />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- test in the main project                                            -->
+  <!-- =================================================================== -->
+  <target name="test-main" depends="init" description="test in main project">
+    <forward2 dir="${main.project}" target="test"  />
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- test in the harness                                                 -->
+  <!-- =================================================================== -->
+  <target name="test-testharness" depends="testharness"
+    description="test in test harness; only run system tests">
+    <forward2 dir="${test.project}" target="test"  />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- test in the harness                                                 -->
+  <!-- ===================================18================================ -->
+  <target name="test-components" depends="install"
+    description="test in test harness; only run system tests">
+    <ivy-delegate target="test" />
+  </target>
+  
+  <!-- =================================================================== -->
+  <!-- test all                                                            -->
+  <!-- =================================================================== -->
+  <target name="test" depends="test-components"
+    description="test everything"/>
+
+
+  <target name="ready-to-test" depends="install"/>
+
+  <target name="tested" depends="test"/>
+
+  <!-- the following targets are for use in CruiseControl automated builds;
+       rather than for normal command line/IDE work. -->
+
+
+  <!-- =================================================================== -->
+  <!-- any cruise control initialisations                                  -->
+  <!-- =================================================================== -->
+    <target name="cc-init" depends="cc-set-build-priority">
+      <property name="cc.artifacts.dir" location="${toplevel.dir}/artifacts" />
+      <mkdir dir="${cc.artifacts.dir}"/>
+      <property name="cruise.base.dir" location="${toplevel.dir}" />
+      <property name="cruise.main.project" location="${cruise.base.dir}/main"/>
+      <property name="cruise.lib.dir" location="${cruise.main.project}/lib"/>
+      <property name="cruise.dist.dir" location="${cruise.main.project}/dist"/>
+      <property name="cruise.config.file" location="cruisecontrol.xml"/>
+      <property name="cruise.control.port" value="7999"/>
+      <property name="cruise.control.rmiport" value="7998"/>
+    </target>
+
+  <!-- =================================================================== -->
+  <!-- -sets the priority to 3 unless overridden -this lowers the priority -->
+  <!-- of any non-forked code, but does nothing for execed apps            -->
+  <!-- =================================================================== -->
+    <target name="cc-set-build-priority" depends="init" if="nice.task.present" >
+      <property name="cc.nice.value" value="3" />
+       <nice newPriority="${cc.nice.value}" />
+    </target>
+
+  <!-- =================================================================== -->
+  <!-- update code from SVN. Can overwrite this file too!                  -->
+  <!-- =================================================================== -->
+    <target name="svnupdate" depends="cc-init" unless="skip.svn"
+      description="update SVN; needs SVN on the command line">
+      <exec executable="svn" failonerror="false">
+        <arg line="update" />
+      </exec>
+    </target>
+
+  <!--
+    CC target to publish everything.
+     we do it in this separate task to add in any other dependencies,
+     like listing the build order (for better diags)
+  -->
+  <target name="cc-published" depends="ivy-list-order,published" />
+
+  <!-- =================================================================== -->
+  <!-- incremental Cruise Control build                                    -->
+  <!-- =================================================================== -->
+   <target name="cc-incremental"
+        depends="svnupdate,cc-published,dist"/>
+
+    <!-- =================================================================== -->
+    <!-- Cruise control test suite                                           -->
+    <!-- =================================================================== -->
+    <target name="cc-test"
+        depends="tested"/>
+
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- this is not cutting a release as "release" is not in the list-->
+  <!-- =================================================================== -->
+  <target name="cc-core"
+      depends="clean,ivy-list-order,dist,cc-test"
+      description="cruise control full build, with NO checkout"/>
+
+  
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build                                     -->
+  <!-- was cc-init,release,cc-incremental,cc-test-->
+  <!-- =================================================================== -->
+    <target name="cc-full"
+        depends="svnupdate,cc-core,mavenReport"
+        description="cruise control full build, with checkout"/>
+
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- =================================================================== -->
+    <target name="cc"
+        depends="cc-core,mavenReportNoSVNUpdate"
+        description="cruise control full build, with NO checkout"/>
+		
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- =================================================================== -->
+    <target name="ccClover"
+        depends="with.clover,cc,clover.report,clover.summary"
+        description="cruise control full build with clover, with NO checkout"/>		
+
+  <!-- =================================================================== -->
+  <!-- Start cruise control from inside ant  -->
+  <!-- Currently we fork and use whichever version of ant is in CC, not -->
+  <!-- the version of Ant that is currently running. This is ugly, but -->
+  <!-- guarantees equivalence with the command line. -->
+  <!-- Override any of the properties to change location of cruise control -->
+  <!-- =================================================================== -->
+  <target name="cruise" depends="cc-init" description="run cruise control">
+    <condition property="cc.found">
+      <and>
+        <available file="${cruise.lib.dir}" type="dir"/>
+        <available file="${cruise.dist.dir}/cruisecontrol.jar" />
+      </and>
+    </condition>
+    <fail unless="cc.found" >
+      Cruise Control was not found in ${cruise.main.project}
+    </fail>
+    <java fork="true" classname="CruiseControl" failonerror="true">
+      <classpath>
+        <fileset dir="${cruise.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${cruise.dist.dir}" includes="*.jar"/>
+      </classpath>
+      <arg value="-configfile"/>
+      <arg file="${cruise.config.file}"/>
+      <arg value="-port"/>
+      <arg value="${cruise.control.port}"/>
+      <arg value="-rmiport"/>
+      <arg value="${cruise.control.rmiport}"/>
+    </java>
+   </target>
+
+<!-- =================================================================== -->
+<!--  Maven site:generate-->
+<!-- =================================================================== -->
+
+  <target name="mavenReport" depends="svnupdate,mavenReportNoSVNUpdate"
+    description="run 'maven site:generate'" >
+  </target>
+
+  <target name="mavenReportNoSVNUpdate"
+      description="run 'maven site:generate'" if="should.maven">
+    <exec executable="maven" dir="${cruise.base.dir}" failonerror="true">
+      <arg value="site:generate"/>
+    </exec>
+  </target>
+
+
+
+  <target name="ready-to-maven" depends="init">
+    <condition property="should.maven">
+      <and>
+        <isset property="maven.present"/>
+        <istrue value="${maven.enabled}" />
+      </and>
+    </condition>
+
+
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- release all sub-projects                                              -->
+  <!-- =================================================================== -->
+
+
+  <target name="release" depends="clean,ivy-purge-published,dist"
+      description="create a clean release -purges all artifacts from the ivy repository too"
+     >
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Luntbuild target for distribution -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-clean" depends="clean,luntbuild-incremental"/>
+
+
+  <!-- =================================================================== -->
+  <!-- incremental build                                    -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-incremental"
+      depends="dist,tasks,components"/>
+
+  <!-- =================================================================== -->
+  <!-- luntbuild test suite                                           -->
+  <!-- =================================================================== -->
+  <target name="luntbuild-test"
+      depends="tested"/>
+
+  <!-- =================================================================== -->
+  <!-- luntbuild release process-->
+  <!-- =================================================================== -->
+  <target name="luntbuild-release"
+      depends="clean,release" />
+
+
+  <!-- =================================================================== -->
+  <!-- Gump target for distribution -->
+  <!-- =================================================================== -->
+  <target name="gump-dist" depends="ivy-purge,dist" />
+
+  <!-- =================================================================== -->
+  <!-- Gump best practises say unit tests only -->
+  <!-- =================================================================== -->
+  <target name="gump-test" depends="test" />
+
+
+  <!-- =================================================================== -->
+  <!-- cddlm compile is handed down-->
+  <!-- =================================================================== -->
+  <target name="cddlm" depends="ivy-cddlm" />
+
+  <target name="bamboo-build-all" depends="published"
+    description="entry point for Bamboo CI system" />
+
+
+  <target name="ivy-properties">
+    <property name="ivy.user.dir" location="${user.home}/.ivy" />
+    <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
+    <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
+
+    <property name="ivy.package.name" value="org.smartfrog" />
+    <property name="ivy.smartfrog.version" value="latest.integration" />
+    <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
+    <!--Ivy 2 uses some separate directories, that also need cleanup-->
+    <property name="ivy2.user.dir" location="${user.home}/.ivy2" />
+    <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
+    <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
+  </target>
+
+  <target name="ivy-dirs" depends="ivy-properties">
+    <!--here to ensure that any operations on the caches have somewhere to
+   work from-->
+    <mkdir dir="${ivy.cache.dir}" />
+    <mkdir dir="${ivy.local.dir}" />
+    <mkdir dir="${ivy2.cache.dir}" />
+    <mkdir dir="${ivy2.local.dir}" />
+  </target>
+
+
+  <target name="ivy-probe-antlib" depends="init,ivy-dirs">
+    <condition property="ivy.found">
+      <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+    </condition>
+  </target>
+
+  <target name="ivy-init-antlib" depends="ivy-probe-antlib" unless="ivy.found"
+      xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!--load up ivy-->
+    <fail>
+      <condition>
+        <not>
+          <available file="${ivy.jar}"/>
+        </not>
+      </condition>
+      Unable to locate "${ivy.jar}"
+      Either part of the directory tree is missing, or the ivy version,
+      currently set to "${ivy.version}" is wrong.
+    </fail>
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        resource="fr/jayasoft/ivy/ant/antlib.xml"
+        loaderRef="ivyLoader">
+      <classpath>
+        <pathelement location="${ivy.jar}"/>
+      </classpath>
+    </typedef>
+    <!--create the external dir if it is missing-->
+    <mkdir dir="external" />
+    <ivy:settings file="antbuild/ivy/ivyconf.xml" override="true"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Create an ordered list of all ivy-enabled projects-->
+  <!-- Non-ivy projects are ignored-->
+  <!-- we also ignore the deployapi components, as their build is more complex-->
+  <!-- =================================================================== -->
+
+  <target name="ivy-init" depends="ivy-init-antlib"
+          xmlns:ivy="antlib:org.apache.ivy.ant">
+    <presetdef name="ivy-projects">
+      <ivy:buildlist skipbuildwithoutivy="true">
+        <fileset file="smartfrog/build.xml" />
+        <fileset file="testharness/build.xml" />
+        <fileset file="antbuild/build.xml" />
+        <fileset dir="release">
+          <include name="build.xml" unless="do.not.release"/>
+        </fileset>
+        <fileset dir="extras" includes="**/build.xml">
+          <!--no CDL -->
+          <exclude name="cdl/build.xml" unless="cdl.enabled"/>
+          <!--not ready for ivy builds yet-->
+          <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
+          <exclude name="avalanche/**/build.xml" unless="avalanche.enabled"/>
+          <exclude name="VAST/build.xml" unless="vast.enabled"/>
+        </fileset>
+        <fileset dir="components" includes="**/build.xml" >
+          <!--no cddlm here-->
+          <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
+          <!--not really that useful-->
+          <exclude name="releasetest/build.xml"/>
+          <!--cargo support is on hold until 3.12-->
+          <exclude name="cargo/build.xml" unless="cargo.enabled"/>
+          <!--lacks the artifacts to compile-->
+          <exclude name="constraints/build.xml" unless="constraints.enabled"/>
+
+          <!--Java 1.6+ code-->
+          <exclude name="vmware/build.xml" unless="java1.6+"/>
+          <exclude name="ec2/build.xml" unless="java1.6+"/>
+
+          <!--Not yet functional -->
+          <exclude name="hadoop/build.xml" />
+
+          <!-- no docs unless forrest is installed-->
+          <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
+          <exclude name="documentation/build.xml" unless="forrest.enabled"/>
+        </fileset>
+        <!--place for symlinks to external projects you want included-->
+        <fileset dir="external" includes="**/build.xml"/>
+      </ivy:buildlist>
+    </presetdef>
+    <ivy-projects reference="child.projects" />
+    <echo level="verbose">The order to build the projects is
+      ${toString:child.projects}
+    </echo>
+    <!-- build them-->
+    <presetdef name="ivy-delegate" description="Delegate the build">
+      <subant verbose="true">
+        <buildpath refid="child.projects"/>
+        <!--<property file="master.properties"/>-->
+      </subant>
+    </presetdef>
+
+    <!-- this macro builds up and runs the path to
+    a module. in verbose mode, it lists what is needed-->
+    <macrodef name="ivy-build">
+      <attribute name="target" default="" />
+      <attribute name="module" />
+      <sequential>
+        <ivy-projects reference="@{module}.projects" leaf="@{module}"/>
+        <pathconvert pathsep="&#10;" refid="@{module}.projects"
+            property="@{module}.projects.list" />
+        <echo>
+          ${@{module}.projects.list}
+        </echo>
+        <subant  target="@{target}" verbose="true">
+          <buildpath refid="@{module}.projects"/>
+        </subant>
+      </sequential>
+
+    </macrodef>
+
+
+    <property name="ivy.report.dir" location="build/ivy/reports" />
+    <delete dir="${ivy.report.dir}"/>
+  </target>
+
+  <target name="ivy-publish" depends="ivy-init">
+    <ivy-delegate target="published" />
+  </target>
+
+
+  <target name="published" depends="ivy-publish"/>
+
+  <target name="ivy-list-order" depends="ivy-init">
+    <echo>java1.5+=${java1.5+}</echo>
+    <pathconvert pathsep="&#10;" refid="child.projects"
+      property="child.projects.list" />
+    <echo>
+${child.projects.list}
+    </echo>
+  </target>
+
+
+  <target name="ivy-report" depends="ivy-init"
+      xmlns:ivy="antlib:org.apache.ivy.ant">
+    <ivy:repreport organisation="org.smartfrog" todir="${ivy.report.dir}"
+        graph="true" dot="true"/>
+  </target>
+
+  <target name="ivy-graph" depends="ivy-report" >
+    <exec executable="dot">
+      <arg value="-Tpng" />
+      <arg value="-o" />
+      <arg file="${ivy.report.dir}/smartfrog.png"/>
+      <arg file="${ivy.report.dir}/ivy-repository-report.dot"/>
+    </exec>
+  </target>
+
+  <target name="ivy-clean" depends="ivy-init"
+    description="pass clean down to all the ivy-managed projects">
+    <ivy-delegate target="clean" />
+  </target>
+
+  <target name="ivy-purge" depends="ivy-purge-published,ivy-purge-cache"
+    description="purge all locally published artifacts from the local repository">
+  </target>
+
+  <target name="ivy-purge-published" depends="ivy-dirs"
+    description="purge all locally published artifacts from the local repository">
+    <delete dir="${ivy.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete dir="${ivy2.local.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+  </target>
+
+  <target name="ivy-purge-cache" depends="ivy-dirs"
+    description="purge all smartfrog artifacts from the cache">
+    <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
+    </delete>
+    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
+    </delete>
+  </target>
+
+  <target name="pdf-doc-folder" depends="ivy-init"
+      description="pass clean down to all the ivy-managed projects">
+    <ivy-delegate target="pdf-doc-folder" />
+  </target>
+
+  <target name="ivy-cddlm" depends="ivy-init">
+    <ivy-projects reference="cddlm.projects" root="sf-deployapi">
+      <fileset file="components/deployapi/build.xml" />
+      <fileset file="extras/cdl/build.xml"/>
+    </ivy-projects>
+    <subant  target="published" verbose="true">
+      <buildpath refid="cddlm.projects"/>
+      <!--<property file="master.properties"/>-->
+    </subant>
+  </target>
+
+  <target name="ivy-www" depends="ivy-init">
+    <ivy-projects reference="www.projects" leaf="sf-www"/>
+    <subant  target="published" verbose="true">
+      <buildpath refid="www.projects"/>
+    </subant>
+  </target>
+
+  <target name="ivy-test" depends="ivy-init">
+    <ivy-projects reference="junit.projects" root="sf-junit"/>
+    <subant  target="published" verbose="true">
+      <buildpath refid="junit.projects"/>
+    </subant>
+  </target>
+
+  <target name="ivy-build" depends="ivy-init"
+      description="run the build and dependencies of the project specified by the 'project' property
+      and the target of the target property (default=published)">
+    <fail unless="project">
+      Set the project property to the name of the project you want to build (e.g. -Dproject=sf-junit)
+    </fail>
+    <property name="target" value="published"/>
+    <ivy-projects reference="ivy.build.projects" root="${project}"/>
+    <subant  target="${target}" verbose="true">
+      <buildpath refid="ivy.build.projects"/>
+    </subant>
+  </target>
+
+
+
+  <!-- ========================================================== -->
+  <!-- this is going to become the full release mechanism, eventually-->
+  <!-- ========================================================== -->
+  <target name="ivy-release" depends="ivy-init"
+      description="run a complete release of SmartFrog using Ivy">
+    <ivy-delegate target="release" />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- print meaningful diagnostics -->
+  <!-- ========================================================== -->
+  <target name="diagnostics" depends="init"
+      description="build file diagnostics">
+    <diagnostics/>
+  </target>
+
+
+  <!-- CLOVER -->
+  <target name="init.clover" depends="init">
+    <property name="clover.dir" location="clover" />
+    <property name="build.clover.dir" location="build/clover" />
+    <property name="build.clover.history.dir" location="${build.clover.dir}/history" />
+    <property name="build.clover.html.dir" location="${build.clover.dir}/html" />
+    <property name="build.clover.pdf" location="${build.clover.dir}/coverage.pdf" />
+    <mkdir dir="${build.clover.history.dir}" />
+    <mkdir dir="${build.clover.html.dir}" />
+    <available property="clover.jar.present" file="${clover.dir}/clover.jar" />
+  </target>
+
+  <target name="declare-clover" depends="init.clover" if="clover.jar.present">
+    <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar" uri="http://cenqua.com/clover"/>
+    <available property="clover.installed" classname="com.cenqua.clover.CloverInstr"/>
+  </target>
+
+
+  <target name="check.clover" depends="declare-clover">
+  </target>
+
+  <target name="require.clover" depends="check.clover" unless="clover.installed">
+    <fail message="The target you are attempting to run requires Clover, which doesn't appear to be installed"/>
+  </target>
+
+  <target name="with.clover" depends="require.clover"
+      xmlns:clover="http://cenqua.com/clover">
+    <clover:clover-setup/>
+  </target>
+
+  <target name="clover.report" depends="require.clover"
+      xmlns:clover="http://cenqua.com/clover">
+
+    <!-- generate a historypoint for the current coverage -->
+    <clover:clover-historypoint historyDir="${build.clover.history.dir}"/>
+
+    <!-- generate a report with both current and historical data -->
+    <clover:clover-html-report outdir="${build.clover.html.dir}" historyDir="${build.clover.history.dir}"/>
+  </target>
+
+  <target name="clover.summary" depends="require.clover"
+      xmlns:clover="http://cenqua.com/clover">
+    <clover:clover-pdf-report outfile="${build.clover.pdf}"/>
+  </target>
+
+  <!-- CLOVER  End-->
+</project>

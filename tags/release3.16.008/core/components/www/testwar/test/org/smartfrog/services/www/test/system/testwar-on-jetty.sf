@@ -1,0 +1,41 @@
+
+
+#include "/org/smartfrog/services/www/test/system/testwar-base.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
+
+/**
+ * this is our test file
+ */
+ 
+ 
+
+    
+
+sfConfig extends TestWarBoundToMySql {
+
+     //integrate logging with smartfrog
+   logging extends IntegrateJettyLogging;
+
+   /*
+    this is the jetty server itself
+    */
+   server extends CoreJettyServer {
+
+      jettyhome LAZY PROPERTY java.io.tmpdir;
+
+      port PARENT:port;
+
+    }
+
+
+    listener extends JettyListener {
+        port port;
+        server LAZY PARENT:server;
+    }
+    
+    //bind to the ipaddress of the parent
+    ping:host LAZY PARENT:listener:ipaddr;
+    
+
+}
+

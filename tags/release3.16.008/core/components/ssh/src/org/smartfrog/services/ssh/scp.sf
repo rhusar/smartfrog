@@ -1,0 +1,173 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/ssh/sshcomponent.sf"
+
+/**
+ * SmartFrog Scp component can be used in workflows to send and retrieve 
+ * files over SSH..
+ */
+
+
+    ScpSchema extends SSHComponentSchema  {
+        localFiles extends Vector;
+        remoteFiles extends Vector;
+        transferType extends String;
+        //this value gets added as we go along
+        transferCount extends OptionalInteger;
+    }
+
+    /**
+     * This is the basic Scp Operation
+     */
+    ScpOperation extends SSHComponent {
+        sfClass "org.smartfrog.services.ssh.ScpComponentImpl";
+        scpSchema  extends ScpSchema  ;
+
+        //get files from the remote server
+        get_files "GET";
+        //put files to the remote server
+        put_files "PUT";
+
+        //default transfer is a get
+        transferType get_files;
+
+
+    }
+
+    /**
+     * Switch to the public/private keypair
+     */
+    ScpOperationWithPrivateKey extends ScpOperation {
+        authentication SSHComponent:authenticate_key;
+    }
+
+    /**
+     * a compound with a nested SCP operation, and a placeholder
+     * for a password provider
+     */
+    ScpSessionAuthPass extends SshCompound {
+
+
+        passwordProvider TBD;
+        localFiles TBD;
+        remoteFiles TBD;
+        transferType ScpOperation:get_files;
+
+        SCP extends ScpOperation {
+
+            host PARENT:ATTRIB host;
+
+            username PARENT:ATTRIB username;
+
+            // reference to password provider
+            passwordProvider LAZY PARENT:passwordProvider;
+
+            port PARENT:ATTRIB port;
+
+            timeout PARENT:ATTRIB timeout;
+
+            transferType PARENT:ATTRIB transferType;
+            localFiles PARENT:ATTRIB localFiles;
+            remoteFiles PARENT:ATTRIB remoteFiles;
+        }
+    }
+
+/**
+ * this scp session uses a file password relative to the
+ * current directory of the process
+ */
+
+ScpSessionFilePassword extends ScpSessionAuthPass {
+    passwordFile TBD;
+
+    passwordProvider extends FilePassword {
+      passwordFile LAZY PARENT:ATTRIB passwordFile;
+    }
+}
+
+/**
+ * This SCP session uses an inline password
+ */
+ScpSessionInlinePassword extends ScpSessionAuthPass {
+    password TBD;
+    passwordProvider extends InlinePassword {
+        password PARENT:ATTRIB password;
+    }
+}
+
+/**
+ * To switch to public key operation, we need a public key and a keyfile
+ */
+
+ScpSessionPublicKey extends ScpSessionAuthPass {
+    keyFile TBD;
+    SCP:authentication SSHComponent:authenticate_key;
+    SCP:keyFile PARENT:ATTRIB keyFile;
+}
+
+/**
+ * a public key scp session with a file password
+ */
+
+ScpSessionPublicKeyFilePassword extends ScpSessionPublicKey {
+    passwordFile TBD;
+
+    passwordProvider extends FilePassword {
+      passwordFile LAZY PARENT:ATTRIB passwordFile;
+    }
+}
+
+
+/**
+ * a public key scp session with an inline password
+ */
+
+ScpSessionPublicKeyInlinePassword extends ScpSessionPublicKey {
+    password TBD;
+    passwordProvider extends InlinePassword {
+        password PARENT:ATTRIB password;
+    }
+}
+
+ScpSessionAuthPubKey extends ScpSessionPublicKey ;
+
+
+
+/**
+ * This component does a bulk upload using full java.util.regex expression
+ * Patterns. All files are placed into the remote directory specified. 
+ */
+ScpBulkUpload extends SSHComponent {
+    sfClass "org.smartfrog.services.ssh.ScpBulkUploadImpl";
+    scpSchema  extends FilesSchema  {
+      remoteDir extends String;
+      //this value gets added as we go along
+      transferCount extends OptionalInteger;
+    }
+
+  pattern Files:pattern;
+  includeHiddenFiles Files:includeHiddenFiles;
+  caseSensitive Files:caseSensitive;
+  fileCount -1;
+  minFileCount -1;
+  maxfileCount -1;
+
+}

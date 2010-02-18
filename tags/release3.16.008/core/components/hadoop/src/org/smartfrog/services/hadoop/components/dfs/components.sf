@@ -1,0 +1,233 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+/**
+ * This package contains components that work with the filesystem
+ * CopyToDFS (source,dest)     -copy a file into DFS
+ * CopyFromDFS (source,dest)   -copy a file from DFS
+ * CopyInDFS (source, dest)  - copy in DNS
+ * MoveInDFS (source, dest)  - move in DNS
+ * DfsDeleteFile : delete a file
+ * DfsCreateDir  : Create a directory
+ * DfsDeleteDir  : delete a directory
+ * DfsListDir : list a directory
+ * DfsChmod : Change file or dir permissions
+
+ * One test function
+ * DfsFileExists : make assertions/condition about the state of a file
+
+ * All of these operations take a Cluster attribute, a LAZY reference to a Component declaring
+ * the settings of the cluster, including login settings. We don't declare it as mandatory in
+ * the schema, so you can pick it up from a parent
+ */
+
+
+ /**
+   * Any DFS operation is workflow enabled
+   */
+
+  DfsOperation extends WorkflowPrim {
+    sfShouldTerminate true;
+
+    //the cluster attribute is required, but not defined in the schema, so
+    //can be picked up from parents
+    //cluster
+
+    //here are some permissions for use in permission logic
+    permission_a+rw     "-rw-rw-rw-";
+    permission_a+rwx    "-rwxrwxrwx";
+    permission_ug+rw    "-rw-rw----";
+    permission_ug+rwx   "-rwxrwx---";
+    permission_u+rw     "-rw-------";
+    permission_u+rwx    "-rwx------";
+  }
+
+ /**
+  * All path operations take a path
+  */
+
+  DfsPathOperation extends DfsOperation {
+    path TBD;
+
+    //is this operation an error when the action has already been applied?
+    idempotent true;
+  }
+
+  DfsCreateDir extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCreateDirImpl";
+    permissionPattern permission_a+rwx;
+  }
+
+  /**
+   Delete a directory
+   */
+  DfsDeleteDir extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsDeleteDirImpl";
+    //should deletion be recursive?
+    recursive true;
+  }
+
+  /**
+    * List a directory. The component can also check the min/max file count size
+    */
+  DfsListDir extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsListDirImpl";
+    minFileCount 0;
+    maxFileCount -1;
+  }
+ 
+
+/**
+ * A component to check the status of a directory
+ */
+
+  DfsPathExists extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsPathExistsImpl";
+    //flag to enable startup checking
+    checkOnStartup true;
+    //flag to enable liveness checking
+    checkOnLiveness true;
+    //flag to say the path can resolve to a file
+    canBeFile true;
+    //flag to say the path can resolve to a directory
+    canBeDirectory true;
+    //minimum size of the file (only checked if the path resolves to a file)
+    minSize 0;
+    //maximum size of the file (only checked if the path resolves to a file); -1 means 'dont care'
+    maxSize -1;
+    //print info about the file?
+    verbose false;
+  }
+
+
+  /**
+   * This turns the component into a condition by
+   * removing the startup and liveness tests
+   */
+  DfsPathExistsCondition extends DfsPathExists {
+    sfShouldTerminate false;
+    checkOnStartup false;
+    checkOnLiveness false;
+  }
+
+
+  /**
+   * This turns the component into a workflow by
+   * terminating the path on startup
+   */
+  DfsPathExistsWorkflow extends DfsPathExists {
+    sfShouldTerminate true;
+    checkOnLiveness false;
+    verbose true;
+  }
+
+  /**
+   * copy a source file to a destination file or directory
+   * There is no dependency checking, but destination files that exist can be skipped
+   */
+  DfsSourceDestOperation extends DfsOperation {
+    source TBD;
+    dest TBD;
+  }
+
+
+  /**
+   * copy a source file to a destination file or directory
+   * There is no dependency checking, but destination files that exist can be skipped
+   */
+  DfsCopyOperation extends DfsSourceDestOperation {
+    overwrite true;
+  }
+
+  /**
+   * copy a local file into HDFS.
+   */
+  DfsCopyFileIn extends DfsCopyOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileInImpl";
+  }
+
+  /**
+   * copy an HDFS file into a local file
+   */
+  DfsCopyFileOut extends DfsCopyOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileOutImpl";
+  }
+
+
+  /**
+   * copy an HDFS file into another HDFS file.
+   * This will go via the local machine, even if both files are remote and on the same node.
+   * Deploy the operation close to the files.
+   */
+  DfsCopyFile extends DfsCopyOperation {
+    blocksize 65536;
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileImpl";
+    blocksize 65536;
+  }
+
+  /**
+   * move a file in the filesystem
+   */
+  DfsMoveFile extends DfsSourceDestOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsMoveFileImpl";
+  }
+
+  /**
+   * Format a file system. This is a workflow component
+   */
+  DfsFormatFileSystem extends DfsOperation {
+
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsFormatFileSystemImpl";
+    //name directory: a List of directories
+    nameDirectories TBD;
+    sfShouldTerminate true;
+  }
+
+  /**
+  * Create a file with the given text streamed out using the DataOutputStream libraries -that is,
+  * it ends up UTF16 big-endian.
+  * if text=="", then nothing is written; a 0 byte file is pushed out.
+  */
+  DfsCreateFile extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCreateFileImpl";
+    text "";
+    overwrite true;
+  }
+
+  /**
+  * Touch a file to zero bytes. Anything there is deleted
+  */
+  DfsTouchFile extends DfsCreateFile {
+    text "";
+  }
+
+  DfsFsck extends DfsOperation {
+
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsFsckImpl";
+    sfShouldTerminate true;
+    move false;
+    delete false;
+    files false;
+    openForWrite false;
+    blocks false;
+    locations false;
+    racks false;
+  }

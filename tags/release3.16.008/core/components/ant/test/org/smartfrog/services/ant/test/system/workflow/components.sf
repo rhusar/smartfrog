@@ -1,0 +1,117 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/ant/test/system/components.sf"
+
+
+DELIBERATE_FAILURE "deliberate failure";
+BAD_TASK "no such task: scp";
+
+antRun extends AntWorkflowRun {
+  logLevel LOG_VERBOSE;
+}
+
+WorkflowTest extends TestCompound {
+
+  action extends antRun;
+
+  tests extends Sequence {
+
+    //override point
+    assertions extends Sequence {
+    }
+  }
+
+}
+
+
+
+
+testEcho extends WorkflowTest  {
+  expectTerminate true;
+
+  action:hello extends echo {
+    message "hello";
+  }
+
+}
+
+testProperties extends TestCompound {
+
+  description "test that properties are set on the results afterwards";
+
+  action extends Compound {
+
+  }
+
+  tests extends Sequence {
+
+    antrun extends antRun {
+      propertyTarget LAZY action;
+
+      setProps extends property {
+        name "p1";
+        value name;
+      }
+    }
+
+    java.version extends AssertPropertySet {
+      name "java.version";
+      propertyTarget LAZY action;
+    }
+
+    antHome extends java.version {
+      name "ant.home";
+    }
+
+    test.property extends java.version {
+      name "p1";
+      value name;
+    }
+  }
+}
+
+
+
+
+WorkflowFailingTest extends WorkflowTest {
+  expectTerminate true;
+  exitType EXIT_TYPE_ABNORMAL;
+
+
+}
+
+testFail extends WorkflowFailingTest {
+  description "test that the fail target fails";
+  exitText DELIBERATE_FAILURE;
+
+  action:failTask extends fail {
+    message DELIBERATE_FAILURE;
+    status -1;
+  }
+}
+
+
+testBadTask extends WorkflowFailingTest {
+  description "test that the bad task target fails";
+  exitText BAD_TASK;
+  action:badTask extends scp {
+
+  }
+}

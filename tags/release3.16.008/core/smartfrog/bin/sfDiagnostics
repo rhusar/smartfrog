@@ -1,0 +1,82 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfDiagnostics"
+   echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName] [-p port]"
+   exit 69
+fi
+if [ $# -eq 1 ] && [ "$1" = "-?" ];then
+   echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName] [-p port]"
+   exit 0
+fi
+
+if [ "$1" = "-p" ];then
+    	echo "Insufficient arguments to use sfDiagnostics"
+    	echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName] [-p port]"
+    	exit 69
+fi
+
+if [ -z $2 ]; then
+    COMPONENT="rootProcess";
+elif [ "$2" = "-p" ];then
+    COMPONENT="rootProcess";
+    if [ -z $3 ];then
+    	echo "Insufficient arguments to use sfDiagnostics"
+    	echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName] [-p port]"
+    	exit 69
+    fi
+    export OPTION="$2 $3";
+    if [ -z $4 ]; then
+    	PROCESS=rootProcess;
+    else
+    	PROCESS="$4";
+    fi    
+else
+    if test "$USERNAMEPREFIX_ON"; then
+        COMPONENT="`whoami`_$2";
+    else
+        COMPONENT="$2";
+    fi
+fi    
+if [ -z $PROCESS ];then
+	if [ -z $3 ]; then
+    		PROCESS=rootProcess;
+	elif [ "$3" == "-p" ];then
+    		PROCESS=rootProcess;
+    		if [-z $4 ];then
+    			echo "Insufficient arguments to use sfDiagnostics"
+    			echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName] [-p port]"
+    			exit 69
+    		fi
+    		export OPTION="$3 $4";
+	else
+    		PROCESS="$3";
+	fi    
+fi
+if [ "$4" = "-p" ];then
+    	if [ -z $5 ];then
+    		echo "Insufficient arguments to use sfDiagnostics"
+    		echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName] [-p port]"
+    		exit 69
+    	fi
+    		export OPTION="$4 $5";
+fi
+. "$SFHOME/bin/setSFProperties"
+
+ACTION=DIAGNOSTICS
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS $OPTION -e
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS $OPTION -e
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS $OPTION -e
+else
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS $OPTION -e
+fi

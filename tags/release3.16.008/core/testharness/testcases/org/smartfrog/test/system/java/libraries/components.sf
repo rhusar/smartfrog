@@ -1,0 +1,99 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+ 
+#include "/org/smartfrog/test/system/java/libraries/libraryTestBase.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/version.sf"
+
+
+
+/*
+ These components test the ivy components
+ */
+ 
+ 
+SmartFrogArtifact extends JarArtifact {
+    project "org.smartfrog";
+    //pull in our own version
+    version (Version:majorRelease ++ "." ++ Version:minorRelease ++ "." ++ Version:build ++ Version:status);
+} 
+
+SmartFrogJar extends SmartFrogArtifact {
+    artifact "smartfrog";
+} 
+
+ 
+
+LocallyPublished extends IvyLocallyPublishedLibrary {
+} 
+
+ 
+LibraryTest extends ExpectDeploy {
+  description "test an ivy component";
+
+  action extends Compound {
+  }
+
+  tests extends Sequence {
+
+  }
+
+//  undeployAfter 500;
+
+}
+  
+ 
+testLocalSmartFrog extends LibraryTest {
+
+    description "Try to locate the smartfrog.jar file that should have been built and published with ivy by the core";
+    
+    action extends Compound {
+        library extends LocallyPublished;
+        smartfrog.jar extends SmartFrogJar {
+            library LAZY PARENT:library;
+        }
+    }
+}
+ 
+
+ 
+ 
+ /**
+  * expect an error or an failed download
+  */
+ testMissingLocalArtifactFails extends ExpectDeployFailure {
+
+    description "force an ivy local publish failure";
+     //dont expect termination
+    expectTerminate false;
+    
+    action extends Compound {
+        library extends LocallyPublished;
+        commons-logging extends commons-logging-1.0.4 {
+            library LAZY PARENT:library;
+        }
+    }
+
+    exceptions [
+      ["",""],
+      ["",LibraryArtifactErrors:ERROR_NO_DOWNLOAD]
+      ];
+}
+ 
