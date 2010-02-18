@@ -1056,7 +1056,8 @@
   <target name="ssh.live" depends="ssh-test">
   </target>
 
-  <target name="scp-upload" depends="upload-init" if="ssh.enabled">
+  <target name="scp-upload" depends="upload-init" if="ssh.enabled"
+      description="Upload the artifacts to a destination SSH server and directory, and make world readable">
 
     <ssh-remote command="mkdir -p ${ssh.dir}"/>
     <property name="ssh.path"
@@ -1073,7 +1074,8 @@
     <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.gz"/>
   </target>
 
-  <target name="ftp-upload" depends="upload-init" if="ftp.enabled">
+  <target name="ftp-upload" depends="upload-init" if="ftp.enabled"
+      description="Upload the artifacts to an FTP server">
     <echo>FTP target is ${ftp.server}</echo>
     <ftp server="${ftp.server}"
         userid="${ftp.user}"
@@ -1091,7 +1093,8 @@
   </target>
 
 
-  <target name="sftp-upload" depends="upload-init" if="sftp.enabled">
+  <target name="sftp-upload" depends="upload-init" if="sftp.enabled"
+      description="Upload the artifacts to a secure sftp server">
     <property name="sftp.server" value="frs.sourceforge.net"/>
     <property name="sftp.user" value="${ssh.user}"/>
     <property name="sftp.group" value="smartfrog"/>
@@ -1102,6 +1105,11 @@
     <property name="sftp.path"
         value="${sftp.user}@${sftp.server}:${sftp.dir}"/>
     <echo>SFTP target is ${sftp.server}</echo>
+    <echo level="verbose">
+      echo uploading to "${sftp.path}"
+      files
+      ${toString:upload.fileset}
+    </echo>
     <scp remoteToDir="${sftp.path}"
         sftp="true"
         password="${sftp.password}"
