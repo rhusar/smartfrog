@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
 import java.io.OutputStreamWriter;
 import java.io.FileNotFoundException;
+import java.io.Closeable;
 import java.net.URL;
 import java.util.List;
 import java.net.MalformedURLException;
@@ -84,13 +85,7 @@ public final class FileSystem {
      * @param stream inputstream to close
      */
     public static void close(InputStream stream) {
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                //ignored
-            }
-        }
+        close((Closeable) stream);
     }
 
     /**
@@ -99,43 +94,25 @@ public final class FileSystem {
      * @param stream output stream to close
      */
     public static void close(OutputStream stream) {
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                //ignored
-            }
-        }
+        close((Closeable) stream);
     }
 
     /**
      * Close a stream; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param channel writer channel to close
+     * @param writer writer channel to close
      */
-    public static void close(Writer channel) {
-        if (channel != null) {
-            try {
-                channel.close();
-            } catch (IOException e) {
-                //ignored
-            }
-        }
+    public static void close(Writer writer) {
+        close((Closeable) writer);
     }
 
     /**
      * Close a reader; do nothing if null. Ignore all thrown IOExceptions
      *
-     * @param channel reader channel to close
+     * @param reader reader channel to close
      */
-    public static void close(Reader channel) {
-        if (channel != null) {
-            try {
-                channel.close();
-            } catch (IOException e) {
-                //ignored
-            }
-        }
+    public static void close(Reader reader) {
+        close((Closeable) reader);
     }
 
     /**
@@ -144,14 +121,24 @@ public final class FileSystem {
      * @param channel file channel to close
      */
     public static void close(FileChannel channel) {
-        if (channel != null) {
+        close((Closeable) channel);
+    }
+
+    /**
+     * Close a closeable object - do nothing if null. Ignore all thrown IOExceptions
+     *
+     * @param closeable object to close
+     */
+    public static void close(Closeable closeable) {
+        if (closeable != null) {
             try {
-                channel.close();
+                closeable.close();
             } catch (IOException e) {
                 //ignored
             }
         }
     }
+
 
     /**
      * Create a temporary file. There is a very small, very very small, race condition here as we delete the temp file
