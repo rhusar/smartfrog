@@ -199,7 +199,7 @@ public final class FileSystem {
      * @param component component to look up the path from
      * @param attribute the name of the attribute to look up
      * @param defval    a default value. This should already be in the local format for the target platform, and
-     *                  absolute. Can be null. No used when mandatory is true
+     *                  absolute. Can be null. Not used when mandatory is true
      * @param baseDir   optional base directory for a relative file when constructing from a string
      * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException when things go wrong
      * @param platform  a platform to use for converting filetypes. Set to null to use the default helper for this
@@ -235,7 +235,7 @@ public final class FileSystem {
      * @param component component to look up the path from
      * @param attribute the name of the attribute to look up
      * @param defval    a default value. This should already be in the local format for the target platform, and
-     *                  absolute. Can be null. No used when mandatory is true
+     *                  absolute. Can be null. Not used when mandatory is true
      * @param baseDir   optional base directory for a relative file when constructing from a string
      * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException when things go wrong
      * @param platform  a platform to use for converting filetypes. Set to null to use the default helper for this
