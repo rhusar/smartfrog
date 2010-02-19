@@ -73,6 +73,7 @@
         conf="webapp->default">
       <exclude org="antlr"/>
       <exclude org="oro"/>
+      <exclude org="commons-logging"/>
     </dependency>
 
     <dependency org="org.apache.struts"
