@@ -68,7 +68,10 @@
         name="commons-collections"
         rev="${commons-collections.version}"
         conf="redist->master"/>
-
+    <dependency org="commons-beanutils"
+        name="commons-beanutils"
+        rev="${commons-beanutils.version}"
+        conf="redist->master"/>
     <dependency org="commons-lang"
         name="commons-lang"
         rev="${commons-lang.version}"
