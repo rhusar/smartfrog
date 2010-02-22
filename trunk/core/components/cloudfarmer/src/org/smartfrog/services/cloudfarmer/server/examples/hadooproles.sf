@@ -18,24 +18,38 @@ For more information: www.smartfrog.org
 
 */
 
+HdfsLinks extends DATA {
+  hdfsPort 50070;
+  "Hadoop DFS"          ["http", hdfsPort, "/"];
+  "Hadoop DFS metrics"  ["http", hdfsPort, "/metrics"];
+  "Hadoop DFS stacks"   ["http", hdfsPort, "/stacks"];
+  "Hadoop DFS conf"     ["http", hdfsPort, "/conf"];
+}
+
+NameNodeLinks extends HdfsLinks {
+  jtPort 50072;
+  "Job Tracker" ["http", jtPort, "/"];
+  "Job Tracker metrics"  ["http", hdfsPort, "/metrics"];
+  "Job Tracker stacks"   ["http", hdfsPort, "/stacks"];
+  "Job Tracker conf"     ["http", hdfsPort, "/conf"];
+}
+
 HadoopRoles extends Compound {
-    master extends ClusterRole {
-      description "Hadoop NameNode and JobTracker";
-      min 1;
-      max 1;
-      links extends DATA {
-        "Hadoop DFS"  ["http", 50070, "/"];
-        "Job Tracker" ["http", 50072, "/"];
-      }
+
+  master extends ClusterRole {
+    description "Hadoop NameNode and JobTracker";
+    min 1;
+    max 1;
+    links extends NameNodeLinks {
     }
-    
-    worker extends ClusterRole {
-      description "Hadoop Worker node with a DataNode and TaskTracker";
-      min 0;
-      recommendedMin 3;
-      links extends DATA {
-        "Hadoop DFS"  ["http", 50070, "/"];
-      }
+  }
+  
+  worker extends ClusterRole {
+    description "Hadoop Worker node with a DataNode and TaskTracker";
+    min 0;
+    recommendedMin 3;
+    links extends HdfsLinks {
     }
+  }
 }
 
