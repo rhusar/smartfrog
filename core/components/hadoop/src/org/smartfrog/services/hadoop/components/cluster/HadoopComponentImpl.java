@@ -76,7 +76,8 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      *
      * @return the new configuration
      * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException              network problems     */
+     * @throws RemoteException              network problems
+     */
     protected ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
         return createConfiguration(this);
     }
@@ -87,7 +88,8 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @param target target component
      * @return the target configuration
      * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException              network problems     */
+     * @throws RemoteException              network problems
+     */
     private ManagedConfiguration createConfiguration(Prim target) throws SmartFrogException, RemoteException {
         boolean clusterRequired = sfResolve(ATTR_CLUSTER_REQUIRED, false, false);
         return ManagedConfiguration.createConfiguration(target, true, clusterRequired, false);
