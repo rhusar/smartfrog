@@ -476,7 +476,6 @@
     <!-- cloudfarmer -->
     <rpmpackage package="cloudfarmer"/>
     <ln artifact="sf-cloudfarmer" version="${smartfrog.version}"/>
-    <ln artifact="commons-beanutils" version="${commons-beanutils.version}"/>
     <ln artifact="commons-chain" version="${commons-chain.version}"/>
     <ln artifact="commons-digester" version="${commons-digester.version}"/>
     <ln artifact="commons-validator" version="${commons-validator.version}"/>
@@ -538,6 +537,7 @@
     <ln artifact="json-lib" version="${json-lib.version}"/>
     <ln artifact="commons-collections" version="${commons-collections.version}"/>
     <ln artifact="commons-lang" version="${commons-lang.version}"/>
+    <ln artifact="commons-beanutils" version="${commons-beanutils.version}"/>
     <ln artifact="ezmorph" version="${ezmorph.version}"/>
 
     <!--logging-->
