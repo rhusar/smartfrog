@@ -19,18 +19,24 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ports;
 
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.utils.Spinner;
+import org.smartfrog.sfcore.utils.SmartFrogOperationTimedOutException;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.net.InetAddress;
+import java.net.ConnectException;
 
 /**
  * Created 28-May-2008 15:22:20
  */
 
 public class PortUtils {
+    private static final int PORT_CHECK_WAIT_INTERVAL = 100;
 
     private PortUtils() {
     }
@@ -38,7 +44,7 @@ public class PortUtils {
     /**
      * Wait for a hostname to resolve
      * @param hostname hostname to look for
-     * @param resolveTimeout timeout
+     * @param resolveTimeout timeout to resolve in seconds
      * @param sleep time in millis to sleep
      * @return the address
      * @throws UnknownHostException if the host did not resolve
@@ -75,32 +81,47 @@ public class PortUtils {
     
 
     /**
-     * probe a port for being open
-     *
+     * Probe a port for being open.
+     * DNS and connect failures are handled by sleeping and trying again, up to the end of the connectTimeout period.
+     *  
      * @param address        address to check
-     * @param connectTimeout timeout
+     * @param connectTimeout timeout in milliseconds
      * @throws IOException failure to connect, including timeout
      */
     public static void checkPort(InetSocketAddress address, int connectTimeout) throws IOException {
         Socket socket = null;
-        socket = new Socket();
-        try {
-            socket.connect(address, connectTimeout);
-        } catch (SecurityException e) {
-            throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
-        } catch (SocketTimeoutException ste) {
-            throw (SocketTimeoutException)new SocketTimeoutException("Timeout connecting to "+ address).initCause(ste);
-        } catch (UnknownHostException unknownHost) {
-            
-        }
-        finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ignored) {
+        Spinner spinner = new Spinner("Connecting to " + address, PORT_CHECK_WAIT_INTERVAL, connectTimeout);
+        boolean firstRun = true;
+        do {
+            try {
+                //check for and handle a repeat cycle
+                if(!firstRun) {
+                    try {
+                        spinner.sleep();
+                    } catch (SmartFrogOperationTimedOutException e) {
+                        throw new IOException(e);
+                    }
+                } else {
+                    firstRun = false;
                 }
+                socket = new Socket();
+                socket.connect(address, connectTimeout);
+            } catch (SecurityException e) {
+                throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
+            } catch (SocketTimeoutException ste) {
+                throw (SocketTimeoutException)new SocketTimeoutException("Timeout connecting to "+ address).initCause(ste);
+            } catch (UnknownHostException unknownHost) {
+                //DNS could still catch up, so retry
+                spinner.setLastThrown(unknownHost);
+            } catch (ConnectException connectionRefused) {
+                //connection failure
+                spinner.setLastThrown(connectionRefused);
             }
-        }
+            finally {
+                FileSystem.close(socket);
+                socket = null;
+            }
+        } while (!spinner.isTimedOut());
     }
 
     /**
