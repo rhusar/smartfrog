@@ -197,7 +197,7 @@ It does not contain any of the Ant optional libraries, or their dependencies.
 
 Group:         ${rpm.framework}
 Summary:        Cloud Infrastructure Management
-Requires:       %{name} = %{version}-%{release}, %{name}-jetty,  %{name}-json,  %{name}-jasper
+Requires:       %{name} = %{version}-%{release}, %{name}-jetty,  %{name}-json
 #
 %description cloudfarmer 
 Components and tools to deal with different cloud infrastructures.
