@@ -19,9 +19,58 @@ For more information: www.smartfrog.org
 */
 
 /**
+ * 
+ * This is the default port stuff
+ */
+HadoopPortConfiguration extends {
+  ANY_PORT "0";
+  /**
+    The address where the datanode server will listen to.
+    If the port is 0 then the server will start on a free port.
+  */
+  DFS_DATANODE_ADDRESS_DEFAULT_PORT "50010";
+  /**
+    The datanode http server address and port.
+    If the port is 0 then the server will start on a free port.
+  */
+  DFS_DATANODE_HTTP_DEFAULT_PORT "50075";
+  DFS_DATANODE_HTTPS_PORT "50475";
+  
+   /**
+     The address and the base port where the dfs namenode web ui will listen on.
+     If the port is 0 then the server will start on a free port.
+   */
+   DFS_HTTP_DEFAULT_PORT "50070";
+   DFS_HTTPS_DEFAULT_PORT "50470";
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  DFS_DATANODE_IPC_DEFAULT_PORT "50020";
+   /**
+     The secondary namenode http server address and port.
+     If the port is 0 then the server will start on a free port.
+   */
+   DFS_SECONDARY_HTTP_DEFAULT_PORT "50090";
+ 
+  /**
+  The job tracker http server address and port the server will listen on.
+  If the port is 0 then the server will start on a free port.
+  */
+  MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT "50030";
+  
+  /**
+  The task tracker http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT "50060";
+  
+}
+
+/**
  * This is where all the hostnames are worked out. It is kept separate and merged in where needed
  */
-HadoopHostnameConfiguration extends {
+HadoopHostnameConfiguration extends HadoopPortConfiguration {
 
 /**
    * hostnames
@@ -29,44 +78,30 @@ HadoopHostnameConfiguration extends {
   LOCALHOST "127.0.0.1";
   ALL_ZEROS "0.0.0.0";
   ANY_HOST ALL_ZEROS;
-  ANY_PORT "0";
   DEFAULT_HOSTNAME ALL_ZEROS;
-  /**
-    The address where the datanode server will listen to.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_DATANODE_ADDRESS_DEFAULT_PORT "50010";
   DFS_DATANODE_DEFAULT_HOSTNAME DEFAULT_HOSTNAME;
+  
+  
+   /**
+   The address and the base port where the dfs namenode web ui will listen on.
+   If the port is 0 then the server will start on a free port.
+   */
   dfs.datanode.hostname DFS_DATANODE_DEFAULT_HOSTNAME;
   dfs.datanode.port  DFS_DATANODE_ADDRESS_DEFAULT_PORT;
   dfs.datanode.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.port);
 
 
-  /**
-    The datanode http server address and port.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_DATANODE_HTTP_DEFAULT_PORT "50075";
   dfs.datanode.http.port DFS_DATANODE_HTTP_DEFAULT_PORT;
   dfs.datanode.http.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.http.port);
 
-  DFS_DATANODE_HTTPS_PORT "50475";
   dfs.datanode.https.port DFS_DATANODE_HTTPS_PORT;
   dfs.datanode.https.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.https.port);
-
   /**
    The datanode ipc server address and port.
    If the port is 0 then the server will start on a free port.
   */
-  DFS_DATANODE_IPC_DEFAULT_PORT "50020";
   dfs.datanode.ipc.port DFS_DATANODE_IPC_DEFAULT_PORT;
   dfs.datanode.ipc.address (dfs.datanode.hostname ++ ":" ++ dfs.datanode.ipc.port);
-  /**
-    The address and the base port where the dfs namenode web ui will listen on.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_HTTP_DEFAULT_PORT "50070";
-  DFS_HTTPS_DEFAULT_PORT "50470";
   DFS_HOSTNAME DEFAULT_HOSTNAME;
   dfs.hostname DFS_HOSTNAME;
   dfs.http.port DFS_HTTP_DEFAULT_PORT;
@@ -75,12 +110,10 @@ HadoopHostnameConfiguration extends {
   dfs.http.address  (dfs.hostname ++ ":" ++ dfs.http.port);
   dfs.https.address  (dfs.hostname ++ ":" ++ dfs.https.port);
 
-
-  /**
-    The secondary namenode http server address and port.
-    If the port is 0 then the server will start on a free port.
-  */
-  DFS_SECONDARY_HTTP_DEFAULT_PORT "50090";
+   /**
+     The secondary namenode http server address and port.
+     If the port is 0 then the server will start on a free port.
+   */
   DFS_SECONDARY_HOSTNAME DEFAULT_HOSTNAME;
   dfs.secondary.hostname DFS_SECONDARY_HOSTNAME;
   dfs.secondary.http.port DFS_SECONDARY_HTTP_DEFAULT_PORT;
@@ -124,7 +157,6 @@ HadoopHostnameConfiguration extends {
   */
   MAPRED_TASK_TRACKER_HOSTNAME DEFAULT_HOSTNAME;
   mapred.task.tracker.hostname MAPRED_TASK_TRACKER_HOSTNAME;
-  MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT "50060";
   mapred.task.tracker.http.port MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT;
   mapred.task.tracker.http.address (mapred.task.tracker.hostname  ++ ":" ++ mapred.task.tracker.http.port);
 }
