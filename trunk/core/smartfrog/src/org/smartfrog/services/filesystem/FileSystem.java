@@ -50,6 +50,7 @@ import java.io.Closeable;
 import java.net.URL;
 import java.util.List;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -133,12 +134,24 @@ public final class FileSystem {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
                 //ignored
             }
         }
     }
 
+    /**
+     * Close a socket
+     * @param socket a socket, can be null
+     */
+    public static void close(Socket socket) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException ignored) {
+            }
+        }
+    }
 
     /**
      * Create a temporary file. There is a very small, very very small, race condition here as we delete the temp file
