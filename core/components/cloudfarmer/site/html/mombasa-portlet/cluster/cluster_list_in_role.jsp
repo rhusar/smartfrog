@@ -29,14 +29,15 @@ For more information: www.smartfrog.org
 <div>
 Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hostcount"/>
 </div>
-<table border="0">
-  <tr bgcolor="grey">
+<table cellpadding="0" cellspacing="0">
+ <tbody>
+  <tr class="header">
     <th>Hostname</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Application</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Role</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Description</th>
   </tr>
   <logic:iterate id="host"
@@ -50,15 +51,15 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
           <bean:write name="host" property="hostname"/>
         </html:link>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td><bean:write name="host" property="application"/></td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <logic:notEmpty name="host" property="role">
           <bean:write name="host" property="role"/>
         </logic:notEmpty>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <logic:notEmpty name="host" property="application">
           <logic:notEmpty name="host" property="application.description">
@@ -86,6 +87,7 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
       </html:link>
     </td>
   </tr>  
+ </tbody>
 </table>
 
 

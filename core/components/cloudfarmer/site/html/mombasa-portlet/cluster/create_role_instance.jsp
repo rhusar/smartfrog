@@ -26,12 +26,13 @@ For more information: www.smartfrog.org
 <html:form action="/mombasa-portlet/cluster/create_role_instance/process" method="post" focus="minNodes">
   <p>Add Hosts in Role "<bean:write name="role" />" </p>
   
-  <table border="0" cellpadding="0" cellspacing="0">
+  <table cellpadding="0" cellspacing="0">
+   <tbody>
     <tr>
       <td>
         Minimum number of machines of role
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:text name="clusterCreateRoleInstanceForm" property="minNodes" size="23"/>
       </td>
@@ -41,7 +42,7 @@ For more information: www.smartfrog.org
       <td>
         Maximum number of machines to create
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:text name="clusterCreateRoleInstanceForm" property="maxNodes" size="23"/>
       </td>
@@ -51,7 +52,7 @@ For more information: www.smartfrog.org
       <td>
         Role name
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:text name="clusterCreateRoleInstanceForm"  property="rolename" value="${role}"/>
       </td>
@@ -67,14 +68,14 @@ For more information: www.smartfrog.org
           Add
         </html:submit>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:reset>
           Reset
         </html:reset>
       </td>
     </tr>
-
+   </tbody>
   </table>
 
 </html:form>

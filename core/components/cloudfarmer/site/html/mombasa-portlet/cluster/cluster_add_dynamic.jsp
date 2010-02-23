@@ -28,7 +28,8 @@ For more information: www.smartfrog.org
 <html:form action="/mombasa-portlet/cluster/add_dynamic/process" method="post" focus="minWorkers">
 
 
-  <table border="0" cellpadding="0" cellspacing="0">
+  <table cellpadding="0" cellspacing="0">
+   <tbody>
     <tr>
       <td>
         Minimum number of workers
@@ -62,7 +63,7 @@ For more information: www.smartfrog.org
         </html:reset>
       </td>
     </tr>
-
+   </tbody>
   </table>
 
 <p>If a master node is needed, it will be added automatically</p>

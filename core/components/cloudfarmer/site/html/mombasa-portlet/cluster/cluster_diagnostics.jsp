@@ -22,17 +22,16 @@ For more information: www.smartfrog.org
 
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
-<table border="0" width="100%">
+<table class="wide" cellpadding="0" cellspacing="0">
+ <tbody>
   <tr>
     <td>Description</td>
-    <td style="padding-left: 10px;"></td>
+    <td class="padding"></td>
     <td><bean:write name="farmer.description"/></td>
   </tr>
-  <p>Diagnostics</p>
-  <pre>
-    <bean:write name="farmer.diagnostics.text"/>
-  </pre>
-
+ </tbody>
 </table>
+<p>Diagnostics</p>
+<pre><bean:write name="farmer.diagnostics.text"/></pre>
 
 

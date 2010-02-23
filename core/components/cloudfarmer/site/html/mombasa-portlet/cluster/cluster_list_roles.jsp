@@ -27,16 +27,18 @@ For more information: www.smartfrog.org
 </div>
 <div>
 </div>
-<table border="0">
-  <tr bgcolor="grey">
+<table cellpadding="0" cellspacing="0">
+ <tbody>
+    
+  <tr class="header">
     <th>Role</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Description</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Size</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Recommended</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Add</th>
   </tr>
   <logic:iterate id="role"
@@ -50,13 +52,13 @@ For more information: www.smartfrog.org
            <bean:write name="role" property="name"/>
          </html:link>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td><bean:write name="role" property="description"/></td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td><bean:write name="role" property="roleSize"/></td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td><bean:write name="role" property="recommendedSize"/></td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
          <html:link action="/mombasa-portlet/cluster/create_role_instance"
             paramId="role" paramName="role" paramProperty="name">
@@ -66,6 +68,7 @@ For more information: www.smartfrog.org
       </td>
     </tr>
   </logic:iterate>
+ </tbody>
 </table>
 <div>
 
