@@ -22,6 +22,10 @@
     This build file aggregates artifacts from other projects to cut a release.
 
     In a normal distribution, the RPM smartfrog-private-security-keys contains nothing sensitive.
+    
+    There is support to scp up the entire RPM set to a remote machine where they can be installed in some
+    virtual HDD set to mount and have a script run when a VM is booted. 
+    The target autorun-install does this. Look at autorun-init for the properties needed to manage this process.
   </description>
 
   <!--we are a component -->
@@ -1636,7 +1640,6 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
       autorun.remote.dest.dir=${autorun.remote.dest.dir}
       autorun.remote.rpm.dir=${autorun.remote.rpm.dir}
       autorun.remote.script.dir=${autorun.remote.script.dir}
-      
     </echo>
   </target>
   
