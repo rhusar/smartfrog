@@ -20,7 +20,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.utils;
 
 /**
- * Utility class to spin and timeout
+ * Utility class to spin and timeout. It can sleep for a predefined wait interval, and will, if interrupted,
+ * throw a {@link SmartFrogOperationTimedOutException} in such a situation. 
  * </p>
  * After timeout, any exception set with {@link #setLastThrown(Throwable)} will be included
  * as a nested exception, for more meaningful stack traces
@@ -28,10 +29,12 @@ package org.smartfrog.sfcore.utils;
  */
 
 public class Spinner {
-    private String operation;
-    private long waitInterval;
-    private long endtime;
+    private final String operation;
+    private final long waitInterval;
+    private final long endtime;
     private Throwable lastThrown;
+    public static final String TIMED_OUT = " timed out";
+    private static final String WAS_INTERRUPTED = " was interrupted";
 
     /**
      * Spin until timeout. The timeout is constructed from now+timeout, so create
@@ -51,14 +54,22 @@ public class Spinner {
      * @throws SmartFrogOperationTimedOutException if we have already timed out. This check occurs before any sleep
      */
     public void sleep() throws SmartFrogOperationTimedOutException {
-        if (System.currentTimeMillis() > endtime) {
-            throw new SmartFrogOperationTimedOutException(operation + " timed out", lastThrown);
+        if (isTimedOut()) {
+            throw new SmartFrogOperationTimedOutException(operation + TIMED_OUT, lastThrown);
         }
         try {
             Thread.sleep(waitInterval);
         } catch (InterruptedException e) {
-            throw new SmartFrogOperationTimedOutException(operation + " was interrupted", lastThrown);
+            throw new SmartFrogOperationTimedOutException(operation + WAS_INTERRUPTED, lastThrown);
         }
+    }
+
+    /**
+     * Test for being timed out. 
+     * @return true if the current clock time is greater than the end time 
+     */
+    public boolean isTimedOut() {
+        return System.currentTimeMillis() > endtime;
     }
 
     /**
@@ -67,5 +78,33 @@ public class Spinner {
      */
     public void setLastThrown(Throwable lastThrown) {
         this.lastThrown = lastThrown;
+    }
+
+    /**
+     * Get the name of the operation 
+     * @return the operation name
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * Get the wait interval
+     * @return wait interval in millis
+     */
+    public long getWaitInterval() {
+        return waitInterval;
+    }
+
+    /**
+     * Get the end time
+     * @return end time in milliseconds since the epoch began
+     */
+    public long getEndtime() {
+        return endtime;
+    }
+
+    public Throwable getLastThrown() {
+        return lastThrown;
     }
 }
