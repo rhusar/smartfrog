@@ -33,6 +33,7 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
     private String longDescription = "";
     private Range roleSize = Range.NO_LIMITS;
     private Range recommendedSize = Range.NO_LIMITS;
+    private int currentSize = 0;
     private HashMap<String, String> options = new HashMap<String, String>();
     private NodeLink[] links;
 
@@ -149,7 +150,16 @@ public final class ClusterRoleInfo implements Serializable, Cloneable {
                 ", longDescription='" + longDescription + '\'' +
                 ", roleSize=" + roleSize +
                 ", recommendedSize=" + recommendedSize +
+                ", currentSize=" + currentSize +
                 '}';
+    }
+
+    public int getCurrentSize() {
+        return currentSize;
+    }
+
+    public void setCurrentSize(int currentSize) {
+        this.currentSize = currentSize;
     }
 
     /**

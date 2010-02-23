@@ -21,8 +21,12 @@ package org.smartfrog.services.cloudfarmer.server.deployment;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.sfcore.logging.LogRemote;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * Created 12-Nov-2009 16:08:51
@@ -47,6 +51,72 @@ public abstract class AbstractNodeDeployment implements NodeDeploymentService {
     public ClusterNode getClusterNode() throws IOException {
         return clusterNode;
     }
-    
-    
+
+
+    /**
+     * Log at the the text locally and on the remote log 
+     * @param localLog local log, can be null
+     * @param remoteLog the remote log, can be null
+     * @param text text to log   
+     * @return the text
+     */
+    protected String info(LogSF localLog, LogRemote remoteLog, String text) {
+        if (localLog != null) {
+            localLog.info(text);
+        }
+        if (remoteLog != null) {
+            try {
+                remoteLog.info(text);
+            } catch (RemoteException e) {
+                if (localLog != null) {
+                    localLog.warn(e);
+                }
+            }
+        }
+        return text;
+    }
+
+    /**
+     * Log at the the text locally and on the remote log at error level
+     *
+     * @param localLog  local log, can be null
+     * @param remoteLog the remote log, can be null
+     * @param text      text to log
+     * @return the text
+     * @throws RemoteException if the remote log operation failed
+     */
+    protected String error(LogSF localLog, LogRemote remoteLog, String text) throws RemoteException {
+        if (localLog != null) {
+            localLog.error(text);
+        }
+        try {
+            remoteLog.error(text);
+        } catch (RemoteException e) {
+            if (localLog != null) {
+                localLog.warn(e);
+            }
+        }
+        return text;
+    }
+    /**
+     * Log at the the text locally and on the remote log at error level
+     *
+     * @param localLog  local log, can be null
+     * @param remoteLog the remote log, can be null
+     * @param text      text to log
+     * @param t a thrown exception
+     * @throws RemoteException if the remote log operation failed
+     */
+    protected void error(LogSF localLog, LogRemote remoteLog, String text, Throwable t) throws RemoteException {
+        if (localLog != null) {
+            localLog.error(text, t);
+        }
+        try {
+            remoteLog.error(text, t);
+        } catch (RemoteException e) {
+            if (localLog != null) {
+                localLog.warn(e);
+            }
+        }
+    }
 }

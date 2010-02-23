@@ -2,6 +2,7 @@ package org.smartfrog.services.cloudfarmer.api;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogRemote;
 
 import java.io.IOException;
 import java.rmi.Remote;
@@ -16,11 +17,12 @@ public interface NodeDeploymentService extends Remote {
      *
      * @param name application name
      * @param cd component description
+     * @param remoteLog
      * @return output, which can be logged
      * @throws IOException network and IO problems
      * @throws SmartFrogException other problems
      */
-    public String deployApplication(String name, ComponentDescription cd)
+    public String deployApplication(String name, ComponentDescription cd, LogRemote remoteLog)
             throws IOException, SmartFrogException;
 
     /**

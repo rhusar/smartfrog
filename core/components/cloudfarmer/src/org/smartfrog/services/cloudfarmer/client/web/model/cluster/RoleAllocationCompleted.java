@@ -5,7 +5,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.IOException;
 
 /**
- * An indivudual role allocation has succeeded or failed.
+ * An individual role allocation has succeeded or failed.
  * This call is made in the same thread as the worker requesting the hosts; anything slow here blocks the next request,
  * if there is a series of them
  */

@@ -7,6 +7,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogRemote;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl;
@@ -24,7 +26,7 @@ import java.rmi.RemoteException;
  */
 public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements NodeDeploymentService {
 
-    private final Log log = LogFactory.getLog(NodeDeploymentOverRMI.class);
+    private final LogSF log = LogFactory.getLog(NodeDeploymentOverRMI.class);
 
     private String hostname = DEFAULT_HOST;
     private int port = DEFAULT_PORT;
@@ -177,13 +179,14 @@ public class NodeDeploymentOverRMI extends AbstractNodeDeployment implements Nod
      * {@inheritDoc }
      */
     @Override
-    public String deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
-        log.info("Deploying the application " + name + " at " + toString());
+    public String deployApplication(String name, ComponentDescription cd, LogRemote remoteLog) throws IOException, SmartFrogException {
+        info(log, remoteLog, "Deploying the application " + name + " at " + toString());
         ProcessCompound root = getBoundProcess();
         if (root == null) {
             throw new SmartFrogException("Not bound to SmartFrog daemon at " + getHostname());
         }
         Prim app = root.sfCreateNewApp(name, cd, null);
+        info(log, remoteLog, "Deploying the application " + name + " at " + toString());
         return "Deployed " + name + " as " + app.sfCompleteName()+ " :" +app.toString();
     }
 

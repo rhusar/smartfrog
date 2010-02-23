@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.server.deployment;
 
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -30,7 +33,19 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class NodeDeploymentHelper {
 
-    public static NodeDeploymentService export(NodeDeploymentService instance) throws RemoteException {
-        return (NodeDeploymentService) UnicastRemoteObject.exportObject(instance);
+    /**
+     * Export an instance
+     * @param service service instance to export 
+     * @return the exported reference
+     * @throws RemoteException RMI problems
+     * @throws SmartFrogException any wrapped security problems
+     */
+    public static NodeDeploymentService export(NodeDeploymentService service) throws RemoteException,
+            SmartFrogException {
+        try {
+            return (NodeDeploymentService) SecureRemoteObject.exportObject(service, 0);
+        } catch (SFGeneralSecurityException e) {
+            throw new SmartFrogException("Failed to deploy " + service + ": " + e, e);
+        }
     }
 }
