@@ -26,7 +26,6 @@ public class StateComponentTransitionException extends SmartFrogException {
 
     public enum StateComponentExceptionCode {
         GENERIC,
-        COMPONENT_NOTENABLED,
         COMPONENT_NOTRUNNING,
         CURRENTACTION_ONGOING,
 
@@ -36,7 +35,7 @@ public class StateComponentTransitionException extends SmartFrogException {
         FAILEDTO_GETNAMEDENABLEDTRANSITION,
         FAILEDTO_HANDLEDPES,
         FAILEDTO_RESOLVETRANSITIONEFFECTS,
-        FAILEDTO_RESOLVETRANSITIONGUARD
+        FAILEDTO_WRITEEVENTLOGBUTISPRESENT
 
 
     }

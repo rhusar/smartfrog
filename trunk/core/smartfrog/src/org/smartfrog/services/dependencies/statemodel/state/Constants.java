@@ -26,10 +26,12 @@ package org.smartfrog.services.dependencies.statemodel.state;
 public class Constants {
     public static final String ASANDCONNECTOR="asAndConnector";
     public static final String BY = "by";
+    public static final String COUNT = "count";
     public static final String DO_SCRIPT = "doScript";
     public static final String DPE="DynamicPolicyEvaluation";
     public static final String ENABLED = "enabled";
     public static final String EXISTS = "exists";
+    public static final String EVENTLOG = "sfOrchEventLog";
     public static final String FINALIZE = "finalize";
     public static final String FUNCTIONCLASS = "sfFunctionClass";
     public static final String ISSTATECOMPONENTTRANSITION = "sfIsStateComponentTransition";

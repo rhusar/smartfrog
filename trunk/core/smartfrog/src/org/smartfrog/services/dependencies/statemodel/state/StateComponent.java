@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.Timer;
@@ -59,6 +60,8 @@ import static org.smartfrog.services.dependencies.statemodel.state.Constants.ISS
 import static org.smartfrog.services.dependencies.statemodel.state.Constants.THREADPOOL;
 import static org.smartfrog.services.dependencies.statemodel.state.Constants.REQUIRES_THREAD;
 import static org.smartfrog.services.dependencies.statemodel.state.Constants.LAG;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.EVENTLOG;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.COUNT;
 
 /**
  */
@@ -78,6 +81,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    protected boolean asyncResponse = false;
    private boolean amRunning=false;
    private ReentrantLock transitionLock = new ReentrantLock();
+
+   private Prim eventLog;
    
    public StateComponent() throws RemoteException {}
 
@@ -106,6 +111,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
        
        threadpool = (ThreadPool) sfResolve(THREADPOOL, false);
        asAndConnector = sfResolve(ASANDCONNECTOR, asAndConnector, false);
+       eventLog = sfResolve(EVENTLOG, (Prim)null, false);
+
       
       //transitions and dpes
       Enumeration keys = cxt.keys();
@@ -186,7 +193,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
            throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.COMPONENT_NOTRUNNING);
        }
        if (!checkIsEnabled()) {
-           throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.COMPONENT_NOTENABLED);	   
+           enabled =null;
+           return;
        }
 	   enabled = (HashMap<String,ComponentDescription>) transitions.clone(); 
 	  
@@ -314,6 +322,17 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
        } catch (SmartFrogResolutionException e) {
            throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_RESOLVETRANSITIONEFFECTS, e);
        }
+
+       try {
+           if (eventLog!=null){
+               int count = eventLog.sfResolve(COUNT, 0, true);
+               eventLog.sfAddAttribute("transition"+count, name+":"+transition);
+               eventLog.sfReplaceAttribute(COUNT, ++count);
+           }
+       } catch (Exception e){
+           throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_WRITEEVENTLOGBUTISPRESENT);
+       }
+
        sfLog().debug("OUT: State("+name+").go()");
    }
      
@@ -477,8 +496,10 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	  sfLog().debug("IN: StateComponent.setState()");
 
       sfLog().debug("Adding to queue...");
-      threadpool.addToQueue((StateUpdateThread)(currentAction=new StateUpdateThread()));
-      sfLog().debug("Added to Queue");
+      try {
+          threadpool.addToQueue((StateUpdateThread)(currentAction=new StateUpdateThread()));
+          sfLog().debug("Added to Queue");
+      } catch (RejectedExecutionException e){ /*Gracefully ignore*/ }
       
       cleanLock();
      
