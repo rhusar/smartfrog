@@ -170,14 +170,20 @@ public class ClusterRoleImpl extends PrimImpl implements ClusterRole {
                             "Wrong number of elements in links entry " + name);
                 }
                 String protocol = vector.get(0).toString();
+                int port;
                 Object o = vector.get(1);
-                if (!(o instanceof Integer)) {
-                    throw new SmartFrogResolutionException(targetRef,
-                            new Reference(ATTR_LINKS),
-                            "Not an integer '" + o + "' in link entry " + name);
-
+                if (o instanceof Integer) {
+                    port = (Integer) o;
+                } else {
+                    String portString = o.toString();
+                    try {
+                        port = Integer.valueOf(portString);
+                    } catch (NumberFormatException e) {
+                        throw new SmartFrogResolutionException(targetRef,
+                                new Reference(ATTR_LINKS),
+                                "Not an integer '" + portString + "' in link entry " + name);
+                    }
                 }
-                int port = (Integer) o;
                 String path = vector.get(2).toString();
                 NodeLink link = new NodeLink(name, protocol, port, path);
                 links.add(link);
