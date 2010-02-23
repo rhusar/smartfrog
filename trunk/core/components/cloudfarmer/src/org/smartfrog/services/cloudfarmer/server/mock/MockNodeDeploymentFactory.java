@@ -8,6 +8,7 @@ import org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentHelper
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.logging.LogRemote;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -79,13 +80,12 @@ public class MockNodeDeploymentFactory extends PrimImpl implements NodeDeploymen
             }
         }
 
-
         @Override
-        public String deployApplication(String name, ComponentDescription cd) throws IOException, SmartFrogException {
-            sfLog().info("Deploying " + name + " at " + hostname);
+        public String deployApplication(String name, ComponentDescription cd, LogRemote remoteLog) throws IOException, SmartFrogException {
+            info(sfLog(), remoteLog, "Deploying " + name + " at " + hostname);
             checkAppDoesntExist(name);
             applications.put(name, cd);
-            return "Mock deployed "+name;
+            return "Mock deployed " + name;
         }
 
         @Override

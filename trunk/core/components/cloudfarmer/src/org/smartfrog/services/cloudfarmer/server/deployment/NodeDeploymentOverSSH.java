@@ -30,6 +30,8 @@ import org.smartfrog.services.ssh.SshCommand;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.OutputStreamLog;
+import org.smartfrog.sfcore.logging.LogRemote;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.utils.SFExpandFully;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
+import java.rmi.RemoteException;
 
 /**
  * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login .
@@ -76,6 +79,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
      */
     private static final int STARTUP_PING_SLEEP_TIME = 30;
     private static final String ERROR_NO_EXECUTABLE = " Error: no executable ";
+    private static final int SLEEP_TIME_FOR_HOSTNAME_RESOLUTION = 500;
 
     public NodeDeploymentOverSSH(NodeDeploymentOverSSHFactory factory, ClusterNode node) {
         super(node);
@@ -88,8 +92,15 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         return factory.makeSFCommand(command);
     }
 
-    private void info(String text, StringBuilder builder) {
-        factory.getLog().info(text);
+    /**
+     * Log the text message and add it to the string buffer
+     * @param logRemote optional remote log
+     * @param builder the builder to append the text to (with a new line afterwards)
+     * @param text the message to log and append
+     * @throws RemoteException remote logging problems 
+     */
+    private void info(LogRemote logRemote, StringBuilder builder, String text) throws RemoteException {
+        info(factory.getLog(), logRemote, text);
         builder.append(text).append('\n');
     }
 
@@ -111,16 +122,17 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
      *
      * @param name application name
      * @param cd   component description
+     * @param remoteLog
      * @return a log of the operations
      * @throws IOException        IO problems
      * @throws SmartFrogException SF problems
      */
     @Override
-    public synchronized String deployApplication(String name, ComponentDescription cd)
+    public synchronized String deployApplication(String name, ComponentDescription cd, LogRemote remoteLog)
             throws IOException, SmartFrogException {
         StringBuilder messages = new StringBuilder();
         if (!getClusterNode().isExternallyVisible()) {
-            info(NOT_EXTERNAL, messages);
+            info(remoteLog, messages, NOT_EXTERNAL);
         }
         File localtempfile = File.createTempFile(factory.getTempfilePrefix(), SF_SUFFIX);
         String desttempfile = factory.getDestDir() + factory.getTempfilePrefix() + getNextNumber() + SF_SUFFIX;
@@ -130,11 +142,12 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         sourceFiles.add(localtempfile);
         destFiles.add(desttempfile);
         String connectionDetails = getConnectionDetails();
-        info("Deploying application with SSH to role '" + name + "' to " + connectionDetails, messages);
+        info(remoteLog, messages, "Deploying application with SSH to role '" + name + "' to " + connectionDetails);
 
         //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
         try {
-            PortUtils.waitForHostnameToResolve(hostname, factory.getPortConnectTimeout(), 500);
+            PortUtils.waitForHostnameToResolve(hostname, factory.getPortConnectTimeout(),
+                    SLEEP_TIME_FOR_HOSTNAME_RESOLUTION);
         } catch (InterruptedException e) {
             throw (InterruptedIOException) new InterruptedIOException("Interrupted waiting for " + hostname)
                     .initCause(e);
@@ -157,7 +170,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
 
             String sshCommand;
             sshCommand = makeSFCommand(SF_START) + " " + "localhost" + " " + name + " " + desttempfile;
-            info("executing: " + sshCommand, messages);
+            info(remoteLog, messages, "executing: " + sshCommand);
             commandsList = new ArrayList<String>(1);
             //make a few attempts to find the startup
             for (int i = 0; i < STARTUP_LOCATE_ATTEMPTS; i++) {
@@ -178,13 +191,13 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
             sshExec(session, commandsList, true, messages, outputBuilder);
             String output = outputBuilder.toString();
             if (output.contains(ERROR_NO_EXECUTABLE)) {
-                error("Found " + ERROR_NO_EXECUTABLE + "in \n" + output);
+                error(factory.getLog(), remoteLog, "Found " + ERROR_NO_EXECUTABLE + "in \n" + output);
             }
         } catch (JSchException e) {
-            error("Failed to upload to " + connectionDetails + " : " + e, e);
+            error(factory.getLog(), remoteLog, "Failed to upload to " + connectionDetails + " : " + e, e);
             throw factory.forward(e, connectionDetails);
         } finally {
-            info("Finished deploying application " + name + " to " + connectionDetails);
+            info(remoteLog, messages, "Finished deploying application " + name + " to " + connectionDetails);
             endSession(session);
             if (!factory.isKeepFiles()) {
                 localtempfile.delete();

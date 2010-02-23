@@ -19,8 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.clusters;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
@@ -32,6 +30,8 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceL
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequestList;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.IOException;
 
@@ -46,6 +46,9 @@ public class ClusterAllocationHandler implements ClusterAllocationCompleted {
     protected Throwable thrown;
 
     protected boolean deploymentRequired = false;
+    public static final String E_CONTROLLER_DOES_NOT_SUPPORT_DEPLOYMENT = "Controller does not support deployment";
+    public static final String E_NO_FARMER = "Farmer is not available";
+    public static final String E_NO_DEPLOYMENT_SERVICE = "No deployment service for ";
 
     public ClusterAllocationHandler(
             ClusterController controller) {
@@ -111,7 +114,9 @@ public class ClusterAllocationHandler implements ClusterAllocationCompleted {
                 return false;
             }
             NodeDeploymentService deploymentService = createNodeDeploymentService(instance);
-            String messages = deploymentService.deployApplication(name, descriptor.getComponentDescription());
+            String messages = deploymentService.deployApplication(name, descriptor.getComponentDescription(),
+                    controller.getRemoteLog());
+                    //null);
             if (messages != null && !messages.isEmpty()) {
                 LOG.info(messages);
             }
@@ -157,16 +162,16 @@ public class ClusterAllocationHandler implements ClusterAllocationCompleted {
 
     protected void checkDeploymentSupported() throws SmartFrogException, IOException {
         if (!(controller instanceof DynamicSmartFrogClusterController)) {
-            throw new SmartFrogException("Controller does not support deployment");
+            throw new SmartFrogException(E_CONTROLLER_DOES_NOT_SUPPORT_DEPLOYMENT);
         }
         DynamicSmartFrogClusterController clusterController = getSfController();
         if (!clusterController.isFarmerAvailable()) {
-            throw new SmartFrogException("Farmer is not available");
+            throw new SmartFrogException(E_NO_FARMER);
         }
         ClusterFarmer farmer = clusterController.getFarmer();
         String diagnostics = farmer.getDiagnosticsText();
         if (!farmer.isDeploymentServiceAvailable()) {
-            throw new SmartFrogException("No deployment service for " + diagnostics);
+            throw new SmartFrogException(E_NO_DEPLOYMENT_SERVICE + diagnostics);
         }
     }
 

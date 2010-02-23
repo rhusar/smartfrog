@@ -32,9 +32,15 @@ import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedExc
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogRemote;
+import org.smartfrog.sfcore.logging.LogRemoteImpl;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 
 import java.io.IOException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -607,14 +613,15 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     /**
      * Diagnostics text or some failsafe string
+     *
      * @return text always
      */
     public String getDiagnosticsTextSafe() {
         try {
             return getDiagnosticsText();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return "";
-        } catch (SmartFrogException e) {
+        } catch (SmartFrogException ignored) {
             return "";
         }
     }
@@ -689,9 +696,23 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
     /**
+     * Get any active remote log; will be null when there is no live host creation thread
+     *
+     * @return a log or null
+     */
+    public LogRemote getRemoteLog() {
+        HostCreationThread w = getWorkerThread();
+        if (w != null) {
+            return w.getRemoteStatus();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * This thread creates host asynchronously, and can call callbacks afterwards, to perform the installation stages
      */
-    public class HostCreationThread extends SmartFrogThread {
+    public final class HostCreationThread extends SmartFrogThread {
         private RoleAllocationRequestList allocationRequests;
         private HostInstanceList hostList = new HostInstanceList();
         private long farmerAvailabilityTimeout;
@@ -703,6 +724,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         private volatile long startTime;
         private volatile long finishTime;
         private StatusEvents statusEvents = new StatusEvents();
+        private volatile LogRemote remoteStatus;
 
         /**
          * create a thread
@@ -727,10 +749,17 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
             return status;
         }
 
+        /**
+         * thread event to update the status. This adds it to the list of events and sets the currents status value to
+         * the new status
+         *
+         * @param error     is the status an error?
+         * @param newStatus the new status
+         */
         private void updateStatus(boolean error, String newStatus) {
             status = newStatus;
             statusEvents.addEvent(error, newStatus);
-            if(error) {
+            if (error) {
                 log.error(newStatus);
             } else {
                 log.info(newStatus);
@@ -747,15 +776,35 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
         }
 
         /**
-         * Log that the request has started
+         * Get the live status event log
+         *
+         * @return the status event as a log
          */
-        private void started() {
+        public Log getStatusLog() {
+            return statusEvents;
+        }
+
+        public LogRemote getRemoteStatus() {
+            return remoteStatus;
+        }
+
+        /**
+         * Log that the request has started
+         *
+         * @throws RemoteException failure to set up the remote log
+         * @throws SFGeneralSecurityException security problems
+         */
+        private void started() throws RemoteException, SFGeneralSecurityException {
+            remoteStatus = LogRemoteImpl.createExportedLog(statusEvents);
             started = true;
             startTime = System.currentTimeMillis();
         }
 
-        private void finished() {
+        private void finished() throws NoSuchObjectException {
             finishTime = System.currentTimeMillis();
+            LogRemote oldRemoteStatus = remoteStatus;
+            remoteStatus = null;
+            //UnicastRemoteObject.unexportObject(oldRemoteStatus, false);
         }
 
 
@@ -792,9 +841,9 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                     updateStatus(true, "Request failed " + throwable);
                     if (clusterAllocationCompleted != null) {
                         clusterAllocationCompleted
-                                .allocationFailed(allocationRequests, 
-                                        getHosts(), 
-                                        throwable, 
+                                .allocationFailed(allocationRequests,
+                                        getHosts(),
+                                        throwable,
                                         callbackData);
                     }
                     throw throwable;
@@ -802,8 +851,8 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 updateStatus(false, "Completed cluster requests");
                 //notify of success
                 if (clusterAllocationCompleted != null) {
-                    clusterAllocationCompleted.allocationSucceeded(allocationRequests, 
-                            getHosts(), 
+                    clusterAllocationCompleted.allocationSucceeded(allocationRequests,
+                            getHosts(),
                             callbackData);
                 }
             } finally {
@@ -848,6 +897,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
          *
          * @throws Throwable on any failure
          */
+        @SuppressWarnings({"ProhibitedExceptionThrown"})
         private void waitForFarmerAvailable() throws Throwable {
             if (!isFarmerAvailable()) {
                 updateStatus(false, "Waiting for Farmer for up to " + farmerAvailabilityTimeout + "mS");
@@ -896,7 +946,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
          * @param thrown the exception to record as thrown
          */
         @Override
-        public void setThrown(Throwable thrown) {
+        public synchronized void setThrown(Throwable thrown) {
             super.setThrown(thrown);
             workerThreadException = thrown;
         }

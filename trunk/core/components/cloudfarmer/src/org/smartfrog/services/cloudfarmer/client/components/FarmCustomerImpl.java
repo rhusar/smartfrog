@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.logging.LogRemoteImpl;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -256,10 +257,13 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                 for (ClusterNode node : clusterNodes) {
                     NodeDeploymentService service = farmer.createNodeDeploymentService(node);
                     sfLog().info("Deploying application " + toDeployName + " to " + node.getHostname());
-                    String messages = service.deployApplication(toDeployName, toDeploy);
-                    if(messages!=null && !messages.isEmpty()) {
+                    String messages = service.deployApplication(toDeployName, 
+                            toDeploy, 
+                            LogRemoteImpl.createExportedLog(sfLog()));
+/*                    if (messages != null && !messages.isEmpty()) {
                         sfLog().info(messages);
                     }
+*/
                 }
             }
 
