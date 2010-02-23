@@ -20,25 +20,27 @@ For more information: www.smartfrog.org
 */
 --%><%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 <div class="separator"></div>
-<table border="0" width="100%">
-  <tr>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/list" styleId="listHosts">List Hosts</html:link>
-    </td>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/listRoles" styleId="listRoles">List Roles</html:link>
-    </td>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/add" styleId="add">Add a Hadoop node</html:link>
-    </td>
-    <td>
-      <html:link
-          action="/mombasa-portlet/cluster/admin" styleId="admin">Administration</html:link>
-    </td>
-  </tr>
+<table class="wide" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td>
+        <html:link
+            action="/mombasa-portlet/cluster/list" styleId="listHosts">List Hosts</html:link>
+      </td>
+      <td>
+        <html:link
+            action="/mombasa-portlet/cluster/listRoles" styleId="listRoles">List Roles</html:link>
+      </td>
+      <td>
+        <html:link
+            action="/mombasa-portlet/cluster/add" styleId="add">Add a Hadoop node</html:link>
+      </td>
+      <td>
+        <html:link
+            action="/mombasa-portlet/cluster/admin" styleId="admin">Administration</html:link>
+      </td>
+    </tr>
+  </tbody>
 </table>
 
 

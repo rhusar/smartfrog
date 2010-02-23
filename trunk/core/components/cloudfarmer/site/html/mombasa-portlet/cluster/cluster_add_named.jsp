@@ -29,12 +29,13 @@ For more information: www.smartfrog.org
 <html:form action="/mombasa-portlet/cluster/add_named/process" method="post" focus="name">
 
 
-  <table border="0" cellpadding="0" cellspacing="0">
+  <table cellpadding="0" cellspacing="0">
+   <tbody>
     <tr>
       <td>
         Name
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:text name="clusterAddNamedForm" property="name" size="23"/>
       </td>
@@ -44,7 +45,7 @@ For more information: www.smartfrog.org
       <td>
         Worker
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:checkbox name="clusterAddNamedForm" property="worker" />
       </td>
@@ -54,7 +55,7 @@ For more information: www.smartfrog.org
       <td>
         Master
       </td>
-      <td style="padding-left: 10px;"></td>
+     <td class="padding"></td>
       <td>
         <logic:notEmpty name="cluster.master.hostname">
           <bean:write name="cluster.master.hostname"/>
@@ -71,14 +72,14 @@ For more information: www.smartfrog.org
           Add
         </html:submit>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:reset>
           Reset
         </html:reset>
       </td>
     </tr>
-
+   </tbody>
   </table>
 
 

@@ -28,16 +28,17 @@ For more information: www.smartfrog.org
 </div>
 
 
-<p>Operation status</p>
+<h3>Operation status: 
 <bean:write name="farmer.work.status"/>
-
+</h3>
 <logic:notEmpty name="farmer.work.status.events">
-  <table border="0">
-    <tr bgcolor="grey">
+  <table cellpadding="0" cellspacing="0">
+   <tbody>
+    <tr class="header" >
       <th>Level</th>
-      <th style="padding-left: 10px;"></th>
+      <th class="padding"></th>
       <th>Message</th>
-      <th style="padding-left: 10px;"></th>
+      <th class="padding"></th>
     </tr>
     <logic:iterate id="event"
                    property="list"
@@ -47,12 +48,13 @@ For more information: www.smartfrog.org
         <td>
           <bean:write name="event" property="level"/>
         </td>
-        <td style="padding-left: 10px;"></td>
+        <td class="padding"></td>
         <td>
           <bean:write name="event" property="message"/>
         </td>
       </tr>
     </logic:iterate>
+   </tbody>
   </table>
 </logic:notEmpty>
 

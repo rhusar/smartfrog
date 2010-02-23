@@ -22,11 +22,33 @@ For more information: www.smartfrog.org
 
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
-<table border="0" width="100%">
+<table class="wide" cellpadding="0" cellspacing="0">
+  <tr class="header">
+    <th>Action</th>
+    <th class="padding"></th>
+    <th>Description</th>
+  </tr>
+  <tbody>
+    <tr>
+      <td>
+        <html:link
+            action="/mombasa-portlet/cluster/diagnostics">Cluster Diagnostics</html:link>
+      </td>
+      <td class="padding"></td>
+      <td>
+        This displays cloudfarmer-specific diagnostic text 
+      </td>
+    </tr>
+  </tbody>
   <tr>
     <td>
       <html:link
           action="/mombasa-portlet/cluster/terminate">Shut down the cluster</html:link>
+    </td>
+    <td class="padding"></td>
+    <td>
+      This will shut down all the Hadoop processes then delete any VMs, totally destroying
+      the cluster.
     </td>
   </tr>
   <tr>
@@ -34,13 +56,11 @@ For more information: www.smartfrog.org
       <html:link
           action="/mombasa-portlet/cluster/change_manager">Change Manager</html:link>
     </td>
-  </tr>
-  <tr>
+    <td class="padding"></td>
     <td>
-      <html:link
-          action="/mombasa-portlet/cluster/diagnostics">Cluster Diagnostics</html:link>
-    </td>
-  </tr>
+      This can switch the web UI to a different cloudfarmer instance
+     </td>
+   </tr>
 </table>
 
 

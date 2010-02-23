@@ -26,13 +26,13 @@ For more information: www.smartfrog.org
 
 <html:form action="/mombasa-portlet/cluster/change_manager/process" method="post" focus="controller">
 
-  <table border="0" cellpadding="0" cellspacing="0" width="80%">
-
+  <table cellpadding="0" cellspacing="0" width="80%">
+   <tbody>
     <tr>
       <td>
         Controller
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:select name="clusterChangeManagerForm" property="controller">
           <html:option value="0">Physical Host List</html:option>
@@ -47,7 +47,7 @@ For more information: www.smartfrog.org
       <td>
         URL
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:text name="clusterChangeManagerForm" property="url" size="23"/>
       </td>
@@ -57,7 +57,7 @@ For more information: www.smartfrog.org
       <td>
         Username
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:text name="clusterChangeManagerForm" property="username" size="23"/>
       </td>
@@ -67,7 +67,7 @@ For more information: www.smartfrog.org
       <td>
         Password
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:password name="clusterChangeManagerForm" property="password" size="23"/>
       </td>
@@ -79,14 +79,14 @@ For more information: www.smartfrog.org
           Change
         </html:submit>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:reset>
           Reset
         </html:reset>
       </td>
     </tr>
-
+   </tbody>
   </table>
   For cells, use http://localhost/farmer/cellModel/farmer </br>
   or use http://localhost/mombasa/farmer/cellModel/farmer </br>

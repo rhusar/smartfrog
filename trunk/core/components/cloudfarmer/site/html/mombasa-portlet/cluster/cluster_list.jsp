@@ -27,16 +27,17 @@ For more information: www.smartfrog.org
 </div>
 <div>
 </div>
-<table border="0">
-  <tr bgcolor="grey">
+<table cellpadding="0" cellspacing="0">
+ <tbody>
+  <tr class="header" >
     <th>Hostname</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>ID</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Role</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Application</th>
-    <th style="padding-left: 10px;"></th>
+    <th class="padding"></th>
     <th>Description</th>
   </tr>
   <logic:iterate id="host"
@@ -50,22 +51,26 @@ For more information: www.smartfrog.org
           <bean:write name="host" property="hostname"/>
         </html:link>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <html:link action="/mombasa-portlet/cluster/viewhost"
             paramId="hostid" paramName="host" paramProperty="id">
           <bean:write name="host" property="id"/>
         </html:link>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <logic:notEmpty name="host" property="role">
-          <bean:write name="host" property="role"/>
+          
+         <html:link action="/mombasa-portlet/cluster/listInRole"
+            paramId="role" paramName="host" paramProperty="role">
+           <bean:write name="host" property="role"/>
+         </html:link>
         </logic:notEmpty>
       </td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td><bean:write name="host" property="application"/></td>
-      <td style="padding-left: 10px;"></td>
+      <td class="padding"></td>
       <td>
         <logic:notEmpty name="host" property="application">
           <logic:notEmpty name="host" property="application.description">
@@ -75,19 +80,21 @@ For more information: www.smartfrog.org
       </td>
     </tr>
   </logic:iterate>
+ </tbody>
 </table>
 <div>
 
 </div>
-<table border="0">
+<table >
+   <tbody>
   <tr >
     <td>Hosts</td>
-    <td style="padding-left: 10px;"></td>
+    <td class="padding"></td>
     <td><bean:write name="hostcount"/></td>
   </tr>  
 <%--  <tr >
     <td>Master</td>
-    <td style="padding-left: 10px;"></td>
+    <td class="padding"></td>
     <td>    
         <logic:notEmpty name="cluster.master.hostname">
           <bean:write name="cluster.master.hostname"/>
@@ -97,13 +104,11 @@ For more information: www.smartfrog.org
 <%--
   <tr >
     <td>Controller</td>
-    <td style="padding-left: 10px;"></td>
+    <td class="padding"></td>
     <td><bean:write name="cluster.controller" property="description"/></td>
   </tr>  
 --%>
-  
-  
-  
+  </tbody>
 </table>
 
 
