@@ -25,7 +25,7 @@ package org.smartfrog.sfcore.logging;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 /**
- * A simple logging interface abstracting logging APIs based in Apache Jakarta
+ * A simple logging interface abstracting logging APIs based on Apache Jakarta
  * logging.
  *
  */
