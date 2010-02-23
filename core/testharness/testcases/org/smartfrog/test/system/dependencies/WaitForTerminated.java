@@ -20,6 +20,7 @@
 package org.smartfrog.test.system.dependencies;
 
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.Spinner;
 
 /**
  * created 23-Feb-2010 11:03:35
