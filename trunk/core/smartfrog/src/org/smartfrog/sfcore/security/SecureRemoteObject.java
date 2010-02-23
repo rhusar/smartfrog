@@ -41,17 +41,17 @@ public class SecureRemoteObject {
      * A factory to create the JSSE connector in the server. If it is null, it
      * means that no security is required.
      */
-    static private RMIServerSocketFactory ssf = null;
+    private static RMIServerSocketFactory ssf = null;
 
     /**
      * A factory to create the JSSE connector in the client. It is always empty
      * in the server and it should be constructed by the client while
      * unmarshalling.
      */
-    static private RMIClientSocketFactory csf = null;
+    private static RMIClientSocketFactory csf = null;
 
     /** A flag that indicates whether we have initialized the JSSE connector. */
-    static private boolean alreadyInit = false;
+    private static boolean alreadyInit = false;
 
     /**
      * Constructs SecureRemoteObject. Nobody should create this type of objects.
@@ -64,7 +64,7 @@ public class SecureRemoteObject {
      *
      * @return Whether initialization has already been done.
      */
-    static private boolean isAlreadyInit() {
+    private static boolean isAlreadyInit() {
         return alreadyInit;
     }
 
@@ -73,7 +73,7 @@ public class SecureRemoteObject {
      *
      * @param flag A new value describing whether initialization has been done.
      */
-    static private void setAlreadyInit(boolean flag) {
+    private static void setAlreadyInit(boolean flag) {
         alreadyInit = flag;
     }
 
@@ -83,7 +83,7 @@ public class SecureRemoteObject {
      * @throws SFGeneralSecurityException Error while initializing the
      *            connector.
      */
-    static synchronized private void initialize()
+    private static synchronized void initialize()
         throws SFGeneralSecurityException {
         try {
             if (isAlreadyInit()) {
