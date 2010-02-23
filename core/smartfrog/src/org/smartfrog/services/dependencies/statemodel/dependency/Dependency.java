@@ -54,7 +54,7 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
 
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
-      transition = sfResolve(TRANSITION, (String) null, true);
+      transition = sfResolve(TRANSITION, (String) null, false);
       name = this.sfParent().sfAttributeKeyFor(this).toString();
    }
 

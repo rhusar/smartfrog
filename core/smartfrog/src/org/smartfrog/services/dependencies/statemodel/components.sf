@@ -55,7 +55,13 @@ StateComponent extends Prim {
      sfUniqueComponentID;
 	 [sfFinal] asAndConnector false;
 
-	 threadpool LAZY PARENT:ATTRIB threadpool; 
+	 threadpool LAZY PARENT:ATTRIB threadpool;
+	 sfOrchEventLog LAZY PARENT:ATTRIB sfOrchEventLog;
+}
+
+OrchEventLog extends Prim {
+    sfClass "org.smartfrog.sfcore.prim.PrimImpl";
+    count 0;
 }
 
 ThreadedCompositeBase extends {
