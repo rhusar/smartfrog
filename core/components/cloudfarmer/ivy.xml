@@ -56,7 +56,12 @@
         rev="latest.integration"
         conf="webapp->default;redist->httpclient"/>
 
-
+    <dependency org="org.smartfrog"
+        name="sf-json"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+    
     <!--httpclient needs commons logging; logging services pulls it in-->
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
@@ -74,6 +79,7 @@
       <exclude org="antlr"/>
       <exclude org="oro"/>
       <exclude org="commons-logging"/>
+      <exclude org="commons-beanutils"/>
     </dependency>
 
     <dependency org="org.apache.struts"
