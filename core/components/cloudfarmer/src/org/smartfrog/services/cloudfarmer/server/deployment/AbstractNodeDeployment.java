@@ -89,7 +89,7 @@ public abstract class AbstractNodeDeployment implements NodeDeploymentService {
         if (localLog != null) {
             localLog.error(text);
         }
-        try {
+        if (remoteLog!=null) try {
             remoteLog.error(text);
         } catch (RemoteException e) {
             if (localLog != null) {
