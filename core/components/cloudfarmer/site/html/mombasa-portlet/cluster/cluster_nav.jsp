@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 */
 --%><%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 <div class="separator"></div>
-<table class="wide" cellpadding="0" cellspacing="0">
+<table class="navigation" >
   <tbody>
-    <tr>
+    <tr class="navigation">
       <td>
         <html:link
             action="/mombasa-portlet/cluster/list" styleId="listHosts">List Hosts</html:link>

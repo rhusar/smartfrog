@@ -29,11 +29,11 @@ For more information: www.smartfrog.org
   <table cellpadding="0" cellspacing="0" width="80%">
    <tbody>
     <tr>
-      <td>
+      <td class="fieldname">
         Controller
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:select name="clusterChangeManagerForm" property="controller">
           <html:option value="0">Physical Host List</html:option>
           <html:option value="1">HP Cells</html:option>
@@ -44,43 +44,43 @@ For more information: www.smartfrog.org
     </tr>
 
     <tr>
-      <td>
+      <td class="fieldname">
         URL
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:text name="clusterChangeManagerForm" property="url" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td class="fieldname">
         Username
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:text name="clusterChangeManagerForm" property="username" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td class="fieldname">
         Password
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:password name="clusterChangeManagerForm" property="password" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td class="action">
         <html:submit>
           Change
         </html:submit>
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="action">
         <html:reset>
           Reset
         </html:reset>

@@ -59,7 +59,7 @@ For more information: www.smartfrog.org
       <td class="padding"></td>
       <td><bean:write name="role" property="recommendedSize"/></td>
       <td class="padding"></td>
-      <td>
+      <td class="action">
          <html:link action="/mombasa-portlet/cluster/create_role_instance"
             paramId="role" paramName="role" paramProperty="name">
            Add

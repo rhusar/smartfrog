@@ -30,7 +30,7 @@ For more information: www.smartfrog.org
   </tr>
   <tbody>
     <tr>
-      <td>
+      <td class="action">
         <html:link
             action="/mombasa-portlet/cluster/diagnostics">Cluster Diagnostics</html:link>
       </td>
@@ -39,9 +39,8 @@ For more information: www.smartfrog.org
         This displays cloudfarmer-specific diagnostic text 
       </td>
     </tr>
-  </tbody>
   <tr>
-    <td>
+    <td class="action">
       <html:link
           action="/mombasa-portlet/cluster/terminate">Shut down the cluster</html:link>
     </td>
@@ -52,7 +51,7 @@ For more information: www.smartfrog.org
     </td>
   </tr>
   <tr>
-    <td>
+    <td class="action">
       <html:link
           action="/mombasa-portlet/cluster/change_manager">Change Manager</html:link>
     </td>
@@ -61,6 +60,7 @@ For more information: www.smartfrog.org
       This can switch the web UI to a different cloudfarmer instance
      </td>
    </tr>
+  </tbody>
 </table>
 
 

@@ -70,7 +70,7 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
     </tr>
   </logic:iterate>
   <tr>
-    <td>
+    <td class="action">
       <html:link action="/mombasa-portlet/cluster/create_role_instance"
                  paramId="role" paramName="role" >
         Add
@@ -79,7 +79,7 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
     </td>
   </tr>
   <tr>
-    <td>
+    <td class="action">
       <html:link action="/mombasa-portlet/cluster/delete_all_in_role"
                  paramId="role" paramName="role" >
         Delete all machines in the role 
