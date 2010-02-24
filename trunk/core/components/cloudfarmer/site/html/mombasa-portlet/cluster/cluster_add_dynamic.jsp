@@ -31,33 +31,33 @@ For more information: www.smartfrog.org
   <table cellpadding="0" cellspacing="0">
    <tbody>
     <tr>
-      <td>
+      <td class="fieldname">
         Minimum number of workers
       </td>
-      <td style="padding-left: 10px;"></td>
-      <td>
+      <td class="padding"></td>
+      <td class="field">
         <html:text name="clusterAddDynamicForm" property="minWorkers" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
-        Maximum of workers
+      <td class="fieldname">
+        Maximum number of workers
       </td>
-      <td style="padding-left: 10px;"></td>
-      <td>
+      <td class="padding"></td>
+      <td class="field">
         <html:text name="clusterAddDynamicForm" property="maxWorkers" size="23"/>
       </td>
     </tr>
     
     <tr>
-      <td>
+      <td class="action">
         <html:submit>
           Add
         </html:submit>
       </td>
-      <td style="padding-left: 10px;"></td>
-      <td>
+      <td class="padding"></td>
+      <td class="action">
         <html:reset>
           Reset
         </html:reset>

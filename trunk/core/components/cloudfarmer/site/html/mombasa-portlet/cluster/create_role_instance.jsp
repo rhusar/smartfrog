@@ -29,32 +29,32 @@ For more information: www.smartfrog.org
   <table cellpadding="0" cellspacing="0">
    <tbody>
     <tr>
-      <td>
+      <td class="fieldname">
         Minimum number of machines of role
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:text name="clusterCreateRoleInstanceForm" property="minNodes" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td class="fieldname">
         Maximum number of machines to create
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:text name="clusterCreateRoleInstanceForm" property="maxNodes" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td  class="fieldname">
         Role name
       </td>
       <td class="padding"></td>
-      <td>
-        <html:text name="clusterCreateRoleInstanceForm"  property="rolename" value="${role}"/>
+      <td class="field">
+        <html:text name="clusterCreateRoleInstanceForm"  property="rolename" styleId="role"/>
       </td>
     </tr>
 <%--
@@ -63,13 +63,13 @@ For more information: www.smartfrog.org
 --%>
     
     <tr>
-      <td>
+      <td class="action">
         <html:submit>
           Add
         </html:submit>
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="action">
         <html:reset>
           Reset
         </html:reset>

@@ -30,6 +30,16 @@ table.wide {
   width: 100%;
 }
 
+table.navigation {
+  width: 100%;
+  background-color: #006699;
+  color: white;
+}
+
+tr.navigation {
+}
+
+
 th.padding {
   padding-left: 10px;
 }
@@ -45,4 +55,42 @@ tr.header {
 
 th {
   font-weight: bold;
+}
+
+/**
+ For field names in forms
+ */
+td.fieldname {
+  font-weight: bold;
+}
+
+/**
+ For fields in forms
+ */
+td.field {
+  
+}
+
+/**
+ For fields in forms
+ */
+td.action{
+  background-color: aliceblue;
+  font-weight: bold;
+}
+
+
+/**
+ For event level in messages
+ */
+td.eventLevel {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+/**
+ For event text in messages
+ */
+td.eventText {
+  font-family: monospace;
 }

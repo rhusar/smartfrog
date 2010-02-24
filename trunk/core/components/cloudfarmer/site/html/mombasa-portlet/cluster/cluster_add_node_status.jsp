@@ -22,10 +22,12 @@ For more information: www.smartfrog.org
 
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
+<%--
 <div align="center">
 <html:link
     action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
 </div>
+--%>
 
 
 <h3>Operation status: 
@@ -45,11 +47,11 @@ For more information: www.smartfrog.org
                    name="farmer.work.status.events"
                    type="org.smartfrog.services.cloudfarmer.client.web.model.cluster.StatusEvent">
       <tr>
-        <td>
+        <td class="eventLevel">
           <bean:write name="event" property="level"/>
         </td>
         <td class="padding"></td>
-        <td>
+        <td class="eventText">
           <bean:write name="event" property="message"/>
         </td>
       </tr>
@@ -58,10 +60,19 @@ For more information: www.smartfrog.org
   </table>
 </logic:notEmpty>
 
-<div align="center">
-<html:link
-    action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
-</div>
+
+<table class="navigation" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr class="navigation">
+      <td>
+        <html:link
+            action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
 
 
 

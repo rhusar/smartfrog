@@ -32,31 +32,31 @@ For more information: www.smartfrog.org
   <table cellpadding="0" cellspacing="0">
    <tbody>
     <tr>
-      <td>
+      <td class="fieldname">
         Name
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:text name="clusterAddNamedForm" property="name" size="23"/>
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td class="fieldname">
         Worker
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="field">
         <html:checkbox name="clusterAddNamedForm" property="worker" />
       </td>
     </tr>
 
     <tr>
-      <td>
+      <td class="fieldname">
         Master
       </td>
      <td class="padding"></td>
-      <td>
+     <td class="field">
         <logic:notEmpty name="cluster.master.hostname">
           <bean:write name="cluster.master.hostname"/>
         </logic:notEmpty>
@@ -67,13 +67,13 @@ For more information: www.smartfrog.org
     </tr>
 
     <tr>
-      <td>
+      <td class="action">
         <html:submit>
           Add
         </html:submit>
       </td>
       <td class="padding"></td>
-      <td>
+      <td class="action">
         <html:reset>
           Reset
         </html:reset>

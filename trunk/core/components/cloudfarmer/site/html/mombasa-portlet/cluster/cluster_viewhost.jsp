@@ -67,6 +67,7 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
    </logic:notEmpty>
    <tr>
      <td>State</td>
+     <td class="padding"></td>
      <td><bean:write name="host" property="state"/></td>
    </tr>
    <logic:notEmpty name="host" property="application">
@@ -113,7 +114,7 @@ org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance instanc
     </td>
   </tr>--%>
   <tr>
-    <td colspan="3" >
+    <td colspan="3" class="action">
       <html:link paramId="hostid" paramName="host" paramProperty="id"
           action="/mombasa-portlet/cluster/delete">Delete the host
       </html:link>
