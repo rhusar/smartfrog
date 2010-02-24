@@ -21,7 +21,7 @@ package org.smartfrog.services.ports;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.utils.Spinner;
-import org.smartfrog.sfcore.utils.SmartFrogOperationTimedOutException;
+import org.smartfrog.sfcore.utils.TimedOutIOException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -96,11 +96,7 @@ public class PortUtils {
             try {
                 //check for and handle a repeat cycle
                 if(!firstRun) {
-                    try {
-                        spinner.sleep();
-                    } catch (SmartFrogOperationTimedOutException e) {
-                        throw new IOException(e);
-                    }
+                    spinner.sleep();
                 } else {
                     firstRun = false;
                 }

@@ -19,9 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.utils;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+
 /**
  * Utility class to spin and timeout. It can sleep for a predefined wait interval, and will, if interrupted,
- * throw a {@link SmartFrogOperationTimedOutException} in such a situation. 
+ * throw a {@link TimedOutIOException} in such a situation. 
  * </p>
  * After timeout, any exception set with {@link #setLastThrown(Throwable)} will be included
  * as a nested exception, for more meaningful stack traces
@@ -51,16 +54,20 @@ public class Spinner {
 
     /**
      * Sleep for a defined period of time
-     * @throws SmartFrogOperationTimedOutException if we have already timed out. This check occurs before any sleep
+     * @throws TimedOutIOException if we have already timed out. This check occurs before any sleep
+     * @throws InterruptedIOException if the operation was interrupted
+     * @throws IOException as the signature
      */
-    public void sleep() throws SmartFrogOperationTimedOutException {
+    public void sleep() throws IOException {
         if (isTimedOut()) {
-            throw new SmartFrogOperationTimedOutException(operation + TIMED_OUT, lastThrown);
+            throw new TimedOutIOException(operation + TIMED_OUT, lastThrown);
         }
         try {
             Thread.sleep(waitInterval);
         } catch (InterruptedException e) {
-            throw new SmartFrogOperationTimedOutException(operation + WAS_INTERRUPTED, lastThrown);
+            //the nested exception is the one last thrown, if non-null
+            throw (InterruptedIOException) new InterruptedIOException(operation + WAS_INTERRUPTED).initCause(
+                    lastThrown != null ? lastThrown : e);
         }
     }
 
