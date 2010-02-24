@@ -19,23 +19,24 @@
  */
 package org.smartfrog.sfcore.utils;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+
+import java.io.IOException;
 
 /**
- * created 23-Feb-2010 11:35:23
+ * An exception for an IO operation that timed out
  */
 
-public class SmartFrogOperationTimedOutException extends SmartFrogRuntimeException {
+public class TimedOutIOException extends IOException {
 
-    public SmartFrogOperationTimedOutException(String msg) {
+    public TimedOutIOException(String msg) {
         super(msg);
     }
 
-    public SmartFrogOperationTimedOutException(Throwable cause) {
+    public TimedOutIOException(Throwable cause) {
         super(cause);
     }
 
-    public SmartFrogOperationTimedOutException(String message, Throwable cause) {
+    public TimedOutIOException(String message, Throwable cause) {
         super(message, cause);
     }
 }
