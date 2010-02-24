@@ -68,6 +68,24 @@ testLocalhostDeployCompoundOverRMI extends ExpectDeploy {
 testLocalhostDeployCompoundOverSSH extends testLocalhostDeployCompoundOverRMI {
   description "create a farm node and then deploy something with SSH";
   action extends TestLocalhostClusterSSH;
-  tests:master:toDeployName "overSSH"; 
+  
+  testRunTime (3 * 60 * 1000);
+  undeployAfter testRunTime;
+  testTimeout testRunTime;
+  
+  tests extends Sequence {
+    
+    master extends DeployMaster {
+    //this is the farmer
+      farmer LAZY action;
+      toDeployName "overSSH";
+    }
+    
+    assert extends AssertWorkflow {
+      reference LAZY ROOT:overSSH;
+      attribute "deployed";
+      attributeEquals "true";
+    }
+  }
 
 }
