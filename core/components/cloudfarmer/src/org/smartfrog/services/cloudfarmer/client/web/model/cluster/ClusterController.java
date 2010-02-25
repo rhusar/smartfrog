@@ -58,6 +58,7 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     private HashMap<String, ClusterRoleInfo> roles;
     private transient volatile HostCreationThread workerThread;
     private volatile Throwable workerThreadException;
+    private String hadoopXmlConfiguration;
 
     private static final int INITIAL_HOSTLIST_CAPACITY = 1;
     private static final int FARMER_AVAILABILITY_SLEEP_MILLIS = 500;
@@ -984,4 +985,11 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
     }
 
 
+    public String getHadoopXmlConfiguration() {
+        return hadoopXmlConfiguration;
+    }
+
+    public void setHadoopXmlConfiguration(String hadoopXmlConfiguration) {
+        this.hadoopXmlConfiguration = hadoopXmlConfiguration;
+    }
 }

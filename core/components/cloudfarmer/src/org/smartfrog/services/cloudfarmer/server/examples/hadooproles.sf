@@ -64,7 +64,7 @@ NameNodeLinks extends HadoopServlets {
   "NameNode"            ["http", nnPort, "/"];
   "NameNode metrics"    ["http", nnPort, METRICS_SERVLET];
   "NameNode stacks"     ["http", nnPort, STACKS_SERVLET];
-  "NameNode conf"       ["http", nnPort, CONF_SERVLET];
+  "NameNode configuration"       ["http", nnPort, CONF_SERVLET];
   "NameNode conf JSON"  ["http", nnPort, CONF_SERVLET_JSON];
  
   jtPort HadoopPortConfiguration:MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT;

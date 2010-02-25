@@ -27,7 +27,9 @@ import org.smartfrog.services.cloudfarmer.client.web.exceptions.BadParameterExce
 import org.smartfrog.services.cloudfarmer.client.web.forms.cluster.AttributeNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 
@@ -36,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.rmi.ConnectException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.io.IOException;
 
 /**
  * Created 02-Oct-2009 12:57:12
@@ -72,9 +75,10 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
      * @return the next action handler
      */
     protected ActionForward failure(HttpServletRequest request, ActionMapping mapping, String message) {
-        request.setAttribute(AttributeNames.ATTR_ERROR_MESSAGE, message);
-        return mapping.findForward(ClusterRequestAttributes.ACTION_FAILURE);
+        return forwardErrorAction(request, mapping, AttributeNames.ACTION_FAILURE, message, null, null
+        );
     }
+    
 
     /**
      * Report a failure
@@ -87,10 +91,7 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
      */
     protected ActionForward failure(HttpServletRequest request, ActionMapping mapping, String message,
                                     Throwable thrown) {
-        log.error(message, thrown);
-        request.setAttribute(AttributeNames.ATTR_THROWN, thrown);
-        request.setAttribute(AttributeNames.ATTR_ERROR_CAUSE, thrown);
-        return failure(request, mapping, message);
+        return forwardErrorAction(request, mapping, AttributeNames.ACTION_FAILURE, message, thrown.toString(), thrown);
     }
 
     /**
@@ -104,9 +105,6 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
      */
     protected ActionForward bindFailure(HttpServletRequest request, ActionMapping mapping, String message,
                                         Throwable thrown) {
-        log.error(message, thrown);
-        request.setAttribute(ATTR_THROWN, thrown);
-        request.setAttribute(ATTR_ERROR_MESSAGE, message);
         String cause = "";
         if (thrown instanceof ConnectException) {
             cause = "SmartFrog is not running at the target URL, or is not reachable";
@@ -115,8 +113,33 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
         } else if (thrown instanceof java.net.UnknownHostException) {
             cause = "The hostname of the cluster manager is not known. Check the URL, and the hosts tables/DNS";
         }
-        request.setAttribute(ATTR_ERROR_CAUSE, cause);
-        return mapping.findForward(AttributeNames.ACTION_BIND_FAILURE);
+        return forwardErrorAction(request, mapping, AttributeNames.ACTION_BIND_FAILURE, message, cause, thrown);
+    }
+
+    /**
+     * Set error attributes and forward the action
+     * @param request request
+     * @param mapping mapping
+     * @param actionName action name
+     * @param message error message
+     * @param cause optional cause string
+     * @param thrown optional exception
+     * @return the forwarded action
+     */
+    protected ActionForward forwardErrorAction(HttpServletRequest request, ActionMapping mapping, String actionName,
+                                               String message, String cause, Throwable thrown) {
+        if (thrown != null) {
+            log.error(message, thrown);
+            request.setAttribute(ATTR_THROWN, thrown);
+        } else {
+            log.error(message);
+        }
+        if (cause != null) {
+            request.setAttribute(ATTR_ERROR_CAUSE, cause);
+            log.error(cause);
+        }
+        request.setAttribute(ATTR_ERROR_MESSAGE, message);
+        return mapping.findForward(actionName);
     }
 
     /**
@@ -274,5 +297,57 @@ public abstract class AbstractStrutsAction extends Action implements ClusterRequ
         } else {
             request.setAttribute(ATTR_CLUSTER_MASTER_HOSTNAME, "(no master node)");
         }
+    }
+
+    /**
+     * Get the Remote daemon of a request
+     * @param request the request
+     * @return any daemon attribute or null
+     */
+    public static RemoteDaemon getRemoteDaemon(HttpServletRequest request) {
+        return (RemoteDaemon) request.getAttribute(AttributeNames.REMOTE_DAEMON);
+    }
+
+
+    /**
+     * Get the Remote daemon of a request
+     * @param request the request
+     * @param required is the daemon required
+     * @return any daemon attribute or null
+     * @throws BadParameterException if it isn't there and it is required
+     */
+    public static String bindRemoteDaemon(HttpServletRequest request, boolean required)
+            throws BadParameterException {
+        return parameterToAttribute(request, AttributeNames.REMOTE_DAEMON_URL, AttributeNames.REMOTE_DAEMON_URL, required);
+    }
+
+    /**
+     * bind to a local or remote daemon
+     * @param request the request
+     * @return the daemon
+     * @throws SmartFrogException SF problems
+     * @throws IOException IO problems
+     */
+    public static RemoteDaemon bindToRemoteDaemon(HttpServletRequest request) throws SmartFrogException, IOException {
+        RemoteDaemon server = getRemoteDaemon(request);
+        if (server == null) {
+            String url = bindRemoteDaemon(request, false);
+            if (url == null) {
+                url = "http://localhost";
+                setAttribute(request, AttributeNames.REMOTE_DAEMON_URL, url);
+            }
+            LOG.info("binding to remote server at " + url);
+            try {
+                server = new RemoteDaemon(url);
+                server.bindOnDemand();
+            } catch (IOException e) {
+                LOG.error("Failed to bind to " + server, e);
+                throw new IOException("Failed to connect to " + server + ":" + e, e);
+            } catch (SmartFrogException e) {
+                LOG.error("Failed to bind to " + server + " " + e, e);
+                throw e;
+            }
+        }
+        return server;
     }
 }

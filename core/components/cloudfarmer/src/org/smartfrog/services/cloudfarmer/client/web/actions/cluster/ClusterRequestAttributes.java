@@ -33,6 +33,11 @@ public interface ClusterRequestAttributes {
      * {@value}
      */
     String ACTION_FAILURE = "failure";
+
+    /**
+     * {@value}
+     */
+    String ACTION_NOT_FOUND = "notFound";
     /**
      * {@value}
      */

@@ -25,6 +25,7 @@ import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.Maste
 import org.smartfrog.services.cloudfarmer.client.web.model.RemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.model.workflow.Workflow;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -52,6 +53,10 @@ public final class HostInstance implements Serializable {
     private String details;
 
     private ClusterNode clusterNode;
+
+    /**
+     * An empty array
+     */
     private static final NodeLink[] NO_NODE_LINKS = new NodeLink[0];
 
     public HostInstance() {
@@ -229,13 +234,30 @@ public final class HostInstance implements Serializable {
 
     /**
      * Get the node links if there is none
-     * @return
+     * @return an empty array or the list of links
      */
-    public NodeLink[] getLinks() {
+    public synchronized NodeLink[] getLinks() {
         if (clusterNode == null) {
             return NO_NODE_LINKS;
         } else {
             return clusterNode.getLinks();
         }
     }
+
+    /**
+     * Resolve a specifically named node link
+     * @param name the name of the link
+     * @return the link name or null
+     * @throws SmartFrogResolutionException on a resolution failure
+     */
+    public NodeLink resolveNodeLink(String name) throws SmartFrogResolutionException {
+        NodeLink[] nodeLinks = getLinks();
+        for (NodeLink link:nodeLinks) {
+            if (name.equals(link.getName())) {
+                return link;
+            }
+        }
+        throw new SmartFrogResolutionException("Could not find \"" + name + "\" in the list of links");
+    }
+    
 }

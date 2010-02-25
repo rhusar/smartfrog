@@ -1,4 +1,4 @@
-/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker;
+package org.smartfrog.services.cloudfarmer.server.examples;
 
 /**
- * Created 18-Nov-2009 16:30:13
+ * Created 25-Feb-2010 17:01:50
  */
 
 
-public interface MasterWorkerRoles {
-    /**
-     * This is the hostname of the master, which hosts both the NN and JT.
-     * <pre>
-     * binding.master.hostname PROPERTY binding.master.hostname;
-     * </pre>
-     * 
-     * 
-     */
-    String BINDING_MASTER_HOSTNAME = "binding.master.hostname";
+public interface HadoopRoleNames {
     
-     
-    
-    /** {@value} */
-    String MASTER = "master";
-    /** {@value} */
-    String WORKER = "worker";
+    String LINK_NAMENODE_CONFIGURATION = "NameNode configuration";
 }

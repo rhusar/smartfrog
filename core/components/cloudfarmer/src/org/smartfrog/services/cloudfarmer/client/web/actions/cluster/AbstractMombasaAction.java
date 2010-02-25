@@ -83,38 +83,6 @@ public abstract class AbstractMombasaAction extends AbstractStrutsAction impleme
     }
 
 
-    public static RemoteDaemon getRemoteDaemon(HttpServletRequest request) {
-        return (RemoteDaemon) request.getAttribute(REMOTE_DAEMON);
-    }
-
-    public static String bindRemoteDaemon(HttpServletRequest request, boolean required)
-            throws BadParameterException {
-        return parameterToAttribute(request, REMOTE_DAEMON_URL, REMOTE_DAEMON_URL, required);
-    }
-
-    public static RemoteDaemon bindToRemoteDaemon(HttpServletRequest request) throws SmartFrogException, IOException {
-        RemoteDaemon server = getRemoteDaemon(request);
-        if (server == null) {
-            String url = bindRemoteDaemon(request, false);
-            if (url == null) {
-                url = "http://localhost";
-                setAttribute(request, REMOTE_DAEMON_URL, url);
-            }
-            LOG.info("binding to remote server at " + url);
-            try {
-                server = new RemoteDaemon(url);
-                server.bindOnDemand();
-            } catch (IOException e) {
-                LOG.error("Failed to bind to " + server, e);
-                throw new IOException("Failed to connect to " + server + ":" + e, e);
-            } catch (SmartFrogException e) {
-                LOG.error("Failed to bind to " + server + " " + e, e);
-                throw e;
-            }
-        }
-        return server;
-    }
-
     /**
      * Bind a request to a specific workflow instance
      *
