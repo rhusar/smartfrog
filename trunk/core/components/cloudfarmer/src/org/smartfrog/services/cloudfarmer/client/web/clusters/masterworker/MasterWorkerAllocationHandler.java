@@ -104,13 +104,23 @@ public abstract class MasterWorkerAllocationHandler extends ClusterAllocationHan
      */
     protected void masterAllocationRequestSucceeded(RoleAllocationRequest request, HostInstanceList newhosts)
             throws IOException, SmartFrogException {
-        master = newhosts.getMaster();
+        bindMaster(newhosts);
         String resource = getMasterResourceName();
         if (resource != null && !resource.isEmpty()) {
             LocalSmartFrogDescriptor descriptor = loadSFApp(resource);
             deployApplication(master, request.getRole(), descriptor);
         }
 
+    }
+
+    /**
+     * Bind to the master node
+     * @param newhosts the new host list
+     * @return the master
+     */
+    protected HostInstance bindMaster(HostInstanceList newhosts) {
+        master = newhosts.getMaster();
+        return master;
     }
 
     /**

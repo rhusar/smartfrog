@@ -22,6 +22,12 @@ package org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hado
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerAllocationHandler;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hadoop.descriptions.TemplateNames;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterController;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.RoleAllocationRequest;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
+import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.io.IOException;
 
 
 /**
@@ -64,7 +70,6 @@ public class HadoopAllocationHandler extends MasterWorkerAllocationHandler imple
     @Override
     protected String getMasterResourceName() {
         return TemplateNames.HADOOP_MASTER_WORKER_SF;
-        //return TemplateNames.HADOOP_MASTER_SF;
     }
 
     /**
@@ -75,5 +80,19 @@ public class HadoopAllocationHandler extends MasterWorkerAllocationHandler imple
     @Override
     protected String getWorkerResourceName() {
         return TemplateNames.HADOOP_WORKER_SF;
+    }
+
+    @Override
+    protected void masterAllocationRequestSucceeded(RoleAllocationRequest request, HostInstanceList newhosts)
+            throws IOException, SmartFrogException {
+        //this is the master instance
+        bindMaster(newhosts);
+        HostInstance newMaster = newhosts.getMaster();
+        
+        //now we need to get the config and set up the controller
+        //loadSFApp()
+        
+        
+        super.masterAllocationRequestSucceeded(request, newhosts);
     }
 }

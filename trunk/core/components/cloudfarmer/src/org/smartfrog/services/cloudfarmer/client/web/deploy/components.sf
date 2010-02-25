@@ -124,6 +124,18 @@ StrutsOnJetty extends Compound {
 
 
   /**
+   * Serves up a a hadoop conf by redirecting to the live engine
+   */
+  HadoopConf extends Servlet {
+    name "HadoopConf";
+    className "org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet";
+    pathSpec "/conf";
+    context LAZY servlets;
+    initOrder 2;
+  }
+
+
+  /**
    * default HTML pages &c. For dev, everything HTML is served up
    */
   defaultContent extends DefaultContentServlet {

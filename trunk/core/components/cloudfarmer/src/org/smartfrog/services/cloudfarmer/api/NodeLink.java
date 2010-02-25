@@ -68,6 +68,12 @@ public final class NodeLink implements Serializable, Cloneable {
         bind(internalHostname, externalHostname);
     }
 
+    /**
+     * Make a URL from a nodelink
+     * @param hostname hostname to bind to
+     * @return the URL
+     * @throws MalformedURLException if a URL cannot be built
+     */
     public URL makeUrl(String hostname) throws MalformedURLException {
         if (hostname == null) {
             return null;
