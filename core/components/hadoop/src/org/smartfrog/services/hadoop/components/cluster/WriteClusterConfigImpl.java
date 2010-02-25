@@ -35,6 +35,5 @@ public class WriteClusterConfigImpl extends HadoopComponentImpl implements Clust
         } finally {
             FileSystem.close(fos);
         }
-
     }
 }
