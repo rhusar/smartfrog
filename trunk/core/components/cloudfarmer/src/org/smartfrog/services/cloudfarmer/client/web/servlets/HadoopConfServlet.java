@@ -41,7 +41,10 @@ import java.io.IOException;
 public class HadoopConfServlet extends HttpServlet {
 
     public static final Log log = LogFactory.getLog(HadoopConfServlet.class);
-    
+    public static final String ERROR_NO_CONTROLLER = "Web Application has no farm controller";
+    public static final String ERROR_NO_HADOOP_MASTER = "Cluster has no hadoop master";
+    public static final String ERROR_NO_MASTER_HOSTNAME = "Cluster master has no hostname";
+
     public HadoopConfServlet() {
     }
 
@@ -49,23 +52,36 @@ public class HadoopConfServlet extends HttpServlet {
         return AbstractClusterAction.getFarmController(request);
     }
 
+    /**
+     * Handle a GET request by redirecting to any deployed master, returns 404 if not
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //super.doGet(request, response);
         log.info("Building the Hadoop config file");
         ClusterController controller = getFarmController(request);
+        if (controller==null) {
+            error(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    ERROR_NO_CONTROLLER);
+            return;
+            
+        }
         HostInstance master = controller.getMaster();
         if (master == null) {
-            error(response, 404,
-                    "Cluster has no hadoop master");
+            error(response, HttpServletResponse.SC_NOT_FOUND,
+                    ERROR_NO_HADOOP_MASTER);
             return;
         }
         
         String hostname = master.getExternalHostname();
         if (hostname == null || hostname.isEmpty()) {
-            error(response, 404,
-                    "Cluster master has no hostname");
+            error(response, HttpServletResponse.SC_NOT_FOUND,
+                    ERROR_NO_MASTER_HOSTNAME);
             return;
         }
 
@@ -73,9 +89,11 @@ public class HadoopConfServlet extends HttpServlet {
             NodeLink nodeLink = master.resolveNodeLink(HadoopRoleNames.LINK_NAMENODE_CONFIGURATION);
             response.sendRedirect(nodeLink.getExternalLink().toString());
         } catch (SmartFrogResolutionException e) {
-            error(response, 500, e.toString());
+            //bad link, probably
+            error(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         }
 /*
+        //this commented out strategy actually retrieves the file, but 302'ing it is easier
         HttpClient httpclient = new HttpClient();
         HttpMethod getRequest = new GetMethod(nodeLink.getPath());
         HttpState state = new HttpState();
