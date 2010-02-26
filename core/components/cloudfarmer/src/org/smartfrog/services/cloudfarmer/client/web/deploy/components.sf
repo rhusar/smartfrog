@@ -197,6 +197,12 @@ ClusterActions extends StrutsActions {
   diagnostics (cluster ++ "diagnostics.do");
 }
 
+HadoopConfServlet extends DATA {
+  page "/conf";
+  ERROR_NO_HADOOP_MASTER CONSTANT org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet.ERROR_NO_HADOOP_MASTER;
+  ERROR_NO_MASTER_HOSTNAME CONSTANT org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet.ERROR_NO_MASTER_HOSTNAME;
+}
+
 /**
  * The mombasa server should be deployed in a fork for better JSP isolation
  * otherwise it behaves badly when restarted

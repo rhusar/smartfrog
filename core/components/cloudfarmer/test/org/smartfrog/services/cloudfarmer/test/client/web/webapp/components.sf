@@ -69,3 +69,13 @@ testTilesHappy extends ExpectJettyServerDeployed {
 testWebappHappy extends testForPage {
   page WorkflowActions:webappHappy;
 }
+
+
+testClusterServletHasNoMaster extends ExpectJettyServerDeployed {
+
+  tests extends Sequence {
+    //look for the error
+    noConf extends WaitForHadoopConfErrorNoMaster;
+    
+  }
+}

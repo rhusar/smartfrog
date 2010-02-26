@@ -60,7 +60,7 @@ WaitForJSPError extends WaitForJettyPage {
 
 
 WaitForJSPErrorCode extends WaitForJSPError {
-  errorCode 200;
+  errorCode HttpCodes:OK;
   queries [
       ["status",errorCode]
       ];
@@ -82,6 +82,24 @@ WaitForStrutsHappy extends WaitForJettyPage {
 WaitForTilesHappy extends WaitForJettyPage {
   page WorkflowActions:tilesHappy;
 }
+
+WaitForHadoopConf extends  WaitForJettyPage {
+  page HadoopConfServlet:page;
+  errorCode HttpCodes:OK;
+  minimumResponseCode errorCode;
+  maximumResponseCode errorCode;
+}
+
+/**
+ This variant looks for a 404 page, which is what you expect 
+ when the master is missing. We also look in the text
+ */
+WaitForHadoopConfErrorNoMaster extends  WaitForHadoopConf {
+  errorCode HttpCodes:NOT_FOUND;
+  responseRegexp (".*" ++ HadoopConfServlet: ERROR_NO_HADOOP_MASTER ++ ".*");
+}
+
+
 
 
 testForPage extends ExpectJettyServerDeployed {
