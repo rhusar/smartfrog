@@ -53,6 +53,7 @@ public class ClusterDeleteAllInRoleProcessAction extends AbstractClusterAction {
         String role = parameterToNonEmptyStringAttribute(request, ATTR_ROLE, ATTR_ROLE);
         log.info("Deleting hosts in role " + role);
         try {
+            controller.refreshRoleList();
             controller.deleteAllInRole(role);
             //refresh the lists
             controller.refreshHostList();

@@ -36,3 +36,6 @@ This JSP page is included in the HTML <head> tag before any title, and can be us
 
 <%-- refer to the style.css--%>
 <link rel="stylesheet" type="text/css" href="/html/mombasa-portlet/style.css">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">

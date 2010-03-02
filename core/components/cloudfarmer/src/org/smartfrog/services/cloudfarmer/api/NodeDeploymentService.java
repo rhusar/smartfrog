@@ -17,7 +17,7 @@ public interface NodeDeploymentService extends Remote {
      *
      * @param name application name
      * @param cd component description
-     * @param remoteLog
+     * @param remoteLog a remote log, can be null
      * @return output, which can be logged
      * @throws IOException network and IO problems
      * @throws SmartFrogException other problems

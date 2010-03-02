@@ -101,7 +101,7 @@ public class ClusterControllerBinding implements Serializable {
     /**
      * Load the controller binding from the servlet context
      *
-     * @param prefs
+     * @param prefs the servlet context
      */
     public void loadBinding(ServletContext prefs) {
         String c = getValue(prefs, CLOUDFARMER_CONTROLLER, Integer.toString(controller));

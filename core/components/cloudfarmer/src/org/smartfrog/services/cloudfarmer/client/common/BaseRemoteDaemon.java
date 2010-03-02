@@ -219,6 +219,9 @@ public class BaseRemoteDaemon extends AbstractEndpoint {
      */
     public static ClusterFarmer resolveFarmer(ProcessCompound process, String path)
             throws SmartFrogResolutionException, IOException {
+        if (process == null) {
+            throw new SmartFrogResolutionException("Null ProcessCompound parameter");
+        }
         String newpath = convertPath(path);
         Reference ref = new Reference(newpath, true);
         Prim farmerPrim;

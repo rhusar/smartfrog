@@ -23,11 +23,13 @@ For more information: www.smartfrog.org
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
 <table class="wide" cellpadding="0" cellspacing="0">
-  <tr class="header">
-    <th>Action</th>
-    <th class="padding"></th>
-    <th>Description</th>
-  </tr>
+  <thead>
+    <tr class="header">
+      <th>Action</th>
+      <th class="padding"></th>
+      <th>Description</th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
       <td class="action">

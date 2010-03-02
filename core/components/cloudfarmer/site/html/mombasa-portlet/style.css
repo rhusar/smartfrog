@@ -22,6 +22,28 @@ body {
 	font: 12pt arial, helvetica, sans-serif;
 }
 
+span.blue-white {
+  background-color: #006699;
+  color: white;
+}
+
+a.navigation:link {
+  color: white;
+}
+
+a.navigation:visited {
+  color: white;
+}
+
+/*
+a.navigation:hover {
+   
+}
+a.navigation:active {
+  color: white;
+} 
+*/
+
 table {
   border: 0;
 }
@@ -88,9 +110,30 @@ td.eventLevel {
   font-family: monospace;
 }
 
+td.eventLevelInfo {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+td.eventLevelError {
+  font-weight: bold;
+  font-family: monospace;
+  color: red;
+}
+
 /**
  For event text in messages
  */
+
 td.eventText {
   font-family: monospace;
+}
+
+td.eventTextInfo {
+  font-family: monospace;
+}
+
+td.eventTextError {
+  font-family: monospace;
+  color: red;
 }

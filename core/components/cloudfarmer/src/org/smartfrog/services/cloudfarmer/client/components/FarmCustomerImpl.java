@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.logging.LogRemoteImpl;
+import org.smartfrog.sfcore.logging.LogRemote;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -182,6 +183,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
      * This is the customer thread that pushed out the files
      */
     public class CustomerThread extends WorkflowThread {
+        protected LogRemote exportedLog;
 
         /**
          * Create a basic thread. Notification is bound to a local notification object.
@@ -257,7 +259,7 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
                 for (ClusterNode node : clusterNodes) {
                     NodeDeploymentService service = farmer.createNodeDeploymentService(node);
                     sfLog().info("Deploying application " + toDeployName + " to " + node.getHostname());
-                    LogRemoteImpl.createExportedLog(sfLog());
+                    exportedLog = LogRemoteImpl.createExportedLog(sfLog());
                     String messages = service.deployApplication(toDeployName, 
                             toDeploy, 
                             null);
