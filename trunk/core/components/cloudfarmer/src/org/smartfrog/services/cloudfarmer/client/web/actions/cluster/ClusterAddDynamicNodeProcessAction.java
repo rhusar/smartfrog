@@ -62,6 +62,7 @@ public class ClusterAddDynamicNodeProcessAction extends AbstractClusterAction {
                                  HttpServletResponse response, ClusterController controller) throws Exception {
         ClusterAddDynamicForm form = (ClusterAddDynamicForm) aform;
         try {
+            controller.refreshRoleList();
             Range r = new Range(form.getMinWorkers() , form.getMaxWorkers());
             log.info("Creating workers in range " + r);
             MasterWorkerAllocationHandler handler = new HadoopAllocationHandler(controller); 

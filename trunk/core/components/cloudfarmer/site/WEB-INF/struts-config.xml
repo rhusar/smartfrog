@@ -296,6 +296,13 @@
       <forward name="failure" path="portlet.mombasa.cluster.error"/>
       <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
     </action>
+    
+    <action path="/mombasa-portlet/cluster/hadoop"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="portlet.mombasa.cluster.hadoop.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
 
 
     <!-- Actions to list a workflow-->

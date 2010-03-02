@@ -145,7 +145,7 @@
 
   <definition name="portlet.mombasa.cluster.add_dynamic.success"
       extends="portlet.mombasa.cluster">
-    <put name="title" value="Add hosts"/>
+    <put name="title" value="Add Hadoop hosts"/>
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_add_dynamic.jsp"/>
   </definition>
 
@@ -236,7 +236,13 @@
     <put name="text" value=""/>
     <put name="content" value="/html/mombasa-portlet/cluster/cluster_diagnostics.jsp"/>
   </definition>
-  
+
+  <definition name="portlet.mombasa.cluster.hadoop.success" extends="portlet.mombasa.cluster">
+    <put name="title" value="Cluster Hadoop Actions"/>
+    <put name="text" value=""/>
+    <put name="content" value="/html/mombasa-portlet/cluster/cluster_hadoop.jsp"/>
+  </definition>
+
 
   <!-- This is the default view-->
   <definition name="portlet.mombasa.cluster.default" extends="portlet.mombasa.cluster.start">

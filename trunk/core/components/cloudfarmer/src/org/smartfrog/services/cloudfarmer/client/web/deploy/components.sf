@@ -129,7 +129,7 @@ StrutsOnJetty extends Compound {
   HadoopConf extends Servlet {
     name "HadoopConf";
     className "org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet";
-    pathSpec "/conf";
+    pathSpec "/hadoop-site.xml";
     context LAZY servlets;
     initOrder 2;
   }

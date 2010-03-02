@@ -26,5 +26,6 @@ package org.smartfrog.services.cloudfarmer.server.examples;
 
 public interface HadoopRoleNames {
     
+    /** {@value} */
     String LINK_NAMENODE_CONFIGURATION = "NameNode configuration";
 }

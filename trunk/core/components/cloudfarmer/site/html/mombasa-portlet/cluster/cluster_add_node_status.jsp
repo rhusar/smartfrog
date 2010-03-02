@@ -65,7 +65,7 @@ For more information: www.smartfrog.org
   <tbody>
     <tr class="navigation">
       <td>
-        <html:link
+        <html:link styleClass="navigation"
             action="/mombasa-portlet/cluster/add_dynamic/status">Update Status</html:link>
       </td>
     </tr>

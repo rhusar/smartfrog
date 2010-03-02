@@ -50,7 +50,7 @@
 
   <!-- override point -->
   <property file="build.properties"/>
-  <!--<property name="system.tests" value="true"/>-->
+  <property name="system.tests" value="true"/>
   <!--very long test timeout to allow for startup delays-->
   <property name="test.timeout.execute" value="120000" />
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
@@ -58,8 +58,17 @@
   <property name="test.web.dir" location="${site.dir}" />
   <!--<property name="application.name" value="ec2" />-->
   <property name="mockfarmer.sf" value="/org/smartfrog/services/cloudfarmer/server/mock/example.sf" />
+  <property name="localfarmer.sf" value="/org/smartfrog/services/cloudfarmer/server/examples/localhost_over_ssh.sf" />
   <property name="mombasa.sf" value="/org/smartfrog/services/cloudfarmer/client/web/deploy/server.sf" />
-  <property name="deploy.sf" value="${mombasa.sf}" />
+  
+  <!--test port and host-->
+  <property name="test.mombasa.host" value="localhost" />
+  <property name="test.mombasa.port" value="8081" />
+  <property name="test.mombasa.url" value="http://${test.mombasa.host}:${test.mombasa.port}/" />
+  <property name="test.hadoop-site.xml" value="${test.mombasa.url}hadoop-site.xml" />
+
+
+  <!-- <property name="deploy.sf" value="${mombasa.sf}" />-->
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
@@ -100,7 +109,7 @@
       description="Deploy a farm manager that serves up the local host" >
     <deploy>
       <application name="farmer"
-          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/manual_localhost.sf"/>
+          descriptor="${localfarmer.sf}"/>
     </deploy>
   </target>
   
@@ -151,7 +160,28 @@
     <sf-startdaemon-debug  spawn="false" timeout="-1">
       <application name="mombasa"
           descriptor="${mombasa.sf}"/>
+      <application name="farmer"
+          descriptor="${mockfarmer.sf}"/>
     </sf-startdaemon-debug>
   </target>
 
+  <target name="ready-to-get" depends="init">
+    <property name="hadoop.config.dir" location="${build.dir}/hadoop-config" />
+    <mkdir dir="${hadoop.config.dir}" />
+    <property name="hadoop.site.xml" location="${hadoop.config.dir}/hadoop-site.xml" />
+  </target>
+
+  <target name="GET" depends="ready-to-get"
+      description="fetch the mombasa cluster list">
+    <echo> fetching ${test.hadoop-site.xml} to ${hadoop.site.xml}</echo>
+    <get src="${test.mombasa.url}mombasa-portlet/cluster/list.do"
+        dest="${hadoop.config.dir}/host-list.html" />
+  </target>
+
+  <target name="hadoop-site.xml" depends="ready-to-get" 
+      description="fetch the hadoop site from the farmer">
+    <echo> fetching ${test.hadoop-site.xml} to ${hadoop.site.xml}</echo>
+    <get src="${test.hadoop-site.xml}"
+      dest="${hadoop.site.xml}" />
+  </target>
 </project>

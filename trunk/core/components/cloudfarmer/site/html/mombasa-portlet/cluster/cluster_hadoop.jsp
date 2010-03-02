@@ -18,29 +18,46 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 
 */
---%><%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
-<div class="separator"></div>
-<table class="navigation" >
+--%>
+
+<%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
+
+<h1>Hadoop Actions</h1>
+
+<table 
+  class="wide" cellpadding="0" cellspacing="0" >
+  <thead>
+    <tr class="header">
+      <th>Action</th>
+      <th class="padding"></th>
+      <th>Description</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr class="navigation">
-      <td>
-        <html:link styleClass="navigation"
-            action="/mombasa-portlet/cluster/list" styleId="listHosts">List Hosts</html:link>
+    <tr>
+      <td class="action">
+        <html:link
+            action="/mombasa-portlet/cluster/add" styleId="add">
+          Add Hadoop nodes
+        </html:link>
       </td>
+      <td class="padding"></td>
       <td>
-        <html:link styleClass="navigation"
-            action="/mombasa-portlet/cluster/listRoles" styleId="listRoles">List Roles</html:link>
+        Add and configure Hadoop nodes
       </td>
-      <td>
-        <html:link styleClass="navigation"
-            action="/mombasa-portlet/cluster/hadoop" styleId="add">Hadoop Actions</html:link>
+    </tr>
+    <tr>
+      <td class="action">
+        <html:link href="/hadoop-site.xml"
+            styleId="hadoop-site">
+          hadoop-site.xml 
+        </html:link>
       </td>
+      <td class="padding"></td>
       <td>
-        <html:link styleClass="navigation"
-            action="/mombasa-portlet/cluster/admin" styleId="admin">Administration</html:link>
+        View the current Hadoop configuration. This link only works once a Hadoop master has been deployed
       </td>
     </tr>
   </tbody>
 </table>
-
 

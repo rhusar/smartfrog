@@ -60,8 +60,11 @@ public class CreateRoleInstanceAction extends AbstractClusterAction {
      */
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request,
-                                 HttpServletResponse response, ClusterController controller) throws Exception {
+    public ActionForward execute(ActionMapping mapping, 
+                                 ActionForm form,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 ClusterController controller) throws Exception {
 
         addMasterAttributes(request, controller);
         String role = parameterToAttribute(request, ATTR_ROLE, ATTR_ROLE, false);
