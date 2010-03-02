@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.UnimplementedException;
+import org.smartfrog.services.cloudfarmer.client.web.model.components.StrutsModelSingletonsImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.rmi.ConnectException;
 
 /**
  * This is the factory that creates cluster controllers.
@@ -38,6 +40,7 @@ public class ClusterControllerFactory {
      */
     public static final String DEFAULT_FARMER_URL = "http://localhost/farmer";
 
+
     /**
      * Read in the preferences and create cluster controller from them. If loading fails, the default controller and
      * settings are used
@@ -47,11 +50,28 @@ public class ClusterControllerFactory {
      * @throws IOException        IO problems
      * @throws SmartFrogException other problems
      */
-    public ClusterController createClusterController(HttpServletRequest request)
+    public synchronized ClusterController createAndBindClusterController(HttpServletRequest request)
+            throws IOException, SmartFrogException {
+        ClusterController clusterController = createClusterController(request);
+        return StrutsModelSingletonsImpl.initAndBindClusterController(clusterController);
+    }
+    
+    /**
+     * Read in the preferences and create cluster controller from them. If loading fails, the default controller and
+     * settings are used.
+     * This call does not update the singletons
+     *
+     * @param request action request
+     * @return a new cluster controller
+     * @throws IOException        IO problems
+     * @throws SmartFrogException other problems
+     */
+    private ClusterController createClusterController(HttpServletRequest request)
             throws IOException, SmartFrogException {
         ClusterControllerBinding binding = new ClusterControllerBinding();
         binding.loadBinding(request.getSession().getServletContext());
-        return createClusterController(binding);
+        ClusterController clusterController = createClusterController(binding);
+        return clusterController;
     }
 
     /**
@@ -63,7 +83,7 @@ public class ClusterControllerFactory {
      * @throws IOException        IO problems
      * @throws SmartFrogException other problems
      */
-    public ClusterController createClusterController(ClusterControllerBinding binding)
+    private ClusterController createClusterController(ClusterControllerBinding binding)
             throws IOException, SmartFrogException {
         switch (binding.getController()) {
             case PHYSICAL_CONTROLLER:
@@ -78,6 +98,20 @@ public class ClusterControllerFactory {
         }
     }
 
+    /**
+     * Read in the preferences, create a cluster controller from them, and switch to it.
+     * If another thread is switching CC at the time, whoever switches last wins.
+     * @param binding the binding options
+     * @return a new cluster controller
+     * @throws IOException        IO problems
+     * @throws SmartFrogException other problems
+     */
+    public ClusterController switchClusterController(ClusterControllerBinding binding)
+            throws SmartFrogException, IOException {
+        ClusterController cc = createClusterController(binding);
+        StrutsModelSingletonsImpl.setClusterController(cc);
+        return StrutsModelSingletonsImpl.getClusterController();
+    }
 
     /**
      * controller option value ={@value}

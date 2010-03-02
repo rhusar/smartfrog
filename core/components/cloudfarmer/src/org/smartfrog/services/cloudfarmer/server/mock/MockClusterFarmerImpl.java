@@ -59,7 +59,7 @@ public class MockClusterFarmerImpl extends AbstractFarmNodeClusterFarmer impleme
     public static final String ATTR_NODE_STARTUP_DELAY_MILLISECONDS = "nodeStartupDelayMilliseconds";
     private String domain = "internal";
     private String externalDomain = "external";
-    private boolean available = true;
+    private volatile boolean available = true;
     private int nodeStartupDelayMilliseconds;
 
     public MockClusterFarmerImpl() throws RemoteException {

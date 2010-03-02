@@ -30,12 +30,12 @@ import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterContro
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterControllerFactory;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstance;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.HostInstanceList;
+import org.smartfrog.services.cloudfarmer.client.web.model.components.StrutsModelSingletonsImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.rmi.ConnectException;
 
 /**
  * Created 02-Sep-2009 16:01:35
@@ -63,6 +63,9 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
         ClusterController controller;
         try {
             controller = bindToClusterController(request);
+            if (controller == null) {
+                return bindFailure(request, mapping, "Null cluster controller", new NullPointerException());
+            }
         } catch (Exception e) {
             return bindFailure(request, mapping, "Failed to bind to the cluster controller", e);
         }
@@ -125,14 +128,13 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
     public static ClusterController bindToClusterController(HttpServletRequest request)
             throws IOException, SmartFrogException {
         ClusterController server = getFarmController(request);
+        //no controller: check
+        if (server == null) {
+            server = StrutsModelSingletonsImpl.getClusterController();
+        }
         if (server == null) {
             ClusterControllerFactory factory = new ClusterControllerFactory();
-            server = factory.createClusterController(request);
-            try {
-                server.bind();
-            } catch (ConnectException e) {
-                throw new ConnectException("Could not connect to " + server + "\n" + e, e);
-            }
+            server = factory.createAndBindClusterController(request);
             setAttribute(request, FARM_CONTROLLER, server);
         }
         return server;
@@ -152,10 +154,10 @@ public abstract class AbstractClusterAction extends AbstractStrutsAction {
             throws SmartFrogException, IOException {
         ClusterControllerBinding binding = changeClusterForm.createControllerBinding();
         ClusterControllerFactory factory = new ClusterControllerFactory();
-        ClusterController server = factory.createClusterController(binding);
+        ClusterController server = factory.switchClusterController(binding);
         removeAttribute(request, FARM_CONTROLLER);
-        //this can fail. In this situation, the current controller has alreaby been removed.
-        server.bind();
+        //this can fail. In this situation, the current controller has already been removed.
+        ClusterController.bind(server);
         setAttribute(request, FARM_CONTROLLER, server);
         return server;
     }
