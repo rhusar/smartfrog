@@ -25,22 +25,13 @@
 #include "/org/smartfrog/services/www/mimetypes.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/logging/jcl/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/client/web/model/components/components.sf"
 
-CloudFarmerURLs extends DATA {
-  //this is the URL to the cloud farmer
-  FarmerWithMombasa "http://localhost/mombasa/farmer";
-  FarmerOnLocalhost "http://localhost/farmer";
-  
-  PhysicalFarmer "0";
-  SmartFrogFarmer "1";
-  
-}
 
 /**
  * Deploy a compound containing jetty and servlets
  * This is always forked
  */
-
 
 StrutsOnJetty extends Compound {
   //we always run this in its own JVM, as Jasper is trouble otherwise
@@ -63,21 +54,27 @@ StrutsOnJetty extends Compound {
   //commonsLogging extends BindCommonsLogging;
   host CoreJettyServer:ANY_HOST;
 
+  /**
+   * Basic Jetty Server
+   */
   server extends CoreJettyServer {
     port PARENT:port;
     host PARENT:host
     server "jetty";
-
   }
 
-
+  /**
+   * A temp directory for JSP Pages
+   */
   JspDir extends TempDir {
    dir LAZY PROPERTY java.io.tmpdir;
    prefix "jettyJSP";
    deleteOnExit (! debugFlag);
   }
 
-
+  /**
+   * port listener
+   */
   listener extends JettySocketConnector {
     port PARENT:port;
     host PARENT:host
@@ -86,6 +83,15 @@ StrutsOnJetty extends Compound {
     allowIPv6 false;
   }
 
+
+  /** any singletons we need */
+  singletons extends StrutsModelSingletons {
+  
+  }
+
+  /**
+   * the servlet context into which everything is deployed
+   */
   servlets extends ServletContext {
     resourcePackage "/org/smartfrog/services/cloudfarmer/client/web/site";
     contextPath "/";
@@ -102,14 +108,16 @@ StrutsOnJetty extends Compound {
 
 
   /**
-   * this is the servlet to which endpoints need to be bound
+   * Struts gets all its config from the struts and tiles XML files
    */
   struts extends StrutsActionServlet {
     context LAZY servlets;
     initOptions:validating false;
-    
   }
   
+  /**
+   JSP support
+   */
   jasper extends JettyJSPServlet {
     context LAZY servlets;
      pathSpec "*.jsp";
@@ -127,10 +135,10 @@ StrutsOnJetty extends Compound {
    * Serves up a a hadoop conf by redirecting to the live engine
    */
   HadoopConf extends Servlet {
+    context LAZY servlets;
     name "HadoopConf";
     className "org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet";
     pathSpec "/hadoop-site.xml";
-    context LAZY servlets;
     initOrder 2;
   }
 

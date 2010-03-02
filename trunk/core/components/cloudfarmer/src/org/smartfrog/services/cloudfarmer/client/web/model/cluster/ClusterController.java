@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import java.io.IOException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.ConnectException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -992,5 +993,19 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
 
     public void setHadoopXmlConfiguration(String hadoopXmlConfiguration) {
         this.hadoopXmlConfiguration = hadoopXmlConfiguration;
+    }
+
+    /**
+     * Bind to a (non-null) controller, and if a connection fails, include a more meaningful error message
+     * @param controller controller to bind
+     * @throws IOException IO problems
+     * @throws SmartFrogException SF problems
+     */
+    public static void bind(ClusterController controller) throws IOException, SmartFrogException {
+        try {
+            controller.bind();
+        } catch (ConnectException e) {
+            throw new ConnectException("Could not connect to " + controller + "\n" + e, e);
+        }
     }
 }
