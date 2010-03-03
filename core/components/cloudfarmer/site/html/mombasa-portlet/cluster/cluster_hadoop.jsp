@@ -58,6 +58,20 @@ For more information: www.smartfrog.org
         View the current Hadoop configuration. This link only works once a Hadoop master has been deployed
       </td>
     </tr>
+    <tr>
+      <td class="action">
+        <html:link href="/hosts.properties?prefix=cluster"
+            styleId="hosts-properties">
+          hosts.properties 
+        </html:link>
+      </td>
+      <td class="padding"></td>
+      <td>
+        Get a list of hosts as a Java Properties file.
+      </td>
+    </tr>
+        
+    
   </tbody>
 </table>
 

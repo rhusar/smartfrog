@@ -26,7 +26,7 @@
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/logging/jcl/components.sf"
 #include "/org/smartfrog/services/cloudfarmer/client/web/model/components/components.sf"
-
+#include "/org/smartfrog/services/cloudfarmer/client/web/servlets/components.sf"
 
 /**
  * Deploy a compound containing jetty and servlets
@@ -134,12 +134,12 @@ StrutsOnJetty extends Compound {
   /**
    * Serves up a a hadoop conf by redirecting to the live engine
    */
-  HadoopConf extends Servlet {
+  hadoopConfServlet extends HadoopConfServlet {
     context LAZY servlets;
-    name "HadoopConf";
-    className "org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet";
-    pathSpec "/hadoop-site.xml";
-    initOrder 2;
+  }
+  
+  hostAndRolesServlet extends HostAndRolesServlet {
+    context LAZY servlets;
   }
 
 
@@ -205,11 +205,6 @@ ClusterActions extends StrutsActions {
   diagnostics (cluster ++ "diagnostics.do");
 }
 
-HadoopConfServlet extends DATA {
-  page "/conf";
-  ERROR_NO_HADOOP_MASTER CONSTANT org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet.ERROR_NO_HADOOP_MASTER;
-  ERROR_NO_MASTER_HOSTNAME CONSTANT org.smartfrog.services.cloudfarmer.client.web.servlets.HadoopConfServlet.ERROR_NO_MASTER_HOSTNAME;
-}
 
 /**
  * The mombasa server should be deployed in a fork for better JSP isolation
