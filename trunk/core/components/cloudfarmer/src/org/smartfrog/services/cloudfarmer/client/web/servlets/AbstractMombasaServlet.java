@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -78,5 +79,95 @@ public abstract class AbstractMombasaServlet extends HttpServlet {
         response.addDateHeader("Expires", System.currentTimeMillis());
         response.addHeader("Cache-Control", "no-cache");
         response.addHeader("Pragma", "no-cache");
+    }
+
+    /**
+     * Handle a GET request by redirecting to any deployed master, returns 404 if not
+     * @param request incoming request
+     * @param response outgoing response
+     * @throws ServletException servlet problems
+     * @throws IOException IO problems
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        //super.doGet(request, response);
+        log.info("Building the Hadoop config file");
+
+
+        //look up the farm controller from the request
+        ClusterController controller;
+        try {
+            controller = getFarmController(request);
+            if (controller == null) {
+                //express internal 500 concern if it is not there
+                error(response, 
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        ERROR_NO_CONTROLLER);
+                return;
+            }
+        } catch (SmartFrogException e) {
+            error_no_cluster_controller(response, e);
+            return;
+        }
+
+        //refresh the lists
+        if (refreshHostAndRoles()) {
+            try {
+                controller.refreshHostList();
+                controller.refreshRoleList();
+            } catch (SmartFrogException e) {
+                //bad link, probably
+                error(response,
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "Failed to talk to controller: " + controller.toString(),
+                        e);
+                return;
+            }
+        }
+        disableCaching(response);
+        getAction(request, response, controller);
+
+    }
+
+
+    /**
+     * Override point: should the lists be updated first
+     * @return true
+     */
+    protected boolean refreshHostAndRoles() {
+        return true;
+    }
+
+    /**
+     *  This is the inner GET action bonded to a controller. The host and roles lists are refreshed
+     * @param request incoming request
+     * @param response outgoing response
+     * @param controller the controller
+     * @throws IOException IO problems
+     */
+    protected abstract void getAction(HttpServletRequest request, 
+                                      HttpServletResponse response,
+                                      ClusterController controller
+    ) throws IOException;
+
+    protected void error_no_cluster_controller(HttpServletResponse response, SmartFrogException e) throws IOException {
+        error(response, 
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                ERROR_NO_CONTROLLER,
+                e);
+    }
+
+    protected void error_no_hadoop_master_hostname(HttpServletResponse response, ClusterController controller)
+            throws IOException {
+        error(response,
+                    HttpServletResponse.SC_NOT_FOUND,
+                    ERROR_NO_MASTER_HOSTNAME + controller.toString());
+    }
+
+    protected void error_no_hadoop_master(HttpServletResponse response, ClusterController controller) throws IOException {
+        error(response, 
+                HttpServletResponse.SC_NOT_FOUND,
+                ERROR_NO_HADOOP_MASTER + controller.toString());
     }
 }

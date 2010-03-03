@@ -84,7 +84,7 @@ WaitForTilesHappy extends WaitForJettyPage {
 }
 
 WaitForHadoopConf extends  WaitForJettyPage {
-  page HadoopConfServlet:page;
+  page HadoopConfServletData:page;
   errorCode HttpCodes:OK;
   minimumResponseCode errorCode;
   maximumResponseCode errorCode;
@@ -96,7 +96,7 @@ WaitForHadoopConf extends  WaitForJettyPage {
  */
 WaitForHadoopConfErrorNoMaster extends  WaitForHadoopConf {
   errorCode HttpCodes:NOT_FOUND;
-  responseRegexp (".*" ++ HadoopConfServlet: ERROR_NO_HADOOP_MASTER ++ ".*");
+  responseRegexp (".*" ++ HadoopConfServletData: ERROR_NO_HADOOP_MASTER ++ ".*");
 }
 
 
