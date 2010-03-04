@@ -29,6 +29,8 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created 11-Jan-2010 16:09:50
@@ -69,7 +71,20 @@ public abstract class MasterWorkerAllocationHandler extends ClusterAllocationHan
         if (MASTER.equals(role)) {
             masterAllocationRequestSucceeded(request, newhosts);
         } else if (WORKER.equals(role)) {
-            workerAllocationRequestSucceeded(request, newhosts);
+            List<DeploymentFailure> failures = workerAllocationRequestSucceeded(request, newhosts);
+            if (failures.size() > 0) {
+                int deployedTo = newhosts.size() - failures.size();
+                DeploymentFailure firstFailure = failures.get(0);
+                StringBuilder builder = new StringBuilder();
+                for (DeploymentFailure df:failures) {
+                    builder.append(df.toString());
+                    builder.append("\n");
+                }
+                throw new SmartFrogDeploymentException(
+                        "Only deployed to " + deployedTo + " hosts :\n"
+                                + builder.toString(),
+                        firstFailure.getException());
+            }
         }
     }
 
@@ -128,22 +143,35 @@ public abstract class MasterWorkerAllocationHandler extends ClusterAllocationHan
      *
      * @param request  the request that just succeeded
      * @param newhosts the new hosts
+     * @return a list of exceptions, the size is an implicit count of nodes that failed. 
      * @throws IOException        IO problems
      * @throws SmartFrogException other problems
      */
-    protected void workerAllocationRequestSucceeded(RoleAllocationRequest request, HostInstanceList newhosts)
+    protected List<DeploymentFailure> workerAllocationRequestSucceeded(RoleAllocationRequest request, HostInstanceList newhosts)
             throws IOException, SmartFrogException {
         //we'd better have a non-null master here
         if (master == null) {
             throw new SmartFrogDeploymentException("Cannot bring up worker nodes without a master node");
         }
+        List<DeploymentFailure> failures = new ArrayList<DeploymentFailure>();
         String resource = getWorkerResourceName();
         if (resource != null && !resource.isEmpty()) {
             LocalSmartFrogDescriptor descriptor = loadSFApp(resource);
             for (HostInstance host : newhosts) {
-                deployApplication(host, request.getRole(), descriptor);
+                try {
+                    deployApplication(host, request.getRole(), descriptor);
+                } catch (SmartFrogException e) {
+                    DeploymentFailure fail = new DeploymentFailure(host, e);
+                    LOG.error(fail, e);
+                    failures.add(fail);
+                } catch (IOException e) {
+                    DeploymentFailure fail = new DeploymentFailure(host, e);
+                    LOG.error(fail, e);
+                    failures.add(fail);
+                }
             }
         }
+        return failures;
     }
 
     /**
@@ -157,4 +185,27 @@ public abstract class MasterWorkerAllocationHandler extends ClusterAllocationHan
      * @return the resource
      */
     protected abstract String getWorkerResourceName();
+
+    protected static class DeploymentFailure {
+        private HostInstance host;
+        private Exception exception;
+
+        protected DeploymentFailure(HostInstance host, Exception exception) {
+            this.host = host;
+            this.exception = exception;
+        }
+
+        public HostInstance getHost() {
+            return host;
+        }
+
+        public Exception getException() {
+            return exception;
+        }
+
+        @Override
+        public String toString() {
+            return "Failed to deploy to " + host + " : " + exception;
+        }
+    }
 }
