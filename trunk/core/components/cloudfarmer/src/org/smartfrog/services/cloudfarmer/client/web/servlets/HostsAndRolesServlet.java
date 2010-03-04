@@ -48,6 +48,7 @@ public class HostsAndRolesServlet extends AbstractMombasaServlet {
     private static final String DEFAULT_PREFIX = "cluster";
     private static final String ROLE = "role";
     private static final String HOST = "host";
+    private static final String SIZE = "size";
 
     public HostsAndRolesServlet() {
     }
@@ -78,6 +79,13 @@ public class HostsAndRolesServlet extends AbstractMombasaServlet {
         List<ClusterRoleInfo> roleList = controller.getRoles();
         HostInstanceList hosts = controller.getHosts();
 
+        //publish the sizes
+        properties.put(prefix + ROLE + "." + SIZE, "" + roleList.size());
+        
+        
+        
+        
+
         //run through the role list
         Map<String, HostInstanceList> roleMap = new HashMap<String, HostInstanceList>(roleList.size());
         int count = 1;
@@ -90,23 +98,28 @@ public class HostsAndRolesServlet extends AbstractMombasaServlet {
         //run through the hosts
         count = 1;
         for (HostInstance host : hosts) {
-            properties.put(prefix + HOST + "." + (count), host.getExternalHostname());
-            String roleName = host.getRole();
-            properties.put(prefix + HOST + "." + (count) + ".role", roleName);
-            count++;
-            //now the role list
-            HostInstanceList hostsInRole = roleMap.get(roleName);
-            if (hostsInRole == null) {
-                //just in case the count changes
-                roleMap.put(roleName, new HostInstanceList());
+            String hostname = host.getExternalHostname();
+            if (hostname != null) {
+                properties.put(prefix + HOST + "." + (count), hostname);
+                String roleName = host.getRole();
+                properties.put(prefix + HOST + "." + (count) + ".role", roleName);
+                count++;
+                //now the role list
+                HostInstanceList hostsInRole = roleMap.get(roleName);
+                if (hostsInRole == null) {
+                    //just in case the role count changes
+                    roleMap.put(roleName, new HostInstanceList());
+                }
+                hostsInRole.add(host);
             }
-            hostsInRole.add(host);
         }
+        properties.put(prefix + HOST + "." + SIZE, "" + count);
         
         //now for each role, push out the hosts
         for (String roleName: roleMap.keySet()) {
             HostInstanceList hostList = roleMap.get(roleName);
-            String roleprefix = prefix + ROLE + "." + roleName + ".";
+            String roleprefix = prefix + "." + roleName + ".";
+            properties.put(roleprefix + SIZE, ""+ hostList.size());
             count = 1;
             for (HostInstance host : hostList) {
                 properties.put(roleprefix + (count++) , host.getExternalHostname());
