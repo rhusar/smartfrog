@@ -53,10 +53,10 @@ public class HostCreationUnitTest extends TestCase {
     private static final int CLUSTER_SIZE = 50;
     private static final Log log = LogFactory.getLog(HostCreationUnitTest.class);
     private static final NodeLink[] MasterLinks = {
-            new NodeLink("root","http",8080,"/")
+            new NodeLink("root", "http", 8080, "/")
     };
-    
-    
+
+
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     protected void setUp() throws Exception {
