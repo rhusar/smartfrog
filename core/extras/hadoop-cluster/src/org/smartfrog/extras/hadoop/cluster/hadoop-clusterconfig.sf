@@ -57,6 +57,7 @@ FullCluster extends ConfiguredCluster {
   cluster:mapred.job.tracker.handler.count threads;
   cluster:mapred.tasktracker.map.tasks.maximum max_tasks;
   cluster:mapred.job.tracker job.tracker.binding;
+  cluster:mapred.job.tracker.hostname jobtrackerHostname;
 
   localhost extends Localhost;
 
