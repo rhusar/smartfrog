@@ -837,7 +837,9 @@ public abstract class ClusterController extends AbstractEndpoint implements Iter
                 waitForFarmerAvailable();
                 try {
                     for (RoleAllocationRequest request : allocationRequests) {
-                        requestHosts(request, clusterAllocationCompleted);
+                        if (!request.isEmpty()) {
+                            requestHosts(request, clusterAllocationCompleted);
+                        }
                     }
                 } catch (Throwable throwable) {
                     //failure, notify and rethrow

@@ -54,12 +54,12 @@ For more information: www.smartfrog.org
       </td>
       <td class="padding"></td>
       <td class="field">
-        <html:text name="clusterCreateRoleInstanceForm"  property="rolename" styleId="role"/>
+        <html:text name="clusterCreateRoleInstanceForm"  property="role" styleId="role"/>
       </td>
     </tr>
 <%--
     
-    <html:hidden name="clusterCreateRoleInstanceForm" property="rolename" value="${role}"/>
+    <html:hidden name="clusterCreateRoleInstanceForm" property="role" value="${role}"/>
 --%>
     
     <tr>

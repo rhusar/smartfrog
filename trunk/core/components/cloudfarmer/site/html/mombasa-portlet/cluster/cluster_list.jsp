@@ -36,6 +36,8 @@ For more information: www.smartfrog.org
     <th class="padding"></th>
     <th>Role</th>
     <th class="padding"></th>
+    <th>State</th>
+    <th class="padding"></th>
     <th>Application</th>
     <th class="padding"></th>
     <th>Description</th>
@@ -61,13 +63,14 @@ For more information: www.smartfrog.org
       <td class="padding"></td>
       <td>
         <logic:notEmpty name="host" property="role">
-          
          <html:link action="/mombasa-portlet/cluster/listInRole"
             paramId="role" paramName="host" paramProperty="role">
            <bean:write name="host" property="role"/>
          </html:link>
         </logic:notEmpty>
       </td>
+      <td class="padding"></td>
+      <td><bean:write name="host" property="state"/></td>
       <td class="padding"></td>
       <td><bean:write name="host" property="application"/></td>
       <td class="padding"></td>

@@ -34,6 +34,8 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
   <tr class="header">
     <th>Hostname</th>
     <th class="padding"></th>
+    <th>State</th>
+    <th class="padding"></th>
     <th>Application</th>
     <th class="padding"></th>
     <th>Role</th>
@@ -51,6 +53,8 @@ Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hos
           <bean:write name="host" property="hostname"/>
         </html:link>
       </td>
+      <td class="padding"></td>
+      <td><bean:write name="host" property="state"/></td>
       <td class="padding"></td>
       <td><bean:write name="host" property="application"/></td>
       <td class="padding"></td>

@@ -82,9 +82,6 @@ public class HostsAndRolesServlet extends AbstractMombasaServlet {
         //publish the sizes
         properties.put(prefix + ROLE + "." + SIZE, "" + roleList.size());
         
-        
-        
-        
 
         //run through the role list
         Map<String, HostInstanceList> roleMap = new HashMap<String, HostInstanceList>(roleList.size());
@@ -118,7 +115,7 @@ public class HostsAndRolesServlet extends AbstractMombasaServlet {
         //now for each role, push out the hosts
         for (String roleName: roleMap.keySet()) {
             HostInstanceList hostList = roleMap.get(roleName);
-            String roleprefix = prefix + "." + roleName + ".";
+            String roleprefix = prefix + ROLE + "." + roleName + ".";
             properties.put(roleprefix + SIZE, ""+ hostList.size());
             count = 1;
             for (HostInstance host : hostList) {

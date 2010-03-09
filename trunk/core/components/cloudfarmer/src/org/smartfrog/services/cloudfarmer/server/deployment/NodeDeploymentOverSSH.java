@@ -79,7 +79,7 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
      */
     private static final int STARTUP_PING_SLEEP_TIME = 30;
     private static final String ERROR_NO_EXECUTABLE = " Error: no executable ";
-    private static final int SLEEP_TIME_FOR_HOSTNAME_RESOLUTION = 500;
+    private static final int SLEEP_TIME_FOR_HOSTNAME_RESOLUTION = 100;
 
     public NodeDeploymentOverSSH(NodeDeploymentOverSSHFactory factory, ClusterNode node) {
         super(node);
@@ -145,14 +145,18 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         info(remoteLog, messages, "Deploying application with SSH to role '" + name + "' to " + connectionDetails);
 
         //make a pre-emptive connection to the port; this blocks waiting for things like machines to come up
+
+        int connectTimeout = factory.getPortConnectTimeout();
+        info(remoteLog, messages, "Waiting "+ connectTimeout +"ms for the hostname " + hostname +" to resolve");
         try {
-            PortUtils.waitForHostnameToResolve(hostname, factory.getPortConnectTimeout(),
+            PortUtils.waitForHostnameToResolve(hostname, connectTimeout,
                     SLEEP_TIME_FOR_HOSTNAME_RESOLUTION);
         } catch (InterruptedException e) {
             throw (InterruptedIOException) new InterruptedIOException("Interrupted waiting for " + hostname)
                     .initCause(e);
         }
-        PortUtils.checkPort(hostname, factory.getPort(), factory.getPortConnectTimeout());
+        info(remoteLog, messages, "Waiting "+ connectTimeout +"ms for the SSH port "+ factory.getPort() + " to be open");
+        PortUtils.checkPort(hostname, factory.getPort(), connectTimeout);
 
 
         Session session = null;
