@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 <%@ include file="/html/mombasa-portlet/cluster/init.jsp" %>
 
 
-<p>Add Hosts </p>
+<p>Add hosts to form a Hadoop cluster; every machine will become a datanode and job tracker.</p>
 
 <html:form action="/mombasa-portlet/cluster/add_dynamic/process" method="post" focus="minWorkers">
 

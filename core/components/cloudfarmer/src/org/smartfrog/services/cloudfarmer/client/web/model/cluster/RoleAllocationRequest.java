@@ -62,6 +62,14 @@ public class RoleAllocationRequest {
         return max;
     }
 
+    /**
+     * Is the request empty?
+     * @return true if no hosts are expected
+     */
+    public boolean isEmpty() {
+        return min <= 0 && max == 0;
+    }
+
     public boolean isStarted() {
         return started;
     }

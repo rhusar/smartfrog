@@ -115,8 +115,8 @@ public class ClusterAllocationHandler implements ClusterAllocationCompleted {
             }
             NodeDeploymentService deploymentService = createNodeDeploymentService(instance);
             String messages = deploymentService.deployApplication(name, descriptor.getComponentDescription(),
-                    controller.getRemoteLog());
-                    //null);
+                    //controller.getRemoteLog());
+                    null);
             if (messages != null && !messages.isEmpty()) {
                 LOG.info(messages);
             }

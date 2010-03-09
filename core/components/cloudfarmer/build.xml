@@ -66,7 +66,7 @@
   <property name="test.mombasa.port" value="8081" />
   <property name="test.mombasa.url" value="http://${test.mombasa.host}:${test.mombasa.port}/" />
   <property name="test.hadoop-site.xml" value="${test.mombasa.url}hadoop-site.xml" />
-  <property name="test.cluster.properties" value="${test.mombasa.url}cluster.properties" />
+  <property name="test.cluster.properties" value="${test.mombasa.url}hosts.properties?prefix=test.cluster" />
 
 
   <!-- <property name="deploy.sf" value="${mombasa.sf}" />-->
@@ -170,8 +170,10 @@
     <property name="hadoop.config.dir" location="${build.dir}/hadoop-config" />
     <mkdir dir="${hadoop.config.dir}" />
     <property name="hadoop.site.xml" location="${hadoop.config.dir}/hadoop-site.xml" />
-    <property name="cluster.properties" location="${hadoop.config.dir}/cluster.properties?prefix=test.cluster" />  
-    
+    <property name="cluster.properties" location="${hadoop.config.dir}/cluster.properties" />  
+    <property name="remote.dir" value="/root" />
+    <property name="remote.settings.dir" value="${remote.dir}/settings" />
+    <property name="init-classpath" value='source setSFProperties; export CLASSPATH="${remote.settings.dir}:$CLASSPATH"'/>
   </target>
 
   <target name="GET" depends="ready-to-get"
@@ -195,13 +197,53 @@
         dest="${cluster.properties}" />
     <property file="${cluster.properties}" />
   </target>
-  
-  <target name="terasort" depends="cluster.properties" >
+
+  <target name="cluster-bind" depends="cluster.properties, hadoop-site.xml" >
     <fail unless="test.cluster.role.master.1" >
-      No cluster master found: has anything been deployed
+      No cluster master found: has anything been deployed?
     </fail>
     <property name="cluster.master" value="${test.cluster.role.master.1}" />
-    <echo > working with ${test.cluster.role.master.1}</echo>
+    <echo > working with ${cluster.master}</echo>
+  </target>
+
+  <target name="cluster-upload-settings" depends="cluster-bind, hadoop-site.xml" >
+    <sshexec host="${cluster.master}"
+        username="root"
+        trust="true"
+        password="${test.cluster.password}"
+        command="rm -rf ${remote.settings.dir} ${remote.dir}/in ${remote.dir}/out; mkdir ${remote.settings.dir}"/>
+    <!--verbose="true"-->
+    <scp file="${hadoop.site.xml}"
+        todir="root@${cluster.master}:${remote.settings.dir}"
+        trust="true"
+        password="${test.cluster.password}"
+        />
+  </target>
+  
+  <target name="terasort" depends="cluster-upload-settings" >
+    <property name="terasort.size" value="10000000" />
+    <echo>
+Now:
+ssh root@${cluster.master}
+      
+${init-classpath}
+rm -rf in out
+time java org.apache.hadoop.util.RunJar $SFHOME/lib/hadoop-mapred-examples-*.jar teragen ${terasort.size} in -verbose
+time java -Xmx1024m org.apache.hadoop.util.RunJar $SFHOME/lib/hadoop-mapred-examples-*.jar terasort in out -verbose
+    </echo>
+  </target>
+  
+  
+  <target  name="job-queue" depends="cluster-bind">
+    <property name="jobqueue" value="org.apache.hadoop.mapred.JobQueueClient"/>
+    <property name="jobqueue.commands" value="-list -showjobs -verbose"/>
+    <sshexec host="${cluster.master}"
+        username="root"
+        trust="true"
+        password="${test.cluster.password}"
+        command='${init-classpath}; java ${jobqueue} ${jobqueue.commands}'/>
+  </target>
+
     
     <!--
     ssh ${cluster.master}
@@ -216,7 +258,7 @@
     
     
     source setSFProperties
-    export CLASSPATH="/home/root/settings:$CLASSPATH"
+    export CLASSPATH="/root/settings:$CLASSPATH"
     echo $CLASSPATH
     
     the main class in the examples file runs the ExampleDriver which takes the example name as param #1, 
@@ -234,12 +276,11 @@
     
     <property name="terasort.size" value="100000000" />
     rm -rf in
-    java org.apache.hadoop.util.RunJar $SFHOME/lib/hadoop-mapred-examples-*.jar teragen 100000000 in
+    java org.apache.hadoop.util.RunJar $SFHOME/lib/hadoop-mapred-examples-*.jar teragen 100000000 in -verbose
     rm -rf out
     time java -Xmx1024m org.apache.hadoop.util.RunJar $SFHOME/lib/hadoop-mapred-examples-*.jar terasort in out
     
 
     -->
-  </target>
   
 </project>
