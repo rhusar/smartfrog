@@ -37,6 +37,7 @@ Display extends Prim {
       //formatMsg     false; // Add date to every printed msg! Not to outputStreams. Ex. [21:44:10.934 16/12/01] msg
       autoClean false; // Should auto clean the screen?
       autoSave false; // Should save screen content before cleaning it?
+      //maxDisplayLines 1000; // Max number of lines held in display text area, defaults to unlimited (-1)
       //cleanEveryNumSec  //Clean every 15 minutes by default. (15*60)
       //cleanEveryNumSec 15; //every 15 secs!
       //directoryAutoSave "."; //Default= "."
