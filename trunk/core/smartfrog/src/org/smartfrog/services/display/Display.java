@@ -32,7 +32,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
@@ -45,17 +44,12 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
-import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -79,15 +73,7 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.text.Document;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.ExitCodes;
@@ -97,7 +83,6 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -105,9 +90,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 
 /**
@@ -271,7 +253,7 @@ public class Display extends JFrame
     /**
      * Posible positions for the frame.
      */
-    private String position = "C";
+    private final String position = "C";
 
     /**
      * To control content in the text area.
@@ -283,9 +265,11 @@ public class Display extends JFrame
     /**
      * 
      */
-    private JMenuItem jMenuItemMngConsole = new JMenuItem();
+    private final JMenuItem jMenuItemMngConsole = new JMenuItem();
    
-    private int fontSize = 12;   
+    private final int fontSize = 12;
+
+    private TextAreaLimiter textAreaLimiter;   
     
     /**
      * Constructs Display object with title.
@@ -1598,7 +1582,7 @@ public class Display extends JFrame
     }
     
     static public class DisplayMenus {
-    	private Display display;
+    	private final Display display;
     	
     	DisplayMenus(Display display){
     		this.display=display;
@@ -1776,7 +1760,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -1810,7 +1794,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -1843,7 +1827,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -1876,7 +1860,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -1910,7 +1894,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -1945,7 +1929,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -1978,7 +1962,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -2011,7 +1995,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -2063,7 +2047,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -2081,6 +2065,7 @@ public class Display extends JFrame
          *
          * @param e window event
          */
+        @Override
         public void windowClosing(WindowEvent e) {
             adaptee.this_windowClosing(e);
         }
@@ -2091,6 +2076,7 @@ public class Display extends JFrame
          *
          * @param e Window event
          */
+        @Override
         public void windowClosed(WindowEvent e) {
             adaptee.this_windowClosed(e);
         }
@@ -2106,7 +2092,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -2139,7 +2125,7 @@ public class Display extends JFrame
         /**
          * Display object.
          */
-        private Display adaptee;
+        private final Display adaptee;
 
 
         /**
@@ -2175,6 +2161,21 @@ public class Display extends JFrame
     
     public Prim getDisplayPrim(){
     	return sfObj;
+    }
+
+/**
+ * Sets the maximum number of lines to display. The actual number of lines displayed
+ * must exceed this number by at least 10% before being reduced tho this number.
+ * @param num
+ */
+    public void setMaxDisplayLines(int num) {
+        if (textAreaLimiter != null) {
+            textAreaLimiter.detach();
+            textAreaLimiter = null;
+        }
+        if (num > 0) {
+            textAreaLimiter = new TextAreaLimiter(this.screen, num);
+        }
     }
     
 }
