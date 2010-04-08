@@ -56,6 +56,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
     private List<CompositeQueueListener> listeners = new ArrayList<CompositeQueueListener>();
     private HashMap<String, ComponentDescription> toDeploy = new HashMap<String, ComponentDescription>();
     private static final int WAIT_A_REASONABLE_PERIOD=5000;
+    private static final long NOTIFSLEEP = 1000;
 
     private static class CompositeQueueListener {
         private volatile boolean cleared = false;
@@ -261,6 +262,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	          while (!Composite.this.terminating){
 	        	  try{
                       handleStateChange();
+                      Thread.sleep(NOTIFSLEEP);
+                  } catch (InterruptedException ignored) {
                   } catch (SmartFrogException e) {
                       sfLog().error(e);
                       throw new RuntimeException(e);
