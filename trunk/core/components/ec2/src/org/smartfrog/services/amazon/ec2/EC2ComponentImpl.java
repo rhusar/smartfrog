@@ -49,6 +49,8 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
     private SmartFrogThread worker;
     private Throwable workException;
     private volatile boolean workCompleted;
+    private boolean awsServerSecure;
+    private String awsServer;
 
     public EC2ComponentImpl() throws RemoteException {
     }
@@ -67,6 +69,8 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
         super.sfStart();
         id = sfResolve(ATTR_ID, "", true);
         key = PasswordHelper.resolvePassword(this, ATTR_KEY, true);
+        awsServer = sfResolve(ATTR_AWS_SERVER, "", true);
+        awsServerSecure = sfResolve(ATTR_AWS_SERVER, true, true);
         ec2binding = bindToEC2();
     }
 
@@ -163,10 +167,18 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
         return ec2binding;
     }
 
+    /**
+     * Get the AWS User ID
+     * @return
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Get the AWS key
+     * @return
+     */
     public String getKey() {
         return key;
     }
@@ -177,7 +189,7 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
      * @return a new binding with the current key/password
      */
     protected Jec2 bindToEC2() {
-        Jec2 ec2 = new Jec2(id, key);
+        Jec2 ec2 = new Jec2(id, key, awsServerSecure, awsServer);
         ec2.useSystemProxy();
         return ec2;
     }
