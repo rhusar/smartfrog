@@ -117,10 +117,14 @@ public class ConstraintConstants {
 	public static final String FCS_DONE="done";
 
     public static final String PREFIXMUSTBESTRING = " prefix must be a String...";
-    public static final String CANNOTRESOLVEPATH = " can not resolve path:";
+    public static final String CANNOTRESOLVE = " can not resolve ";
     public static final String VECTOREXTENTSTRING = " vector extent should be comprised of Strings";
     public static final String EXTENTTYPE = "extent in Array should be an Integer or a Vector";
     public static final String BADLYFORMEDEXTENT = "badly formed multi-dimensional extent";
+    public static final String PATHNOTRESOLVEINEFFECTS = "path in effects will not resolve: ";
+    public static final String FAILEDTOFINDATTRIBEFFECTS = "Failed to find attrib in effects: ";
+    public static final String PREDSHOULDYIELDBOOLEANFROMSOURCE = "In extracting values as per source, pred should yield Boolean: ";
+
 
     public static SmartFrogFunctionResolutionException relay(Class cl, ComponentDescription comp, String msg){
         return new SmartFrogFunctionResolutionException("In "+cl.getSimpleName()+" with context: "+comp+", "+msg);
