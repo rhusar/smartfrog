@@ -576,7 +576,40 @@ SmartFrog to deploy complex systems.
       <depends packname="Ant"/>
       <depends packname="WWW"/>
     </pack>
+    <pack name="Jersey" required="no" preselected="no">
+      <description>
+        The sf-jersey package adds Jersey and hence JAX-RS support
 
+        The Jersey version is ${jersey.version}, client and server libraries
+        are included. This implements JAX-RS version ${jsr311-api.version}
+      </description>
+      <file src="ivy/lib/package-jersey/sf-jersey-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-jersey/sf-jersey-javadocs-${smartfrog.version}.zip"
+        targetdir="$INSTALL_PATH"
+        unpack="true"/>
+      <file
+        src="ivy/lib/package-jersey/sf-jersey-documentation-${smartfrog.version}.zip"
+        targetdir="$INSTALL_PATH"
+        unpack="true"/>
+      <file src="ivy/lib/package-jersey/jersey-core-${jersey.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-jersey/jersey-client-${jersey.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-jersey/jersey-server-${jersey.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-jersey/asm-${asm.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-jersey/jsr311-api-${jsr311-api.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      />
+    </pack>
     <pack name="JMX" required="no" preselected="no">
       <description>
         The sf-jmx package can integrate JMX MBeans with SmartFrog, and

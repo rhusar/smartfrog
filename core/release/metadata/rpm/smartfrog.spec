@@ -892,6 +892,22 @@ fi
 %{linkdir}/xmlenc.jar
 
 # -----------------------------------------------------------------------------
+%files jersey
+
+%{libdir}/sf-jersey-${smartfrog.version}.jar
+%{libdir}/jersey-core-${jersey.version}.jar
+%{libdir}/jersey-server-${jersey.version}.jar
+%{libdir}/jersey-client-${jersey.version}.jar
+%{libdir}/jsr311-api-${jsr311-api.version}.jar
+%{libdir}/asm-${asm.version}.jar
+%{linkdir}/sf-jersey.jar
+%{linkdir}/asm.jar
+%{linkdir}/jersey-core.jar
+%{linkdir}/jersey-server.jar
+%{linkdir}/jersey-client.jar
+%{linkdir}/jsr311-api.jar
+
+# -----------------------------------------------------------------------------
 %files jetty
 
 %{libdir}/sf-jetty-${smartfrog.version}.jar
@@ -913,15 +929,7 @@ fi
 %{libdir}/core-${org.eclipse.jdt.core.version}.jar
 %{linkdir}/core.jar
 
-# -----------------------------------------------------------------------------
-%files jersey
 
-%{libdir}/sf-jersey-${smartfrog.version}.jar
-%{libdir}/jersey-core-${jersey.version}.jar
-%{libdir}/jsr311-api-${jsr311-api.version}.jar
-%{linkdir}/sf-jersey.jar
-%{linkdir}/jersey-core.jar
-%{linkdir}/jsr311-api.jar
 
 # -----------------------------------------------------------------------------
 %files jmx

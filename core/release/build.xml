@@ -531,6 +531,9 @@
     <rpmpackage package="jersey"/>
     <ln artifact="sf-jersey" version="${smartfrog.version}"/>
     <ln artifact="jersey-core" version="${jersey.version}"/>
+    <ln artifact="jersey-client" version="${jersey.version}"/>
+    <ln artifact="jersey-server" version="${jersey.version}"/>
+    <ln artifact="asm" version="${asm.version}"/>
     <ln artifact="jsr311-api" version="${jsr311-api.version}"/>
 
     <!-- jmx -->
