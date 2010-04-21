@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-restlet">
+  <info organisation="org.smartfrog" module="sf-restapi">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>SmartFrog Restlet components</description>
+    <description>SmartFrog restapi components</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
@@ -30,13 +30,12 @@
           description="all documentation artifacts"/>
     <conf name="testwar"
         description="the test WAR File" visibility="private"/>
-    <conf name="restlet" description="contains the restlet dependencies"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-restlet-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-restlet-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-restapi-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-restapi-documentation" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
@@ -44,7 +43,7 @@
         changing="true"
         rev="latest.integration"
         conf="daemon->services;compile,runtime->default"/>
-
+    
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -63,28 +62,24 @@
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime->default;redist->redist"/>
+        conf="test->default"/>
 
 
-    <!--we pull in www stuff -->
+    <!--we pull in www stuff for testing only-->
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon,test->default,httpclient,servletapi;testwar->testwar"/>
+        conf="test->default,httpclient,servletapi;testwar->testwar"/>
 
-    <!--XML content-->
-    <dependency org="org.smartfrog"
-        name="sf-xml"
-        changing="true"
-        rev="latest.integration"
-        conf="compile,runtime,daemon->default"/>
+    
     <!--httpclient needs commons logging; logging services pulls it in-->
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
-        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+        conf="test->default"/>
+
     <!--jetty for testing-->
     <dependency org="org.smartfrog"
         name="sf-jetty"
@@ -92,38 +87,24 @@
         rev="latest.integration"
         conf="test->default,jsp"/>
 
-
-    <!--restlet api-->
-    <dependency org="org.restlet"
-        name="org.restlet"
-        rev="${restlet.version}"
+    <dependency org="javax.ws.rs"
+        name="jsr311-api"
+        rev="${jsr311-api.version}"
         conf="redist->default"/>
 
-    <!--this is the implementation and java.net integration-->
-    <dependency org="com.noelios.restlet"
-        name="com.noelios.restlet"
-        rev="${restlet.version}"
-        conf="redist->default"/>
-    <dependency org="com.noelios.restlet"
-        name="com.noelios.restlet.ext.net"
-        rev="${restlet.version}"
-        conf="redist->default"/>
-    <dependency org="com.noelios.restlet"
-        name="com.noelios.restlet.ext.httpclient"
-        rev="${restlet.version}"
-        conf="redist->default">
-      <exclude org="commons-httpclient"/>
-    </dependency>
 
-    <!--file upload-->
-    <dependency org="org.restlet"
-        name="org.restlet.ext.fileupload"
-        rev="${restlet.version}"
+    <dependency org="com.sun.jersey"
+        name="jersey-core"
+        rev="${jersey.version}"
         conf="redist->default"/>
-    <dependency org="commons-fileupload"
-        name="commons-fileupload"
-        rev="${commons-fileupload.version}"
+    
+    
+    <!--activation -->
+    <dependency org="javax.activation"
+        name="activation"
+        rev="${activation.version}"
         conf="redist->default"/>
+
 
   </dependencies>
 </ivy-module>

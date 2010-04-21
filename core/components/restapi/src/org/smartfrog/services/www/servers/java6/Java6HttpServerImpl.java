@@ -19,7 +19,7 @@
  */
 
 
-package org.smartfrog.services.restapi.jersey;
+package org.smartfrog.services.www.servers.java6;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -28,12 +28,10 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 import com.sun.net.httpserver.HttpServer;
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
 
 /**
  * Component that represents a Jser
@@ -65,7 +63,7 @@ public class Java6HttpServerImpl extends PrimImpl {
         try {
             createMethod = factoryClass.getMethod("create", String.class);
         } catch (NoSuchMethodException e) {
-            throw new SmartFrogDeploymentException("No method 'create(String)' in class " + factoryClassName);
+            throw new SmartFrogDeploymentException("No method 'create(String)' in class " + factoryClassName, e);
         }
         try {
             createMethod.invoke(null, serverURL);
@@ -75,11 +73,13 @@ public class Java6HttpServerImpl extends PrimImpl {
                 thrown = e.getCause();
             }
             throw new SmartFrogDeploymentException("Could not start the server on "
-                    + serverURL + ": " + thrown, thrown);
+                    + serverURL + ": " + thrown, 
+                    thrown);
 
         } catch (IllegalAccessException e) {
             throw new SmartFrogDeploymentException("Could not start the server on "
-                    + serverURL + ": " + e, e);
+                    + serverURL + ": " + e,
+                    e);
         }
         server.start();
     }
