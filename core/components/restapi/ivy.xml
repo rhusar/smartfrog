@@ -28,6 +28,8 @@
         extends="redist"/>
     <conf name="documentation"
           description="all documentation artifacts"/>
+    <conf name="json" description="Jersey with JSON support"
+        extends="redist"/>
     <conf name="testwar"
         description="the test WAR File" visibility="private"/>
   </configurations>
@@ -97,14 +99,10 @@
         name="jersey-core"
         rev="${jersey.version}"
         conf="redist->default"/>
-    
-    
-    <!--activation -->
-    <dependency org="javax.activation"
-        name="activation"
-        rev="${activation.version}"
-        conf="redist->default"/>
 
-
+    <dependency org="com.sun.jersey"
+        name="jersey-json"
+        rev="${jersey.version}"
+        conf="json->default"/>
   </dependencies>
 </ivy-module>
