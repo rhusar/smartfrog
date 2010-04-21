@@ -289,6 +289,16 @@ It does not contain the Apache Hadoop shell scripts
 #This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
 #application server, such as Jetty.
 
+# -----------------------------------------------------------------------------
+
+%package jersey
+Group:         ${rpm.framework}
+Summary:        Jersey JAX-WS-Support integration
+Requires:       %{name} = %{version}-%{release}
+
+%description jersey
+This contains the artifacts needed to deploy the Jersey ${jersey.version} version of
+the JAX-WS-RS API.
 
 # -----------------------------------------------------------------------------
 
@@ -903,6 +913,15 @@ fi
 %{libdir}/core-${org.eclipse.jdt.core.version}.jar
 %{linkdir}/core.jar
 
+# -----------------------------------------------------------------------------
+%files jersey
+
+%{libdir}/sf-jersey-${smartfrog.version}.jar
+%{libdir}/jersey-core-${jersey.version}.jar
+%{libdir}/jsr311-api-${jsr311-api.version}.jar
+%{linkdir}/sf-jersey.jar
+%{linkdir}/jersey-core.jar
+%{linkdir}/jsr311-api.jar
 
 # -----------------------------------------------------------------------------
 %files jmx

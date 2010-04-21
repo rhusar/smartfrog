@@ -64,6 +64,8 @@
         description="hadoop components"/>
     <conf name="package-jmx"
         description="jmx components"/>
+    <conf name="package-jersey"
+        description="jersey components"/>
     <conf name="package-json"
         description="json components"/>
     <conf name="package-logging"
@@ -217,6 +219,14 @@
         rev="${ivy.smartfrog.version}"
         conf="package-jmx->master,redist,documentation"/>
 
+
+    <!--Jersey -->
+    <dependency org="org.smartfrog"
+        name="sf-jersey"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-jersey->master,redist,documentation"/>
+    
     <!--JSON -->
     <dependency org="org.smartfrog"
         name="sf-json"
