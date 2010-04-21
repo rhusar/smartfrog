@@ -47,11 +47,11 @@ HadoopPortConfiguration extends {
    If the port is 0 then the server will start on a free port.
   */
   DFS_DATANODE_IPC_DEFAULT_PORT "50020";
-   /**
-     The secondary namenode http server address and port.
-     If the port is 0 then the server will start on a free port.
-   */
-   DFS_SECONDARY_HTTP_DEFAULT_PORT "50090";
+  /**
+  The secondary namenode http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  DFS_SECONDARY_HTTP_DEFAULT_PORT "50090";
  
   /**
   The job tracker http server address and port the server will listen on.
