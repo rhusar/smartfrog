@@ -66,7 +66,13 @@
         rev="latest.integration"
         conf="test->default"/>
 
-
+    <!-- Jersey -->
+    <dependency org="org.smartfrog"
+        name="sf-jersey"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime->default;redist->redist"/>
+    
     <!--we pull in www stuff for testing only-->
     <dependency org="org.smartfrog"
         name="sf-www"
