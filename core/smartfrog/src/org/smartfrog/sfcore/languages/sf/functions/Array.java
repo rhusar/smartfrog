@@ -53,11 +53,11 @@ public class Array extends BaseFunction implements MessageKeys {
     	String prefix=null;
 
     	//Get the prefix...
+
         try {
-            prefix = (String) orgContext.get(PREFIX);
-        } catch (Exception e) {
-            //sfLog().debug(e);
-            throw relay(this.getClass(), comp, PREFIXMUSTBESTRING);
+            prefix = (String) comp.sfResolve(PREFIX);
+        } catch (SmartFrogResolutionException ignore) {
+            //can be null...
         }
 
         if (prefix==null){
@@ -75,14 +75,26 @@ public class Array extends BaseFunction implements MessageKeys {
                 dest = (ComponentDescription) comp.sfResolve(Reference.fromString(path));
             } catch (SmartFrogResolutionException e) {
                 //sfLog().debug(e);
-                throw relay(this.getClass(), comp, CANNOTRESOLVEPATH+path);
+                throw relay(this.getClass(), comp, CANNOTRESOLVE+" path: "+path);
             }
     	}
 
-    	Object extent = orgContext.get(EXTENT);
-        if (extent==null) extent = orgContext.get(SIZE);
+    	Object extent = null;
+        try {
+            extent = comp.sfResolve(EXTENT);
+        } catch (SmartFrogResolutionException ignore) {
+            //try size before throwing...
+        }
 
-    	Object generator = orgContext.get(GENERATOR);
+        if (extent == null) {
+            try {
+                 extent = comp.sfResolve(SIZE);
+            } catch (SmartFrogResolutionException e) {
+                throw relay(this.getClass(), comp, CANNOTRESOLVE + EXTENT + ", " + SIZE);
+            }
+        }
+
+        Object generator = orgContext.get(GENERATOR);
         if (generator == null) generator = orgContext.get(TEMPLATE);
 
     	if (extent!=null){
