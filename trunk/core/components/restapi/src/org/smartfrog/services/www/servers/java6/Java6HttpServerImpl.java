@@ -55,7 +55,7 @@ public class Java6HttpServerImpl extends PrimImpl {
         String host = sfResolve(ATTR_HOST, "", true);
         String protocol = sfResolve(ATTR_PROTOCOL, "", true);
         String serverURL = protocol + "://" + host + ":" + port + "/";
-        sfLog().info("Starting Java6 server on " + serverURL);
+        sfLog().info("Starting Java6 HTTP server on " + serverURL);
         String factoryClassName = sfResolve(ATTR_FACTORY_CLASS, "", true);
         ComponentHelper helper = new ComponentHelper(this);
         Class factoryClass = helper.loadClass(factoryClassName);

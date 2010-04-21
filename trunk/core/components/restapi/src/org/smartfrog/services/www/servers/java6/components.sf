@@ -26,11 +26,14 @@
 
 Java6HttpServer extends Prim {
     sfClass "org.smartfrog.services.www.java6.Java6HttpServerImpl";
-    host "localhost";
+    LOCALHOST "localhost";
+    ALL_HOSTS "0.0.0.0";
+    host ALL_HOSTS;
     port 8080;
     HTTP "http";
     HTTPS "https";
     protocol HTTP;
+    //the factory class is required
     factoryClass TBD;
 }
 
