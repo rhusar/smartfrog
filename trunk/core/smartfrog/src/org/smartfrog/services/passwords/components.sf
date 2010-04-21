@@ -29,7 +29,7 @@
  */
 
 /**
- Extract a password from a file
+ Extract a password from a file. The entire file is the password
  */
 FilePassword extends Prim {
     // default password provides expects password from a password file
