@@ -185,7 +185,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	   return name;
    }
    
-   public String getStatusAsString() throws RemoteException {
+   /*public String getStatusAsString() throws RemoteException {
 	   String status="";
 	   for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
 	         Object c = e.nextElement();
@@ -194,7 +194,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	         }
 	   }
 	   return status;
-   }
+   }*/
    
    public void handleStateChange() throws RemoteException, SmartFrogException {
 	  sfLog().debug("IN: Composite: handleStateChange()");

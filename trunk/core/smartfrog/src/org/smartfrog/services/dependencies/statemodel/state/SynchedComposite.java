@@ -34,16 +34,7 @@ public class SynchedComposite extends Composite {
    public SynchedComposite() throws RemoteException {  
    }
 
-    /**
-     * See super.sfReplaceAttribute() for more information (which is called).
-     * Will complete documentation... 
-     * @param key
-     * @param value value to add or replace
-     *
-     * @return
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
-     */
+    
   public synchronized Object sfReplaceAttribute(Object key, Object value)
 	throws SmartFrogRuntimeException, RemoteException {
 	   Object result = super.sfReplaceAttribute(key, value);
