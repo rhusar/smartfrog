@@ -36,6 +36,8 @@ AWSResource extends RemoteResource {
 AwsAuthorizedService extends Prim {
   id TBD;
   key TBD;
+  awsServer "ec2.amazonaws.com";
+  awsServerSecure true;
 }
 
 /**

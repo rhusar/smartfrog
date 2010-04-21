@@ -80,7 +80,9 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
         sfLog().info("Creating EC2farmer with a limit of " + clusterLimit);
         roles = sfResolve(ATTR_ROLES, roles, true);
         roleBindings = new HashMap<String, RoleBinding>();
-        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY, (Prim) null, true);
+        deploymentFactory = (NodeDeploymentServiceFactory) sfResolve(ATTR_DEPLOYMENT_FACTORY,
+                                                            (Prim) null,
+                                                            true);
         buildRoleBindings();
     }
 
@@ -91,7 +93,8 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      * @throws SmartFrogException other problems
      */
     @Override
-    public ClusterNode[] create(String role, int min, int max) throws IOException, SmartFrogException {
+    public ClusterNode[] create(String role, int min, int max)
+          throws IOException, SmartFrogException {
         List<ClusterNode> nodes = createNodes(role, min, max);
         return nodes.toArray(new ClusterNode[nodes.size()]);
     }
@@ -106,7 +109,8 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
      * @throws IOException        IO/network problems
      * @throws SmartFrogException other problems
      */
-    private List<ClusterNode> createNodes(String role, int min, int max) throws SmartFrogException, IOException {
+    private List<ClusterNode> createNodes(String role, int min, int max)
+          throws SmartFrogException, IOException {
         ClusterFarmerUtils.validateClusterRange(min, max);
         int limit = addNodes(min, max);
         LaunchConfiguration launch = createLaunchConfigFromRole(role);
@@ -457,7 +461,8 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
                             "Expected a component implementing EC2ClusterRole",
                             value);
                 } else {
-                    sfLog().debug("Ignoring roles attribute " + roleName + " which maps to " + value);
+                    sfLog().debug("Ignoring roles attribute " + roleName
+                        + " which maps to " + value);
                 }
             }
         }
@@ -508,9 +513,10 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     @Override
     public String getDiagnosticsText() throws IOException, SmartFrogException {
         return getDescription()
-                + "\nclusterLimit:" + clusterLimit
-                + "\nnodeCount:" + nodeCount
-                + "\nEC2 user ID:" + getId();
+                + "\nAWS User ID: " + getId()
+                + "\nclusterLimit: " + clusterLimit
+                + "\nnodeCount: " + nodeCount
+                ;
     }
 
     /**
@@ -548,7 +554,8 @@ public class EC2ClusterFarmerImpl extends EC2ComponentImpl implements EC2Cluster
     /**
      * {@inheritDoc} <p/> This is implemented by handing off to any declared deployment factory
      *
-     * @throws SmartFrogDeploymentException if no deployment factory is defined, this includes diagnostics
+     * @throws SmartFrogDeploymentException if no deployment factory is defined,
+     * this exception includes diagnostics
      */
     @Override
     public NodeDeploymentService createNodeDeploymentService(ClusterNode node) throws IOException, SmartFrogException {
