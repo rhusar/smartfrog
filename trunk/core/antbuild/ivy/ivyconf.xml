@@ -17,7 +17,9 @@
       value="http://maven.restlet.org/" override="false"/>
   <property name="maven-repository.dev.java.net"
     value="https://maven-repository.dev.java.net/" override="false"/>
-
+  <!--the sun m2 repository is full of other people's stuff too, so list it last-->
+  <property name="maven2.dev.java.net"
+      value="http://download.java.net/maven/2/" override="false"/>
   <property name="smartfrog.sourceforge.repository"
       value="http://smartfrog.sourceforge.net/repository/" override="false"/>
   <property name="m2.fs.repo.dir" value="${user.home}/.m2/repository"/>
@@ -72,6 +74,11 @@
       pattern="${maven2.pattern.ext}"
       m2compatible="true"
       />
+    <ibiblio name="sun2"
+        root="${maven2.dev.java.net}"
+        pattern="${maven2.pattern.ext}"
+        m2compatible="true"
+        />
    <ibiblio name="smartfrog"
       root="${smartfrog.sourceforge.repository}"
       pattern="${maven2.pattern.ext}"
