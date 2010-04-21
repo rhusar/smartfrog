@@ -527,6 +527,12 @@
     <ln artifact="paranamer" version="${paranamer.version}"/>
     <ln artifact="xmlenc" version="${xmlenc.version}"/>
 
+    <!-- jersey -->
+    <rpmpackage package="jersey"/>
+    <ln artifact="sf-jersey" version="${smartfrog.version}"/>
+    <ln artifact="jersey-core" version="${jersey.version}"/>
+    <ln artifact="jsr311-api" version="${jsr311-api.version}"/>
+
     <!-- jmx -->
     <rpmpackage package="jmx"/>
     <ln artifact="sf-jmx" version="${smartfrog.version}"/>
@@ -884,6 +890,7 @@
         <include name="sf-emailer/${smartfrog.version}/*"/>
         <include name="sf-groovy/${smartfrog.version}/*"/>
         <include name="sf-hadoop/${smartfrog.version}/*"/>
+        <include name="sf-jersey/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
         <include name="sf-net/${smartfrog.version}/*"/>
@@ -1222,7 +1229,7 @@
     <property name="rpms.components.list"
         value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity smartfrog-rpmtools smartfrog-groovy"/>
     <property name="rpms.www.list"
-        value="smartfrog-www smartfrog-jetty smartfrog-xunit "/>
+        value="smartfrog-www smartfrog-jetty smartfrog-xunit smartfrog-jersey"/>
     <property name="rpms.testing.list"
         value="smartfrog-junit "/>
 
