@@ -34,7 +34,7 @@ public class DistributedClusterTest extends HadoopTestBase implements Names {
 
     public void testDistributedCluster() throws Throwable {
         checkFileSystem();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testDistributedCluster.sf");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testDistributedCluster");
         enableFailOnPortCheck();
     }
 }
