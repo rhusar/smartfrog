@@ -34,7 +34,7 @@ public class SystemHealthTest extends DeployingTestBase {
     }
 
     public void testJasperHealth() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJasperHealth.sf");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJasperHealth");
     }
 
     public void testHealth() throws Throwable {

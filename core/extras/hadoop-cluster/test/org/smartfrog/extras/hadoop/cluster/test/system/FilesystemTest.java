@@ -34,13 +34,13 @@ public class FilesystemTest extends HadoopTestBase implements Names {
 
     public void testHDFS() throws Throwable {
         checkFileSystem();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testHDFS.sf");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testHDFS");
         enableFailOnPortCheck();
     }
 
     public void testFileSystemCopyFileInAndOut() throws Throwable {
         checkFileSystem();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemCopyFileInAndOut.sf");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemCopyFileInAndOut");
         enableFailOnPortCheck();
     }
 }
