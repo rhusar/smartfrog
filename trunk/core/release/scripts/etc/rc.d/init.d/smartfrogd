@@ -59,7 +59,7 @@ fi
 
 RETVAL=0
 
-# Set Envrionment
+# Set Environment
 if [ -f /etc/sysconfig/smartfrog ]; then
 	. /etc/sysconfig/smartfrog
 fi
