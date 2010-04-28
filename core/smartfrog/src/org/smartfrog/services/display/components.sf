@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/services/utils/logtofile/components.sf"
+#include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
 
-// Display component
-// Redirect output to a window if graphics mode available.
-
+  /**
+    Display component.
+    Redirect output to a window if graphics mode available.
+  */
 Display extends Prim {
       sfClass "org.smartfrog.services.display.SFDisplay"; //Wrapper for Display.java
       nameDisplay "output Display (Exit: alt+F4 )"; //Window Title
@@ -49,5 +51,20 @@ Display extends Prim {
 }
 // end Display
 
-//LogToFile component
+  /**
+    Headless test. 
+    When used as a condition, this component evaluates to true if the system 
+    is headless.
+    
+    when used as a component, a LAZY reference to java.awt.headless will
+    resolve to the current value of the JVM property, while setting that value
+    will change the JVM property.
+    
+    It is up to the JVM itself what happens when that property is set on a running
+    system. Most likely the property needs to be set on the command line, rather
+    than midway through the life of an sfDaemon.
+  */
+Headless extends Condition {
+  sfClass "org.smartfrog.services.display.HeadlessImpl";
+}
 
