@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.apache.hadoop;
 
-import org.apache.hadoop.util.MockService;
+import org.apache.hadoop.util.MockLifecycleService;
 import org.smartfrog.services.hadoop.core.InnerPing;
 import org.smartfrog.services.hadoop.core.Pingable;
 import org.smartfrog.services.hadoop.core.ServicePingStatus;
@@ -30,7 +30,7 @@ import java.io.IOException;
  * Created 26-Aug-2009 17:13:18
  */
 
-public class PingableMockService extends MockService implements InnerPing, Pingable {
+public class PingableMockService extends MockLifecycleService implements InnerPing, Pingable {
     private volatile int pingCount = 0;
     private boolean failOnPing;
 
@@ -44,7 +44,7 @@ public class PingableMockService extends MockService implements InnerPing, Pinga
     public void innerPing(ServicePingStatus status) throws IOException {
         pingCount++;
         if (failOnPing) {
-            throw new MockServiceException("failOnPing");
+            throw new MockLifecycleService.MockServiceException("failOnPing");
         }
     }
 

@@ -21,7 +21,7 @@ package org.smartfrog.services.hadoop.test.system.internals;
 
 import junit.framework.TestCase;
 import org.apache.hadoop.util.MockService;
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.apache.hadoop.PingableMockService;
 import org.smartfrog.services.hadoop.core.ServicePingStatus;
 

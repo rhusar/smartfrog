@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.namenode;
 
 import org.apache.hadoop.hdfs.server.namenode.ExtNameNode;
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
@@ -127,7 +127,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
 
     /** {@inheritDoc} */
     @Override
-    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+    protected LifecycleService createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         return ExtNameNode.create(this, configuration);
     }
 

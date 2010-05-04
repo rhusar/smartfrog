@@ -21,7 +21,7 @@ package org.smartfrog.services.hadoop.components.tracker;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.ExtJobTracker;
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
@@ -126,9 +126,9 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
 
     /** {@inheritDoc} */
     @Override
-    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+    protected LifecycleService createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         try {
-            Service service = new ExtJobTracker(this, configuration);
+            LifecycleService service = new ExtJobTracker(this, configuration);
             return service;
         } catch (InterruptedException e) {
             throw new SmartFrogLifecycleException(ERROR_NO_START + getServiceName() + ": " + e, e, this);
@@ -166,7 +166,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * @return a new thread that is an instance of ServiceDeployerThread
      */
     @Override
-    protected ServiceDeployerThread createDeployerThread(Service hadoopService,
+    protected ServiceDeployerThread createDeployerThread(LifecycleService hadoopService,
                                                          ManagedConfiguration conf) {
         return new ServiceDeployerThread(hadoopService, conf, true);
     }
@@ -191,7 +191,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * @throws SmartFrogException smartfrog problems
      */
     @Override
-    protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
+    protected void onServiceDeploymentComplete(LifecycleService hadoopService) throws IOException, SmartFrogException {
         super.onServiceDeploymentComplete(hadoopService);
         try {
             //check that the tracker is now bound to a filesystem

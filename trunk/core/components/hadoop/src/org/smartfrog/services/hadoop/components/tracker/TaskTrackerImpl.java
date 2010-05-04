@@ -23,7 +23,7 @@ package org.smartfrog.services.hadoop.components.tracker;
 
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.mapred.ExtTaskTracker;
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.components.cluster.PortEntry;
@@ -78,7 +78,7 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
 
     /** {@inheritDoc} */
     @Override
-    protected Service createTheService(ManagedConfiguration configuration)
+    protected LifecycleService createTheService(ManagedConfiguration configuration)
         throws IOException, SmartFrogException, InterruptedException {
         return new ExtTaskTracker(this, configuration);
     }
@@ -107,7 +107,7 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
      * @throws SmartFrogException smartfrog problems
      */
     @Override
-    protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
+    protected void onServiceDeploymentComplete(LifecycleService hadoopService) throws IOException, SmartFrogException {
         super.onServiceDeploymentComplete(hadoopService);
         try {
             getTaskTracker().offerService();

@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -86,7 +86,7 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
-    //@Override
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         HadoopService service;
         try {
@@ -97,8 +97,8 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
             setFailureCause(e);
             return false;
         }
-        
-        Service.ServiceState state = service.getServiceState();
+
+        LifecycleService.ServiceState state = service.getServiceState();
         sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());
         String description = service.getDescription();
         sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, description);
@@ -106,8 +106,8 @@ public class IsHadoopServiceLive extends AbstractTargetedCondition implements Co
             return evalOrFail(service.isServiceLive(), "service is not live " + description
                     + " (state = " + state + ")");
         } else {
-            return evalOrFail(state.equals(Service.ServiceState.STARTED) ||
-                    state.equals(Service.ServiceState.LIVE), "service is in the wrong state " + state
+            return evalOrFail(state.equals(LifecycleService.ServiceState.STARTED) ||
+                    state.equals(LifecycleService.ServiceState.LIVE), "service is in the wrong state " + state
                     + " : " + description);
         }
     }

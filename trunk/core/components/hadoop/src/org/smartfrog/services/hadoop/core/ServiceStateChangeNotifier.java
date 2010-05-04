@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -28,10 +28,10 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class ServiceStateChangeNotifier {
 
-    private Service service;
+    private LifecycleService service;
     private ServiceStateChangeHandler handler;
 
-    public ServiceStateChangeNotifier(Service service, ServiceStateChangeHandler handler) {
+    public ServiceStateChangeNotifier(LifecycleService service, ServiceStateChangeHandler handler) {
         this.service = service;
         this.handler = handler;
     }
@@ -42,14 +42,14 @@ public class ServiceStateChangeNotifier {
      * @param service service to work with
      * @param owner owner Prim
      */
-    public ServiceStateChangeNotifier(Service service, Prim owner) {
+    public ServiceStateChangeNotifier(LifecycleService service, Prim owner) {
         this.service = service;
         if (owner instanceof ServiceStateChangeHandler) {
             handler = (ServiceStateChangeHandler) owner;
         }
     }
 
-    public void onStateChange(Service.ServiceState oldState, Service.ServiceState newState) {
+    public void onStateChange(LifecycleService.ServiceState oldState, LifecycleService.ServiceState newState) {
         if (handler != null) {
             handler.onStateChange(service, oldState, newState);
         }

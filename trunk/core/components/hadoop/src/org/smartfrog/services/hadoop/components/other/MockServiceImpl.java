@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.other;
 
-import org.apache.hadoop.util.MockService;
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.apache.hadoop.PingableMockService;
+import org.apache.hadoop.util.MockLifecycleService;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -60,8 +60,8 @@ public class MockServiceImpl extends HadoopServiceImpl implements HadoopCluster 
      *
      * @return the job tracker or null
      */
-    public MockService getMockService() {
-        return (MockService) getService();
+    public MockLifecycleService getMockService() {
+        return (MockLifecycleService) getService();
     }
 
     /**
@@ -72,7 +72,7 @@ public class MockServiceImpl extends HadoopServiceImpl implements HadoopCluster 
      * @throws IOException
      * @throws SmartFrogException
      */
-    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+    protected LifecycleService createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         PingableMockService service = new PingableMockService();
         service.setFailOnStart(configuration.getBoolean(ATTR_FAIL_ON_START,false));
         service.setFailOnPing(configuration.getBoolean(ATTR_FAIL_ON_PING, false));

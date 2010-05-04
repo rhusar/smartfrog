@@ -19,7 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
+
 
 /**
  * Created 01-Oct-2008 17:32:23
@@ -35,5 +36,6 @@ public interface ServiceStateChangeHandler {
      * @param oldState old state
      * @param newState new state
      */
-    void onStateChange(Service service, Service.ServiceState oldState, Service.ServiceState newState);
+    void onStateChange(LifecycleService service, LifecycleService.ServiceState oldState, LifecycleService.ServiceState newState);
+  
 }
