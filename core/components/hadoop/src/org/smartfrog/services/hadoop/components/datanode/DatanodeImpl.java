@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.datanode;
 
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
@@ -105,7 +105,7 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster, C
      * @throws SmartFrogException smartfrog prblems
      */
     @Override
-    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+    protected LifecycleService createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         //get the list of data directories
         Vector<String> dataDirs = createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
         addDirectoriesToDelete(dataDirs);

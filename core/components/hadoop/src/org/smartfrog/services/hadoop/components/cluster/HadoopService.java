@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.hadoop.conf.ClusterBound;
 import org.smartfrog.services.hadoop.core.ServicePingStatus;
 
@@ -57,7 +57,7 @@ public interface HadoopService extends Remote, ClusterBound {
      * @return the current service state, or UNDEFINED if there is no service
      * @throws RemoteException for RMI problems
      */
-    Service.ServiceState getServiceState() throws RemoteException;
+    LifecycleService.ServiceState getServiceState() throws RemoteException;
 
     /**
      * Ping the service and get its service state

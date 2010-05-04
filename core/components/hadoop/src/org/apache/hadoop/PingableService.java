@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.apache.hadoop;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,9 +29,9 @@ import java.io.IOException;
  * This is to keep the ping code somewhere that still builds regularly
  */
 
-public class PingableService extends Service {
+public class PingableService extends LifecycleService {
 
-    private static final Log LOG = LogFactory.getLog(Service.class);
+    private static final Log LOG = LogFactory.getLog(PingableService.class);
     
     /**
      * Ping: checks that a component considers itself live.

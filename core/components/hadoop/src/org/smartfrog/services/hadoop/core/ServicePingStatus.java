@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -46,7 +46,7 @@ public final class ServicePingStatus implements Serializable {
     /**
      * enumerated state
      */
-    private Service.ServiceState state;
+    private LifecycleService.ServiceState state;
 
     /**
      * name of the service
@@ -76,7 +76,7 @@ public final class ServicePingStatus implements Serializable {
      * @param state           current state
      * @param lastStateChange when did the state last change?
      */
-    public ServicePingStatus(String name, Service.ServiceState state,
+    public ServicePingStatus(String name, LifecycleService.ServiceState state,
                          Date lastStateChange) {
         this.state = state;
         this.name = name;
@@ -88,7 +88,7 @@ public final class ServicePingStatus implements Serializable {
      *
      * @param service service to read from
      */
-    public ServicePingStatus(Service service) {
+    public ServicePingStatus(LifecycleService service) {
         name = service.getServiceName();
         updateState(service);
     }
@@ -119,7 +119,7 @@ public final class ServicePingStatus implements Serializable {
      *
      * @return the state
      */
-    public Service.ServiceState getState() {
+    public LifecycleService.ServiceState getState() {
         return state;
     }
 
@@ -128,7 +128,7 @@ public final class ServicePingStatus implements Serializable {
      *
      * @param state new state
      */
-    public void setState(Service.ServiceState state) {
+    public void setState(LifecycleService.ServiceState state) {
         this.state = state;
     }
 
@@ -173,7 +173,7 @@ public final class ServicePingStatus implements Serializable {
      *
      * @param service the service to update from
      */
-    public void updateState(Service service) {
+    public void updateState(LifecycleService service) {
         synchronized (service) {
             setState(service.getServiceState());
             setLastStateChange(service.getLastStateChange());

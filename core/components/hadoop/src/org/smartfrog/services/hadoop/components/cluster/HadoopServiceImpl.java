@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.ports.PortUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -54,7 +54,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         implements HadoopService, ServiceStateChangeHandler, ConfigurationAttributes {
 
     private boolean serviceEnabled = true;
-    private Service service;
+    private LifecycleService service;
     private ServiceDeployerThread deployerThread;
     private static final int SHUTDOWN_DELAY = 5000;
     public static final String NO_FILESYSTEM = "Filesystem is not running";
@@ -203,7 +203,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         }
         sfLog().info("waiting for thread to finish");
         if (deployer.waitForThreadTermination(SHUTDOWN_DELAY) && getDeployerThread() != null) {
-            Service s = getService();
+            LifecycleService s = getService();
             sfLog().warn("Hadoop Service thread did not terminate within the expected shutdown period."
                     + (s != null? (" Service is " + s) : ""));
         }
@@ -241,8 +241,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     @Override
     public boolean isServiceLive() throws RemoteException {
-        Service s = getService();
-        return s != null && s.getServiceState() == Service.ServiceState.LIVE;
+      LifecycleService s = getService();
+        return s != null && s.getServiceState() == LifecycleService.ServiceState.LIVE;
     }
 
     /**
@@ -277,9 +277,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * When the namenode is terminated, and we are not shutting down ourself, then we notify {@inheritDoc}
      */
     @Override
-    public void onStateChange(Service hadoopService, Service.ServiceState oldState,
-                              Service.ServiceState newState) {
-        if (newState == Service.ServiceState.CLOSED && !terminationInitiated) {
+    public void onStateChange(LifecycleService hadoopService, LifecycleService.ServiceState oldState,
+                              LifecycleService.ServiceState newState) {
+        if (newState == LifecycleService.ServiceState.CLOSED && !terminationInitiated) {
             TerminationRecord tr;
             Throwable thrown = hadoopService.getFailureCause();
             if(thrown!=null) {
@@ -307,7 +307,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             if (deployer != null) {
                 deployer.ping(true);
             }
-            Service hadoopService = getService();
+            LifecycleService hadoopService = getService();
             ServicePingStatus serviceStatus = pingService();
             if (hadoopService != null && serviceStatus != null) {
                 List<Throwable> throwables = serviceStatus.getThrowables();
@@ -319,7 +319,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                 }
                 //now look at the service state alone
                 //as SF has stricter service state rules
-                Service.ServiceState state = serviceStatus.getState();
+                LifecycleService.ServiceState state = serviceStatus.getState();
                 switch (state) {
                     case STARTED:
                     case LIVE:
@@ -363,7 +363,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @param hadoopService the service to terminate.
      */
-    protected void terminateService(Service hadoopService) {
+    protected void terminateService(LifecycleService hadoopService) {
         if (hadoopService != null) {
             synchronized (this) {
                 if (hadoopService == getService()) {
@@ -392,7 +392,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @return the service
      */
-    public final synchronized Service getService() {
+    public final synchronized LifecycleService getService() {
         return service;
     }
 
@@ -402,7 +402,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @param service the new value
      */
-    protected final synchronized void setService(Service service) {
+    protected final synchronized void setService(LifecycleService service) {
         if (service != null && this.service != null) {
             throw new IllegalStateException("Cannot set a non-null service " + service + " on top of a valid service "
                     + this.service);
@@ -429,7 +429,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     * @throws SFHadoopException            for Jetty exceptions and other causes of trouble
     * @throws SmartFrogDeploymentException on some wrapped IOExceptions
     */
-    protected synchronized void deployService(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
+    protected synchronized void deployService(LifecycleService hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         deployerThread = createDeployerThread(hadoopService, conf);
         deployerThread.start();
     }
@@ -437,10 +437,10 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * {@inheritDoc}
      */
-    public final Service.ServiceState getServiceState() throws RemoteException {
-        Service hadoop = getService();
+    public final LifecycleService.ServiceState getServiceState() throws RemoteException {
+      LifecycleService hadoop = getService();
         if (hadoop == null) {
-            return Service.ServiceState.UNDEFINED;
+            return LifecycleService.ServiceState.UNDEFINED;
         } else {
             return hadoop.getServiceState();
         }
@@ -450,7 +450,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * {@inheritDoc}
      */
     public ServicePingStatus pingService() throws IOException {
-        Service hadoop = getService();
+      LifecycleService hadoop = getService();
         if (hadoop == null ){
             return null;
         } 
@@ -485,7 +485,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @param conf          configuration -used for diagnostics
      * @return a new thread that is an instance of ServiceDeployerThread
      */
-    protected ServiceDeployerThread createDeployerThread(Service hadoopService,
+    protected ServiceDeployerThread createDeployerThread(LifecycleService hadoopService,
                                                          ManagedConfiguration conf) {
         return new ServiceDeployerThread(hadoopService, conf, false);
     }
@@ -498,7 +498,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @param hadoopService the service
      * @throws SmartFrogDeploymentException if a service is already deployed
      */
-    private synchronized void bindToService(Service hadoopService) throws SmartFrogDeploymentException {
+    private synchronized void bindToService(LifecycleService hadoopService) throws SmartFrogDeploymentException {
         if (service != null) {
             throw new SmartFrogDeploymentException("Cannot bind to a new service (" + hadoopService + ")"
                     + " when an existing service is in use: "
@@ -514,7 +514,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @param conf          configuration
      * @throws SmartFrogException if things go wrong
      */
-    private void innerDeploy(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
+    private void innerDeploy(LifecycleService hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         try {
             bindToService(hadoopService);
             //start the service
@@ -543,7 +543,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @param hadoopService service that failed to deploy
      * @param thrown what got thrown
      */
-    protected void onServiceDeploymentFailed(Service hadoopService, Throwable thrown) {
+    protected void onServiceDeploymentFailed(LifecycleService hadoopService, Throwable thrown) {
         sfLog().warn("Unable to deploy " + hadoopService, thrown);
         terminateService(hadoopService);
     }
@@ -555,8 +555,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws IOException        IO/hadoop problems
      * @throws SmartFrogException smartfrog problems
      */
-    protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
-        Service s = getService();
+    protected void onServiceDeploymentComplete(LifecycleService hadoopService) throws IOException, SmartFrogException {
+        LifecycleService s = getService();
         if (s != null && !sfIsTerminated) {
             sfLog().info(getServiceName() + " deployment complete: service is: " + s);
             //now we copy over the port values
@@ -621,7 +621,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             //now check the known ports are closed. This will bail out early
             checkPortsAreClosed("startup");
             try {
-                Service createdService = createTheService(conf);
+                LifecycleService createdService = createTheService(conf);
                 deployService(createdService, conf);
             } catch (Throwable thrown) {
                 throw SFHadoopException.forward(ERROR_NO_START + getServiceName(),
@@ -652,8 +652,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @return the service that has been created. The default: null
      * @throws IOException        hadoop or RMI issues
      * @throws SmartFrogException Smartfrog problems
+     * @throws InterruptedException if the process was interrupted
      */
-    protected Service createTheService(ManagedConfiguration conf)
+    protected LifecycleService createTheService(ManagedConfiguration conf)
         throws IOException, SmartFrogException, InterruptedException {
         return null;
     }
@@ -734,12 +735,12 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     */
     public class ServiceDeployerThread extends WorkflowThread {
 
-        private Service hadoopService;
+        private LifecycleService hadoopService;
         private ManagedConfiguration conf;
 
         private boolean useWorkflowTermination;
 
-        public ServiceDeployerThread(Service hadoopService, ManagedConfiguration conf,
+        public ServiceDeployerThread(LifecycleService hadoopService, ManagedConfiguration conf,
                                      boolean useWorkflowTermination) {
             super(HadoopServiceImpl.this, useWorkflowTermination);
             setName(getServiceName());

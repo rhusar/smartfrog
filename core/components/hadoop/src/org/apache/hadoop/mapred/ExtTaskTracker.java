@@ -142,10 +142,10 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo, Configur
      * @return the worker count
      */
 
-/*    @Override
+    @Override
     public int getLiveWorkerCount() {
         return workerThreads;
-    }*/
+    }
 
     /**
      * {@inheritDoc}

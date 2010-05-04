@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
-import org.apache.hadoop.util.Service;
+import org.apache.hadoop.util.LifecycleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,12 +33,12 @@ import java.io.IOException;
 public class PingHelper implements Pingable {
     
     private InnerPing instance;
-    private Service service;
+    private LifecycleService service;
     private static final Log LOG = LogFactory.getLog(PingHelper.class);
     
     public PingHelper(InnerPing instance) {
         this.instance = instance;
-        service = (Service) instance;
+        service = (LifecycleService) instance;
     }
 
 
@@ -59,8 +59,8 @@ public class PingHelper implements Pingable {
     @Override
     public ServicePingStatus ping() throws IOException {
         ServicePingStatus status = new ServicePingStatus(service);
-        Service.ServiceState state = status.getState();
-        if (state == Service.ServiceState.LIVE) {
+      LifecycleService.ServiceState state = status.getState();
+        if (state == LifecycleService.ServiceState.LIVE) {
             try {
                 instance.innerPing(status);
             } catch (Throwable thrown) {
