@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 <%= text %>
 </div>
 <div>
-Total humber of hosts in role <bean:write name="role" /> : <bean:write name="hostcount"/>
+Total number of hosts in role <bean:write name="role" /> : <bean:write name="hostcount"/>
 </div>
 <table cellpadding="0" cellspacing="0">
  <tbody>

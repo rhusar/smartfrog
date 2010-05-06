@@ -69,11 +69,20 @@ NodeDeploymentOverSSHFactory extends SSHComponent {
   // (so include a / in it);
   sf.home.dir "";
   
-  MINUTE (60 * 1000);
+  SECOND 1000;
+  MINUTE (60 * SECOND );
   //time in milliseconds to wait for the SSH port opening
   portConnectTimeout (1 * MINUTE);
   connectTimeout portConnectTimeout;
   timeout (2 * MINUTE)
+  
+  
+  startupSleepTime (5 * SECOND);
+  startupPingSleepTime (5 * SECOND)
+  sleepTime (30 * SECOND);
+  startupLocateAttempts 20;
+  startupPingAttempts 20;
+  
 }
 
 NodeDeploymentOverSSHtoRPMInstallationFactory  extends NodeDeploymentOverSSHFactory {
