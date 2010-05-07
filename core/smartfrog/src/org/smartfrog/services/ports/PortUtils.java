@@ -44,7 +44,7 @@ public class PortUtils {
     /**
      * Wait for a hostname to resolve
      * @param hostname hostname to look for
-     * @param resolveTimeout timeout to resolve in seconds
+     * @param resolveTimeout timeout to resolve in milliseconds
      * @param sleep time in millis to sleep
      * @return the address
      * @throws IOException if the host did not resolve
@@ -52,7 +52,7 @@ public class PortUtils {
      */
     public static InetAddress waitForHostnameToResolve(String hostname, int resolveTimeout, int sleep)
             throws IOException, InterruptedException {
-        Spinner spinner=new Spinner("Resolving hostname "+hostname, sleep, resolveTimeout * 1000);
+        Spinner spinner = new Spinner("Resolving hostname " + hostname, sleep, resolveTimeout);
         while (true) {
             try {
                 InetAddress addr = InetAddress.getByName(hostname);
