@@ -126,7 +126,9 @@ public  class LogFactory {
         }
         log = new LogImpl(name);
         loggers.put(name, log);
-        if ((log!=null)&&log.isTraceEnabled()) log.trace("New log created: "+ name);
+        if ((log != null) && log.isTraceEnabled()) {
+            log.trace("New log created: " + name);
+        }
         return log;
     }
 
