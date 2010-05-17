@@ -22,9 +22,9 @@ package org.smartfrog.services.logging.jcl.front;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogConfigurationException;
 import org.apache.commons.logging.impl.LogFactoryImpl;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  * created 09-May-2006 17:17:53
@@ -47,13 +47,14 @@ public class CommonsLogFactory extends LogFactoryImpl {
 
     /**
      * To get the sfCore logger
+     *
      * @param name The name of the log to look for
      * @return Logger implementing LogSF and Log
      */
     private LogSF sfLog(String name) {
         try {
             //try to create a log and register it
-            return LogFactory.getLog(name,true);
+            return LogFactory.getLog(name, true);
         } catch (SmartFrogLogException e) {
             //if we can't register, get a simpler log
             return LogFactory.getLog(name);
@@ -62,26 +63,13 @@ public class CommonsLogFactory extends LogFactoryImpl {
 
 
     /**
-     * <p>Construct (if necessary) and return a <code>Log</code> instance,
-     * using the factory's current set of configuration attributes.</p>
-     * <p/>
-     * <p><strong>NOTE</strong> - Depending upon the implementation of
-     * the <code>LogFactory</code> you are using, the <code>Log</code>
-     * instance you are returned may or may not be local to the current
-     * application, and may or may not be returned again on a subsequent
-     * call with the same name argument.</p>
-     *
-     * @param name Logical name of the <code>Log</code> instance to be
-     *             returned (the meaning of this name is only known to the underlying
-     *             logging implementation that is being wrapped)
-     * @throws org.apache.commons.logging.LogConfigurationException
-     *          if a suitable <code>Log</code>
-     *          instance cannot be returned
+     * Create a new instance of this log
+     * @param name
+     * @return a new log
+     * @throws LogConfigurationException
      */
-    public Log getInstance(String name) throws LogConfigurationException {
-
+    @Override
+    protected Log newInstance(String name) throws LogConfigurationException {
         return new CommonsLogFrontEnd(sfLog(name));
     }
-
-
 }
