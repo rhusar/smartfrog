@@ -27,6 +27,7 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.WorkerThreadPrimImpl;
 
 import java.rmi.RemoteException;
 

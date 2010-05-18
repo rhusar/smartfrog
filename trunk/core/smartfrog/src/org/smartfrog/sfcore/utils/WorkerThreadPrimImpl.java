@@ -17,20 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.components.dfs;
+package org.smartfrog.sfcore.utils;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
 
 /**
- * Created 24-Feb-2009 14:49:27
+ * Created 24-Feb-2009 14:49:27 - originally in the Hadoop package, but moved to the core for re-use
  */
 
-public class WorkerThreadPrimImpl extends PrimImpl{
+public class WorkerThreadPrimImpl extends PrimImpl {
 
     private WorkflowThread worker;
 
@@ -52,14 +50,35 @@ public class WorkerThreadPrimImpl extends PrimImpl{
     }
 
     /**
-     * Shut down any worker if running
+     * Shut down any worker if running. This will set the worker field to null.
      */
     protected synchronized void terminateWorker() {
-        WorkflowThread w = worker;
-        worker = null;
-        SmartFrogThread.requestThreadTermination(w);
+        WorkflowThread w;
+        synchronized (this) {
+            w = worker;
+            worker = null;
+        }
+        if (w != null) {
+            terminateWorkerThread(w);
+        }
     }
 
+    /**
+     * At this point the worker attribute has been set to null, now the thread termination is requested. The base
+     * implementation uses {@link SmartFrogThread#requestThreadTermination(SmartFrogThread)}; subclasses may choose an
+     * alternate strategy
+     *
+     * @param workflowThread a non-null thread
+     */
+    protected void terminateWorkerThread(WorkflowThread workflowThread) {
+        SmartFrogThread.requestThreadTermination(workflowThread);
+    }
+
+    /**
+     * Get any worker
+     *
+     * @return the worker, may be null
+     */
     protected final synchronized WorkflowThread getWorker() {
         return worker;
     }
