@@ -118,7 +118,7 @@ EarApplication extends ApplicationServerContext {
 /**
  * a servlet context is where servlets can be deployed.
  * Any derivative of ServletContextComponent can be bound
- to this
+ * to this
  */
 
 ServletContext extends ApplicationServerContext {

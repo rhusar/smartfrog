@@ -53,25 +53,25 @@ For more information: www.smartfrog.org
 
 
   
-    <!-- ========================================================== -->
-    <!-- parse the file -->
-    <!-- ========================================================== -->
-    <target name="parse" depends="ready-to-test"
-        description="parse the deployment descriptor">
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="ready-to-test"
+      description="parse the deployment descriptor">
 
-      <sf-parse quiet="true" file="${src.dir}/${deploy.sf}"
-        classpathref="exec.classpath">
-      </sf-parse>
-      <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf"
-        classpathref="exec.classpath">
-      </sf-parse>
-      <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf"
-        classpathref="exec.classpath">
-      </sf-parse>
-      <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf"
-        classpathref="exec.classpath">
-      </sf-parse>
-    </target>
+    <sf-parse quiet="true" file="${src.dir}/${deploy.sf}"
+      classpathref="exec.classpath">
+    </sf-parse>
+    <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf"
+      classpathref="exec.classpath">
+    </sf-parse>
+    <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf"
+      classpathref="exec.classpath">
+    </sf-parse>
+    <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf"
+      classpathref="exec.classpath">
+    </sf-parse>
+  </target>
 
 
   <target name="ready-to-deploy" depends="common.ready-to-deploy,testwar">
@@ -103,5 +103,15 @@ For more information: www.smartfrog.org
       Not found: ${test.testwar.war}
     </fail>
   </target>
+
+
+  <target name="bulkio" depends="ready-to-deploy"
+      description="Deploy a Jetty server that supports bulk IO" >
+    <deploy>
+      <application name="bulkio"
+          descriptor="/org/smartfrog/services/jetty/examples/jetty_bulkio_servlets.sf"/>
+    </deploy>
+  </target>
+
 
 </project>

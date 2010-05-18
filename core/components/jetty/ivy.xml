@@ -49,7 +49,7 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,redist,test,daemon->default,servletapi;testwar->testwar"/>
+        conf="compile,redist,daemon->default,servletapi;testwar->testwar;test->efault,servletapi,httpclient"/>
 
 
     <!-- depend on logging services, to pick up commons-logging and bindings -->
@@ -102,9 +102,9 @@
         rev="${jetty.version}"
         conf="jsp->master"/>
     <dependency org="commons-el"
-      name="commons-el"
-      rev="${commons-el.version}"
-      conf="jsp->master"/>
+        name="commons-el"
+        rev="${commons-el.version}"
+        conf="jsp->master"/>
     <!--this is the compiler stage-->
     <dependency org="org.smartfrog"
         name="sf-ant"
