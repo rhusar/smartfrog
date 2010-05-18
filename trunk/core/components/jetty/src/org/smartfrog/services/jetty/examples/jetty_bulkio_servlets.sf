@@ -18,43 +18,22 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/jetty/examples/ports.sf"
+#include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/bulkio/server/components.sf"
 
 
+BulkIOJetty extends JettySocketHttpServerCompound {
+
+  host CoreJettyServer:ANY_HOST;
   
-LocalJettyServer extends JettySocketHttpServerCompound {
-
-    sfSyncTerminate true;
-    port test.jetty.port.1;
-    jettyhome test.jetty.home;
-
-    //integrate logging with smartfrog
-    logging extends IntegrateJettyLogging;
-
-   /*
-    this is the jetty server itself
-    */
-    server:jettyhome PARENT:jettyhome;
-
-}
-
-JettyOnNIO extends LocalJettyServer {
-
-  connector extends JettySelectChannelConnector {
+  bulkIOSupport extends BulkIOSupport {
     server LAZY PARENT:server;
-    port PARENT:port;
-    host PARENT:host;
-  }  
+    
+    defaultServlet extends DefaultContentServlet {
+      context LAZY PARENT:context;
+    }
+    
+  }
 }
 
-
-JettyHTTPS extends LocalJettyServer {
-  port test.jetty.port.https;
-
-  listener extends JettySSLSocketConnector {
-    port PARENT:port;
-    server LAZY PARENT:server;
-  };
-}
-
+sfConfig extends BulkIOJetty;

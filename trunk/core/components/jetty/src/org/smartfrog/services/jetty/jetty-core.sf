@@ -251,6 +251,10 @@ JettySelectChannelConnector extends AbstractThreadPooledConnector {
 
 }
 
+/**
+ * this is a compound defining the server at server, default port bindings, but nothing 
+ * actually listening for connections
+ */
 JettyHttpServerCompound extends Compound {
 
   port AbstractConnector:port;
@@ -262,6 +266,9 @@ JettyHttpServerCompound extends Compound {
 
 }
 
+/**
+ * Listen for connections using sockets
+ */
 
 JettySocketHttpServerCompound extends JettyHttpServerCompound {
 
@@ -273,7 +280,9 @@ JettySocketHttpServerCompound extends JettyHttpServerCompound {
 
 }
 
-
+/**
+ * Listen for connections using HTTPS sockets
+ */
 JettySocketHttpsServerCompound extends JettyHttpServerCompound {
 
   port JettySSLSocketConnector:port;
@@ -286,6 +295,9 @@ JettySocketHttpsServerCompound extends JettyHttpServerCompound {
   
 }
 
+/**
+ * Listen for connections Select operations and NIO channels
+ */
 JettySelectChannelHttpServerCompound extends JettyHttpServerCompound {
 
   connector extends JettySelectChannelConnector {

@@ -1,0 +1,69 @@
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ include this file after pulling in 
+  #include "/org/smartfrog/services/www/webapplication.sf"
+*/
+
+BulkIoServlet extends Servlet {
+  //optional limit on IO, can be used to test client handling of limit being reached
+  limit -1;
+  initParams [
+      ["limit", limit]
+    ];
+}
+
+
+BulkUploadServlet extends BulkIoServlet {
+  name "BulkUploadServlet";
+  pathSpec "/upload";
+  className "org.smartfrog.services.www.bulkio.server.BulkUploadServlet";
+}
+
+BulkDownloadServlet extends BulkIoServlet {
+  name "BulkDownloadServlet";
+  pathSpec "/download";
+  className "org.smartfrog.services.www.bulkio.server.BulkDownloadServlet";
+}
+
+/**
+ * A compound that deploys the servlet context and two servlets
+ */
+BulkIOSupport extends Compound {
+  server TBD;
+  contextPath "/";
+
+  context extends ServletContext {
+    server LAZY PARENT:server;
+    contextPath PARENT:contextPath;
+    resourcePackage "/org/smartfrog/services/www/bulkio/server/resources/";
+  }
+  
+  uploadServlet extends BulkUploadServlet {
+    context LAZY PARENT:context;
+  }
+  
+  downloadServlet extends BulkDownloadServlet {
+    context LAZY PARENT:context;
+  }
+  
+}
+

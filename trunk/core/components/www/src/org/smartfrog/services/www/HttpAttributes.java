@@ -106,4 +106,13 @@ public interface HttpAttributes extends Remote {
     String HTTP = "http";
     /** {@value} */
     String HTTPS = "https";
+    
+    String METHOD_PUT = "PUT";
+    String METHOD_POST = "POST";
+    String METHOD_GET = "GET";
+    String METHOD_DELETE = "DELETE";
+    String METHOD_HEAD = "HEAD";
+
+
+    String CONTENT_LENGTH = "Content-Length";
 }
