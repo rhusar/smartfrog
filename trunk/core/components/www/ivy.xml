@@ -16,7 +16,7 @@
         description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private" extends="servletapi"
+    <conf name="compile" visibility="private" extends="redist"
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
@@ -64,7 +64,13 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
-
+    
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="httpclient->default"/>
+    
     <dependency org="commons-httpclient"
         name="commons-httpclient"
         rev="${commons-httpclient.version}"
@@ -76,6 +82,10 @@
     <dependency org="commons-codec"
         name="commons-codec"
         rev="${commons-codec.version}"
+        conf="httpclient->default"/>
+    <dependency org="commons-fileupload"
+        name="commons-fileupload"
+        rev="${commons-fileupload.version}"
         conf="httpclient->default"/>
 
 
