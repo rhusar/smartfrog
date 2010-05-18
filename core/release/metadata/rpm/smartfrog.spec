@@ -309,7 +309,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-www, %{name}-ant
 
 %description jetty
 This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
-SmartFrog. 
+SmartFrog, with JSP support. 
 
 # -----------------------------------------------------------------------------
 
@@ -487,6 +487,7 @@ component that can monitor the health of a remote site.
 The bundled libraries are
 commons-httpclient-${commons-httpclient.version}.jar
 commons-codec-${commons-codec.version}.jar
+commons-fileupload-${commons-fileupload.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -1026,8 +1027,6 @@ fi
 %{libdir}/com.noelios.restlet.ext.httpclient-${restlet.version}.jar
 %{linkdir}/com.noelios.restlet.ext.net.jar
 %{libdir}/com.noelios.restlet.ext.net-${restlet.version}.jar
-%{linkdir}/commons-fileupload.jar
-%{libdir}/commons-fileupload-${commons-fileupload.version}.jar
 
 
 # -----------------------------------------------------------------------------
@@ -1078,6 +1077,9 @@ fi
 %{linkdir}/sf-www.jar
 %{linkdir}/commons-codec.jar
 %{linkdir}/commons-httpclient.jar
+
+%{linkdir}/commons-fileupload.jar
+%{libdir}/commons-fileupload-${commons-fileupload.version}.jar
 
 
 # -----------------------------------------------------------------------------
