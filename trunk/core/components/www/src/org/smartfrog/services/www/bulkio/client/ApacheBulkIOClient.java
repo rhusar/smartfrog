@@ -19,36 +19,52 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.www.bulkio.client;
 
+import org.apache.commons.logging.Log;
+
 /**
  * Created 17-May-2010 16:46:34
  */
 
 public class ApacheBulkIOClient extends AbstractBulkIOClient {
-/*
-
-    @Override
-    public long doUpload(long size) throws IOException, InterruptedException {
-        return 0;
+    
+    public ApacheBulkIOClient(Log log) {
+        super(log);
     }
 
-    @Override
-    public long doUpload(File f) throws IOException, InterruptedException {
-        return 0;
+    public ApacheBulkIOClient() {
     }
 
-    @Override
-    public long doDownload(long size) throws IOException, InterruptedException {
-        return 0;
-    }
-
-    @Override
-    public long doDownload(long size, File f) throws IOException, InterruptedException {
-        return 0;
-    }
-*/
+    /*
+    
+        @Override
+        public long doUpload(long size) throws IOException, InterruptedException {
+            return 0;
+        }
+    
+        @Override
+        public long doUpload(File f) throws IOException, InterruptedException {
+            return 0;
+        }
+    
+        @Override
+        public long doDownload(long size) throws IOException, InterruptedException {
+            return 0;
+        }
+    
+        @Override
+        public long doDownload(long size, File f) throws IOException, InterruptedException {
+            return 0;
+        }
+    */
 
     @Override
     public void interrupt() {
 
     }
+
+    @Override
+    public String getName() {
+        return "IOClient using Apache Httpclient library";
+    }
+
 }

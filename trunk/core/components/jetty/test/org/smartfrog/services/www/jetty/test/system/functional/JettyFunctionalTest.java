@@ -73,11 +73,4 @@ public class JettyFunctionalTest extends JettyTestBase {
         expectSuccessfulTestRun(FUNCTIONAL_FILES, "tcp20test");
     }
 
-    public void NotestSecurity() throws Throwable {
-        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurity");
-    }
-    
-    public void NotestSecurityUnauth() throws Throwable {
-        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurityUnauth");
-    }
 }

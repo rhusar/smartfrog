@@ -42,30 +42,37 @@ BulkIOClient extends WorkflowPrim {
 
   chunkLength 4096;
   
+  format FORMAT_BINARY ;
+  FORMAT_BINARY "application/octet-stream";
+  
   SUN_IO_CLASS "org.smartfrog.services.www.bulkio.client.SunJavaBulkIOClient";
   APACHE_IO_CLASS  "org.smartfrog.services.www.bulkio.client.ApacheBulkIOClient";
+
+  POST "POST";
+  GET "GET";
+  PUT "PUT";
 
 }
 
 BulkIOUpload extends BulkIOClient {
-  operation "POST";
+  operation POST;
 }
 
 BulkIODownload extends BulkIOClient {
-  operation "GET";
+  operation GET;
 }
 
 /** 
- * do a bulk download using Sun's API
+ * do a bulk upload using Sun's API
  */
-SunBulkIODownload extends BulkIODownload {
+SunBulkIOUpload extends BulkIOUpload {
   ioClass SUN_IO_CLASS;
 }
 
 /** 
- * do a bulk download using HttpClient
+ * do a bulk upload using HttpClient
  */
-ApacheBulkIODownload extends BulkIODownload {
+ApacheBulkIOUpload extends BulkIOUpload {
   ioClass APACHE_IO_CLASS;
 }
 

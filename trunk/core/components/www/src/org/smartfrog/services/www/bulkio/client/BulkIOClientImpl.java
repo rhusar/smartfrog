@@ -19,13 +19,16 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.www.bulkio.client;
 
+import org.smartfrog.services.logging.jcl.front.CommonsLogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkerThreadPrimImpl;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -88,12 +91,14 @@ public class BulkIOClientImpl extends WorkerThreadPrimImpl implements BulkIOClie
                         e,
                         BulkIOClientImpl.this);
             }
+            ioclient.setLog(CommonsLogFactory.createInstance(sfLog()));
             ioclient.size = sfResolve(ATTR_SIZE, 0L, true);
             ioclient.connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, 0, true);
             ioclient.chunked = sfResolve(ATTR_CHUNKED, true, true);
             ioclient.chunkLength = sfResolve(ATTR_CHUNK_LENGTH, 0, true);
             ioclient.operation = sfResolve(ATTR_OPERATION, "", true);
             ioclient.useFormUpload = sfResolve(ATTR_USE_FORM_UPLOAD, true, true);
+            ioclient.format = sfResolve(ATTR_FORMAT, "", true);
             String targetURLpath = sfResolve(ATTR_URL, "", true);
 
             try {
@@ -102,6 +107,21 @@ public class BulkIOClientImpl extends WorkerThreadPrimImpl implements BulkIOClie
                 throw new SmartFrogResolutionException("Bad URL \"" + targetURLpath + "\" : " + e,
                         e,
                         BulkIOClientImpl.this);
+            }
+        }
+
+        /**
+         * do the operation
+         *
+         * @throws Throwable
+         */
+        @Override
+        public void execute() throws Throwable {
+            try {
+                ioclient.execute();
+            } catch (IOException e) {
+                sfLog().error("Failed to execute " + ioclient + ": " + e, e);
+                throw e;
             }
         }
 
