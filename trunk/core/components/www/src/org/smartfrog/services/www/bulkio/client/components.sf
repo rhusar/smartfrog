@@ -38,7 +38,7 @@ BulkIOClient extends WorkflowPrim {
 
   connectTimeout 30000;
 
-  chunked false;
+  chunked true;
 
   chunkLength 4096;
   
