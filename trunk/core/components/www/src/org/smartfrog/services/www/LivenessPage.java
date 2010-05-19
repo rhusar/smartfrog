@@ -30,6 +30,8 @@ import java.rmi.RemoteException;
 
 
 public interface LivenessPage extends HttpAttributes {
+    /** {@value} */
+    String URL_TARGET_COMPONENT = "urlTargetComponent";
 
 
     /**
