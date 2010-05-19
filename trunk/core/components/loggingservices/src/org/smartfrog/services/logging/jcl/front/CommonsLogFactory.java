@@ -70,6 +70,18 @@ public class CommonsLogFactory extends LogFactoryImpl {
      */
     @Override
     protected Log newInstance(String name) throws LogConfigurationException {
-        return new CommonsLogFrontEnd(sfLog(name));
+        LogSF backEnd = sfLog(name);
+        return createInstance(backEnd);
     }
+
+    /**
+     * Create a commons log from a SmartFrog log
+     * @param backEnd
+     * @return the new logging instance
+     */
+    public static Log createInstance(LogSF backEnd) {
+        return new CommonsLogFrontEnd(backEnd);
+    }
+
+
 }
