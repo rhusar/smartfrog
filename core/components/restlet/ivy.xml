@@ -119,7 +119,9 @@
     <dependency org="org.restlet"
         name="org.restlet.ext.fileupload"
         rev="${restlet.version}"
-        conf="redist->default"/>
+        conf="redist->default">
+      <exclude org="commons-fileupload"/>
+    </dependency>
 
   </dependencies>
 </ivy-module>
