@@ -29,18 +29,20 @@ BulkIoServlet extends Servlet {
   initParams [
       ["limit", limit]
     ];
+  UPLOAD "/upload";
+  DOWNLOAD "/download";
 }
 
 
 BulkUploadServlet extends BulkIoServlet {
   name "BulkUploadServlet";
-  pathSpec "/upload";
+  pathSpec UPLOAD;
   className "org.smartfrog.services.www.bulkio.server.BulkUploadServlet";
 }
 
 BulkDownloadServlet extends BulkIoServlet {
   name "BulkDownloadServlet";
-  pathSpec "/download";
+  pathSpec DOWNLOAD;
   className "org.smartfrog.services.www.bulkio.server.BulkDownloadServlet";
 }
 

@@ -1,0 +1,73 @@
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+
+
+#include "/org/smartfrog/services/www/jetty/test/system/components.sf"
+
+BulkIoTestCase extends JettyTestCompound {
+
+  MB (1024*1024L);
+  GB (1024*MB);
+  SizeMB OPTIONAL(4) IPROPERTY test.bulkio.size;
+  size (MB * SizeMB);
+  operation BulkIOClient:GET;
+  servlet BulkIoServlet:DOWNLOAD;
+  ioClass BulkIOClient:SUN_IO_CLASS;
+	action extends BulkIOJetty;
+
+
+    //wait for the port, then talk to it. The waiting operation
+    //also sets up the target URL for the bulk operation
+    tests extends Sequence {
+      url "http://localhost";
+    
+        wait extends waitForAnyHttpResponse  {
+          port PARENT:PARENT:action:port;
+          path PARENT:PARENT:servlet;
+          urlTargetComponent LAZY PARENT:PARENT:tests;
+          //sfShouldTerminate false;
+        }
+        
+        bulkOperation extends BulkIOClient {
+          operation PARENT:PARENT:operation;
+          ioClass PARENT:PARENT:ioClass;
+          size PARENT:PARENT:size;
+          //get the URL
+          url LAZY PARENT:url;
+        }
+    }
+
+}
+
+BulkIoGet extends BulkIoTestCase {
+
+}
+
+BulkIoPost extends BulkIoTestCase {
+  operation BulkIOClient:POST;
+  servlet BulkIoServlet:UPLOAD;
+}
+
+BulkIoPut extends BulkIoPost {
+  operation BulkIOClient:PUT;
+}

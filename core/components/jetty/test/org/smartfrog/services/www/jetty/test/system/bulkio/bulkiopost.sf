@@ -17,23 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.www.bulkio.client;
+#include "/org/smartfrog/services/www/jetty/test/system/bulkio/components.sf"
 
-import org.smartfrog.services.www.HttpAttributes;
+sfConfig extends BulkIoPost {
 
-
-/**
- * Created 18-May-2010 12:08:38
- */
-
-public interface BulkIOClient extends HttpAttributes {
-
-    String ATTR_USE_FORM_UPLOAD = "useFormUpload";
-    String ATTR_CHUNKED = "chunked";
-    String ATTR_CHUNK_LENGTH = "chunkLength";
-    String ATTR_IOCLASS = "ioClass";
-    String ATTR_SIZE = "size";
-    String ATTR_OPERATION = "operation";
-    //String ATTR_ = "";
-    String ATTR_FORMAT = "format";
 }

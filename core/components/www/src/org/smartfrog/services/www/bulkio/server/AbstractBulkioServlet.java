@@ -68,9 +68,9 @@ public abstract class AbstractBulkioServlet extends HttpServlet {
     }
 
     protected long getContentLength(HttpServletRequest request) throws ServletException {
-        String contentL = request.getHeader(HttpAttributes.CONTENT_LENGTH);
+        String contentL = request.getHeader(HttpAttributes.HEADER_CONTENT_LENGTH);
         return contentL == null ? -1 :
-                parseToLong(" the header " + HttpAttributes.CONTENT_LENGTH, contentL);
+                parseToLong(" the header " + HttpAttributes.HEADER_CONTENT_LENGTH, contentL);
     }
 
     /**

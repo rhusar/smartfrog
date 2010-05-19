@@ -68,8 +68,8 @@ public class BulkDownloadServlet extends AbstractBulkioServlet {
                 format = TEXT_PLAIN;
             }
             response.setContentType(format);
-            response.setHeader(HttpAttributes.CONTENT_LENGTH, Long.toString(size));
-            response.setHeader("X-" + HttpAttributes.CONTENT_LENGTH, Long.toString(size));
+            response.setHeader(HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(size));
+            response.setHeader("X-" + HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(size));
             ServletOutputStream outputStream = null;
             try {
                 outputStream = response.getOutputStream();

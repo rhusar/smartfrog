@@ -28,6 +28,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
 #include "/org/smartfrog/services/jetty/examples/war/waitforpages.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/htmlpage.sf"
+#include "/org/smartfrog/services/jetty/examples/jetty_bulkio_servlets.sf"
+#include "/org/smartfrog/services/www/bulkio/client/components.sf"
 
 
  /*
@@ -120,7 +122,7 @@ JettyTestCompound extends TestCompound {
 }
 
 
-  RunFailingTests extends IsPropertySet {
-    property "run.failing.tests";
-  }
+RunFailingTests extends IsPropertySet {
+  property "run.failing.tests";
+}
 

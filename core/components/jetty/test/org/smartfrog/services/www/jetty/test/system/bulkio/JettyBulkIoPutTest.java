@@ -17,23 +17,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.www.bulkio.client;
-
-import org.smartfrog.services.www.HttpAttributes;
+package org.smartfrog.services.www.jetty.test.system.bulkio;
 
 
 /**
- * Created 18-May-2010 12:08:38
+ * Created 19-May-2010 10:54:20
  */
 
-public interface BulkIOClient extends HttpAttributes {
+public class JettyBulkIoPutTest extends BulkIoTestCase {
 
-    String ATTR_USE_FORM_UPLOAD = "useFormUpload";
-    String ATTR_CHUNKED = "chunked";
-    String ATTR_CHUNK_LENGTH = "chunkLength";
-    String ATTR_IOCLASS = "ioClass";
-    String ATTR_SIZE = "size";
-    String ATTR_OPERATION = "operation";
-    //String ATTR_ = "";
-    String ATTR_FORMAT = "format";
+    public JettyBulkIoPutTest(String name) {
+        super(name);
+    }
+
+    protected String getFile() {
+        return "bulkioput";
+    }
+
 }
