@@ -128,16 +128,20 @@ public class LivenessPageChecker implements LivenessPage {
     private Prim owner;
 
     /**
-    * Mime types
-    */
+     * Mime types
+     */
     protected HashMap<String, String> mimeTypeMap;
     private String errorMessage;
 
-    /** headers */
+    /**
+     * headers
+     */
     private Vector<Vector<String>> headers;
     private int connectTimeout;
 
-    /** regexp or empty string */
+    /**
+     * regexp or empty string
+     */
     private RegexpCheck regexpCheck;
     public static final String ERROR_NO_CONNECTION = "unable to connect to URL";
     public static final String ERROR_NO_MATCH = "Response body does not match regular expression ";
@@ -153,7 +157,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @param host     hostname/ip address
      * @param port     port to use
      * @param page     page on the web site
-     * @throws RemoteException  for RMI/Networking problems
+     * @throws RemoteException              for RMI/Networking problems
      * @throws SmartFrogDeploymentException deployment problems
      */
     public LivenessPageChecker(
@@ -210,7 +214,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogLogException log setup problems
      */
     private void bind(Prim owner) throws SmartFrogLogException {
-        this.owner=owner;
+        this.owner = owner;
         if (owner != null) {
             log = LogFactory.getLog(owner);
         }
@@ -224,17 +228,17 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
      */
     public synchronized void bindToURL(String target) throws SmartFrogDeploymentException {
-        bindToURL(target,target);
+        bindToURL(target, target);
     }
 
     /**
      * bind to a url string
      *
-     * @param target URL to bind to
+     * @param target          URL to bind to
      * @param sanitizedTarget the same URL without any password strings
      * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
      */
-    public synchronized void bindToURL(String target,String sanitizedTarget) throws SmartFrogDeploymentException {
+    public synchronized void bindToURL(String target, String sanitizedTarget) throws SmartFrogDeploymentException {
         try {
             targetURL = new URL(target);
             uri = targetURL.toURI();
@@ -246,40 +250,66 @@ public class LivenessPageChecker implements LivenessPage {
         }
     }
 
-    /**
-     *  concatenate paths, ensuring only one / between them.
-     * @param first first string, or ""
-     * @param second second string or ""
-     * @return first/second, even if first has a trailing / and second a leading /
-     */
-    protected String concatPaths(String first,String second) {
-        String f, s;
-        f = first != null ? first : "";
-        int fl = f.length();
-        if (fl > 0 && f.charAt(fl - 1) == '/') {
-            f = f.substring(0, fl - 1);
+    public static String addLeadingSlash(String s) {
+        if (s == null) {
+            return "/";
+        } else if (!s.isEmpty() && s.charAt(0) == '/') {
+            return s;
+        } else {
+            return '/' + s;
         }
-
-        s = second != null ? second : "";
-        if (s.length() > 0 && s.charAt(0) == '/') {
-            s = s.substring(1);
-        }
-        return f + '/' + s;
     }
 
     /**
-    * make a URL from the various things
-    *
-    * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
-    */
+     * concatenate paths, ensuring only one / between them.
+     *
+     * @param first  first string, null, or
+     * @param second second string or "" null. If null, nothing happens to the first string
+     * @return first/second, even if first has a trailing / and second a leading /
+     */
+    public static String concatPaths(String first, String second) {
+        String f, s;
+        boolean firstIsSet = first != null;
+        boolean secondIsSet = second != null;
+        
+        if(!firstIsSet && !secondIsSet) {
+            return "";
+        }
+        if (!firstIsSet && secondIsSet) {
+            return second;
+        }
+        if (firstIsSet && !secondIsSet) {
+            return first;
+        }
+
+        //we only get here if first and second are set
+        f = first;
+        int fl = f.length();
+        boolean firstNonEmpty = fl > 0;
+        boolean firstHasTrailingSlash = firstNonEmpty && f.charAt(fl - 1) == '/';
+        if (firstHasTrailingSlash) {
+            f = f.substring(0, fl - 1) + '/';
+        }
+        s = second;
+        if (firstNonEmpty && s.length() > 0 && s.charAt(0) == '/' ) {
+            s = s.substring(1);
+        }
+        return f + s;
+    }
+
+    /**
+     * make a URL from the various things
+     *
+     * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
+     */
     protected void makeURL() throws SmartFrogDeploymentException {
-        StringBuilder url= new StringBuilder();
+        StringBuilder url = new StringBuilder();
         url.append(protocol);
         url.append("://");
         url.append(host);
         url.append(':');
         url.append(calculatePort());
-        String fullpath=concatPaths("",path);
+        String fullpath = addLeadingSlash(path);
         fullpath = concatPaths(fullpath, page);
         url.append(fullpath);
         if (queries != null) {
@@ -304,7 +334,7 @@ public class LivenessPageChecker implements LivenessPage {
             } else if (HTTPS.equals(protocol)) {
                 urlport = HTTPS_PORT;
             } else {
-                throw new SmartFrogDeploymentException(UNKNOWN_DEFAULT_PORT +protocol);
+                throw new SmartFrogDeploymentException(UNKNOWN_DEFAULT_PORT + protocol);
             }
         }
         return urlport;
@@ -384,7 +414,7 @@ public class LivenessPageChecker implements LivenessPage {
             if (isStatusOutOfRange(responseCode)) {
                 String text = maybeGetErrorText(connection);
                 String message = "Endpoint " + toString()
-                        + " returned error: "+ responseCode
+                        + " returned error: " + responseCode
                         + '\n' + response
                         + '\n' + text;
                 logAndRaise(message);
@@ -456,8 +486,8 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * Override point.
-     * Default implementation checks the regular expression and adds group as attributes
+     * Override point. Default implementation checks the regular expression and adds group as attributes
+     *
      * @param responseCode response http code
      * @param response     response line
      * @param body         body of the response
@@ -469,17 +499,17 @@ public class LivenessPageChecker implements LivenessPage {
             log.info("" + responseCode + ' ' + response);
             log.info(body);
         }
-        if(regexpCheck!=null) {
+        if (regexpCheck != null) {
             regexpCheck.validate(owner, body);
         }
     }
 
-/**
-* fetch error text if configured to do so, otherwise return an empty string
-*
-* @param connection a connection that can be null if it so chooses.
-* @return "" or remote error text
-*/
+    /**
+     * fetch error text if configured to do so, otherwise return an empty string
+     *
+     * @param connection a connection that can be null if it so chooses.
+     * @return "" or remote error text
+     */
     protected String maybeGetErrorText(HttpURLConnection connection) {
         if (connection == null) {
             return ERROR_NO_CONNECTION;
@@ -498,7 +528,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @param connection current connection
      * @return null if there was no input from either stream, or something went wrong with the read.
      */
-    protected String getInputOrErrorText(HttpURLConnection connection) {
+    public static String getInputOrErrorText(HttpURLConnection connection) {
         InputStream instream = null;
         StringWriter text = null;
 
@@ -546,7 +576,7 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public String toString() {
         return urlAsString + " ["
-                + minimumResponseCode + "<= response <=" + maximumResponseCode+ ']'
+                + minimumResponseCode + "<= response <=" + maximumResponseCode + ']'
                 + (username != null ? (" as \"" + username + "\" ") : "")
                 + (enabled ? "" : "(disabled)");
     }
@@ -747,6 +777,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Get the URL as a URI
+     *
      * @return the active URL as a URI; null if we havent bound yet.
      */
     public URI getUri() {
@@ -759,13 +790,14 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * Set the response regular expression. builds a new {@link RegexpCheck}  using the
-     * log parameters, which should already be set up.
+     * Set the response regular expression. builds a new {@link RegexpCheck}  using the log parameters, which should
+     * already be set up.
+     *
      * @param responseRegexp the regular expression
      * @throws SmartFrogDeploymentException if the syntax would not compile
      */
     public void setResponseRegexp(String responseRegexp) throws SmartFrogDeploymentException {
-        regexpCheck=new RegexpCheck(responseRegexp,log);
+        regexpCheck = new RegexpCheck(responseRegexp, log);
     }
 
     public boolean isLogResponse() {
@@ -777,9 +809,9 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
 
-
     /**
      * Get the headers.
+     *
      * @return the current set of headers
      */
     public Vector<Vector<String>> getHeaders() {

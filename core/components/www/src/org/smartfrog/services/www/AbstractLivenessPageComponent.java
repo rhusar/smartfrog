@@ -23,6 +23,7 @@ package org.smartfrog.services.www;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
@@ -114,10 +115,18 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
 
         //now tell the liveness page it is deployed
         livenessPage.onStart();
+        URL targetURL = livenessPage.getTargetURL();
+        String targetUrlString = targetURL.toString();
+        //update any URL on the component
         if (url == null) {
             //set the URL if it was not already set
-            URL targetURL = livenessPage.getTargetURL();
-            sfReplaceAttribute(ATTR_URL, targetURL.toString());
+            sfReplaceAttribute(ATTR_URL, targetUrlString);
+        }
+        //and of any component references by UrlTargetComponent
+        Prim urlTargetComponent = sfResolve(LivenessPage.URL_TARGET_COMPONENT, (Prim) null, false);
+        if (urlTargetComponent != null) {
+            sfLog().info("Setting " + urlTargetComponent.sfCompleteName() +":"+ ATTR_URL+" to "+ targetUrlString);
+            urlTargetComponent.sfReplaceAttribute(ATTR_URL, targetUrlString);
         }
     }
 
