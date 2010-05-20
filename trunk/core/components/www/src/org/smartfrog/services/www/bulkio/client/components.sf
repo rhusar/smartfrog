@@ -42,7 +42,14 @@ BulkIOClient extends WorkflowPrim {
 
   chunkLength 4096;
   
+  //checksum to expect on a get, if >=0 this is checked against the CRC of the downloaded content
+  expectedChecksumFromGet -1;
+  
+  //should the client look for and parse the results
+  parseResults true;
+  
   format FORMAT_BINARY ;
+  
   FORMAT_BINARY "application/octet-stream";
   
   SUN_IO_CLASS "org.smartfrog.services.www.bulkio.client.SunJavaBulkIOClient";
@@ -72,9 +79,11 @@ SunBulkIOUpload extends BulkIOUpload {
 /** 
  * do a bulk upload using HttpClient
  */
+/*
 ApacheBulkIOUpload extends BulkIOUpload {
   ioClass APACHE_IO_CLASS;
 }
+*/
 
 /** 
  * do a bulk download using Sun's API
@@ -86,6 +95,8 @@ SunBulkIODownload extends BulkIODownload {
 /** 
  * do a bulk download using HttpClient
  */
+/*
 ApacheBulkIODownload extends BulkIODownload {
   ioClass APACHE_IO_CLASS;
 }
+*/

@@ -56,6 +56,10 @@ public abstract class AbstractBulkioServlet extends HttpServlet {
         response.addHeader("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
     }
 
+    public Log getLog() {
+        return log;
+    }
+
     /**
     * Get the request size
     *
@@ -118,5 +122,9 @@ public abstract class AbstractBulkioServlet extends HttpServlet {
                 log.warn(e);
             }
         }
+    }
+
+    public static int getByteFromCounter(long position) {
+        return '0' + (int) (position % 10);
     }
 }

@@ -17,21 +17,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.www.jetty.test.system.bulkio;
+package org.smartfrog.services.www.bulkio;
 
 /**
- * Created 19-May-2010 10:54:20
+ * Created 20-May-2010 12:01:13
  */
 
-public class JettyBulkIoPostTest extends BulkIoTestCaseWithBigOperations {
-
-    public JettyBulkIoPostTest(String name) {
-        super(name);
-    }
-
-    protected String getFile() {
-        return "bulkiopost";
-    }
-
-
+public interface IoAttributes {
+    String BYTES_READ = "bytes.read";
+    String BYTES_EXPECTED = "bytes.expected";
+    String CONTENT_TYPE = "content.type";
+    String CONTENT_LENGTH = "content.length";
+    String CHECKSUM = "checksum";
 }

@@ -24,7 +24,7 @@ package org.smartfrog.services.www.jetty.test.system.bulkio;
  * Created 19-May-2010 10:54:20
  */
 
-public class JettyBulkIoPutTest extends BulkIoTestCase {
+public class JettyBulkIoPutTest extends BulkIoTestCaseWithBigOperations {
 
     public JettyBulkIoPutTest(String name) {
         super(name);

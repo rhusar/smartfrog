@@ -74,7 +74,7 @@ public class BulkDownloadServlet extends AbstractBulkioServlet {
             try {
                 outputStream = response.getOutputStream();
                 for (long bytes = 0; bytes < size; bytes++) {
-                    outputStream.write('0'+(int)(bytes%10));
+                    outputStream.write(getByteFromCounter(bytes));
                 }
             } finally {
                 closeQuietly(outputStream);

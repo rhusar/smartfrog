@@ -36,4 +36,7 @@ public interface BulkIOClient extends HttpAttributes {
     String ATTR_OPERATION = "operation";
     //String ATTR_ = "";
     String ATTR_FORMAT = "format";
+    String ATTR_PARSE_RESULTS ="parseResults";
+    
+    String ATTR_EXPECTED_CHECKSUM_FROM_GET = "expectedChecksumFromGet";
 }

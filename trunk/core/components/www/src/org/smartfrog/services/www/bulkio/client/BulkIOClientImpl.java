@@ -22,7 +22,6 @@ package org.smartfrog.services.www.bulkio.client;
 import org.smartfrog.services.logging.jcl.front.CommonsLogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkerThreadPrimImpl;
@@ -99,6 +98,8 @@ public class BulkIOClientImpl extends WorkerThreadPrimImpl implements BulkIOClie
             ioclient.operation = sfResolve(ATTR_OPERATION, "", true);
             ioclient.useFormUpload = sfResolve(ATTR_USE_FORM_UPLOAD, true, true);
             ioclient.format = sfResolve(ATTR_FORMAT, "", true);
+            ioclient.parseResults = sfResolve(ATTR_PARSE_RESULTS, true, true);
+            ioclient.expectedChecksumFromGet = sfResolve(ATTR_EXPECTED_CHECKSUM_FROM_GET, 0L, false);
             String targetURLpath = sfResolve(ATTR_URL, "", true);
 
             try {

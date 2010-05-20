@@ -23,15 +23,16 @@ package org.smartfrog.services.www.jetty.test.system.bulkio;
  * Created 19-May-2010 10:54:20
  */
 
-public class JettyBulkIoPostTest extends BulkIoTestCaseWithBigOperations {
+public abstract class SmallIoTestCase extends BaseBulkIoTestCase {
 
-    public JettyBulkIoPostTest(String name) {
+
+    public SmallIoTestCase(String name) {
         super(name);
     }
 
-    protected String getFile() {
-        return "bulkiopost";
-    }
 
+    public void testBulkIo1MB() throws Throwable {
+        expectBulkIoRun(getFile(), MB);
+    }
 
 }

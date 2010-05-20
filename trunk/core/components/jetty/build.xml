@@ -47,7 +47,7 @@ For more information: www.smartfrog.org
   
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
-  
+  <property name="org.mortbay.log.class" value="org.smartfrog.services.jetty.log.JettyLogger" />
   <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
   <property name="deploy.sf" value="org/smartfrog/services/jetty/examples/war/secureWarServer.sf"/>
 

@@ -22,12 +22,16 @@ package org.smartfrog.services.www.bulkio.client;
 import org.apache.commons.logging.Log;
 import org.smartfrog.services.www.HttpAttributes;
 import org.smartfrog.services.www.LivenessPageChecker;
+import org.smartfrog.services.www.bulkio.IoAttributes;
+import org.smartfrog.services.www.bulkio.server.AbstractBulkioServlet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
+import java.util.zip.CRC32;
 
 /**
  * This class uses the Sun Java APIs to do bulk upload.
@@ -45,17 +49,24 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
     }
 
     @Override
-    public long doUpload(long size) throws IOException, InterruptedException {
+    public long doUpload(String method, long ioSize) throws IOException, InterruptedException {
         validateURL();
-        getLog().info("Uploading " + size + " bytes to " + getUrl());
+        CRC32 checksum = new CRC32();
+        URL targetUrl = getUrl();
+        getLog().info("Uploading " + ioSize + " bytes to " + targetUrl);
         HttpURLConnection connection = openConnection();
-        connection.setRequestProperty(HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(size));
+        connection.setRequestMethod(method);
+        connection.setRequestProperty(HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(ioSize));
         connection.setDoOutput(true);
+        maybeSetChunking(connection);
         connection.connect();
         OutputStream stream = connection.getOutputStream();
+        long bytes = 0;
         try {
-            for (long bytes = 0; bytes < size; bytes++) {
-                stream.write(32);
+            for (bytes = 0; bytes < ioSize; bytes++) {
+                int octet = (AbstractBulkioServlet.getByteFromCounter(bytes));
+                stream.write(octet);
+                checksum.update(octet);
                 if (interrupted) {
                     throw new InterruptedException("Interrupted after sending " + bytes + " bytes");
                 }
@@ -63,35 +74,61 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
         } finally {
             closeQuietly(stream);
         }
-
-        return size;
-    }
-/*
-
-    @Override
-    public long doUpload(File f) throws IOException, InterruptedException {
-        return 0;
-    }
-
-
-*/
-
-    @Override
-    public long doDownload(long size) throws IOException, InterruptedException {
-        validateURL();
-        URL target = createFullURL(size, format);
-        getLog().info("Downloading " + size + " bytes from " + target);
-        HttpURLConnection connection = openConnection(target);
-        int status = connection.getResponseCode();
-        if (status != HttpURLConnection.HTTP_OK) {
-            String errorText = LivenessPageChecker.getInputOrErrorText(connection);
-            throw new IOException("Wrong status code " + status + " from " + target + ":\n" + errorText);
+        getLog().info("Upload complete, checking results");
+        checkStatusCode(targetUrl, connection, HttpURLConnection.HTTP_OK);
+        long expectedChecksum = checksum.getValue();
+        getLog().info("Uploaded " + bytes + " bytes to " + targetUrl + " checksum=" + expectedChecksum);
+        if (bytes != ioSize) {
+            throw new IOException("Wrong content length uploaded from "
+                    + " - put " + ioSize + " but got " + bytes);
         }
+        if (parseResults) {
+            InputStream inStream = null;
+            Properties props = new Properties();
+            try {
+                inStream = connection.getInputStream();
+                props.load(inStream);
+            } finally {
+                closeQuietly(inStream);
+            }
+
+            long actualChecksum = getLongPropValue(props, IoAttributes.CHECKSUM);
+            if (actualChecksum != expectedChecksum) {
+                throw new IOException("Expected checksum from upload of " + ioSize + " bytes "
+                        + "was " + expectedChecksum + " but got " + actualChecksum
+                        + "\n Properties: " + props.toString());
+            }
+
+        }
+        return ioSize;
+    }
+
+    /*
+    
+        @Override
+        public long doUpload(File f) throws IOException, InterruptedException {
+            return 0;
+        }
+    
+    
+    */
+
+    @Override
+    public long doDownload(long ioSize) throws IOException, InterruptedException {
+        validateURL();
+        URL target = createFullURL(ioSize, format);
+        getLog().info("Downloading " + ioSize + " bytes from " + target);
+        CRC32 checksum = new CRC32();
+        HttpURLConnection connection = openConnection(target);
+        connection.setRequestMethod(HttpAttributes.METHOD_GET);
+        connection.setDoOutput(false);
+        connection.connect();
+        checkStatusCode(target, connection, HttpURLConnection.HTTP_OK);
         String contentLengthHeader = connection.getHeaderField(HttpAttributes.HEADER_CONTENT_LENGTH);
         long contentLength = Long.parseLong(contentLengthHeader);
-        if (contentLength != size) {
+        if (contentLength != ioSize) {
             throw new IOException("Wrong content length returned from " + target
-                    + " - expected " + size + " but got " + contentLength);
+                    + " - expected " + ioSize + " but got " + contentLength);
         }
         String formatHeader = connection.getHeaderField(HttpAttributes.HEADER_CONTENT_TYPE);
         if (!format.equals(formatHeader)) {
@@ -101,21 +138,35 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
         InputStream stream = connection.getInputStream();
         long bytes = 0;
         try {
-            for (bytes = 0; bytes < size; bytes++) {
-                stream.read();
+            for (bytes = 0; bytes < ioSize; bytes++) {
+                int octet = stream.read();
+                checksum.update(octet);
                 if (interrupted) {
                     throw new InterruptedException("Interrupted after reading" + bytes + " bytes");
                 }
             }
         } finally {
-            getLog().info("Download finished after " + bytes + " bytes ");
             closeQuietly(stream);
         }
-        if (bytes != size) {
+        long actualChecksum = checksum.getValue();
+        getLog().info("Download finished after " + bytes + " bytes, checksum=" + actualChecksum);
+        if (bytes != ioSize) {
             throw new IOException("Wrong content length downloaded from " + target
-                    + " - requested " + size + " but got " + bytes);
+                    + " - requested " + ioSize + " but got " + bytes);
+        }
+        if (expectedChecksumFromGet >= 0 && expectedChecksumFromGet != actualChecksum) {
+            throw new IOException("Expected checksum from download of " + ioSize + " bytes "
+                    + "was " + expectedChecksumFromGet + " but got " + actualChecksum);
         }
         return bytes;
+    }
+
+    private void checkStatusCode(URL target, HttpURLConnection connection, int expectedStatus) throws IOException {
+        int status = connection.getResponseCode();
+        if (status != expectedStatus) {
+            String errorText = LivenessPageChecker.getInputOrErrorText(connection);
+            throw new IOException("Wrong status code " + status + " from " + target + ":\n" + errorText);
+        }
     }
 
     @Override
