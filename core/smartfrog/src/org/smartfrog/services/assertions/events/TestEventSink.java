@@ -438,7 +438,7 @@ public class TestEventSink implements EventSink {
                     TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
             return termEvent;
         } catch (TestFailureException tfe) {
-            //startup faied and was intercepted during startup
+            //startup failed and was intercepted during startup
             return tfe.getEvent();
         }
         LifecycleEvent event;
