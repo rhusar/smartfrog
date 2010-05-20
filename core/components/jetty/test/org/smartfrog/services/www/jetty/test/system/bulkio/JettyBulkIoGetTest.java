@@ -23,7 +23,7 @@ package org.smartfrog.services.www.jetty.test.system.bulkio;
  * Created 19-May-2010 10:54:20
  */
 
-public class JettyBulkIoGetTest extends BulkIoTestCase {
+public class JettyBulkIoGetTest extends BulkIoTestCaseWithBigOperations {
 
 
     public JettyBulkIoGetTest(String name) {
@@ -34,25 +34,7 @@ public class JettyBulkIoGetTest extends BulkIoTestCase {
         return "bulkioget";
     }
 
-    public void testBulkIoSmall() throws Throwable {
-        expectBulkIoRun(getFile(), SMALL);
-    }
 
-    public void testBulkIoMedium() throws Throwable {
-        expectBulkIoRun(getFile(), MEDIUM);
-    }
 
-    public void testBulkIoLarge() throws Throwable {
-        expectBulkIoRun(getFile(), LARGE);
-    }
-
-    public void testBulkIoVeryLarge() throws Throwable {
-        expectBulkIoRun(getFile(), VERY_LARGE);
-    }
-    
-/*
-    public void testBulkIoGet() throws Throwable {
-        expectSuccessfulTestRun(BULKIO, getFile());
-    }*/
 
 }

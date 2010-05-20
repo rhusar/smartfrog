@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Properties;
 
 /**
  * Created 17-May-2010 17:35:44
@@ -51,6 +52,10 @@ public abstract class AbstractBulkIOClient {
     public int chunkLength = 8192;
 
     public String format = "application/binary";
+
+    public boolean parseResults;
+
+    public long expectedChecksumFromGet;
     
     private Log log = LogFactory.getLog(AbstractBulkIOClient.class);
 
@@ -76,7 +81,7 @@ public abstract class AbstractBulkIOClient {
     public void setUrl(URL url) {
         this.url = url;
     }
-    
+
     public URL createFullURL(long size, String format) throws IOException {
         validateURL();
         StringBuilder fullPath = new StringBuilder(url.getFile());
@@ -91,7 +96,7 @@ public abstract class AbstractBulkIOClient {
     public long execute() throws IOException, InterruptedException {
         if (HttpAttributes.METHOD_POST.equals(operation)
                 || HttpAttributes.METHOD_PUT.equals(operation)) {
-            return doUpload(size);
+            return doUpload(operation, size);
         } else if (HttpAttributes.METHOD_GET.equals(operation)) {
             return doDownload(size);
         } else {
@@ -99,7 +104,7 @@ public abstract class AbstractBulkIOClient {
         }
     }
 
-    public long doUpload(long size) throws IOException, InterruptedException {
+    public long doUpload(String method, long ioSize) throws IOException, InterruptedException {
         return notImplemented();
     }
 
@@ -107,15 +112,15 @@ public abstract class AbstractBulkIOClient {
         throw new IOException("Not Implemented");
     }
 
-    public long doUpload(File f) throws IOException, InterruptedException {
+    public long doUpload(String method, File f) throws IOException, InterruptedException {
         return notImplemented();
     }
 
-    public long doDownload(long size) throws IOException, InterruptedException {
+    public long doDownload(long ioSize) throws IOException, InterruptedException {
         return notImplemented();
     }
 
-    public long doDownload(long size, File f) throws IOException, InterruptedException {
+    public long doDownload(long ioSize, File f) throws IOException, InterruptedException {
         return notImplemented();
     }
 
@@ -128,6 +133,7 @@ public abstract class AbstractBulkIOClient {
 
     /**
      * Validate the URL we are connecting to
+     *
      * @throws IOException if there is no valid URL
      */
     protected void validateURL() throws IOException {
@@ -137,11 +143,11 @@ public abstract class AbstractBulkIOClient {
     }
 
     /**
-    * Open a connection. The connection is not yet "connected" -you can do some last minute tuning
-    *
-    * @return an HTTP connection.
-    * @throws IOException
-    */
+     * Open a connection. The connection is not yet "connected" -you can do some last minute tuning
+     *
+     * @return an HTTP connection.
+     * @throws IOException
+     */
     protected HttpURLConnection openConnection() throws IOException {
         HttpURLConnection connection;
         validateURL();
@@ -167,11 +173,18 @@ public abstract class AbstractBulkIOClient {
         if (connectTimeout >= 0) {
             connection.setConnectTimeout(connectTimeout);
         }
+        return connection;
+    }
+
+    /**
+     * Set chunking. <i>DO NOT DO THIS ON A GET AS the JDK CANNOT HANDLE IT</i>
+     *
+     * @param connection
+     */
+    protected void maybeSetChunking(HttpURLConnection connection) {
         if (chunked) {
             connection.setChunkedStreamingMode(chunkLength);
         }
-
-        return connection;
     }
 
     public String getName() {
@@ -180,7 +193,7 @@ public abstract class AbstractBulkIOClient {
 
     @Override
     public String toString() {
-        return getName() + " connected to \""+ getUrl() + "\"; Operation is "+operation;
+        return getName() + " connected to \"" + getUrl() + "\"; Operation is " + operation;
     }
 
     /**
@@ -195,6 +208,25 @@ public abstract class AbstractBulkIOClient {
             } catch (IOException e) {
                 log.warn(e);
             }
+        }
+    }
+
+    /**
+     * Get a long property value
+     * @param props property instance
+     * @param key key
+     * @return the long value
+     * @throws IOException if the 
+     */
+    long getLongPropValue(Properties props, String key) throws IOException {
+        String value = props.getProperty(key);
+        if (value == null) {
+            throw new IOException("Failed to find property key " + key);
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            throw new IOException("Failed to parse property "+ key + " = \"" + value + "\": " + e, e);
         }
     }
 }
