@@ -1014,8 +1014,13 @@ smartfrog.tasks.classpath=
         <syspropertyset>
           <propertyref prefix="test."/>
           <propertyref prefix="run."/>
+          <!-- HTTP settings-->
           <propertyref prefix="http.proxy"/>
           <propertyref prefix="https.proxy"/>
+          <!-- Log settings for various tools-->
+          <propertyref prefix="org.mortbay.log."/>
+          <propertyref prefix="log4j."/>
+          <propertyref prefix="org.apache.commons.logging."/>
         </syspropertyset>
       </sf-startdaemon>
     </presetdef>
@@ -1060,6 +1065,13 @@ smartfrog.tasks.classpath=
         <syspropertyset>
           <propertyref prefix="test."/>
           <propertyref prefix="run."/>
+          <!-- HTTP settings-->
+          <propertyref prefix="http.proxy"/>
+          <propertyref prefix="https.proxy"/>
+          <!-- Log settings for various tools-->
+          <propertyref prefix="org.mortbay.log."/>
+          <propertyref prefix="log4j."/>
+          <propertyref prefix="org.apache.commons.logging."/>          
         </syspropertyset>
       </sf-run>
     </presetdef>
