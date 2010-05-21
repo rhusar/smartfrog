@@ -36,6 +36,7 @@ public class ExtJobTrackerTest extends TestCase {
 
     /**
      * Constructs a test case with the given name.
+     * @param name test name
      */
     public ExtJobTrackerTest(String name) {
         super(name);
@@ -46,7 +47,7 @@ public class ExtJobTrackerTest extends TestCase {
         try {
             jt.offerService();
             fail("Should not reach here");
-        } catch (Service.ServiceStateException e) {
+        } catch (LifecycleService.StateException e) {
             //this is expected.
         }
     }

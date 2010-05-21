@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.test.system.internals;
 
 import junit.framework.TestCase;
-import org.apache.hadoop.util.MockService;
+import org.apache.hadoop.util.MockLifecycleService;
 import org.apache.hadoop.util.LifecycleService;
 import org.apache.hadoop.PingableMockService;
 import org.smartfrog.services.hadoop.core.ServicePingStatus;
@@ -53,7 +53,7 @@ public final class TestPingableMockService extends TestCase {
 
   @Override
   protected void tearDown() throws Exception {
-    Service.close(service);
+      PingableMockService.close(service);
     super.tearDown();
   }
 
@@ -71,25 +71,25 @@ public final class TestPingableMockService extends TestCase {
     return service.ping();
   }
   
-  private void assertInState(Service.ServiceState state)
-          throws Service.ServiceStateException {
+  private void assertInState(LifecycleService.ServiceState state)
+          throws LifecycleService.StateException {
     service.verifyServiceState(state);
   }
 
-  private void assertInLiveState() throws Service.ServiceStateException {
-    assertInState(Service.ServiceState.LIVE);
+  private void assertInLiveState() throws LifecycleService.StateException {
+    assertInState(LifecycleService.ServiceState.LIVE);
   }
 
-  private void assertInCreatedState() throws Service.ServiceStateException {
-    assertInState(Service.ServiceState.CREATED);
+  private void assertInCreatedState() throws LifecycleService.StateException {
+    assertInState(LifecycleService.ServiceState.CREATED);
   }
 
-  private void assertInFailedState() throws Service.ServiceStateException {
-    assertInState(Service.ServiceState.FAILED);
+  private void assertInFailedState() throws LifecycleService.StateException {
+    assertInState(LifecycleService.ServiceState.FAILED);
   }
 
-  private void assertInTerminatedState() throws Service.ServiceStateException {
-    assertInState(Service.ServiceState.CLOSED);
+  private void assertInTerminatedState() throws LifecycleService.StateException {
+    assertInState(LifecycleService.ServiceState.CLOSED);
   }
 
   private void assertRunning() {
@@ -100,19 +100,19 @@ public final class TestPingableMockService extends TestCase {
     assertFalse("Service is running: " + service, service.isRunning());
   }
 
-  private void enterState(Service.ServiceState state)
-          throws Service.ServiceStateException {
+  private void enterState(LifecycleService.ServiceState state)
+          throws LifecycleService.StateException {
     service.changeState(state);
     assertInState(state);
   }
 
 
-  private void enterFailedState() throws Service.ServiceStateException {
-    enterState(Service.ServiceState.FAILED);
+  private void enterFailedState() throws LifecycleService.StateException {
+    enterState(LifecycleService.ServiceState.FAILED);
   }
 
-  private void enterTerminatedState() throws Service.ServiceStateException {
-    enterState(Service.ServiceState.CLOSED);
+  private void enterTerminatedState() throws LifecycleService.StateException {
+    enterState(LifecycleService.ServiceState.CLOSED);
   }
 
   private void assertStateChangeCount(int expected) {
@@ -145,7 +145,7 @@ public final class TestPingableMockService extends TestCase {
     Throwable throwable = thrown.get(0);
     assertTrue(
             "Nested exception is not a MockServiceException : " + throwable,
-            throwable instanceof MockService.MockServiceException);
+            throwable instanceof MockLifecycleService.MockServiceException);
     return serviceStatus;
   }
 
@@ -173,11 +173,11 @@ public final class TestPingableMockService extends TestCase {
     try {
       start();
       failShouldNotGetHere();
-    } catch (MockService.MockServiceException e) {
+    } catch (MockLifecycleService.MockServiceException e) {
       assertInFailedState();
       //and test that the ping works out
       ServicePingStatus serviceStatus = assertPingContainsMockException();
-      assertEquals(Service.ServiceState.FAILED, serviceStatus.getState());
+      assertEquals(LifecycleService.ServiceState.FAILED, serviceStatus.getState());
     }
   }
 
@@ -186,12 +186,12 @@ public final class TestPingableMockService extends TestCase {
     service.setFailOnPing(true);
     start();
     ServicePingStatus serviceStatus = service.ping();
-    assertEquals(Service.ServiceState.FAILED, serviceStatus.getState());
+    assertEquals(LifecycleService.ServiceState.FAILED, serviceStatus.getState());
     assertPingCount(1);
     List<Throwable> thrown = serviceStatus.getThrowables();
     assertEquals(1, thrown.size());
     Throwable throwable = thrown.get(0);
-    assertTrue(throwable instanceof MockService.MockServiceException);
+    assertTrue(throwable instanceof MockLifecycleService.MockServiceException);
   }
 
   public void testPingInCreated() throws Throwable {
@@ -210,7 +210,7 @@ public final class TestPingableMockService extends TestCase {
     enterFailedState();
     assertInFailedState();
     ServicePingStatus serviceStatus = service.ping();
-    assertEquals(Service.ServiceState.FAILED, serviceStatus.getState());
+    assertEquals(LifecycleService.ServiceState.FAILED, serviceStatus.getState());
     assertPingCount(0);
   }
 
@@ -223,7 +223,7 @@ public final class TestPingableMockService extends TestCase {
     enterTerminatedState();
     assertInTerminatedState();
     ServicePingStatus serviceStatus = service.ping();
-    assertEquals(Service.ServiceState.CLOSED, serviceStatus.getState());
+    assertEquals(LifecycleService.ServiceState.CLOSED, serviceStatus.getState());
     assertPingCount(0);
   }
 
