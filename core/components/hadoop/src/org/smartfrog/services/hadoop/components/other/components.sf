@@ -235,7 +235,7 @@ CheckJspHelperClasses extends CheckJspClasses {
     "org.apache.hadoop.util.StringUtils",
     "org.apache.hadoop.util.DiskChecker$DiskErrorException",
     "org.apache.hadoop.util.DiskChecker$DiskOutOfSpaceException",
-    "org.apache.hadoop.util.Service",
+    "org.apache.hadoop.util.LifecycleService",
     "org.apache.hadoop.hdfs.DFSUtil",
     "org.apache.hadoop.hdfs.server.common.GenerationStamp",
     "org.apache.hadoop.hdfs.server.common.HdfsConstants",
