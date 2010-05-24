@@ -62,6 +62,12 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
     /** The target description to work of. */
     public ComponentDescription target;
+    private static final String JAVA_CLASS_PATH = "java.class.path";
+    private static final String SF_PROCESS_NAME = "org.smartfrog.sfcore.processcompound.sfProcessName";
+    private static final String SF_CODE_BASE = "sfCodeBase";
+    private static final String PRIM = "Prim";
+    private static final String CLASS_NOT_FOUND = "Class not found";
+    private static final String EMPTY_SFCLASS = "Empty classname provided for "+ SmartFrogCoreKeys.SF_CLASS;
 
     /**
      * Constructs a component deployer for given description.
@@ -110,10 +116,10 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             return dComponent;
         } catch (InstantiationException instexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, null, cxt);
+                    MSG_INSTANTIATION_ERROR, PRIM), instexcp, null, cxt);
         } catch (IllegalAccessException illaexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_ILLEGAL_ACCESS, "Prim", "newInstance()"), illaexcp, null, cxt);
+                    MSG_ILLEGAL_ACCESS, PRIM, "newInstance()"), illaexcp, null, cxt);
         } catch (SmartFrogException sfdex){
             throw ((SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfdex));
         } catch (Throwable t) {
@@ -172,7 +178,12 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             // extract class name
             obj =  target.sfResolve(refClass);
             targetClassName = (String) obj;
-
+            if (targetClassName.isEmpty()) {
+                throw new SmartFrogResolutionException(
+                        refClass,
+                        target.sfCompleteName(),
+                        EMPTY_SFCLASS);
+            }
             // We look in the default code base if everything else fails.
             return SFClassLoader.forName(targetClassName,targetCodeBase, true);
         } catch (SmartFrogResolutionException resex) {
@@ -185,11 +196,14 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
                 name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
             }
-            throw new SmartFrogDeploymentException (refClass,null,name,target,
+            throw new SmartFrogDeploymentException (refClass, null, name,target,
               null,
-              "Wrong class when resolving '"+refClass+ "': '"
-              +(obj!=null?(obj+"' ("+obj.getClass().getName()+")"):"'")
-              , ccex, targetCodeBase);
+              "Wrong class when resolving \""+refClass+ "\": \""
+                      + (obj != null ? 
+                        (obj + "' (" + obj.getClass().getName() + ")") 
+                      : "|\""),
+                    ccex,
+                    targetCodeBase);
         } catch (java.lang.ClassNotFoundException cnfex){
             Object name = null;
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
@@ -197,15 +211,15 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             }
             ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
             try {
-              if (targetCodeBase != null) cdInfo.sfAddAttribute("sfCodeBase",
+              if (targetCodeBase != null) cdInfo.sfAddAttribute(SF_CODE_BASE,
                   targetCodeBase);
-              cdInfo.sfAddAttribute("java.class.path",System.getProperty("java.class.path"));
-              cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
-                  System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
+              cdInfo.sfAddAttribute(JAVA_CLASS_PATH,System.getProperty(JAVA_CLASS_PATH));
+              cdInfo.sfAddAttribute(SF_PROCESS_NAME,
+                  System.getProperty(SF_PROCESS_NAME));
             } catch (SmartFrogException sfex){
               if (sflog.isDebugEnabled()) sflog.debug("",sfex);
             }
-            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
+            throw new SmartFrogDeploymentException (refClass,null,name,target,null, CLASS_NOT_FOUND, cnfex, cdInfo);
         }
 
     }
