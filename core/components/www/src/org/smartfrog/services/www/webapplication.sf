@@ -187,16 +187,75 @@ ServletSchema extends Schema {
 /**
  * declare an abstract servlet
  */
-Servlet extends ServletContextComponent {
+ServletContextComponentWithInitParams extends ServletContextComponent {
+    initParams [];
+    //initialisation options name -> value mappings
+    initOptions extends DATA {}
+}
+
+/**
+ * declare a servlet
+ */
+Servlet extends ServletContextComponentWithInitParams {
     servletSchema extends ServletSchema;
     //implementation class
     sfClass "org.smartfrog.services.www.context.ServletComponentImpl";
     //order of initialisation; -1 means on demand.
     initOrder -1;
-    //initial parameters
-    initParams [];
-    //initialisation options name -> value mappings
-    initOptions extends DATA {}
+}
+
+/**
+ * this servlet declaration defines
+ * the servlet information
+ */
+FilterSchema extends Schema {
+    //name
+    name extends String;
+    //path
+    pattern extends String;
+    //the class that implements the servlet
+    className extends String;
+    //initialisation parameters as a list of [name,value] pairs
+    initParams extends OptionalVector;
+}
+
+
+/**
+ * declare a filter with default dispatch options set to "no dispatch"
+ */
+Filter extends ServletContextComponentWithInitParams {
+    filterSchema extends FilterSchema;
+    //implementation class
+    sfClass "org.smartfrog.services.www.context.FilterComponentImpl";
+    PATTERN_EVERYTHING "/*";
+    pattern PATTERN_EVERYTHING;
+    dispatchRequest false;
+    dispatchForward false;
+    dispatchInclude false;
+    dispatchError false;
+}
+
+RequestFilter extends Filter {
+    dispatchRequest true;
+}
+
+ForwardFilter extends Filter {
+    dispatchForward true;
+}
+
+IncludeFilter extends Filter {
+    dispatchInclude true;
+}
+
+ErrorFilter extends Filter {
+    dispatchError true;
+}
+
+AllFilter extends Filter {
+    dispatchRequest true;
+    dispatchForward true;
+    dispatchInclude true;
+    dispatchError true;
 }
 
 

@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.www.context;
 
-import org.smartfrog.services.www.ServletComponent;
+import org.smartfrog.services.www.FilterComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -30,21 +30,21 @@ import java.rmi.RemoteException;
  * This component adds a servlet declaration to the servlet context,
  * removing it when terminated.
  */
-public class ServletComponentImpl extends DelegatedServletComponentImpl
-        implements ServletComponent {
+public class FilterComponentImpl extends DelegatedServletComponentImpl
+        implements FilterComponent {
 
     /**
      * constructor
      * @throws RemoteException from the superclass
      */
-    public ServletComponentImpl() throws RemoteException {
+    public FilterComponentImpl() throws RemoteException {
     }
 
 
     @Override
     protected ServletContextComponentDelegate addComponent(ServletContextIntf servletContext)
             throws RemoteException, SmartFrogException {
-        return servletContext.addServlet(this);
+        return servletContext.addFilter(this);
     }
 
 }

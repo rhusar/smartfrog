@@ -20,8 +20,8 @@
 
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
+import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.JettyImpl;
@@ -100,10 +100,13 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         application = new WebAppContext(webApp, contextPath);
 
 
-        ServletHandler servlethandler = application.getServletHandler();
-/*        AbstractSessionManager sessionmanager = (AbstractSessionManager)
+
+ /* commented out as the request ID stuff has gone away in Jetty 6
+       ServletHandler servlethandler = application.getServletHandler();
+        AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
-        sessionmanager.setUseRequestedId(requestId);*/
+        sessionmanager.setUseRequestedId(requestId);
+        */
 
 
         setContext(application);

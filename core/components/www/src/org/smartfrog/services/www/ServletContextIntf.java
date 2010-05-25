@@ -83,5 +83,16 @@ public interface ServletContextIntf extends ApplicationServerContext {
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException;
 
+    /**
+     * add a filter
+     *
+     * @param servletDeclaration component declaring the servlet
+     * @return the delegate that implements the servlet binding
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException    for RMI/Networking problems
+     */
+    public ServletContextComponentDelegate addFilter(FilterComponent declaration)
+            throws RemoteException, SmartFrogException;
+
 
 }
