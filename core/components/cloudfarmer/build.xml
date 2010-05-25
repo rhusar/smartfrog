@@ -236,7 +236,10 @@ time java -Xmx1024m org.apache.hadoop.util.RunJar $SFHOME/lib/hadoop-mapred-exam
   
   <target  name="job-queue" depends="cluster-bind">
     <property name="jobqueue" value="org.apache.hadoop.mapred.JobQueueClient"/>
-    <property name="jobqueue.commands" value="-list -showjobs -verbose"/>
+    <property name="jobqueue.commands" value="-list -showjobs"/>
+    <!--
+    <property name="jobqueue.commands" value="-list -showjobs  -verbose"/>
+    -->
     <sshexec host="${cluster.master}"
         username="root"
         trust="true"
