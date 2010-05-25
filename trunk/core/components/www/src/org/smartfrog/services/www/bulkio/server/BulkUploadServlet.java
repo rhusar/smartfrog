@@ -45,7 +45,7 @@ public class BulkUploadServlet extends AbstractBulkioServlet {
         // size = getSize(request);
         long contentLength = getContentLength(request);
         String type = request.getContentType();
-        
+
         getLog().info(request.getMethod() + " operation receiving " + contentLength + " bytes of type " + type);
         if (size >= 0 && size != contentLength) {
             throw new ServletException(
@@ -71,7 +71,7 @@ public class BulkUploadServlet extends AbstractBulkioServlet {
                 + IoAttributes.CONTENT_TYPE + "=" + type + "\n"
                 + IoAttributes.CHECKSUM + "=" + checksumValue + "\n";
         getLog().info(summary);
-        returnPlainText(response,summary);
+        returnPlainText(response, summary);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class BulkUploadServlet extends AbstractBulkioServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
- //       disableCaching(response);
+        //       disableCaching(response);
         response.setContentType(HttpHeaders.TEXT_HTML);
         ServletOutputStream out = null;
         try {

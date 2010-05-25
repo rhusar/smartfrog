@@ -58,12 +58,12 @@ public abstract class AbstractBulkioServlet extends HttpServlet implements HttpH
     }
 
     /**
-    * Get the request size
-    *
-    * @param request request
-    * @return the value or -1 for no value supplied.
-    * @throws ServletException if the parse failed
-    */
+     * Get the request size
+     *
+     * @param request request
+     * @return the value or -1 for no value supplied.
+     * @throws ServletException if the parse failed
+     */
     protected long getSize(HttpServletRequest request) throws ServletException {
         return getParameterAsLong(request, ATTR_SIZE);
     }
