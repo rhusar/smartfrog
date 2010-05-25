@@ -20,6 +20,7 @@
 package org.smartfrog.services.www.context;
 
 import org.smartfrog.services.www.ApplicationServerContext;
+import org.smartfrog.services.www.FilterComponent;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
@@ -96,6 +97,15 @@ public class ServletContextImpl extends ApplicationServerContextImpl implements 
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException {
         return getContext().addServlet(servletDeclaration);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ServletContextComponentDelegate addFilter(FilterComponent declaration)
+            throws RemoteException, SmartFrogException {
+        return getContext().addFilter(declaration);
     }
 
     /**
