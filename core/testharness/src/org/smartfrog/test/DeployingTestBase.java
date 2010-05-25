@@ -313,7 +313,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         conditionalFail(results.isForcedTimeout(),
                 "Forced timeout", event);
         if (results.isFailed() && !results.isSkipped()) {
-            String message = "Test failed: " + '\n' + results;
+            String message = "Test failed: " + '\n' + results.toString();
             throw new TerminationRecordException(message, results.getStatus());
         }
         return results;

@@ -98,6 +98,11 @@ public class TestCompletedEvent extends LifecycleEvent {
         buffer.append("\nforcedTimeout:").append(forcedTimeout);
         buffer.append("\nskipped:").append(skipped);
         buffer.append('\n');
+        TerminationRecord status = getStatus();
+        if (status != null) {
+            buffer.append(status.toString());
+            buffer.append('\n');
+        }
         return buffer.toString();
     }
 }
