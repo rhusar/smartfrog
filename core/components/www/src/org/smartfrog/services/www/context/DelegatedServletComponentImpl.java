@@ -42,7 +42,12 @@ public abstract class DelegatedServletComponentImpl extends ServletContextCompon
         //validate our classpath
         String classname=sfResolve(REF_CLASSNAME,"",true);
         Class clazz = LoadClassImpl.loadClass(this, classname);
+        //create an instance which is then debugged
+        
         Object instance = LoadClassImpl.createInstance(clazz);
+        if(sfLog().isDebugEnabled()) {
+            sfLog().debug("Created delegate instance " + instance);
+        }
 
         //create and bind the delegate
         delegate = addComponent(servletContext);
@@ -65,7 +70,7 @@ public abstract class DelegatedServletComponentImpl extends ServletContextCompon
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (delegate == null) {
-            throw new SmartFrogLivenessException("Not live");
+            throw new SmartFrogLivenessException("Not live", this);
         } else {
             delegate.ping();
         }

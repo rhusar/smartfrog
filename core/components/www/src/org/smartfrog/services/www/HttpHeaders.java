@@ -30,24 +30,26 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-/*
-This defines some basic filters
-*/
+package org.smartfrog.services.www;
 
-BaseFilter extends Filter {
-  name "BaseFilter";
-  description "A filter that does nothing; can be a base class for useful filters";
-  className "org.smartfrog.services.www.filters.BaseFilter";
-}
+/**
+ * Any useful Http Headers
+ */
 
-NoCacheFilter extends Filter {
-  name "NoCacheFilter";
-  description "set the cache-control header to no-cache, and so disable any caching"; 
-  className "org.smartfrog.services.www.filters.NoCacheFilter";
-}
 
-RequestCounterFilter extends Filter {
-  name "RequestCounterFilter";
-  description "Filter that counts the number of requests in and out"; 
-  className "org.smartfrog.services.www.filters.RequestCounterFilter";
+public interface HttpHeaders {
+    /** {@value} */
+    String CONTENT_LENGTH = "Content-Length";
+    /** {@value} */
+    String CONTENT_TYPE = "Content-Type";
+    /**
+     */
+    String EXPIRES = "expires";
+
+    String CACHE_CONTROL = "Cache-Control";
+    
+    String NO_CACHE = "no-cache";
+    String FORMAT_BINARY = "application/binary";
+    String TEXT_HTML = "text/html";
+    String TEXT_PLAIN = "text/plain";
 }

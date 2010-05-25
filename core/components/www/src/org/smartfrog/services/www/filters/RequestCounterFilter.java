@@ -30,24 +30,52 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-/*
-This defines some basic filters
-*/
 
-BaseFilter extends Filter {
-  name "BaseFilter";
-  description "A filter that does nothing; can be a base class for useful filters";
-  className "org.smartfrog.services.www.filters.BaseFilter";
-}
+package org.smartfrog.services.www.filters;
 
-NoCacheFilter extends Filter {
-  name "NoCacheFilter";
-  description "set the cache-control header to no-cache, and so disable any caching"; 
-  className "org.smartfrog.services.www.filters.NoCacheFilter";
-}
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-RequestCounterFilter extends Filter {
-  name "RequestCounterFilter";
-  description "Filter that counts the number of requests in and out"; 
-  className "org.smartfrog.services.www.filters.RequestCounterFilter";
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * count the number of requests; there's a shared counter and a per-instance counter
+ */
+
+public class RequestCounterFilter extends BaseFilter {
+    
+    private static AtomicLong sharedCounter = new AtomicLong();
+    private AtomicLong counter = new AtomicLong();
+    
+    private long inc() {
+        sharedCounter.incrementAndGet();
+        return counter.incrementAndGet();
+    }
+    
+    public long getCounterValue() {
+        return counter.longValue();
+    }
+
+    public static long getSharedCounterValue() {
+        return sharedCounter.longValue();
+    }
+
+    public void reset() {
+        counter = new AtomicLong();
+    }
+
+    public static void resetSharedCounter() {
+        sharedCounter = new AtomicLong();
+    }
+
+    @Override
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        
+        response.addHeader("X-RequestCount", Long.toString(inc()));
+        super.doFilter(request, response, chain);
+    }
 }

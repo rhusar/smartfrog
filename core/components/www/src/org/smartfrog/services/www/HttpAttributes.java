@@ -119,8 +119,4 @@ public interface HttpAttributes extends Remote {
     String METHOD_HEAD = "HEAD";
 
 
-    /** {@value} */
-    String HEADER_CONTENT_LENGTH = "Content-Length";
-    /** {@value} */
-    String HEADER_CONTENT_TYPE = "Content-TYPE";
 }

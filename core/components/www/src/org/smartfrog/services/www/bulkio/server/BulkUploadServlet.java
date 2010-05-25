@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.www.bulkio.server;
 
+import org.smartfrog.services.www.HttpHeaders;
 import org.smartfrog.services.www.bulkio.IoAttributes;
 
 import javax.servlet.ServletException;
@@ -82,8 +83,8 @@ public class BulkUploadServlet extends AbstractBulkioServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        disableCaching(response);
-        response.setContentType(TEXT_HTML);
+ //       disableCaching(response);
+        response.setContentType(HttpHeaders.TEXT_HTML);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

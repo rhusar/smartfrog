@@ -1,22 +1,14 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.servlet.ServletMapping;
-import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.FilterComponent;
-import org.smartfrog.services.www.WebApplicationHelper;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
-import java.util.Vector;
 
 /**
  * Created 24-May-2010 17:59:25
@@ -25,14 +17,7 @@ import java.util.Vector;
 public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
         implements FilterComponent {
 
-    /**
-     * default inititialisation order {@value}
-     */
-
-    private String pathSpec = null;
-
-    private FilterHolder holder = null;
-    private String absolutePath;
+    private String pattern;
 
     /**
      * Create the delegate and configure the {@link org.mortbay.jetty.servlet.Context} of Jetty that is the real
@@ -59,23 +44,36 @@ public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
      */
     private void bind(Prim prim, DelegateServletContext ctx) throws RemoteException, SmartFrogException {
         Context servletContext = resolveJettyServletContext(ctx);
-        pathSpec = prim.sfResolve(pathSpecRef, pathSpec, true);
 
-        holder = new FilterHolder();
+        FilterHolder holder = new FilterHolder();
 
         bindAndInitHolder(holder);
 
 
-        //update our path attribute
-        String ancestorPath = ctx.getAbsolutePath();
-        absolutePath = WebApplicationHelper.deregexpPath(JettyHelper.concatPaths(
-                ancestorPath,
-                pathSpec));
-        prim.sfReplaceAttribute(ApplicationServerContext.ATTR_ABSOLUTE_PATH,
-                absolutePath);
-        int dispatches = 0;
+        pattern = prim.sfResolve(ATTR_PATTERN, pattern, true);
+
+        //build the dispatch mask
+        boolean dispatchRequest = prim.sfResolve(ATTR_DISPATCH_REQUEST, true, true);
+        boolean dispatchForward = prim.sfResolve(ATTR_DISPATCH_FORWARD, true, true);
+        boolean dispatchInclude = prim.sfResolve(ATTR_DISPATCH_INCLUDE, true, true);
+        boolean dispatchError   = prim.sfResolve(ATTR_DISPATCH_ERROR, true, true);
+        int dispatches = Handler.DEFAULT;
+        
+        if (dispatchRequest) {
+            dispatches |= Handler.REQUEST;
+        }
+        if (dispatchForward) {
+            dispatches |= Handler.FORWARD;
+        }
+        if (dispatchInclude) {
+            dispatches |= Handler.INCLUDE;
+        }
+        if (dispatchError) {
+            dispatches |= Handler.ERROR;
+        }
+
         //add the filter
-        servletContext.addFilter(holder, pathSpec, dispatches);
+        servletContext.addFilter(holder, pattern, dispatches);
 /*
         ServletHandler servletHandler = servletContext.getServletHandler();
         ServletHolder resolvedHolder = servletHandler.getServlet(name);
@@ -100,9 +98,6 @@ public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
 
     }
 
-    public String getAbsolutePath() {
-        return absolutePath;
-    }
 
     /**
      * Returns a string representation of the object.
@@ -111,10 +106,8 @@ public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
      */
     @Override
     public String toString() {
-        return "name=" + name
-                + "; className=" + className
-                + "; pathSpec=" + pathSpec
-                + "; absolutePath=" + absolutePath;
+        return super.toString()
+                + "; pattern=" + pattern;
     }
 
     /**
@@ -135,7 +128,7 @@ public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
         if (isJettyHolderStarted()) {
             throw new SmartFrogLivenessException("Filter " +
                     name +
-                    " is not running under" + getAbsolutePath());
+                    " is not running under" + pattern);
         }
     }
 }

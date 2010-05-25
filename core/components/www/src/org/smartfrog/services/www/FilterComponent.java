@@ -35,9 +35,13 @@ public interface FilterComponent extends ServletContextComponent {
      * {@value}
      */
     String ATTR_CLASSNAME = ServletComponent.ATTR_CLASSNAME;
-    
+
+    /**
+     * {@value }
+     */
     String ATTR_PATTERN = "pattern";
 
+    String ATTR_dispatchType = "dispatchType";
     /**
      * {@value }
      */

@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
 #include "/org/smartfrog/services/www/bulkio/server/components.sf"
+#include "/org/smartfrog/services/www/filters/components.sf"
 
 
 BulkIOJetty extends LocalJettyServer {
@@ -30,6 +31,14 @@ BulkIOJetty extends LocalJettyServer {
     server LAZY PARENT:server;
     
     defaultServlet extends DefaultContentServlet {
+      context LAZY PARENT:context;
+    }
+    
+    noCaching extends NoCacheFilter {
+      context LAZY PARENT:context;
+    }
+    
+    requestCounter extends RequestCounterFilter {
       context LAZY PARENT:context;
     }
     

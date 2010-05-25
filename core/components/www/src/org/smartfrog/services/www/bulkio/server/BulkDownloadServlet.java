@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.www.bulkio.server;
 
-import org.smartfrog.services.www.HttpAttributes;
+import org.smartfrog.services.www.HttpHeaders;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -34,12 +34,23 @@ import java.io.IOException;
 public class BulkDownloadServlet extends AbstractBulkioServlet {
 
     @Override
+    protected void doHead(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        long size = getSize(request);
+        getAndSetFormat(request, response);
+        setXContentLength(response, size);
+    }
+
+    private void getAndSetFormat(HttpServletRequest request, HttpServletResponse response) {
+        String format = getRequestedFormat(request);
+        response.setContentType(format);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        disableCaching(response);
         long size = getSize(request);
         if (size == -1) {
-            //response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No " + ATTR_SIZE + " parameter");
             response.setContentType(TEXT_HTML);
             ServletOutputStream out = null;
             try {
@@ -49,10 +60,10 @@ public class BulkDownloadServlet extends AbstractBulkioServlet {
                 out.println("<body><h1>Download</h1>");
                 out.println(" <form method='get'><h2>Download a file</h2>");
                 out.println("  <p> Size:");
-                out.println("  <input type='text'name='"+ ATTR_SIZE+"'/>");
+                out.println("  <input type='text'name='" + ATTR_SIZE + "'/>");
                 out.println("  <p>");
                 out.println("  <p> Format:");
-                out.println("  <input type='text'name='"+ ATTR_FORMAT+"' value='text/plain'/>");
+                out.println("  <input type='text'name='" + ATTR_FORMAT + "' value='text/plain'/>");
                 out.println("  <p>");
                 out.println("  <button type='submit'>submit</button>");
                 out.println("  <p>");
@@ -63,13 +74,9 @@ public class BulkDownloadServlet extends AbstractBulkioServlet {
                 closeQuietly(out);
             }
         } else {
-            String format = request.getParameter(ATTR_FORMAT);
-            if (format == null) {
-                format = TEXT_PLAIN;
-            }
-            response.setContentType(format);
-            response.setHeader(HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(size));
-            response.setHeader("X-" + HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(size));
+            getAndSetFormat(request, response);
+            response.setHeader(CONTENT_LENGTH, Long.toString(size));
+            setXContentLength(response, size);
             ServletOutputStream outputStream = null;
             try {
                 outputStream = response.getOutputStream();
@@ -81,6 +88,18 @@ public class BulkDownloadServlet extends AbstractBulkioServlet {
             }
         }
 
+    }
+
+    private void setXContentLength(HttpServletResponse response, long size) {
+        response.setHeader("X-" + CONTENT_LENGTH, Long.toString(size));
+    }
+
+    private String getRequestedFormat(HttpServletRequest request) {
+        String format = request.getParameter(ATTR_FORMAT);
+        if (format == null) {
+            format = TEXT_PLAIN;
+        }
+        return format;
     }
 
 }
