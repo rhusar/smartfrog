@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/bulkio/server/components.sf"
 
 
-BulkIOJetty extends JettySocketHttpServerCompound {
+BulkIOJetty extends LocalJettyServer {
 
   host CoreJettyServer:ANY_HOST;
   
