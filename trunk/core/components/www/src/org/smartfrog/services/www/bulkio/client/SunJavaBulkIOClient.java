@@ -21,6 +21,7 @@ package org.smartfrog.services.www.bulkio.client;
 
 import org.apache.commons.logging.Log;
 import org.smartfrog.services.www.HttpAttributes;
+import org.smartfrog.services.www.HttpHeaders;
 import org.smartfrog.services.www.LivenessPageChecker;
 import org.smartfrog.services.www.bulkio.IoAttributes;
 import org.smartfrog.services.www.bulkio.server.AbstractBulkioServlet;
@@ -56,7 +57,7 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
         getLog().info("Uploading " + ioSize + " bytes to " + targetUrl);
         HttpURLConnection connection = openConnection();
         connection.setRequestMethod(method);
-        connection.setRequestProperty(HttpAttributes.HEADER_CONTENT_LENGTH, Long.toString(ioSize));
+        connection.setRequestProperty(HttpHeaders.CONTENT_LENGTH, Long.toString(ioSize));
         connection.setDoOutput(true);
         maybeSetChunking(connection);
         connection.connect();
@@ -124,13 +125,13 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
         connection.setDoOutput(false);
         connection.connect();
         checkStatusCode(target, connection, HttpURLConnection.HTTP_OK);
-        String contentLengthHeader = connection.getHeaderField(HttpAttributes.HEADER_CONTENT_LENGTH);
+        String contentLengthHeader = connection.getHeaderField(HttpHeaders.CONTENT_LENGTH);
         long contentLength = Long.parseLong(contentLengthHeader);
         if (contentLength != ioSize) {
             throw new IOException("Wrong content length returned from " + target
                     + " - expected " + ioSize + " but got " + contentLength);
         }
-        String formatHeader = connection.getHeaderField(HttpAttributes.HEADER_CONTENT_TYPE);
+        String formatHeader = connection.getHeaderField(HttpHeaders.CONTENT_TYPE);
         if (!format.equals(formatHeader)) {
             throw new IOException("Wrong content type returned from " + target
                     + " - expected " + format + " but got " + formatHeader);

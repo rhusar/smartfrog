@@ -21,7 +21,7 @@ package org.smartfrog.services.www.bulkio.server;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.www.HttpAttributes;
+import org.smartfrog.services.www.HttpHeaders;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,24 +36,21 @@ import java.io.PrintWriter;
  * 17-May-2010 15:02:27
  */
 
-public abstract class AbstractBulkioServlet extends HttpServlet {
+public abstract class AbstractBulkioServlet extends HttpServlet implements HttpHeaders {
 
     public static final String ATTR_LIMIT = "limit";
     public static final String ATTR_SIZE = "size";
     public static final String ATTR_FORMAT = "format";
-    public static final String FORMAT_BINARY = "application/binary";
 
     protected static final Log log = LogFactory.getLog(AbstractBulkioServlet.class);
-    protected static final String TEXT_HTML = "text/html";
-    protected static final String TEXT_PLAIN = "text/plain";
 
     protected long getLimit() {
         return Long.valueOf(getInitParameter(ATTR_LIMIT));
     }
 
     protected void disableCaching(HttpServletResponse response) {
-        response.addHeader("Cache-Control","none");
-        response.addHeader("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+        response.addHeader(CACHE_CONTROL, NO_CACHE);
+        response.addHeader(EXPIRES, "Thu, 01 Dec 1994 16:00:00 GMT");
     }
 
     public Log getLog() {
@@ -72,9 +69,9 @@ public abstract class AbstractBulkioServlet extends HttpServlet {
     }
 
     protected long getContentLength(HttpServletRequest request) throws ServletException {
-        String contentL = request.getHeader(HttpAttributes.HEADER_CONTENT_LENGTH);
+        String contentL = request.getHeader(CONTENT_LENGTH);
         return contentL == null ? -1 :
-                parseToLong(" the header " + HttpAttributes.HEADER_CONTENT_LENGTH, contentL);
+                parseToLong(" the header " + CONTENT_LENGTH, contentL);
     }
 
     /**
@@ -100,7 +97,7 @@ public abstract class AbstractBulkioServlet extends HttpServlet {
     }
 
     protected void returnPlainText(HttpServletResponse response, String message) throws IOException {
-        response.setContentType(TEXT_PLAIN);
+        response.setContentType(HttpHeaders.TEXT_PLAIN);
         PrintWriter writer = response.getWriter();
         try {
             writer.append(message);
