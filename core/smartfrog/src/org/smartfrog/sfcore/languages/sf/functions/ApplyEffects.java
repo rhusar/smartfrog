@@ -108,7 +108,7 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    SFSystem.sfLog().debug("KEY: "+key);
     	    
     	    Object update = effects.sfContext().get(UPDATE);
-    	    if (update==SFNull.get()) update=null;
+    	    //if (update==SFNull.get()) update=null;
     	    if (update!=null && update instanceof Reference) {
                 try {
                     update=effects.sfResolve((Reference)update);

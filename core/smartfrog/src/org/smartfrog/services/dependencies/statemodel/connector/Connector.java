@@ -26,6 +26,7 @@ import java.util.Vector;
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 import org.smartfrog.services.dependencies.statemodel.state.StateDependencies;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import static org.smartfrog.services.dependencies.statemodel.state.Constants.EXISTS;
@@ -56,7 +57,7 @@ public class Connector extends PrimImpl implements Prim, DependencyValidation, S
        return null;
     }
 
-    public boolean isEnabled() throws RemoteException {
+    public boolean isEnabled() throws RemoteException, SmartFrogRuntimeException {
        return false;
     }
 }

@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -31,6 +33,6 @@ public interface StateComponentManagement {
     //public HashMap<String, Object> getLocalState();
     public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException, RemoteException;
     //public boolean handleDPEs() throws RemoteException, StateComponentTransitionException;
-    public void selectSingleAndGo() throws RemoteException, StateComponentTransitionException;
+    public void selectSingleAndGo() throws RemoteException, StateComponentTransitionException, SmartFrogRuntimeException;
     public void go(String transition) throws StateComponentTransitionException;
 }

@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
 import org.smartfrog.services.dependencies.statemodel.state.StateComponentTransitionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 
 public class OrchVM extends StateComponent implements Prim {
@@ -30,7 +31,11 @@ public class OrchVM extends StateComponent implements Prim {
 	public OrchVM() throws RemoteException {}  
 
 	public boolean threadBody() throws RemoteException, StateComponentTransitionException {
-		selectSingleAndGo();  //ignore return value...
+        try {
+            selectSingleAndGo();  //ignore return value...
+        } catch (SmartFrogRuntimeException ignore) {
+            sfLog().debug(ignore);
+        }
 		return true;
 	}
 }
