@@ -53,13 +53,13 @@ public class DependenciesTest extends DeployingTestBase {
         application = deployExpectingSuccess(FILES + "testThreeUpDown.sf", "testThreeUpDown");
         WaitForTerminated.wait(getClass(), application, "model");
 
-        Prim p = (Prim) application.sfResolve(EVENTLOG);  
-        assertTrue(p.sfResolve(TRANSITION+"0").toString().equals(VM+":"+TSTART));
-        assertTrue(p.sfResolve(TRANSITION + "1").toString().equals(OS + ":" + TSTART));
-        assertTrue(p.sfResolve(TRANSITION + "2").toString().equals(App + ":" + TSTART));
-        assertTrue(p.sfResolve(TRANSITION + "3").toString().equals(App + ":" + TSTOP));
-        assertTrue(p.sfResolve(TRANSITION + "4").toString().equals(OS + ":" + TSTOP));
-        assertTrue(p.sfResolve(TRANSITION + "5").toString().equals(VM + ":" + TSTOP));
+        Prim p = (Prim) application.sfResolve(EVENTLOG);
+        assertTrue(p.sfResolve(TRANSITION+"0").toString().endsWith(VM+":"+TSTART));
+        assertTrue(p.sfResolve(TRANSITION + "1").toString().endsWith(OS + ":" + TSTART));
+        assertTrue(p.sfResolve(TRANSITION + "2").toString().endsWith(App + ":" + TSTART));
+        assertTrue(p.sfResolve(TRANSITION + "3").toString().endsWith(App + ":" + TSTOP));
+        assertTrue(p.sfResolve(TRANSITION + "4").toString().endsWith(OS + ":" + TSTOP));
+        assertTrue(p.sfResolve(TRANSITION + "5").toString().endsWith(VM + ":" + TSTOP));
         log.debug("testThreeUpDown: SUCCESS");
 
     }
