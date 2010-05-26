@@ -18,6 +18,8 @@
 
  */
 
+#include "/org/smartfrog/sfcore/prim/prim.sf"
+
 /**
  * This is the minimal HTTP server that ships with Java6.
  * It is not a servlet engine and has minimal compatibility with the mainstream
@@ -25,7 +27,7 @@
  */
 
 Java6HttpServer extends Prim {
-    sfClass "org.smartfrog.services.www.java6.Java6HttpServerImpl";
+    sfClass "org.smartfrog.services.www.servers.java6.Java6HttpServerImpl";
     LOCALHOST "localhost";
     ALL_HOSTS "0.0.0.0";
     host ALL_HOSTS;
@@ -37,3 +39,10 @@ Java6HttpServer extends Prim {
     factoryClass TBD;
 }
 
+
+/**
+ * The jersey server has its own factory
+ */
+JerseyHttpServer extends Java6HttpServer {
+    factoryClass "com.sun.jersey.api.container.httpserver.HttpServerFactory";
+}

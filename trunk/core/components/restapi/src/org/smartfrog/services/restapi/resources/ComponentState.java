@@ -26,11 +26,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-// The Java class will be hosted at the URI path "/helloworld"
 /**
  *
  */
-@Path("/components/{path:.+}\"")
+@Path("/components/{path:.+}")
 public class ComponentState extends AbstractRestResource {
 
   // The Java method will process HTTP GET requests
@@ -38,7 +37,6 @@ public class ComponentState extends AbstractRestResource {
   // The Java method will produce content identified by the MIME Media type "text/plain"
   @Produces("text/plain")
   public String getState(@PathParam("path") String path) {
-    // Return some cliched textual content
     return "undefined";
   }
 }

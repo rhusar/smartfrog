@@ -34,7 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * Component that represents a Jser
+ * Component that represents a Java 6 server
  */
 public class Java6HttpServerImpl extends PrimImpl {
 
@@ -66,7 +66,8 @@ public class Java6HttpServerImpl extends PrimImpl {
             throw new SmartFrogDeploymentException("No method 'create(String)' in class " + factoryClassName, e);
         }
         try {
-            createMethod.invoke(null, serverURL);
+            Object result = createMethod.invoke(null, serverURL);
+            server = (HttpServer) result;
         } catch (InvocationTargetException e) {
             Throwable thrown = e;
             if (e.getCause() != null) {
@@ -77,6 +78,10 @@ public class Java6HttpServerImpl extends PrimImpl {
                     thrown);
 
         } catch (IllegalAccessException e) {
+            throw new SmartFrogDeploymentException("Could not start the server on "
+                    + serverURL + ": " + e,
+                    e);
+        } catch (ClassCastException e) {
             throw new SmartFrogDeploymentException("Could not start the server on "
                     + serverURL + ": " + e,
                     e);
