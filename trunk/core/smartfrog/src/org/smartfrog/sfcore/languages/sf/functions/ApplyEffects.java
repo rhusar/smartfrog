@@ -96,8 +96,10 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	    }
     	    
     	    Object key = effects.sfContext().get(KEY);
+
     	    if (key==SFNull.get()) key=null;
-    	    if (key!=null && key instanceof Reference) {
+    	    if (key==null) return; //nothing here...
+    	    if (key instanceof Reference) {
                 try {
                     key=effects.sfResolve((Reference)key);
                 } catch (SmartFrogResolutionException e) {
