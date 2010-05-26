@@ -20,6 +20,23 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.*;
+import org.smartfrog.services.dependencies.threadpool.ThreadPool;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.ApplyReference;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
@@ -30,42 +47,11 @@ import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.swing.Timer;
-
-import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
-import org.smartfrog.services.dependencies.threadpool.ThreadPool;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.ApplyReference;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.T_FINALIZE;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.T_PREPARE;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.FINALIZE;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.PREPARE;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.T_ONTERMINATION;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.DO_SCRIPT;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.NAME;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.RUNNING;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.ASANDCONNECTOR;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.DPE;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.FUNCTIONCLASS;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.ISSTATECOMPONENTTRANSITION;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.THREADPOOL;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.REQUIRES_THREAD;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.LAG;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.EVENTLOG;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.COUNT;
-
 /**
  */
 
-public abstract class StateComponent extends PrimImpl implements Prim, StateDependencies, StateChangeNotification, DependencyValidation, StateComponentManagement {
+public abstract class StateComponent extends PrimImpl implements Prim, StateDependencies,
+        StateChangeNotification, DependencyValidation, StateComponentManagement {
    private boolean asAndConnector = false;  //document this!
      
    private HashMap<String,ComponentDescription> transitions = new HashMap<String,ComponentDescription>();
@@ -80,8 +66,10 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    protected boolean asyncResponse = false;  //LOG ISSUE AND REMOVE...
    private boolean amRunning=false;
    private ReentrantLock transitionLock = new ReentrantLock();
+   private String fullName;
+   private String fullNamePath;
 
-   private Prim eventLog;
+   private Prim eventLog;  //this needs proper synchronisation...
    
    public StateComponent() throws RemoteException {}
 
@@ -137,11 +125,21 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
       }
       
       //My name...
-      Object name_o = cxt.get(NAME);
-      if (name_o!=null && name_o instanceof String) name = (String) name_o;
-      else name = (String) sfParent().sfAttributeKeyFor(this);
+      name = attributeName(this);
+      sfReplaceAttribute("name", name);
+
+      fullName = sfCompleteName().toString();
+      int idx = fullName.indexOf("rootProcess:");
+      if (idx!=-1) fullName = fullName.substring("rootProcess:".length()+idx);
+
+      fullNamePath = SERVICERESOURCE.substring(1).replaceAll(PATHDELIM, SFDELIM)+fullName;
+      sfReplaceAttribute(FULLNAMEPATH, fullNamePath = SERVICERESOURCE.substring(1).replaceAll(PATHDELIM, SFDELIM) + fullName);
       
    }
+
+   protected String attributeName(Prim component) throws RemoteException {
+       return component.sfCompleteName().toString();
+    }
 
    private boolean checkRunning(){
 	   if (!amRunning){
@@ -154,7 +152,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }
    
    @SuppressWarnings("unchecked")
-   private void resetPossibleTransitions() throws StateComponentTransitionException, RemoteException {
+   private void resetPossibleTransitions() throws StateComponentTransitionException, RemoteException, SmartFrogRuntimeException {
 	    sfLog().debug("IN: State("+name+").resetPossibleTransitions()");
 	   
 	   enabled=null;
@@ -298,7 +296,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
       sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
    }
 
-    private boolean checkIsEnabled() throws RemoteException {  //and connector on the dependencies
+    private boolean checkIsEnabled() throws RemoteException, SmartFrogRuntimeException {  //and connector on the dependencies
         for (DependencyValidation dv : dependencies) {
             if (dv.getTransition() != null) continue;
             if (!dv.isEnabled()) return false;
@@ -380,7 +378,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         return progress;
     }*/
 
-    public void selectSingleAndGo() throws RemoteException, StateComponentTransitionException {
+    public void selectSingleAndGo() throws RemoteException, StateComponentTransitionException, SmartFrogRuntimeException {
         sfLog().debug("IN: State(" + name + ").selectSingleAndGo(...)");
 
         resetPossibleTransitions();
@@ -416,7 +414,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         try {
             if (eventLog != null) {
                 int count = eventLog.sfResolve(COUNT, 0, true);
-                eventLog.sfAddAttribute("transition" + count, name + ":" + transition);
+                eventLog.sfAddAttribute("transition" + count, fullName + ":" + transition);
                 eventLog.sfReplaceAttribute(COUNT, ++count);
             }
         } catch (Exception e) {
@@ -428,15 +426,636 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
     //////////////////////////////////////////////////////////////////////
     //StateChangeNotification
+    public String getModelInfoAsString(String refresh) throws RemoteException, SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
-    //NO LONGER A NEED FOR THIS- TO LOG ISSUE AND REMOVE
-    /*public String getStatusAsString() throws RemoteException {
-        return "";
-    }*/
+        /*  EXAMPLE:
+       sfModelMetaData extends DATA {
+      description "This is the foobar service";
+      links extends DATA {
+         -- extends DATA {
+           description "link to my friend";
+           link "/friend";
+         }
+      }
+   }
+        */
+
+        StringBuilder result = new StringBuilder();
+
+        ComponentDescription metaData = sfResolve(MODELMETADATA, (ComponentDescription) null, false);
+
+        if (metaData != null) {
+            result.append(MAINHEADER).append(metaData.sfResolve(DESCRIPTION).toString()).
+                    append(MAINHEADERCLOSE);
+            
+            ComponentDescription links = (ComponentDescription) metaData.sfContext().get(LINKS);
+            if (links != null) {
+                Enumeration keys = links.sfContext().keys();
+                while (keys.hasMoreElements()) {
+                    ComponentDescription link = (ComponentDescription) links.sfContext().get(keys.nextElement());
+                    result.append(SCRIPTHEADER).
+                            append("<A HREF=\"").
+                            append(link.sfContext().get(LINK)).
+                            append("\">").
+                            append(link.sfContext().get(DESCRIPTION)).
+                            append("</A>").
+                            append(SCRIPTHEADERCLOSE);
+                    //append(LINEBREAK);
+                }
+            }
+        }
+
+        return result.toString();
+    }
+
+    public String getTransitionLogAsString() throws RemoteException, SmartFrogResolutionException {
+        StringBuilder result = new StringBuilder();
+
+
+
+        if (eventLog != null) {
+            int count = eventLog.sfResolve(COUNT, 0, true);
+            for (int i = 0; i < count; i++) {
+                String transition = "transition" + i;
+                result.append(SCRIPTHEADER).
+                        append(transition).
+                        append(": ").
+                        append((String) eventLog.sfContext().get(transition)).
+                        append(SCRIPTHEADERCLOSE);
+            }
+        }
+
+        return result.toString();
+    }
+
+
+    public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException {
+        //Look for link meta-data...
+
+        /* EXAMPLE:
+        sfInformMetaData extends DATA {
+      -- extends DATA {
+         description "status of the component";
+         desired extends DATA {
+            guard true;
+            attribute "dup";
+            values ["false", "true"];
+            aliases extends DATA {
+              "false" "bring down";
+              "true" "bring up";
+            }
+         }
+
+         observed extends DATA {
+             guard true;
+             attribute "oup";
+             aliases extends DATA {
+              "false" "not up";
+              "true" "is up";
+            }
+         }
+         links extends DATA {
+          -- extends DATA {
+            description "hey up...";
+            link "/heyup!";
+            guard LAZY oup;
+          }
+         }
+         stdout "foobar";
+         stderr "foobar";
+      }
+
+      -- extends DATA {
+         description "array sizing";
+         desired extends DATA {
+            guard true;
+            attribute "foobarX";
+         }
+
+         observed extends DATA {
+             guard true;
+             attribute "foobarX";
+         }
+     }
+   }
+
+         */
+
+        StringBuilder result = new StringBuilder();
+
+        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
+
+        if (metaData != null) {
+
+            boolean show = sfResolve(SHOW, false, false);
+            String cdescription = sfResolve(DESCRIPTION, (String) null, false);
+
+            result.append(SMALLHEADER).append("<A HREF=\"#\" ONCLICK=\"toggle_visibility('").append(fullName).append("');\">");
+            if (cdescription!=null) {
+                result.append(cdescription).append("</A> -- ");
+            }
+            result.append(fullName);
+            if (cdescription == null) {
+                result.append("</A>");
+            }
+            result.append("<DIV id='").append(fullName).
+                    append("' style=\"display:").append(show?"block":"none").append(";\">");
+
+
+            /*
+            <a href="#" onclick="toggle_visibility('foo');">Click here to toggle visibility of element #foo</a>
+            <div id="foo" style="display:none;">This is foo</div>
+             */
+
+            //result.append("<DIV)
+
+
+            //        result.append(SMALLHEADER).append("Component: ").append(fullName).append(SMALLHEADERCLOSE);
+
+            Enumeration keys = metaData.sfContext().keys();
+            while (keys.hasMoreElements()) {
+                Object key = keys.nextElement();
+                ComponentDescription entry = null;
+                try {
+                    entry = (ComponentDescription) metaData.sfContext().get(key);
+                } catch (Exception e) {
+                    continue; //round while
+                }
+
+                sfLog().debug("ENTRY!!! " + entry + ":" + key);
+                sfLog().debug("***GUARD***"+entry.sfContext().get(GUARD));
+
+                try {
+                    Boolean guardEval = (Boolean) entry.sfResolve(GUARD);
+                    if ((guardEval != null) && !(guardEval)) continue; //round while
+                } catch (Exception ignore) {
+                    sfLog().debug(ignore);
+                }
+
+                result.append(SCRIPTHEADER).append(ITAL).
+                        append(entry.sfContext().get(DESCRIPTION)).append(ITALCLOSE).append(SCRIPTHEADERCLOSE);
+
+                sfLog().debug("DESCRIPTION! " + key);
+
+                ComponentDescription observed = (ComponentDescription) entry.sfContext().get(OBSERVED);
+
+                int indent = sfResolve(MYINDENT, MYINDENTDEFAULT, false);
+                observed(observed, result, indent);
+
+                sfLog().debug("OBSERVED! " + key);
+
+                desired(entry, result, indent);
+                sfLog().debug("DESIRED! " + key);
+
+                
+                //ANY LINKS?
+                links(entry, result, indent);
+                sfLog().debug("LINKS! " + key);
+
+            }
+            stdout(result);
+
+            result.append("</DIV>");
+        }
+        
+
+        return result.toString();
+    }
+
+    void observed(ComponentDescription entry, StringBuilder result, int indent) throws SmartFrogResolutionException, RemoteException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        ComponentDescription observed = (ComponentDescription) entry.sfContext().get(OBSERVED);
+        if (observed != null) {
+            boolean cont = true;
+            /*if (observed.sfContext().get(GUARD)!=null){
+                Boolean guardEval = (Boolean) observed.sfResolve(GUARD);
+                if ((guardEval != null) && !(guardEval)) cont=false;
+            }*/
+            if (cont) {
+
+                boolean annotate = observed.sfResolve(ANNOTATE, false, false);
+
+                String description = null;
+                try {
+                    description = observed.sfResolve(DESCRIPTION).toString();
+                } catch (SmartFrogResolutionException e) {
+                    sfLog().debug(e);
+                }
+
+                if (description!=null){
+                    result.append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).//append(SCRIPTHEADER).
+                            append(ITAL).
+                            append(description).append(ITALCLOSE);//.append(SCRIPTHEADERCLOSE);
+                }
+
+                sfLog().debug("ATTRIBUTE! ");
+                String attribute = null;
+                try {
+                    attribute = observed.sfResolve(ATTRIBUTE).toString();
+                } catch (SmartFrogResolutionException e) {
+                    sfLog().debug(e);
+                    return; //take no action...
+                }
+
+                sfLog().debug("ATTRIBUTE! " + attribute);
+                String value = null;
+                try {
+                    value = sfResolve(attribute).toString();
+                } catch (SmartFrogResolutionException e) {
+                    sfLog().debug(e);
+                    return; //take no action... 
+                }
+                
+                sfLog().debug("VALUE! " + value);
+
+
+                sfLog().debug("ALIASES! ");
+                ComponentDescription aliases = null;
+                try {
+                    aliases = (ComponentDescription) observed.sfResolve(ALIASES);
+                } catch (SmartFrogResolutionException ignore) {
+
+                }
+                if (aliases != null) {
+                    String alias = (String) aliases.sfContext().get(value);
+                    if (alias != null) value = alias;
+                }
+                sfLog().debug("VALUE "+value);
+                result.append(SOMEPADDING).//append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).
+                        append(value).append(annotate?POBSERVED:"").append(SCRIPTHEADERCLOSE);
+            }
+        }
+    }
+
+    void desired(ComponentDescription entry, StringBuilder result, int indent) throws SmartFrogResolutionException {
+        ComponentDescription desired = (ComponentDescription) entry.sfContext().get(DESIRED);
+        boolean cont = true;
+        if (desired != null) {
+
+            Vector values = null;
+            try {
+                values = (Vector) desired.sfResolve(VALUES);
+            } catch (SmartFrogResolutionException ignore) {
+
+            }
+
+            sfLog().debug("DESIREDGUARD! ");
+
+            boolean annotate = desired.sfResolve(ANNOTATE, false, false);
+
+            String description = null;
+            try {
+                description = desired.sfResolve(DESCRIPTION).toString();
+            } catch (SmartFrogResolutionException e) {
+                sfLog().debug(e);
+            }
+
+            if (description != null) {
+                result.append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).//append(SCRIPTHEADER).
+                        append(ITAL).
+                        append(description).append(ITALCLOSE);//.append(SCRIPTHEADERCLOSE);
+            }
+
+            String attribute = null;
+            try {
+                attribute = desired.sfResolve(ATTRIBUTE).toString();
+            } catch (SmartFrogResolutionException e) {
+                 sfLog().ignore(e);
+                return; //ok
+            }
+
+            String cvalue = sfContext().get(attribute).toString();
+            if (values != null) {
+
+                sfLog().debug("DESIREDATTR! ");
+
+                ComponentDescription aliases = null;
+                try {
+                    aliases = (ComponentDescription) desired.sfResolve(STATEALIASES);
+                } catch (SmartFrogResolutionException ignore) {
+
+                }
+                sfLog().debug("DESIREDSTATEALIAS! ");
+
+                if (aliases != null) {
+                    String alias = (String) aliases.sfContext().get(cvalue);
+                    if (alias != null) cvalue = alias;
+                }
+                result.append(SOMEPADDING).//append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).
+                        append(cvalue).append(annotate ? PDESIRED : "").append(SCRIPTHEADERCLOSE);
+            }
+
+
+            sfLog().debug("DESIREDSTATEPRINT! ");
+
+            /*try {
+                Boolean guardEval = (Boolean) desired.sfResolve(GUARD);
+                if ((guardEval != null) && !(guardEval)) cont = false; //round while
+            } catch (Exception ignore) {
+
+            }*/
+
+            if (cont) {
+
+                result.append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).append(SETVALUE);
+
+
+                ComponentDescription aliases = null;
+                try {
+                    aliases = (ComponentDescription) desired.sfResolve(ACTIONALIASES);
+                } catch (SmartFrogResolutionException ignore) {
+
+                }
+
+                sfLog().debug("DESIREDACTIONALIAS! ");
+
+                String dStateName = ":::" + fullName + ":::" + attribute;
+                if (values != null) {
+
+                    result.append("<SELECT name=\"").append(dStateName).append("\">");
+                    for (Object value : values) {
+                        result.append("<OPTION value=\"");
+                        String realValue = value.toString();
+                        String shownValue = realValue;
+                        if (aliases != null) {
+                            String alias = (String) aliases.sfContext().get(realValue);
+                            if (alias != null) shownValue = alias;
+                        }
+                        result.append(realValue).append("\">").
+                                append(shownValue).append("</OPTION>");
+                    }
+                    result.append("</SELECT>");
+
+                } else {
+                    result.append("<INPUT type=\"text\" value=\"").append(cvalue).
+                            append("\"name=\"").append(dStateName).append("\"/>");
+                }
+                result.append(SCRIPTHEADERCLOSE);
+                sfLog().debug("DESIREDSTATESET! ");
+            } 
+        }
+    }
+
+
+    void links(ComponentDescription entry, StringBuilder result, int indent){
+        ComponentDescription links = null;
+        try {
+            links = (ComponentDescription) entry.sfResolve(LINKS);
+        } catch (SmartFrogResolutionException ignore) {
+
+        } catch (ClassCastException ignore) {
+
+        }
+        if (links != null) {
+
+            sfLog().debug("LINKS...yes ");
+            String dns = null;
+            try {
+                dns = (String) sfResolve(DNS);
+            } catch (Exception ignore) {
+
+            }
+
+            sfLog().debug("LINKS...dns " + dns);
+
+            if (dns != null) {
+                Enumeration keys = links.sfContext().keys();
+                while (keys.hasMoreElements()) {
+                    ComponentDescription link = (ComponentDescription) links.sfContext().get(keys.nextElement());
+                    sfLog().debug("LINKS...link " + link);
+                    try {
+                        Boolean guardEval = (Boolean) link.sfResolve(GUARD);
+                        if ((guardEval != null) && !(guardEval)) continue; //round while
+                    } catch (Exception ignore) {
+                        sfLog().debug("LINKS...did not resolve guard "+ignore);    
+                    }
+                    result.append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).
+                            append("<A HREF=\"http://").append(dns).
+                            append(link.sfContext().get(LINK)).
+                            append("\">").
+                            append(link.sfContext().get(DESCRIPTION)).
+                            append("</A>").
+                            append(SCRIPTHEADERCLOSE);
+                }
+            }
+            
+        }
+    }
+
+    void stdout(StringBuilder result){
+        String stdout = null;
+        String stderr = null;
+
+        try {
+            stdout = (String) sfResolve(STDOUT);
+            stderr = (String) sfResolve(STDERR);
+        } catch (Exception ignore) {
+
+        }
+
+        if (stdout != null) {
+            result.append(SCRIPTHEADER).
+                    append("Script STDOUT: ").append(stdout).append(SCRIPTHEADERCLOSE);
+        }
+
+        if (stderr != null) {
+            result.append(SCRIPTHEADER).
+                    append("Script STDERR: ").append(stderr).append(SCRIPTHEADERCLOSE);
+        }
+
+        sfLog().debug("STDOUT/ERR! ");
+    }
+
+    public String getServiceStateDetails() throws RemoteException, SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+
+        boolean ignoreme = sfResolve(IGNOREMETADATA, false, false);
+        if (ignoreme) return "";
+
+        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
+
+        StringBuilder status = new StringBuilder();
+
+        if (metaData!=null){
+            boolean show = sfResolve(SHOW, false, false);
+            String cdescription = sfResolve(DESCRIPTION, (String) null, false);
+            int indent = sfResolve(MYINDENT, MYINDENTDEFAULT, false)-1;
+
+            String myParent=MAINDIV;
+            try {
+                Object myParentObj = sfResolve(PARENT);
+                if (myParentObj instanceof String){
+                    Reference myParentRef = Reference.fromString(myParentObj.toString());
+                    myParentObj = sfResolve(myParentRef);
+                }
+                Prim myParentPrim = (Prim) myParentObj;
+                myParent=myParentPrim.sfResolve(FULLNAMEPATH).toString();
+                myParent=myParent + SFDELIM + CONTAINER;
+            } catch (Exception e) {
+                sfLog().debug(e); //ok
+            }
+
+            //Ok this should be moved...(hence direct specified literal)
+            String vmName = sfResolve("vmName", (String)null, false);
+            String additional = (vmName!=null? SOMEPADDING+"("+vmName+")"+SOMEPADDING:"");
+
+            status.append("<COMP>");
+            status.append("<STATUS>").append(show?SHOW:NOSHOW).append("</STATUS>");
+            status.append("<DESCRIPTION>").append(cdescription).append(additional).append("</DESCRIPTION>");
+            String resource=fullNamePath+SFDELIM+CONTAINER;
+            status.append("<PATH>").append(resource).append("</PATH>");
+            status.append("<PARENT>").append(myParent).append("</PARENT>");
+            status.append("<INDENT>").append(indent).append("</INDENT>");
+            status.append("</COMP>");
+
+            StringBuilder extra = new StringBuilder();
+
+            Enumeration keys = metaData.sfContext().keys();
+            while (keys.hasMoreElements()) {
+                Object key = keys.nextElement();
+                ComponentDescription entry = null;
+                try {
+                    entry = (ComponentDescription) metaData.sfContext().get(key);
+                } catch (Exception e) {
+                    continue; //round while
+                }
+
+                sfLog().debug("ENTRY!!! " + entry + ":" + key);
+                sfLog().debug("***GUARD***" + entry.sfContext().get(GUARD));
+
+                try {
+                    Boolean guardEval = (Boolean) entry.sfResolve(GUARD);
+                    if ((guardEval != null) && !(guardEval)) continue; //round while
+                } catch (Exception ignore) {
+                    sfLog().debug(ignore);
+                }
+
+                sfLog().debug("***GUARD*** PASSES");
+
+                ComponentDescription observed = (ComponentDescription) entry.sfContext().get(OBSERVED);
+                ComponentDescription links = null;
+                try {
+                    links = (ComponentDescription) entry.sfResolve(LINKS);
+                } catch (SmartFrogResolutionException ignore) {
+
+                } catch (ClassCastException ignore) {
+
+                }
+
+                sfLog().debug("***LINKS***"+links);
+                sfLog().debug("***OBSERVED***" + observed);
+
+                if (links!=null || observed!=null){
+                    extra.append("<COMP>");
+                    extra.append("<STATUS>").append(observed!=null?"updating":"static").append("</STATUS>");
+
+                    resource = fullNamePath + SFDELIM + key + SFDELIM + OBSERVED;
+                    extra.append("<PATH>").append(resource).append("</PATH>");
+                    extra.append("<PARENT>").append(fullNamePath).append(SFDELIM).append(CONTAINER).append("</PARENT>");
+                    extra.append("</COMP>");
+                }
+
+                ComponentDescription desired = (ComponentDescription) entry.sfContext().get(DESIRED);
+                sfLog().debug("***DESIRED***" + desired);
+
+                if (desired != null) {
+                    extra.append("<COMP>");
+                    extra.append("<STATUS>").append("static").append("</STATUS>");
+                    resource = fullNamePath + SFDELIM + key + SFDELIM + DESIRED;
+                    extra.append("<PATH>").append(resource).append("</PATH>");
+                    extra.append("<PARENT>").append(fullNamePath).append(SFDELIM).append(CONTAINER).append("</PARENT>");
+                    extra.append("</COMP>");
+                }
+            }
+
+            if (extra.toString().length()==0) return "";
+            else status.append(extra);
+        }
+        
+        return status.toString();
+    }
+
+    public String getServiceStateObserved(String key) throws RemoteException, SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+
+
+        StringBuilder result = new StringBuilder();
+
+        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
+        ComponentDescription entry = (ComponentDescription) metaData.sfContext().get(key);
+        
+        sfLog().debug("OBSERVED! " + key);
+
+        int indent = sfResolve(MYINDENT, MYINDENTDEFAULT, false);
+
+        observed(entry, result, indent);
+
+        //ANY LINKS?
+        links(entry, result, indent);
+
+        return result.toString();
+    }
+
+    public String getServiceStateDesired(String key) throws RemoteException, SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+
+
+        StringBuilder result = new StringBuilder();
+
+        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
+        ComponentDescription entry = (ComponentDescription) metaData.sfContext().get(key);
+
+        int indent = sfResolve(MYINDENT, MYINDENTDEFAULT, false);
+        
+        desired(entry, result, indent);
+        sfLog().debug("DESIRED! " + key);
+
+
+        return result.toString();
+    }
+
+    public String getServiceStateContainer() throws RemoteException, SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        StringBuilder result = new StringBuilder();
+
+        //
+        /*
+        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
+
+        if (metaData != null) {
+
+            boolean show = sfResolve(SHOW, false, false);
+            String cdescription = sfResolve(DESCRIPTION, (String) null, false);
+
+            result.append(SMALLHEADER).append("<A HREF=\"#\" ONCLICK=\"toggle_visibility('").append(fullName).append("');\">");
+            if (cdescription != null) {
+                result.append(cdescription).append("</A> -- ");
+            }
+            result.append(fullName);
+            if (cdescription == null) {
+                result.append("</A>");
+            }
+            result.append("<DIV id='").append(fullName).
+                    append("' style=\"display:").append(show ? "block" : "none").append(";\">");
+
+            stdout(result);
+
+        }*/
+        return result.toString();
+    }
+
+
+    public boolean isThreadedComposite() throws RemoteException, SmartFrogException {
+        return false;
+    }
 
     Timer scriptTimer;
 
     public void handleStateChange() throws RemoteException, SmartFrogException {
+
+        if (this.sfIsTerminating || this.sfIsTerminated || !(this.sfIsStarted)) return;
+
 
         sfLog().debug("IN: State(" + name + ").handleStateChange()");
 
@@ -516,7 +1135,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    /////////////////////////////////////////////////////////
    //DependencyValidation
 
-   public boolean isEnabled() throws RemoteException {
+   public boolean isEnabled() throws RemoteException, SmartFrogRuntimeException {
       return (!asAndConnector) || checkIsEnabled();
    }
 

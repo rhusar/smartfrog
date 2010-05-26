@@ -43,7 +43,7 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.prim.Prim;
 
-public class NilStateComponent extends StateComponent implements Prim {
+public class NilStateComponent extends StateComponent {
 			
 	public NilStateComponent() throws RemoteException {}  
 

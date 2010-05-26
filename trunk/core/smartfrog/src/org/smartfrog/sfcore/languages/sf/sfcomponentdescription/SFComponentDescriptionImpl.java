@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.MessageKeys;
@@ -685,8 +686,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 		
 	/**
 	 * Create and add an LRSRecord (link resolution state record) to the end of the chain of link records being kept  
-	 * @param me
-	 * @param par
+	 * @param sfcd
 	 * @param idx
 	 */
 	private LRSRecord addLRSRecord(SFComponentDescription sfcd, int idx){
@@ -798,6 +798,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                    } catch (SmartFrogLazyResolutionException slrex) {
                        rv.setEager(false);
                    } catch (Exception resex) {
+                       if (sfLog().isDebugEnabled()) {
+                           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+                           sfLog().debug("EXCEPTION in link resolution: " + value + ":" + sfcd.sfCompleteName() + ":" + key.toString() + ":" + resex+"***");
+                       }
                        resState.addUnresolved(value, sfcd.sfCompleteName(), key.toString(), resex);
                    } catch (Throwable thr){
                 	  if (thr instanceof CoreSolverFatalError) throw (CoreSolverFatalError) thr;
@@ -825,15 +829,17 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
     public static ComponentDescription simpleLinkResolve(ComponentDescription comp) throws SmartFrogException {
 		//Simple link resolve...
-		ComponentDescription newcomp = new SFComponentDescriptionImpl();
+       if (SFSystem.sfLog().isDebugEnabled()) SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        ComponentDescription newcomp = new SFComponentDescriptionImpl();
 		newcomp.setParent(comp.sfParent());
 		newcomp.setEager(comp.getEager());
 		
 		for (Iterator v = comp.sfAttributes(); v.hasNext();) {
-			Object name = v.next();
-           String nameS = name.toString();
+		   Object name = v.next();
            Reference ref = new Reference(ReferencePart.here(name));
            Object value=comp.sfResolve(ref);
+           SFSystem.sfLog().debug("key:value, "+ name +" : "+value);
+
            if (value instanceof ComponentDescription) value=simpleLinkResolve((ComponentDescription)value);           
           
            newcomp.sfAddAttribute(name, value);
@@ -976,6 +982,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     * @throws FileNotFoundException if the resource does not resolve
     */
    public static ComponentDescription getDescriptionURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
+       if (SFSystem.sfLog().isDebugEnabled()) SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
        InputStream instream = SFClassLoader.getResourceAsStream(url);
        if (instream == null) {
            throw new FileNotFoundException("Unable to load " + url);

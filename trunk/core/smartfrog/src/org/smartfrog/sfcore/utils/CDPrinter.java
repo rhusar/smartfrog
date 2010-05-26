@@ -20,21 +20,20 @@
 
 package org.smartfrog.sfcore.utils;
 
-import java.io.FileNotFoundException;
-import java.util.*;
-
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
+
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * This class provides a single static method - print - which takes a ComponentDescription
@@ -97,6 +96,7 @@ public class CDPrinter {
 
         try {
             CDPStart = cd.sfResolve(new Reference(ReferencePart.here("CDPStart")), CDPStart, false);
+            log.debug("CDPStart"+ CDPStart);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
             log.error(e);
@@ -104,11 +104,13 @@ public class CDPrinter {
 
         try {
             CDPEnd = cd.sfResolve(new Reference(ReferencePart.here("CDPEnd")), CDPEnd, false);
+            log.debug("CDPEnd" + CDPEnd);
         } catch (SmartFrogResolutionException e) {
             log.error(e);
         }
         try {
             CDPSep = cd.sfResolve(new Reference(ReferencePart.here("CDPSep")), CDPSep, false);
+            log.debug("CDPSep" + CDPSep);
         } catch (SmartFrogResolutionException e) {
             //shouldn't happen
             log.error(e);
@@ -118,6 +120,10 @@ public class CDPrinter {
             Object next = i.next();
             Object value = cd.sfContext().get(next);
             if (value instanceof ComponentDescription) {
+                if (((ComponentDescription)value).sfContext().get("sfCDPrinterIgnore")!=null) {
+                    log.debug("print(): " + next + " ignored");
+                    continue; //round for...
+                }
                 String resNext = print((ComponentDescription) value, indent+incr, incr, indents);
                 if (!resNext.isEmpty() && !nested.isEmpty()) {
                     nested += CDPSep;
@@ -125,7 +131,8 @@ public class CDPrinter {
                 nested += resNext;
             }
         }
-        return indentString + CDPStart + nested + (nested.equals("")? "" : indentString) + CDPEnd;
+        
+        return indentString + CDPStart + nested + (nested.equals("") ? "" : indentString) + CDPEnd;
     }
 
     /**

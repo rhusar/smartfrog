@@ -40,6 +40,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dependencies.statemodel.state;
 
 import java.rmi.RemoteException;
+
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 
 public class SimpleStateComponent extends StateComponent implements Prim {
@@ -47,7 +49,11 @@ public class SimpleStateComponent extends StateComponent implements Prim {
 	public SimpleStateComponent() throws RemoteException {}  
 
 	public boolean threadBody() throws RemoteException, StateComponentTransitionException {
-		selectSingleAndGo();  //ignore return value...
-		return true;
+        try {
+            selectSingleAndGo();  //ignore return value...
+        } catch (SmartFrogRuntimeException ignore) {
+            sfLog().debug(ignore);
+        }
+        return true;
 	}
 }

@@ -22,11 +22,12 @@ package org.smartfrog.services.dependencies.statemodel.connector;
 
 import java.rmi.RemoteException;
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 public class XorConnector extends Connector {
 	public XorConnector() throws RemoteException {}
 
-    public boolean isEnabled() throws RemoteException {
+    public boolean isEnabled() throws RemoteException, SmartFrogRuntimeException {
         boolean existsCheck = false;
         boolean result = false;
         for (DependencyValidation dep : dependencies) {

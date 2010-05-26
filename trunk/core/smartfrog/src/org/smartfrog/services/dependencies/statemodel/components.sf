@@ -40,6 +40,18 @@ DesiredObservedStateComponent extends StateComponent {
    }
 }
 
+PerformAction extends StateComponent {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
+   done false;
+   tToDone extends Transition {
+          guard ( !LAZY done );
+          effects extends PolicyEffects {
+		     key "done";
+		     update true;
+	      }
+   }
+}
+
 Dependency extends Prim {
      sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
      sfUpdatable true;
@@ -57,6 +69,8 @@ StateComponent extends Prim {
 
 	 threadpool LAZY PARENT:ATTRIB threadpool;
 	 sfOrchEventLog LAZY PARENT:ATTRIB sfOrchEventLog;
+	 sfInformMetaData extends DATA { show false; }
+	 sfIgnoreMyMetaData false;
 }
 
 OrchEventLog extends Prim {
@@ -66,6 +80,8 @@ OrchEventLog extends Prim {
 
 ThreadedCompositeBase extends {
      threadpool extends SimpleThreadPool;
+     sfIsThreadedComposite;
+     sfNotificationDelay 1000;
 }
 
 ThreadedComposite extends Composite, ThreadedCompositeBase;
@@ -99,7 +115,7 @@ NWayComposite extends Composite {
 }
 
 
-Model extends CompositeWithSync {
+Model extends CompositeWithSync, ThreadedCompositeBase {
      //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
      running true;  //note this has changed in meaning from legacy versions
      sfIsOrchModel;

@@ -23,14 +23,24 @@ package org.smartfrog.services.dependencies.statemodel.state;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import org.smartfrog.services.dependencies.statemodel.state.Composite.Notifier;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 /**
  */
 public interface StateChangeNotification extends Remote {
    //child down to State, where it is handled
    public void handleStateChange() throws RemoteException, SmartFrogException;
-   //public String getStatusAsString() throws RemoteException;
+   public boolean isThreadedComposite() throws RemoteException, SmartFrogException;
+   public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException;
+   public String getModelInfoAsString(String refresh) throws RemoteException, SmartFrogResolutionException;
+    public String getTransitionLogAsString() throws RemoteException, SmartFrogResolutionException;
+
+   public String getServiceStateDetails() throws RemoteException, SmartFrogResolutionException;
+    //public String getTerminationDetails() throws RemoteException, SmartFrogResolutionException;
+    public String getServiceStateObserved(String key) throws RemoteException, SmartFrogResolutionException;
+    public String getServiceStateDesired(String key) throws RemoteException, SmartFrogResolutionException;
+    public String getServiceStateContainer() throws RemoteException, SmartFrogResolutionException;
+
+
 }
