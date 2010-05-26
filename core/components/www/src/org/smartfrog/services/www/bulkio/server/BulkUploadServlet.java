@@ -49,7 +49,7 @@ public class BulkUploadServlet extends AbstractBulkioServlet {
         getLog().info(request.getMethod() + " operation receiving " + contentLength + " bytes of type " + type);
         if (size >= 0 && size != contentLength) {
             throw new ServletException(
-                    "Content-Length header of " + contentLength + " does not equal the size parameter " + size);
+                    CONTENT_LENGTH + " header of " + contentLength + "bytes does not equal the size parameter " + size);
         }
         ServletInputStream inStream = null;
         long bytes;
