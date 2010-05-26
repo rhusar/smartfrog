@@ -68,6 +68,10 @@ public class Java6HttpServerImpl extends PrimImpl {
         try {
             Object result = createMethod.invoke(null, serverURL);
             server = (HttpServer) result;
+            if (server == null) {
+                throw new SmartFrogDeploymentException("Null server from " + factoryClassName);
+            }
+            server.start();
         } catch (InvocationTargetException e) {
             Throwable thrown = e;
             if (e.getCause() != null) {
@@ -86,7 +90,6 @@ public class Java6HttpServerImpl extends PrimImpl {
                     + serverURL + ": " + e,
                     e);
         }
-        server.start();
     }
 
     @Override
