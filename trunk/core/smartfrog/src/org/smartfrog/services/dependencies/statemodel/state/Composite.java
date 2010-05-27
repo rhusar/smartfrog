@@ -88,6 +88,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
         }
 
         super.sfDeploy();
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
 
     public void sfStart() throws RemoteException, SmartFrogException {
@@ -103,6 +105,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
         } catch (SmartFrogResolutionException ignored) {
             sfLog().ignore(ignored);  //intentionally ok
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
 
     public void sfTerminateWith(TerminationRecord tr) {
@@ -110,6 +114,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 
         terminating = true;
         super.sfTerminateWith(tr);
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
 
     public void sfRun() throws SmartFrogException, RemoteException {
@@ -121,6 +127,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
                 ((RunSynchronisation) c).sfRun();
             }
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
    
    public void waitOnQueuesCleared() throws IOException {
@@ -144,6 +152,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
                 throw ie;
             }
        }
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    public void addToDeploy(String name, ComponentDescription cd) throws SmartFrogException {
@@ -169,6 +179,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 				if (added!=null && added instanceof SynchedComposite) model.addToRun(added); 
 			}*/
 	   }
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    public void addToTerminate(String name){
@@ -176,6 +188,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
        synchronized (toTerminate){
 		   toTerminate.add(name);
 	   }
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 	   
    }
    
@@ -193,6 +207,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
                 status += ((StateChangeNotification) c).getDesiredStatusAsString();
             }
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return status;
     }
 
@@ -205,6 +221,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
                 status += ((StateChangeNotification) c).getServiceStateDetails();
             }
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return status;
     }
 
@@ -291,6 +309,8 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	  listeners.clear(); 
 	   
 	  }}}
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 	  
    }
 

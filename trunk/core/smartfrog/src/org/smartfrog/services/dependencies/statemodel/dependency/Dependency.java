@@ -57,6 +57,8 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
       super.sfDeploy();
       //transition = sfResolve(TRANSITION, (String) null, false);
       name = this.sfParent().sfAttributeKeyFor(this).toString();
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
    public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -72,6 +74,8 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
        }
 
        if (running!=null && running) sfRun();  //set it up now ("run" it)...
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    public synchronized void sfRun() throws SmartFrogException, RemoteException {
@@ -122,9 +126,13 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
        }
 
        sfLog().debug("ON: " + on);
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
    public synchronized void sfTerminateWith(TerminationRecord tr) {
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
        try {
            by.deregister(this);
        } catch (RemoteException e) {
@@ -132,6 +140,8 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
            throw new RuntimeException(e); //force a hard reset, which should follow...
        }
        super.sfTerminateWith(tr);
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
    public String toString(){
@@ -164,7 +174,9 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
            isEnabled = (enabled && (on == null || on.isEnabled()));
        }
        sfLog().debug("ISENABLED: " + isEnabled);
-       
+
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
        return isEnabled;
    }
 

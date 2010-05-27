@@ -75,7 +75,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
    @Override
    public synchronized void sfTerminateWith(TerminationRecord t) {
-		sfLog().debug ("StateComponent: (IN) sfTerminateWith(t)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 		
 		ComponentDescription tTermination = transitions.get(T_ONTERMINATION);
 
@@ -89,12 +90,15 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 		
 		super.sfTerminateWith(t);
         sfLog().debug ("StateComponent: "+name+" terminated");
-        sfLog().debug ("StateComponent: (OUT) sfTerminateWith(t)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
     @Override
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
-       super.sfDeploy();
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        super.sfDeploy();
 
        Context cxt = sfContext();
        
@@ -134,6 +138,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
       fullNamePath = SERVICERESOURCE.substring(1).replaceAll(PATHDELIM, SFDELIM)+fullName;
       sfReplaceAttribute(FULLNAMEPATH, fullNamePath = SERVICERESOURCE.substring(1).replaceAll(PATHDELIM, SFDELIM) + fullName);
+      if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
       
    }
 
@@ -142,18 +148,23 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     }
 
    private boolean checkRunning(){
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   if (!amRunning){
 		   Boolean runValue = null;
 		   try { runValue = (Boolean) sfResolve(new Reference(ReferencePart.attrib(RUNNING))); }
 		   catch (Exception e){/*System.out.println("Wee exception:"+e);*/}
 		   if (runValue!=null) amRunning = runValue;
 	   }
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 	   return amRunning;
    }
    
    @SuppressWarnings("unchecked")
    private void resetPossibleTransitions() throws StateComponentTransitionException, RemoteException, SmartFrogRuntimeException {
-	    sfLog().debug("IN: State("+name+").resetPossibleTransitions()");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   
 	   enabled=null;
 	   if (!checkRunning()){
@@ -202,10 +213,13 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   
 	   if (enabled.isEmpty()) enabled=null;
 
-	   sfLog().debug("OUT: State("+name+").resetPossibleTransitions()");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    private void acquireLock() throws StateComponentTransitionException {
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   sfLog().debug("IN: State("+name+").acquireLock(...)");
 	   sfLog().debug("is locked?"+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
 	   if ((currentAction!=null && currentAction!=Thread.currentThread()) || //Allow locking only by scheduled action...
@@ -213,20 +227,25 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
            throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_ACQUIRELOCK);
        }
 	   transitionLock.lock();
-	   sfLog().debug("OUT: State("+name+").acquireLock(...)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    private void cleanLock(){
-	   sfLog().debug("IN: State("+name+").cleanLock(...)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   while (transitionLock.isHeldByCurrentThread()) {  //CHECK!
 		   transitionLock.unlock();
 	   }
 	   sfLog().debug("is locked?"+transitionLock.isHeldByCurrentThread()+transitionLock.isLocked()+transitionLock.getHoldCount()+transitionLock.getQueueLength());
-	   sfLog().debug("OUT: State("+name+").cleanLock(...)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    private void preparefinalize(boolean prepare, String transition) throws StateComponentTransitionException {
-		 //Is there a prepare/finalizetransition script?
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+       //Is there a prepare/finalizetransition script?
 	     String actualName = (prepare?T_PREPARE+transition.substring(1):T_FINALIZE+transition.substring(1));
 	     sfLog().debug("Prepare transition..."+actualName);
 	     ComponentDescription action = (ComponentDescription) sfContext().get(actualName);
@@ -245,25 +264,35 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                   }
               }
 		 }
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    private void doPrepare(String transition) throws StateComponentTransitionException {
-	    sfLog().debug("Prepare transition...");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   preparefinalize(true, transition);
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    private void doFinalize(String transition) throws StateComponentTransitionException {
-	    sfLog().debug("Finalize transition...");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   preparefinalize(false, transition);
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
      
    private void clean(){
-	   sfLog().debug("IN: State("+name+").clean(...)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 	   currentAction=null;
 	   cleanLock();
 	   //asyncResponse=false;  //LOG ISSUE AND REMOVE...
 	   scriptTimer=null;
-	   sfLog().debug("OUT: State("+name+").clean(...)");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
    //See handleDPEs()
@@ -279,7 +308,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }*/
 
    private void transitionScript(ComponentDescription transition, String key) throws StateComponentTransitionException {
-	   sfLog().debug("State("+name+").handleStateChange() -- Script call...");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
        try {
            transition.sfResolve(DO_SCRIPT);
@@ -293,19 +323,25 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
       go(key);
       clean();
-      sfLog().debug("OUT: State("+name+").handleStateChange() -- Script call...");
+       if (sfLog().isDebugEnabled())
+           sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
     private boolean checkIsEnabled() throws RemoteException, SmartFrogRuntimeException {  //and connector on the dependencies
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         for (DependencyValidation dv : dependencies) {
             if (dv.getTransition() != null) continue;
             if (!dv.isEnabled()) return false;
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return true;
     }
 
     private void setState() throws StateComponentTransitionException {
-        sfLog().debug("IN: StateComponent.setState()");
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
         sfLog().debug("Adding to queue...");
         try {
@@ -315,7 +351,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
         cleanLock();
 
-        sfLog().debug("OUT: StateComponent.setState()");
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
 
     protected abstract boolean threadBody() throws StateComponentTransitionException, RemoteException;
@@ -379,7 +416,8 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     }*/
 
     public void selectSingleAndGo() throws RemoteException, StateComponentTransitionException, SmartFrogRuntimeException {
-        sfLog().debug("IN: State(" + name + ").selectSingleAndGo(...)");
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
         resetPossibleTransitions();
         sfLog().debug("WITHIN: State(" + name + ").selectSingleAndGo(...). Number transitions..." + enabled.size());
@@ -392,11 +430,13 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         String key = (String) keys.next();
         go(key);
 
-        sfLog().debug("OUT: State(" + name + ").selectSingleAndGo(...)");
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
 
     public void go(String transition) throws StateComponentTransitionException {
-        sfLog().debug("IN: State(" + name + ").go()");
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         sfLog().debug("Key in simple transition" + transition);
         ComponentDescription trans = null;
         //try{
@@ -421,11 +461,14 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
             throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_WRITEEVENTLOGBUTISPRESENT);
         }
 
-        sfLog().debug("OUT: State(" + name + ").go()");
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
     }
 
     //////////////////////////////////////////////////////////////////////
     //StateChangeNotification
+
+    //The following aren't really "StateComponent" methods and should be removed at some stage
     public String getModelInfoAsString(String refresh) throws RemoteException, SmartFrogResolutionException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
@@ -465,14 +508,17 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                 }
             }
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 
         return result.toString();
     }
 
     public String getTransitionLogAsString() throws RemoteException, SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+
         StringBuilder result = new StringBuilder();
-
-
 
         if (eventLog != null) {
             int count = eventLog.sfResolve(COUNT, 0, true);
@@ -485,10 +531,15 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                         append(SCRIPTHEADERCLOSE);
             }
         }
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 
         return result.toString();
     }
 
+
+    /*
+     *DEPRECATED! 
 
     public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException {
         //Look for link meta-data...
@@ -541,7 +592,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    }
 
          */
-
+        /*
         StringBuilder result = new StringBuilder();
 
         ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
@@ -563,10 +614,10 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                     append("' style=\"display:").append(show?"block":"none").append(";\">");
 
 
-            /*
-            <a href="#" onclick="toggle_visibility('foo');">Click here to toggle visibility of element #foo</a>
-            <div id="foo" style="display:none;">This is foo</div>
-             */
+
+            //<a href="#" onclick="toggle_visibility('foo');">Click here to toggle visibility of element #foo</a>
+            //<div id="foo" style="display:none;">This is foo</div>
+
 
             //result.append("<DIV)
 
@@ -621,7 +672,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         
 
         return result.toString();
-    }
+    } */
 
     void observed(ComponentDescription entry, StringBuilder result, int indent) throws SmartFrogResolutionException, RemoteException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
@@ -686,9 +737,11 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                         append(value).append(annotate?POBSERVED:"").append(SCRIPTHEADERCLOSE);
             }
         }
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]+":LEAVING");
     }
 
     void desired(ComponentDescription entry, StringBuilder result, int indent) throws SmartFrogResolutionException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         ComponentDescription desired = (ComponentDescription) entry.sfContext().get(DESIRED);
         boolean cont = true;
         if (desired != null) {
@@ -795,10 +848,12 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                 sfLog().debug("DESIREDSTATESET! ");
             } 
         }
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]+":LEAVING");
     }
 
 
     void links(ComponentDescription entry, StringBuilder result, int indent){
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         ComponentDescription links = null;
         try {
             links = (ComponentDescription) entry.sfResolve(LINKS);
@@ -841,9 +896,12 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
             }
             
         }
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]+":LEAVING");
     }
 
+    /*DEPRECATED - to be removed
     void stdout(StringBuilder result){
+
         String stdout = null;
         String stderr = null;
 
@@ -865,7 +923,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         }
 
         sfLog().debug("STDOUT/ERR! ");
-    }
+    }*/
 
     public String getServiceStateDetails() throws RemoteException, SmartFrogResolutionException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
@@ -972,6 +1030,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
             if (extra.toString().length()==0) return "";
             else status.append(extra);
         }
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]+":LEAVING");
         
         return status.toString();
     }
@@ -994,6 +1053,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         //ANY LINKS?
         links(entry, result, indent);
 
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return result.toString();
     }
 
@@ -1011,7 +1071,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         desired(entry, result, indent);
         sfLog().debug("DESIRED! " + key);
 
-
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return result.toString();
     }
 
@@ -1019,29 +1079,9 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         StringBuilder result = new StringBuilder();
 
-        //
-        /*
-        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
+        //This should be removed but it requires changing the index.html implementation to not ask for a "container!"...
 
-        if (metaData != null) {
-
-            boolean show = sfResolve(SHOW, false, false);
-            String cdescription = sfResolve(DESCRIPTION, (String) null, false);
-
-            result.append(SMALLHEADER).append("<A HREF=\"#\" ONCLICK=\"toggle_visibility('").append(fullName).append("');\">");
-            if (cdescription != null) {
-                result.append(cdescription).append("</A> -- ");
-            }
-            result.append(fullName);
-            if (cdescription == null) {
-                result.append("</A>");
-            }
-            result.append("<DIV id='").append(fullName).
-                    append("' style=\"display:").append(show ? "block" : "none").append(";\">");
-
-            stdout(result);
-
-        }*/
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return result.toString();
     }
 
@@ -1053,6 +1093,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     Timer scriptTimer;
 
     public void handleStateChange() throws RemoteException, SmartFrogException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
         if (this.sfIsTerminating || this.sfIsTerminated || !(this.sfIsStarted)) return;
 
@@ -1118,28 +1159,34 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         }
 
         setState();
-        sfLog().debug("OUT: State(" + name + ").handleStateChange()");
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]+":LEAVING");
     }
 
     //////////////////////////////////////////////////////////////////////
    //StateDependencies
 
    public void register(DependencyValidation d) {
+       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
       dependencies.add(d);
+       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
    public void deregister(DependencyValidation d) {
+       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
       dependencies.remove(d);
+       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
 
    /////////////////////////////////////////////////////////
    //DependencyValidation
 
    public boolean isEnabled() throws RemoteException, SmartFrogRuntimeException {
+       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
       return (!asAndConnector) || checkIsEnabled();
    }
 
    public String getTransition(){
+       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 	   return null;
    }
 
@@ -1150,7 +1197,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     */
    public class StateUpdateThread implements Runnable {
       public void run() {
-    	  sfLog().debug("IN: StateUpdateThread.run()");
+          if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
     	  try{
     	   String key=null;
     	   if (enabled.size()==1){
@@ -1172,7 +1219,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
           } catch (RemoteException ignored) {
               sfLog().warn(ignored);  //appropriate action will have already been taken
           }
-           sfLog().debug("OUT: StateUpdateThread.run()");
+          if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
       }
    }
 }
