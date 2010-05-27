@@ -34,7 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/www/jaxrs/test/testapp/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 
-JerseyApplication extends Compound {
+Java6JerseyApplication extends Compound {
 
   jerseyServer extends JerseyHttpServer {
     port 5050;
@@ -44,6 +44,24 @@ JerseyApplication extends Compound {
   
 }
 
+JerseyApplication extends JerseyCompound {
+
+  jetty extends LocalJettyServer {
+    host CoreJettyServer:ANY_HOST;
+    jettyhome "undefined";
+  }
+  
+  server LAZY jetty:server;
+  
+  jaxRsApp extends TestJaxRsApp;
+  
+}
+
+
+
+
 JerseyApplicationTest extends ExpectDeploy {
+
+
   action extends JerseyApplication;
 }

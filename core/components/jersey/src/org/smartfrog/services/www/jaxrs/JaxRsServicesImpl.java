@@ -79,13 +79,39 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
                 aClass = SFClassLoader.forName(classname);
             } catch (ClassNotFoundException e) {
                 throw new SmartFrogDeploymentException(
-                        "Endpoint class " + name + " value \"" + classname + "\" does not load",
+                        "Endpoint class " + name
+                                + " value \"" + classname
+                                + "\" does not load in "
+                                + getRuntimeString()
+                                + ". Cause: " + e,
                         e,
                         this);
             }
-            endpoints.put(classname, createEndpoint(aClass));
+            try {
+                Object endpointer = createEndpoint(aClass);
+                endpoints.put(classname, endpointer);
+            } catch (IllegalArgumentException e) {
+                throw new SmartFrogDeploymentException(
+                        "Endpoint class " + name + " value \"" + classname
+                                + "\" cannot be loaded in "
+                                + getRuntimeString()
+                                + ". Cause: " + e,
+                        e,
+                        this);
+            } catch (UnsupportedOperationException e) {
+
+            }
         }
 
+    }
+
+    /**
+     * Get the runtime description
+     *
+     * @return the runtime
+     */
+    public String getRuntimeString() {
+        return getRuntime().toString();
     }
 
     /**
