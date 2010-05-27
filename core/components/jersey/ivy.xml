@@ -92,7 +92,7 @@
       name="sf-jetty"
       changing="true"
       rev="latest.integration"
-      conf="test->default,jsp"/>
+      conf="test->default"/>
 
     <dependency org="asm"
       name="asm"
