@@ -48,6 +48,8 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
      *  */
     protected Object doFunction() throws SmartFrogFunctionResolutionException {
     	//First try me...
+        if (SFSystem.sfLog().isDebugEnabled())
+            SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
     	applyEffects(comp);
 
         //Then any nested effects...
@@ -57,13 +59,16 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
             Object effects = context.get(key);
             if (!(effects instanceof ComponentDescription)) continue;
             applyEffects((ComponentDescription)effects);
-        }   	
-    	
+        }
+        if (SFSystem.sfLog().isDebugEnabled())
+            SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
+
         return true;
     }
         
     public static void applyEffects(ComponentDescription effects) throws SmartFrogFunctionResolutionException {
-            SFSystem.sfLog().debug("IN applyEffects");
+        if (SFSystem.sfLog().isDebugEnabled())
+            SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
         Reference array = null;
         try {

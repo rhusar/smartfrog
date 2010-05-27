@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dependencies.statemodel.connector;
 
 import java.rmi.RemoteException;
+
+import org.smartfrog.SFSystem;
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
@@ -28,6 +30,8 @@ public class XorConnector extends Connector {
 	public XorConnector() throws RemoteException {}
 
     public boolean isEnabled() throws RemoteException, SmartFrogRuntimeException {
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         boolean existsCheck = false;
         boolean result = false;
         for (DependencyValidation dep : dependencies) {
@@ -44,6 +48,9 @@ public class XorConnector extends Connector {
         if (!result && exists) {
             result = !existsCheck;
         }
+
+        if (sfLog().isDebugEnabled())
+            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
 
         //Either way, subsequently toggle result based on not
         return (not ? !result : result);
