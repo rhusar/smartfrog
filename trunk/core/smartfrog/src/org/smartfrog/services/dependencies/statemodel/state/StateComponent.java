@@ -384,16 +384,20 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     //Save it as the next transition that should fire -- LOG ISSUE AND TIDY!
     //Inappropriate name - this is not to do with asyncResponse. Instead, it is external management change related...*/
     public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException, RemoteException {
-        /*
+
         if (currentAction != null) {
             throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.CURRENTACTION_ONGOING);
         }
 
         acquireLock();
-        resetPossibleTransitions();
+        try {
+            resetPossibleTransitions();
+        } catch (SmartFrogRuntimeException e) {
+            throw new StateComponentTransitionException(StateComponentTransitionException.StateComponentExceptionCode.FAILEDTO_GETTRANSITIONS);
+        }
         iasc.actOn(this);
         //handleDPEs();
-        clean();*/
+        clean();
     }
 
     /*THESE WILL BE ACCOMMODATED AS EXPLICIT TRANSITION -- TO LOG ISSUE AND REMOVE
