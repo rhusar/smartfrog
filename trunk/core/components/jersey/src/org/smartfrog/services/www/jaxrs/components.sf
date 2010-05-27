@@ -40,3 +40,81 @@ JaxRsServices extends Prim {
   
   }
 }
+
+JaxRsConstants extends DATA {
+  //servlet name
+  servletName "javax.ws.rs.application";
+}
+
+JaxRsServlet extends Servlet {
+  name "JaxRsServlet";
+  pathSpec "/*";
+}
+
+/**
+ * add jersey-specific options here
+ */
+JaxRsServletContext extends ServletContext {
+
+}
+
+/**
+ * Jersey specific values
+ */
+JerseyConstants extends DATA {
+
+  servletClassName jersey10className;
+  jersey10className "com.sun.jersey.spi.container.servlet.ServletContainer";
+  jersey11className "com.sun.jersey.server.impl.container.servlet.ServletAdaptor";
+  initParamResourceConfigClass "com.sun.jersey.config.property.resourceConfigClass";
+  initParamResourceConfigClassName "com.sun.jersey.api.core.PackagesResourceConfig";
+   //set to a ; separated list of packages
+  initParamPackagesToScan "com.sun.jersey.config.property.packages";
+}
+
+/**
+ * This stuff isn't very well documented -use your search engine of choice
+ * to find details on it
+ * http://kingsfleet.blogspot.com/2008/10/running-jax-rcjerseyjsr311-on-weblogic.html
+ * http://publib.boulder.ibm.com/infocenter/wasinfo/v6r1/index.jsp?topic=/com.ibm.websphere.web20fepjaxrs.doc/info/ae/ae/twbs_jaxrs_configwebxml.html
+ 
+ */
+ 
+JerseyServlet extends JaxRsServlet {
+  //packages to Scan
+  packagesToScan "org.smarfrog.services.www.jaxrs";
+  
+  initParams [
+      [JerseyConstants:initParamResourceConfigClass, JerseyConstants:initParamResourceConfigClassName],
+      [JerseyConstants:initParamPackagesToScan, packagesToScan]
+    ];
+
+  className JerseyConstants:servletClassName;
+}
+
+/**
+ * add jersey-specific options here
+ */
+JerseyServletContext extends JaxRsServletContext {
+
+}
+
+
+/**
+ * A compound that deploys the servlet context and related servlets
+ */
+JerseyCompound extends Compound {
+  server TBD;
+  contextPath "/";
+
+  context extends JerseyServletContext {
+    server LAZY PARENT:server;
+    contextPath PARENT:contextPath;
+    resourcePackage "/org/smartfrog/services/www/jaxrs/jetty/webresources/";
+  }
+  
+  jerseyServlet extends JerseyServlet {
+    context LAZY PARENT:context;
+  }
+  
+}
