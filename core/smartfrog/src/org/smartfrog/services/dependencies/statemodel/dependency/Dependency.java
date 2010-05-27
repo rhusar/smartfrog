@@ -33,9 +33,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.RUNNING;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.RELEVANT;
-import static org.smartfrog.services.dependencies.statemodel.state.Constants.ENABLED;
+import static org.smartfrog.services.dependencies.statemodel.state.Constants.*;
 
 /**
  * Class that implements the dependency between two StateDependencies-implementing objects.
@@ -55,7 +53,7 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
       super.sfDeploy();
-      //transition = sfResolve(TRANSITION, (String) null, false);
+      transition = sfResolve(TRANSITION, (String) null, false);
       name = this.sfParent().sfAttributeKeyFor(this).toString();
        if (sfLog().isDebugEnabled())
            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
