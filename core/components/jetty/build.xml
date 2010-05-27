@@ -42,6 +42,10 @@ For more information: www.smartfrog.org
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true" />
   <property name="test.timeout.execute" value="1800000" />
+  <property name="junit.timeout" value="60000000" />
+  <property name="functional.test.timeout" value="600000" />
+  <property name="test.timeout" value="${test.timeout.execute}" />
+  
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
   
