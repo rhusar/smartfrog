@@ -198,7 +198,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	   return name;
    }
 
-    public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException {
+   /* public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         String status = "";
         for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements();) {
@@ -210,7 +210,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
         if (sfLog().isDebugEnabled())
             sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
         return status;
-    }
+    }*/
 
     public String getServiceStateDetails() throws RemoteException, SmartFrogResolutionException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
