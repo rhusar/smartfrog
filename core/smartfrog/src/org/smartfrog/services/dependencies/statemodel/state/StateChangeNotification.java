@@ -32,7 +32,7 @@ public interface StateChangeNotification extends Remote {
    //child down to State, where it is handled
    public void handleStateChange() throws RemoteException, SmartFrogException;
    public boolean isThreadedComposite() throws RemoteException, SmartFrogException;
-   public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException;
+   //public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException;
    public String getModelInfoAsString(String refresh) throws RemoteException, SmartFrogResolutionException;
     public String getTransitionLogAsString() throws RemoteException, SmartFrogResolutionException;
 
