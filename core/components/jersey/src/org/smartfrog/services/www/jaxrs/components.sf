@@ -35,10 +35,29 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 JaxRsServices extends Prim {
 
   sfClass "org.smartfrog.services.www.jaxrs.JaxRsServicesImpl";
+
+  /**
+   * Classes to list in the Classes() method
+   */
+  classes extends DATA {
   
+  }
+
+  /**
+   * Classes to list in the singleton() method
+   */
+  singletonClasses extends DATA {
+  
+  }
+  
+  
+  /**
+   * classes to dynamically register after the application is deployed
+   */
   endpointClasses extends DATA {
   
   }
+  
 }
 
 JaxRsConstants extends DATA {
@@ -105,7 +124,7 @@ JerseyServletContext extends JaxRsServletContext {
  */
 JerseyCompound extends Compound {
   server TBD;
-  contextPath "/";
+  contextPath "/api";
 
   context extends JerseyServletContext {
     server LAZY PARENT:server;

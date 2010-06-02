@@ -29,62 +29,7 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/components.sf"
-#include "/org/smartfrog/services/www/servers/java6/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/test/testapp/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/jersey/components.sf"
-
-Java6JerseyApplication extends Compound {
-
-  jerseyServer extends JerseyHttpServer {
-    port 5050;
-  }
-  
-  jerseyDiagnostics extends JerseyDiagnostics;
-  
-  jaxRsApp extends TestJaxRsApp;
-  
-}
-
-  
+#include "/org/smartfrog/services/www/jaxrs/test/components.sf"
 
 
-JerseyWithJettyApplication extends JerseyCompound {
-
-  jetty extends LocalJettyServer {
-    host CoreJettyServer:ANY_HOST;
-    jettyhome "undefined";
-  }
-  
-  server LAZY jetty:server;
-  
-  jaxRsApp extends TestJaxRsApp;
-  
-}
-
-JerseyDiagnosticsTest extends ExpectDeploy {
-
-  action extends JerseyDiagnostics;
-}
-
-JerseyClasspathTest extends ExpectDeploy {
-
-  action extends LoadGrizzly;
-}
-
-
-
-
-JerseyApplicationTest extends ExpectDeploy {
-
-
-  action extends Java6JerseyApplication;
-}
-
-
-JerseyWithJettyTest extends ExpectDeploy {
-
-
-  action extends JerseyWithJettyApplication;
-}
+sfConfig extends JerseyClasspathTest;

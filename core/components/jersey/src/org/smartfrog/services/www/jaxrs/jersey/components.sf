@@ -29,62 +29,24 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/components.sf"
-#include "/org/smartfrog/services/www/servers/java6/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/test/testapp/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/jersey/components.sf"
+#include "/org/smartfrog/sfcore/prim/prim.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
 
-Java6JerseyApplication extends Compound {
-
-  jerseyServer extends JerseyHttpServer {
-    port 5050;
-  }
+/**
+ * A class that prints some jersey diagnostics using Sun's Service Provider API when started
+ * This code will not work on other JAX-WS implementations
+ */
+JerseyDiagnostics extends Prim {
+  sfClass "org.smartfrog.services.www.jaxrs.jersey.JerseyDiagnostics";
   
-  jerseyDiagnostics extends JerseyDiagnostics;
-  
-  jaxRsApp extends TestJaxRsApp;
-  
+  serviceToFind "com.sun.jersey.spi.container.ContainerProvider";
 }
 
-  
-
-
-JerseyWithJettyApplication extends JerseyCompound {
-
-  jetty extends LocalJettyServer {
-    host CoreJettyServer:ANY_HOST;
-    jettyhome "undefined";
-  }
-  
-  server LAZY jetty:server;
-  
-  jaxRsApp extends TestJaxRsApp;
-  
-}
-
-JerseyDiagnosticsTest extends ExpectDeploy {
-
-  action extends JerseyDiagnostics;
-}
-
-JerseyClasspathTest extends ExpectDeploy {
-
-  action extends LoadGrizzly;
-}
-
-
-
-
-JerseyApplicationTest extends ExpectDeploy {
-
-
-  action extends Java6JerseyApplication;
-}
-
-
-JerseyWithJettyTest extends ExpectDeploy {
-
-
-  action extends JerseyWithJettyApplication;
+LoadGrizzly extends LoadClass {
+  message "You need the grizzly classes on the classpath";
+  classes [
+    "com.sun.grizzly.tcp.Adapter"
+    ];
+  create false;
+  retain false;
 }
