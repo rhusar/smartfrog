@@ -29,62 +29,25 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/components.sf"
-#include "/org/smartfrog/services/www/servers/java6/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/test/testapp/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/jersey/components.sf"
+package org.smartfrog.services.www.jaxrs.test;
 
-Java6JerseyApplication extends Compound {
+import org.smartfrog.test.DeployingTestBase;
 
-  jerseyServer extends JerseyHttpServer {
-    port 5050;
-  }
-  
-  jerseyDiagnostics extends JerseyDiagnostics;
-  
-  jaxRsApp extends TestJaxRsApp;
-  
-}
+/**
+ * Created 26-May-2010 15:42:43
+ */
 
-  
+public class JerseyDiagnosticsTest extends DeployingTestBase {
+    public static final String PACKAGE = "/org/smartfrog/services/www/jaxrs/test/";
+    public JerseyDiagnosticsTest(String name) {
+        super(name);
+    }
 
-
-JerseyWithJettyApplication extends JerseyCompound {
-
-  jetty extends LocalJettyServer {
-    host CoreJettyServer:ANY_HOST;
-    jettyhome "undefined";
-  }
-  
-  server LAZY jetty:server;
-  
-  jaxRsApp extends TestJaxRsApp;
-  
-}
-
-JerseyDiagnosticsTest extends ExpectDeploy {
-
-  action extends JerseyDiagnostics;
-}
-
-JerseyClasspathTest extends ExpectDeploy {
-
-  action extends LoadGrizzly;
-}
-
-
-
-
-JerseyApplicationTest extends ExpectDeploy {
-
-
-  action extends Java6JerseyApplication;
-}
-
-
-JerseyWithJettyTest extends ExpectDeploy {
-
-
-  action extends JerseyWithJettyApplication;
+    public void testJerseyDiagnostics() throws Throwable {
+        deployExpectingSuccess(PACKAGE + "jerseydiagnosticstest.sf", "jerseydiagnosticstest");
+    }
+    
+    public void testJerseyClasspath() throws Throwable {
+        deployExpectingSuccess(PACKAGE+ "jerseyclasspathtest.sf","jerseyclasspathtest.sf");
+    }
 }

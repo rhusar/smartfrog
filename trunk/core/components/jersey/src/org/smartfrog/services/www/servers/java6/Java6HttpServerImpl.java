@@ -43,6 +43,7 @@ public class Java6HttpServerImpl extends PrimImpl {
     public static final String ATTR_HOST = "host";
     public static final String ATTR_PROTOCOL = "protocol";
     public static final String ATTR_FACTORY_CLASS = "factoryClass";
+    private static final String E_NO_START = "Could not start the server on ";
 
     public Java6HttpServerImpl() throws RemoteException {
     }
@@ -77,16 +78,16 @@ public class Java6HttpServerImpl extends PrimImpl {
             if (e.getCause() != null) {
                 thrown = e.getCause();
             }
-            throw new SmartFrogDeploymentException("Could not start the server on "
+            throw new SmartFrogDeploymentException(E_NO_START
                     + serverURL + ": " + thrown, 
                     thrown);
 
         } catch (IllegalAccessException e) {
-            throw new SmartFrogDeploymentException("Could not start the server on "
+            throw new SmartFrogDeploymentException(E_NO_START
                     + serverURL + ": " + e,
                     e);
         } catch (ClassCastException e) {
-            throw new SmartFrogDeploymentException("Could not start the server on "
+            throw new SmartFrogDeploymentException(E_NO_START
                     + serverURL + ": " + e,
                     e);
         }

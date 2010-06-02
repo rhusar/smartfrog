@@ -174,4 +174,6 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
     public Map<String, Object> getEndpoints() {
         return endpoints;
     }
+    
+
 }
