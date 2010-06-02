@@ -145,13 +145,15 @@ public class JettyHelper extends WebApplicationHelper {
      * @param connector a Connector
      * @throws SmartFrogException failue to start the Connector
      */
-    public void addAndStartConnector(Connector connector)
+    public void addAndStartConnector(Connector connector, String bindingDescription)
             throws SmartFrogException {
         addConnector(connector);
         try {
             connector.start();
         } catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
+            throw SmartFrogException.forward("Failed to start connector "+connector
+                    +" configured as "+bindingDescription +": " + ex,
+                    ex);
         }
     }
 

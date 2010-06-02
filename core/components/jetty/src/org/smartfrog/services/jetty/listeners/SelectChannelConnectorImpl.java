@@ -46,7 +46,9 @@ public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements
 
         channel.setAcceptors(sfResolve(ATTR_ACCEPTORS, 2, true));
         setMaxIdleTime(channel);
-        bindConnectorToPortAndHost(channel);
+        String binding = bindConnectorToPortAndHost(channel);
+        setDescription("SelectChannel connector " + binding);
+
         // set up all the threads;
         QueuedThreadPool pool = createBoundedThreadPool();
         channel.setThreadPool(pool);

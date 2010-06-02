@@ -42,6 +42,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
     protected Reference serverNameRef = new Reference(SERVER_NAME);
     protected Connector connector = null;
     protected JettyHelper jettyHelper = new JettyHelper(this);
+    private String description;
 
 
     /**
@@ -100,7 +101,8 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
             SmartFrogException, RemoteException {
         connector = createConnector();
         configureConnector();
-        jettyHelper.addAndStartConnector(connector);
+        sfLog().info(getDescription());
+        jettyHelper.addAndStartConnector(connector, getDescription());
         onConnectorStarted(connector);
     }
 
@@ -121,20 +123,23 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      * This method reads the port and host attributes, and sets the connector to it
      *
      * @param conn the connector
+     * @return text details for logging and exceptions
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    protected void bindConnectorToPortAndHost(Connector conn) throws SmartFrogException, RemoteException {
+    protected String bindConnectorToPortAndHost(Connector conn) throws SmartFrogException, RemoteException {
         //now bind to the host and port
+        String details;
         int port = sfResolve(portRef, 0, true);
         String host = sfResolve(hostRef, (String) null, true);
         conn.setPort(port);
-        if (host != null && host.length()>0 && !"*".equals(host)) {
-            sfLog().info("Listening on " + host + ":" + port);
+        if (host != null && host.length() > 0 && !"*".equals(host)) {
+            details = "listening on" + host + ":" + port;
             conn.setHost(host);
         } else {
-            sfLog().info("Listening on port " + port);
+            details = "listening on *:" + port;
         }
+        return details;
     }
 
     /**
@@ -158,5 +163,13 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      */
     protected QueuedThreadPool createBoundedThreadPool() throws SmartFrogResolutionException, RemoteException {
         return ThreadPoolFactory.createThreadPool(this);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    protected void setDescription(String description) {
+        this.description = description;
     }
 }
