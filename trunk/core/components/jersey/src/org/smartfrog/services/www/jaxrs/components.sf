@@ -101,7 +101,8 @@ JerseyConstants extends DATA {
  
 JerseyServlet extends JaxRsServlet {
   //packages to Scan
-  packagesToScan "org.smarfrog.services.www.jaxrs";
+  //packagesToScan "org.smarfrog.services.www.jaxrs";
+  packagesToScan "none";
   
   initParams [
       [JerseyConstants:initParamResourceConfigClass, JerseyConstants:initParamResourceConfigClassName],
@@ -124,7 +125,7 @@ JerseyServletContext extends JaxRsServletContext {
  */
 JerseyCompound extends Compound {
   server TBD;
-  contextPath "/api";
+  contextPath "/";
 
   context extends JerseyServletContext {
     server LAZY PARENT:server;
