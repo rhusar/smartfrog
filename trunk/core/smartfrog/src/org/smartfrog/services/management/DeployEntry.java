@@ -507,7 +507,7 @@ public class DeployEntry implements Entry {
                      tags = (( ComponentDescription) entry).sfGetTags();
                 } catch (SmartFrogContextException ex){
                      //only show in trace - it will happen when browsing "*copy*" descriptions
-                     if (sfLog().isTraceEnabled()) sfLog().trace("Error DeployEntry.getEntryTags()" +  ex.toString(),ex);
+                     if (sfLog().isTraceEnabled()) sfLog().trace("Error DeployEntry.getEntryTags(): " +  ex.toString(),ex);
                      return tags;
                 }
             } else {
@@ -517,7 +517,7 @@ public class DeployEntry implements Entry {
             return tags;
 
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error("Error DeployEntry.getEntryTags()" +  e.toString(),e);
+            if (sfLog().isErrorEnabled()) sfLog().error("Error DeployEntry.getEntryTags(): " +  e.toString(),e);
             tags = new HashSet();
             tags.add("[tags error]");
             return tags;
