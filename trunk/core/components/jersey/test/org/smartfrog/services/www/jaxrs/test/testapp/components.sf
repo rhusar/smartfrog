@@ -36,7 +36,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 TestJaxRsApp extends JaxRsServices {
   PACKAGE "org.smartfrog.services.www.jaxrs.test.testapp";
-  endpointClasses extends DATA {
+  classes extends DATA {
     error ( PACKAGE ++ ".ErrorResource");
     echo  ( PACKAGE ++ ".EchoResource");
   }
