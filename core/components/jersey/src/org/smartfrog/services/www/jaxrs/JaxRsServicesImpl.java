@@ -34,6 +34,7 @@ package org.smartfrog.services.www.jaxrs;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -42,9 +43,9 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.rmi.RemoteException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 /**
  * This represents a JAX RS application
@@ -53,7 +54,6 @@ import java.util.Map;
 public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsLocalServices {
 
     private JaxRsApplication application;
-    private Map<String, Object> endpoints;
     public static final String ERROR_NOT_LOCAL = "The application provided is not local";
 
     public JaxRsServicesImpl() throws RemoteException {
@@ -66,43 +66,81 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         application = new JaxRsApplication(this);
-        ComponentDescription classes = null;
-        classes = sfResolve(ATTR_ENDPOINT_CLASSES, classes, true);
-        endpoints = new HashMap<String, Object>();
-        Iterator attrs = classes.sfAttributes();
-        while (attrs.hasNext()) {
-            String name = attrs.next().toString();
-            String classname = classes.sfResolve(name, "", true);
-            Class aClass = null;
+        
+        List<Class<?>> classes = resolveClassesFromCD(ATTR_CLASSES);
+        List<Class<?>> singletonClasses = resolveClassesFromCD(ATTR_SINGLETON_CLASSES);
+        List<Class<?>> endpointClassList = resolveClassesFromCD(ATTR_ENDPOINT_CLASSES);
+
+        for (Class<?> clazz:classes) {
+            sfLog().info("Deploying per-instance class "+clazz);
+            application.addClass(clazz);
+        }
+        for (Class<?> clazz : singletonClasses) {
+            sfLog().info("Deploying singleton class " + clazz);
             try {
-                sfLog().info("Deploying JAX-RS endpoint " + classname);
-                aClass = SFClassLoader.forName(classname);
-            } catch (ClassNotFoundException e) {
+                Object instance = clazz.newInstance();
+                application.addSingleton(instance);
+            } catch (Throwable e) {
                 throw new SmartFrogDeploymentException(
-                        "Endpoint class " + name
-                                + " value \"" + classname
-                                + "\" does not load in "
-                                + getRuntimeString()
-                                + ". Cause: " + e,
+                        "Singleton class " + clazz
+                                + " does not load : " + e,
                         e,
                         this);
             }
+        }
+        for (Class<?> clazz : endpointClassList) {
+            sfLog().info("Deploying endpoint class " + clazz);
             try {
-                Object endpointer = createEndpoint(aClass);
-                endpoints.put(classname, endpointer);
-            } catch (IllegalArgumentException e) {
+                Object endpointer = createEndpoint(clazz);
+                
+            } catch (Throwable t) {
                 throw new SmartFrogDeploymentException(
-                        "Endpoint class " + name + " value \"" + classname
-                                + "\" cannot be loaded in "
+                        "Endpoint class " + clazz 
+                                + " cannot be loaded in "
                                 + getRuntimeString()
-                                + ". Cause: " + e,
-                        e,
+                                + ". Cause: " + t,
+                        t,
                         this);
-            } catch (UnsupportedOperationException e) {
-
             }
         }
 
+    }
+
+    /**
+     * Take an attribute and resolve that to a CD, then go through every attribute in that and load
+     * its value as class (if not empty)
+     * @param attribute
+     * @return a possibly empty list of classes
+     * @throws SmartFrogDeploymentException failure to instantiate a class
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
+     */
+    private List<Class<?>> resolveClassesFromCD(String attribute)
+            throws SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
+        ComponentDescription classesCD = null;
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classesCD = sfResolve(attribute, classesCD, true);
+        Iterator attrs = classesCD.sfAttributes();
+        while (attrs.hasNext()) {
+            String name = attrs.next().toString();
+            String classname = classesCD.sfResolve(name, "", true);
+            if (!classname.isEmpty()) {
+                try {
+                    Class aClass;
+                    aClass = SFClassLoader.forName(classname);
+                    classes.add(aClass);
+                } catch (ClassNotFoundException e) {
+                    throw new SmartFrogDeploymentException(
+                            "class " + name
+                                    + " value \"" + classname
+                                    + "\" does not load :"
+                                    + e,
+                            e,
+                            this);
+                }
+            }
+        }
+        return classes;
     }
 
     /**
@@ -120,7 +158,6 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
     @Override
     protected void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        endpoints = null;
     }
 
     /**
@@ -170,10 +207,5 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
             throw new RemoteException(ERROR_NOT_LOCAL);
         }
     }
-
-    public Map<String, Object> getEndpoints() {
-        return endpoints;
-    }
-    
 
 }

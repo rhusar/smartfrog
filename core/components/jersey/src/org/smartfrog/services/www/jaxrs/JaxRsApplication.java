@@ -36,6 +36,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 
 import javax.ws.rs.core.Application;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created 26-May-2010 14:03:48
@@ -44,7 +46,9 @@ import javax.ws.rs.core.Application;
 public class JaxRsApplication extends Application {
 
     private final JaxRsServicesImpl owner;
-    private LogSF log;
+    private final LogSF log;
+    private final Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+    private final Set<Object> singletons = new LinkedHashSet<Object>(1);
 
     public JaxRsApplication(JaxRsServicesImpl owner) {
         this.owner = owner;
@@ -65,5 +69,37 @@ public class JaxRsApplication extends Application {
 
     public LogSF getLog() {
         return log;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<Class<?>> getClasses() {
+        return classes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<Object> getSingletons() {
+        return singletons;
+    }
+
+    /**
+     * Add a new singleton
+     * @param singleton singleton to add
+     */
+    public void addSingleton(Object singleton) {
+        singletons.add(singleton);
+    }
+
+    /**
+     * Add a new class
+     * @param clazz class to add
+     */
+    public void addClass(Class<?> clazz) {
+        classes.add(clazz);
     }
 }

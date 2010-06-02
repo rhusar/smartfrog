@@ -35,10 +35,16 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/www/jaxrs/jersey/components.sf"
 
+TestPorts extends DATA {
+  jersey.test.port.1 5050;
+  jersey.test.port.2 5051;
+}
+
+
 Java6JerseyApplication extends Compound {
 
   jerseyServer extends JerseyHttpServer {
-    port 5050;
+    port TestPorts:jersey.test.port.2;
   }
   
   jerseyDiagnostics extends JerseyDiagnostics;

@@ -31,7 +31,10 @@
       description="core Jersey redistributals"/>
     <conf name="server"
       description="server-side redistributals excluding smartfrog artifacts"
-      extends="core"/>
+      extends="core,grizzly"/>
+    <conf name="grizzly"
+        description="grizzly embeddable web server"
+        extends="core"/>
     <conf name="client"
       description="server-side redistributals excluding smartfrog artifacts"
       extends="core"/>
@@ -85,8 +88,15 @@
       changing="true"
       rev="latest.integration"
       conf="test->default,httpclient,servletapi;testwar->testwar"/>
-
-
+<!--    <dependency org="com.sun.grizzly"
+        name="grizzly-webserver"
+        rev="${grizzly.version}"
+        conf="grizzly->default"/>-->
+    <dependency org="com.sun.grizzly"
+        name="grizzly-http-servlet"
+        rev="${grizzly.version}"
+        conf="grizzly->default"/>
+    
     <!--jetty for testing-->
     <dependency org="org.smartfrog"
       name="sf-jetty"
@@ -124,5 +134,7 @@
       rev="${jersey.version}"
       conf="json->default"/>
 
+    
+    
   </dependencies>
 </ivy-module>
