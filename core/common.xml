@@ -228,6 +228,15 @@
     </echo>
   </target>
 
+  <target name="proxy-test" depends="print-proxy-settings">
+    <property name="proxy.test.url" value="http://jira.smartfrog.org/" />
+    <echo>Retrieving ${proxy.test.url}
+    </echo>
+    <get 
+        src="${proxy.test.url}"
+        dest="${build.dir}/proxy-test.html" 
+        verbose="true" /> 
+  </target>
   
 
 <!--
