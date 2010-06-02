@@ -218,6 +218,18 @@ For more information: www.smartfrog.org
     description="test in test harness; only run system tests">
     <ivy-delegate target="test" />
   </target>
+
+
+  <!-- =================================================================== -->
+  <!-- test in the harness                                                 -->
+  <!-- =================================================================== -->
+  <target name="test-jersey" depends="testharness"
+      description="test in test harness; only run system tests">
+    <forward2 dir="components/jersey" target="test"  >
+      <property name="system.tests" value="true" />
+    </forward2>
+  </target>
+  
   
   <!-- =================================================================== -->
   <!-- test all                                                            -->
