@@ -90,5 +90,5 @@ public interface JettyConnector extends Remote {
      * restrict/control IP settings : {@value}
      */
     String ATTR_ALLOW_IPV6 = "allowIPv6";
-
+    
 }

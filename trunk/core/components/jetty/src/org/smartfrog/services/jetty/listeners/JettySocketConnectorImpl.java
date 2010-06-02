@@ -77,7 +77,8 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
         //bind to the thread pool
         socketConnector.setThreadPool(pool);
         setMaxIdleTime(connector);
-        bindConnectorToPortAndHost(connector);
+        String binding = bindConnectorToPortAndHost(connector);
+        setDescription("Socket connector " + binding);
     }
 
     /**
