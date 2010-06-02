@@ -34,6 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/www/jaxrs/test/testapp/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/www/jaxrs/jersey/components.sf"
+#include "/org/smartfrog/services/jetty/examples/war/waitforpages.sf"
 
 TestPorts extends DATA {
   jersey.test.port.1 5050;
@@ -41,7 +42,7 @@ TestPorts extends DATA {
 }
 
 
-Java6JerseyApplication extends Compound {
+GrizzlyJerseyApplication extends Compound {
 
   jerseyServer extends JerseyHttpServer {
     port TestPorts:jersey.test.port.2;
@@ -53,7 +54,19 @@ Java6JerseyApplication extends Compound {
   
 }
 
-  
+
+  //we dont care which number comes back, only that we get a number
+  TestSequence extends Sequence {
+    port TODO;
+    
+    wait extends waitForAnyHttpResponse  {
+      host "localhost";
+      port PARENT:port;
+      path "/api"      
+      minimumResponseCode HttpCodes:START_2XX;
+      maximumResponseCode HttpCodes:END_2XX;
+    }
+  }  
 
 
 JerseyWithJettyApplication extends JerseyCompound {
@@ -85,7 +98,7 @@ JerseyClasspathTest extends ExpectDeploy {
 JerseyApplicationTest extends ExpectDeploy {
 
 
-  action extends Java6JerseyApplication;
+  action extends GrizzlyJerseyApplication;
 }
 
 

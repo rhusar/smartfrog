@@ -16,4 +16,7 @@ public class EchoResource extends AbstractJaxRsResource {
     public String doGet(@PathParam("message") String message) {
         return message;
     }
+
+
+
 }

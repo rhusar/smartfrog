@@ -42,6 +42,22 @@ For more information: www.smartfrog.org
   
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
-  
+
+
+  <target name="jetty" depends="ready-to-deploy"
+      description="Deploy a Jetty server that supports Jersey" >
+    <deploy>
+      <application name="jetty"
+          descriptor="/org/smartfrog/services/www/jaxrs/test/examples/jetty.sf"/>
+    </deploy>
+  </target>
+
+  <target name="grizzly" depends="ready-to-deploy"
+      description="Deploy a Grizzly server that supports Jersey" >
+    <deploy>
+      <application name="grizzly"
+          descriptor="/org/smartfrog/services/www/jaxrs/test/examples/grizzly.sf"/>
+    </deploy>
+  </target>
 
 </project>

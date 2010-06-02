@@ -29,17 +29,8 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/components.sf"
-#include "/org/smartfrog/services/www/jaxrs/components.sf"
-//jetty server
-#include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/jaxrs/test/examples/components.sf"
 
-TestJaxRsApp extends JaxRsServices {
-  PACKAGE "org.smartfrog.services.www.jaxrs.test.testapp.";
-  classes extends DATA {
-    error ( PACKAGE ++ "ErrorResource");
-    echo  ( PACKAGE ++ "EchoResource");
-    diagnostics ( PACKAGE ++ "DiagnosticsResource");
-  }
+sfConfig extends GrizzlyServer {
+
 }
-
