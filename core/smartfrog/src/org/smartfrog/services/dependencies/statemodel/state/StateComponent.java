@@ -472,7 +472,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
     //////////////////////////////////////////////////////////////////////
     //StateChangeNotification
 
-    //The following aren't really "StateComponent" methods and should be removed at some stage
+    //The following aren't really "StateComponent" methods and should be rehoused at some stage
     public String getModelInfoAsString(String refresh) throws RemoteException, SmartFrogResolutionException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
 
@@ -540,143 +540,6 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
         return result.toString();
     }
-
-
-    /*
-     *DEPRECATED! 
-
-    public String getDesiredStatusAsString() throws RemoteException, SmartFrogResolutionException {
-        //Look for link meta-data...
-
-        /* EXAMPLE:
-        sfInformMetaData extends DATA {
-      -- extends DATA {
-         description "status of the component";
-         desired extends DATA {
-            guard true;
-            attribute "dup";
-            values ["false", "true"];
-            aliases extends DATA {
-              "false" "bring down";
-              "true" "bring up";
-            }
-         }
-
-         observed extends DATA {
-             guard true;
-             attribute "oup";
-             aliases extends DATA {
-              "false" "not up";
-              "true" "is up";
-            }
-         }
-         links extends DATA {
-          -- extends DATA {
-            description "hey up...";
-            link "/heyup!";
-            guard LAZY oup;
-          }
-         }
-         stdout "foobar";
-         stderr "foobar";
-      }
-
-      -- extends DATA {
-         description "array sizing";
-         desired extends DATA {
-            guard true;
-            attribute "foobarX";
-         }
-
-         observed extends DATA {
-             guard true;
-             attribute "foobarX";
-         }
-     }
-   }
-
-         */
-        /*
-        StringBuilder result = new StringBuilder();
-
-        ComponentDescription metaData = sfResolve(INFORMMETADATA, (ComponentDescription) null, false);
-
-        if (metaData != null) {
-
-            boolean show = sfResolve(SHOW, false, false);
-            String cdescription = sfResolve(DESCRIPTION, (String) null, false);
-
-            result.append(SMALLHEADER).append("<A HREF=\"#\" ONCLICK=\"toggle_visibility('").append(fullName).append("');\">");
-            if (cdescription!=null) {
-                result.append(cdescription).append("</A> -- ");
-            }
-            result.append(fullName);
-            if (cdescription == null) {
-                result.append("</A>");
-            }
-            result.append("<DIV id='").append(fullName).
-                    append("' style=\"display:").append(show?"block":"none").append(";\">");
-
-
-
-            //<a href="#" onclick="toggle_visibility('foo');">Click here to toggle visibility of element #foo</a>
-            //<div id="foo" style="display:none;">This is foo</div>
-
-
-            //result.append("<DIV)
-
-
-            //        result.append(SMALLHEADER).append("Component: ").append(fullName).append(SMALLHEADERCLOSE);
-
-            Enumeration keys = metaData.sfContext().keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
-                ComponentDescription entry = null;
-                try {
-                    entry = (ComponentDescription) metaData.sfContext().get(key);
-                } catch (Exception e) {
-                    continue; //round while
-                }
-
-                sfLog().debug("ENTRY!!! " + entry + ":" + key);
-                sfLog().debug("***GUARD***"+entry.sfContext().get(GUARD));
-
-                try {
-                    Boolean guardEval = (Boolean) entry.sfResolve(GUARD);
-                    if ((guardEval != null) && !(guardEval)) continue; //round while
-                } catch (Exception ignore) {
-                    sfLog().debug(ignore);
-                }
-
-                result.append(SCRIPTHEADER).append(ITAL).
-                        append(entry.sfContext().get(DESCRIPTION)).append(ITALCLOSE).append(SCRIPTHEADERCLOSE);
-
-                sfLog().debug("DESCRIPTION! " + key);
-
-                ComponentDescription observed = (ComponentDescription) entry.sfContext().get(OBSERVED);
-
-                int indent = sfResolve(MYINDENT, MYINDENTDEFAULT, false);
-                observed(observed, result, indent);
-
-                sfLog().debug("OBSERVED! " + key);
-
-                desired(entry, result, indent);
-                sfLog().debug("DESIRED! " + key);
-
-                
-                //ANY LINKS?
-                links(entry, result, indent);
-                sfLog().debug("LINKS! " + key);
-
-            }
-            stdout(result);
-
-            result.append("</DIV>");
-        }
-        
-
-        return result.toString();
-    } */
 
     void observed(ComponentDescription entry, StringBuilder result, int indent) throws SmartFrogResolutionException, RemoteException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
@@ -815,7 +678,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 
             if (cont) {
 
-                result.append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).append(SETVALUE);
+                result.append(SCRIPTHEADER1).append(indent+1).append(SCRIPTHEADER2).append(SETVALUE);
 
 
                 ComponentDescription aliases = null;
@@ -889,7 +752,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
                     } catch (Exception ignore) {
                         sfLog().debug("LINKS...did not resolve guard "+ignore);    
                     }
-                    result.append(SCRIPTHEADER1).append(indent).append(SCRIPTHEADER2).
+                    result.append(SCRIPTHEADER1).append(indent+1).append(SCRIPTHEADER2).
                             append("<A HREF=\"http://").append(dns).
                             append(link.sfContext().get(LINK)).
                             append("\">").
@@ -902,32 +765,6 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         }
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]+":LEAVING");
     }
-
-    /*DEPRECATED - to be removed
-    void stdout(StringBuilder result){
-
-        String stdout = null;
-        String stderr = null;
-
-        try {
-            stdout = (String) sfResolve(STDOUT);
-            stderr = (String) sfResolve(STDERR);
-        } catch (Exception ignore) {
-
-        }
-
-        if (stdout != null) {
-            result.append(SCRIPTHEADER).
-                    append("Script STDOUT: ").append(stdout).append(SCRIPTHEADERCLOSE);
-        }
-
-        if (stderr != null) {
-            result.append(SCRIPTHEADER).
-                    append("Script STDERR: ").append(stderr).append(SCRIPTHEADERCLOSE);
-        }
-
-        sfLog().debug("STDOUT/ERR! ");
-    }*/
 
     public String getServiceStateDetails() throws RemoteException, SmartFrogResolutionException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
