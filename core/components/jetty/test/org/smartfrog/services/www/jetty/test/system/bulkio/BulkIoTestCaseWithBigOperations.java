@@ -61,7 +61,7 @@ public abstract class BulkIoTestCaseWithBigOperations extends BaseBulkIoTestCase
         expectBulkIoRun(getFile(), LARGE_3GB);
     }
 
-    public void testBulk4GB() throws Throwable {
+    public void NotestBulk4GB() throws Throwable {
         expectBulkIoRun(getFile(), LARGE_4GB);
     }
 
