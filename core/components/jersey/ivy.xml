@@ -82,20 +82,20 @@
       conf="test->default"/>
 
 
-    <!--we pull in www stuff for testing only-->
+    <!--we pull in www stuff for testing and grizzly-->
     <dependency org="org.smartfrog"
       name="sf-www"
       changing="true"
       rev="latest.integration"
-      conf="test->default,httpclient,servletapi;testwar->testwar"/>
-<!--    <dependency org="com.sun.grizzly"
-        name="grizzly-webserver"
-        rev="${grizzly.version}"
-        conf="grizzly->default"/>-->
+      conf="test->default,httpclient,servletapi;testwar->testwar;grizzly->servletapi"/>
+
+    <!-- grizzly-->
     <dependency org="com.sun.grizzly"
         name="grizzly-http-servlet"
         rev="${grizzly.version}"
-        conf="grizzly->default"/>
+        conf="grizzly->default">
+      <exclude org="javax.servlet" />
+    </dependency>
     
     <!--jetty for testing-->
     <dependency org="org.smartfrog"

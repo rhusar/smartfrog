@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 -->
 
 <description>
-     Build file for Restlet
+     Build file for JAX-RS and jersey support
      
      
 </description>
