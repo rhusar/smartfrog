@@ -87,7 +87,7 @@ TestSecurity extends JettyTestCompound {
 	action extends TempDirServer {
 	
 	
-	  port 5050;
+	  port test.jetty.port.1;
 
 	  security extends AdminSecurityRealm {
 	    server LAZY PARENT:server;
