@@ -35,7 +35,7 @@ For more information: www.smartfrog.org
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
   <property name="org.mortbay.log.class" value="org.smartfrog.services.jetty.log.JettyLogger" />
-  <!--<property name="system.tests" value="true" /> -->
+  <property name="system.tests" value="true" /> 
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
