@@ -33,14 +33,17 @@ BulkIOJetty extends LocalJettyServer {
     defaultServlet extends DefaultContentServlet {
       context LAZY PARENT:context;
     }
-    
+ /*   
     noCaching extends NoCacheFilter {
       context LAZY PARENT:context;
     }
+ */
     
+/*
     requestCounter extends RequestCounterFilter {
       context LAZY PARENT:context;
     }
+*/
     
   }
 }
