@@ -294,7 +294,7 @@ It does not contain the Apache Hadoop shell scripts
 %package jersey
 Group:         ${rpm.framework}
 Summary:        Jersey JAX-WS-Support integration
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}, %{name}-www
 
 %description jersey
 This contains the artifacts needed to deploy the Jersey ${jersey.version} version of
@@ -896,17 +896,21 @@ fi
 %files jersey
 
 %{libdir}/sf-jersey-${smartfrog.version}.jar
-%{libdir}/jersey-core-${jersey.version}.jar
-%{libdir}/jersey-server-${jersey.version}.jar
-%{libdir}/jersey-client-${jersey.version}.jar
-%{libdir}/jsr311-api-${jsr311-api.version}.jar
-%{libdir}/asm-${asm.version}.jar
 %{linkdir}/sf-jersey.jar
-%{linkdir}/asm.jar
+%{libdir}/jersey-core-${jersey.version}.jar
 %{linkdir}/jersey-core.jar
+%{libdir}/jersey-server-${jersey.version}.jar
 %{linkdir}/jersey-server.jar
+%{libdir}/jersey-client-${jersey.version}.jar
 %{linkdir}/jersey-client.jar
+%{libdir}/jsr311-api-${jsr311-api.version}.jar
 %{linkdir}/jsr311-api.jar
+%{libdir}/asm-${asm.version}.jar
+%{linkdir}/asm.jar
+%{libdir}/grizzly-http-servlet-${grizzly.version}.jar
+%{linkdir}/grizzly-http-servlet.jar
+%{libdir}/grizzly-utils-${grizzly.version}.jar
+%{linkdir}/grizzly-utils.jar
 
 # -----------------------------------------------------------------------------
 %files jetty

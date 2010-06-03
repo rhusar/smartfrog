@@ -581,7 +581,8 @@ SmartFrog to deploy complex systems.
         The sf-jersey package adds Jersey and hence JAX-RS support
 
         The Jersey version is ${jersey.version}, client and server libraries
-        are included. This implements JAX-RS version ${jsr311-api.version}
+        are included, as is the "Grizzly" embeddable web server 
+        This implements JAX-RS version ${jsr311-api.version}
       </description>
       <file src="ivy/lib/package-jersey/sf-jersey-${smartfrog.version}.jar"
         targetdir="$INSTALL_PATH/lib"
@@ -608,7 +609,12 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-jersey/jsr311-api-${jsr311-api.version}.jar"
         targetdir="$INSTALL_PATH/lib"
         />
-      />
+      <file src="ivy/lib/package-jersey/grizzly-utils-${grizzly.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-jersey/grizzly-http-servlet-${grizzly.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
     <pack name="JMX" required="no" preselected="no">
       <description>
