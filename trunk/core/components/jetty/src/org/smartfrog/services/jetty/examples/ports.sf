@@ -28,6 +28,10 @@ For more information: www.smartfrog.org
 test.jetty.home PROPERTY test.jetty.home;
 jetty_home test.jetty.home;
 
+/**
+ * Keep these ports in sync with JettyTestPorts.java so that
+ * test runs can teardown ports
+ */
 test.jetty.port.1 5050;
 test.jetty.port.2 5051;
 test.jetty.port.https 5053;

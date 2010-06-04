@@ -32,14 +32,16 @@
 
 package org.smartfrog.services.www.jetty.test.system;
 
+import org.smartfrog.services.jetty.examples.JettyTestPorts;
 import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.test.PortCheckingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.util.Properties;
 
-public abstract class JettyTestBase extends DeployingTestBase {
+public abstract class JettyTestBase extends PortCheckingTestBase implements JettyTestPorts {
     public static final String FULL_FILES = "/org/smartfrog/services/www/jetty/test/system/full/";
     public static final String JETTY_HOME = "jetty.home";
     public static final String TEST_JETTY_HOME = "test." + JETTY_HOME;
