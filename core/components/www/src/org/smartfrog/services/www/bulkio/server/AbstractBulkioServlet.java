@@ -83,7 +83,7 @@ public abstract class AbstractBulkioServlet extends HttpServlet implements HttpH
      * @throws ServletException
      */
     protected long getParameterAsLong(HttpServletRequest request, String param) throws ServletException {
-        return parseToLong(" the parameter " + ATTR_SIZE, request.getParameter(param));
+        return parseToLong(" the parameter " + param, request.getParameter(param));
     }
 
     protected long parseToLong(String source, String longValue) throws ServletException {
