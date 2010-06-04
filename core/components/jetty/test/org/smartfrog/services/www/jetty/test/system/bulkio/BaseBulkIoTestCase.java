@@ -41,8 +41,15 @@ public abstract class BaseBulkIoTestCase extends JettyTestBase {
         super(name);
     }
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        enableFailOnPortCheck();
+    }
+
     public void expectBulkIoRun(String filename, long size) throws Throwable {
         System.setProperty(TEST_BULKIO_SIZE, Long.toString(size));
+        addPortCheck("Jetty 1", TEST_JETTY_PORT_1);
         expectSuccessfulTestRun(BULKIO, filename);
     }
 
