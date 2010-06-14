@@ -23,7 +23,7 @@
 
 JettyAndMock extends Compound {
     jetty extends StrutsOnJetty;
-    //mock;
+    cluster extends MockCluster;
   }
 
 
