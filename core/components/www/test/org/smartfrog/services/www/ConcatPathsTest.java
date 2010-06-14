@@ -43,10 +43,9 @@ public class ConcatPathsTest extends TestCase {
     public void testConcatOnePathOneNullString() throws Exception {
         expectConcat("/", null, "/");
     }
-
     
-    public void testConcatStrings() throws Exception {
-        expectConcat("", "", "");
+    public void testConcatEmptyStrings() throws Exception {
+        expectConcat("", "", "/");
     }
 
     public void testConcatOneLongPathLeadingSlashOneNullString() throws Exception {
@@ -63,6 +62,14 @@ public class ConcatPathsTest extends TestCase {
 
     public void testConcatOneNullOneLongPathSlashString() throws Exception {
         expectConcat(null, "/upload", "/upload");
+    }
+
+    public void testConcatTestWarAndPage() throws Exception {
+        expectConcat("/testwar", "error", "/testwar/error");
+    }
+
+    public void testConcatTestWarSlashAndPage() throws Exception {
+        expectConcat("/testwar", "error", "/testwar/error");
     }
 
 
