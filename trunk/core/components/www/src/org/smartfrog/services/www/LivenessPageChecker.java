@@ -284,14 +284,24 @@ public class LivenessPageChecker implements LivenessPage {
 
         //we only get here if first and second are set
         f = first;
+        s = second;
         int fl = f.length();
         boolean firstNonEmpty = fl > 0;
-        boolean firstHasTrailingSlash = firstNonEmpty && f.charAt(fl - 1) == '/';
-        if (firstHasTrailingSlash) {
-            f = f.substring(0, fl - 1) + '/';
+
+        //if the first element is not empty make sure that there is a / at the end
+        if (firstNonEmpty) {
+            
+            boolean firstHasTrailingSlash = f.charAt(fl - 1) == '/';
+            if (!firstHasTrailingSlash) {
+                f = f + '/';
+            }
+        } else {
+            f = "/";
         }
-        s = second;
-        if (firstNonEmpty && s.length() > 0 && s.charAt(0) == '/' ) {
+        //at this point the first string, f, ends in a / .
+        
+        //now strip any leading slash
+        if (s.length() > 0 && s.charAt(0) == '/' ) {
             s = s.substring(1);
         }
         return f + s;
