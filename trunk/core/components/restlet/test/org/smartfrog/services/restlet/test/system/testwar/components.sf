@@ -23,77 +23,9 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/restlet/test/system/testwar/ports.sf"
 #include "/org/smartfrog/services/restlet/test/system/components.sf"
 
-/**
- * These are helper configurations derived from the jetty test suite; we're bringing up the testwar on the
- * system
- */
-
-
-/*
-LocalJettyServer extends Compound {
-
-    sfSyncTerminate true;
-    port test.jetty.port.1;
-    jettyhome test.jetty.home;
-
-    //integrate logging with smartfrog
-    logging extends IntegrateJettyLogging;
-
-    server extends CoreJettyServer {
-
-      jettyhome PARENT:jettyhome;
-
-      port PARENT:port;
-
-    }
-
-    listener extends JettySocketConnector {
-      server LAZY PARENT:server;
-      port PARENT:port;
-    }
-
-}
-
-JettyOnNIO extends LocalJettyServer {
-  listener extends JettySelectChannelConnector {
-    server LAZY PARENT:server;
-  }
-}
-
-
-JettyHTTPS extends LocalJettyServer {
-  port test.jetty.port.https;
-
-  listener extends JettySSLSocketConnector {
-    port PARENT:port;
-    server LAZY PARENT:server;
-  };
-}
 
 
 
-//the war file must be present
-  TestWar extends FileMustExist {
-    filename PROPERTY test.testwar.war;
-  }
-
-
-  TestWarServer extends LocalJettyServer {
-
-    contextPath "/testwar";
-
-    testwar extends TestWar;
-
-    deployedWar extends WebApplication {
-        server LAZY PARENT:server;
-        filename LAZY testwar:absolutePath;
-        contextPath PARENT:contextPath;
-    }
-  }
-
-
-
-*/
 
   WarTest extends TestCompound {
       testTimeout test.timeout;
@@ -143,8 +75,8 @@ JettyHTTPS extends LocalJettyServer {
   }
 
 
-LocalErrorGet extends LocalGet {
-      page "error";
+   LocalErrorGet extends LocalGet {
+      page "/error";
       errorCode 419;
       queries [["status",errorCode]];
       maximumResponseCode errorCode;
