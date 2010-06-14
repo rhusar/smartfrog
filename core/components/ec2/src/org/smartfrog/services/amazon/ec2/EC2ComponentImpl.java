@@ -70,7 +70,7 @@ public class EC2ComponentImpl extends EventCompoundImpl implements EC2Component,
         id = sfResolve(ATTR_ID, "", true);
         key = PasswordHelper.resolvePassword(this, ATTR_KEY, true);
         awsServer = sfResolve(ATTR_AWS_SERVER, "", true);
-        awsServerSecure = sfResolve(ATTR_AWS_SERVER, true, true);
+        awsServerSecure = sfResolve(ATTR_AWS_SERVER_SECURE, true, true);
         ec2binding = bindToEC2();
     }
 
