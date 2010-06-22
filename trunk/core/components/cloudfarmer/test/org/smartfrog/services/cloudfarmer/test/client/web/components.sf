@@ -22,8 +22,11 @@
 #include "/org/smartfrog/services/cloudfarmer/client/web/deploy/components.sf"
 
 JettyAndMock extends Compound {
-    jetty extends StrutsOnJetty;
     cluster extends MockCluster;
+
+    jetty extends StrutsOnJetty {
+    
+    }
   }
 
 
@@ -31,6 +34,7 @@ ExpectJettyServerDeployed extends ExpectDeploy {
   description "A test with jetty and the mock cluster farmer";
 
   action extends JettyAndMock;
+  farmer LAZY action:cluster;
 
 }
 

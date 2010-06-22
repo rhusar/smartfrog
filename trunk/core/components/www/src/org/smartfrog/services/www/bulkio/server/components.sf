@@ -31,6 +31,7 @@ BulkIoServlet extends Servlet {
     ];
   UPLOAD "/upload";
   DOWNLOAD "/download";
+  SLOW "/slow";
 }
 
 
@@ -44,6 +45,12 @@ BulkDownloadServlet extends BulkIoServlet {
   name "BulkDownloadServlet";
   pathSpec DOWNLOAD;
   className "org.smartfrog.services.www.bulkio.server.BulkDownloadServlet";
+}
+
+SlowGetServlet extends BulkIoServlet {
+  name "SlowGetServlet";
+  pathSpec SLOW;
+  className "org.smartfrog.services.www.bulkio.server.SlowGetServlet";
 }
 
 /**
@@ -67,5 +74,9 @@ BulkIOSupport extends Compound {
     context LAZY PARENT:context;
   }
   
+  slowGetServlet extends SlowGetServlet {
+    context LAZY PARENT:context;
+  }
+      
 }
 
