@@ -32,7 +32,14 @@ import org.smartfrog.sfcore.logging.LogSF;
 
 public class CommonsLogFactory extends LogFactoryImpl {
 
+    private final LogSF logSf = sfLog("org.smartfrog.services.logging.jcl.front.CommonsLogFactory");
+    
     public CommonsLogFactory() {
+        logSf.info("created");
+    }
+
+    public CommonsLogFactory(String name) {
+        logSf.info("created: "+ name);
     }
 
     /**
