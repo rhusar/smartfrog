@@ -21,11 +21,15 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
 #include "/org/smartfrog/services/www/bulkio/server/components.sf"
 #include "/org/smartfrog/services/www/filters/components.sf"
+#include "/org/smartfrog/services/logging/jcl/components.sf"
 
 
 BulkIOJetty extends LocalJettyServer {
 
   host CoreJettyServer:ANY_HOST;
+  
+  commonsLoggingBridge extends BindCommonsLogging;
+  
   
   bulkIOSupport extends BulkIOSupport {
     server LAZY PARENT:server;

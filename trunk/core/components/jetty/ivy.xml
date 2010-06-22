@@ -52,11 +52,7 @@
         conf="compile,redist,daemon->default,servletapi;testwar->testwar;test->default,servletapi,httpclient"/>
 
 
-    <!-- depend on logging services, to pick up commons-logging and bindings -->
-    <dependency org="org.smartfrog"
-        name="sf-loggingservices"
-        rev="latest.integration"
-        conf="jsp->default"/>
+
 
     <dependency org="org.smartfrog"
         name="sf-tasks"
@@ -90,7 +86,7 @@
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime->default;redist->redist"/>    
+        conf="compile,runtime,jsp->default;redist->redist"/>    
     
     <!--JSP support -->
     <dependency org="org.mortbay.jetty"

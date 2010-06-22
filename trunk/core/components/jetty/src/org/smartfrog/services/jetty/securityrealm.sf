@@ -20,53 +20,53 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/webapplication.sf"
 
 JettySecurityRealm extends Prim {
-    sfClass "org.smartfrog.services.jetty.JettySecurityRealmImpl";
-    name TBD;
-    contextPath TBD;
-    //lazy link to server
-    server TBD;
-    checkWelcomeFiles true;
-    BASIC_AUTH "BASIC";
-    FORM_AUTH "FORM";
-    DIGEST_AUTH "DIGEST";
-    CERT_AUTH "CLIENT_CERT";
-
-    authentication BASIC_AUTH;
-
-    //list of [name, credential, role1, role2,...] elements
-    users [];
-
-    //list of tuples of paths and lists of name, role pairs.
-    // Each entry should be
-    // [constraint Name, Path/pattern,  method, user role
-    constraints [];
-    
-    METHOD_GET "GET";
-    METHOD_PUT "GET";
-    METHOD_POST "POST";
-    METHOD_DELETE "DELETE";
-    METHOD_HEAD "HEAD";
-    METHOD_ANY "";
-    
-    PATH_EVERYTHING "/*";
-    
-    //public
-    CONSTRAINT_PUBLIC ["Public", PATH_EVERYTHING, METHOD_ANY, "*"];
+  sfClass "org.smartfrog.services.jetty.JettySecurityRealmImpl";
+  name TBD;
+  contextPath TBD;
+  //lazy link to server
+  server TBD;
+  checkWelcomeFiles true;
+  BASIC_AUTH "BASIC";
+  FORM_AUTH "FORM";
+  DIGEST_AUTH "DIGEST";
+  CERT_AUTH "CLIENT_CERT";
+  
+  authentication BASIC_AUTH;
+  
+  //list of [name, credential, role1, role2,...] elements
+  users [];
+  
+  //list of tuples of paths and lists of name, role pairs.
+  // Each entry should be
+  // [constraint Name, Path/pattern,  method, user role
+  constraints [];
+  
+  METHOD_GET "GET";
+  METHOD_PUT "GET";
+  METHOD_POST "POST";
+  METHOD_DELETE "DELETE";
+  METHOD_HEAD "HEAD";
+  METHOD_ANY "";
+  
+  PATH_EVERYTHING "/*";
+  
+  //public
+  CONSTRAINT_PUBLIC ["Public", PATH_EVERYTHING, METHOD_ANY, "*"];
 }
 
 AdminSecurityRealm extends JettySecurityRealm {
-    contextPath PATH_EVERYTHING;
-    name "AdminSecurityRealm";
-    adminPassword "password";
-    
-    
-    
-    users [
-      ["admin", adminPassword, name],
-      ["test", "test", name]
-    ];
-
-    constraints [
-      ["Admin", contextPath, METHOD_ANY, name]
-    ];
+  contextPath PATH_EVERYTHING;
+  name "AdminSecurityRealm";
+  adminPassword "password";
+  
+  
+  
+  users [
+    ["admin", adminPassword, name],
+    ["test", "test", name]
+  ];
+  
+  constraints [
+    ["Admin", contextPath, METHOD_ANY, name]
+  ];
 }

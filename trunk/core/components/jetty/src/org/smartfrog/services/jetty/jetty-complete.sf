@@ -40,19 +40,22 @@
 
 CompleteJettyHttpServer extends Compound {
 
-   jettyhome TBD;
+   //jettyhome TBD;
 
    //integrate logging with smartfrog
    logging extends IntegrateJettyLogging;
 
    server extends CoreJettyServer {
-     //if logging is enabled, then it logs to jettyhome/logs.
+     //if logging is enabled, then it logs to logDir
      enableLogging false;
      port PARENT:port;
-     jettyhome PARENT:jettyhome;
+     //jettyhome PARENT:jettyhome;
   }
 
    port 8080;
+   //extended idletime for manual interaction
+   maxIdleTime 20000;
+   
 
   /**
    * this listens on a direct port
@@ -60,6 +63,8 @@ CompleteJettyHttpServer extends Compound {
   connector extends JettySocketConnector {
     server LAZY PARENT:server;
     port PARENT:port;
+    maxIdleTime PARENT:maxIdleTime ;
+    host PARENT:host;
   }
 
 }
@@ -71,6 +76,16 @@ CompleteJettyHttpServerWithContexts extends JettyHttpServer {
    contexts extends Compound {
      server LAZY PARENT:server;
    }
+}
+
+JettyOnNIO extends LocalJettyServer {
+
+  connector extends JettySelectChannelConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+    maxIdleTime PARENT:maxIdleTime ;
+  }  
 }
 
 

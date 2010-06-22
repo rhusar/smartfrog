@@ -20,10 +20,10 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/utils/setproperty/components.sf"
 
 IntegrateJettyLogging extends SystemProperties {
-   properties [
+  properties [
     ["org.mortbay.log.class","org.smartfrog.services.jetty.log.JettyLogger"]
-   ];
-   setOnEarlyDeploy true;
-   setOnDeploy false;
-   unsetOnTerminate false;
+  ];
+  setOnEarlyDeploy true;
+  setOnDeploy false;
+  unsetOnTerminate false;
 }

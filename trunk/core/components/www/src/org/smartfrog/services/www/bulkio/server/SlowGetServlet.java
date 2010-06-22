@@ -32,12 +32,16 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 package org.smartfrog.services.www.bulkio.server;
 
+import org.apache.log4j.helpers.ISO8601DateFormat;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * This servlet does long lived GET operations
@@ -84,11 +88,21 @@ public class SlowGetServlet extends AbstractBulkioServlet {
 
         ServletOutputStream outputStream = null;
         outputStream = response.getOutputStream();
+        DateFormat dateFormatter = new ISO8601DateFormat();
         long count = 0;
         try {
             for (count = 1; count <= events; count++) {
                 Thread.sleep(interval);
-                outputStream.println("Event " + count + " of " + events);
+                long now = System.currentTimeMillis();
+                Date date = new Date(now);
+                StringBuilder message = new StringBuilder();
+                message.append(now).append(", ");
+                message.append(count).append(", ");
+                message.append(events).append(", ");
+                message.append('"').append(dateFormatter.format(date)).append("\"");
+                String text = message.toString();
+                getLog().info(text);
+                outputStream.println(text);
                 outputStream.flush();
                 response.flushBuffer();
             }
