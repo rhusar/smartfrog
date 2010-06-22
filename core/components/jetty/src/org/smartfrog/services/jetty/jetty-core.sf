@@ -246,6 +246,7 @@ JettySelectChannelConnector extends AbstractThreadPooledConnector {
      */
     socketLingerTime -1;
     headerBufferSize   (4  * 1024);
+    //request and response buffers are only used if the request or response is bigger than the header buffer
     requestBufferSize  (8  * 1024);
     responseBufferSize (24 * 1024);
 
