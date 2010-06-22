@@ -43,6 +43,10 @@ public class CommonsLogTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * Disabled as it forces commons-log into whatever state it was in
+     * @throws Throwable
+     */
     public void NotestCreateCommonsLogWorks() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testCreateCommonsLogWorks.sf");
     }

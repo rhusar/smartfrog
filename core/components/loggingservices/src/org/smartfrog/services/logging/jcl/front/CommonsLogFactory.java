@@ -32,7 +32,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 
 public class CommonsLogFactory extends LogFactoryImpl {
 
-    private final LogSF logSf = sfLog("org.smartfrog.services.logging.jcl.front.CommonsLogFactory");
+    private final LogSF logSf = getSmartFrogLog("org.smartfrog.services.logging.jcl.front.CommonsLogFactory");
     
     public CommonsLogFactory() {
         logSf.info("created");
@@ -58,7 +58,7 @@ public class CommonsLogFactory extends LogFactoryImpl {
      * @param name The name of the log to look for
      * @return Logger implementing LogSF and Log
      */
-    private LogSF sfLog(String name) {
+    public static LogSF getSmartFrogLog(String name) {
         try {
             //try to create a log and register it
             return LogFactory.getLog(name, true);
@@ -77,7 +77,7 @@ public class CommonsLogFactory extends LogFactoryImpl {
      */
     @Override
     protected Log newInstance(String name) throws LogConfigurationException {
-        LogSF backEnd = sfLog(name);
+        LogSF backEnd = getSmartFrogLog(name);
         return createInstance(backEnd);
     }
 
