@@ -28,23 +28,23 @@ For more information: www.smartfrog.org
  */ 
 
 context extends ServletContext {
- contextPath "/test3";
- resourceBase LAZY PROPERTY java.io.tmpdir;
+  contextPath "/test3";
+  resourceBase LAZY PROPERTY java.io.tmpdir;
 }
 
 listener extends JettyListener {
- listenerPort 8086;
+  listenerPort 8086;
 }
 
 
 sfConfig extends Compound {
-
-      server LAZY HOST localhost:rootProcess:ex1:server1;
-
-      newlistener extends listener {
-          server LAZY PARENT:server;
-      }
-      newcontext extends context {
-          server LAZY PARENT:server;
-     }
+  
+  server LAZY HOST localhost:rootProcess:ex1:server1;
+  
+  newlistener extends listener {
+    server LAZY PARENT:server;
+  }
+  newcontext extends context {
+    server LAZY PARENT:server;
+  }
 }

@@ -57,67 +57,67 @@ JettySampleContexts extends Compound {
   server TBD;
 
   jettyDemo extends JettyDemo {
-   server LAZY PARENT:server;
+    server LAZY PARENT:server;
   }
 
   jettyExamples extends JettyExamples {
-   server LAZY PARENT:server;
+    server LAZY PARENT:server;
   }
 
   jettyJavadoc extends JettyJavadoc {
-   server LAZY PARENT:server;
+    server LAZY PARENT:server;
   }
   jettyCGIBIN extends JettyCGIBIN {
-   server LAZY PARENT:server;
+    server LAZY PARENT:server;
   }
 }
 
 JettyExampleWar extends WebApplication {
- server LAZY PARENT:server;
+  server LAZY PARENT:server;
 }
 
 RootWAR extends JettyExampleWar {
- contextPath "/";
- filename "demo/webapps/root";
+   contextPath "/";
+   filename "demo/webapps/root";
 }
 
 JettyDemo extends JettyExampleWar {
- contextPath "/jetty";
- filename "demo/webapps/jetty";
+   contextPath "/jetty";
+   filename "demo/webapps/jetty";
 }
 
 JettyExamples extends JettyExampleWar {
- contextPath "/examples";
- filename "demo/webapps/examples";
- requestId true; //optional
+   contextPath "/examples";
+   filename "demo/webapps/examples";
+   requestId true; //optional
 }
 
 JettyServletContexts extends ServletContext {
- server LAZY PARENT:server;
- contextPath "/demo";
- resourceBase "/demo/docroot";
- classpath "demo/servlets";
- handlers extends Handlers {
-  context LAZY PARENT;
+  server LAZY PARENT:server;
+  contextPath "/demo";
+  resourceBase "/demo/docroot";
+  classpath "demo/servlets";
+  handlers extends Handlers {
+    context LAZY PARENT;
   }
- servlets extends BuiltInServlets {
-  context LAZY PARENT;
+  servlets extends BuiltInServlets {
+    context LAZY PARENT;
   }
 }
 
 JettyJavadoc extends ServletContext {
- contextPath "/javadoc";
- resourceBase "javadoc";
+  contextPath "/javadoc";
+  resourceBase "javadoc";
 }
 
 JettyCGIBIN extends ServletContext {
- contextPath "/cgi-bin";
- resourceBase "cgi-bin";
-
- servlets extends CGIservlet {
-   //server LAZY PARENT:server;
-   context LAZY PARENT;
- }
+  contextPath "/cgi-bin";
+  resourceBase "cgi-bin";
+  
+  servlets extends CGIservlet {
+     //server LAZY PARENT:server;
+     context LAZY PARENT;
+  }
 }
 
 

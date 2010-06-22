@@ -145,11 +145,11 @@ For more information: www.smartfrog.org
   </servlet-mapping>
  */
 JettyJSPServlet extends Servlet {
-   name "JettyJSPServlet";
-   pathSpec "/*";
-   mappings ["*.jsp","*.jspx","*.jspf","*.xsp","*.JSP","*.JSPX","*.JSPF","*.XSP"];
-   className "org.apache.jasper.servlet.JspServlet";
-   errorText "This servlet needs the jsp-api and jsp implementation JARs on the classpath";
-   initOrder 1;
+  name "JettyJSPServlet";
+  pathSpec "/*";
+  mappings ["*.jsp","*.jspx","*.jspf","*.xsp","*.JSP","*.JSPX","*.JSPF","*.XSP"];
+  className "org.apache.jasper.servlet.JspServlet";
+  errorText "This servlet needs the jsp-api and jsp implementation JARs on the classpath";
+  initOrder 1;
 }
 

@@ -135,7 +135,7 @@ CoreJettyServer extends ApplicationServer , ThreadPoolOptions{
    name "JettyServer";
    minThreads 4;
    maxThreads 32;
-   maxIdleTime 1000;
+   maxIdleTime 10000;
 
    //should the date header be sent in a response?
    sendDateHeader true;
