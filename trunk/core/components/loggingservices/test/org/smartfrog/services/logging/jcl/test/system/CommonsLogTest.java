@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -29,41 +29,29 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
+package org.smartfrog.services.logging.jcl.test.system;
 
-#include "/org/smartfrog/services/utils/setproperty/components.sf"
-
-
-CommonsLogFactory extends {
-  classname "org.smartfrog.services.logging.jcl.front.CommonsLogFactory";
-  factoryResource "org.apache.commons.logging.Log";
-}
-
-
-BindCommonsLogging extends SystemProperties {
-  setOnEarlyDeploy true;
-  setOnDeploy false;
-  unsetOnTerminate false;
-  properties [
-      [CommonsLogFactory:factoryResource , CommonsLogFactory:classname]
-    ]
-
-}
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * This is mainly for testing; it creates a commons log instance and logs through it
+ * Created 22-Jun-2010 12:35:56
  */
-CreateCommonsLog extends WorkflowPrim {
-  sfClass "org.smartfrog.services.logging.jcl.CreateCommonsLogImpl";
-  logName sfClass;
-  started "started";
-  terminated "terminated";
-  EXPECTED_CLASSNAME_SF_LOG "org.smartfrog.services.logging.jcl.front.CommonsLogFrontEnd";
-  EXPECTED_CLASSNAME_LOG4J  "org.apache.commons.logging.impl.Log4JLogger";
-  
-  //if not null, triggers a check for the required classname
-  expectedClassname "";
-}
 
-CreateCommonsLogWorkflow extends CreateCommonsLog {
-  sfShouldTerminate true;
+public class CommonsLogTest extends DeployingTestBase {
+    public static final String PACKAGE = "/org/smartfrog/services/logging/jcl/test/system/" ;
+    public CommonsLogTest(String name) {
+        super(name);
+    }
+
+    public void NotestCreateCommonsLogWorks() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCreateCommonsLogWorks.sf");
+    }
+
+    public void testCommonsLoggingBinding() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCommonsLoggingBinding.sf");
+    }
+
+    public void testCommonsLoggingBindingWorks() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testCommonsLoggingBindingWorks.sf");
+    } 
 }

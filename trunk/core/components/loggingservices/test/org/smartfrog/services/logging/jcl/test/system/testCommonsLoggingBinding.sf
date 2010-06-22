@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -30,40 +30,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/logging/jcl/test/system/components.sf"
 
+sfConfig extends testCommonsLoggingBinding {
 
-CommonsLogFactory extends {
-  classname "org.smartfrog.services.logging.jcl.front.CommonsLogFactory";
-  factoryResource "org.apache.commons.logging.Log";
-}
-
-
-BindCommonsLogging extends SystemProperties {
-  setOnEarlyDeploy true;
-  setOnDeploy false;
-  unsetOnTerminate false;
-  properties [
-      [CommonsLogFactory:factoryResource , CommonsLogFactory:classname]
-    ]
-
-}
-
-/**
- * This is mainly for testing; it creates a commons log instance and logs through it
- */
-CreateCommonsLog extends WorkflowPrim {
-  sfClass "org.smartfrog.services.logging.jcl.CreateCommonsLogImpl";
-  logName sfClass;
-  started "started";
-  terminated "terminated";
-  EXPECTED_CLASSNAME_SF_LOG "org.smartfrog.services.logging.jcl.front.CommonsLogFrontEnd";
-  EXPECTED_CLASSNAME_LOG4J  "org.apache.commons.logging.impl.Log4JLogger";
-  
-  //if not null, triggers a check for the required classname
-  expectedClassname "";
-}
-
-CreateCommonsLogWorkflow extends CreateCommonsLog {
-  sfShouldTerminate true;
 }
