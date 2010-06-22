@@ -52,7 +52,6 @@ testCommonsLoggingBindingWorks extends testCommonsLoggingBinding {
     }
     log2 extends CreateCommonsLogWorkflow {
       logName "log2";
-      expectedClassname EXPECTED_CLASSNAME_SF_LOG;
     }
   }
 }

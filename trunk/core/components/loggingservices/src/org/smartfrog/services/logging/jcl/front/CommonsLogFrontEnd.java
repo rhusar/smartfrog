@@ -33,10 +33,22 @@ public class CommonsLogFrontEnd implements Log {
     /**
      * The prim to which we are bound
      */
-    private org.smartfrog.sfcore.logging.Log backEnd;
+    private final org.smartfrog.sfcore.logging.Log backEnd;
 
+    /**
+     * Create bound to a named back end
+     * @param backEnd
+     */
     public CommonsLogFrontEnd(org.smartfrog.sfcore.logging.Log backEnd) {
         this.backEnd = backEnd;
+    }
+
+    /**
+     * Create bind to the given log by name
+     * @param name log name
+     */
+    public CommonsLogFrontEnd(String name) {
+        this.backEnd = CommonsLogFactory.getSmartFrogLog(name);
     }
 
     /**
