@@ -18,12 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.services.cloudfarmer.api;
+package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFParse;
-import org.smartfrog.sfcore.common.ParseOptionSet;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.File;
@@ -34,7 +31,8 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * This class parses .sf files locally; it is used to load up the CD prior to deployment.
+ * This class parses .sf files locally; it is used to load up a {@link ComponentDescription}, with the option of turning
+ * errors into an exception
  *
  * Most of the content is null/invalid until an attempt to parse is made
  */
@@ -44,7 +42,7 @@ public class LocalSmartFrogDescriptor {
     private ParseOptionSet options = new ParseOptionSet();
     private SFParse.ParseResults parsedDescriptor = new SFParse.ParseResults();
 
-    List<String> errorList = new ArrayList<String>();
+    private List<String> errorList = new ArrayList<String>();
 
     public LocalSmartFrogDescriptor() {
     }
@@ -120,12 +118,13 @@ public class LocalSmartFrogDescriptor {
 
     /**
      * Parse from an input stream; parse in a non-empty filename
+     *
      * @param filename filename
-     * @param is input stream
+     * @param is       input stream
      * @return true iff there were no errors
      */
     public boolean parseFromInputStream(String filename,
-                                               InputStream is) {
+                                        InputStream is) {
         setParsedDescriptor(SFParse.parseInputStreamToResults(filename, is, null,
                 getOptions()));
         return !buildErrorList();
@@ -139,7 +138,7 @@ public class LocalSmartFrogDescriptor {
     private boolean buildErrorList() {
         errorList = new ArrayList<String>();
         if (hasErrors()) {
-            for (Vector<String> vector : getErrors()) {
+            for (Iterable<String> vector : getErrors()) {
                 for (String error : vector) {
                     errorList.add(error);
                 }
@@ -189,12 +188,12 @@ public class LocalSmartFrogDescriptor {
         if (!hasErrors()) {
             return null;
         }
-        SmartFrogException sfe = new SmartFrogCompilationException(errorList.get(0));
-        return sfe;
+        return new SmartFrogCompilationException(errorList.get(0));
     }
 
     /**
      * Extract and throw an exception if there is one
+     *
      * @throws SmartFrogException if something went wrong with the parse
      */
     public void throwParseExceptionIfNeeded() throws SmartFrogException {
