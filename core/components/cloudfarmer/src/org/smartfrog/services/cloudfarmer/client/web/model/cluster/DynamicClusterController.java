@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterNode;
-import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
+import org.smartfrog.sfcore.common.LocalSmartFrogDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;

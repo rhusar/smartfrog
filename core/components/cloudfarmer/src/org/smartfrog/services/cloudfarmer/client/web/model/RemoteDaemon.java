@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model;
 
 import org.apache.struts.upload.FormFile;
-import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
+import org.smartfrog.sfcore.common.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.common.BaseRemoteDaemon;
 import org.smartfrog.services.cloudfarmer.client.web.exceptions.ParseFailedException;
 import org.smartfrog.services.cloudfarmer.client.web.forms.workflow.AbstractWorkflowServerActionForm;

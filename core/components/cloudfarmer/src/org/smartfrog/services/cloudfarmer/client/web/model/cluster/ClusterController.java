@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.cloudfarmer.client.web.model.cluster;
 
 import org.smartfrog.services.cloudfarmer.api.ClusterRoleInfo;
-import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
+import org.smartfrog.sfcore.common.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.client.common.AbstractEndpoint;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.MasterWorkerRoles;
 import org.smartfrog.services.cloudfarmer.client.web.clusters.masterworker.hadoop.descriptions.TemplateNames;
@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.ConnectException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

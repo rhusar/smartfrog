@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.cloudfarmer.client.web.clusters;
 
-import org.smartfrog.services.cloudfarmer.api.LocalSmartFrogDescriptor;
+import org.smartfrog.sfcore.common.LocalSmartFrogDescriptor;
 import org.smartfrog.services.cloudfarmer.api.NodeDeploymentService;
 import org.smartfrog.services.cloudfarmer.api.ClusterFarmer;
 import org.smartfrog.services.cloudfarmer.client.web.model.cluster.ClusterAllocationCompleted;
