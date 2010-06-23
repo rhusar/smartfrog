@@ -52,7 +52,7 @@ public class CreateCommonsLogImpl extends PrimImpl {
     public static final String ATTR_MESSAGES = "messages";
     public static final String ATTR_EXPECTED_CLASSNAME = "expectedClassname";
     private Log log;
-    private String terminated="";
+    private String terminated = "";
 
     public CreateCommonsLogImpl() throws RemoteException {
     }
@@ -60,31 +60,31 @@ public class CreateCommonsLogImpl extends PrimImpl {
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        String logName = sfResolve(ATTR_LOG_NAME,"", true);
+        String logName = sfResolve(ATTR_LOG_NAME, "", true);
         String started = sfResolve(ATTR_STARTED_MESSAGE, "", true);
         terminated = sfResolve(ATTR_TERMINATED_MESSAGE, "", true);
         log = LogFactory.getLog(logName);
-        if(!started.isEmpty()) {
+        if (!started.isEmpty()) {
             log.info(started);
         }
         String expectedClassname = sfResolve(ATTR_EXPECTED_CLASSNAME, "", true);
-        String actualClassname =log.getClass().getName();
+        String actualClassname = log.getClass().getName();
         if (!expectedClassname.isEmpty()) {
             if (!expectedClassname.equals(actualClassname)) {
-                throw new SmartFrogDeploymentException("Expected logging classname to be \"" 
+                throw new SmartFrogDeploymentException("Expected logging classname to be \""
                         + expectedClassname + "\""
-                        + "but got \""+actualClassname+"\"");
+                        + "but got \"" + actualClassname + "\"");
             }
         }
-        ComponentHelper ch=new ComponentHelper(this);
+        ComponentHelper ch = new ComponentHelper(this);
         ch.sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
-                "Succesfully deployed a commons log bound to "+ actualClassname,sfCompleteName(), null);
+                "Succesfully deployed a commons log bound to " + actualClassname, sfCompleteName(), null);
     }
 
     @Override
     protected void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if (!terminated.isEmpty()) {
+        if (log != null && !terminated.isEmpty()) {
             log.info(terminated);
         }
 
