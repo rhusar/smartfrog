@@ -184,7 +184,7 @@ public class LocalSmartFrogDescriptor {
      *
      * @return the exception, or null if there is none
      */
-    public SmartFrogException createExceptionFromErrors() {
+    public SmartFrogCompilationException createExceptionFromErrors() {
         if (!hasErrors()) {
             return null;
         }
@@ -196,8 +196,8 @@ public class LocalSmartFrogDescriptor {
      *
      * @throws SmartFrogException if something went wrong with the parse
      */
-    public void throwParseExceptionIfNeeded() throws SmartFrogException {
-        SmartFrogException sfe = createExceptionFromErrors();
+    public void throwParseExceptionIfNeeded() throws SmartFrogCompilationException {
+        SmartFrogCompilationException sfe = createExceptionFromErrors();
         if (sfe != null) {
             throw sfe;
         }
