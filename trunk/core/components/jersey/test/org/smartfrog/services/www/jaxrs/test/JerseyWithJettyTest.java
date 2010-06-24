@@ -39,11 +39,12 @@ import org.smartfrog.test.DeployingTestBase;
 
 public class JerseyWithJettyTest extends DeployingTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/www/jaxrs/test/";
+
     public JerseyWithJettyTest(String name) {
         super(name);
     }
 
     public void testJerseywithJetty() throws Throwable {
-        deployExpectingSuccess(PACKAGE+ "jerseywithjettytest.sf","jerseywithjettytest");
+        deployExpectingSuccess(PACKAGE + "jerseywithjettytest.sf", "jerseywithjettytest");
     }
 }

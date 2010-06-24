@@ -12,7 +12,7 @@ public abstract class AbstractJaxRsResource {
     public Application application;
 
     private Log log;
-    
+
     public Application getApplication() {
         return application;
     }
@@ -35,5 +35,5 @@ public abstract class AbstractJaxRsResource {
             }
         }
         return log;
-    } 
+    }
 }

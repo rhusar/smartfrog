@@ -39,6 +39,7 @@ import org.smartfrog.test.DeployingTestBase;
 
 public class JerseyDiagnosticsTest extends DeployingTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/www/jaxrs/test/";
+
     public JerseyDiagnosticsTest(String name) {
         super(name);
     }
@@ -46,8 +47,8 @@ public class JerseyDiagnosticsTest extends DeployingTestBase {
     public void testJerseyDiagnostics() throws Throwable {
         deployExpectingSuccess(PACKAGE + "jerseydiagnosticstest.sf", "jerseydiagnosticstest");
     }
-    
+
     public void testJerseyClasspath() throws Throwable {
-        deployExpectingSuccess(PACKAGE+ "jerseyclasspathtest.sf","jerseyclasspathtest.sf");
+        deployExpectingSuccess(PACKAGE + "jerseyclasspathtest.sf", "jerseyclasspathtest.sf");
     }
 }

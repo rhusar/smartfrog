@@ -89,6 +89,7 @@ public class JaxRsApplication extends Application {
 
     /**
      * Add a new singleton
+     *
      * @param singleton singleton to add
      */
     public void addSingleton(Object singleton) {
@@ -97,6 +98,7 @@ public class JaxRsApplication extends Application {
 
     /**
      * Add a new class
+     *
      * @param clazz class to add
      */
     public void addClass(Class<?> clazz) {

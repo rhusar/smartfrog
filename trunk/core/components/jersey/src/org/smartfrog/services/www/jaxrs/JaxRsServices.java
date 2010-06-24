@@ -40,9 +40,9 @@ import java.rmi.Remote;
 
 
 public interface JaxRsServices extends Remote {
-    
+
     String ATTR_ENDPOINT_CLASSES = "endpointClasses";
-    
+
     /**
      * Classes to list in the Classes() method
      */

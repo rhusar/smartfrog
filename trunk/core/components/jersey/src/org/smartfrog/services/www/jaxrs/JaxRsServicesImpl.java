@@ -66,13 +66,13 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         application = new JaxRsApplication(this);
-        
+
         List<Class<?>> classes = resolveClassesFromCD(ATTR_CLASSES);
         List<Class<?>> singletonClasses = resolveClassesFromCD(ATTR_SINGLETON_CLASSES);
         List<Class<?>> endpointClassList = resolveClassesFromCD(ATTR_ENDPOINT_CLASSES);
 
-        for (Class<?> clazz:classes) {
-            sfLog().info("Deploying per-instance class "+clazz);
+        for (Class<?> clazz : classes) {
+            sfLog().info("Deploying per-instance class " + clazz);
             application.addClass(clazz);
         }
         for (Class<?> clazz : singletonClasses) {
@@ -92,10 +92,10 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
             sfLog().info("Deploying endpoint class " + clazz);
             try {
                 Object endpointer = createEndpoint(clazz);
-                
+
             } catch (Throwable t) {
                 throw new SmartFrogDeploymentException(
-                        "Endpoint class " + clazz 
+                        "Endpoint class " + clazz
                                 + " cannot be loaded in "
                                 + getRuntimeString()
                                 + ". Cause: " + t,
@@ -107,13 +107,14 @@ public class JaxRsServicesImpl extends PrimImpl implements JaxRsServices, JaxRsL
     }
 
     /**
-     * Take an attribute and resolve that to a CD, then go through every attribute in that and load
-     * its value as class (if not empty)
+     * Take an attribute and resolve that to a CD, then go through every attribute in that and load its value as class
+     * (if not empty)
+     *
      * @param attribute
      * @return a possibly empty list of classes
      * @throws SmartFrogDeploymentException failure to instantiate a class
      * @throws SmartFrogResolutionException resolution problems
-     * @throws RemoteException network problems
+     * @throws RemoteException              network problems
      */
     private List<Class<?>> resolveClassesFromCD(String attribute)
             throws SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
