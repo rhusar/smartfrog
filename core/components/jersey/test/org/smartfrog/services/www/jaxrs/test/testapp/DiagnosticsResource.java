@@ -3,7 +3,6 @@ package org.smartfrog.services.www.jaxrs.test.testapp;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 
@@ -12,19 +11,19 @@ import javax.ws.rs.core.Request;
  */
 
 @Path("/diagnostics")
-public class DiagnosticsResource extends AbstractJaxRsResource{
+public class DiagnosticsResource extends AbstractJaxRsResource {
     @GET
     @Produces("text/html")
     public String doGet(
             @Context Request request
             //,
-    //        @Context Application app
+            //        @Context Application app
     ) {
-        StringBuilder builder= new StringBuilder();
-        
-        builder.append("This is the diagnostics page. Application field: " +getApplication());
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("This is the diagnostics page. Application field: " + getApplication());
 //        builder.append(" application parameter: "+ app);
-        builder.append("request: "+ request);
+        builder.append("request: " + request);
         return builder.toString();
     }
 /*    

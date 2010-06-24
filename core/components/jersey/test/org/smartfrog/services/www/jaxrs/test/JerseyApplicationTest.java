@@ -39,11 +39,12 @@ import org.smartfrog.test.DeployingTestBase;
 
 public class JerseyApplicationTest extends DeployingTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/www/jaxrs/test/";
+
     public JerseyApplicationTest(String name) {
         super(name);
     }
 
     public void testJerseyApplication() throws Throwable {
-        deployExpectingSuccess(PACKAGE+ "jerseyapplicationtest.sf","jerseyapplicationtest");
+        deployExpectingSuccess(PACKAGE + "jerseyapplicationtest.sf", "jerseyapplicationtest");
     }
 }

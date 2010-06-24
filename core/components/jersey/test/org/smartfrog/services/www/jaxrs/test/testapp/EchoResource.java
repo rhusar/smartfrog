@@ -18,5 +18,4 @@ public class EchoResource extends AbstractJaxRsResource {
     }
 
 
-
 }

@@ -44,29 +44,23 @@ public interface JaxRsLocalServices {
 
     /**
      * Get the local JAX-RS runtime
-     * @return a runtime found using the JAX-RS specification's algorithm. Nothing special is tried here.
-     * Note that a VM with javax.ws.rs.ext.RuntimeDelegate set to a classname is used if nothing is
-     * set in the JVM's lib/jaxrs.properties file or any classname in the resource
-     * META-INF/services/javax.ws.rs.ext.RuntimeDelegate.
-     * 
-     * Using the JVM properties component to change the property is the recommended technique here, as it ensures
-     * that however JAX-RS is started, it gets the right class.
-     * 
-     * @return a JAX-RS runtime 
+     *
+     * @return a JAX-RS runtime
      */
     RuntimeDelegate getRuntime();
 
     /**
      * Create a URI builder
+     *
      * @return a URI builder
      */
     UriBuilder createUriBuilder();
 
     /**
      * @param tClass a class to register
-     * @param <T> the class which implements an endpoint
+     * @param <T>    the class which implements an endpoint
      * @return the deployed instance
-     * @throws IllegalArgumentException bad argument
+     * @throws IllegalArgumentException      bad argument
      * @throws UnsupportedOperationException an unsupported operation
      */
     public <T> T createEndpoint(java.lang.Class<T> tClass)

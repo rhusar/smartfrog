@@ -1,51 +1,51 @@
 <?xml version="1.0"?>
 <project name="jersey" default="default">
 
-<!--
-/** (C) Copyright 2010 Hewlett-Packard Development Company, LP
+  <!--
+  /** (C) Copyright 2010 Hewlett-Packard Development Company, LP
+  
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  
+  For more information: www.smartfrog.org
+  
+  */
+  -->
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+  <description>
+    Build file for JAX-RS and jersey support
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  </description>
 
-For more information: www.smartfrog.org
-
-*/
--->
-
-<description>
-     Build file for JAX-RS and jersey support
-     
-     
-</description>
-
-  <property name="is.component" value="true"  />
-   <!-- override point -->
-  <property file="build.properties" />
-  <property name="root.dir" location="../../"  />
+  <property name="is.component" value="true"/>
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="org.mortbay.log.class" value="org.smartfrog.services.jetty.log.JettyLogger" />
-  <property name="system.tests" value="true" /> 
+  <property name="org.mortbay.log.class" value="org.smartfrog.services.jetty.log.JettyLogger"/>
+  <property name="system.tests" value="true"/>
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
-  
+
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
 
   <target name="jetty" depends="ready-to-deploy"
-      description="Deploy a Jetty server that supports Jersey" >
+      description="Deploy a Jetty server that supports Jersey">
     <deploy>
       <application name="jetty"
           descriptor="/org/smartfrog/services/www/jaxrs/test/examples/jetty.sf"/>
@@ -53,7 +53,7 @@ For more information: www.smartfrog.org
   </target>
 
   <target name="grizzly" depends="ready-to-deploy"
-      description="Deploy a Grizzly server that supports Jersey" >
+      description="Deploy a Grizzly server that supports Jersey">
     <deploy>
       <application name="grizzly"
           descriptor="/org/smartfrog/services/www/jaxrs/test/examples/grizzly.sf"/>

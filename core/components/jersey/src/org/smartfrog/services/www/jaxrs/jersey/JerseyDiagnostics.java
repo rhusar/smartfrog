@@ -19,8 +19,8 @@ import java.rmi.RemoteException;
 public class JerseyDiagnostics extends PrimImpl {
 
     public static final String SERVICE_TO_FIND = "serviceToFind";
-    
-    
+
+
     public JerseyDiagnostics() throws RemoteException {
     }
 
@@ -31,37 +31,38 @@ public class JerseyDiagnostics extends PrimImpl {
         if (webApp == null) {
             sfLog().warn("no Web application");
         } else {
-            sfLog().info("Jersey Web application "+webApp
-            +"\nclass="+webApp.getClass());
+            sfLog().info("Jersey Web application " + webApp
+                    + "\nclass=" + webApp.getClass());
         }
-        
-        String classname = sfResolve(SERVICE_TO_FIND,"", true);
-        if(!classname.isEmpty()) {
+
+        String classname = sfResolve(SERVICE_TO_FIND, "", true);
+        if (!classname.isEmpty()) {
             try {
                 Class aClass = SFClassLoader.forName(classname);
                 ServiceFinder foundServices = findServiceProviderFor(aClass);
-                int counter=0;
-                for (Object service:foundServices) {
+                int counter = 0;
+                for (Object service : foundServices) {
                     counter++;
-                    sfLog().info("Service "+ counter+" class "+ service.getClass() +" :" +service.toString()); 
+                    sfLog().info("Service " + counter + " class " + service.getClass() + " :" + service.toString());
                 }
             } catch (Throwable e) {
-                throw new SmartFrogDeploymentException("Failed to find service implementations of "+classname+": "+e, e);
+                throw new SmartFrogDeploymentException(
+                        "Failed to find service implementations of " + classname + ": " + e, e);
 
             }
         }
-        
+
     }
 
     public static WebApplication getDeployedApplication() throws ContainerException {
         WebApplication webApplication = WebApplicationFactory.createWebApplication();
         return webApplication;
     }
-    
+
     public static ServiceFinder findServiceProviderFor(Class clazz) throws ServiceConfigurationError {
         ServiceFinder serviceFinder = ServiceFinder.find(clazz);
         return serviceFinder;
     }
-    
-    
+
+
 }

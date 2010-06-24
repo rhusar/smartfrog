@@ -21,17 +21,16 @@
 
 package org.smartfrog.services.www.servers.java6;
 
+import com.sun.net.httpserver.HttpServer;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-
-import com.sun.net.httpserver.HttpServer;
+import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 
 /**
  * Component that represents a Java 6 server
@@ -79,7 +78,7 @@ public class Java6HttpServerImpl extends PrimImpl {
                 thrown = e.getCause();
             }
             throw new SmartFrogDeploymentException(E_NO_START
-                    + serverURL + ": " + thrown, 
+                    + serverURL + ": " + thrown,
                     thrown);
 
         } catch (IllegalAccessException e) {
