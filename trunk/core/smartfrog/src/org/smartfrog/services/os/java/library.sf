@@ -228,6 +228,7 @@ Maven2Library extends Library {
  */
 AbstractIvy2Library extends Library {
 
+    ivyDir ".ivy2";
 
     /**
      * Well known cache directory
@@ -236,7 +237,7 @@ AbstractIvy2Library extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename ".ivy/cache";
+        filename (ivyDir ++ "/cache" );
     }
 
     /**
@@ -246,7 +247,7 @@ AbstractIvy2Library extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename ".ivy/local";
+        filename (ivyDir ++ "local");
     }
 
 
