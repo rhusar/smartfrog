@@ -19,16 +19,7 @@
  */
 package org.smartfrog.test.system.java.libraries;
 
-import junit.framework.AssertionFailedError;
-import org.smartfrog.services.filesystem.FileUsingComponent;
-import org.smartfrog.services.os.java.LibraryArtifact;
-import org.smartfrog.services.os.java.LibraryArtifactImpl;
-import org.smartfrog.services.os.java.LibraryHelper;
-import org.smartfrog.services.os.java.LibraryImpl;
 import org.smartfrog.test.DeployingTestBase;
-
-import java.io.File;
-import java.net.ConnectException;
 
 /**
  * Test Ivy library work
@@ -46,7 +37,7 @@ public class IvyLibraryTest extends DeployingTestBase {
         expectSuccessfulTestRun(FILES, "testLocalSmartFrog");
     }
     
-        public void testMissingLocalArtifactFails() throws Throwable {
+    public void testMissingLocalArtifactFails() throws Throwable {
         expectSuccessfulTestRun(FILES, "testMissingLocalArtifactFails");
     }
     
