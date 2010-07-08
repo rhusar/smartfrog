@@ -91,9 +91,12 @@ testLocalSmartFrog extends LibraryTest {
         }
     }
 
+/*
     exceptions [
       ["",""],
       ["",LibraryArtifactErrors:ERROR_NO_DOWNLOAD]
       ];
+*/
+      
 }
  
