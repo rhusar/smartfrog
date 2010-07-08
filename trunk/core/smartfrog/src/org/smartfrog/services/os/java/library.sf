@@ -236,7 +236,7 @@ AbstractIvy2Library extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename ".ivy2/cache";
+        filename ".ivy/cache";
     }
 
     /**
@@ -246,7 +246,7 @@ AbstractIvy2Library extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename ".ivy2/local";
+        filename ".ivy/local";
     }
 
 
