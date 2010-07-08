@@ -253,9 +253,9 @@ public class AntProject {
                     if (!ptypes[0].equals(value.getClass())) {
                         value = convType(value.toString(), ptypes[0]);
                     }
-                    ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
+                    if (log.isDebugEnabled()) log.debug("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
                     method.invoke(task, value);
-                    //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
+                    if (log.isDebugEnabled()) log.debug("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
                     return;
                 } catch (BuildException e) {
                     throw new SmartFrogAntBuildException(e);
