@@ -367,7 +367,10 @@ ${test.listing}
         </syspropertyset>
         <classpath refid="testharness.daemon.classpath"/>
         <!-- #Test case isolation technique -->
-        <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
+<!--        <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>-->
+        <batchtest todir="${test.data.dir}" if="testcase">
+          <fileset dir="${test.classes.dir}" includes="**/${testcase}.class"/>
+        </batchtest>
         <batchtest todir="${test.data.dir}" unless="testcase">
           <!-- bulk test case -->
           <fileset dir="${test.classes.dir}">

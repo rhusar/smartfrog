@@ -457,7 +457,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     protected TestCompletedEvent expectTestTimeout(String packageName, String filename) throws Throwable {
         LifecycleEvent event = runTestDeployment(packageName, filename);
         conditionalFail(event instanceof TerminatedEvent,
-                "Test run terminated without completing the tests", event);
+                "Test run terminated when a timeout was expected", event);
         //if not a terminated event, its test results
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(!results.isForcedTimeout(),
