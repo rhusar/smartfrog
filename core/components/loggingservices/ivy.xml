@@ -80,6 +80,7 @@
         rev="${commons-logging.version}"
         conf="commons-logging->master"/>
 
+    <!-- SLF4J and its Jakarta Commons Logging back end-->
 
     <dependency org="org.slf4j"
       name="slf4j-api"
