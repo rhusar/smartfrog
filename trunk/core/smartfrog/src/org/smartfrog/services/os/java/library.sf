@@ -247,7 +247,7 @@ AbstractIvy2Library extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename (ivyDir ++ "local");
+        filename (ivyDir ++ "/local");
     }
 
 
