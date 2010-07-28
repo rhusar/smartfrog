@@ -506,6 +506,11 @@ java.class.path=
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
         <formatter type="${junit.printformatter}" usefile="false"/>
+        <!--all properties for logging -->
+        <syspropertyset>
+          <propertyref prefix="org.apache.commons.logging"/>
+          <propertyref prefix="log4j.properties"/>
+        </syspropertyset>
       </junit>
     </presetdef>
 
