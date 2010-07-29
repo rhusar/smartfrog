@@ -69,5 +69,15 @@
         name="commons-logging"
         rev="${commons-logging.version}"
         conf="compile,redist->master"/>
+    <dependency org="emma"
+        name="emma"
+        rev="${emma.version}"
+        conf="test-helpers->default"
+        />
+    <dependency org="emma"
+        name="emma_ant"
+        rev="${emma.version}"
+        conf="test-helpers->master"
+        />
   </dependencies>
 </ivy-module>
