@@ -108,19 +108,6 @@ public class CompilerSystemTest extends SmartFrogTestBase {
      * test case
      * @throws Throwable on failure
      */
-    public void testCaseTCN10() throws Throwable {
-        deployExpectingException(FILES + "tcn10.sf",
-                "tcn10",
-                EXCEPTION_DEPLOYMENT,
-                null,
-                EXCEPTION_RESOLUTION,
-                "Encountered \"HOST\" ");
-    }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testCaseTCN23() throws Throwable {
         deployExpectingException(FILES + "tcn23.sf",
                 "tcn23",
