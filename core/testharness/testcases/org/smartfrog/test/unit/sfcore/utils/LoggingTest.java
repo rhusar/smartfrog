@@ -11,7 +11,7 @@ import java.net.URL;
  */
 
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
-public class TestLogging extends TestCase {
+public class LoggingTest extends TestCase {
 
     private Log log;
 
