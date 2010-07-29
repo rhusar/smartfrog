@@ -256,23 +256,14 @@ ${test.listing}
 
     <!-- Emma paths -->
 
-    <ivy:cachepath organisation="emma" module="emma" revision="2.0.5312"
-        inline="true" conf="default" pathid="emma.classpath"/>
-    <ivy:cachepath organisation="emma" module="emma_ant" revision="2.0.5312"
-        inline="true" conf="default" pathid="emma.ant.classpath" transitive="false"/>
-
     <ivy:addpath topath="testharness.daemon.classpath" first="true">
       <pathelement location="${root.dir}/smartfrog/dist/lib.intr/classes"/>
-      <path refid="emma.classpath"/>
     </ivy:addpath>
 
-    <path id="tests.run.classpath.emma">
-      <path refid="testhelpers.classpath"/>
-    </path>
 
     <ivy:addpath topath="tests.run.classpath" first="true">
       <pathelement location="${root.dir}/smartfrog/dist/lib.intr/classes"/>
-      <path refid="emma.classpath"/>
+      <path refid="testhelpers.classpath"/>
     </ivy:addpath>
 
     <!-- Emma end paths -->
