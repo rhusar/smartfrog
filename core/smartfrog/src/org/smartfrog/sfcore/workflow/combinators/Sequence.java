@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.workflow.combinators;
 
@@ -44,14 +44,15 @@ import java.rmi.RemoteException;
  *
  * <p>
  * The file sequence.sf contains the SmartFrog configuration file for the base
- * Sequence combinator. This file conatins the details of the attributes which
- * may be passed to Seqeunce.
+ * Sequence combinator. This file contains the details of the attributes which
+ * may be passed to Sequence.
  * </p>
  */
 public class Sequence extends EventCompoundImpl implements Compound {
 
     /** Error message {@value} */
     public static final String ERROR_STARTING_NEXT_CHILD = "Sequence could not start the next component: ";
+    public static final String EMPTY_SEQUENCE = "Empty Sequence";
 
     /**
      * Constructs Sequence.
@@ -71,26 +72,26 @@ public class Sequence extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        if(actionKeys.hasMoreElements()) {
+        if (actionKeys.hasMoreElements()) {
             // let any errors be thrown and caught by SmartFrog for abnormal
             // termination  - including empty actions
             String componentName;
-            componentName = (String)actionKeys.nextElement();
-            ComponentDescription act =null;
+            componentName = (String) actionKeys.nextElement();
+            ComponentDescription act = null;
             try {
-              act = (ComponentDescription) actions.get(componentName);
-              sfCreateNewChild(componentName, act, null);
+                act = (ComponentDescription) actions.get(componentName);
+                sfCreateNewChild(componentName, act, null);
             } catch (ClassCastException ex) {
                 throw new SmartFrogDeploymentException("Error when deploying " + componentName
-                        + " Class" +(actions.get(componentName)).getClass().getName(), ex, this, null);
+                        + " Class" + (actions.get(componentName)).getClass().getName(), ex, this, null);
             } catch (Exception ex) {
                 throw SmartFrogDeploymentException.forward("Error when deploying "
-                        + componentName +" in " +sfCompleteNameSafe() ,ex);
+                        + componentName + " in " + sfCompleteNameSafe(), ex);
             }
         } else {
             //nothing in the sequence, so just terminate ourselves
             new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
-                    "Empty Sequence",
+                    EMPTY_SEQUENCE,
                     null,
                     null);
         }
@@ -114,7 +115,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
         boolean terminate = true;
         if (status.isNormal()) {
 
-            String componentName=null;
+            String componentName = null;
             if (actionKeys.hasMoreElements()) {
                 try {
                     sfRemoveChild(comp);
@@ -129,15 +130,15 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     terminate = false;
                 } catch (Exception e) {
                     //oops, something went wrong
-                    if(componentName==null) {
-                        componentName="(unknown)";
+                    if (componentName == null) {
+                        componentName = "(unknown)";
                     }
-                    String text= ERROR_STARTING_NEXT_CHILD + componentName;
+                    String text = ERROR_STARTING_NEXT_CHILD + componentName;
                     if (sfLog().isErrorEnabled()) {
-                        sfLog().error(getName() + " - "+ text, e);
+                        sfLog().error(getName() + " - " + text, e);
                     }
                     TerminationRecord tr = TerminationRecord
-                            .abnormal(text +": exception " + e, getName(), e);
+                            .abnormal(text + ": exception " + e, getName(), e);
                     sfTerminate(tr);
                     //we've triggered an abnormal shutdown, so no forwarding of the earlier event
                     //as that would use the (normal) terminator used.
@@ -155,12 +156,12 @@ public class Sequence extends EventCompoundImpl implements Compound {
         } else {
             //abnormal terminations
             if (sfLog().isErrorEnabled()) {
-                StringBuilder text=new StringBuilder();
+                StringBuilder text = new StringBuilder();
                 text.append(getName());
                 text.append("- error in child component\n");
                 text.append(status.toString());
                 text.append("\n");
-                sfLog().error(text.toString(),status.getCause());
+                sfLog().error(text.toString(), status.getCause());
             }
             terminate = true;
         }
