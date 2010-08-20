@@ -62,7 +62,7 @@ FailOnStartup extends LifecycleInlineWorkflow {
   #;
 }
 
-testInlineLifecycle extends ExpectDeploy {
+testInlineLifecycle extends ExpectTerminate {
 
   action extends LifecycleInline;
 
