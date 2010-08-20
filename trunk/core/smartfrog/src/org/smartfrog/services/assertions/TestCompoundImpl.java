@@ -118,6 +118,10 @@ public class TestCompoundImpl extends ConditionCompound
     public static final String UNEXPECTED_TERMINATION = " (this termination was not expected)";
     public static final String TERMINATION_MESSAGE_MISMATCH = "Termination message mismatch";
     public static final String FAILED_TO_START_CONDITION = "Failed to start condition";
+    private static final String ACTION_TERMINATED_AS_EXPECTED = "Action terminated as expected";
+    private static final String ABNORMAL_TEST_TERMINATION = "Test component terminated abnormally";
+    private static final String UNEXPECTED_CHILD_FAILURE =
+            "A child that was neither an action or a test failed";
 
     /**
      * Constructor
@@ -385,9 +389,16 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws SmartFrogDeploymentException smartfrog problems
      * @throws RemoteException              RMI problems
      */
-    private void startTests() throws RemoteException, SmartFrogDeploymentException {
-        if (tests != null) {
-            testsPrim = sfCreateNewChild(TESTS_RUNNING, tests, null);
+    private synchronized void startTests() throws RemoteException, SmartFrogException {
+        if (tests != null && testsPrim == null) {
+            testsPrim = sfCreateNewChild(TESTS_RUNNING,
+                    this,
+                    (ComponentDescription) tests.copy(),
+                    null);
+            // it is now a child, so need to guard against double calling of lifecycle...
+            testsPrim.sfDeploy();
+            
+            
             //the test terminator reports a termination as a failure
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
                     FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
@@ -480,6 +491,14 @@ public class TestCompoundImpl extends ConditionCompound
         }
     }
 
+    /**
+     * Add some more text to a termination record description
+     * @param tr record to update
+     * @param text text to append
+     */
+    private void appendToDescription(TerminationRecord tr, String text) {
+        tr.description = tr.description + "; " + text;
+    }
 
     /**
      * This is an override point; it is where subclasses get to change their workflow depending on what happens
@@ -570,7 +589,7 @@ public class TestCompoundImpl extends ConditionCompound
                         //now look at the record, and if it is abnormal, convert it
                         //to a normal status, preserving the message
                         testSucceeded = true;
-                        sfLog().info("Action terminated as expected");
+                        sfLog().info(ACTION_TERMINATED_AS_EXPECTED);
                         if (!childStatus.isNormal()) {
                             exitRecord = TerminationRecord.normal(
                                     childStatus.description,
@@ -594,7 +613,7 @@ public class TestCompoundImpl extends ConditionCompound
                         exitRecord = TerminationRecord.abnormal(
                                 (childStatus.description != null
                                         ? childStatus.description
-                                        : "Action terminated normally " + childStatus)
+                                        : "Action terminated normally which was not expected: " + childStatus)
                                         + UNEXPECTED_TERMINATION,
                                 childStatus.id,
                                 childStatus.getCause());
@@ -612,9 +631,10 @@ public class TestCompoundImpl extends ConditionCompound
             //it is an error if these terminated abnormally, for any reason at all.
             //that is: test failure triggers an undeployment.
             if (!childStatus.isNormal()) {
-                sfLog().info("Tests have failed");
+                sfLog().info(ABNORMAL_TEST_TERMINATION);
                 //mark this as an error.
                 exitRecord = childStatus;
+                appendToDescription(exitRecord, ABNORMAL_TEST_TERMINATION);
                 testSucceeded = false;
             } else {
                 sfLog().debug("Tests termination was successful");
@@ -624,8 +644,9 @@ public class TestCompoundImpl extends ConditionCompound
         } else {
             //something odd just terminated, like the condition.
             //whatever, it is the end of the test run.
-            sfLog().debug("A child that was neither an action or a test failed");
+            sfLog().debug(UNEXPECTED_CHILD_FAILURE);
             exitRecord = childStatus;
+            appendToDescription(exitRecord, UNEXPECTED_CHILD_FAILURE);
             testSucceeded = false;
         }
 
@@ -684,6 +705,10 @@ public class TestCompoundImpl extends ConditionCompound
                 return ERROR_NO_EXCEPTIONS_FOUND + expectedExceptionCount;
             }
         } else {
+            if (expectedExceptionCount == 0) {
+                //we have an exception, but the list of exceptions is null
+                return null;
+            }
             //now run through the exception list
             for (Vector<String> tuple : exceptions) {
                 if (thrown == null) {
