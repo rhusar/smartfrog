@@ -20,9 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.test.system.nwfailure;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.RemoteException;
-import java.io.*;
 import java.util.Locale;
+
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -73,13 +77,7 @@ public class NetworkFailure extends PrimImpl implements Prim {
         }catch (IOException ioex) {
             throw new SmartFrogDeploymentException(ioex);
         } finally {
-            if(br!=null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-
-                }
-            }
+            FileSystem.close(br);
         }
     }
 
