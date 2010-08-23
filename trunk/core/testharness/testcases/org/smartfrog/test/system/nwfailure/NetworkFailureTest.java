@@ -83,36 +83,4 @@ public class NetworkFailureTest extends SmartFrogTestBase {
         }
     }
 
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
-    public void testConnectionRefusedTCN51b() throws Throwable {
-
-        Throwable thrown = deployExpectingException(FILES + "tcn51b.sf",
-                "tcn51b",
-                SMARTFROG_DEPLOYMENT_EXCEPTION,
-                null,
-                null,
-                null);
-        String message=thrown.getMessage();
-        assertNotNull("No nested message", message);
-        assertTrue("Did not find " + EXCEPTION_CREATING_CONNECTION_TO + " or " + CONNECTION_REFUSED
-                + " in " + message,
-                message.contains(EXCEPTION_CREATING_CONNECTION_TO)
-                        || message.contains(CONNECTION_REFUSED));
-
-        Throwable nested = thrown.getCause();
-        assertNotNull("No nested cause", nested);
-        message = nested.getMessage();
-        assertNotNull("No nested message", message);
-        String faulttype = nested.getClass().getName();
-        if (JAVA_RMI_CONNECT_EXCEPTION.equals(faulttype)) {
-            assertContains(message, CONNECTION_REFUSED);
-        } else {
-            assertEquals(CONNECT_IOEXCEPTION, faulttype);
-        }
-    }
 }
