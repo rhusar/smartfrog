@@ -2338,6 +2338,13 @@ Exist.
     </delete>
   </target>
 
+  <!--This is quite traumatic, as it cleans the cache which can take a while to download
+    again, but it does ensure your machine isn't building with artifacts that no longer exist-->
+  <target name="ivy-cleancache" depends="ivy-init"
+      description="clean the ivy cache completely">
+    <ivy:cleancache />
+  </target>
+  
   <!--remove all project-seecific libraries from the cache-->
   <target name="ivy-purge-project" depends="ivy-properties"
       description="purge all smartfrog artifacts from the ~/.ivy2 directories">
