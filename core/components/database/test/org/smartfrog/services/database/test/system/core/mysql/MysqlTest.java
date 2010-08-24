@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.database.test.system.core.mysql;
 
-import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
+import org.smartfrog.test.DeployingTestBase;
 
 /** Mysql tests */
 public class MysqlTest extends DeployingTestBase {
@@ -36,7 +36,7 @@ public class MysqlTest extends DeployingTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        mysqlPresent=Boolean.getBoolean(MYSQL_PRESENT);
+        mysqlPresent = Boolean.getBoolean(MYSQL_PRESENT);
     }
 
 
@@ -47,7 +47,7 @@ public class MysqlTest extends DeployingTestBase {
     public void testInstallMysqlTest() throws Throwable {
         deployAndTerminateMysql("InstallMysqlTest");
     }
-    
+
     public void testConnectionOpenTest() throws Throwable {
         deployAndTerminateMysql("ConnectionOpenTest");
     }
@@ -78,11 +78,11 @@ public class MysqlTest extends DeployingTestBase {
      * @throws Throwable
      */
     public void testMissingDatabase() throws Throwable {
-        if(mysqlPresent) {
+        if (mysqlPresent) {
             TestCompletedEvent event = expectAbnormalTestRun(BASE, "MissingDatabaseTest", true, null);
             Throwable cause = event.getCause();
             //see SFOS-383
-            if(cause!=null && cause.getMessage().indexOf("Table 'mysql.proc' doesn't exist")>=0) {
+            if (cause != null && cause.getMessage().contains("Table 'mysql.proc' doesn't exist")) {
                 throw cause;
             }
         }
@@ -91,6 +91,7 @@ public class MysqlTest extends DeployingTestBase {
     /*
     *@skip: only works if you deploy mysql in grant-tables mode
     */
+
     public void NotestUserManipulation() throws Throwable {
         deployAndTerminateMysql("UserManipulationTest");
     }
@@ -101,9 +102,9 @@ public class MysqlTest extends DeployingTestBase {
 
     private void deployAndTerminateMysql(String template) throws Throwable {
         if (mysqlPresent) {
-            runTestsToCompletion(BASE,template);
+            runTestsToCompletion(BASE, template);
         } else {
-            getLog().info("Skipping test "+template+" as mysqld is not found on the path");
+            getLog().info("Skipping test " + template + " as mysqld is not found on the path");
         }
     }
 
