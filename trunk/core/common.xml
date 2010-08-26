@@ -2184,7 +2184,7 @@ Exist.
 
 
   <target name="ivy-properties" depends="init-common-simpledefinitions,load-versions" >
-    <property name="ivy.version" value="2.0.0" />
+    <property name="ivy.version" value="2.2.0-rc1" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
