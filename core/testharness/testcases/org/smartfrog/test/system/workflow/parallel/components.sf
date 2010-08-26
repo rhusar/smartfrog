@@ -67,7 +67,7 @@ TestBlockWithStartupExceptionNoToggle extends TestBlockBase {
 
 TestBlockWithFailure extends TestBlockBase {
 
-  delay 2;
+  delay 10;
   action extends Parallel {
 
        fail extends FailAbnormal {
