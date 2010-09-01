@@ -77,6 +77,7 @@
         conf="compile->master;httpclient->default">
       <exclude org="commons-logging"/>
       <exclude org="junit"/>
+      <exclude org="commons-codec"/>
     </dependency>
 
     <dependency org="commons-codec"
