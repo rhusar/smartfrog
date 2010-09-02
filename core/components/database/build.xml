@@ -44,6 +44,15 @@
   <available property="test.mysql.present"
       file="mysqld.exe" filepath="${env.Path}"/>
 
+  <condition property="test.mysql.enabled">
+    <and>
+      <isset property="test.mysql.present" />
+      <not>
+        <isset property="test.mysql.disabled" />
+      </not>
+    </and>
+  </condition>
+
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 

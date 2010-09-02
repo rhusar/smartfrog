@@ -26,8 +26,8 @@ import org.smartfrog.test.DeployingTestBase;
 public class MysqlTest extends DeployingTestBase {
     private static final String BASE = "/org/smartfrog/services/database/test/system/core/mysql/";
 
-    private boolean mysqlPresent;
-    public static final String MYSQL_PRESENT = "test.mysql.present";
+    private boolean mysqlEnabled;
+    public static final String MYSQL_ENABLED = "test.mysql.enabled";
 
     public MysqlTest(String name) {
         super(name);
@@ -36,7 +36,7 @@ public class MysqlTest extends DeployingTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        mysqlPresent = Boolean.getBoolean(MYSQL_PRESENT);
+        mysqlEnabled = Boolean.getBoolean(MYSQL_ENABLED);
     }
 
 
@@ -78,7 +78,7 @@ public class MysqlTest extends DeployingTestBase {
      * @throws Throwable
      */
     public void testMissingDatabase() throws Throwable {
-        if (mysqlPresent) {
+        if (mysqlEnabled) {
             TestCompletedEvent event = expectAbnormalTestRun(BASE, "MissingDatabaseTest", true, null);
             Throwable cause = event.getCause();
             //see SFOS-383
@@ -101,7 +101,7 @@ public class MysqlTest extends DeployingTestBase {
     }
 
     private void deployAndTerminateMysql(String template) throws Throwable {
-        if (mysqlPresent) {
+        if (mysqlEnabled) {
             runTestsToCompletion(BASE, template);
         } else {
             getLog().info("Skipping test " + template + " as mysqld is not found on the path");
