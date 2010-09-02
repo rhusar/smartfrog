@@ -27,6 +27,12 @@
       <groupId>quartz</groupId>
       <artifactId>quartz</artifactId>
       <version>${quartz.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

@@ -39,22 +39,27 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-        name="smartfrog" changing="true"
+        name="smartfrog"
+        changing="true"
         rev="latest.integration"
         conf="compile->services;runtime->examples;daemon->examples"/>
     <dependency org="org.smartfrog"
-        name="sf-tasks" changing="true"
+        name="sf-tasks"
+        changing="true"
         rev="latest.integration"
         conf="build->default"/>
     <!--commons logging is needed at compile time, which is pulled from sf-logging services -->
     <dependency org="org.smartfrog"
-        name="sf-loggingservices" changing="true"
+        name="sf-loggingservices"
+        changing="true"
         rev="latest.integration"
         conf="compile->default;redist->redist;runtime->default"/>
     <dependency org="quartz"
         name="quartz"
         rev="${quartz.version}"
-        conf="compile->master;redist->default"/>
+        conf="compile->master;redist->default">
+      <exclude org="commons-logging"/>
+    </dependency>
 
   </dependencies>
 </ivy-module>

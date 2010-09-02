@@ -5,16 +5,16 @@
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-        REST front end
-        Created 14-Nov-2007 by slo
+      REST front end
+      Created 14-Nov-2007 by slo
     </description>
   </info>
-<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
     <include file="../../antbuild/ivy/configurations.xml"/>
   </configurations>
   -->
-<configurations defaultconfmapping="default">
+  <configurations defaultconfmapping="default">
     <conf name="default" extends="master,runtime"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
@@ -30,7 +30,7 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-</configurations> 
+  </configurations>
 
   <publications>
     <!--get the artifact from our module name-->
@@ -40,10 +40,10 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-      name="smartfrog"
-      changing="true"
-      rev="latest.integration"
-      conf="compile,runtime,daemon->services"/>
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         rev="latest.integration"
@@ -55,7 +55,7 @@
     <dependency org="org.smartfrog"
         name="sf-xml"
         rev="latest.integration"
-        conf="redist->redist;daemon,runtime,compile->default"/>
+        conf="redist->redist;daemon,runtime,compile->default;redist->xalan"/>
 
     <!--test-time dependencies-->
     <dependency org="org.smartfrog"
@@ -69,24 +69,28 @@
     <dependency org="httpunit"
         name="httpunit"
         rev="${httpunit.version}"
-	conf="test->default"/>
- <!--runtime-time dependencies-->
-   <dependency org="xom"
+        conf="test->default"/>
+    <!--runtime-time dependencies-->
+<!--
+    <dependency org="xom"
         name="xom"
         rev="${xom.version}"
-	conf="runtime->default"/>
+        conf="runtime->default">
+      <exclude org="xerces"/>
+    </dependency>
     <dependency org="xml-apis"
         name="xml-apis"
         rev="${xml-apis.version}"
-	conf="runtime->default"/>
+        conf="runtime->default"/>
     <dependency org="xalan"
         name="xalan"
         rev="${xalan.version}"
-	conf="runtime->default"/>
+        conf="runtime->default"/>
     <dependency org="xerces"
         name="xercesImpl"
         rev="${xerces.version}"
         conf="runtime->default"/>
+-->
 
 
   </dependencies>

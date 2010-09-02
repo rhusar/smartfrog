@@ -74,7 +74,9 @@
     <dependency org="xom"
         name="xom"
         rev="${xom.version}"
-        conf="compile,redist->master"/>
+        conf="compile,redist->master">
+      <exclude org="xerces"/>
+    </dependency>
     <!--xalan is added in here, for efficient XML operations.
     The version built in to Java 5 is very memory hungry
     -->
