@@ -38,18 +38,44 @@ package org.smartfrog.services.www;
 
 
 public interface HttpHeaders {
-    /** {@value} */
+    /**
+     * {@value}
+     */
+
     String CONTENT_LENGTH = "Content-Length";
-    /** {@value} */
+    /**
+     * {@value}
+     */
+
     String CONTENT_TYPE = "Content-Type";
     /**
+     * {@value}
      */
-    String EXPIRES = "expires";
+    String EXPIRES = "Expires";
 
+    /**
+     * {@value}
+     */
     String CACHE_CONTROL = "Cache-Control";
-    
+
+    /**
+     * {@value}
+     */
+    String NO_STORE_OR_CACHE = "no-store, no-cache, must-revalidate";
+    /**
+     * {@value}
+     */
     String NO_CACHE = "no-cache";
+    /**
+     * {@value}
+     */
     String FORMAT_BINARY = "application/binary";
+    /**
+     * {@value}
+     */
     String TEXT_HTML = "text/html";
+    /**
+     * {@value}
+     */
     String TEXT_PLAIN = "text/plain";
 }
