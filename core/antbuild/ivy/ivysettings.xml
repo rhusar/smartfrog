@@ -1,4 +1,12 @@
 <ivysettings>
+  <property name="ivy.resolver"
+      value="default" override="false"/>
+  <!-- consider
+    latest-revision when resolving issues
+    strict to force conflicts to be fixed.
+  -->
+  <property name="ivy.conflict.manager"
+      value="strict" override="false"/>
   <property name="ivy.ibiblio.root"
     value="http://repo1.maven.org/maven2/" override="false"/>
   <property name="maven.restlet.org"
@@ -26,7 +34,10 @@
 
   <!-- pull in the local repository -->
   <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
-  <settings defaultResolver="default"/>
+  <settings
+      defaultResolver="${ivy.resolver}"
+      defaultConflictManager="${ivy.conflict.manager}"
+      />
   <resolvers>
     <!-- BUGBUG: not a real m2 repo structure
     <filesystem name="team">

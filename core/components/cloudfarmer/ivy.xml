@@ -80,6 +80,7 @@
       <exclude org="oro"/>
       <exclude org="commons-logging"/>
       <exclude org="commons-beanutils"/>
+      <exclude org="commons-digester"/>
     </dependency>
 
     <dependency org="org.apache.struts"
@@ -91,6 +92,14 @@
         name="struts-tiles"
         rev="${struts.version}"
         conf="webapp->default"/>
+
+    <dependency org="commons-digester"
+        name="commons-digester"
+        rev="${commons-digester.version}"
+        conf="webapp->default">
+      <exclude org="commons-beanutils"/>
+      <exclude org="commons-logging"/>
+    </dependency>
 
     <!-- commons IO gets included in the struts distro, though not
     in the dependency metadata, and is used internally-->

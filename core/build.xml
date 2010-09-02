@@ -525,7 +525,9 @@ For more information: www.smartfrog.org
 
           <!-- temporarily excluded -->
           <exclude name="persistence/build.xml"/>
-          
+
+          <!-- not live-->
+          <exclude name="rest/build.xml"/>
 
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
