@@ -2387,11 +2387,10 @@ ${ivy.reports.dir}
   </target>
 
   <!--publish master artifacts-->
-  <target name="ivy-publish" depends="ready-to-publish"
-      xmlns:ivy="antlib:org.apache.ivy.ant">
+  <target name="ivy-publish" depends="ready-to-publish">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
-          conf="master"
+        conf="master"
         artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
@@ -2419,8 +2418,7 @@ ${ivy.reports.dir}
           depends="ready-to-publish,package-javadocs,package-documents"/>
 
   <!--publish everything, rather than just artifacts in the master config-->
-  <target name="ivy-publish-all" depends="ready-to-publish-all"
-          xmlns:ivy="antlib:org.apache.ivy.ant">
+  <target name="ivy-publish-all" depends="ready-to-publish-all">
     <ivy:publish resolver="local" pubrevision="${Version}"
        overwrite="true"
        haltonmissing="false"
