@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.restlet.test.system.testwar;
 
-import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.test.PortCheckingTestBase;
 
 /**
  *
@@ -27,18 +27,26 @@ import org.smartfrog.test.DeployingTestBase;
  *
  */
 
-public class TestwarTest extends DeployingTestBase {
+public class TestwarTest extends PortCheckingTestBase {
     public static final String PACKAGE="/org/smartfrog/services/restlet/test/system/testwar";
 
     public TestwarTest(String name) {
         super(name);
     }
 
+    private void addRestletPortCheck() {
+        addPortCheck("Restlet server",5050);
+    }
+
     public void testWarDeployed() throws Throwable {
+        addRestletPortCheck();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testWarDeployed");
     }
-    
+
     public void testErrorPage() throws Throwable {
+        PortPair reslet = createPortPair("Restlet server", 5050);
+        reslet.assertClosed();
+        addRestletPortCheck();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testErrorPage");
     }
 }
