@@ -21,23 +21,25 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.parser;
 
-import java.io.*;
-
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
-
-
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 /**
  * Implements the Parser interface for SmartFrog parsers. This implementation
