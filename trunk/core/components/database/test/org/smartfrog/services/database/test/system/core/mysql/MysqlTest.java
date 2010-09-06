@@ -26,7 +26,7 @@ import org.smartfrog.test.DeployingTestBase;
 public class MysqlTest extends DeployingTestBase {
     private static final String BASE = "/org/smartfrog/services/database/test/system/core/mysql/";
 
-    private boolean mysqlEnabled;
+    private boolean mysqlEnabled, mysqlPresent;
     public static final String MYSQL_ENABLED = "test.mysql.enabled";
 
     public MysqlTest(String name) {
@@ -36,12 +36,20 @@ public class MysqlTest extends DeployingTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        mysqlPresent = Boolean.getBoolean("test.mysql.present");
         mysqlEnabled = Boolean.getBoolean(MYSQL_ENABLED);
     }
 
 
+    /**
+     * Only check for no myql if the reason that mysql tests are disabled are that it
+     * isn't there.
+     * @throws Throwable on any failure
+     */
     public void testCheckNoMysql() throws Throwable {
-        deployAndTerminate("CheckNoMysqlTest");
+        if(!mysqlEnabled && !mysqlPresent) {
+            deployAndTerminate("CheckNoMysqlTest");
+        }
     }
 
     public void testInstallMysqlTest() throws Throwable {
