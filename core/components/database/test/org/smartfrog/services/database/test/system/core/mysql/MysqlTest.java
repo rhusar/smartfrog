@@ -26,8 +26,10 @@ import org.smartfrog.test.DeployingTestBase;
 public class MysqlTest extends DeployingTestBase {
     private static final String BASE = "/org/smartfrog/services/database/test/system/core/mysql/";
 
-    private boolean mysqlEnabled, mysqlPresent;
+    private boolean mysqlEnabled, mysqlPresent, mysqlDisabled;
     public static final String MYSQL_ENABLED = "test.mysql.enabled";
+    public static final String MYSQL_DISABLED = "test.mysql.disabled";
+    protected static final String MYSQL_PRESENT = "test.mysql.present";
 
     public MysqlTest(String name) {
         super(name);
@@ -36,8 +38,9 @@ public class MysqlTest extends DeployingTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        mysqlPresent = Boolean.getBoolean("test.mysql.present");
+        mysqlPresent = Boolean.getBoolean(MYSQL_PRESENT);
         mysqlEnabled = Boolean.getBoolean(MYSQL_ENABLED);
+        mysqlDisabled = Boolean.getBoolean(MYSQL_DISABLED);
     }
 
 
@@ -47,7 +50,7 @@ public class MysqlTest extends DeployingTestBase {
      * @throws Throwable on any failure
      */
     public void testCheckNoMysql() throws Throwable {
-        if(!mysqlEnabled && !mysqlPresent) {
+        if(!mysqlEnabled && !mysqlDisabled) {
             deployAndTerminate("CheckNoMysqlTest");
         }
     }
