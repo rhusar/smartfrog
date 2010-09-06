@@ -346,20 +346,29 @@ public class SmartFrogException extends Exception implements Serializable {
     }
 
     /**
-     * Get the cause message
-     * @param nm Message separator (ex. "\n");
+     * Get the cause message from the underlying exception tree (via {@link #getCause()}
+     * adding indentation (3 spaces) unless the<code>separator</code> parameter
+     * starts with "," or ":". As the cause itself has this parameter passed down
+     * (provided that it too is a {@link SmartFrogException}, this provides automatic indentation.
+     * <p>
+     *
+     * Note that the moment any exception in the list appears which is not derived from SmartFrogException,
+     * this chaining is lost as it becomes up to the specific exception's own implementation of
+     * {@link Throwable#toString()} to report child exceptions.
+     *
+     * @param separator Message separator (ex. "\n", ": ", or ", ");
      * @return  cause message
      */
-    public String getCauseMessage(String nm) {
-        String causeText="";
+    public String getCauseMessage(String separator) {
+        String causeText = "";
         Throwable cause = getCause();
-        if ((!(nm.startsWith(","))||(!nm.startsWith(":")))){
-             nm=nm+"   ";
+        if ((!(separator.startsWith(",")) || (!separator.startsWith(":")))) {
+            separator = separator + "   ";
         }
-        if (cause instanceof SmartFrogException){
-           causeText = ((SmartFrogException)cause).toString(nm);
+        if (cause instanceof SmartFrogException) {
+            causeText = ((SmartFrogException) cause).toString(separator);
         } else {
-            causeText=cause.toString();
+            causeText = cause.toString();
         }
 
         return causeText;

@@ -62,7 +62,7 @@ For more information: www.smartfrog.org
 
   testWarDeployed extends WarTest  {
     description "test that the root page of the WAR is deployed";
-
+    sfProcessName "testWarDeployed";
 
       tests:operations  extends Sequence {
 
@@ -99,6 +99,8 @@ For more information: www.smartfrog.org
   }
 
   testErrorPage extends WarTest  {
+
+    sfProcessName "testErrorPage";
 
     description ##test that error page of the WAR returns the error we want,
         and that the restlet client can be controlled to ask for different error codes#;

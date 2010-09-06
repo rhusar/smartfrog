@@ -238,7 +238,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * location of the app's descriptor
          *
-         * @param descriptor resource path to the descripto
+         * @param descriptor resource path to the descriptor
          */
         public void setDescriptor(String descriptor) {
             this.descriptor = descriptor;

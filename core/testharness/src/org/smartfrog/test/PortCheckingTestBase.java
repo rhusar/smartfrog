@@ -72,9 +72,26 @@ public class PortCheckingTestBase extends DeployingTestBase {
      * @param port the port number
      */
     protected void addPortCheck(String name, int port) {
-        ports.add(new PortPair(name, port));
+        addPortCheck(createPortPair(name, port));
     }
 
+    /**
+     * Create a portpair
+     * @param name the port name
+     * @param port the port number
+     * @return the new port pair
+     */
+    protected PortPair createPortPair(final String name, final int port) {
+        return new PortPair(name, port);
+    }
+
+    /**
+     * Check for a specific port pair
+     * @param portPair portpair
+     */
+    protected void addPortCheck(PortPair portPair) {
+        ports.add(portPair);
+    }
 
     /**
      * Block until the ports are closed or the shutdown timeout is met
@@ -147,7 +164,7 @@ public class PortCheckingTestBase extends DeployingTestBase {
      */
     protected class PortPair {
 
-        private PortPair(String name, int port) {
+        protected PortPair(String name, int port) {
             this.port = port;
             this.name = name;
         }
