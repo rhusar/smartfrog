@@ -20,11 +20,9 @@
 
 package org.smartfrog.projects.alpine.handlers;
 
-import org.smartfrog.projects.alpine.interfaces.MessageHandler;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
-import org.smartfrog.projects.alpine.core.Context;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 /**

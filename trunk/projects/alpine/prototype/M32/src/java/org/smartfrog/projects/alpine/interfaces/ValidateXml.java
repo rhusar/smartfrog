@@ -38,9 +38,9 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
  * when its parent wants to be validated, so should it.
  */
 public interface ValidateXml {
-    
+
     /**
      * Validate the Xml. Throw {@link InvalidXmlException} if invalid. 
-     */ 
+     */
     public void validateXml();
 }

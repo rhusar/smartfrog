@@ -23,9 +23,9 @@ package org.smartfrog.projects.alpine.om;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
-import org.smartfrog.projects.alpine.om.soap12.Soap12NodeFactory;
 import org.smartfrog.projects.alpine.om.soap11.Soap11NodeFactory;
 import org.smartfrog.projects.alpine.om.soap11.SoapElementFactory;
+import org.smartfrog.projects.alpine.om.soap12.Soap12NodeFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +34,8 @@ import java.util.List;
  * the chain of factories
  */
 public class FactoryChain extends ExtendedNodeFactory {
-    
-    private List<ExtendedNodeFactory> chain=new ArrayList<ExtendedNodeFactory>();
+
+    private List<ExtendedNodeFactory> chain = new ArrayList<ExtendedNodeFactory>();
 
 
     /**
@@ -54,7 +54,7 @@ public class FactoryChain extends ExtendedNodeFactory {
      * @return true if a factory was found
      */
     public boolean inScope(String element, String namespace) {
-        return null!=findFactory(element, namespace);
+        return null != findFactory(element, namespace);
     }
 
     /**
@@ -64,8 +64,8 @@ public class FactoryChain extends ExtendedNodeFactory {
      * @return a factory if found, or null
      */
     public ExtendedNodeFactory findFactory(String element, String namespace) {
-        for(ExtendedNodeFactory factory:chain) {
-            if(factory.inScope(element, namespace)) {
+        for (ExtendedNodeFactory factory : chain) {
+            if (factory.inScope(element, namespace)) {
                 return factory;
             }
         }
@@ -95,7 +95,7 @@ public class FactoryChain extends ExtendedNodeFactory {
 
 
     public Element startMakingElement(String name, String namespace) {
-        return lookupFactory(name, namespace).startMakingElement(name,namespace);
+        return lookupFactory(name, namespace).startMakingElement(name, namespace);
     }
 
     public Nodes finishMakingElement(Element element) {
@@ -110,8 +110,8 @@ public class FactoryChain extends ExtendedNodeFactory {
      * @param soap12 flag to request a soap1.2 handler
      * @return the factory chain
      */
-    public static FactoryChain createSoapFactoryChain(boolean soap11,boolean soap12) {
-        FactoryChain fc=new FactoryChain();
+    public static FactoryChain createSoapFactoryChain(boolean soap11, boolean soap12) {
+        FactoryChain fc = new FactoryChain();
         if (soap12) {
             fc.add(new Soap12NodeFactory());
         }

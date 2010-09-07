@@ -2,24 +2,24 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions
-    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
   targetNamespace="http://smartfrog.org/projects/alpine/m32/handlers/echo"
   xmlns:api="http://smartfrog.org/projects/alpine/m32/handlers/echo"
   xmlns:s12="http://www.w3.org/2003/05/soap-envelope"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-    xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
   >
   <!-- ============================================================= -->
   <wsdl:documentation>
 
-  echo WSDL
+    echo WSDL
   </wsdl:documentation>
-  
+
   <!-- ============================================================= -->
   <!-- BEGIN IMPORTS -->
   <!-- ============================================================= -->
-  
+
   <!-- ============================================================= -->
   <!-- END IMPORTS -->
   <!-- ============================================================= -->
@@ -30,11 +30,11 @@
 
 
   <wsdl:types>
-    
-    <xsd:schema 
+
+    <xsd:schema
       targetNamespace="http://smartfrog.org/projects/alpine/m32/handlers/echo"
       >
-      
+
       <xsd:complexType name="unboundedXMLAnyNamespace">
         <xsd:sequence>
           <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
@@ -52,17 +52,17 @@
       <xsd:element name="echoResponse" type="api:unboundedXMLAnyNamespace"/>
 
     </xsd:schema>
-    
+
   </wsdl:types>
-      
+
   <!-- ============================================================= -->
   <!-- END TYPES -->
   <!-- ============================================================= -->
-    
+
   <!-- ============================================================= -->
   <!-- begin WSDL messages-->
   <!-- ============================================================= -->
-  
+
   <wsdl:message name="echoRequest">
     <wsdl:part element="api:echoRequest" name="echoRequest"/>
   </wsdl:message>
@@ -71,7 +71,7 @@
     <wsdl:part element="api:echoResponse" name="echoResponse"/>
   </wsdl:message>
 
-  
+
   <!-- ============================================================= -->
   <!-- begin WSDL operations -->
   <!-- ============================================================= -->
@@ -81,18 +81,18 @@
   <!-- ============================================================= -->
 
 
-  <wsdl:portType name="echoEPR"    >
-    
+  <wsdl:portType name="echoEPR">
+
     <!-- create -->
     <wsdl:operation name="echo">
       <wsdl:input message="api:echoRequest" name="echoRequest"/>
       <wsdl:output message="api:echoResponse" name="echoResponse"/>
     </wsdl:operation>
-    
+
 
   </wsdl:portType>
-  
-  
+
+
   <!-- ============================================================= -->
   <!-- Echo EPR binding to doc/lit SOAP -->
   <!-- ============================================================= -->
@@ -111,13 +111,13 @@
     </wsdl:operation>
 
   </wsdl:binding>
-  
-  
+
+
   <!-- ============================================================= -->
   <!-- end service definitions-->
   <!-- ============================================================= -->
 
-  
+
   <!-- ============================================================= -->
   <!-- end WSDL definitions-->
   <!-- ============================================================= -->

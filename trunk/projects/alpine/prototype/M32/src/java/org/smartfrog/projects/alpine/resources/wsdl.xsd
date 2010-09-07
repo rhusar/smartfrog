@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?> 
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- 
  
 Copyright 2001-2003 International Business Machines Corporation, Microsoft Corporation. All rights reserved.
@@ -44,7 +44,7 @@ POSSIBILITY OF SUCH DAMAGES.
   <xs:complexType name="tDocumented">
     <xs:annotation>
       <xs:documentation>
-      This type is extended by  component types to allow them to be documented
+        This type is extended by component types to allow them to be documented
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
@@ -57,7 +57,7 @@ POSSIBILITY OF SUCH DAMAGES.
       <xs:extension base="wsdl:tDocumented">
         <xs:annotation>
           <xs:documentation>
-          This type is extended by component types to allow attributes from other namespaces to be added.
+            This type is extended by component types to allow attributes from other namespaces to be added.
           </xs:documentation>
         </xs:annotation>
         <xs:anyAttribute namespace="##other" processContents="lax"/>
@@ -70,7 +70,7 @@ POSSIBILITY OF SUCH DAMAGES.
       <xs:extension base="wsdl:tDocumented">
         <xs:annotation>
           <xs:documentation>
-          This type is extended by component types to allow elements from other namespaces to be added.
+            This type is extended by component types to allow elements from other namespaces to be added.
           </xs:documentation>
         </xs:annotation>
         <xs:sequence>
@@ -106,7 +106,8 @@ POSSIBILITY OF SUCH DAMAGES.
   <xs:group name="anyTopLevelOptionalElement">
     <xs:annotation>
       <xs:documentation>
-      Any top level optional element allowed to appear more then once - any child of definitions element except wsdl:types. Any extensibility element is allowed in any place.
+        Any top level optional element allowed to appear more then once - any child of definitions element
+        except wsdl:types. Any extensibility element is allowed in any place.
       </xs:documentation>
     </xs:annotation>
     <xs:choice>

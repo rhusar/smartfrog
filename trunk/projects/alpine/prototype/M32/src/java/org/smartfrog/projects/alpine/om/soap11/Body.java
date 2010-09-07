@@ -25,7 +25,7 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 
 /**
  * The element name is "Body".
- * 
+ *
  * The element MUST be present in a SOAP message and MUST be an immediate 
  * child element of a SOAP Envelope element. 
  * It MUST directly follow the SOAP Header element if present. 
@@ -35,9 +35,9 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
  * child element of the SOAP Body element. 
  * Immediate child elements of the SOAP Body element MAY be namespace-qualified. 
  * SOAP defines the SOAP Fault element, which is used to indicate error messages 
- * 
+ *
  */
-public class Body extends Soap11Element  {
+public class Body extends Soap11Element {
 
     public Body() {
         super(QNAME_BODY);
@@ -58,17 +58,17 @@ public class Body extends Soap11Element  {
     /**
      * duplicate ourselves
      * @return a copy of ourselves
-     */ 
+     */
     protected Element shallowCopy() {
         return new Body(getQualifiedName(), getNamespaceURI());
     }
-    
+
     /**
      * do we have a fault
      * @return true iff there is a fault child
-     */ 
+     */
     public boolean isFault() {
-        return getFirstChildElement(QNAME_FAULT)!=null;
+        return getFirstChildElement(QNAME_FAULT) != null;
     }
 
     /**

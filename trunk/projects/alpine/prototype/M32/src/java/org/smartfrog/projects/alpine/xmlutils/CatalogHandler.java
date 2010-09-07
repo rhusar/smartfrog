@@ -21,9 +21,8 @@ package org.smartfrog.projects.alpine.xmlutils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
-import org.smartfrog.projects.alpine.faults.ValidationException;
-import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

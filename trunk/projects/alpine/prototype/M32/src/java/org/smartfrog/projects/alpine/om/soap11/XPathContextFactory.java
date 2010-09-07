@@ -23,14 +23,14 @@ package org.smartfrog.projects.alpine.om.soap11;
 import nu.xom.XPathContext;
 
 /**
- 
+
  */
 public class XPathContextFactory implements SoapConstants {
 
 
     public static XPathContext create() {
-        XPathContext context=new XPathContext();
-        context.addNamespace("xsd",URI_XSD_2001);
+        XPathContext context = new XPathContext();
+        context.addNamespace("xsd", URI_XSD_2001);
         context.addNamespace("soap11", URI_SOAP11);
         context.addNamespace("env11", URI_SOAP11);
         context.addNamespace("soap12", URI_SOAP12);
@@ -40,6 +40,6 @@ public class XPathContextFactory implements SoapConstants {
         context.addNamespace("wsdl", URI_WSDL);
         context.addNamespace("xml", URI_XML_1998);
         return context;
-}
+    }
 
 }

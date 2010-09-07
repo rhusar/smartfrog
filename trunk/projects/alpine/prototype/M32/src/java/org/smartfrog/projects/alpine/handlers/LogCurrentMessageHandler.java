@@ -51,9 +51,9 @@ public class LogCurrentMessageHandler extends HandlerBase {
         //log the sender request
         String address = (String) messageContext.get(ContextConstants.REQUEST_REMOTE_ADDRESS);
         if (address != null) {
-            log.info("Message "+
-                    (messageContext.isProcessed()?"to":"from")
-                    +" IP address " + address);
+            log.info("Message " +
+                    (messageContext.isProcessed() ? "to" : "from")
+                    + " IP address " + address);
         }
         MessageDocument currentMessage = messageContext.getCurrentMessage();
         if (currentMessage == null) {

@@ -84,7 +84,7 @@ public class Envelope extends Soap11Element {
      * @return the header
      */
     public Header getHeader() {
-        Elements childElements = getChildElements(ELEMENT_HEADER,getNamespaceURI());
+        Elements childElements = getChildElements(ELEMENT_HEADER, getNamespaceURI());
         Header header;
         if (childElements == null || childElements.size() == 0) {
             //create a new, empty header where there was none

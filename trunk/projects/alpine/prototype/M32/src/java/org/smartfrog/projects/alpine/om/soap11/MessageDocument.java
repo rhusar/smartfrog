@@ -175,7 +175,7 @@ public class MessageDocument extends Document implements ValidateXml {
         }
         if (!(root instanceof Envelope)) {
             throw new InvalidXmlException(SoapConstants.FAULTCODE_VERSION_MISMATCH
-                    +" : {"+ root.getNamespaceURI()+ "}#" + root.getQualifiedName());
+                    + " : {" + root.getNamespaceURI() + "}#" + root.getQualifiedName());
         }
         Envelope env = (Envelope) root;
         env.validateXml();

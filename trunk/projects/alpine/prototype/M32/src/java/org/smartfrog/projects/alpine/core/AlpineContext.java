@@ -20,20 +20,17 @@
 
 package org.smartfrog.projects.alpine.core;
 
-import javax.servlet.ServletContext;
-import java.util.HashMap;
-
 /**
  * This is the servlet-specific context. It includes all the endpoint contexts.
  */
 public class AlpineContext {
-    
+
     /**
      * unique name of the context for use in the servlet context
-     */ 
-    public static final String NAME= AlpineContext.class.getCanonicalName();
-    
-    private EndpointContextMap endpoints=new EndpointContextMap();
+     */
+    public static final String NAME = AlpineContext.class.getCanonicalName();
+
+    private EndpointContextMap endpoints = new EndpointContextMap();
 
     public EndpointContextMap getEndpoints() {
         return endpoints;
@@ -41,22 +38,22 @@ public class AlpineContext {
 
     /**
      * yes, singletons are bad :)
-     */ 
+     */
     private static AlpineContext alpineCtx;
-    
+
     /**
      * get the alpine context from the servlet context ; create it if needed
      *
      * @return the current context
      */
     public static synchronized AlpineContext getAlpineContext() {
-        
+
         if (alpineCtx == null) {
             alpineCtx = createAlpineContext();
         }
         return alpineCtx;
     }
-    
+
     /**
      * Create a new alpine context
      *
@@ -64,5 +61,5 @@ public class AlpineContext {
      */
     private static AlpineContext createAlpineContext() {
         return new AlpineContext();
-    }    
+    }
 }

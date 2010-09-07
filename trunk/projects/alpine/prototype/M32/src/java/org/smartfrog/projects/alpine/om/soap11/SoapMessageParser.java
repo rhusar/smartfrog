@@ -22,13 +22,12 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Builder;
 import nu.xom.Document;
-import nu.xom.NodeFactory;
 import nu.xom.ParsingException;
+import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
+import org.smartfrog.projects.alpine.om.FactoryChain;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
 import org.smartfrog.projects.alpine.xmlutils.ParserHelper;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
-import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
-import org.smartfrog.projects.alpine.om.FactoryChain;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -77,7 +76,7 @@ public class SoapMessageParser {
             }
         }
         if (factory == null) {
-            factory= FactoryChain.createSoapFactoryChain(true,true);
+            factory = FactoryChain.createSoapFactoryChain(true, true);
             //factory = new SoapFactory(namespace, null);
         }
         builder = new Builder(xerces, validate, factory);

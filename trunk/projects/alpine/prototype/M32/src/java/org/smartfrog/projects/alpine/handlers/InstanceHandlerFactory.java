@@ -70,7 +70,8 @@ public class InstanceHandlerFactory implements MessageHandlerFactory {
      * @throws org.smartfrog.projects.alpine.faults.AlpineRuntimeException
      *
      */
-    public static MessageHandler createNewHandler(ClassLoader classloader, String classname, EndpointContext context) {
+    public static MessageHandler createNewHandler(ClassLoader classloader, String classname,
+                                                  EndpointContext context) {
         try {
             Class<MessageHandler> aClass = (Class<MessageHandler>) classloader.loadClass(classname);
             MessageHandler handler = aClass.newInstance();

@@ -37,7 +37,9 @@ times remain with the Authors.
 No other rights are granted by implication, estoppel or otherwise.
 
 -->
-<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" elementFormDefault="qualified" blockDefault="#all">
+<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+  elementFormDefault="qualified" blockDefault="#all">
   <!-- //////////////////// WS-Addressing //////////////////// -->
   <!-- Endpoint reference -->
   <xs:element name="EndpointReference" type="wsa:EndpointReferenceType"/>
@@ -51,8 +53,9 @@ No other rights are granted by implication, estoppel or otherwise.
       <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>
-					 If "Policy" elements from namespace "http://schemas.xmlsoap.org/ws/2002/12/policy#policy" are used, they must appear first (before any extensibility elements).
-					</xs:documentation>
+            If "Policy" elements from namespace "http://schemas.xmlsoap.org/ws/2002/12/policy#policy" are
+            used, they must appear first (before any extensibility elements).
+          </xs:documentation>
         </xs:annotation>
       </xs:any>
     </xs:sequence>

@@ -27,12 +27,12 @@ import nu.xom.Nodes;
 import nu.xom.XPathContext;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
+import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 import org.smartfrog.projects.alpine.xmlutils.AttributeIterator;
 import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
 
 import javax.xml.namespace.QName;
 
@@ -155,7 +155,7 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
      * @return an iterator over all elements in the namespace
      */
     public BaseElementsIterator<Element> elements(String namespace) {
-        return XsdUtils.elements(this,namespace);
+        return XsdUtils.elements(this, namespace);
     }
 
     /**
@@ -311,9 +311,9 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
      */
     public void appendQName(QName qname) {
         String prefix = qname.getPrefix();
-        if(prefix.length()==0) {
+        if (prefix.length() == 0) {
             //make up a prefix
-            prefix=PREFIX;
+            prefix = PREFIX;
         }
         addNamespaceDeclaration(prefix, qname.getNamespaceURI());
         appendChild(prefix + ":" + qname.getLocalPart());
@@ -326,8 +326,8 @@ public class SoapElement extends Element implements ValidateXml, SoapConstants {
      * @param xmlns the namespace
      */
     public void addNewNamespace(String prefix, String xmlns) {
-        if(getNamespaceURI(prefix)==null) {
-            addNamespaceDeclaration(prefix,xmlns);
+        if (getNamespaceURI(prefix) == null) {
+            addNamespaceDeclaration(prefix, xmlns);
         }
     }
 

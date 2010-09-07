@@ -20,11 +20,14 @@
 package org.smartfrog.projects.alpine.transport;
 
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.faults.*;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.faults.ClientException;
+import org.smartfrog.projects.alpine.faults.FaultConstants;
+import org.smartfrog.projects.alpine.faults.NetworkIOException;
+import org.smartfrog.projects.alpine.faults.TimeoutException;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.transport.http.HttpTransmitter;
-import org.smartfrog.projects.alpine.wsa.MessageIDSource;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -68,7 +71,7 @@ public class Transmission implements Callable {
      */
     private Future<?> result;
 
-    
+
     public MessageContext getContext() {
         return context;
     }
@@ -166,7 +169,7 @@ public class Transmission implements Callable {
             //convert to alpine timeout exception
             throw TimeoutException.fromConcurrentTimeout(timeoutException);
         } catch (InterruptedException e) {
-            throw new ClientException("Interrupted while waiting for response from "+
+            throw new ClientException("Interrupted while waiting for response from " +
                     getRequest().getAddressDetails().getTo().toString());
         }
     }
@@ -190,9 +193,6 @@ public class Transmission implements Callable {
                     getResponse().getRootElement().copy()));
         }
     }
-
-
-
 
 
 }

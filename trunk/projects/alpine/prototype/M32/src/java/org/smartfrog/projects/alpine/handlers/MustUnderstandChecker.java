@@ -19,11 +19,11 @@
  */
 package org.smartfrog.projects.alpine.handlers;
 
-import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.core.EndpointContext;
-import org.smartfrog.projects.alpine.om.soap11.Header;
-import org.smartfrog.projects.alpine.faults.MustUnderstandFault;
 import nu.xom.Element;
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.faults.MustUnderstandFault;
+import org.smartfrog.projects.alpine.om.soap11.Header;
 
 /**
  * This handler checks that at this point in the receipt, all MU attributes in all headers
@@ -34,21 +34,21 @@ import nu.xom.Element;
 public class MustUnderstandChecker extends HandlerBase {
 
     /**
-    * Message handler
-    *
-    * @param messageContext context containing the headers and the SOAP Version
-    * @param endpointContext the endpoint context
-    * @throws MustUnderstandFault for a failure
-    *
-    */
+     * Message handler
+     *
+     * @param messageContext context containing the headers and the SOAP Version
+     * @param endpointContext the endpoint context
+     * @throws MustUnderstandFault for a failure
+     *
+     */
     public void processMessage(MessageContext messageContext, EndpointContext endpointContext) {
-        for(Element header:messageContext.getRequest().getEnvelope().getHeaders()) {
-            checkOneElement(messageContext,header);
+        for (Element header : messageContext.getRequest().getEnvelope().getHeaders()) {
+            checkOneElement(messageContext, header);
         }
     }
 
-    private void checkOneElement(MessageContext messageContext,Element header) {
-        if(Header.isMustUnderstand(header, messageContext.getSoapNamespace())) {
+    private void checkOneElement(MessageContext messageContext, Element header) {
+        if (Header.isMustUnderstand(header, messageContext.getSoapNamespace())) {
             throw new MustUnderstandFault(messageContext.getSoapNamespace(),
                     messageContext.getRole(),
                     header);

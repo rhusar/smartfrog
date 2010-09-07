@@ -26,9 +26,9 @@ import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
-import org.smartfrog.projects.alpine.wsa.AlpineEPR;
-import org.smartfrog.projects.alpine.wsa.AddressingConstants;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
+import org.smartfrog.projects.alpine.wsa.AddressingConstants;
+import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 import javax.xml.namespace.QName;
@@ -145,11 +145,11 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      */
     public void addAddressDetails(AlpineEPR epr, String wsaNamespace) {
         if (epr != null) {
-            String ns=wsaNamespace!=null? wsaNamespace: AddressingConstants.XMLNS_WSA_2005;
-            addDetail(epr.toXomInNewNamespace("epr", 
+            String ns = wsaNamespace != null ? wsaNamespace : AddressingConstants.XMLNS_WSA_2005;
+            addDetail(epr.toXomInNewNamespace("epr",
                     FaultConstants.NS_URI_ALPINE, "alpine",
                     ns, "wsa"));
-            addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_HOSTNAME, 
+            addDetail(new SoapElement(FaultConstants.QNAME_FAULTDETAIL_HOSTNAME,
                     epr.getAddress()));
         }
     }

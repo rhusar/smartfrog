@@ -20,8 +20,8 @@
 
 package org.smartfrog.projects.alpine.xmlutils;
 
-import nu.xom.Elements;
 import nu.xom.Element;
+import nu.xom.Elements;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -29,12 +29,12 @@ import java.util.NoSuchElementException;
 /**
  * an iterator that iterates over elements
  */
-public class BaseElementsIterator <E extends Element> implements Iterator<E>,
-        Iterable<E>  {
-    
+public class BaseElementsIterator<E extends Element> implements Iterator<E>,
+        Iterable<E> {
+
     private Elements elements;
-    
-    private int index=0;
+
+    private int index = 0;
 
     public BaseElementsIterator(Elements elements) {
         this.elements = elements;
@@ -47,7 +47,7 @@ public class BaseElementsIterator <E extends Element> implements Iterator<E>,
      * @return <tt>true</tt> if the iterator has more elements.
      */
     public boolean hasNext() {
-        return index<elements.size();
+        return index < elements.size();
     }
 
     /**
@@ -59,7 +59,7 @@ public class BaseElementsIterator <E extends Element> implements Iterator<E>,
      */
     @SuppressWarnings("unchecked")
     public E next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             return null;
         } else {
             return (E) elements.get(index++);

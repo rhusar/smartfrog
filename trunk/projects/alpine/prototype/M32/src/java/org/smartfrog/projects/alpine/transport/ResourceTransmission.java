@@ -21,7 +21,11 @@ package org.smartfrog.projects.alpine.transport;
 
 import org.smartfrog.projects.alpine.core.MessageContext;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * created 11-Dec-2006 14:28:41
@@ -33,16 +37,16 @@ public class ResourceTransmission extends FileTransmission {
 
     public ResourceTransmission(MessageContext context, String resource) throws IOException {
         super(context);
-        this.resource=resource;
+        this.resource = resource;
 
-        InputStream ins= context.getLoader().loadResource(resource);
+        InputStream ins = context.getLoader().loadResource(resource);
         File outputFile = null;
         OutputStream outToFile = null;
         try {
             outputFile = File.createTempFile("alpine", ".xml");
-            outToFile=new FileOutputStream(outputFile);
+            outToFile = new FileOutputStream(outputFile);
             int b;
-            while((b=ins.read())>=0) {
+            while ((b = ins.read()) >= 0) {
                 outToFile.write(b);
             }
             outToFile.flush();
@@ -59,6 +63,6 @@ public class ResourceTransmission extends FileTransmission {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "Transmitting resource "+resource+ " as "+getFile().getPath();
+        return "Transmitting resource " + resource + " as " + getFile().getPath();
     }
 }

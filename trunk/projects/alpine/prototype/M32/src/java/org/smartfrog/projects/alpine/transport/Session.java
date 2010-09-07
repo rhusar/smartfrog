@@ -24,8 +24,8 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.wsa.AddressDetails;
 import org.smartfrog.projects.alpine.wsa.AlpineEPR;
 import org.smartfrog.projects.alpine.wsa.MessageIDSource;
@@ -65,7 +65,7 @@ public class Session {
      * @param validating flag to set validating parser
      */
     public Session(AlpineEPR endpoint, String role, boolean validating) {
-        if(endpoint!=null) {
+        if (endpoint != null) {
             bind(endpoint);
         }
         if (role != null) {
@@ -245,7 +245,7 @@ public class Session {
      * @return the soap action from the QNAme
      */
     public String getSoapAction(QName request) {
-        return request.getNamespaceURI()+"/"+request.getLocalPart();
+        return request.getNamespaceURI() + "/" + request.getLocalPart();
     }
 
     public String getSoapAction(SoapElement request) {
@@ -254,7 +254,8 @@ public class Session {
 
 
     public String toString() {
-        return sessionType() +" session to "+address!=null?address.toString():"an undefined destination";
+        return sessionType() + " session to " + address != null ? address.toString()
+                : "an undefined destination";
     }
 
     /**

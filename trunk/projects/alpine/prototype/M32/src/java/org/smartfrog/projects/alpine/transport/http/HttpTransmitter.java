@@ -32,8 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.core.MessageContext;
-import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.faults.SoapException;
 import org.smartfrog.projects.alpine.http.HttpBinder;
 import org.smartfrog.projects.alpine.http.HttpConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
@@ -100,9 +100,9 @@ public class HttpTransmitter {
         proxySettings.configureClient(httpclient);
         //socket options
         connectionParams = new HttpConnectionParams();
-        Object o=settings.get(HttpConnectionParams.SO_TIMEOUT);
-        if(o!=null) {
-            int timeout=(Integer) o;
+        Object o = settings.get(HttpConnectionParams.SO_TIMEOUT);
+        if (o != null) {
+            int timeout = (Integer) o;
             httpclient.setTimeout(timeout);
             connectionParams.setSoTimeout(timeout);
         }
@@ -126,7 +126,7 @@ public class HttpTransmitter {
             serializer.flush();
             outToFile.flush();
             outToFile.close();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             //clean up and rethrow on failure
             if (outToFile != null) {
                 try {
@@ -200,11 +200,11 @@ public class HttpTransmitter {
             //get the content type and drop anything following a semicolon
             //this can be null on an empty response
             contentType = getResponseContentType(method);
-            if(contentType!=null) {
+            if (contentType != null) {
                 contentType = HttpBinder.extractBaseContentType(contentType);
                 responseIsXml = HttpBinder.isValidSoapContentType(contentType);
             } else {
-                responseIsXml=false;
+                responseIsXml = false;
             }
 
             if (requestFailed &&
@@ -227,7 +227,7 @@ public class HttpTransmitter {
                 throw fault;
             }
             //extract the response
-            responseStream = new CachingInputStream(method.getResponseBodyAsStream(),"utf8");
+            responseStream = new CachingInputStream(method.getResponseBodyAsStream(), "utf8");
             //parse it
             SoapMessageParser parser = tx.getContext().createParser();
             MessageDocument response;
@@ -245,13 +245,13 @@ public class HttpTransmitter {
                     //this is here to catch XML Responses that cannot be
                     //parsed, and to avoid the underlying problem 'remote server error'
                     //from being lost.
-                    String text=responseStream.toString();
+                    String text = responseStream.toString();
                     SoapException ex = new SoapException(
                             "The remote endpoint returned an error,\n"
                                     + "but the response could not be parsed\n"
                                     + "and turned into a SOAPFault.\n"
-                                    +"XML:"+ text+
-                            "\nParse Error:"+e.toString(),
+                                    + "XML:" + text +
+                                    "\nParse Error:" + e.toString(),
                             e, null);
                     ex.addAddressDetails(request);
                     throw ex;

@@ -19,7 +19,6 @@
  */
 package org.smartfrog.projects.alpine.transport;
 
-import org.smartfrog.projects.alpine.core.MessageContext;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 /**
@@ -66,5 +65,5 @@ public class BaseProgress implements ProgressFeedback {
     /**
      * public static instance for dropping all feedback
      */
-    public static final ProgressFeedback EMPTY_PROGRESS=new BaseProgress();
+    public static final ProgressFeedback EMPTY_PROGRESS = new BaseProgress();
 }

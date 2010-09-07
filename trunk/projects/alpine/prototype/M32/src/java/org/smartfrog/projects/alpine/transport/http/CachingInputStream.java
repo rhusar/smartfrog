@@ -31,16 +31,14 @@ import java.io.UnsupportedEncodingException;
 public class CachingInputStream extends InputStream {
 
 
-
-
     private InputStream stream;
     private String encoding;
     private ByteArrayOutputStream buffer;
 
-    public CachingInputStream(InputStream stream,String encoding) {
+    public CachingInputStream(InputStream stream, String encoding) {
         this.stream = stream;
-        this.encoding=encoding;
-        buffer=new ByteArrayOutputStream(1024);
+        this.encoding = encoding;
+        buffer = new ByteArrayOutputStream(1024);
     }
 
     /**
@@ -52,7 +50,7 @@ public class CachingInputStream extends InputStream {
      * */
     public int read() throws IOException {
         int ch = stream.read();
-        if(ch>=0) {
+        if (ch >= 0) {
             buffer.write(ch);
         }
         return ch;

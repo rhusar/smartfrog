@@ -25,7 +25,6 @@ import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
-import org.smartfrog.projects.alpine.om.soap11.SoapFactory;
 import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.soap12.Soap12Constants;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;

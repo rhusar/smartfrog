@@ -1,9 +1,9 @@
 package org.smartfrog.projects.alpine.om.soap11;
 
+import nu.xom.Element;
 import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
-import nu.xom.Element;
 
 /**
  * A factory that creates nothing but soap nodes

@@ -20,8 +20,6 @@
 
 package org.smartfrog.projects.alpine.xmlutils;
 
-import nu.xom.Element;
-import nu.xom.Elements;
 import nu.xom.Node;
 import nu.xom.Nodes;
 
@@ -29,7 +27,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- 
+
  */
 public class NodesIterator implements Iterator<Node>,
         Iterable<Node> {

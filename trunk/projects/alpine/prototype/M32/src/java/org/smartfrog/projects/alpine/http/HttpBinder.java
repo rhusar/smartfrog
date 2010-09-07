@@ -77,7 +77,8 @@ public class HttpBinder {
      * @param response response to send
      * @throws java.io.IOException io exception
      */
-    public void outputResponse(MessageContext messageContext, HttpServletResponse response) throws IOException {
+    public void outputResponse(MessageContext messageContext, HttpServletResponse response)
+            throws IOException {
         MessageDocument message = messageContext.getResponse();
         int responseCode = message.isFault() ?
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK;
@@ -146,7 +147,7 @@ public class HttpBinder {
      * @return the content up to (and excluding) the first semicolon
      */
     public static String extractBaseContentType(String contentType) {
-        if(contentType==null) {
+        if (contentType == null) {
             return null;
         }
         int semicolon = contentType.indexOf(';');

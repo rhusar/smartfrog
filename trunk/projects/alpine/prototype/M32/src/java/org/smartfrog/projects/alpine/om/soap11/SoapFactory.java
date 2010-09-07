@@ -20,9 +20,7 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
-import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.NodeFactory;
 import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
