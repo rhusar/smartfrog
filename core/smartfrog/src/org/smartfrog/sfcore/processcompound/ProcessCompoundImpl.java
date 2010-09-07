@@ -1443,21 +1443,19 @@ public class ProcessCompoundImpl extends CompoundImpl
         Properties props = System.getProperties();
         //Sys properties get ordered
         Vector<String> keysVector = new Vector<String>(props.size());
-        for (Enumeration keys = props.propertyNames(); keys.hasMoreElements();)
-        {
-            keysVector.add((String) keys.nextElement());
+        for(String key : props.stringPropertyNames()) {
+            keysVector.add(key);
         }
         // Order keys
         Collections.sort(keysVector);
+        Properties newprops = new Properties();
         //process keys
-        for(String key:keysVector) {
+        for(String key: keysVector) {
             try {
                 if ((key.startsWith(SmartFrogCoreProperty.propBase)) &&
                         (!(key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
-                    //Logger.log("Checking: "+name.toString());
-                    //Logger.log("Key: "+key.toString());
                     if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_NAME)) {
-                        // Special case relsolved in addClassPath
+                        // Special case resolved in addClassPath
 
                         //Add special parameters to named subprocesses
                         //@todo add Junit test for this feature
@@ -1475,13 +1473,15 @@ public class ProcessCompoundImpl extends CompoundImpl
                         } else {
                             //Properties to overwrite processcompound.sf attributes
                             Object value = props.get(key);
-                            cmd.addElement("-D" + key + '=' + value.toString());
+                            //cmd.addElement("-D" + key + '=' + value.toString());
+                            newprops.put(key, value);
                         }
                     } else {
                         //Special - Add property to name ProcessCompound
-                        cmd.addElement("-D" + (SmartFrogCoreProperty.propBaseSFProcess
+                        newprops.put(SmartFrogCoreProperty.propBaseSFProcess+ SmartFrogCoreKeys.SF_PROCESS_NAME, name);
+/*                        cmd.addElement("-D" + (SmartFrogCoreProperty.propBaseSFProcess
                                 + SmartFrogCoreKeys.SF_PROCESS_NAME + '=') +
-                                name.toString());
+                                name.toString());*/
                     }
                 }
             } catch (Exception ex) {
@@ -1492,7 +1492,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         // Pass java.security.policy if it is defined
-        String secProp = props.getProperty(JAVA_SECURITY_POLICY);
+/*        String secProp = props.getProperty(JAVA_SECURITY_POLICY);
 
         if (secProp != null) {
             cmd.addElement("-D"+ JAVA_SECURITY_POLICY + '=' + secProp);
@@ -1514,7 +1514,18 @@ public class ProcessCompoundImpl extends CompoundImpl
             if (secProp != null) {
                 cmd.addElement("-D" + SFSecurityProperties.propKeyStoreName + '=' + secProp);
             }
+        }*/
+        //propagate any other values
+        for (String key : keysVector) {
+            if (newprops.get(key) == null) {
+                newprops.put(key, props.get(key));
+            }
         }
+        //now add to the command list
+        for (String key : newprops.stringPropertyNames()) {
+            cmd.addElement("-D" + key + "=" + newprops.getProperty(key));
+        }
+
     }
 
     /**
