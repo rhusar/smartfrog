@@ -21,11 +21,11 @@ package org.smartfrog.test;
 
 import org.smartfrog.sfcore.utils.TimeoutInterval;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created 13-Feb-2009 14:20:42
@@ -37,7 +37,7 @@ public class PortCheckingTestBase extends DeployingTestBase {
     protected int connectTimeout = 5000;
     protected long shutdownTimeout = 20000;
     private int pollInterval = 1000;
-    private List<PortPair> ports = new ArrayList<PortPair>();
+    private Collection<PortPair> ports = new ArrayList<PortPair>();
 
 
     public PortCheckingTestBase(String name) {
@@ -99,7 +99,7 @@ public class PortCheckingTestBase extends DeployingTestBase {
     protected void blockUntilPortsAreClosed() {
         TimeoutInterval ti = new TimeoutInterval(shutdownTimeout);
         StringBuilder portsAtFault = new StringBuilder();
-        boolean portIsOpen=true;
+        boolean portIsOpen = true;
         while (!ti.hasTimedOut() && portIsOpen) {
             portIsOpen = false;
             portsAtFault = new StringBuilder();
@@ -114,7 +114,7 @@ public class PortCheckingTestBase extends DeployingTestBase {
                 break;
             }
         }
-        if(portIsOpen) {
+        if (portIsOpen) {
             String message = "Ports still open after " + ti.getDelay() + " milliseconds:\n" + portsAtFault;
             getLog().warn(message);
             if (failOnCheckFailure) {
@@ -211,8 +211,8 @@ public class PortCheckingTestBase extends DeployingTestBase {
         try {
             socket = new Socket();
             socket.connect(address, connectTimeout);
-        } catch (SecurityException e) {
-            throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
+        } catch (Exception e) {
+            throw (IOException) new IOException("Failed to connect to " + address + ": " + e).initCause(e);
         } finally {
             if (socket != null) {
                 try {
@@ -235,7 +235,7 @@ public class PortCheckingTestBase extends DeployingTestBase {
         try {
             checkPort(localPort, connectTimeout);
             return true;
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return false;
         }
     }
