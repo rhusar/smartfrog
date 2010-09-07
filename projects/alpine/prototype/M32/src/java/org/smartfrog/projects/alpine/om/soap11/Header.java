@@ -62,6 +62,7 @@ public class Header extends Soap11Element {
         setMustUnderstand(element, getNamespaceURI(), mustUnderstand);
         addOrReplaceChild(element);
     }
+
     /**
      * duplicate ourselves
      *
@@ -70,6 +71,7 @@ public class Header extends Soap11Element {
     protected Element shallowCopy() {
         return new Header(getQualifiedName(), getNamespaceURI());
     }
+
     /**
      * query the mustUnderstand attribute
      * @param that the header that is being compared
@@ -106,8 +108,8 @@ public class Header extends Soap11Element {
         if (attribute != null) {
             that.removeAttribute(attribute);
         }
-        Attribute mu=new Attribute(PREFIX_SOAP +":"+ATTR_MUST_UNDERSTAND,
-                soapNamespace,understand?"1":"0");
+        Attribute mu = new Attribute(PREFIX_SOAP + ":" + ATTR_MUST_UNDERSTAND,
+                soapNamespace, understand ? "1" : "0");
         that.addAttribute(mu);
     }
 

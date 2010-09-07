@@ -22,9 +22,9 @@ package org.smartfrog.projects.alpine.wsa;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 import org.smartfrog.projects.alpine.faults.ValidationException;
-import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.interfaces.XomSource;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
@@ -34,10 +34,10 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 
 import javax.xml.namespace.QName;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.MalformedURLException;
 
 /*
 <wsa:EndpointReference
@@ -219,7 +219,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      */
     public SoapElement toXom(String localname, String namespace, String prefix) {
         return toXomInNewNamespace(
-                localname,namespace,prefix,namespace, prefix);
+                localname, namespace, prefix, namespace, prefix);
     }
 
 
@@ -234,11 +234,11 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @return the graph in a new namespace
      */
     public SoapElement toXomInNewNamespace(String rootname,
-                                           String rootNs,String rootPrefix,
+                                           String rootNs, String rootPrefix,
                                            String wsaNs, String wsaPrefix) {
         String prefixColon = wsaPrefix + ":";
-        SoapElement root = new SoapElement(rootPrefix +":"+rootname, rootNs);
-        root.addNamespaceDeclaration(wsaPrefix,wsaNs);
+        SoapElement root = new SoapElement(rootPrefix + ":" + rootname, rootNs);
+        root.addNamespaceDeclaration(wsaPrefix, wsaNs);
         if (address != null) {
             Element to = new SoapElement(prefixColon + WSA_ADDRESS, wsaNs, getAddress());
             root.appendChild(to);
@@ -289,7 +289,7 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
                     String localname = elt.getLocalName();
                     if (WSA_ADDRESS.equals(localname)) {
                         address = elt.getValue();
-                        if(address!=null) {
+                        if (address != null) {
                             address = address.trim();
                         }
                     } else if (WSA_REFERENCE_PARAMETERS.equals(localname)) {
@@ -395,30 +395,30 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @return the query or null for no match
      */
     public static String lookupQuery(String query, String name) {
-        if(query==null) {
+        if (query == null) {
             return null;
         }
-        String param= name + "=";
+        String param = name + "=";
         int index;
-        if(query.startsWith(param)) {
+        if (query.startsWith(param)) {
             //first query in the string
-            index= 0;
+            index = 0;
         } else {
             //this is the second query
-            param= "&" + param;
+            param = "&" + param;
             index = query.indexOf(param);
         }
-        if(index<0) {
+        if (index < 0) {
             return null;
         }
-        int pl=param.length();
+        int pl = param.length();
 
         //find the end of the string
-        int end = query.indexOf("&", index+pl);
+        int end = query.indexOf("&", index + pl);
         if (end == -1) {
             end = query.length();
         }
-        return query.substring(index+pl, end).trim();
+        return query.substring(index + pl, end).trim();
     }
 
 
@@ -428,13 +428,13 @@ public final class AlpineEPR implements Validatable, AddressingConstants, XomSou
      * @throws AlpineRuntimeException for any failure to convert the address string to a URL
      */
     public URL createAddressURL() {
-        if(address ==null) {
+        if (address == null) {
             throw new AlpineRuntimeException("No address");
         }
         try {
             return new URL(address);
         } catch (MalformedURLException e) {
-            throw new AlpineRuntimeException("Cannot conver to a URL:"+address);
+            throw new AlpineRuntimeException("Cannot conver to a URL:" + address);
         }
     }
 }

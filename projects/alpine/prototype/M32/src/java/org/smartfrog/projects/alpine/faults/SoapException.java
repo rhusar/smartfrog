@@ -20,13 +20,13 @@
 
 package org.smartfrog.projects.alpine.faults;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+import org.smartfrog.projects.alpine.om.base.SoapElement;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.SoapConstants;
-import org.smartfrog.projects.alpine.om.base.SoapElement;
-import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * This represents a SOAPException from the XML. 
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SoapException extends AlpineRuntimeException implements SoapFaultSource {
 
-    private static final Log log= LogFactory.getLog(SoapException.class);
+    private static final Log log = LogFactory.getLog(SoapException.class);
     private Fault fault;
 
     private String soapNamespace;
@@ -42,13 +42,13 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
     /**
      * message is extracted from the fault string
      * @param fault the fault
-     */ 
+     */
     public SoapException(Fault fault) {
-        super(fault.getFaultString()!=null? fault.getFaultString():
-             fault.toXML());
+        super(fault.getFaultString() != null ? fault.getFaultString() :
+                fault.toXML());
         this.fault = fault;
-        soapNamespace=fault.getNamespaceURI();
-        if(fault.getFaultString()==null) {
+        soapNamespace = fault.getNamespaceURI();
+        if (fault.getFaultString() == null) {
             //TODO, handle a null fault string
 
         }
@@ -69,7 +69,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
                          SoapElement detail) {
 
         super(message);
-        fault=new Fault(SoapConstants.ELEMENT_FAULT, soapNamespace);
+        fault = new Fault(SoapConstants.ELEMENT_FAULT, soapNamespace);
         fault.setFaultCode(faultcode);
         fault.setFaultActor(faultActor);
         fault.setFaultString(message);
@@ -80,7 +80,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * a custom message
      * @param message
      * @param fault
-     */ 
+     */
     public SoapException(String message, Fault fault) {
         super(message);
         this.fault = fault;
@@ -92,7 +92,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * @param message
      * @param cause
      * @param fault
-     */ 
+     */
     public SoapException(String message, Throwable cause, Fault fault) {
         super(message, cause);
         this.fault = fault;
@@ -103,14 +103,14 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * message is extracted from the fault string
      * @param cause
      * @param fault
-     */ 
+     */
     public SoapException(Throwable cause, Fault fault) {
         super(cause);
         this.fault = fault;
     }
 
-    public SoapException(String text,MessageDocument message) {
-        this(text,message.getFault());
+    public SoapException(String text, MessageDocument message) {
+        this(text, message.getFault());
         addAddressDetails(message);
     }
 
@@ -122,7 +122,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
     /**
      * Get the fault information
      * @return the nested fault
-     */ 
+     */
     public Fault getFault() {
         return fault;
     }
@@ -135,7 +135,7 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
      * Will warn to the log if the wrong namespace is asked for
      */
     public Fault GenerateSoapFault(String namespace) {
-        if(!(soapNamespace.equals(namespace))) {
+        if (!(soapNamespace.equals(namespace))) {
             log.warn("Different xmlns for fault");
         }
         return (Fault) fault.copy();
@@ -153,8 +153,6 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
     public String getFaultActor() {
         return fault.getFaultActor();
     }
-
-    
 
 
 }

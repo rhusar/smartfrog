@@ -116,7 +116,7 @@ public class SoapPostServlet extends ServletBase {
      * @param response response to patch
      */
     protected void turnOffCaching(HttpServletResponse response) {
-        response.setHeader("Cache-Control","no-cache");
+        response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
     }
 
@@ -176,7 +176,7 @@ public class SoapPostServlet extends ServletBase {
             if (messageContext.getResponse() == null) {
                 throw new ServerException("No response message created in handler chain");
             }
-            if (!messageContext.isProcessed() && fault==null) {
+            if (!messageContext.isProcessed() && fault == null) {
                 // a missing processed flag generates a warning, as long as there is a response.
                 getLog().warn("Message has not been marked as processed, but it contains a response");
             }
@@ -188,7 +188,7 @@ public class SoapPostServlet extends ServletBase {
         if (fault != null) {
             //we have the fault; patch it in
             responseMessage = messageContext.getResponse();
-            if(responseMessage==null) {
+            if (responseMessage == null) {
                 //demand create a response
                 responseMessage = messageContext.createResponse();
             }
@@ -210,7 +210,8 @@ public class SoapPostServlet extends ServletBase {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    MessageHandler createMessageHandler(MessageContext messageContext, String classname) throws ClassNotFoundException,
+    MessageHandler createMessageHandler(MessageContext messageContext, String classname)
+            throws ClassNotFoundException,
             IllegalAccessException, InstantiationException {
         Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(classname);
         MessageHandler handler = aClass.newInstance();

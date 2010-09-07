@@ -33,16 +33,17 @@ public class MustUnderstandFault extends SoapException {
      * the text in the messge
      * {@value}
      */
-    public static final String NOT_UNDERSTOOD = "A mustUnderstand header was not understood by the endpoint :";
+    public static final String NOT_UNDERSTOOD
+            = "A mustUnderstand header was not understood by the endpoint :";
 
     public MustUnderstandFault(String soapNamespace,
                                String faultActor,
                                Element header) {
         super(soapNamespace, SoapConstants.FAULTCODE_MUST_UNDERSTAND,
                 faultActor,
-                NOT_UNDERSTOOD +header.getQualifiedName(),
+                NOT_UNDERSTOOD + header.getQualifiedName(),
                 null);
-        this.header=header;
+        this.header = header;
     }
 
 

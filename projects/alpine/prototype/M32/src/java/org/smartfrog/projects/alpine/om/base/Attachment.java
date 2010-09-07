@@ -50,8 +50,8 @@ public class Attachment {
      * @throws Throwable the <code>Exception</code> raised by this method
      */
     protected void finalize() throws Throwable {
-        if(autoDelete && file!=null) {
-            synchronized(this) {
+        if (autoDelete && file != null) {
+            synchronized (this) {
                 file.delete();
             }
         }
@@ -63,11 +63,11 @@ public class Attachment {
      * @return true if there was a successful deletion
      */
     public synchronized boolean delete() {
-        if(file==null) {
+        if (file == null) {
             return false;
         } else {
             boolean b = file.delete();
-            file=null;
+            file = null;
             return b;
         }
     }

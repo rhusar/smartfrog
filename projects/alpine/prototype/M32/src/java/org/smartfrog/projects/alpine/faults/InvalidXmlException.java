@@ -29,14 +29,14 @@ import org.smartfrog.projects.alpine.om.soap11.Fault;
 public class InvalidXmlException extends AlpineRuntimeException {
 
     private Node invalidNode;
-    
+
     public InvalidXmlException(String message) {
         super(message);
     }
-    
+
     public InvalidXmlException(Node invalidNode, String message) {
         super(message);
-        this.invalidNode= invalidNode;
+        this.invalidNode = invalidNode;
     }
 
     public Node getInvalidNode() {
@@ -49,8 +49,8 @@ public class InvalidXmlException extends AlpineRuntimeException {
      */
     public void addExtraDetails(Fault fault) {
         super.addExtraDetails(fault);
-        if(invalidNode!=null) {
-            Node cloned=invalidNode.copy();
+        if (invalidNode != null) {
+            Node cloned = invalidNode.copy();
             fault.addFaultDetail(FaultConstants.QNAME_FAULTDETAIL_INVALID_XML, cloned);
         }
     }

@@ -33,8 +33,8 @@ public class MessageIDSource {
     private int counter;
 
     public MessageIDSource() {
-        UUID uuid=UUID.randomUUID();
-        preamble="uuid:"+uuid.toString()+'-';
+        UUID uuid = UUID.randomUUID();
+        preamble = "uuid:" + uuid.toString() + '-';
     }
 
     public MessageIDSource(String preamble) {
@@ -42,7 +42,7 @@ public class MessageIDSource {
     }
 
     public synchronized String newID() {
-        String id=preamble+counter;
+        String id = preamble + counter;
         counter++;
         return id;
     }

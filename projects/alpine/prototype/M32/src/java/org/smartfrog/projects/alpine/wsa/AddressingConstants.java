@@ -28,7 +28,7 @@ public interface AddressingConstants {
     /**
      * {@value}
      */
-    String XMLNS_WSA_2003= "http://schemas.xmlsoap.org/ws/2003/03/addressing";
+    String XMLNS_WSA_2003 = "http://schemas.xmlsoap.org/ws/2003/03/addressing";
     /**
      * {@value}
      */
@@ -52,7 +52,7 @@ public interface AddressingConstants {
 
     String WSA_TO = "To";
     String WSA_FROM = "From";
-    String WSA_FAULTTO="FaultTo";
+    String WSA_FAULTTO = "FaultTo";
     String WSA_REPLYTO = "ReplyTo";
 
     String WSA_ACTION = "Action";

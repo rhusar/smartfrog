@@ -82,7 +82,8 @@ public class FaultConstants {
      * Axis' logging treats runtime exceptions more seriously.
      * "isRuntimeException"
      */
-    public static final QName QNAME_FAULTDETAIL_RUNTIMEEXCEPTION = new QName(NS_URI_AXIS, "isRuntimeException");
+    public static final QName QNAME_FAULTDETAIL_RUNTIMEEXCEPTION = new QName(NS_URI_AXIS,
+            "isRuntimeException");
 
     /**
      * QName of stack trace element in an axis fault detail.

@@ -22,13 +22,13 @@ package org.smartfrog.projects.alpine.wsa;
 import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
+import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 import org.smartfrog.projects.alpine.om.base.SoapElement;
+import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.Header;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
-import org.smartfrog.projects.alpine.om.soap11.Envelope;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -296,12 +296,12 @@ public class AddressDetails implements Validatable, AddressingConstants {
         for (Element header : headers.elements(namespace)) {
             String localname = header.getLocalName();
             String text = header.getValue();
-            boolean understood=false;
+            boolean understood = false;
             if (WSA_MESSAGEID.equals(localname)) {
                 checkNotEmpty(header, text);
                 checkValidURI(WSA_MESSAGEID, text);
                 messageID = text;
-                understood=true;
+                understood = true;
             } else if (WSA_ACTION.equals(localname)) {
                 checkNotEmpty(header, text);
                 action = text;
@@ -328,7 +328,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
                 understood = true;
             }
             //mark headers that we understood as so, for the MustUnderstand checker.
-            if(Header.isMustUnderstand(header, soapNS) && understood) {
+            if (Header.isMustUnderstand(header, soapNS) && understood) {
                 Header.setMustUnderstand(header, soapNS, false);
             }
         }
@@ -339,13 +339,14 @@ public class AddressDetails implements Validatable, AddressingConstants {
         try {
             new URI(text);
         } catch (URISyntaxException e) {
-            throw new AlpineRuntimeException("Invalid wsa:"+headerName +" header -it must be a URI :"+text);
+            throw new AlpineRuntimeException(
+                    "Invalid wsa:" + headerName + " header -it must be a URI :" + text);
         }
     }
 
     private void checkNotEmpty(Element header, String text) {
-        if(text==null || text.length()==0) {
-            throw new AlpineRuntimeException("Missing content from header "+header.getQualifiedName());
+        if (text == null || text.length() == 0) {
+            throw new AlpineRuntimeException("Missing content from header " + header.getQualifiedName());
         }
     }
 
@@ -381,7 +382,7 @@ public class AddressDetails implements Validatable, AddressingConstants {
         }
         //patch in WSA prefix to the message header.
         Envelope envelope = message.getEnvelope();
-        envelope.getHeader().addNewNamespace(prefix,wsaNamespace);
+        envelope.getHeader().addNewNamespace(prefix, wsaNamespace);
         //and the soap prefix
         envelope.addSoapPrefix();
         maybeAdd(message, dest, WSA_TO, wsaNamespace, prefix, markWsaReferences, markMustUnderstand);
@@ -426,7 +427,8 @@ public class AddressDetails implements Validatable, AddressingConstants {
      * @param markReferences
      * @param mustUnderstand
      */
-    private void maybeAdd(MessageDocument message, AlpineEPR dest, String localname, String namespace, String prefix,
+    private void maybeAdd(MessageDocument message, AlpineEPR dest, String localname, String namespace,
+                          String prefix,
                           boolean markReferences, boolean mustUnderstand) {
         if (dest != null) {
             dest.addressMessage(message, localname, namespace, prefix, markReferences, mustUnderstand);
@@ -479,7 +481,9 @@ public class AddressDetails implements Validatable, AddressingConstants {
         if (from != null ? !from.equals(that.from) : that.from != null) return false;
         if (messageID != null ? !messageID.equals(that.messageID) : that.messageID != null) return false;
         if (referenceParameters != null ? !referenceParameters.equals(that.referenceParameters)
-                : that.referenceParameters != null) return false;
+                : that.referenceParameters != null) {
+            return false;
+        }
         if (relatesTo != null ? !relatesTo.equals(that.relatesTo) : that.relatesTo != null) return false;
         if (replyTo != null ? !replyTo.equals(that.replyTo) : that.replyTo != null) return false;
 

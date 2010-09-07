@@ -28,7 +28,8 @@
  HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
  ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
- */package org.smartfrog.projects.alpine.interfaces;
+ */
+package org.smartfrog.projects.alpine.interfaces;
 
 import org.smartfrog.projects.alpine.core.Context;
 import org.smartfrog.projects.alpine.core.EndpointContext;

@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
  * created 16-May-2005 17:17:59
  */
 
-public class BaseNodeIterator <E extends Node> implements Iterator<E>,
+public class BaseNodeIterator<E extends Node> implements Iterator<E>,
         Iterable<E> {
 
     LinkedList l;

@@ -20,7 +20,6 @@
 package org.smartfrog.projects.alpine.xmlutils;
 
 import nu.xom.Attribute;
-import nu.xom.ParentNode;
 import nu.xom.Element;
 
 import java.util.Iterator;
@@ -34,7 +33,7 @@ public class AttributeIterator implements Iterator<Attribute>,
         Iterable<Attribute> {
 
     Element element;
-    int index=0;
+    int index = 0;
     Attribute currentAttribute;
 
     public AttributeIterator(Element element) {
@@ -42,7 +41,7 @@ public class AttributeIterator implements Iterator<Attribute>,
     }
 
     public boolean hasNext() {
-        return index<element.getAttributeCount();
+        return index < element.getAttributeCount();
     }
 
     public Attribute next() {
@@ -70,7 +69,7 @@ public class AttributeIterator implements Iterator<Attribute>,
      * @throws java.util.NoSuchElementException if there isnt one
      */
     public void remove() {
-        Attribute attr=getCurrent();
+        Attribute attr = getCurrent();
         element.removeAttribute(attr);
     }
 

@@ -22,48 +22,47 @@ package org.smartfrog.projects.alpine.core;
 
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.Hashtable;
 
 /**
  * map of endpoint contexts
  */
 public class EndpointContextMap {
-        
-        private Hashtable<String, EndpointContext> map=new Hashtable<String, EndpointContext>();
-    
+
+    private Hashtable<String, EndpointContext> map = new Hashtable<String, EndpointContext>();
+
     /**
      * map from a request to an endpoint;
      * @param request the incoming request
      * @return the context or null
-     */ 
+     */
     public EndpointContext lookup(HttpServletRequest request) {
-        String path=request.getPathInfo();
-        if(path==null) {
+        String path = request.getPathInfo();
+        if (path == null) {
             return null;
         }
         return map.get(path);
     }
-    
+
     /**
      * register an endpoint under the path
      * Also sets the {@link ContextConstants#ATTR_PATH} attribute in the endpoint context
      * @param path path to register on the server
      * @param context the context of the endpoint
-     */ 
+     */
     public synchronized void register(String path, EndpointContext context) {
-        context.put(ContextConstants.ATTR_PATH,path);
+        context.put(ContextConstants.ATTR_PATH, path);
         map.put(path, context);
     }
-    
+
     /**
      * unregister a context
      * @param context the context of the endpoint
      * @return true iff the context was found and removed
-     */ 
+     */
     public synchronized boolean unregister(EndpointContext context) {
-        String path=(String) context.get(ContextConstants.ATTR_PATH);
-        if(path==null) {
+        String path = (String) context.get(ContextConstants.ATTR_PATH);
+        if (path == null) {
             return false;
         }
         return unregister(path);
@@ -73,9 +72,9 @@ public class EndpointContextMap {
      * Unregister a context by path
      * @param path path  on the server
      * @return true if the path was matched to an endpoint
-     */ 
+     */
     public boolean unregister(String path) {
-        if(map.get(path)==null) {
+        if (map.get(path) == null) {
             return false;
         }
         map.remove(path);

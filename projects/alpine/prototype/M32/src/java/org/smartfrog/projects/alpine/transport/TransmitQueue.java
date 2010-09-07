@@ -38,7 +38,7 @@ public class TransmitQueue {
     /**
      * internal queue of things to send
      */
-    private ConcurrentLinkedQueue<Transmission> queue=new ConcurrentLinkedQueue<Transmission>();
+    private ConcurrentLinkedQueue<Transmission> queue = new ConcurrentLinkedQueue<Transmission>();
 
     /**
      * default progressor for upload
@@ -99,7 +99,7 @@ public class TransmitQueue {
      */
     public void transmit(Transmission tx) {
         FutureTask<?> task;
-        synchronized(tx) {
+        synchronized (tx) {
             task = new FutureTask<Object>(tx);
             tx.setResult(task);
         }

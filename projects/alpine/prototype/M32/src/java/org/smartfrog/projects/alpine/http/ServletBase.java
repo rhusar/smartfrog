@@ -23,18 +23,18 @@ package org.smartfrog.projects.alpine.http;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServlet;
 
 /**
- 
+
  */
 public class ServletBase extends HttpServlet {
 
     private static final Log log =
             LogFactory.getLog(ServletBase.class);
-        
-    
+
+
     public ServletBase() {
     }
 
@@ -47,8 +47,8 @@ public class ServletBase extends HttpServlet {
     /**
      * get the svc context
      * @return the context
-     */ 
+     */
     public ServletContext getServletContext() {
         return getServletConfig().getServletContext();
-    }    
+    }
 }

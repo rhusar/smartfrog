@@ -40,7 +40,7 @@ public interface SoapConstants {
     /**
      * The value for our soap apis
      */
-    public static final String URI_SOAPAPI= URI_SOAP11;
+    public static final String URI_SOAPAPI = URI_SOAP11;
     /**
      * {@value}
      */

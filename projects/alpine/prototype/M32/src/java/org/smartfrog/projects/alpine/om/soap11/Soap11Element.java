@@ -33,7 +33,7 @@ public class Soap11Element extends SoapElement {
     public Soap11Element(QName name) {
         super(name);
     }
-    
+
     public Soap11Element(String name) {
         super(name);
     }
@@ -49,15 +49,15 @@ public class Soap11Element extends SoapElement {
     /**
      * Get the root document as a message document
      * @return the message document
-     */ 
+     */
     public MessageDocument getMessageDocument() {
         return (MessageDocument) getDocument();
     }
-    
+
     /**
      * Get the envelope
      * @return the envelope in the message
-     */ 
+     */
     public Envelope getEnvelope() {
         return getMessageDocument().getEnvelope();
     }

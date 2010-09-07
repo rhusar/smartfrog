@@ -33,8 +33,8 @@ public class EndpointContext extends Context {
         MessageContext messageContext = new MessageContext();
         //propagate actor information
 
-        messageContext.put(ContextConstants.ATTR_OWNER_ENDPOINT,this);
-        messageContext.copy(this,ContextConstants.ATTR_ROLE);
+        messageContext.put(ContextConstants.ATTR_OWNER_ENDPOINT, this);
+        messageContext.copy(this, ContextConstants.ATTR_ROLE);
         messageContext.copy(this, ContextConstants.ATTR_SOAP_CONTENT_TYPE);
 
         messageContext.createRequest();

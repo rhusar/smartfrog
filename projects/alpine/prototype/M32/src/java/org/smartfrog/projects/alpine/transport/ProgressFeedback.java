@@ -55,7 +55,7 @@ public interface ProgressFeedback {
      * @return true if the operation should continue
      * @throws ProgressCancelledFault if you want to give a meaningful message
      */
-    boolean tick(Transmission tx, MessageDocument message,long byteDone, long bytesPredicted) ;
+    boolean tick(Transmission tx, MessageDocument message, long byteDone, long bytesPredicted);
 
 
     /**

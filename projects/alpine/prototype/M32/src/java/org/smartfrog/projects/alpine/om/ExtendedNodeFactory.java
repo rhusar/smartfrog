@@ -20,9 +20,9 @@
 
 package org.smartfrog.projects.alpine.om;
 
+import nu.xom.Document;
 import nu.xom.NodeFactory;
 import nu.xom.Nodes;
-import nu.xom.Document;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 /**
@@ -36,7 +36,7 @@ public abstract class ExtendedNodeFactory extends NodeFactory {
 
     /**
      * SOAP says these are forbidden. We just strip them, in an act of silent forgiveness.
-     * 
+     *
      * @return the nodes to be added to the tree
      */
     public Nodes makeProcessingInstruction(String target, String data) {

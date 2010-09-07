@@ -20,8 +20,6 @@
 
 package org.smartfrog.projects.alpine.core;
 
-import org.smartfrog.projects.alpine.interfaces.Validatable;
-import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.smartfrog.projects.alpine.interfaces.Validatable;
 
@@ -32,50 +30,50 @@ import java.util.Hashtable;
  * A basic context consists of a list of things off name,value pairs
  */
 public class Context implements Validatable {
-    
+
     /**
      * string uri to value map.
-     */ 
-    private Hashtable<String, Object> content=new Hashtable<String, Object>();
+     */
+    private Hashtable<String, Object> content = new Hashtable<String, Object>();
 
     /**
      * get our content map
      * @return the Hashtable of this context
-     */ 
+     */
     public Hashtable<String, Object> content() {
         return content;
     }
 
-    
+
     /**
      * look up an entry
      * @param key string to search on
      * @return object or null
-     * @see Hashtable#get(Object)   
-     */ 
+     * @see Hashtable#get(Object)
+     */
     public Object get(String key) {
         return content.get(key);
     }
-    
+
     /**
      * add or replace an entry in the table.
      * @param key
      * @param value
-     * @see Hashtable#put(Object,Object)   
-     */ 
+     * @see Hashtable#put(Object,Object)
+     */
     public void put(String key, Object value) {
-        content.put(key,value);
+        content.put(key, value);
     }
 
     /**
      * Remove an entry
-     * @see Hashtable#remove(Object)  
+     * @see Hashtable#remove(Object)
      * @param key
-     */ 
+     */
     public void remove(String key) {
         content.remove(key);
     }
-    
+
     /**
      * validate an instance by checking that everything in our content that is validatable,
      * thinks that it is valid. 
@@ -86,9 +84,9 @@ public class Context implements Validatable {
      * @throws ValidationException with text if not valid
      */
     public boolean validate() throws ValidationException {
-        for(Object entry:content.values()) {
-            if(entry instanceof Validatable) {
-                Validatable testpoint=(Validatable) entry;
+        for (Object entry : content.values()) {
+            if (entry instanceof Validatable) {
+                Validatable testpoint = (Validatable) entry;
                 testpoint.validate();
             }
         }
@@ -100,10 +98,10 @@ public class Context implements Validatable {
      * @param source source context
      * @param key key to look for
      */
-    public void copy(Context source,String key) {
+    public void copy(Context source, String key) {
         final Object value = source.get(key);
-        if(value!=null) {
-            put(key,value);
+        if (value != null) {
+            put(key, value);
         }
     }
 

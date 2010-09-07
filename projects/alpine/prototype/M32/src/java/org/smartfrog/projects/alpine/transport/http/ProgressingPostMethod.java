@@ -19,10 +19,10 @@
  */
 package org.smartfrog.projects.alpine.transport.http;
 
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.methods.PostMethod;
 
 import java.io.IOException;
 
@@ -63,7 +63,8 @@ public class ProgressingPostMethod extends PostMethod {
      *                             if a protocol exception occurs. Usually protocol exceptions
      *                             cannot be recovered from.
      */
-    protected boolean writeRequestBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
+    protected boolean writeRequestBody(HttpState state, HttpConnection conn)
+            throws IOException, HttpException {
         return super.writeRequestBody(state, conn);
     }
 }

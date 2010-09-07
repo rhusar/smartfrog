@@ -21,21 +21,21 @@ package org.smartfrog.projects.alpine.xmlutils;
 
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Elements;
 import nu.xom.Node;
 import nu.xom.Nodes;
 import nu.xom.Serializer;
 import nu.xom.Text;
 import nu.xom.XPathContext;
-import nu.xom.Elements;
 import org.smartfrog.projects.alpine.faults.ServerException;
 
 import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * XML Schema helper stuff.
@@ -175,7 +175,7 @@ public final class XsdUtils {
             //empty local, exit accordingly
             return null;
         }
-        if(prefix.length()==0) {
+        if (prefix.length() == 0) {
             //shortened prefix implies local
             return new QName(local);
         }
@@ -252,7 +252,7 @@ public final class XsdUtils {
      * @return a formatted, indented, wrapped, version of the message
      */
     public static String printToString(Element element) {
-        if(element==null) {
+        if (element == null) {
             return "";
         }
         Document doc = new Document((Element) element.copy());
@@ -295,7 +295,7 @@ public final class XsdUtils {
      * @param namespace name of the elements
      * @return an iterator over the child elements
      */
-    public static BaseElementsIterator<Element> elements(Element element, String local,String namespace) {
+    public static BaseElementsIterator<Element> elements(Element element, String local, String namespace) {
         Elements childElements = element.getChildElements(local, namespace);
         return new BaseElementsIterator<Element>(childElements);
     }
@@ -308,7 +308,7 @@ public final class XsdUtils {
      * @return an iterator over the child elements
      */
     public static BaseElementsIterator<Element> elements(Element element, String namespace) {
-        return elements(element, "",namespace);
+        return elements(element, "", namespace);
     }
 
     /**
@@ -328,8 +328,8 @@ public final class XsdUtils {
      * @return a list representation.
      */
     public static List<Element> makeList(Elements in) {
-        List<Element> out=new ArrayList<Element>(in.size());
-        for(int i=0;i<in.size();i++) {
+        List<Element> out = new ArrayList<Element>(in.size());
+        for (int i = 0; i < in.size(); i++) {
             out.add(in.get(i));
         }
         return out;

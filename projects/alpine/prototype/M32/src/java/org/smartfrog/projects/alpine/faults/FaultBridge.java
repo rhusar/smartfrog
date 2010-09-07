@@ -48,7 +48,7 @@ public class FaultBridge {
      * based on the message context for dynamicity (maybe)
      * @param context source of xmlns and other values
      * @return a new bridge
-     */ 
+     */
     public static FaultBridge getFaultBridge(MessageContext context) {
         return new FaultBridge(context.getSoapNamespace());
     }
@@ -61,12 +61,12 @@ public class FaultBridge {
      * <li>anything else is turned into a SoapException</li>
      * @param thrown what went wrong
      * @return a translated fault
-     */ 
+     */
     public AlpineRuntimeException translateFault(Throwable thrown) {
-        if(thrown instanceof AlpineRuntimeException) {
+        if (thrown instanceof AlpineRuntimeException) {
             return (AlpineRuntimeException) thrown;
         }
-        if(thrown instanceof SoapFaultSource) {
+        if (thrown instanceof SoapFaultSource) {
             return convertFaultSourceToAlpineException(thrown);
         }
         //anything else. 
@@ -89,7 +89,7 @@ public class FaultBridge {
         //create a fault
         Fault fault = createFault(thrown);
         //now we create a soap exception from it
-        SoapException soapException=new SoapException(thrown,fault);
+        SoapException soapException = new SoapException(thrown, fault);
         return soapException;
     }
 
@@ -99,7 +99,7 @@ public class FaultBridge {
      * @return a matching {Fault}
      */
     private Fault createFault(Throwable thrown) {
-        Fault fault=new Fault(SoapConstants.ELEMENT_FAULT,namespace);
+        Fault fault = new Fault(SoapConstants.ELEMENT_FAULT, namespace);
         fault.addThrowable(thrown);
         return fault;
     }
@@ -109,10 +109,10 @@ public class FaultBridge {
      * fault from the source, otherwise we create a new fault
      * @param thrown what was thrown
      * @return a fault
-     */ 
+     */
     public Fault extractFaultFromThrowable(Throwable thrown) {
         if (thrown instanceof SoapFaultSource) {
-            return ((SoapFaultSource)(thrown)).GenerateSoapFault(namespace);
+            return ((SoapFaultSource) (thrown)).GenerateSoapFault(namespace);
         }
         //anything else.
         return createFault(thrown);
