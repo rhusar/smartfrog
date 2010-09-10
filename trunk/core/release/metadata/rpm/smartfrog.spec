@@ -486,6 +486,8 @@ component that can monitor the health of a remote site.
 
 The bundled libraries are
 commons-httpclient-${commons-httpclient.version}.jar
+httpcore-${apache.httpcommons.core.version}.jar
+httpclient-${apache.httpcommons.client.version}.jar
 commons-codec-${commons-codec.version}.jar
 commons-fileupload-${commons-fileupload.version}.jar
 
@@ -1075,16 +1077,22 @@ fi
 # -----------------------------------------------------------------------------
 %files www
 %{libdir}/sf-www-${smartfrog.version}.jar
-%{libdir}/commons-codec-${commons-codec.version}.jar
-%{libdir}/commons-httpclient-${commons-httpclient.version}.jar
-
 %{linkdir}/sf-www.jar
+
+%{libdir}/commons-codec-${commons-codec.version}.jar
 %{linkdir}/commons-codec.jar
+
+%{libdir}/commons-httpclient-${commons-httpclient.version}.jar
 %{linkdir}/commons-httpclient.jar
 
 %{linkdir}/commons-fileupload.jar
 %{libdir}/commons-fileupload-${commons-fileupload.version}.jar
 
+%{libdir}/httpcore-${apache.httpcommons.core.version}.jar
+%{linkdir}/httpcore.jar
+
+%{libdir}/httpclient-${apache.httpcommons.client.version}.jar
+%{linkdir}/httpclient.jar
 
 # -----------------------------------------------------------------------------
 %files xml
@@ -1115,6 +1123,8 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Fri Sep 10 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.18.001-1.el5
+- added httpcommons JARs to sf-www RPM
 * Thu Feb 11 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
 - json RPM includes ezmorph and commons- libraries that json-lib depends on
 - velocity RPM now depends on json RPM

@@ -156,6 +156,7 @@
         rev="${htmlunit.version}"
         conf="compile,test->default">
       <exclude org="xalan"/>
+      <exclude org="commons-httpclient"/>
     </dependency>
 
     <dependency org="org.smartfrog"
