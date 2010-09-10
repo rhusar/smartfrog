@@ -322,7 +322,8 @@
         name="sf-www"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist,documentation,servletapi"/>
+        conf="package-www->master,redist,documentation,servletapi,httpclient"/>
+    
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"

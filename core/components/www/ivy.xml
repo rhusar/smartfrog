@@ -6,7 +6,7 @@
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>SmartFrog web components</description>
   </info>
-<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
     <include file="../../antbuild/ivy/configurations.xml"/>
   </configurations>
@@ -27,14 +27,14 @@
         extends="httpclient,servletapi"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="servletapi" description="the servlet API" />
+    <conf name="servletapi" description="the servlet API"/>
     <conf name="httpclient" description="Http Client libraries"/>
     <conf name="war" description="compile path for the test war" visibility="private"
         extends="servletapi"/>
     <conf name="testwar"
         description="The war file used for testing WWW support"/>
     <conf name="documentation"
-          description="all documentation artifacts"/>
+        description="all documentation artifacts"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
@@ -46,10 +46,10 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-      name="smartfrog"
-      changing="true"
-      rev="latest.integration"
-      conf="compile,runtime,daemon->services"/>
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -64,13 +64,13 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
-    
+
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
         conf="httpclient->default"/>
-    
+
     <dependency org="commons-httpclient"
         name="commons-httpclient"
         rev="${commons-httpclient.version}"
@@ -84,11 +84,35 @@
         name="commons-codec"
         rev="${commons-codec.version}"
         conf="httpclient->default"/>
+    
     <dependency org="commons-fileupload"
         name="commons-fileupload"
         rev="${commons-fileupload.version}"
         conf="httpclient->default"/>
 
+
+    <dependency org="org.apache.httpcomponents"
+        name="httpcore"
+        rev="${apache.httpcommons.core.version}"
+        conf="httpclient->default">
+      <exclude module="commons-codec"/>
+    </dependency>
+<!--
+  No mime stuff, still unstable
+    <dependency org="org.apache.httpcomponents"
+        name="httpmime"
+        rev="${apache.httpcommons.core.version}"
+        conf="httpclient->default">
+      <exclude module="commons-codec"/>
+    </dependency>-->
+
+    <dependency org="org.apache.httpcomponents"
+        name="httpclient"
+        rev="${apache.httpcommons.client.version}"
+        conf="httpclient->default">
+      <exclude module="commons-logging"/>
+      <exclude module="commons-codec"/>
+    </dependency>
 
   </dependencies>
 </ivy-module>
