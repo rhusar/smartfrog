@@ -617,9 +617,12 @@
     <!-- WWW -->
     <rpmpackage package="www"/>
     <ln artifact="sf-www" version="${smartfrog.version}"/>
-    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
     <ln artifact="commons-codec" version="${commons-codec.version}"/>
-
+    <ln artifact="commons-fileupload" version="${commons-fileupload.version}"/>
+    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
+    <ln artifact="httpcore" version="${apache.httpcommons.core.version}"/>
+    <ln artifact="httpclient" version="${apache.httpcommons.client.version}"/>
+    
     <!--Jetty-->
     <!--comes in after the www package-->
     <ln artifact="sf-jetty" version="${smartfrog.version}"/>
