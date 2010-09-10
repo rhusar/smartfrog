@@ -22,6 +22,8 @@ package org.smartfrog.test;
 import junit.framework.TestCase;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.xunit.base.TestContextInjector;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -47,6 +49,9 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * A base class for smartfrog tests
@@ -54,13 +59,17 @@ import java.rmi.NoSuchObjectException;
  * @author steve loughran created 17-Feb-2004 17:08:35
  */
 
-public abstract class SmartFrogTestBase extends TestCase {
+public abstract class SmartFrogTestBase extends TestCase implements TestContextInjector {
 
     /**
      * cached directory of classes
      */
     protected File classesDir;
     protected String hostname;
+    protected Map<String, Object> testContext = new HashMap<String, Object>();
+    protected boolean contextSet;
+    protected Properties properties = new Properties();
+    
     private static final Log log = LogFactory.getLog(SmartFrogTestBase.class);
 
     /**
@@ -186,7 +195,65 @@ public abstract class SmartFrogTestBase extends TestCase {
         terminateApplication(application);
     }
 
+    /**
+     * Get the test context
+     *
+     * @return the current test context or null
+     */
+    public Map<String, Object> getTestContext() {
+        return testContext;
+    }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param testContext the test context
+     */
+    @Override
+    public void setTestContext(HashMap<String, Object> testContext) {
+        this.testContext = testContext;
+        contextSet = testContext != null;
+        //set the properties, with a bit of contingency planning
+        if(contextSet) {
+            properties = (Properties) getContextEntry(TestContextInjector.ATTR_PROPERTIES);
+        }
+        if (properties == null) {
+            properties = new Properties();
+        }
+    }
+
+    /**
+     * Get any entry in the test case context
+     *
+     * @param key key to search for
+     * @return the entry or null for no match
+     */
+    public Object getContextEntry(String key) {
+        return testContext.get(key);
+    }
+
+    /**
+     * Get a string property. First the context properties used, then the System properties
+     *
+     * @param key    key to look for
+     * @param defVal default value
+     * @return a discovered property, or the default values
+     */
+    public String getProperty(String key, String defVal) {
+        String result = properties.getProperty(key, null);
+        return result != null ? result :
+                System.getProperty(key, defVal);
+    }
+
+    /**
+     * Set a property
+     *
+     * @param key   property key
+     * @param value value
+     */
+    public void setProperty(String key, String value) {
+        properties.setProperty(key, value);
+    }
     /**
      * Get the log of this test class
      *
@@ -690,13 +757,7 @@ public abstract class SmartFrogTestBase extends TestCase {
             String extension = determineLanguage(resource);
             phases = (new SFParser(extension)).sfParse(is);
         } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ignore) {
-                    //ignore
-                }
-            }
+            FileSystem.close(is);
         }
         return phases;
     }

@@ -61,9 +61,11 @@ public abstract class TestCaseWithContext extends TestCase implements TestContex
     @Override
     public void setTestContext(HashMap<String, Object> testContext) {
         this.testContext = testContext;
-        contextSet = true;
+        contextSet = testContext != null;
         //set the properties, with a bit of contingency planning
-        properties = (Properties) getContextEntry(TestContextInjector.ATTR_PROPERTIES);
+        if(contextSet) {
+            properties = (Properties) getContextEntry(TestContextInjector.ATTR_PROPERTIES);
+        }
         if (properties == null) {
             properties = new Properties();
         }
