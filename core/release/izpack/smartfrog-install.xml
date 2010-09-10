@@ -817,15 +817,7 @@ SmartFrog to deploy complex systems.
         Includes Restlet libraries (CDDL and GPL licensed)
 
       </description>
-      <file src="ivy/lib/package-ec2/sf-ec2-${smartfrog.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-ec2/typica-${typica.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-ec2/commons-fileupload-${commons-fileupload.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
+
       <file src="ivy/lib/package-ec2/org.restlet-${restlet.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
@@ -979,6 +971,16 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-www/commons-fileupload-${commons-fileupload.version}.jar"
+          targetdir="$INSTALL_PATH/lib" />
+      
+      <file src="ivy/lib/package-www/httpcore-${apache.httpcommons.core.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/httpclient-${apache.httpcommons.client.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+
       <depends packname="Logging"/>
     </pack>
 
@@ -1002,10 +1004,10 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/jetty-util-${jetty.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-www/jsp-api-2.1-${jetty.version}.jar"
+      <file src="ivy/lib/package-www/jsp-api-2.1-${jetty.jsp.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-www/jsp-2.1-${jetty.version}.jar"
+      <file src="ivy/lib/package-www/jsp-2.1-${jetty.jsp.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/commons-el-${commons-el.version}.jar"
