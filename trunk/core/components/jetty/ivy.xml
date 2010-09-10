@@ -52,8 +52,6 @@
         conf="compile,redist,daemon->default,servletapi;testwar->testwar;test->default,servletapi,httpclient"/>
 
 
-
-
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -91,11 +89,11 @@
     <!--JSP support -->
     <dependency org="org.mortbay.jetty"
         name="jsp-2.1"
-        rev="${jetty.version}"
+        rev="${jetty.jsp.version}"
         conf="jsp->master"/>
     <dependency org="org.mortbay.jetty"
         name="jsp-api-2.1"
-        rev="${jetty.version}"
+        rev="${jetty.jsp.version}"
         conf="jsp->master"/>
     <dependency org="commons-el"
         name="commons-el"
