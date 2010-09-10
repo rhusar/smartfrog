@@ -120,8 +120,8 @@ public class TestCompoundImpl extends ConditionCompound
     public static final String FAILED_TO_START_CONDITION = "Failed to start condition";
     private static final String ACTION_TERMINATED_AS_EXPECTED = "Action terminated as expected";
     private static final String ABNORMAL_TEST_TERMINATION = "Test component terminated abnormally";
-    private static final String UNEXPECTED_CHILD_FAILURE =
-            "A child that was neither an action or a test failed";
+    private static final String UNEXPECTED_CHILD_TERMINATION =
+            "A child that was neither an action nor a test terminated";
 
     /**
      * Constructor
@@ -644,9 +644,14 @@ public class TestCompoundImpl extends ConditionCompound
         } else {
             //something odd just terminated, like the condition.
             //whatever, it is the end of the test run.
-            sfLog().debug(UNEXPECTED_CHILD_FAILURE);
+            sfLog().warn(UNEXPECTED_CHILD_TERMINATION);
             exitRecord = childStatus;
-            appendToDescription(exitRecord, UNEXPECTED_CHILD_FAILURE);
+            appendToDescription(exitRecord, UNEXPECTED_CHILD_TERMINATION
+                    + " ("
+                    + " testPrim = " + testsPrim 
+                    + " actionPrim=" + actionPrim 
+                    + " terminatingChild=" +child 
+                    + ")");
             testSucceeded = false;
         }
 
