@@ -927,9 +927,9 @@ fi
 %{linkdir}/jetty-util.jar
 
 # these are the Jasper components
-%{libdir}/jsp-2.1-${jetty.version}.jar
+%{libdir}/jsp-2.1-${jetty.jsp.version}.jar
 %{linkdir}/jsp-2.1.jar
-%{libdir}/jsp-api-2.1-${jetty.version}.jar
+%{libdir}/jsp-api-2.1-${jetty.jsp.version}.jar
 %{linkdir}/jsp-api-2.1.jar
 %{libdir}/commons-el-${commons-el.version}.jar
 %{linkdir}/commons-el.jar
