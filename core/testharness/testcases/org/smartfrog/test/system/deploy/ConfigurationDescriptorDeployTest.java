@@ -150,15 +150,15 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
     protected Prim deployExpectingSuccessFile(String fileURL, String testDescription)
             throws Throwable {
         testDescription = "- Test descriptions file: \n   " + testDescription + " -  \n";
-        Vector cfgDescS = OptionSet.readCfgDescriptorsFile (fileURL);
+        Vector cfgDescS = OptionSet.readCfgDescriptorsFile(fileURL);
         try {
-            Object deployedApp=null;
+            Object deployedApp = null;
             getLog().info("\n Testing: " + testDescription + "\n    ");
             for (Enumeration items = cfgDescS.elements(); items.hasMoreElements();) {
-              ConfigurationDescriptor cfgDesc =(ConfigurationDescriptor)items.nextElement();
+                ConfigurationDescriptor cfgDesc = (ConfigurationDescriptor) items.nextElement();
                 getLog().info("\n    To deploy: " + cfgDesc.toString("\n    "));
-              deployedApp = SFSystem.runConfigurationDescriptor( cfgDesc,true);
-                getLog().info("\n      Result: "+ cfgDesc.toString("\n    "));
+                deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc, true);
+                getLog().info("\n      Result: " + cfgDesc.toString("\n    "));
 //                if (deployedApp instanceof Prim) {
 //                    log.info("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
 //                } else if (deployedApp instanceof ConfigurationDescriptor) {
@@ -169,12 +169,12 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
 //                        throw exception;
 //                    }
 //                 }
-             } //for
-             if (deployedApp instanceof Prim) {
-                    return ((Prim) deployedApp);
-             }
+            } //for
+            if (deployedApp instanceof Prim) {
+                return ((Prim) deployedApp);
+            }
         } catch (Throwable throwable) {
-            logThrowable(testDescription + "\n    " + fileURL,throwable);
+            logThrowable(testDescription + "\n    " + fileURL, throwable);
             throw throwable;
         }
         fail(testDescription + "something odd came back");
