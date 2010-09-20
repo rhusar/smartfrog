@@ -47,12 +47,14 @@ public class PortCheckingTestBase extends DeployingTestBase {
     /**
      * Sets up the fixture,by extracting the hostname and classes dir
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         enablePortCheck();
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -237,6 +239,36 @@ public class PortCheckingTestBase extends DeployingTestBase {
             return true;
         } catch (IOException ignored) {
             return false;
+        }
+    }
+
+    /**
+     * Wait for a port to open.
+     * @param address internet address
+     * @param totalTimeoutMillis total time to spin
+     * @param connectTimeoutMillis connect time
+     * @param sleepMillis sleep time
+     * @throws InterruptedException if the sleep was interrupted
+     * @throws IOException connection failures
+     */
+    public static void waitForPortOpen(InetSocketAddress address,
+                                   int totalTimeoutMillis,
+                                   int connectTimeoutMillis,
+                                   int sleepMillis) throws InterruptedException, IOException {
+        long endtime = System.currentTimeMillis() + totalTimeoutMillis;
+        IOException caught = null;
+        boolean connected = false;
+        while (!connected && endtime > System.currentTimeMillis()) {
+            try {
+                checkPort(address, connectTimeoutMillis);
+                connected = true;
+            } catch (IOException e) {
+                caught = e;
+                Thread.sleep(sleepMillis);
+            }
+        }
+        if (!connected) {
+            throw caught;
         }
     }
 }
