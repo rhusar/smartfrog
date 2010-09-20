@@ -38,6 +38,14 @@ package org.smartfrog.services.www;
 
 
 public interface HttpHeaders {
+
+    /**
+     * {@value}
+     */
+
+    String CONNECTION = "Connection";
+
+    /**
     /**
      * {@value}
      */
