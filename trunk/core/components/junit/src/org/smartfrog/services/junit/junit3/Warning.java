@@ -50,6 +50,7 @@ public class Warning extends TestCase {
      * @param name   test name
      * @param thrown exception to raise later
      */
+    @SuppressWarnings({"JUnitTestCaseWithNonTrivialConstructors"})
     public Warning(String name, Throwable thrown) {
         super(name);
         this.thrown = thrown;
@@ -61,6 +62,7 @@ public class Warning extends TestCase {
      * @param name    test name
      * @param message error message
      */
+    @SuppressWarnings({"JUnitTestCaseWithNonTrivialConstructors"})
     public Warning(String name, String message) {
         super(name);
         thrown = new AssertionFailedError(message);
