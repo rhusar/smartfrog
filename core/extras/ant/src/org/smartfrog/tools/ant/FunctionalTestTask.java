@@ -65,6 +65,7 @@ public class FunctionalTestTask extends Task {
     public static final String MESSAGE_NO_TESTS = "No tests defined";
     public static final String EXCEPTION_CAUGHT_ON_CLEANUP = "Exception caught on cleanup:";
     public static final String MESSAGE_FORCED_SHUTDOWN_OF_APPLICATION = "Forced shutdown of application";
+    protected static final String PARALLEL_EXECUTION_TIMED_OUT = "Parallel execution timed out";
 
 
     public FunctionalTestTask() {
@@ -175,8 +176,10 @@ public class FunctionalTestTask extends Task {
         //set up the test and application in parallel; if
         //the application is null, then only the tests run
         int totalTimeout = timeout;
+        int probeTimeout = 0;
         if (probe != null) {
-            totalTimeout += probe.getMaxWait();
+            probeTimeout = probe.getMaxWait();
+            totalTimeout += probeTimeout;
         }
 
 
@@ -227,6 +230,13 @@ public class FunctionalTestTask extends Task {
         } catch (BuildException e) {
             //something went wrong, probably in execution
             testFault = e;
+            if (e.getMessage().contains(PARALLEL_EXECUTION_TIMED_OUT)) {
+                //it's a test run timeout, so be more explicit about the
+                //problem
+                testFault = new BuildException("Test run timed out after " + totalTimeout + "seconds "
+                        + " -wait timeout = " + probeTimeout +"s, "
+                        + " -test timeout = " + timeout +"s ", e);
+            }
         }
         finally {
             //teardown
