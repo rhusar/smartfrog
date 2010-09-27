@@ -233,9 +233,9 @@ public class FunctionalTestTask extends Task {
             if (e.getMessage().contains(PARALLEL_EXECUTION_TIMED_OUT)) {
                 //it's a test run timeout, so be more explicit about the
                 //problem
-                testFault = new BuildException("Test run timed out after " + totalTimeout + "seconds "
-                        + " -wait timeout = " + probeTimeout +"s, "
-                        + " -test timeout = " + timeout +"s ", e);
+                testFault = new BuildException("Test run timed out after " + totalTimeout + "s:"
+                        + " wait timeout= " + probeTimeout +"s;"
+                        + " test timeout = " + timeout +"s.", e);
             }
         }
         finally {
