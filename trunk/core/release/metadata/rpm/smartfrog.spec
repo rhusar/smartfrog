@@ -114,7 +114,7 @@ SmartFrog and its components are implemented in Java.
 
 %{security_text}
 
-The RPM installs smartfrog into
+The RPM installs SmartFrog into
  %{basedir} 
 It also adds scripts to /etc/profile.d and /etc/sysconfig 
 so that SmartFrog is available on the command line.
@@ -669,17 +669,18 @@ rm -rf $RPM_BUILD_ROOT
 #now the files in the lib directory...use ant library versions to 
 #include version numbers
 %dir %{libdir}
-%{libdir}/smartfrog-${smartfrog.version}.jar
-%{libdir}/sfExamples-${smartfrog.version}.jar
-%{libdir}/sfServices-${smartfrog.version}.jar
-
-
-#the links directory 
+#the links directory
 %attr(755, ${rpm.username},${rpm.groupname}) %dir %{basedir}/links
+
+%{libdir}/smartfrog-${smartfrog.version}.jar
 %{linkdir}/smartfrog.jar
+%{libdir}/sfExamples-${smartfrog.version}.jar
 %{linkdir}/sfExamples.jar
+%{libdir}/sfServices-${smartfrog.version}.jar
 %{linkdir}/sfServices.jar
 
+%{libdir}/sf-tasks-${smartfrog.version}.jar
+%{linkdir}/sf-tasks.jar
 
 #other directories
 %{basedir}/testCA

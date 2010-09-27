@@ -120,7 +120,7 @@
     <dependency org="org.smartfrog"
         name="sf-tasks" changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="redist->redist;package-core->master;build->default"/>
+        conf="redist->redist;package-core->master,documentation;build->default"/>
 
     
     <!-- the testharness. This is not redistributed, it is used to test the RPMs-->
