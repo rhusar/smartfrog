@@ -33,7 +33,6 @@
 package org.smartfrog.services.www.jetty.test.system;
 
 import org.smartfrog.services.jetty.examples.JettyTestPorts;
-import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.PortCheckingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.smartfrog.sfcore.prim.Prim;
@@ -69,12 +68,23 @@ public abstract class JettyTestBase extends PortCheckingTestBase implements Jett
      */
     protected void setUp() throws Exception {
         super.setUp();
+        setupJettyHome();
+        setupJasper();
+        setupProxy();
+    }
+
+    private void setupJettyHome() {
         String runtimeJettyHome = TestHelper.getTestProperty(TEST_JETTY_HOME, "");
         System.setProperty(JETTY_HOME, runtimeJettyHome);
+    }
+
+    private void setupJasper() {
         hasJasper = TestHelper.getTestProperty(TEST_JASPER_FOUND, null) != null;
+    }
+
+    protected void setupProxy() {
         proxyHost = System.getProperty(HTTP_PROXY_HOST, null);
         proxyPort = System.getProperty(HTTP_PROXY_PORT, null);
-        Properties sysprops= System.getProperties();
         if (proxyHost != null) {
             System.setProperty(HTTP_PROXY_HOST, "");
         }
@@ -90,13 +100,17 @@ public abstract class JettyTestBase extends PortCheckingTestBase implements Jett
      * @throws Exception if things go wrong
      */
     protected void tearDown() throws Exception {
+        restoreProxySettings();
+        super.tearDown();
+    }
+
+    private void restoreProxySettings() {
         if (proxyHost != null) {
             System.setProperty(HTTP_PROXY_HOST, proxyHost);
         }
         if (proxyPort != null) {
             System.setProperty(HTTP_PROXY_PORT, proxyPort);
         }
-        super.tearDown();
     }
 
     /**
