@@ -292,6 +292,15 @@ want izpack to see it, double escape the $$ symbol.-->
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfUpdate" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/sfVersion" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/smartfrog" failure="warn"/>
+      <file src="ivy/lib/package-core/sf-tasks-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-core/sf-tasks-javadocs-${smartfrog.version}.zip"
+        targetdir="$INSTALL_PATH"
+        unpack="true"/>
+      <file src="ivy/lib/package-core/sf-tasks-documentation-${smartfrog.version}.zip"
+        targetdir="$INSTALL_PATH"
+        unpack="true"/>
     </pack>
 
     <!--    <pack name="SmartFrog Examples" required="no" preselected="yes">

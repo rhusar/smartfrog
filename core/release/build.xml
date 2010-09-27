@@ -453,7 +453,7 @@
               <available file="${rpm.lib.dir}/@{artifact}-@{version}.jar"/>
             </not>
           </condition>
-          Missing destination artifact: ${rpm.lib.dir}/@{artifact}-@{version}.jar
+          Missing link artifact: ${rpm.lib.dir}/@{artifact}-@{version}.jar
         </fail>
         <exec executable="ln" failonerror="true">
           <arg value="-sf"/>
@@ -463,9 +463,11 @@
       </sequential>
     </macrodef>
     <!--core-->
+    <rpmpackage package="core"/>
     <ln artifact="smartfrog" version="${smartfrog.version}"/>
     <ln artifact="sfExamples" version="${smartfrog.version}"/>
     <ln artifact="sfServices" version="${smartfrog.version}"/>
+    <ln artifact="sf-tasks" version="${smartfrog.version}"/>
 
     <!-- ant -->
     <rpmpackage package="ant"/>
@@ -895,6 +897,7 @@
         <include name="sf-csvfiles/${smartfrog.version}/*"/>
         <include name="sf-database/${smartfrog.version}/*"/>
         <include name="sf-dns/${smartfrog.version}/*"/>
+        <include name="sf-ec2/${smartfrog.version}/*"/>
         <include name="sf-emailer/${smartfrog.version}/*"/>
         <include name="sf-groovy/${smartfrog.version}/*"/>
         <include name="sf-hadoop/${smartfrog.version}/*"/>
@@ -903,6 +906,7 @@
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
         <include name="sf-net/${smartfrog.version}/*"/>
         <include name="sf-quartz/${smartfrog.version}/*"/>
+        <include name="sf-restlet/${smartfrog.version}/*"/>
         <include name="sf-rpmtools/${smartfrog.version}/*"/>
         <include name="sf-scripting/${smartfrog.version}/*"/>
         <include name="sf-ssh/${smartfrog.version}/*"/>
