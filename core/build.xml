@@ -512,6 +512,8 @@ For more information: www.smartfrog.org
           <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
           <exclude name="avalanche/**/build.xml" unless="avalanche.enabled"/>
           <exclude name="VAST/build.xml" unless="vast.enabled"/>
+          <!--these are slow and normally run in their own test runs-->
+          <exclude name="bulkiotests/build.xml" unless="bulkiotests.enabled"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
