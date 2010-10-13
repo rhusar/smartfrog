@@ -232,7 +232,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	 *
 	 * @param name of attribute to be removed
 	 *
-	 * @return removed attribute value if successfull or null if not
+	 * @return removed attribute value if successful or null if not
 	 *
 	 * @throws SmartFrogContextException when name is null
 	 */
@@ -722,20 +722,21 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	}
 
 	/**
-	 * Removes an entry from the hashtable.
+	 * Removes an entry from the hashtable, the attribute tags and wrappers, and any core solver.
 	 * Overwrites OrderedHashtable.remove().
 	 *
 	 * @param key key to remove
 	 *
-	 * @return removed object
+	 * @return removed object or null if there was no such entry.
 	 */
 	public Object remove(Object key) {
 		Object r = super.remove(key);
 		attributeTags.remove(key);
 		attributeTagsWrappers.remove(key);
-		
-		if (r!=null) CoreSolver.getInstance().addUndoPut(this, key, r);
-		return r;
+        if (r != null) {
+            CoreSolver.getInstance().addUndoPut(this, key, r);
+        }
+        return r;
 	}
 
 

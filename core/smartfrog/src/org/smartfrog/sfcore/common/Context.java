@@ -240,7 +240,7 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      *
      * @param name name of attribute to be removed
      *
-     * @return the removed value if successfull, null otherwise
+     * @return the removed value if successful, null otherwise
      *
      * @throws SmartFrogContextException when name is null
      */
