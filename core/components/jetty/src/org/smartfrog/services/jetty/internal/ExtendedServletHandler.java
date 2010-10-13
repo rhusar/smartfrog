@@ -21,23 +21,26 @@ package org.smartfrog.services.jetty.internal;
 
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created 12-Oct-2007 16:30:04
+ * this is a servlet handler which has extra features.
+ * Created 12-Oct-2007 16:30:04.
  */
 
 public class ExtendedServletHandler extends ServletHandler {
     private Log log;
+    private Prim owner;
 
-    public ExtendedServletHandler(Log log) {
+    public ExtendedServletHandler(final Prim owner, Log log) {
         this.log = log;
+        this.owner = owner;
     }
 
     /**
@@ -49,24 +52,19 @@ public class ExtendedServletHandler extends ServletHandler {
      */
     @Override
     protected void notFound(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            Log log = LogFactory.getLog(this);
-            log.info("404 \"" + request.getRequestURI()+ "\"" 
-                    + " from "+ request.getRemoteAddr());
-        } catch (SmartFrogLogException e) {
-            throw new RuntimeException(e);
-        }
+        log.info("404 \"" + request.getRequestURI() + "\""
+                + " from " + request.getRemoteAddr());
         super.notFound(request, response);
     }
 
 
     @Override
     public String toString() {
-        if(_string==null) {
+        if (_string == null) {
             StringBuffer details = new StringBuffer("ExtendedServletHandler ");
             ServletHolder[] servlets = getServlets();
-            if(servlets!=null) {
-                for (ServletHolder sh:servlets) {
+            if (servlets != null) {
+                for (ServletHolder sh : servlets) {
                     details.append(sh.toString()).append("; ");
                 }
             }
@@ -74,4 +72,25 @@ public class ExtendedServletHandler extends ServletHandler {
         }
         return _string;
     }
+
+    /**
+     * Customize a servlet.
+     *
+     * What we add here is a binding between the SF owner and the servlet, if that is supported
+     * @param servlet the servlet to customise.
+     * @return the customised servlet.
+     * @throws Exception on any perceived problem.
+     */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
+    @Override
+    public Servlet customizeServlet(Servlet servlet)
+            throws Exception {
+        if (servlet instanceof BindToOwner) {
+            BindToOwner bind = (BindToOwner) servlet;
+            bind.bindToOwner(owner);
+        }
+        return servlet;
+    }
+
+
 }

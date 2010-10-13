@@ -51,9 +51,11 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * abstract base class for anything that goes into a jetty servlet context, binds to the context etc. This class doesnt
- * do anything in its constructor and doesnt implement the delegated lifecycle methods, that is a task for the
- * implementations.
+ * Abstract base class for anything that goes into a jetty servlet context, binds to the context etc.
+ * <p/>
+ * This class doesn't do anything in its constructor other than set up the log,
+ * and doesn't implement the delegated lifecycle methods
+ * --- that is a task for the implementations.
  */
 
 public abstract class AbstractJettyServletContextDelegate implements ServletContextComponentDelegate {
@@ -204,7 +206,7 @@ public abstract class AbstractJettyServletContextDelegate implements ServletCont
     @Override
     public void start() throws SmartFrogException, RemoteException {
         try {
-            log.info("Starting " + toString());
+            log.debug("Starting " + toString());
             getJettyHolder().start();
         } catch (Exception e) {
             throw new SmartFrogException(e);

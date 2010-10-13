@@ -123,10 +123,18 @@ public abstract class DelegateApplicationContext
         }
     }
 
+    /**
+     * Get the Jetty server
+     * @return the jetty server or null
+     */
     protected Server getJettyServer() {
         return getServer().getServer();
     }
 
+    /**
+     * Get the context handler for this servlet context
+     * @return the handler, or null if there is no jetty server live
+     */
     protected ContextHandlerCollection getServerContextHandler() {
 
         Server httpServer = getJettyServer();
