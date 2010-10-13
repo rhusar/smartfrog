@@ -120,7 +120,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      */
     protected Prim deploy(Prim parent)
             throws SmartFrogDeploymentException {
-        String processName = "unknown";
+        String processName = "(unknown process)";
         try {
             ProcessCompound pc = null;
 
