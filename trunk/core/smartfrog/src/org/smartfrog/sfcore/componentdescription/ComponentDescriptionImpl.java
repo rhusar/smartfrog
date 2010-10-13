@@ -225,10 +225,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @param name of attribute to be removed
      *
-     * @return removed attribute value if successfull or null if not. If the attribute
-     * value removed is a component description, then its parent is
-     * removed as well.
-
+     * @return removed attribute value if successful or null if not. If the attribute
+     * value removed is a component description, then its parent attribute is set to null.
      *
      * @throws SmartFrogRuntimeException when name is null
      */
