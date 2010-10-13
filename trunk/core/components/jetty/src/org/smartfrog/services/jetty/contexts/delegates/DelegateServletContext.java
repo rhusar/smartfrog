@@ -145,9 +145,12 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         Context ctx = new Context(
                 null,                           //parent
                 sessionHandler,                 //sessions
-                new ExtendedSecurityHandler(log),  //security; 
-                new ExtendedServletHandler(log),   //servlets
-                new ExtendedErrorHandler(log)); //error handler
+                //security;
+                new ExtendedSecurityHandler(log),
+                //servlets
+                new ExtendedServletHandler(owner, log),
+                //error handler
+                new ExtendedErrorHandler(log));
         setContext(ctx);
 
         handlerSet = new HandlerCollection();
@@ -200,28 +203,28 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         }
 
 
-        log.info("Starting Jetty servlet context");
+        log.debug("Starting Jetty servlet context");
         handlerLifecycle.start();
-        if (log.isInfoEnabled()) {
+        if (log.isDebugEnabled()) {
             dumpHandlers(getServerContextHandler().getHandlers());
         }
     }
 
     /**
-     * Dump our handler chain, make things meaningful. This is a recursive function and logs to info
+     * Dump our handler chain, make things meaningful. This is a recursive function and logs to debug
      *
      * @param handlers handlers to dump.
      */
     private void dumpHandlers(Handler[] handlers) {
 
         for (Handler handler : handlers) {
-            log.info(handler.toString());
+            log.debug(handler.toString());
             if (handler instanceof ServletHandler) {
                 ServletHandler sh = (ServletHandler) handler;
                 ServletMapping[] servletMappings = sh.getServletMappings();
                 if (servletMappings != null) {
                     for (ServletMapping mapping : servletMappings) {
-                        log.info(mapping.toString());
+                        log.debug(mapping.toString());
                     }
                 } else {
 
@@ -245,7 +248,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     public void terminate() throws RemoteException, SmartFrogException {
         if (handlerLifecycle != null) {
             try {
-                log.info("Terminating Jetty servlet context");
+                log.debug("Terminating Jetty servlet context");
                 handlerLifecycle.wrappedStop();
                 ContextHandlerCollection handlers = getServerContextHandler();
                 if (handlers != null) {
@@ -299,7 +302,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      */
     @Override
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
-        log.info("Adding mime mapping " + extension + " maps to " + mimeType);
+        log.debug("Adding mime mapping " + extension + " maps to " + mimeType);
         MimeTypes mimes = getServletContext().getMimeTypes();
         mimes.addMimeMapping(extension, mimeType);
     }

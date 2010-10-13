@@ -47,10 +47,10 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
-import java.util.Vector;
+import java.util.Collection;
 
 /**
- * servlet within a Jetty servlet context
+ * A servlet within a Jetty servlet context.
  */
 public class JettyServletDelegate extends AbstractJettyServletContextDelegate
         implements ServletComponent {
@@ -133,7 +133,7 @@ public class JettyServletDelegate extends AbstractJettyServletContextDelegate
         }
 
         //you can only add mappings after registering the servlet
-        Vector<String> mappings = ListUtils.resolveStringList(prim, mappingsRef, false);
+        Collection<String> mappings = ListUtils.resolveStringList(prim, mappingsRef, false);
         if (mappings != null) {
             String[] pathSpecs = new String[mappings.size()];
             int counter = 0;

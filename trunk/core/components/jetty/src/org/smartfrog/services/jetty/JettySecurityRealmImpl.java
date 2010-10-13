@@ -173,7 +173,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
         @Override
         public void doStart() throws Exception {
             super.doStart();
-            sfLog().info("Starting security Handler with auth method " + getAuthMethod());
+            sfLog().debug("Starting security Handler with auth method " + getAuthMethod());
             if (getAuthenticator() == null) {
                 throw new SmartFrogDeploymentException("Failed to start the security handler: "
                         + "unrecognised Authenticator method: " + getAuthMethod());
