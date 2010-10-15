@@ -62,6 +62,10 @@ public class SmartFrogCompilationException extends SmartFrogException implements
      */
     public SmartFrogCompilationException(String message, Object source) {
         super(message);
+        putSource(source);
+    }
+
+    private void putSource(final Object source) {
         if (source!=null) put(SOURCE,source);
     }
 
@@ -82,7 +86,7 @@ public class SmartFrogCompilationException extends SmartFrogException implements
      */
     public SmartFrogCompilationException(Throwable cause, Object source) {
         super(cause);
-        if (source!=null) put(SOURCE,source);
+        putSource(source);
     }
 
 
@@ -96,7 +100,7 @@ public class SmartFrogCompilationException extends SmartFrogException implements
      */
     public SmartFrogCompilationException(Throwable cause, Prim sfObject, Object source) {
         super(cause, sfObject);
-        if (source!=null) put(SOURCE,source);
+        putSource(source);
     }
 
     /**
@@ -108,7 +112,7 @@ public class SmartFrogCompilationException extends SmartFrogException implements
      */
     public SmartFrogCompilationException(String message, Throwable cause, Object source) {
         super(message, cause);
-        if (source!=null) put(SOURCE,source);
+        putSource(source);
     }
 
     /**
@@ -131,7 +135,7 @@ public class SmartFrogCompilationException extends SmartFrogException implements
      */
     public SmartFrogCompilationException(String message, Prim sfObject, Object source) {
         super(message, sfObject);
-        if (source!=null) put(SOURCE,source);
+        putSource(source);
     }
 
     /**
@@ -146,7 +150,7 @@ public class SmartFrogCompilationException extends SmartFrogException implements
     public SmartFrogCompilationException(String message, Throwable cause,
         Prim sfObject,Object source) {
         super(message, cause, sfObject);
-        if (source!=null) put(SOURCE,source);
+        putSource(source);
     }
 
     /**
