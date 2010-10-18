@@ -82,6 +82,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
     private ReaderLanguageParser parser = null;
     /* cache the real unparser for the language */
     private WriterLanguageUnparser unparser = null;
+    private static final String SF_ENCODING = "UTF-8";
 
     /**
      * Constructor for an instance of the parser for the default language.
@@ -297,7 +298,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
     */
    public Phases sfParse(InputStream is) throws SmartFrogParseException {
       try {
-         return sfParse(new InputStreamReader(is, "utf-8"),null);
+         return sfParse(new InputStreamReader(is, SF_ENCODING),null);
       } catch (UnsupportedEncodingException e) {
          throw new SmartFrogParseException("error in encoding of stream", e);
       }
@@ -317,7 +318,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
     */
    public Phases sfParse(InputStream is, String codebase) throws SmartFrogParseException {
       try {
-         return sfParse(new InputStreamReader(is, "utf-8"), codebase);
+         return sfParse(new InputStreamReader(is, SF_ENCODING), codebase);
       } catch (UnsupportedEncodingException e) {
          throw new SmartFrogParseException("error in encoding of stream", e);
       }
@@ -388,7 +389,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
      */
     public Reference sfParseReference(InputStream is) throws SmartFrogCompilationException {
        try {
-          return sfParseReference(new InputStreamReader(is, "utf-8"));
+          return sfParseReference(new InputStreamReader(is, SF_ENCODING));
        } catch (UnsupportedEncodingException e) {
           throw new SmartFrogParseException("error in encoding of stream", e);
        }
@@ -444,7 +445,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
      */
     public Object sfParseAnyValue(InputStream is) throws SmartFrogCompilationException {
       try {
-         return sfParseAnyValue(new InputStreamReader(is, "utf-8"));
+         return sfParseAnyValue(new InputStreamReader(is, SF_ENCODING));
       } catch (UnsupportedEncodingException e) {
          throw new SmartFrogParseException("error in encoding of stream", e);
       }
@@ -499,7 +500,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
      */
     public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogCompilationException {
        try {
-          return sfParsePrimitiveValue(new InputStreamReader(is, "utf-8"));
+          return sfParsePrimitiveValue(new InputStreamReader(is, SF_ENCODING));
        } catch (UnsupportedEncodingException e) {
           throw new SmartFrogParseException("error in encoding of stream", e);
        }
@@ -550,7 +551,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
     public Object sfParseTags(InputStream is) throws SmartFrogCompilationException {
        Object o = null;
        try {
-          return sfParseTags(new InputStreamReader(is, "utf-8"));
+          return sfParseTags(new InputStreamReader(is, SF_ENCODING));
        } catch (UnsupportedEncodingException e) {
           throw new SmartFrogParseException("error in encoding of stream", e);
        }
@@ -604,7 +605,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
      */
     public ComponentDescription sfParseComponentDescription(InputStream is) throws SmartFrogCompilationException {
        try {
-          return sfParseComponentDescription(new InputStreamReader(is, "utf-8"));
+          return sfParseComponentDescription(new InputStreamReader(is, SF_ENCODING));
        } catch (UnsupportedEncodingException e) {
           throw new SmartFrogParseException("error in encoding of string for reader", e);
        }
