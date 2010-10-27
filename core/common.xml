@@ -1014,7 +1014,8 @@ smartfrog.tasks.classpath=
         logStackTraces="true" spawn="true"
         securityManager="${security.manager}"
         dir="${build.test.dir}"
-          >
+        timeout="0"
+        >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
@@ -2538,7 +2539,8 @@ ${ivy.reports.dir}
 
   <!-- Ivy quick and dirty test -->
 
-  <target name="ivy-test" depends="ivy-resolve" if="ivy.found" description="Try to retrieve dependencies from ivy.xml placed in local dir">
+  <target name="ivy-test" depends="ivy-resolve" if="ivy.found"
+      description="Try to retrieve dependencies from ivy.xml placed in local dir">
     <ivy:retrieve />
   </target>
   <!-- Ivy quick and dirty test End-->

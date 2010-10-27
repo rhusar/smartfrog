@@ -130,6 +130,16 @@ public class FunctionalTestTask extends Task {
     }
 
     /**
+     * This is the timeout for testing; any timeouts in the probe are not covered under this.
+     *
+     * @param timeout in seconds.
+     */
+    public void setTestTimeoutMillis(int timeout) {
+        this.timeout = timeout/1000;
+    }
+
+
+    /**
      * Set the timeout allowed for a clean shutdown of the application. After this timeout, a more brutal operation is
      * used.
      *

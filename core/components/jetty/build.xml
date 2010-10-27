@@ -45,8 +45,7 @@ For more information: www.smartfrog.org
   <property name="junit.timeout" value="60000000" />
   <property name="functional.test.timeout" value="600000" />
   <property name="test.timeout" value="${test.timeout.execute}" />
-<!--  <property name="org.apache.commons.logging.Log" value="org.smartfrog.services.logging.jcl.front.CommonsLogFrontEnd" />
-  -->
+  <property name="org.apache.commons.logging.Log" value="org.smartfrog.services.logging.jcl.front.CommonsLogFrontEnd" />
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
   
