@@ -2185,7 +2185,7 @@ Exist.
 
 
   <target name="ivy-properties" depends="init-common-simpledefinitions,load-versions" >
-    <property name="ivy.version" value="2.2.0-rc1" />
+    <property name="ivy.version" value="2.2.0" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
@@ -2210,7 +2210,7 @@ Exist.
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="${core.dir}/antbuild/" />
     <property name="ivysettings.dir" location="${antbuild.dir}/ivy/" />
-    <property name="ivy.repository.dir" location="${antbuild.dir}/repository/" />
+    <property name="ivy.repository.dir" location="${antbuild.dir}/repository" />
     <property name="ivysettings.xml" location="${ivysettings.dir}/ivysettings.xml" />
 
     <property name="ivy.jar"
