@@ -101,15 +101,18 @@ For more information: www.smartfrog.org
       <attribute name="target"/>
       <attribute name="inheritAll" default="false"/>
       <attribute name="antfile" default="build.xml"/>
+      <element name="options" optional="true"/>
       <sequential>
         <subant
             antfile="@{antfile}"
             target="@{target}" inheritAll="@{inheritAll}"
             inheritrefs="false">
           <buildpathelement location="@{dir}"/>
+          <options />
         </subant>
       </sequential>
     </macrodef>
+
     <macrodef name="forward">
       <attribute name="dir"/>
       <attribute name="target"/>
@@ -226,7 +229,9 @@ For more information: www.smartfrog.org
   <target name="test-jersey" depends="testharness"
       description="test in test harness; only run system tests">
     <forward2 dir="components/jersey" target="test"  >
-      <property name="system.tests" value="true" />
+      <options >
+        <property name="system.tests" value="true" />
+      </options>
     </forward2>
   </target>
   
