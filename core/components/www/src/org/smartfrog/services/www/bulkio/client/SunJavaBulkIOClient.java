@@ -69,7 +69,8 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
                 stream.write(octet);
                 checksum.update(octet);
                 if (interrupted) {
-                    throw new InterruptedException("Interrupted after sending " + bytes + " bytes");
+                    throw new InterruptedException("Interrupted after sending " + bytes + " bytes"
+                    + " to "+ targetUrl);
                 }
             }
         } finally {
@@ -80,8 +81,9 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
         long expectedChecksum = checksum.getValue();
         getLog().info("Uploaded " + bytes + " bytes to " + targetUrl + " checksum=" + expectedChecksum);
         if (bytes != ioSize) {
-            throw new IOException("Wrong content length uploaded from "
-                    + " - put " + ioSize + " but got " + bytes);
+            throw new IOException("Wrong content length uploaded to "
+                    + targetUrl
+                    + " : put " + ioSize + " but got " + bytes);
         }
         if (parseResults) {
             InputStream inStream = null;
@@ -95,8 +97,9 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
 
             long actualChecksum = getLongPropValue(props, IoAttributes.CHECKSUM);
             if (actualChecksum != expectedChecksum) {
-                throw new IOException("Expected checksum from upload of " + ioSize + " bytes "
-                        + "was " + expectedChecksum + " but got " + actualChecksum
+                throw new IOException("Expected the checksum from upload of " + ioSize + " bytes "
+                        + " to " + targetUrl
+                        + "to be " + expectedChecksum + " but got " + actualChecksum
                         + "\n Properties: " + props.toString());
             }
 
@@ -143,7 +146,8 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
                 int octet = stream.read();
                 checksum.update(octet);
                 if (interrupted) {
-                    throw new InterruptedException("Interrupted after reading" + bytes + " bytes");
+                    throw new InterruptedException("Interrupted after reading" + bytes + " bytes"
+                    + " from " + target);
                 }
             }
         } finally {
@@ -156,8 +160,9 @@ public class SunJavaBulkIOClient extends AbstractBulkIOClient {
                     + " - requested " + ioSize + " but got " + bytes);
         }
         if (expectedChecksumFromGet >= 0 && expectedChecksumFromGet != actualChecksum) {
-            throw new IOException("Expected checksum from download of " + ioSize + " bytes "
-                    + "was " + expectedChecksumFromGet + " but got " + actualChecksum);
+            throw new IOException("Wrong checksum from download of " + ioSize + " bytes "
+                    + " from " + target
+                    + " expected " + expectedChecksumFromGet + " but got " + actualChecksum);
         }
         return bytes;
     }
