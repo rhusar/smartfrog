@@ -109,13 +109,5 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <target name="bulkio" depends="ready-to-deploy"
-      description="Deploy a Jetty server that supports bulk IO" >
-    <deploy>
-      <application name="bulkio"
-          descriptor="/org/smartfrog/services/jetty/examples/jetty_bulkio_servlets.sf"/>
-    </deploy>
-  </target>
-
 
 </project>

@@ -171,7 +171,6 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
             updateEnabledState();
         } catch (SmartFrogResolutionException e) {
             throw new SmartFrogLivenessException(e);
-
         }
         //check the counter
         if (nextCheck-- <= 0) {

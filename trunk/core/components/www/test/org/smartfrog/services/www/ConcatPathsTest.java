@@ -43,7 +43,7 @@ public class ConcatPathsTest extends TestCase {
     public void testConcatOnePathOneNullString() throws Exception {
         expectConcat("/", null, "/");
     }
-    
+
     public void testConcatEmptyStrings() throws Exception {
         expectConcat("", "", "/");
     }
@@ -71,7 +71,6 @@ public class ConcatPathsTest extends TestCase {
     public void testConcatTestWarSlashAndPage() throws Exception {
         expectConcat("/testwar", "error", "/testwar/error");
     }
-
 
     public void testPathAndPage() throws Exception {
         expectConcat("", "/page", "/page");
@@ -101,18 +100,35 @@ public class ConcatPathsTest extends TestCase {
         expectAddLeadingSlash("path", "/path");
     }
 
+    /**
+     * Expect that the result of leading slash edition will be as predicted
+     * @param in input string
+     * @param expected expected result
+     */
     private void expectAddLeadingSlash(String in, String expected) {
         String path = LivenessPageChecker.addLeadingSlash(in);
-        assertEquals("Expected leading slash on "+quote(in) + " to be " + quote(expected) +" but got " +quote(path),
-                expected,path);
+        assertEquals("Expected leading slash on "
+                        + quote(in)
+                        + " to be " + quote(expected)
+                        + " but got " + quote(path),
+                expected, path);
     }
 
-
+    /**
+     * Check that two paths concatenate together as expected
+     * @param first first path
+     * @param second second path
+     * @param expected expected result
+     */
     private void expectConcat(String first, String second, String expected) {
         String merged = LivenessPageChecker.concatPaths(first, second);
-        assertEquals("Expected concat of " + quote(first) + " and " + quote(second) + " to be " + quote(expected)
-                + " but got "
-                + quote(merged), expected, merged);
+        assertEquals("Expected concat of "
+                        + quote(first)
+                        + " and " + quote(second)
+                        + " to be " + quote(expected)
+                        + " but got " + quote(merged),
+                expected,
+                merged);
     }
 
     protected String quote(String s) {

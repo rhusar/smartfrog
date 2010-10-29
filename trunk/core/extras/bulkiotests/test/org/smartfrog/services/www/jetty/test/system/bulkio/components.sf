@@ -41,9 +41,8 @@ BulkIoTestCase extends JettyTestCompound {
     
         wait extends waitForPageOK {
           port PARENT:PARENT:action:port;
-          path PARENT:PARENT:servlet;
+          page PARENT:PARENT:servlet;
           urlTargetComponent LAZY PARENT:PARENT:tests;
-          //sfShouldTerminate false;
         }
         
         bulkOperation extends BulkIOClient {
