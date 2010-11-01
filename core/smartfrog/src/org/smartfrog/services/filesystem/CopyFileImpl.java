@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- * Implemetation for CopyFile component.
+ * Implementation for CopyFile component.
  */
 public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
 

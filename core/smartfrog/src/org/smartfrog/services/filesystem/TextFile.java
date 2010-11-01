@@ -23,7 +23,7 @@ package org.smartfrog.services.filesystem;
  * created 30-Mar-2005 16:37:45
  */
 
-public interface TextFile extends FileUsingComponent  {
+public interface TextFile extends FileUsingComponent {
     /**
      * any optional text
      */

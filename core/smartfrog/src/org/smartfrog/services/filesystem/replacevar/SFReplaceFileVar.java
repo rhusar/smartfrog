@@ -1,37 +1,35 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.services.filesystem.replacevar;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-
-import java.util.Vector;
-import java.util.Enumeration;
-
 import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  *  Component to replace text attributes in a text file
@@ -82,7 +80,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     /**
      *  Constructor for the SFRunCommand object
      *
-     *@exception  RemoteException  Description of Exception
+     *@exception RemoteException  Description of Exception
      */
     public SFReplaceFileVar() throws RemoteException {
         super();
@@ -117,7 +115,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     /**
      *  Deploy Method
      *
-     *@exception  Exception  Description of Exception
+     *@exception Exception  Description of Exception
      */
     public void sfDeploy() throws RemoteException, SmartFrogException {
         if (sfLog().isInfoEnabled()) sfLog().info("Deploying...");
@@ -131,7 +129,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     /**
      *  Start Method
      *
-     *@exception  Exception  Description of Exception
+     *@exception Exception  Description of Exception
      */
     public void sfStart() throws RemoteException, SmartFrogException {
         //@ToDo: it should check if the file exist an produce an appropiate message
@@ -140,7 +138,8 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
 
         //Appending lines to file
 
-        if ((dataParser.isValid()) && ((dataParser.getDataReplace() != null) || (dataParser.getDataAppend() != null))) {
+        if ((dataParser.isValid()) && ((dataParser.getDataReplace() != null) || (dataParser.getDataAppend()
+                != null))) {
             parserVar = new ParserVar(this, dataParser);
         }
         if (parserVar != null) {
@@ -170,7 +169,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     public void kill() {
         if (parserVar != null) {
             try {
-               // parserVar.destroy(); //Not necessary any more.
+                // parserVar.destroy(); //Not necessary any more.
             } catch (Exception ex) {
 //           ex.printStackTrace();
             }
@@ -187,12 +186,13 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                 fileName = (String) sfResolve(varSFfileName);
             } catch (SmartFrogResolutionException e) {
                 this.dataParser.setValid(false);
-                if (sfLog().isErrorEnabled()) sfLog().error(varSFfileName + " not found.",e);
+                if (sfLog().isErrorEnabled()) sfLog().error(varSFfileName + " not found.", e);
             }
 
             if (fileName != null) {
                 //data for parsing
-                this.dataParser = new DataParser(fileName, readVarData(appendVariables), readVarData(varVariables));
+                this.dataParser = new DataParser(fileName, readVarData(appendVariables),
+                        readVarData(varVariables));
             }
 
             try {
@@ -203,7 +203,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                     }
                 }
             } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varSFnewFileName + " not found.",e);
+                if (sfLog().isErrorEnabled()) sfLog().error(varSFnewFileName + " not found.", e);
             }
 
             try {
@@ -212,7 +212,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                     this.setShouldTerminate(((Boolean) shouldTerminateObj).booleanValue());
                 }
             } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varShouldTerminate + " not found.",e);
+                if (sfLog().isErrorEnabled()) sfLog().error(varShouldTerminate + " not found.", e);
             }
             try {
                 Object shouldDetachObj = sfResolve(varShouldDetach);
@@ -220,11 +220,11 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                     this.setShouldDetach(((Boolean) shouldDetachObj).booleanValue());
                 }
             } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varShouldDetach + " not found.",e);
+                if (sfLog().isErrorEnabled()) sfLog().error(varShouldDetach + " not found.", e);
             }
 
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error("Error reading SF attributes: " + e.getMessage(),e);
+            if (sfLog().isErrorEnabled()) sfLog().error("Error reading SF attributes: " + e.getMessage(), e);
         }
     }
 
@@ -233,7 +233,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
      *  Read all Replace Var Attributes in Vectors
      *
      *@param  typeAttrib  Description of the Parameter
-     *@return             Description of the Return Value
+     *@return Description of the Return Value
      */
     private Vector readVarData(String typeAttrib) {
         Object key = null;
@@ -241,7 +241,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
         Vector auxVec = null;
         Vector data = new Vector();
 //      System.out.println("reading Attributes..." + typeAttrib);
-        for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+        for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
             key = e.nextElement();
             if (key instanceof String) {
                 try {
@@ -255,7 +255,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                         //}
                     }
                 } catch (Exception ex) {
-                    if (sfLog().isErrorEnabled()){
+                    if (sfLog().isErrorEnabled()) {
                         sfLog().debug(ex);
                     }
                 }

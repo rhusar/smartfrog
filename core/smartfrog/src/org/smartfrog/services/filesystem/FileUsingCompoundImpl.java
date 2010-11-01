@@ -13,12 +13,12 @@
  */
 package org.smartfrog.services.filesystem;
 
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+
 import java.io.File;
 import java.net.URI;
 import java.rmi.RemoteException;
-
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.compound.CompoundImpl;
 
 /**
  * This is a compound object that has the {@link FileUsingComponent} interfaces
@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
  * files synchronised.
  */
 public class FileUsingCompoundImpl extends CompoundImpl implements
-        FileUsingComponent,FileIntf {
+        FileUsingComponent, FileIntf {
 
     /**
      * the file we are bonded to
@@ -46,9 +46,10 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
     /**
      * get the absolute path of this file
      *
-     * @return path
+     * @return path to the file
+     * @throws NullPointerException if the file is null
      */
-    public String getAbsolutePath()  {
+    public String getAbsolutePath() {
         return file.getAbsolutePath();
     }
 
@@ -56,14 +57,15 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * get the URI of this file
      *
      * @return URI
+     * @throws NullPointerException if the file is null
      */
-    public URI getURI()  {
+    public URI getURI() {
         return file.toURI();
     }
 
     /**
      * get the file we are using
-     * @return File
+     * @return File or null if it isn't set yet.
      */
     public File getFile() {
         return file;
@@ -71,15 +73,16 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
 
 
     /**
-     * Bind the class to the filename; indicate in the operation whether to
-     * dema
+     * Bind the class to the filename; indicate in the operation whether
+     * the file should be mandatory or not
      * @param mandatory flag to indicate mandatoryness
      * @param defval a default value to use if not mandatory (can be null)
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException runtime error
      */
-    protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
-        String absolutePath = FileSystem.lookupAbsolutePath(this, ATTR_FILENAME, defval, null, mandatory, null);
+    protected void bind(boolean mandatory, String defval) throws RemoteException, SmartFrogRuntimeException {
+        String absolutePath = FileSystem
+                .lookupAbsolutePath(this, ATTR_FILENAME, defval, null, mandatory, null);
         if (absolutePath != null) {
             setAbsolutePath(absolutePath);
         }

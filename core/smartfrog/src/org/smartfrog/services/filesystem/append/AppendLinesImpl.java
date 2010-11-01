@@ -19,27 +19,26 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.filesystem.append;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
-import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
-import java.rmi.RemoteException;
-import java.util.Vector;
-import java.util.Set;
-import java.util.HashSet;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.Writer;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.LineNumberReader;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.rmi.RemoteException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  *
@@ -59,7 +58,7 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      linesAdded 0;
      */
 
-    int linesAdded=0;
+    int linesAdded = 0;
     private String lineEnding, encoding;
     private boolean addOnlyMissingLines;
     private Vector<String> lines;
@@ -84,13 +83,13 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        bind(true,"");
-        addOnlyMissingLines=sfResolve(REF_MISSING_LINES_ONLY,true,true);
+        bind(true, "");
+        addOnlyMissingLines = sfResolve(REF_MISSING_LINES_ONLY, true, true);
         lineEnding = sfResolve(REF_LINE_ENDING, "", true);
         encoding = sfResolve(REF_ENCODING, "", true);
-        lines= ListUtils.resolveStringList(this, REF_LINES,true);
+        lines = ListUtils.resolveStringList(this, REF_LINES, true);
         appendLines();
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,null,null);
+        maybeStartTerminator("Appending lines to file ");
     }
 
     /**
@@ -100,13 +99,13 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      */
     private void appendLines() throws SmartFrogDeploymentException {
         try {
-            if(!getFile().exists()) {
+            if (!getFile().exists()) {
                 buildNewFile();
             } else {
                 appendExistingFile();
             }
         } catch (IOException e) {
-            throw new SmartFrogDeploymentException("When writing to "+getFile(),e,this);
+            throw new SmartFrogDeploymentException("When writing to " + getFile(), e, this);
         }
     }
 
@@ -116,9 +115,9 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      * @throws IOException for IO problems
      */
     private void appendExistingFile() throws IOException {
-        Vector<String> linesToAdd = addOnlyMissingLines?filterExistingLines():lines;
-        if(linesToAdd.size()>0) {
-            appendLines(new FileOutputStream(getFile(),true), linesToAdd);
+        Vector<String> linesToAdd = addOnlyMissingLines ? filterExistingLines() : lines;
+        if (linesToAdd.size() > 0) {
+            appendLines(new FileOutputStream(getFile(), true), linesToAdd);
             return;
         }
     }
@@ -129,10 +128,10 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      * @throws IOException for IO problems
      */
     private Vector<String> filterExistingLines() throws IOException {
-        Set<String> existingLines=loadExistingLines();
-        Vector<String> linesToAdd=new Vector<String>(lines.size());
+        Set<String> existingLines = loadExistingLines();
+        Vector<String> linesToAdd = new Vector<String>(lines.size());
         for (String line : lines) {
-            if(!existingLines.contains(line)) {
+            if (!existingLines.contains(line)) {
                 linesToAdd.add(line);
             }
         }
@@ -146,12 +145,12 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      * @throws IOException for IO problems
      */
     private Set<String> loadExistingLines() throws IOException {
-        LineNumberReader reader=null;
+        LineNumberReader reader = null;
         try {
             reader = new LineNumberReader(new FileReader(getFile()));
-            Set<String> result=new HashSet<String>();
+            Set<String> result = new HashSet<String>();
             String line;
-            while((line=reader.readLine())!=null) {
+            while ((line = reader.readLine()) != null) {
                 result.add(line);
             }
             return result;
@@ -172,11 +171,11 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
 
         //handle the parent directory
         File parentFile = destFile.getParentFile();
-        if(parentFile!=null && !parentFile.exists()) {
+        if (parentFile != null && !parentFile.exists()) {
             try {
                 parentFile.mkdirs();
             } catch (SecurityException e) {
-                throw new SmartFrogDeploymentException("Unable to create "+parentFile,e,this);
+                throw new SmartFrogDeploymentException("Unable to create " + parentFile, e, this);
             }
         }
         appendLines(new FileOutputStream(destFile), lines);
@@ -190,15 +189,15 @@ public class AppendLinesImpl extends FileUsingComponentImpl implements FileUsing
      * @throws IOException for io problems.
      */
     private void appendLines(FileOutputStream stream, Vector<String> linesToAdd) throws IOException {
-        Writer out=null;
+        Writer out = null;
         try {
-            out = new BufferedWriter(new OutputStreamWriter(stream,encoding));
-            for(String line: linesToAdd) {
+            out = new BufferedWriter(new OutputStreamWriter(stream, encoding));
+            for (String line : linesToAdd) {
                 out.write(line);
                 out.write(lineEnding);
             }
             out.close();
-            out=null;
+            out = null;
         } finally {
             FileSystem.close(out);
         }

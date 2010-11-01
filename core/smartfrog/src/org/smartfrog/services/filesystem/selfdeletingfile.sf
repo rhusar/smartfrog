@@ -30,3 +30,11 @@ SelfDeletingFile extends FileAndDirWorkflowComponent {
     sfClass "org.smartfrog.services.filesystem.SelfDeletingFileImpl";
     deleteOnExit true;
 }
+
+/**
+ * This is a file which deletes itself when it terminates, and it terminates itself on startup, so
+ * can delete things immediately
+ */
+DeleteFileOnStartup extends SelfDeletingFile {
+    sfShouldTerminate true;
+}

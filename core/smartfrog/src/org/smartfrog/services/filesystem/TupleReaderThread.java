@@ -19,10 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.filesystem;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.filesystem.TupleDataSource;
 
 import java.rmi.RemoteException;
 
@@ -91,6 +90,7 @@ public class TupleReaderThread extends WorkflowThread {
     protected void onStarted() throws SmartFrogException, RemoteException {
 
     }
+
     /**
      * we've finished (successfully)
      *

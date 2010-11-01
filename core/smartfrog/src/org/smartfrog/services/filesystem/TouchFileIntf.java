@@ -34,7 +34,7 @@ public interface TouchFileIntf extends FileUsingComponent {
     /**
      * its age in milliseconds since 1970-01-01
      */
-    final static String ATTR_AGE = "timestamp";
+    String ATTR_AGE = "timestamp";
 
 
     /**

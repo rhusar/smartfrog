@@ -23,8 +23,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -242,9 +240,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * If subclassed, the polling for sfShouldTerminate can be delayed
      */
     protected void triggerTerminationInStartup() {
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "File "+getFile()
-                        .getAbsolutePath(),sfCompleteNameSafe(),null);
+        maybeStartTerminator("File");
     }
 
     /**
@@ -279,10 +275,10 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     }
 
     /**
-    * do our file state test
-    *
-    * @throws SmartFrogLivenessException if a test failed
-    */
+     * do our file state test
+     *
+     * @throws SmartFrogLivenessException if a test failed
+     */
     protected void testFileState() throws SmartFrogLivenessException {
         if (sfLog().isDebugEnabled()) {
             sfLog().debug("liveness check will look for " + getFile().toString());

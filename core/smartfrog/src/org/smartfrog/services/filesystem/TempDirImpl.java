@@ -21,7 +21,6 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -31,7 +30,7 @@ import java.rmi.RemoteException;
  */
 
 public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
-    private boolean delete=false;
+    private boolean delete = false;
     private boolean createOnDeploy;
 
     /**
@@ -73,10 +72,7 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
             readAttributesAndCreateDir();
         }
         //maybe terminate
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "Created temp dir " + file,
-                null,
-                null);
+        maybeStartTerminator("Created temp dir ");
     }
 
     /**
@@ -96,7 +92,7 @@ public class TempDirImpl extends FileUsingComponentImpl implements TempFile {
 
         if (sfLog().isDebugEnabled()) {
             sfLog().debug("Creating temp file in dir [" + dir + "], prefix=" + prefix
-                    + ", suffix=" + suffix );
+                    + ", suffix=" + suffix);
         }
 
         //bind to the temp file

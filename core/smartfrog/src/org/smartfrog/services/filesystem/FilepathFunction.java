@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.languages.sf.functions.BaseOperator;
 import org.smartfrog.sfcore.utils.PlatformHelper;
 
 /**
-
+ * function to work with file paths
  */
 public class FilepathFunction extends BaseOperator {
     /**
@@ -52,7 +52,7 @@ public class FilepathFunction extends BaseOperator {
 
         }
 
-        return directory+childPath;
+        return directory + childPath;
     }
 }
 

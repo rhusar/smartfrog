@@ -19,9 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.filesystem.files;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
@@ -37,7 +40,8 @@ public class FilesImpl extends PrimImpl implements Files {
     /**
      * Error text {@value}
      */
-    public static final String ERROR_NOT_STARTED = "The component must be started before it can list the files";
+    public static final String ERROR_NOT_STARTED
+            = "The component must be started before it can list the files";
     private static final Reference FILES_ATTRIBUTE = new Reference(ATTR_FILES);
     private static final Reference DIR_ATTRIBUTE = new Reference(ATTR_DIR);
     private static final Reference PATTERN_ATTRIBUTE = new Reference(ATTR_PATTERN);
@@ -76,7 +80,7 @@ public class FilesImpl extends PrimImpl implements Files {
      */
 
     public File[] listFiles() throws SmartFrogLifecycleException {
-        if(!sfIsStarted()) {
+        if (!sfIsStarted()) {
             throw new SmartFrogLifecycleException(ERROR_NOT_LIVE);
         }
         return fileset.listFiles();
@@ -154,11 +158,11 @@ public class FilesImpl extends PrimImpl implements Files {
      * @return an exception to throw
      */
     private static SmartFrogDeploymentException exceptionBadFileCount(Prim component,
-                                                                   Fileset fileset,
-                                                                   int length,
-                                                                   int filecount, String prefix) {
+                                                                      Fileset fileset,
+                                                                      int length,
+                                                                      int filecount, String prefix) {
 
-        StringBuilder builder=new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         builder.append(ERROR_FILE_COUNT_MISMATCH)
                 .append(prefix)
                 .append(filecount)
@@ -170,7 +174,7 @@ public class FilesImpl extends PrimImpl implements Files {
                 .append(fileset.getSource());
         builder.append('\n');
         File dir = fileset.getBaseDir();
-        if(!dir.exists()) {
+        if (!dir.exists()) {
             builder.append("Base directory ")
                     .append(dir)
                     .append(" does not exist");

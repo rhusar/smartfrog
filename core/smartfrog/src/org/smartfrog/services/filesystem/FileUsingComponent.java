@@ -22,8 +22,8 @@ package org.smartfrog.services.filesystem;
 import java.rmi.Remote;
 
 /**
- * A file using component has an attribute bound to a file
- * This interface defines no operations, merely well-known attributes
+ * A file using component has an attribute bound to a file.
+ * This interface defines no operations, merely well-known attributes.
  * created 30-Mar-2005 16:30:30
  */
 
@@ -34,16 +34,16 @@ public interface FileUsingComponent extends Remote {
      * The attribute that is used for extracting file strings/file components
      * {@value }
      */
-    public static final String ATTR_FILENAME = "filename";
+    String ATTR_FILENAME = "filename";
 
     /**
      * Absolute path {@value}
      */
-    public static final String ATTR_ABSOLUTE_PATH = "absolutePath";
+    String ATTR_ABSOLUTE_PATH = "absolutePath";
 
     /**
      * URI attribute {@value}
      */
-    public static final String ATTR_URI = UriIntf.ATTR_URI;
+    String ATTR_URI = UriIntf.ATTR_URI;
 
 }

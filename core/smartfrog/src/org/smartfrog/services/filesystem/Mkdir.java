@@ -28,11 +28,14 @@ import java.rmi.Remote;
 
 public interface Mkdir extends Remote {
     /**
-     * new directory to create
+     * new directory to create: {@value}
      */
     String ATTR_DIR = "dir";
-    /** parent directory {@value} */
+    /** parent directory: {@value} */
     String ATTR_PARENT = "parentDir";
-    
-    String ATTR_CLEAN_ON_START="cleanOnStartup";
+
+    /**
+     * Should the directory be cleaned up on startup: {@value}
+     */
+    String ATTR_CLEAN_ON_START = "cleanOnStartup";
 }

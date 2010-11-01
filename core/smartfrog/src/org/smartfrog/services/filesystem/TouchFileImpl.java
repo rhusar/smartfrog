@@ -19,13 +19,13 @@
  */
 package org.smartfrog.services.filesystem;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 /**
  * This is a minimal component whose aim in life is to touch files.
@@ -34,7 +34,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
  */
 
 public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIntf {
-    private long age=-1;
+    private long age = -1;
 
     /**
      * Constructor.
@@ -61,7 +61,7 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
         super.sfStart();
         touch();
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "TouchFile "+getFile().getAbsolutePath()+", "+age,
+                "TouchFile " + getFile().getAbsolutePath() + ", " + age,
                 sfCompleteNameSafe(),
                 null);
     }
@@ -93,15 +93,17 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
     public synchronized void touch(String filename, long newAge) throws IOException, SmartFrogException {
         File target = new File(filename);
         File parentFile = target.getParentFile();
-        if(sfLog().isDebugEnabled()) {
-            sfLog().debug("About to touch file "+filename);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug("About to touch file " + filename);
         }
-        if(parentFile!=null) {
+        if (parentFile != null) {
             try {
                 parentFile.mkdirs();
             } catch (SecurityException e) {
                 //failure to mkdir is turned into a security problem; we catch it and make it meaningful
-                throw new SmartFrogDeploymentException("Security blocked the creation of the parent directories "+parentFile,
+                throw new SmartFrogDeploymentException(
+                        "Security blocked the creation of the parent directories "
+                                + parentFile,
                         e,
                         this);
             }
@@ -112,8 +114,8 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
                 target.setLastModified(newAge);
             }
         } catch (SecurityException e) {
-            throw new SmartFrogDeploymentException("Security blocked the touching of file " + target, e, this);
-
+            throw new SmartFrogDeploymentException("Security blocked the touching of file " + target, e,
+                    this);
         }
     }
 }

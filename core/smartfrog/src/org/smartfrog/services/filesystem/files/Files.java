@@ -19,12 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.filesystem.files;
 
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.io.File;
 
 /**
  * Created 04-Feb-2008 14:09:45
@@ -35,22 +34,22 @@ public interface Files extends Remote {
     /**
      * A LAZY reference to another source of files:  {@value}
      */
-    String ATTR_FILES="files";
+    String ATTR_FILES = "files";
 
     /**
      * set at runtime a List of files as strings: {@value}
      */
-    String ATTR_FILELIST="fileList";
+    String ATTR_FILELIST = "fileList";
 
     /**
      * Fileset attribute:  {@value}
      */
-    String ATTR_FILE_SET="fileSet";
+    String ATTR_FILE_SET = "fileSet";
 
     /**
      * FileSetString attribute:  {@value}
      */
-    String ATTR_FILE_SET_STRING="fileSetString";
+    String ATTR_FILE_SET_STRING = "fileSetString";
 
     /**
      * SF component attribute {@value}

@@ -21,11 +21,10 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * Component to create directories; can clean them up too.
@@ -53,20 +52,20 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
 
         String dir;
 
-        File parentDir=null;
+        File parentDir = null;
         String parent;
-        parent= FileSystem.lookupAbsolutePath(this,
+        parent = FileSystem.lookupAbsolutePath(this,
                 ATTR_PARENT,
                 null,
                 null,
                 false,
                 null);
-        if (parent!=null) {
-            parentDir=new File(parent);
+        if (parent != null) {
+            parentDir = new File(parent);
         }
 
-        dir=FileSystem.lookupAbsolutePath(this,Mkdir.ATTR_DIR,null,parentDir,true,null);
-        File directory=new File(dir);
+        dir = FileSystem.lookupAbsolutePath(this, Mkdir.ATTR_DIR, null, parentDir, true, null);
+        File directory = new File(dir);
         bind(directory);
         //get the delete flag
         //this is only done if the directory does not yet exist.
@@ -84,13 +83,13 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
         super.sfStart();
         File directory = getFile();
         boolean clean = sfResolve(ATTR_CLEAN_ON_START, false, false);
-        if(directory.exists()) {
+        if (directory.exists()) {
             if (clean) {
                 FileSystem.recursiveDelete(directory);
             }
             //it already exists. that may be harmless, but it warns the component to not
             //delete the directory during termination.
-            delete=false;
+            delete = false;
         }
         directory.mkdirs();
         if (!directory.exists() || !directory.isDirectory()) {
@@ -100,10 +99,7 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
             throw new SmartFrogDeploymentException("Failed to create directory " +
                     directory.getAbsolutePath());
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "Mkdir "+getFile().getAbsolutePath(),
-                sfCompleteNameSafe(),
-                null);
+        maybeStartTerminator("Mkdir");
     }
 
 
