@@ -19,8 +19,9 @@
  */
 package org.smartfrog.services.filesystem;
 
-import java.rmi.Remote;
 import org.smartfrog.sfcore.compound.Compound;
+
+import java.rmi.Remote;
 
 /**
  * Defines attributes for CopyFile component.
@@ -31,8 +32,8 @@ public interface CopyFile extends Remote, Compound {
     String ATTR_FROM = "source";
     /** new file copy {@value} */
     String ATTR_TO = "destination";
-    
-    String ATTR_COPY_ON_DEPLOY=  "copyOnDeploy";
-    
-    String ATTR_OVERWRITE ="overwrite";
+
+    String ATTR_COPY_ON_DEPLOY = "copyOnDeploy";
+
+    String ATTR_OVERWRITE = "overwrite";
 }

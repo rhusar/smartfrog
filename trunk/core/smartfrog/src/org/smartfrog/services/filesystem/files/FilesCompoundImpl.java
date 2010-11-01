@@ -19,18 +19,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.filesystem.files;
 
+import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.sfcore.prim.Prim;
 
-import java.rmi.RemoteException;
 import java.io.File;
-import java.util.Set;
-import java.util.HashSet;
+import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -40,7 +40,7 @@ import java.util.Vector;
 public class FilesCompoundImpl extends CompoundImpl implements Files {
 
     private Set<File> fileset = new HashSet<File>();
-    private File[] fileArray=new File[] {};
+    private File[] fileArray = new File[]{};
     private String fileList;
 
     public FilesCompoundImpl() throws RemoteException {
@@ -62,10 +62,10 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
         int filesize = fileset.size();
         Vector<String> fileVector = new Vector<String>(filesize);
         fileArray = new File[filesize];
-        int index=0;
+        int index = 0;
         StringBuilder aggregatePath = new StringBuilder();
         for (File file : fileset) {
-            fileArray[index++]=file;
+            fileArray[index++] = file;
             String path = file.getAbsolutePath();
             fileVector.add(path);
             aggregatePath.append(path);
@@ -151,7 +151,7 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
             throws SmartFrogRuntimeException, RemoteException {
         int length = fileset.size();
         //deal with the file count
-        Prim component=this;
+        Prim component = this;
         int filecount = sfResolve(ATTR_FILECOUNT, -1, false);
         int minFilecount = sfResolve(ATTR_MINFILECOUNT, -1, false);
         int maxFilecount = sfResolve(ATTR_MAXFILECOUNT, -1, false);
@@ -161,7 +161,7 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
                 || (maxFilecount >= 0 && length > maxFilecount)) {
             throw new SmartFrogDeploymentException(
                     FilesImpl.ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files "
-                            + "in the list [ " + fileList +"]", this);
+                            + "in the list [ " + fileList + "]", this);
         }
 
         if (filecount < 0) {

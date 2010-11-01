@@ -19,12 +19,12 @@
  */
 package org.smartfrog.services.filesystem;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
 import java.net.URI;
@@ -45,7 +45,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     /**
      *  Constructor .
      *
-     *@exception  RemoteException In case of network/rmi error
+     *@exception RemoteException In case of network/rmi error
      */
     public FileUsingComponentImpl() throws RemoteException {
     }
@@ -55,7 +55,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      *
      * @return path of the file
      */
-    public String getAbsolutePath()  {
+    public String getAbsolutePath() {
         if (file == null) {
             return null;
         } else {
@@ -68,7 +68,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      *
      * @return URI of the file
      */
-    public URI getURI()  {
+    public URI getURI() {
         if (file == null) {
             return null;
         } else {
@@ -131,7 +131,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      */
     protected void setAbsolutePath(String absolutePath)
             throws SmartFrogRuntimeException, RemoteException {
-        File newfile=new File(absolutePath);
+        File newfile = new File(absolutePath);
         bind(newfile);
     }
 
@@ -145,8 +145,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      */
     public void bind(File newfile) throws SmartFrogRuntimeException,
             RemoteException {
-        file=newfile;
-        bind(this,newfile);
+        file = newfile;
+        bind(this, newfile);
     }
 
 
@@ -163,7 +163,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @throws RemoteException  In case of network/rmi error
      * @throws SmartFrogRuntimeException runtime error
      */
-    public static String bindWithDir(Prim component,boolean mandatory, String defval)
+    public static String bindWithDir(Prim component, boolean mandatory, String defval)
             throws RemoteException, SmartFrogRuntimeException {
         File parentDir = null;
         String dir = FileSystem.lookupAbsolutePath(component,
@@ -221,12 +221,12 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
                 parentDir,
                 mandatory,
                 null);
-        if (absolutePath != null && absolutePath.length()>0) {
+        if (absolutePath != null && absolutePath.length() > 0) {
             File newfile = new File(absolutePath);
             bind(component, newfile);
         } else {
-            if(mandatory) {
-                throw new SmartFrogDeploymentException("No filename supplied",component);
+            if (mandatory) {
+                throw new SmartFrogDeploymentException("No filename supplied", component);
             }
         }
         return absolutePath;
@@ -252,7 +252,6 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     }
 
 
-
     /**
      * Returns the name of the file we are bound to.
      *
@@ -266,7 +265,8 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
 
     /**
      * Helper method for all components that support delete-on-clearup;
-     * This should be called from the {@link Prim#sfTerminatedWith(org.smartfrog.sfcore.prim.TerminationRecord, org.smartfrog.sfcore.prim.Prim)}
+     * This should be called from the {@link Prim#sfTerminatedWith(org.smartfrog.sfcore.prim.TerminationRecord,
+     * org.smartfrog.sfcore.prim.Prim)}
      * implementation -after calling the superclass.
      * Will delete the file if {@link FileIntf#ATTR_DELETE_ON_EXIT } is set to
      * true, and there is a file to delete. If the file cannot be deleted immediately,
@@ -277,7 +277,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
         try {
             boolean delete;
             //see if anyone changed the delete settings during our life
-            delete = sfResolve(ATTR_DELETE_ON_EXIT,false,false);
+            delete = sfResolve(ATTR_DELETE_ON_EXIT, false, false);
             if (delete && getFile() != null && getFile().exists()) {
                 if (!getFile().delete()) {
                     getFile().deleteOnExit();
@@ -290,4 +290,13 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
         }
     }
 
+    /**
+     * something that is called in the {@link #sfStart()} method to optionally start the termination
+     * process. It can be overridden, or called from an overridden sfStart method.
+     * @param action action that happened for use in the termination message
+     */
+    protected void maybeStartTerminator(final String action) {
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, action + " " + getFile(),
+                sfCompleteNameSafe(), null);
+    }
 }

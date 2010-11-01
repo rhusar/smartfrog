@@ -21,14 +21,13 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
-import java.io.Writer;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.rmi.RemoteException;
 
 /**
  * created 18-May-2004 11:46:09
@@ -116,10 +115,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         }
 
         //maybe terminate
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "Created temp file " + file,
-                null,
-                null);
+        maybeStartTerminator("Created temp file");
     }
 
     /**

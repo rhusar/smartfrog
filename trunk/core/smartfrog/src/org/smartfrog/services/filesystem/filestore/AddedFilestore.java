@@ -32,7 +32,7 @@ public class AddedFilestore {
 
     private File directory;
 
-    private HashMap<URI,FileEntry> files = new HashMap<URI, FileEntry>();
+    private HashMap<URI, FileEntry> files = new HashMap<URI, FileEntry>();
 
     /**
      * Constructor.

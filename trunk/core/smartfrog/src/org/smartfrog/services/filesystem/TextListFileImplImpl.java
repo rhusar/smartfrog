@@ -20,8 +20,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
 import java.util.Vector;

@@ -39,7 +39,7 @@ public class FileEntryImpl implements FileEntry {
     private Object metadata;
 
     //extra data
-    private Hashtable<String,Object> data;
+    private Hashtable<String, Object> data;
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ public class FileEntryImpl implements FileEntry {
 
     /**
      * Returns extra data
-     * @return  Hashtable
+     * @return Hashtable
      */
     private Hashtable<String, Object> data() {
         if (data == null) {
@@ -125,7 +125,7 @@ public class FileEntryImpl implements FileEntry {
         return metadata;
     }
 
-     /**
+    /**
      * Set metadata
      * @param metadata Object
      *

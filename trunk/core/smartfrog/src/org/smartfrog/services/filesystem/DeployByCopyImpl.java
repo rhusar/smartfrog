@@ -21,14 +21,15 @@
 package org.smartfrog.services.filesystem;
 
 
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
 /**
- * a component that deletes a file when terminated
- * */
+ * Deploy an application by copying the file and deleting the destination file
+ * when terminating.
+ */
 public class DeployByCopyImpl extends CopyFileImpl implements CopyFile {
 
     private boolean shouldDelete;

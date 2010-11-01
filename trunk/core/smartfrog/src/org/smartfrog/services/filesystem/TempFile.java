@@ -35,20 +35,20 @@ public interface TempFile extends FileUsingComponent {
     String ATTR_TEXT = "text";
     /**
      * text encoding {@value}
-    */
+     */
     String ATTR_TEXT_ENCODING = "encoding";
 
     /**
      * temp filename prefix {@value}
-    */
-    String ATTR_PREFIX="prefix";
+     */
+    String ATTR_PREFIX = "prefix";
     /**
      * temp filename suffix {@value}
-    */
+     */
     String ATTR_SUFFIX = "suffix";
     /**
      * temp file directory {@value}
-    */
+     */
     String ATTR_DIRECTORY = "dir";
     //this is the filename that is created
     //String ATTR_FILENAME = "filename";
@@ -65,8 +65,8 @@ public interface TempFile extends FileUsingComponent {
      * get the filename of this file
      *
      * @return the filename
-     * @exception  RemoteException In case of network/rmi error
+     * @exception RemoteException In case of network/rmi error
      */
-    String getFilename() throws RemoteException ;
+    String getFilename() throws RemoteException;
 
 }

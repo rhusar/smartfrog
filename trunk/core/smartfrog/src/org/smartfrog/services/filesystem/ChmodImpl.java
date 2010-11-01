@@ -32,16 +32,15 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 package org.smartfrog.services.filesystem;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.ArrayList;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component to set the access permissions of a file or directory.
@@ -91,9 +90,9 @@ public class ChmodImpl extends PrimImpl implements Chmod {
         recursively = sfResolve(ATTR_RECURSIVELY, false, true);
 
         if (userPermissions.equals("") &&
-            groupPermissions.equals("") &&
-            otherPermissions.equals("") &&
-            octalNotation.equals("")) {
+                groupPermissions.equals("") &&
+                otherPermissions.equals("") &&
+                octalNotation.equals("")) {
             sfLog().error(ERROR_NO_PERMISSIONS_SPECIFIED);
             throw new SmartFrogException(ERROR_NO_PERMISSIONS_SPECIFIED);
         }
@@ -107,11 +106,11 @@ public class ChmodImpl extends PrimImpl implements Chmod {
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-     public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
         // compose the options
-        List<String> commands=new ArrayList<String>(4);
+        List<String> commands = new ArrayList<String>(4);
         commands.add("chmod");
 
         if (recursively) {
@@ -128,7 +127,7 @@ public class ChmodImpl extends PrimImpl implements Chmod {
             }
             if (groupPermissions.length() != 0) {
                 // multiple user classes have to be comma-separated
-                modeString += (modeString.length()!=0 ? "," : "") + 'g' + groupPermissions;
+                modeString += (modeString.length() != 0 ? "," : "") + 'g' + groupPermissions;
             }
             if (otherPermissions.length() != 0) {
                 // multiple user classes have to be comma-separated
@@ -136,7 +135,8 @@ public class ChmodImpl extends PrimImpl implements Chmod {
             }
 
             //sanity check
-            assert modeString.length()==0 || modeString.charAt(0)!=',':" bad modes: '"+modeString+"'";
+            assert modeString.length() == 0 || modeString.charAt(0) != ',' :
+                    " bad modes: '" + modeString + "'";
             commands.add(modeString);
         }
 
@@ -144,10 +144,10 @@ public class ChmodImpl extends PrimImpl implements Chmod {
 
         // execute the command
         String[] commandArray = commands.toArray(new String[commands.size()]);
-        String details="";
-        for(String s:commandArray) {
-            details+=s;
-            details+=" ";
+        String details = "";
+        for (String s : commandArray) {
+            details += s;
+            details += " ";
         }
         sfLog().info(details);
         try {

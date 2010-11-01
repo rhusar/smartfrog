@@ -20,7 +20,6 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -41,7 +40,6 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
     }
 
 
-
     /**
      * when we deploy, we write out our text stream
      * @throws SmartFrogException error while starting
@@ -53,7 +51,7 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
         String text = buildText();
         String encoding = null;
         if (text != null) {
-            encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
+            encoding = sfResolve(ATTR_TEXT_ENCODING, (String) null, true);
             File textFile = getFile();
             File parentDir = textFile.getParentFile();
             if (!parentDir.exists()) {

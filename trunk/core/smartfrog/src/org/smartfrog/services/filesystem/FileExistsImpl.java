@@ -31,21 +31,20 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 package org.smartfrog.services.filesystem;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.RemoteException;
 import java.io.File;
+import java.rmi.RemoteException;
 
 /**
  * A component to validate files
  */
 public class FileExistsImpl extends FileUsingComponentImpl implements FileExists {
 
-    private long minSize = -1, maxSize=-1;
+    private long minSize = -1, maxSize = -1;
     private boolean canBeFile, canBeDir;
-    private String lastError="";
+    private String lastError = "";
 
     public FileExistsImpl() throws RemoteException {
     }
@@ -69,14 +68,14 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
         canBeFile = sfResolve(ATTR_CAN_BE_FILE, true, true);
         canBeDir = sfResolve(ATTR_CAN_BE_DIR, true, true);
         //maybe check on startup
-        boolean checkOnStartup= sfResolve(ATTR_CHECKONSTARTUP, true, true);
-        if(checkOnStartup) {
-            if(!evaluate()) {
+        boolean checkOnStartup = sfResolve(ATTR_CHECKONSTARTUP, true, true);
+        if (checkOnStartup) {
+            if (!evaluate()) {
                 //on failure, throw the last error
-                throw new SmartFrogDeploymentException(lastError,this);
+                throw new SmartFrogDeploymentException(lastError, this);
             }
             //and look at workflow options
-            new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,null,null);
+            maybeStartTerminator("Checked for file ");
         }
     }
 

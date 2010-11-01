@@ -19,43 +19,43 @@
  */
 package org.smartfrog.services.filesystem;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.utils.PlatformHelper;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.io.Reader;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
-import java.io.OutputStreamWriter;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.Closeable;
-import java.net.URL;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
- * Filesystem operations
+ * Static Filesystem operations
  */
 
 public final class FileSystem {
@@ -291,9 +291,11 @@ public final class FileSystem {
         if (component instanceof Prim) {
             pathAttr = ((Prim) component).sfResolve(attribute, mandatory);
         } else if (component instanceof ComponentDescription) {
-            pathAttr =( (ComponentDescription) component).sfResolve(attribute, mandatory);
+            pathAttr = ((ComponentDescription) component).sfResolve(attribute, mandatory);
         } else {
-            throw  new SmartFrogResolutionException ("Wrong object type. It does not implement Resolve() interfaces: "+component.getClass().getName());
+            throw new SmartFrogResolutionException(
+                    "Wrong object type. It does not implement Resolve() interfaces: " + component.getClass()
+                            .getName());
         }
         if (pathAttr == null) {
             //mandatory must be false, because we did not get a value.
@@ -320,10 +322,10 @@ public final class FileSystem {
      * @throws RemoteException In case of network/rmi error
      */
     public static Vector<String> resolveFileList(Prim component,
-                                          String attribute,
-                                          File baseDir,
-                                          boolean mandatory,
-                                          PlatformHelper platform)
+                                                 String attribute,
+                                                 File baseDir,
+                                                 boolean mandatory,
+                                                 PlatformHelper platform)
             throws SmartFrogResolutionException, RemoteException {
         Reference reference = new Reference(attribute);
         return resolveFileList(component,
@@ -378,10 +380,10 @@ public final class FileSystem {
      * @throws SmartFrogResolutionException if the reference cannot be converted to a path
      */
     public static Vector<String> convertPathVector(Vector<?> paths,
-                                           File baseDir,
-                                           PlatformHelper platform,
-                                           Object component,
-                                           Reference attribute)
+                                                   File baseDir,
+                                                   PlatformHelper platform,
+                                                   Object component,
+                                                   Reference attribute)
             throws RemoteException, SmartFrogResolutionException {
         Vector<String> results = new Vector<String>(paths.size());
         for (Object element : paths) {
@@ -401,7 +403,8 @@ public final class FileSystem {
      * @throws RemoteException for network problems
      * @throws SmartFrogResolutionException if the reference cannot be converted to a path
      */
-    public static String convertToAbsolutePath(Object pathSource, File baseDir, PlatformHelper platform, Object component, Reference attribute)
+    public static String convertToAbsolutePath(Object pathSource, File baseDir, PlatformHelper platform,
+                                               Object component, Reference attribute)
             throws RemoteException, SmartFrogResolutionException {
         String path = null;
         if (pathSource instanceof FileIntf) {
@@ -542,9 +545,10 @@ public final class FileSystem {
      * @throws RemoteException for network problems
      * @throws SmartFrogResolutionException if an element cannot be converted to a path
      */
-    public static Vector<File> resolveFileList(Vector fileReferences, File baseDir, Prim component, Reference attribute)
+    public static Vector<File> resolveFileList(Vector fileReferences, File baseDir, Prim component,
+                                               Reference attribute)
             throws SmartFrogResolutionException, RemoteException {
-        Vector<File> results=new Vector<File>(fileReferences.capacity());
+        Vector<File> results = new Vector<File>(fileReferences.capacity());
         for (Object entry : fileReferences) {
             String path = FileSystem.convertToAbsolutePath(entry, baseDir, null, component, attribute);
             results.add(new File(path));
@@ -563,10 +567,11 @@ public final class FileSystem {
      * @throws RemoteException for network problems
      * @throws SmartFrogResolutionException if an element cannot be converted to a path
      */
-    public static Vector<File> resolveFileList(Prim component, Reference attribute, File baseDir, boolean mandatory)
+    public static Vector<File> resolveFileList(Prim component, Reference attribute, File baseDir,
+                                               boolean mandatory)
             throws SmartFrogResolutionException, RemoteException {
-        Vector fileReferences=component.sfResolve(attribute,(Vector)null, mandatory);
-        if(fileReferences==null) {
+        Vector fileReferences = component.sfResolve(attribute, (Vector) null, mandatory);
+        if (fileReferences == null) {
             return null;
         }
         Vector<File> results = new Vector<File>(fileReferences.capacity());
@@ -589,7 +594,8 @@ public final class FileSystem {
      * @throws IOException Thrown when dir is not a directory.
      */
 
-    public static List<String> scanDir(File dir, List<String> filePaths, String extensionsRegex, boolean recursive) throws IOException {
+    public static List<String> scanDir(File dir, List<String> filePaths, String extensionsRegex,
+                                       boolean recursive) throws IOException {
         if (!dir.isDirectory()) throw new IOException(dir + " is not a directory.");
         File[] files = dir.listFiles();
         for (File file : files) {
@@ -616,7 +622,7 @@ public final class FileSystem {
      */
     public static List<URL> toFileURLs(List filePaths) throws MalformedURLException {
         List<URL> urls = new ArrayList<URL>();
-        for(Object o:filePaths) {
+        for (Object o : filePaths) {
             urls.add(toFileURL(o.toString()));
         }
         return urls;
@@ -646,7 +652,8 @@ public final class FileSystem {
      * @param minSize  minimum size to accept if the target is a file
      * @throws SmartFrogLivenessException if the file is not found, of the wrong type, or too small
      */
-    public static void requireFileToExist(String path, boolean fileOnly, int minSize) throws SmartFrogLivenessException {
+    public static void requireFileToExist(String path, boolean fileOnly, int minSize)
+            throws SmartFrogLivenessException {
         File target = new File(path);
         if (!target.exists()) {
             throw new SmartFrogLivenessException("File not found: \"" + path + "\"");
@@ -1009,9 +1016,10 @@ public final class FileSystem {
      * @param suffix suffix, e,g. ".ext";
      * @param dir    parent dir; can be null
      * @return the directory.
-     * @throws  SmartFrogException a wrapper for any IOException.
+     * @throws SmartFrogException a wrapper for any IOException.
      */
-    public static File createTempFile(final String prefix, final String suffix, final String dir) throws SmartFrogException {
+    public static File createTempFile(final String prefix, final String suffix, final String dir)
+            throws SmartFrogException {
         File file;
         try {
             if (dir == null) {
@@ -1162,7 +1170,7 @@ public final class FileSystem {
      */
     public static Vector<File> convertToFiles(Vector<String> filesAsStrings) {
         Vector<File> dataDirFiles = new Vector<File>(filesAsStrings.size());
-        for(String dir: filesAsStrings) {
+        for (String dir : filesAsStrings) {
             dataDirFiles.add(new File(dir));
         }
         return dataDirFiles;

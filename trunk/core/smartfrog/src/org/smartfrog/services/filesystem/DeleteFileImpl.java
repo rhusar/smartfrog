@@ -19,25 +19,25 @@
  */
 package org.smartfrog.services.filesystem;
 
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
+import java.io.File;
 import java.rmi.RemoteException;
 
 /**
  * This is a component which will delete a file that it is bound do at
- * termination time.
- * created 31-Mar-2005 14:51:14
+ * startup.
  */
 
-public class SelfDeletingFileImpl extends FileUsingComponentImpl
+public class DeleteFileImpl extends FileUsingComponentImpl
         implements FileUsingComponent {
 
     /**
      * Constructor.
      * @throws RemoteException  In case of network/rmi error
      */
-    public SelfDeletingFileImpl() throws RemoteException {
+    public DeleteFileImpl() throws RemoteException {
     }
 
     /**
@@ -61,16 +61,21 @@ public class SelfDeletingFileImpl extends FileUsingComponentImpl
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        maybeStartTerminator("Deleting file");
+        File target = getFile();
+        try {
+            if (target != null && target.exists()) {
+                if (!target.delete()) {
+                    sfLog().warn("Failed to delete " + target);
+                }
+            }
+        } catch (SecurityException e) {
+            //failure is turned into a security problem; we catch it and make it meaningful
+            throw new SmartFrogDeploymentException(
+                    "Security blocked the deletion of the file directories " + target,
+                    e,
+                    this);
+        }
+        maybeStartTerminator("Deleted file");
     }
 
-    /**
-     * delete the file if needed
-     *
-     * @param status termination status
-     */
-    public synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        deleteFileIfNeeded();
-    }
 }

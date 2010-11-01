@@ -22,12 +22,12 @@ package org.smartfrog.services.filesystem.files;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
-import java.io.FilenameFilter;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.Serializable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.regex.Matcher;
 
 /**
  * This is a
@@ -41,10 +41,10 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
     private String pattern;
     private Pattern mask;
 
-    private boolean caseSensitive=false;
+    private boolean caseSensitive = false;
     private boolean hiddenFiles = false;
     public static final String BAD_PATTERN = "Pattern syntax not understood by the Java Pattern class"
-    +"\nConsult http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html";
+            + "\nConsult " + "http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html";
 
     /**
      * Create a new filter. Consult {@link Pattern#compile(String)} for the syntax.
@@ -53,16 +53,17 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
      * @param caseSensitive clear this bit to do case-insensitive (unicode and ASCII) pattern matching
      * @throws SmartFrogDeploymentException if the pattern cannot be parsed.
      */
-    public FilenamePatternFilter(String pattern, boolean hiddenFiles, boolean caseSensitive) throws SmartFrogDeploymentException {
+    public FilenamePatternFilter(String pattern, boolean hiddenFiles, boolean caseSensitive)
+            throws SmartFrogDeploymentException {
         this.pattern = pattern;
         try {
-            int flags=0;
-            if(!caseSensitive) {
-                flags|=Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE;
+            int flags = 0;
+            if (!caseSensitive) {
+                flags |= Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
             }
-            mask= Pattern.compile(pattern,flags);
+            mask = Pattern.compile(pattern, flags);
         } catch (PatternSyntaxException e) {
-            throw new SmartFrogDeploymentException(BAD_PATTERN,e);
+            throw new SmartFrogDeploymentException(BAD_PATTERN, e);
         }
         this.hiddenFiles = hiddenFiles;
         this.caseSensitive = caseSensitive;
@@ -77,8 +78,8 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
      *         otherwise.
      */
     public boolean accept(File dir, String name) {
-        File targetFile=new File(dir,name);
-        if(!hiddenFiles && targetFile.isHidden()) {
+        File targetFile = new File(dir, name);
+        if (!hiddenFiles && targetFile.isHidden()) {
             //finish early on hidden files, as the cost of checking is less
             return false;
         }
@@ -92,6 +93,6 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "matching on "+pattern + " caseSensitive="+caseSensitive+" hiddenFiles="+hiddenFiles;
+        return "matching on " + pattern + " caseSensitive=" + caseSensitive + " hiddenFiles=" + hiddenFiles;
     }
 }

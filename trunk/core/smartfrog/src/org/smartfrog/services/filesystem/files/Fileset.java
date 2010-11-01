@@ -31,8 +31,8 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.Vector;
 import java.util.Arrays;
+import java.util.Vector;
 
 /**
  * This is conceptually similar to an Ant FileSet, but architecturally very
@@ -186,15 +186,15 @@ public class Fileset implements Serializable {
                                         String patternAttribute,
                                         String caseAttribute,
                                         String hiddenAttribute)
-            throws  SmartFrogException, RemoteException {
+            throws SmartFrogException, RemoteException {
 
-           return createFileset(component,
-                                Reference.fromString(filesAttribute),
-                                Reference.fromString(dirAttribute),
-                                Reference.fromString(patternAttribute),
-                                Reference.fromString(caseAttribute),
-                                Reference.fromString(hiddenAttribute));
-       }
+        return createFileset(component,
+                Reference.fromString(filesAttribute),
+                Reference.fromString(dirAttribute),
+                Reference.fromString(patternAttribute),
+                Reference.fromString(caseAttribute),
+                Reference.fromString(hiddenAttribute));
+    }
 
     /**
      * Look for a fileset from the various attributes
@@ -221,8 +221,8 @@ public class Fileset implements Serializable {
 
         Fileset result;
         Files files;
-        ComponentDescription cd=null;
-        Prim prim=null;
+        ComponentDescription cd = null;
+        Prim prim = null;
         if (component instanceof Prim) {
             prim = (Prim) component;
             files = (Files) prim.sfResolve(filesAttribute, (Prim) null, false);
@@ -230,8 +230,9 @@ public class Fileset implements Serializable {
             cd = (ComponentDescription) component;
             files = (Files) cd.sfResolve(filesAttribute, (Prim) null, false);
         } else {
-            throw  new SmartFrogResolutionException("Wrong object type. It does not implement Resolve() interfaces: "
-                            +component.getClass().getName());
+            throw new SmartFrogResolutionException(
+                    "Wrong object type. It does not implement Resolve() interfaces: "
+                            + component.getClass().getName());
         }
 
 
@@ -247,29 +248,29 @@ public class Fileset implements Serializable {
                 pattern = prim.sfResolve(patternAttribute, "", true);
                 caseSensitive = prim.sfResolve(caseAttribute, true, true);
                 includeHiddenFiles = prim.sfResolve(hiddenAttribute, true, true);
-            }  else  {
+            } else {
                 pattern = cd.sfResolve(patternAttribute, "", true);
                 caseSensitive = cd.sfResolve(caseAttribute, true, true);
                 includeHiddenFiles = cd.sfResolve(hiddenAttribute, true, true);
             }
 
-            FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles, caseSensitive);
+            FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles,
+                    caseSensitive);
             result = new Fileset(baseDir, filter);
         }
         return result;
     }
 
-    
 
     /**
      * Returns a list of files in String format using the platform file separator.
      * @return String list of files separated by the platform's path separator.
      */
     public String toString() {
-          String fileSetString = Arrays.toString(listFiles());
-          fileSetString = fileSetString.substring(1,fileSetString.length()-1);
-          fileSetString = fileSetString.replace(", ",System.getProperty("path.separator"));
-          return (fileSetString);
+        String fileSetString = Arrays.toString(listFiles());
+        fileSetString = fileSetString.substring(1, fileSetString.length() - 1);
+        fileSetString = fileSetString.replace(", ", System.getProperty("path.separator"));
+        return (fileSetString);
     }
 
 
