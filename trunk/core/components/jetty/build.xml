@@ -2,7 +2,7 @@
 <project name="jetty" default="default">
 
 <!--
-/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2010 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -40,7 +40,7 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
-<!--  <property name="system.tests" value="true" />-->
+  <property name="system.tests" value="true" />
   <property name="test.timeout.execute" value="1800000" />
   <property name="junit.timeout" value="60000000" />
   <property name="functional.test.timeout" value="600000" />
@@ -85,7 +85,8 @@ For more information: www.smartfrog.org
 
   <target name="ready-to-test" depends="common.ready-to-test,testwar">
     <property name="test.jetty.home"
-        location="${test.src.dir}/files/jettyhome"/>
+        location="${build.dir}/jettyhome"/>
+    <mkdir dir="${test.jetty.home}" />
     <property name="test.demo.webapp"
         location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
     <echo >
