@@ -248,7 +248,10 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     public void terminate() throws RemoteException, SmartFrogException {
         if (handlerLifecycle != null) {
             try {
-                log.debug("Terminating Jetty servlet context");
+                if (log.isDebugEnabled()) {
+                    Throwable t = new Throwable("stack trace");
+                    log.info("Terminating Jetty servlet context", t);
+                }
                 handlerLifecycle.wrappedStop();
                 ContextHandlerCollection handlers = getServerContextHandler();
                 if (handlers != null) {
