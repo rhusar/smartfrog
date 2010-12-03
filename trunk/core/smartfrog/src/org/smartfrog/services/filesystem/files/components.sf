@@ -93,8 +93,12 @@ FilesCompound extends Compound {
 }
 
 /**
- * This class deletes files when deployed
+ * This class deletes files when deployed.
+ * Any file in the list that is missing is skipped, any 
  */
 DeleteFiles extends FilesCompound {
   sfClass "org.smartfrog.services.filesystem.files.DeleteFilesImpl";
+  
+  //set this flag to false and the run will stop after the first failure
+  continueAfterDeleteFailures true;
 }
