@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
 /**
  * This component provides a list of files that match a pattern.
@@ -88,17 +89,24 @@ Files extends Prim {
  * 3. Any child component with an absolutePath attribute that resolves to a string.
  * All of these are merged, duplicate file path references removed, and the final files[] attribute returned.
  */
-FilesCompound extends Compound {
+FilesCompound extends EventCompound {
   sfClass "org.smartfrog.services.filesystem.files.FilesCompoundImpl";
 }
 
 /**
  * This class deletes files when deployed.
- * Any file in the list that is missing is skipped, any 
+ * Any file in the list that is missing is skipped, this component will never fail just because
+ * it cannot delete a file. 
+ * 
+ * It is a workflow component
  */
 DeleteFiles extends FilesCompound {
   sfClass "org.smartfrog.services.filesystem.files.DeleteFilesImpl";
   
   //set this flag to false and the run will stop after the first failure
   continueAfterDeleteFailures true;
+}
+
+DeleteFilesWorkflow extends DeleteFiles {
+  sfTerminate true;
 }
