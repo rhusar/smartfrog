@@ -91,3 +91,10 @@ Files extends Prim {
 FilesCompound extends Compound {
   sfClass "org.smartfrog.services.filesystem.files.FilesCompoundImpl";
 }
+
+/**
+ * This class deletes files when deployed
+ */
+DeleteFiles extends FilesCompound {
+  sfClass "org.smartfrog.services.filesystem.files.DeleteFilesImpl";
+}
