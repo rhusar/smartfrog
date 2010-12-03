@@ -23,10 +23,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.workflow.components;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
