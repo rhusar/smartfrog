@@ -56,7 +56,7 @@ public class FilesCompoundImpl extends EventCompoundImpl implements Files {
      * @return false, always
      */
     @Override
-    protected boolean isOldNotationSupported() {
+    protected final boolean isOldNotationSupported() {
         return false;
     }
 
@@ -180,7 +180,7 @@ public class FilesCompoundImpl extends EventCompoundImpl implements Files {
         }
 
         if (filecount < 0) {
-            component.sfReplaceAttribute(ATTR_FILECOUNT, new Integer(length));
+            component.sfReplaceAttribute(ATTR_FILECOUNT, length);
         }
     }
 
