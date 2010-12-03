@@ -25,25 +25,39 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 /**
- * Created 21-Apr-2008 14:44:35
+ * This component aggregates files. Created in 2008, in 2010 it was tweaked
+ * to be 
  */
 
-public class FilesCompoundImpl extends CompoundImpl implements Files {
+public class FilesCompoundImpl extends EventCompoundImpl implements Files {
 
     private Set<File> fileset = new HashSet<File>();
     private File[] fileArray = new File[]{};
-    private String fileList;
+    private Vector<String> fileVector;
+    private String filePath;
 
     public FilesCompoundImpl() throws RemoteException {
+    }
+
+
+    /**
+     * {@inheritDoc}
+     * @return false, always
+     */
+    @Override
+    protected boolean isOldNotationSupported() {
+        return false;
     }
 
     /**
@@ -60,7 +74,8 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
         //now run through our children and, for all that implement File or Files, add them to our list.
         aggregateChildFiles();
         int filesize = fileset.size();
-        Vector<String> fileVector = new Vector<String>(filesize);
+
+        fileVector = new Vector<String>(filesize);
         fileArray = new File[filesize];
         int index = 0;
         StringBuilder aggregatePath = new StringBuilder();
@@ -71,8 +86,8 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
             aggregatePath.append(path);
             aggregatePath.append(File.pathSeparatorChar);
         }
-        fileList = aggregatePath.toString();
-        sfReplaceAttribute(Files.ATTR_FILE_SET_STRING, fileList);
+        filePath = aggregatePath.toString();
+        sfReplaceAttribute(Files.ATTR_FILE_SET_STRING, filePath);
         sfReplaceAttribute(Files.ATTR_FILELIST, fileVector);
         checkAndUpdateFileCount();
     }
@@ -161,11 +176,37 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
                 || (maxFilecount >= 0 && length > maxFilecount)) {
             throw new SmartFrogDeploymentException(
                     FilesImpl.ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files "
-                            + "in the list [ " + fileList + "]", this);
+                            + "in the list [ " + filePath + "]", this);
         }
 
         if (filecount < 0) {
             component.sfReplaceAttribute(ATTR_FILECOUNT, new Integer(length));
         }
     }
+
+    /**
+     * Get the fileset
+     * @return the fileset, this is only valid after the component is started.
+     */
+    public Set<File> getFileset() {
+        return fileset;
+    }
+
+    /**
+     * Get the list of filenames as strings
+     * @return a list of filenames or null if the component is not yet deployed.
+     */
+    public List<String> getFileList() {
+        return fileVector;
+    }
+
+    /**
+     * Get the string path of the files with the platform separator between them .
+     * @return a path like "/bin/file1:/home/user/file2" on Unix, "C:\autoexec.bat;c:\file2.txt" on Windows
+     */
+    public String getFilePath() {
+        return filePath;
+    }
+
+    
 }
