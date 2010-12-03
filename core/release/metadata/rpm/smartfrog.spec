@@ -450,7 +450,9 @@ Requires:       %{name} = %{version}-%{release}  , %{name}-xunit
 #
 %description junit
 This contains the components for running JUnit ${junit.version} tests, and the
-junit-${junit.version}.jar.
+junit-${junit.version}.jar. It also includes the /sf-testharness.jar for testing
+SmartFrog deployments from inside JUnit tests.
+
 Prerequisite packages: xunit, logging.
 
 # -----------------------------------------------------------------------------
@@ -1052,9 +1054,11 @@ fi
 
 # -----------------------------------------------------------------------------
 %files xunit
-%{libdir}/sf-xunit-${smartfrog.version}.jar
 
+%{libdir}/sf-xunit-${smartfrog.version}.jar
 %{linkdir}/sf-xunit.jar
+
+
 
 # -----------------------------------------------------------------------------
 %files junit
@@ -1064,6 +1068,8 @@ fi
 %{linkdir}/sf-junit.jar
 %{linkdir}/junit.jar
 
+%{libdir}/sf-testharness-${smartfrog.version}.jar
+%{linkdir}/sf-testharness.jar
 
 # -----------------------------------------------------------------------------
 %files velocity

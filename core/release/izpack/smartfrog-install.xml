@@ -273,6 +273,9 @@ want izpack to see it, double escape the $$ symbol.-->
       <file src="ivy/lib/package-core/sf-core-install-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
+      <file src="ivy/lib/package-core/sf-tasks-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
       <!--these are all the executables that should be marked as +x in unix. -->
       <executable stage="never" targetfile="$INSTALL_PATH/bin/setSFDefaultProperties" failure="warn"/>
       <executable stage="never" targetfile="$INSTALL_PATH/bin/setSFSecurityProperties" failure="warn"/>
@@ -379,7 +382,6 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH"
           unpack="true"/>
     </pack>
-
     <pack name="CloudFarmer" required="no" preselected="no">
       <description>
         The cloudfarmer package contains components and client code to assist in 
@@ -411,7 +413,6 @@ SmartFrog to deploy complex systems.
       <depends packname="Jetty"/>
       <depends packname="JSON"/>
     </pack>
-
     <pack name="CSVfiles" required="no" preselected="no">
       <description>
         The csvfiles package contains components that can work with CSV files, turning the data
@@ -906,9 +907,13 @@ SmartFrog to deploy complex systems.
     <pack name="JUnit" required="no" preselected="no">
       <description>
         This contains the components for running JUnit ${junit.version} tests, and the
-        junit-${junit.version}.jar.
+        junit-${junit.version}.jar. It also includes the sf-testharness JAR containing
+        the JUnit classes that SmartFrog uses to test itself.
         Prerequisite packages: xunit, Logging.
       </description>
+      <file src="ivy/lib/package-testing/sf-testharness-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
       <file src="ivy/lib/package-testing/sf-junit-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />

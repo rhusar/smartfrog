@@ -608,6 +608,7 @@
     <rpmpackage package="testing"/>
     <ln artifact="sf-xunit" version="${smartfrog.version}"/>
     <ln artifact="sf-junit" version="${smartfrog.version}"/>
+    <ln artifact="sf-testharness" version="${smartfrog.version}"/>
     <ln artifact="junit" version="${junit.version}"/>
 
     <!--velocity-->
