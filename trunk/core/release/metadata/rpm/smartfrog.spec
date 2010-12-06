@@ -376,7 +376,6 @@ commons-net-${commons-net.version}.jar
 dnsjava-${dnsjava.version}.jar
 jsch-${jsch.version}.jar
 mail-${mail.version}.jar
-oro-${oro.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -997,7 +996,6 @@ fi
 %{libdir}/mail-${mail.version}.jar
 %{libdir}/activation-${activation.version}.jar
 %{libdir}/commons-net-${commons-net.version}.jar
-%{libdir}/oro-${oro.version}.jar
 %{libdir}/jsch-${jsch.version}.jar
 
 
@@ -1009,7 +1007,6 @@ fi
 %{linkdir}/mail.jar
 %{linkdir}/activation.jar
 %{linkdir}/commons-net.jar
-%{linkdir}/oro.jar
 %{linkdir}/jsch.jar
 
 # -----------------------------------------------------------------------------
