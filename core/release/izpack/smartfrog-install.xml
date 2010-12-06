@@ -732,7 +732,6 @@ SmartFrog to deploy complex systems.
         dnsjava-${dnsjava.version}.jar
         jsch-${jsch.version}.jar
         mail-${mail.version}.jar
-        oro-${oro.version}.jar
 
       </description>
       <description>SmartFrog Networking services</description>
@@ -760,9 +759,6 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH"
           unpack="true"/>
       <file src="ivy/lib/package-networking/commons-net-${commons-net.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-networking/oro-${oro.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
 

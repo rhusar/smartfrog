@@ -85,6 +85,7 @@
   </target>
 
   <target name="release" depends="published"/>
+
   <target name="published" depends="ivy-report,common.published"/>
 
   <!--
@@ -576,7 +577,6 @@
     <ln artifact="mail" version="${mail.version}"/>
     <ln artifact="activation" version="${activation.version}"/>
     <ln artifact="commons-net" version="${commons-net.version}"/>
-    <ln artifact="oro" version="${oro.version}"/>
     <ln artifact="jsch" version="${jsch.version}"/>
 
     <!-- quartz -->
