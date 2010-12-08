@@ -20,14 +20,7 @@
 
 package org.smartfrog.sfcore.processcompound;
 
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.SFDeployer;
@@ -172,6 +165,104 @@ public class SFProcess implements MessageKeys {
         }
 
         return rootLocator;
+    }
+
+    /**
+     * Gets the port of RMI registry on which local process compound is running or
+     * if ProcessCompound is null then the 'sfRootLocatorPort' is read from
+     * processcompound.sf description
+     *
+     * @return port number
+     *
+     * @throws SmartFrogException fails to get the registry port
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static synchronized int getRootLocatorPort() throws RemoteException, SmartFrogException {
+        return (getRootLocatorPort(processCompound));
+    }
+
+    /**
+     * Gets the port of RMI registry on which input process compound is running or
+     * if ProcessCompound is null then the 'sfRootLocatorPort' is read from
+     * processcompound.sf description
+     *
+     * @param c Instance of process compound
+     *
+     * @return port number
+     *
+     * @throws SmartFrogException fails to get the registry port
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static synchronized int getRootLocatorPort(ProcessCompound c) throws RemoteException, SmartFrogException {
+        Object portObj=null;
+        try {
+            if (c!=null) {
+              portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false));
+            } else {
+              portObj = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false);
+            }
+            if (portObj == null) {
+              throw new SmartFrogResolutionException("Unable to locate registry port from ", c);
+            }
+            Number port = (Number) portObj;
+            return port.intValue();
+        } catch (ClassCastException ccex){
+            throw new SmartFrogResolutionException(
+                "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
+                +": "+portObj+", "+portObj!=null?portObj.getClass().getName():"",
+                ccex, c);
+        }
+    }
+
+    /**
+     * Gets the bind address for default RootLocator (ex.RMI registry) on the local process compound is running or
+     * if ProcessCompound is null then the 'sfRootLocatorBindAddress' is read from
+     * processcompound.sf description
+     *
+     * @return InetAddress bind address or  <code>null</code> if no particular one is defined.
+     *
+     * @throws SmartFrogException fails to get the registry bind address
+     * @throws RemoteException In case of network/rmi error
+     */
+     protected static InetAddress getRootLocatorBindAddress() throws SmartFrogException, RemoteException {
+        return (getRootLocatorBindAddress(processCompound));
+     }
+
+    /**
+     * Gets the bind address for RootLocator (ex.RMI registry) on which input process compound is running or
+     * if ProcessCompound is null then the 'sfRootLocatorBindAddress' is read from
+     * processcompound.sf description
+     *
+     * @param c Instance of process compound
+     *
+     * @return InetAddress bind address or  <code>null</code> if no particular one is defined.
+     *
+     * @throws SmartFrogException fails to get the registry bind address
+     * @throws RemoteException In case of network/rmi error
+     */
+    protected static InetAddress getRootLocatorBindAddress(ProcessCompound c) throws SmartFrogException, RemoteException {
+        Object bindAddr=null;
+        InetAddress rootLocatorBindAddress=null;
+        if (c!=null) {
+          bindAddr = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS, false));
+        } else {
+          bindAddr = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS, false);
+        }
+        if ((bindAddr==null) ||(bindAddr instanceof SFNull)) {
+            return null;
+        } else if (bindAddr instanceof java.net.InetAddress) {
+           return ((java.net.InetAddress) bindAddr);
+        } else {
+            try {
+                rootLocatorBindAddress = InetAddress.getByName(bindAddr.toString());
+            } catch (UnknownHostException uhex){
+                throw new SmartFrogResolutionException(
+                        "Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS
+                        +": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
+
+            }
+        }
+        return rootLocatorBindAddress;
     }
 
     /**

@@ -186,7 +186,7 @@ public class OptionSet {
                 } else if ("-p".equals(currentArg)|| "-port".equals(currentArg)) {
                         String port = args[++i];
                         try {
-                            System.setProperty("org.smartfrog.sfcore.processcompound.sfRootLocatorPort", readLocationPort(port));
+                            System.setProperty(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, readLocationPort(port));
                         } catch  (NumberFormatException nex) {
                             exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                             errorString = ("Wrong port number (-p option): "+port);
