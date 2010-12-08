@@ -806,7 +806,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       */
      public void warn(Object message){
          if (message instanceof Throwable){
-             warn (message,(Throwable)message);
+             warn (((Throwable)message).getMessage(),(Throwable)message);
          } else {
              invoke(WARN_O,new Object[]{message});
          }
@@ -832,7 +832,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       */
      public void error(Object message){
          if (message instanceof Throwable){
-             error (message,(Throwable)message);
+             error (((Throwable)message).getMessage(),(Throwable)message);
          } else {
             invoke(ERROR_O,new Object[]{message});
          }
@@ -858,7 +858,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       */
      public void fatal(Object message){
          if (message instanceof Throwable){
-             fatal (message,(Throwable)message);
+             fatal (((Throwable)message).getMessage(),(Throwable)message);
          } else {
          invoke(FATAL_O,new Object[]{message});
          }
@@ -900,7 +900,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     public void ignore(Object message){
         if (message instanceof Throwable){
-            ignore (message,(Throwable)message);
+            ignore (((Throwable)message).getMessage(),(Throwable)message);
         } else {
             invoke(TRACE_O,new Object[]{"IGNORE - "+message.toString()});
          }

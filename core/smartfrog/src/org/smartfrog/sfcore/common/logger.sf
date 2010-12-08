@@ -23,6 +23,7 @@ Logger extends {
   // logLiveness false;
   // processCompoundDiagReport  false;
   // testNetwork true;
-  //testURI [|"http://www.smartfrog.org"|];
+  // testURI [|"http://www.smartfrog.org"|];
+  // testSFDaemonNetworkPort false;
   testJarRepeat  [|"smartfrog-","sfServices","sfExamples","sf-anubis"|]
 }

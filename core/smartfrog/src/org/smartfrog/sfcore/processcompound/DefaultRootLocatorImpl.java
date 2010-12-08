@@ -157,31 +157,13 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogException fails to get the registry port
      * @throws RemoteException In case of network/rmi error
      */
-    protected static int getRegistryPort(ProcessCompound c)
-        throws SmartFrogException, RemoteException {
-        Object portObj=null;
-        try {
-            if (registryPort<=-1) {
-                if (c!=null) {
-                  portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false));
-                } else {
-                  portObj = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.
-                                             SF_ROOT_LOCATOR_PORT, false);
-                }
-                if (portObj == null) {
-                  throw new SmartFrogResolutionException("Unable to locate registry port from ", c);
-                }
-                Number port = (Number) portObj;
-                registryPort = port.intValue();
-            }
-        } catch (ClassCastException ccex){
-            throw new SmartFrogResolutionException(
-                "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-                +": "+portObj+", "+portObj!=null?portObj.getClass().getName():"", 
-                ccex, c);
+    protected static int getRegistryPort(ProcessCompound c) throws SmartFrogException, RemoteException {
+        if (registryPort<=-1) {
+           registryPort = SFProcess.getRootLocatorPort(c);
         }
         return registryPort;
     }
+
 
 
     /**
@@ -200,26 +182,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         throws SmartFrogException, RemoteException {
         Object bindAddr=null;
             if (registryBindAddr == null) {
-                if (c!=null) {
-                  bindAddr = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS, false));
-                } else {
-                  bindAddr = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.
-                                             SF_ROOT_LOCATOR_BIND_ADDRESS, false);
-                }
-                if ((bindAddr==null) ||(bindAddr instanceof SFNull)) {
-                    return null;
-                } else if (bindAddr instanceof java.net.InetAddress) {
-                   return ((java.net.InetAddress) bindAddr);
-                } else {
-                    try {
-                    	registryBindAddr = InetAddress.getByName(bindAddr.toString());
-                    } catch (UnknownHostException uhex){
-                    	throw new SmartFrogResolutionException(
-                    			"Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-                    			+": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
-
-                    }
-                }
+               registryBindAddr = SFProcess.getRootLocatorBindAddress(c);
             }
         return registryBindAddr;
     }

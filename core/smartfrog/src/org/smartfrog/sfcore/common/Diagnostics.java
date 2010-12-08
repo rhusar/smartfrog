@@ -56,10 +56,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -172,6 +169,15 @@ public final class Diagnostics {
         } else {
             out.append("Network report disabled.");
         }
+
+        if (Logger.testSFDaemonNetworkPort) {
+            doReportSFDaemonNetworkPort(out);
+            out.append("\n");
+        } else {
+            out.append("SFDaemonNetworkPort report disabled.");
+        }
+
+
         out.append("\n");
 
 
@@ -636,6 +642,8 @@ public final class Diagnostics {
        return failed;
      }
 
+
+
     /**
      * Report simple remote network diagnostics for list of URIs
      *
@@ -691,6 +699,118 @@ public final class Diagnostics {
        return failed;
      }
 
+      /**
+     * Report simple SF daemon network port diagnostics
+     * @param out the stream to print the report to.
+     * @return failed. It reports if the test failed or not.
+     */
+    public static boolean doReportSFDaemonNetworkPort(StringBuffer out) {
+       boolean failedTCP = true;
+       boolean failedUDP = true;
+       out.append("SF daemon network port test: ");
+       int port = -1;
+       try {
+          port = SFProcess.getRootLocatorPort();
+       } catch (Exception e) {
+           out.append("[Failed] When checking network port. Not found"+ ", "+e.toString());
+           return true;
+       }
+       try {
+           if ((availableUDP (port,null))){
+                 out.append(" UDP port: " + port +" available.");
+                 failedUDP = false;
+           } else {
+                 out.append(" UDP port: " + port +" NOT available.");
+           }
+           if ((availableTCP (port,null))){
+                 out.append(" TCP port: " + port +" available.");
+                 failedTCP = false;
+           } else {
+                 out.append(" TCP port: " + port +" NOT available.");
+           }
+       } catch (IllegalArgumentException e) {
+           out.append("[Failed] When checking network port: "+port+ ", "+e.toString());
+       } catch (Exception ex) {
+           out.append("[Failed] When checking network port: "+port+ ", "+ex.toString());
+       }
+       return (failedTCP||failedUDP);
+     }
+
+
+    /**
+    * Methods to check availablity of ports
+    *
+    * Inspired by <a href="http://mina.apache.org">Apache MINA Project</a>
+    * @see <a href="http://www.iana.org/assignments/port-numbers">IANA.org</a>
+    */
+    /**
+     * The minimum number of server port number.
+     */
+    public static final int MIN_PORT_NUMBER = 1;
+    /**
+     * The maximum number of server port number.
+     */
+    public static final int MAX_PORT_NUMBER = 49151;
+
+    /**
+      * Checks to see if a specific port is available. for UDP
+      * Output String can be null.
+      * @param port the port to check for availability
+      * @param out the stream to print the report to. It can be null if no report is needed.
+      */
+     public static boolean availableUDP (int port, StringBuffer out) {
+         if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
+             throw new IllegalArgumentException("Invalid start port: " + port);
+         }
+         DatagramSocket ds = null;
+         try {
+             ds = new DatagramSocket(port);
+             ds.setReuseAddress(true);
+             return true;
+         } catch (IOException e) {
+             if (out !=null)
+                out.append(" DEBUG- Diagnostics.availableUDP Error:" + e.getMessage() + "\n");
+             // Do nothing
+         } finally {
+             if (ds != null) {
+                 ds.close();
+             }
+         }
+        return false;
+     }
+    /**
+      * Checks to see if a specific port is available. for TCP
+      * @param port the port to check for availability
+      * @param out the stream to print the report to. It can be null if no report is needed.
+      */
+     public static boolean availableTCP (int port, StringBuffer out) {
+         if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
+             throw new IllegalArgumentException("Invalid start port: " + port);
+         }
+         ServerSocket ss = null;
+         try {
+             ss = new ServerSocket(port);
+             ss.setReuseAddress(true);
+             return true;
+         } catch (IOException e) {
+             if (out !=null)
+                out.append(" DEBUG- Diagnostics.availableTCP Error:" + e.getMessage() + "\n");
+             // Do nothing
+         } finally {
+             if (ss != null) {
+                 try {
+                     ss.close();
+                 } catch (IOException e) {
+                     if (out !=null)
+                        out.append("DEBUG- Diagnostics.availableUDP Error (Finally):" + e.getMessage() + "\n");
+                     /* should not be thrown */
+                 }
+             }
+         }
+        return false;
+    }
+
+    // End of port diagnostics.
 
     /**
      * Report a listing of classpath used in the current vm.

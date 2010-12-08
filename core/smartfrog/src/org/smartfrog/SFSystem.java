@@ -652,6 +652,19 @@ public class SFSystem implements MessageKeys {
                 }
             }
         }
+        if (Logger.testSFDaemonNetworkPort) {
+            StringBuffer result = new StringBuffer();
+            boolean failed = Diagnostics.doReportSFDaemonNetworkPort(result);
+            if (failed) {
+                if (sfLog().isWarnEnabled()) {
+                    sfLog().warn(result.toString());
+                }
+            } else {
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug(result.toString());
+                }
+            }
+        }
     }
 
     /**

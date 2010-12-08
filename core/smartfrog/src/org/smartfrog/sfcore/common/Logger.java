@@ -56,10 +56,10 @@ public class Logger implements MessageKeys {
     public static final String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
     /** String name for optional attribute "{@value}". */
     public static final String ATR_TEST_NETWORK = "testNetwork";
-
-
     /** String name for optional attribute "{@value}". */
     public static final String ATR_TEST_URI = "testURI";
+    /** String name for optional attribute "{@value}". */
+    public static final String ATR_TEST_SFDAEMON_NETWORK_PORT="testSFDaemonNetworkPort";
 
     /** String name for optional attribute "{@value}". */
     public static final String ATR_TEST_JAR_REPEAT = "testJarRepeat";
@@ -86,12 +86,17 @@ public class Logger implements MessageKeys {
     /** Property to define a list of remote hosts for remote network test . The default value can be overridden by the
       * value specified in default.ini file.
       */
-    public static String[] testJarRepeat = {SMARTFROG_JAR, SFSERVICES_JAR};
+    public static String[] testURI = {SMARTFROG_URL};
+
+    /** Property to enable initial daemon network port test. The default value can be overridden by the
+     * value specified in default.ini file.
+     */
+    public static boolean testSFDaemonNetworkPort = false;
 
     /** Property to define a list of remote hosts for remote network test . The default value can be overridden by the
       * value specified in default.ini file.
       */
-    public static String[] testURI = {SMARTFROG_URL};
+    public static String[] testJarRepeat = {SMARTFROG_JAR, SFSERVICES_JAR};
 
     private static boolean initialized = false;
 
@@ -122,6 +127,7 @@ public class Logger implements MessageKeys {
                processCompoundDiagReport = configuration.sfResolve(ATR_LOG_PC_DIAG_REPORT,processCompoundDiagReport,false);
                testNetwork = configuration.sfResolve(ATR_TEST_NETWORK,testNetwork,false);
                testURI = configuration.sfResolve(ATR_TEST_URI,testURI,false);
+               testSFDaemonNetworkPort = configuration.sfResolve(ATR_TEST_SFDAEMON_NETWORK_PORT,testSFDaemonNetworkPort,false);
                testJarRepeat = configuration.sfResolve(ATR_TEST_JAR_REPEAT,testJarRepeat,false);
             }
         } catch (Exception ex){
