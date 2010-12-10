@@ -57,7 +57,7 @@ public class TestCompoundImpl extends ConditionCompound
         implements TestCompound {
     private ComponentDescription waitForCD;
     private ComponentDescription tests;
-    private Prim testsPrim;
+    private volatile Prim testsPrim;
 
     protected static final String ACTION_RUNNING = ATTR_ACTION;
     protected static final String TESTS_RUNNING = ATTR_TESTS;
@@ -65,9 +65,9 @@ public class TestCompoundImpl extends ConditionCompound
     private long testTimeout;
     private boolean expectTerminate;
     private boolean failInTestSequence;
-    private DelayedTerminator actionTerminator;
-    private DelayedTerminator testsTerminator;
-    private Prim actionPrim;
+    private volatile DelayedTerminator actionTerminator;
+    private volatile DelayedTerminator testsTerminator;
+    private volatile Prim actionPrim;
     private String exitType;
     private String exitText;
     private String description;
@@ -501,25 +501,34 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     * This is an override point; it is where subclasses get to change their workflow depending on what happens
-     * underneath. It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
-     * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds. If the the
-     * method returns true, the event is forwarded up the object hierarchy, which will eventually trigger a component
-     * termination. <p/> Always return false if you start new components from this method! </p>
+     * {@inheritDoc}
      *
+     * Work out which child has terminated and act on it. 
      * @param childStatus exit record of the component
-     * @param child       child component that is terminating
+     * @param terminatingChild       child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      */
     @Override
-    protected boolean onChildTerminated(TerminationRecord childStatus, Prim child) {
+    protected boolean onChildTerminated(TerminationRecord childStatus, Prim terminatingChild) {
         boolean propagateTermination = shouldTerminate;
         TerminationRecord exitRecord = null;
         boolean testSucceeded;
-        if (actionPrim == child) {
+        Prim actionChild;
+        DelayedTerminator actionTerminatorChild;
+        Prim testsChild;
+
+        synchronized (this) {
+            actionChild = actionPrim;
+            actionTerminatorChild = actionTerminator;
+            testsChild = testsPrim;
+        }
+        
+        if (actionChild == terminatingChild) {
             actionTerminationRecord = childStatus;
             //child termination
-            if (actionTerminator != null && actionTerminator.isForcedShutdown() && !expectTerminate) {
+            if (actionTerminatorChild != null 
+                    && actionTerminatorChild.isForcedShutdown() 
+                    && !expectTerminate) {
                 //this is a forced shutdown, all is well
                 sfLog().info("Forced shutdown of action component (expected)");
                 testSucceeded = true;
@@ -624,35 +633,37 @@ public class TestCompoundImpl extends ConditionCompound
                 }
 
             }
-        } else if (child == testsPrim) {
-            sfLog().debug("Tests have terminated");
-            //tests are terminating.
-            testsTerminationRecord = childStatus;
-            //it is an error if these terminated abnormally, for any reason at all.
-            //that is: test failure triggers an undeployment.
-            if (!childStatus.isNormal()) {
-                sfLog().info(ABNORMAL_TEST_TERMINATION);
-                //mark this as an error.
-                exitRecord = childStatus;
-                appendToDescription(exitRecord, ABNORMAL_TEST_TERMINATION);
-                testSucceeded = false;
-            } else {
-                sfLog().debug("Tests termination was successful");
-                //normal termination is good
-                testSucceeded = true;
-            }
         } else {
-            //something odd just terminated, like the condition.
-            //whatever, it is the end of the test run.
-            sfLog().warn(UNEXPECTED_CHILD_TERMINATION);
-            exitRecord = childStatus;
-            appendToDescription(exitRecord, UNEXPECTED_CHILD_TERMINATION
-                    + " ("
-                    + " testPrim = " + testsPrim 
-                    + " actionPrim=" + actionPrim 
-                    + " terminatingChild=" +child 
-                    + ")");
-            testSucceeded = false;
+            if (terminatingChild == testsChild) {
+                sfLog().debug("Tests have terminated");
+                //tests are terminating.
+                testsTerminationRecord = childStatus;
+                //it is an error if these terminated abnormally, for any reason at all.
+                //that is: test failure triggers an undeployment.
+                if (!childStatus.isNormal()) {
+                    sfLog().info(ABNORMAL_TEST_TERMINATION);
+                    //mark this as an error.
+                    exitRecord = childStatus;
+                    appendToDescription(exitRecord, ABNORMAL_TEST_TERMINATION);
+                    testSucceeded = false;
+                } else {
+                    sfLog().debug("Tests termination was successful");
+                    //normal termination is good
+                    testSucceeded = true;
+                }
+            } else {
+                //something odd just terminated, like the condition.
+                //whatever, it is the end of the test run.
+                sfLog().warn(UNEXPECTED_CHILD_TERMINATION);
+                exitRecord = childStatus;
+                appendToDescription(exitRecord, UNEXPECTED_CHILD_TERMINATION
+                        + " ("
+                        + " testPrim = " + testsChild 
+                        + " actionPrim=" + actionChild 
+                        + " terminatingChild=" + terminatingChild 
+                        + ")");
+                testSucceeded = false;
+            }
         }
 
         synchronized (this) {
