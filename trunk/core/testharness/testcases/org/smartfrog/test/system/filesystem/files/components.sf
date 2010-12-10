@@ -63,6 +63,11 @@ BuildTestDirs extends FilesCompound {
     }
 }
 
+DeleteTestDirs extends BuildTestDirs {
+  sfClass DeleteFiles:sfClass;
+  continueAfterDeleteFailures true;
+}
+
 FilesTest extends ExpectDeploy  {
   tests extends Sequence {
   }
@@ -179,4 +184,11 @@ testRuntimeAddedAttributes extends FilesTest {
 
         // TODO: check fileSet too
     }
+}
+
+testDeleteFilesCompound extends FilesTest {
+  description "deploy the test dirs and delete them"
+  action extends DeleteTestDirs {
+  }
+  
 }

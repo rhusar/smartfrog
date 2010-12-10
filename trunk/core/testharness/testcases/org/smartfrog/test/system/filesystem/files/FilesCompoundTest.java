@@ -60,4 +60,8 @@ public class FilesCompoundTest extends DeployingTestBase {
     public void testRuntimeAddedAttributes() throws Throwable {
         expectSuccessfulTestRun(FILES, "testRuntimeAddedAttributes");
     }
+
+    public void testDeleteFilesCompound() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testDeleteFilesCompound");
+    }  
 }
