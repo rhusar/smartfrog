@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,23 @@
  For more information: www.smartfrog.org
 
  */
-#include "/org/smartfrog/services/www/jetty/test/system/functional/components.sf";
+ 
+ /*
+  Define some servlets that are useful for debugging
+   include this file after pulling in 
+    #include "/org/smartfrog/services/www/webapplication.sf"
+  */
+  
+  BindingServlet extends Servlet {
+    name "BindingServlet";
+    pathSpec "/binding";
+    className "org.smartfrog.services.jetty.examples.servlets.BindingServlet";
+  }
+  
+  ResolveServlet extends Servlet {
+    name "ResolveServlet";
+    pathSpec "/resolve";
+    className "org.smartfrog.services.jetty.examples.servlets.ResolveServlet";
+  }
 
-sfConfig extends Compound {
-    server extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-    }
-
-    war extends FilesystemWar {
-      server LAZY PARENT:server;
-    }
-
-    list1 extends JettySocketConnector {
-        port test.jetty.port.1;
-        //serverHost "localhost";
-        server LAZY PARENT:server;
-    }
-}
-
+ 

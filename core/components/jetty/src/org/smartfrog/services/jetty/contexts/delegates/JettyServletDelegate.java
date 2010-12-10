@@ -32,6 +32,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 package org.smartfrog.services.jetty.contexts.delegates;
 
+import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -69,7 +70,7 @@ public class JettyServletDelegate extends AbstractJettyServletContextDelegate
      * Create the delegate and configure the {@link org.mortbay.jetty.servlet.Context} of Jetty that is the real
      * context
      *
-     * @param context sevlet context
+     * @param context servlet context
      * @param owner   owner component
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException    network problems
@@ -117,6 +118,7 @@ public class JettyServletDelegate extends AbstractJettyServletContextDelegate
 
         //add the servlet
         servletContext.addServlet(holder, pathSpec);
+        DelegateHelper.setOwnerAttribute(servletContext.getServletContext(), prim);
         ServletHandler servletHandler = servletContext.getServletHandler();
         ServletHolder resolvedHolder = servletHandler.getServlet(name);
         if (resolvedHolder == null) {

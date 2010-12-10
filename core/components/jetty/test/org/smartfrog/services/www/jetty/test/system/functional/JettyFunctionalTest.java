@@ -44,7 +44,7 @@ public class JettyFunctionalTest extends JettyTestBase {
 	}
 
 
-    public void testCaseTCP21() throws Throwable {
+    public void NotestCaseTCP21() throws Throwable {
         application = deployExpectingSuccess(FUNCTIONAL_FILES + "tcp21.sf", "tcp21");
         assertNotNull(application);
         Prim server = (Prim) application.sfResolve("server");

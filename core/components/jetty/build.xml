@@ -53,9 +53,10 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
   <property name="org.mortbay.log.class" value="org.smartfrog.services.jetty.log.JettyLogger" />
   <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
-  <property name="deploy.sf" value="org/smartfrog/services/jetty/examples/war/secureWarServer.sf"/>
+  <property name="warserver.sf" value="org/smartfrog/services/jetty/examples/war/secureWarServer.sf"/>
+  <property name="binding.sf" value="org/smartfrog/services/jetty/examples/servlets/example.sf"/>
 
-
+  <property name="deploy.sf" value="${binding.sf}"/>
   
   <!-- ========================================================== -->
   <!-- parse the file -->

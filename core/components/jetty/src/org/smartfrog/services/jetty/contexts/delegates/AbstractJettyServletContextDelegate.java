@@ -125,7 +125,7 @@ public abstract class AbstractJettyServletContextDelegate implements ServletCont
         return "name=" + name
                 + "; className=" + className;
     }
-    
+
     /**
      * From the delegate servlet context, resolve the real servlet context. Contains an assert that the argument is not
      * null.
