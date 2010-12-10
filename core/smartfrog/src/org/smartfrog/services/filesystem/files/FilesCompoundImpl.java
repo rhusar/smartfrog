@@ -25,6 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.io.File;
@@ -37,10 +39,10 @@ import java.util.Vector;
 
 /**
  * This component aggregates files. Created in 2008, in 2010 it was tweaked
- * to be 
+ * to be a workflow component too. 
  */
 
-public class FilesCompoundImpl extends EventCompoundImpl implements Files {
+public class FilesCompoundImpl extends CompoundImpl implements Files {
 
     private Set<File> fileset = new HashSet<File>();
     private File[] fileArray = new File[]{};
@@ -48,16 +50,6 @@ public class FilesCompoundImpl extends EventCompoundImpl implements Files {
     private String filePath;
 
     public FilesCompoundImpl() throws RemoteException {
-    }
-
-
-    /**
-     * {@inheritDoc}
-     * @return false, always
-     */
-    @Override
-    protected final boolean isOldNotationSupported() {
-        return false;
     }
 
     /**
@@ -89,7 +81,10 @@ public class FilesCompoundImpl extends EventCompoundImpl implements Files {
         filePath = aggregatePath.toString();
         sfReplaceAttribute(Files.ATTR_FILE_SET_STRING, filePath);
         sfReplaceAttribute(Files.ATTR_FILELIST, fileVector);
-        checkAndUpdateFileCount();
+        int count = checkAndUpdateFileCount();
+        ComponentHelper helper = new ComponentHelper(this);
+        TerminationRecord record = TerminationRecord.normal("File count "+count, sfCompleteName());
+        helper.sfSelfDetachAndOrTerminate(record);
     }
 
     /**
@@ -159,10 +154,11 @@ public class FilesCompoundImpl extends EventCompoundImpl implements Files {
     /**
      * check and update file count attributes. Only run this after the filelist has been updated
      *
+     * @return the file count
      * @throws SmartFrogRuntimeException for resolution problems
      * @throws RemoteException           network problems
      */
-    public void checkAndUpdateFileCount()
+    public int checkAndUpdateFileCount()
             throws SmartFrogRuntimeException, RemoteException {
         int length = fileset.size();
         //deal with the file count
@@ -182,6 +178,7 @@ public class FilesCompoundImpl extends EventCompoundImpl implements Files {
         if (filecount < 0) {
             component.sfReplaceAttribute(ATTR_FILECOUNT, length);
         }
+        return length;
     }
 
     /**
