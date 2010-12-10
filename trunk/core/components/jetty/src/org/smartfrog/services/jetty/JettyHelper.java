@@ -151,8 +151,8 @@ public class JettyHelper extends WebApplicationHelper {
         try {
             connector.start();
         } catch (Exception ex) {
-            throw SmartFrogException.forward("Failed to start connector "+connector
-                    +" configured as "+bindingDescription +": " + ex,
+            throw SmartFrogException.forward("Failed to start connector " + connector
+                    + " configured as " + bindingDescription + ": " + ex,
                     ex);
         }
     }

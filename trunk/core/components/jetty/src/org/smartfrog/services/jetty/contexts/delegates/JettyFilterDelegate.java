@@ -31,32 +31,30 @@ public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
     public JettyFilterDelegate(DelegateServletContext context, Prim owner)
             throws SmartFrogException, RemoteException {
         super(owner, context);
-        bind(owner, context);
+        bind();
     }
 
     /**
      * Read in state, bind to the owner
      *
-     * @param ctx  sevlet context
-     * @param prim owner component
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException    network problems
      */
-    private void bind(Prim prim, DelegateServletContext ctx) throws RemoteException, SmartFrogException {
-        Context servletContext = resolveJettyServletContext(ctx);
+    private void bind() throws RemoteException, SmartFrogException {
+        Context servletContext = resolveJettyServletContext(context);
 
         FilterHolder holder = new FilterHolder();
 
         bindAndInitHolder(holder);
 
 
-        pattern = prim.sfResolve(ATTR_PATTERN, pattern, true);
+        pattern = owner.sfResolve(ATTR_PATTERN, pattern, true);
 
         //build the dispatch mask
-        boolean dispatchRequest = prim.sfResolve(ATTR_DISPATCH_REQUEST, true, true);
-        boolean dispatchForward = prim.sfResolve(ATTR_DISPATCH_FORWARD, true, true);
-        boolean dispatchInclude = prim.sfResolve(ATTR_DISPATCH_INCLUDE, true, true);
-        boolean dispatchError   = prim.sfResolve(ATTR_DISPATCH_ERROR, true, true);
+        boolean dispatchRequest = owner.sfResolve(ATTR_DISPATCH_REQUEST, true, true);
+        boolean dispatchForward = owner.sfResolve(ATTR_DISPATCH_FORWARD, true, true);
+        boolean dispatchInclude = owner.sfResolve(ATTR_DISPATCH_INCLUDE, true, true);
+        boolean dispatchError   = owner.sfResolve(ATTR_DISPATCH_ERROR, true, true);
         int dispatches = Handler.DEFAULT;
         
         if (dispatchRequest) {
@@ -74,6 +72,7 @@ public class JettyFilterDelegate extends AbstractJettyServletContextDelegate
 
         //add the filter
         servletContext.addFilter(holder, pattern, dispatches);
+        DelegateHelper.setOwnerAttribute(servletContext.getServletContext(), owner);
 /*
         ServletHandler servletHandler = servletContext.getServletHandler();
         ServletHolder resolvedHolder = servletHandler.getServlet(name);

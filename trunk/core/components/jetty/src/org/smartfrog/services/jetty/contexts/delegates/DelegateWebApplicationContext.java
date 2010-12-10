@@ -45,6 +45,7 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
 
     private String contextPath = null;
     private String webApp = null;
+    private final Prim owner;
     private boolean requestId = false;
 
 
@@ -52,25 +53,30 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
     /**
      * a log
      */
-    private Log log;
+    private final Log log;
 
-    public DelegateWebApplicationContext(JettyImpl server, Prim declaration) {
+    /**
+     * 
+     * @param server the server to deploy into
+     * @param owner the Prim that owns the webapp context
+     */
+    public DelegateWebApplicationContext(JettyImpl server, Prim owner) {
         super(server, null);
-        log = LogFactory.getOwnerLog(declaration);
+        this.owner = owner;
+        log = LogFactory.getOwnerLog(owner);
     }
 
     /**
      * at deploy time, do everything except starting the component
      *
-     * @param declaration owner
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException    network problems
      */
-    public void deploy(Prim declaration)
+    @Override
+    public void deploy()
             throws SmartFrogException, RemoteException {
         super.deploy();
-        webApp =
-                FileSystem.lookupAbsolutePath(declaration,
+        webApp = FileSystem.lookupAbsolutePath(owner,
                         ATTR_FILE,
                         null,
                         null,
@@ -83,9 +89,9 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
                     webappFile);
         }
         //request ID
-        requestId = declaration.sfResolve(requestIdRef, requestId, false);
+        requestId = owner.sfResolve(requestIdRef, requestId, false);
 
-        contextPath = declaration.sfResolve(contextPathRef,
+        contextPath = owner.sfResolve(contextPathRef,
                 (String) null,
                 true);
 
@@ -94,7 +100,7 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
             contextPath = "/" + contextPath;
         }
 
-        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
+        owner.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
         application = new WebAppContext(webApp, contextPath);
 
 
@@ -106,8 +112,9 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         sessionmanager.setUseRequestedId(requestId);
         */
 
-
+        
         setContext(application);
+        DelegateHelper.setOwnerAttribute(application.getServletContext(), owner);
     }
 
 

@@ -71,11 +71,11 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     private String resourceBase;
     private String resourcePackage;
     private String absolutePath;
-    private Prim owner;
+    private final Prim owner;
     /**
      * a log
      */
-    private Log log;
+    private final Log log;
     private ResourceHandler resourceHandler;
     private HandlerCollection handlerSet;
     private JettyToSFLifecycle<HandlerCollection> handlerLifecycle;

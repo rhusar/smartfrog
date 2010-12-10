@@ -257,7 +257,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
             throws RemoteException, SmartFrogException {
 
         DelegateWebApplicationContext delegate = new DelegateWebApplicationContext(this, webApplication);
-        delegate.deploy(webApplication);
+        delegate.deploy();
         return delegate;
     }
 

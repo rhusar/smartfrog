@@ -52,28 +52,24 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
      * deploy into a new process
      */
     
-    JettyServerFilesystemWar extends Compound {
-        description ("A jetty server with the war deployed to " ++ context:contextPath ++ " as a filesystem");
-        
-        server LocalJettyServer;
+  JettyServerFilesystemWar extends Compound {
+    description ("A jetty server with the war deployed to " ++ context:contextPath ++ " as a filesystem");
     
-    
-        context extends FilesystemWar {
-           contextPath "/filesystemwar";
-           server LAZY PARENT:server:server;
-        }
-    
+    server LocalJettyServer;
+
+
+    context extends FilesystemWar {
+     contextPath "/filesystemwar";
+     server LAZY PARENT:server:server;
     }
+  
+  }
       
   
   tcp27 extends JettyServerFilesystemWar;
 
   WarTest extends JettyTestCompound {
-
-  
-      action extends TestWarServer;
-
-
+    action extends TestWarServer;
   }
 
 
@@ -198,8 +194,6 @@ testRealmUnauth extends TestRealm {
 tcp27testFilesystemWar extends JettyTestCompound {
 
 	action extends tcp27;
-
-
 
   tests extends Sequence {
       wait extends waitForPage {
