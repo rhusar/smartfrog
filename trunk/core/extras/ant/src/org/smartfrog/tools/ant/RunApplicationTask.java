@@ -24,7 +24,7 @@ import org.apache.tools.ant.BuildException;
 
 
 /**
- * Run an application by deploying it locally; only return from ant after it has finished.
+ * Run an application by deploying it locally; only return from Ant after it has finished.
  * The default timeout of this task is zero; it only exits when finished. It does
  * have a failonerror value of true; any failure to run is an error.
  *
