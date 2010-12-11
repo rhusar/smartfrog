@@ -23,16 +23,10 @@ package org.smartfrog.services.dependencies.statemodel.state;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Timer;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -42,11 +36,14 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import static org.smartfrog.services.dependencies.statemodel.state.Constants.*;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 /**
  * Composite pattern for orchestration components
  */
-public class Composite extends CompoundImpl implements Compound, StateChangeNotification,
+public class
+        Composite extends CompoundImpl implements Compound, StateChangeNotification,
         RunSynchronisation, DeployingAgent {
 
     private String name = "";
@@ -57,7 +54,23 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
     private static final int WAIT_A_REASONABLE_PERIOD=5000;
     private static long notificationSleep;
     private boolean threaded=false;
+    private Vector<Mapping> sfMappings;
     private Prim eventLog;
+
+    private static final String E_BAD_PATH = "Bad path in Mapping, should be a Reference...";
+    private static final String E_BAD_ATTR = "Bad attr in Mapping, should be a String...";
+    private static final String E_BAD_ECHOATTR = "Bad echo attr in Mapping, should be a String (if present)...";
+    private static final String E_BAD_REPATTR = "Bad replaceAttr in Mapping, should be a String (if present)...";
+    private static final String E_BAD_ECHO = "Bad echo in Mapping, should be a Reference (if present)...";
+    private static final String E_BAD_SCOPE = "Bad scope in Mapping, should be a Reference (if present)...";
+
+    private static final String ATTR = "attr";
+    private static final String PATH = "path";
+    private static final String REPLACE_ATTR = "replaceAttr";
+    private static final String ECHO = "echo";
+    private static final String ECHOATTR = "echoAttr";
+    private static final String RETRY = "retry";
+    private static final String SCOPE = "scope";
 
     private static class CompositeQueueListener {
         private volatile boolean cleared = false;
@@ -95,12 +108,91 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
     public void sfStart() throws RemoteException, SmartFrogException {
         if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
         super.sfStart();
+
+        ComponentDescription sfMapping = sfResolve(MAPPING, (ComponentDescription) null, false);
+
+        if (sfMapping != null) {
+
+            sfMappings = new Vector<Mapping>();
+            Enumeration els = sfMapping.sfContext().elements();
+            while (els.hasMoreElements()) {
+                Object el = els.nextElement();
+                if (el instanceof ComponentDescription) {
+                    ComponentDescription mapping = (ComponentDescription) el;
+                    Object attrObj = mapping.sfResolve(ATTR);
+                    if (attrObj != null) {
+                        Mapping newMapping = new Mapping();
+                        sfMappings.add(newMapping);
+                        try {
+                            newMapping.attr = (String) attrObj;
+                        } catch (ClassCastException e) {
+                            throw new SmartFrogException(E_BAD_ATTR, e);
+                        }
+
+                        Object replaceObj = mapping.sfResolve(REPLACE_ATTR);
+                        if (replaceObj instanceof SFNull) newMapping.replaceAttr = null;
+                        else if (replaceObj instanceof String) newMapping.replaceAttr = replaceObj.toString();
+                        else {
+                            //force the exception...
+                            try {
+                                newMapping.replaceAttr = (String) replaceObj;
+                            } catch (ClassCastException e) {
+                                throw new SmartFrogException(E_BAD_REPATTR, e);
+                            }
+                        }
+
+                        try {
+                            newMapping.path = (Reference) mapping.sfContext().get(PATH);
+                        } catch (ClassCastException e) {
+                            throw new SmartFrogException(E_BAD_PATH, e);
+                        }
+
+                        Object echoObj = mapping.sfContext().get(ECHO);
+                        if (echoObj instanceof SFNull) newMapping.echo = null;
+                        else if (echoObj instanceof Reference) newMapping.echo = (Reference) echoObj;
+                        else {
+                            //force the exception...
+                            try {
+                                newMapping.echo = (Reference) echoObj;
+                            } catch (ClassCastException e) {
+                                throw new SmartFrogException(E_BAD_ECHO, e);
+                            }
+                        }
+
+                        if (newMapping.echo!=null){
+                            try {
+                                newMapping.echoAttr = (String) mapping.sfResolve(ECHOATTR);
+                            } catch (ClassCastException e) {
+                                throw new SmartFrogException(E_BAD_ECHOATTR, e);
+                            }
+                        }
+
+                        newMapping.retry = mapping.sfResolve(RETRY, false, true);
+
+                        Object scopeObj = mapping.sfContext().get(SCOPE);
+                        if (scopeObj instanceof SFNull) newMapping.scope = null;
+                        else if (scopeObj instanceof Reference) newMapping.scope = (Reference) scopeObj;
+                        else {
+                            //force the exception...
+                            try {
+                                newMapping.scope = (Reference) scopeObj;
+                            } catch (ClassCastException e) {
+                                throw new SmartFrogException(E_BAD_SCOPE, e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         try {
             sfResolve(THREADEDCOMP);
             threaded = true;
             new Thread(new Notifier()).start();  //Only for orch models do we set this off!
 
             eventLog = sfResolve(EVENTLOG, (Prim) null, false);
+
+
 
         } catch (SmartFrogResolutionException ignored) {
             sfLog().ignore(ignored);  //intentionally ok
@@ -296,7 +388,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 		  while (keys.hasNext()){
               String key = keys.next();
               Prim p = (Prim) sfResolve(key);
-              if (p instanceof Composite) p.sfReplaceAttribute(NORMALTERMINATION, true);
+              //if (p instanceof Composite) p.sfReplaceAttribute(NORMALTERMINATION, true);
               sfLog().debug(name +": Terminating "+key);
               p.sfDetachAndTerminate(TerminationRecord.normal(null));
 		  }
@@ -314,11 +406,129 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	  
    }
 
+    @Override
+    public Object sfReplaceAttribute(Object name, Object value) throws SmartFrogRuntimeException, RemoteException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        sfLog().debug("Key:"+name+" , Value:"+value+", "+sfMappings);
 
- 
 
 
-   /* *************************************************
+        Object retval =  super.sfReplaceAttribute(name, value);
+
+        sfLog().debug("Ready to try mappings...");
+        String modelRunning1 = null;
+        try {
+            modelRunning1 = (String) sfResolve("mapByDefault");
+            sfLog().debug("Model Running Attribute:"+modelRunning1);
+        } catch (Exception e) {
+            //sfLog().debug(e);
+        }
+
+        if (modelRunning1!=null){
+            sfLog().debug("Key:" + name + " , Cf:" + modelRunning1 );
+
+            if (name.equals(modelRunning1)) {
+                doValueMapping(name);
+                return retval;
+            }
+
+        }
+        boolean modelRunning2=false;
+            try {
+                modelRunning2 = sfResolve(new Reference(ReferencePart.attrib("modelRunning")), false, false);
+            } catch (Exception e) {
+                sfLog().debug(e);
+            }
+
+            if (modelRunning2) {
+                doValueMapping(name);
+            }
+
+        return retval;
+    }
+
+
+    private void doValueMapping(final Object name)  {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        if (sfMappings != null) {
+            boolean retryMapping = false;
+            try {
+                retryMapping= doValueMappingWkr(name);
+            } catch (SmartFrogRuntimeException e) {
+                sfLog().debug(e);
+                //should not break just because of mapping issue...
+            } catch (RemoteException e) {
+                sfLog().debug(e);
+            }
+
+
+            if (retryMapping) {
+                java.util.Timer timer = new java.util.Timer();
+                timer.schedule(new TimerTask() {
+                    public void run() {
+                        doValueMapping(name);
+                        cancel(); //Terminate the timer...
+                    }
+                }, 2500);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean doValueMappingWkr(Object name) throws SmartFrogRuntimeException, RemoteException {
+        if (sfLog().isDebugEnabled()) sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        boolean retryMapping = false;
+        for (Mapping mapping : sfMappings){
+            Prim target=this;
+
+
+            try {
+                if (mapping.replaceAttr==null){
+                    sfLog().debug("No replaceAttr");
+                    //If null, we assume all replacements are "game" and that the name is the vm name·..
+                    if (mapping.scope!=null) {
+                        target = (Prim) sfResolve(mapping.scope);
+                        target = (Prim) target.sfResolve(name.toString());
+                    } else {
+                        target = (Prim) sfParent().sfResolve(new Reference(ReferencePart.attrib(name.toString())));
+                    }
+                    sfLog().debug("No replaceAttr:"+target);
+                } else if (!(name.equals(mapping.replaceAttr))) continue; //round while...
+                sfLog().debug("Getting target...");
+                target = (Prim) target.sfResolve(mapping.path);  //get target from path...
+                sfLog().debug("Got target..."+target);
+            } catch (Exception e) {
+                sfLog().debug(e);
+                target=null;  
+            }
+
+            if (target==null){
+                if (mapping.retry) {
+                    retryMapping=true;
+                }
+                continue; //round while...
+            }
+
+            //do replace...
+            Object value = sfResolve(name.toString());
+            sfLog().debug("Doing the replace..."+target+":"+mapping.attr+":"+value);
+            target.sfReplaceAttribute(mapping.attr, value);
+
+            //extra replace?
+            if (mapping.echo!=null){
+                target = (Prim) target.sfResolve(mapping.echo);
+
+                Vector echoValue = new Vector();
+                echoValue.add(mapping.attr);
+                echoValue.add(value);
+                
+                target.sfReplaceAttribute(mapping.echoAttr, echoValue);
+            }
+        }
+        return retryMapping;
+    }
+
+    /* *************************************************
 	   * Update class
 	   */
 	   class Notifier implements Runnable {
@@ -338,5 +548,18 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 	          }
 	      }
 	   }
-	   
+
+    /* *************************************************
+        * Mapping class
+        */
+
+      class Mapping {
+          Reference path;
+          String attr;
+          String replaceAttr;
+          Reference echo;
+          String echoAttr;
+          boolean retry;
+          Reference scope;
+      }
 }

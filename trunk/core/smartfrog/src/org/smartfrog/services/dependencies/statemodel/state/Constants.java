@@ -24,6 +24,8 @@ package org.smartfrog.services.dependencies.statemodel.state;
  */
 
 public class Constants {
+    public static final String QUERYMETADATA = "sfQueryMetaData";
+    public static final String MAPPING = "sfMapping";
     public static final String ASANDCONNECTOR="asAndConnector";
     public static final String BY = "by";
     public static final String COUNT = "count";

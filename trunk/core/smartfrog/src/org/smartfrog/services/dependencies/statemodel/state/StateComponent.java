@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.constraints.ConstraintConstants;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -70,10 +71,14 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
    private String fullNamePath;
 
    private Prim eventLog;  //this needs proper synchronisation...
+
+   protected boolean sfStarted=false;
    
    public StateComponent() throws RemoteException {}
 
-   @Override
+
+
+    @Override
    public synchronized void sfTerminateWith(TerminationRecord t) {
        if (sfLog().isDebugEnabled())
            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
@@ -295,8 +300,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
            sfLog().debug(Thread.currentThread().getStackTrace()[1] + ":LEAVING");
    }
    
-   //See handleDPEs()
-   /*
+   //See handleDPEs()  -- this must go!!!
    private boolean runDPEs() throws SmartFrogResolutionException, RemoteException {
        sfLog().debug("IN: State(" + name + ").runDPEs()");
 	   boolean ret=false;
@@ -305,7 +309,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
 	   }
        sfLog().debug("OUT: State(" + name + ").runDPEs()");
 	   return ret;
-   }*/
+   }
 
    private void transitionScript(ComponentDescription transition, String key) throws StateComponentTransitionException {
        if (sfLog().isDebugEnabled())
@@ -380,8 +384,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         return state;
     }*/
 
-    /*THIS WILL BE MADE AVAILABLE IF AND WHEN THERE IS AN EVIDENT NEED!
-    //Save it as the next transition that should fire -- LOG ISSUE AND TIDY!
+
     //Inappropriate name - this is not to do with asyncResponse. Instead, it is external management change related...*/
     public void invokeAsynchronousStateChange(InvokeAsynchronousStateChange iasc) throws StateComponentTransitionException, RemoteException {
 
@@ -400,7 +403,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         clean();
     }
 
-    /*THESE WILL BE ACCOMMODATED AS EXPLICIT TRANSITION -- TO LOG ISSUE AND REMOVE
+    /*THESE WILL BE ACCOMMODATED AS EXPLICIT TRANSITION -- TO LOG ISSUE AND REMOVE*/
     public boolean handleDPEs() throws RemoteException, StateComponentTransitionException {
         sfLog().debug("IN: State(" + name + ").handleDPEs()");
         boolean progress = false;
@@ -417,7 +420,7 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
         sfLog().debug("IN: State(" + name + ").handleDPEs() Progress" + progress);
 
         return progress;
-    }*/
+    }
 
     public void selectSingleAndGo() throws RemoteException, StateComponentTransitionException, SmartFrogRuntimeException {
         if (sfLog().isDebugEnabled())
@@ -952,11 +955,14 @@ public abstract class StateComponent extends PrimImpl implements Prim, StateDepe
             return;  //skip for now...
         }
 
-        /*if (handleDPEs()) {
+
+        //This need cutting - but orchdws depends on it!!!
+        if (handleDPEs()) {
             sfLog().debug("OUT: State(" + name + ").handleStateChange()");
             clean();
             return;  //dpes have proceeded...
-        }*/
+        }
+        //
 
         resetPossibleTransitions();
 
