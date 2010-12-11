@@ -188,6 +188,7 @@ testRuntimeAddedAttributes extends FilesTest {
 
 testDeleteFilesCompound extends FilesTest {
   description "deploy the test dirs and delete them"
+  expectTerminate true;
   action extends DeleteTestDirs {
   }
   
