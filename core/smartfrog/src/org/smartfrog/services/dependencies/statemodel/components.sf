@@ -70,7 +70,8 @@ StateComponent extends Prim {
 	 threadpool LAZY PARENT:ATTRIB threadpool;
 	 sfOrchEventLog LAZY PARENT:ATTRIB sfOrchEventLog;
 	 sfInformMetaData extends DATA { show false; }
-	 sfIgnoreMyMetaData false;
+	 //sfIgnoreMyMetaData false;
+	 sfQueryMetaData true;
 }
 
 OrchEventLog extends Prim {
@@ -91,6 +92,7 @@ Composite extends Compound {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
      sfUpdatable true;
      sfSyncTerminate true;
+     sfQueryMetaData true;
 
      /*inputConnectors extends Compound {
         sfUpdatable true;
@@ -161,5 +163,15 @@ VerificationRecord extends {
     sfIsVerificationRecord;
     proposition TBD;
     ltl false;
+}
+
+OrchStateMapping extends DATA {
+   path TBD;
+   attr TBD;
+   replaceAttr;
+   echo;
+   echoAttr "change";
+   retry true;
+   scope;
 }
 
