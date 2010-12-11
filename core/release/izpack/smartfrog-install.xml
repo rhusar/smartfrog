@@ -1064,6 +1064,9 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-xml/xalan-${xalan.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-xml/serializer-${xalan.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
 
     <pack name="XMPP" required="no" preselected="no">

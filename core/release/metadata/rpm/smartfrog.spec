@@ -1106,6 +1106,7 @@ fi
 %{libdir}/xml-apis-${xml-apis.version}.jar
 %{libdir}/xercesImpl-${xerces.version}.jar
 %{libdir}/xalan-${xalan.version}.jar
+%{libdir}/serializer-${xalan.version}.jar
 
 %{linkdir}/sf-xml.jar
 %{linkdir}/jdom.jar
@@ -1113,7 +1114,7 @@ fi
 %{linkdir}/xml-apis.jar
 %{linkdir}/xercesImpl.jar
 %{linkdir}/xalan.jar
-
+%{linkdir}/serializer.jar
 # -----------------------------------------------------------------------------
 %files xmpp
 %{libdir}/sf-xmpp-${smartfrog.version}.jar
@@ -1127,6 +1128,8 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Fri Dec 10 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.18.003-1.el5
+- added serializer JARs to sf-xml RPM
 * Fri Sep 10 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.18.001-1.el5
 - added httpcommons JARs to sf-www RPM
 * Thu Feb 11 2010 Steve Loughran <smartfrog@hpl.hp.com> 3.17.015-1.el5
