@@ -3,7 +3,7 @@
     xmlns:ivy="antlib:org.apache.ivy.ant"
     xmlns:iz="http://www.izforge.com/">
   <!--
-    /** (C) Copyright 2007-2008 Hewlett-Packard Development Company, LP
+    /** (C) Copyright 2007-2010 Hewlett-Packard Development Company, LP
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -645,7 +645,8 @@
     <ln artifact="xml-apis" version="${xml-apis.version}"/>
     <ln artifact="xercesImpl" version="${xerces.version}"/>
     <ln artifact="xalan" version="${xalan.version}"/>
-
+    <ln artifact="serializer" version="${xalan.version}"/>
+    
     <!-- xmpp -->
     <rpmpackage package="xmpp"/>
     <ln artifact="sf-xmpp" version="${smartfrog.version}"/>

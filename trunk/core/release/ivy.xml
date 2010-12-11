@@ -172,7 +172,6 @@
         name="sf-database"
         changing="true"
         rev="${ivy.smartfrog.version}"
-
         conf="package-database->master,redist,documentation"/>
 
     <!--dns in networking-->
@@ -182,14 +181,12 @@
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
 
-
     <!--email in networking -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
-
 
     <!--ec2 -->
     <dependency org="org.smartfrog"
@@ -218,7 +215,6 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-jmx->master,redist,documentation"/>
-
 
     <!--Jersey -->
     <dependency org="org.smartfrog"
