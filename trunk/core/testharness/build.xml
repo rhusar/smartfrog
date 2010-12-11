@@ -188,9 +188,6 @@ ${test.listing}
       <contains string="${sun.boot.class.path}" substring="jrockit"/>
     </condition>
     <patternset id="teststhatfail">
-      <!--SFOS-403-->
-      <!--<exclude name="${systemtests}/workflow/conditional/FailingConditionTest.*"
-          unless="run.failing.tests"/>-->
       <!-- SFOS-154; test failing on VMWare and CruiseControl (sometimes). Possible race condition-->
       <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
           unless="run.failing.tests"/>
