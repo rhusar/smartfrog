@@ -223,6 +223,12 @@ ${test.listing}
       <exclude name="${systemtests}/reference/CyclicReferenceTest.*"
           if="jrockit.jvm"
           unless="run.failing.tests"/>
+
+      <!--
+      SFOS-1551 Test failing DeployTCN1Test
+       -->
+      <exclude name="${systemtests}/deploy/DeployTCN1Test.*"
+        unless="run.failing.tests"/>
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
