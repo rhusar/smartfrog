@@ -17,25 +17,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.jetty;
+package org.smartfrog.sfcore.utils;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
- * Created 29-Oct-2009 11:07:24
+ * This is a class for wrapping up non-remotable state to the SmartFrog context. This can be added, remote
+ * users get an error message, while local callers get the real reference.
  */
 
 public class WrappedInstance<T> implements Serializable {
 
     /**
-     * The context does not serialize
+     * The instance data does not serialize and is marked as transient.
      */
     private transient T instance;
+
+    /**
+     * The toString value that is used in the {@link #toString()} operation.
+     */
     private String stringValue;
 
     public WrappedInstance(T instance) {
@@ -51,13 +56,13 @@ public class WrappedInstance<T> implements Serializable {
 
     public void setInstance(T instance) {
         this.instance = instance;
-        
-        stringValue = instance==null? null : instance.toString();
+
+        stringValue = instance == null ? null : instance.toString();
     }
 
     @Override
     public String toString() {
-        return "Wrapping of "+stringValue
+        return "Wrapping of " + stringValue
                 + (instance == null ? " instance not serialized" : "");
     }
 
@@ -70,17 +75,20 @@ public class WrappedInstance<T> implements Serializable {
      * @throws SmartFrogResolutionException resolution failure
      * @throws RemoteException network problems
      */
-    public T resolve(Prim source, String attribute, boolean mandatory) throws SmartFrogResolutionException, RemoteException {
+    public T resolve(Prim source, String attribute, boolean mandatory)
+            throws SmartFrogResolutionException, RemoteException {
         Reference r = new Reference(attribute);
         Object wrapper = source.sfResolve(r, mandatory);
         if (!(wrapper instanceof WrappedInstance)) {
-            throw new SmartFrogResolutionException( r, source.sfCompleteName(), "Not a WrappedInstance: " + wrapper);
+            throw new SmartFrogResolutionException(r,
+                    source.sfCompleteName(),
+                    "Not a WrappedInstance: " + wrapper);
         }
         WrappedInstance<T> that = (WrappedInstance<T>) wrapper;
         T inst = that.getInstance();
-        if(mandatory && inst==null) {
-            throw new SmartFrogResolutionException(r, 
-                    source.sfCompleteName(), 
+        if (mandatory && inst == null) {
+            throw new SmartFrogResolutionException(r,
+                    source.sfCompleteName(),
                     "WrappedInstance value is null -this object is not remotely accessible: " + wrapper);
         }
         return inst;
