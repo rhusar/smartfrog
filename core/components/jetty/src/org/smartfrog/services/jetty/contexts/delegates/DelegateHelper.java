@@ -16,7 +16,7 @@ public class DelegateHelper {
      */
     public static final String ORG_SMARTFROG_SERVICES_JETTY_OWNER = "org.smartfrog.services.jetty.owner";
 
-    static void setOwnerAttribute(final ContextHandler.SContext scontext, final Prim prim) {
+    public static void setOwnerAttribute(final ContextHandler.SContext scontext, final Prim prim) {
         scontext.setAttribute(ORG_SMARTFROG_SERVICES_JETTY_OWNER, prim);
     }
 

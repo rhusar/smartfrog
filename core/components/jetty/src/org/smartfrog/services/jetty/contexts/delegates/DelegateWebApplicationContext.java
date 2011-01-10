@@ -103,16 +103,6 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         owner.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
         application = new WebAppContext(webApp, contextPath);
 
-
-
- /* commented out as the request ID stuff has gone away in Jetty 6
-       ServletHandler servlethandler = application.getServletHandler();
-        AbstractSessionManager sessionmanager = (AbstractSessionManager)
-                servlethandler.getSessionManager();
-        sessionmanager.setUseRequestedId(requestId);
-        */
-
-        
         setContext(application);
         DelegateHelper.setOwnerAttribute(application.getServletContext(), owner);
     }

@@ -31,6 +31,7 @@ import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.WrappedInstance;
 
 import java.rmi.RemoteException;
 

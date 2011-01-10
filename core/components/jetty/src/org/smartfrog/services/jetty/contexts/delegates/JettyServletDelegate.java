@@ -123,7 +123,7 @@ public class JettyServletDelegate extends AbstractJettyServletContextDelegate
         ServletHolder resolvedHolder = servletHandler.getServlet(name);
         if (resolvedHolder == null) {
             //oops. no servlets, make a list
-            StringBuilder message = new StringBuilder("Failed to register the servlet with jetty.");
+            StringBuilder message = new StringBuilder("Failed to register the servlet with Jetty.");
             ServletHolder[] holders = servletHandler.getServlets();
             for (ServletHolder entry : holders) {
                 message.append("\n\"");
