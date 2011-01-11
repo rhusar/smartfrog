@@ -401,7 +401,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (str != null) {
          System.err.println(str);
       }
-      ExitCodes.exitSilently(exitCode);
+      ExitCodes.exit(exitCode);
    }
 
 
@@ -485,10 +485,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
      CDPanel = new DeployTreePanel(cd,false, false, true);
      CDPanel.setEnabled(true);
      display.setTextScreen(cd.toString());
-     display.tabPane.add(CDPanel, "Description parsed ..." , indexPanel++);
-
-
-
+     display.tabPane.add(CDPanel, "Description parsed ..." , indexPanel);
    }
 
     private static LogSF sfLogStatic() {
