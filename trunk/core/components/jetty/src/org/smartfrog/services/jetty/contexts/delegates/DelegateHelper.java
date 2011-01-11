@@ -5,7 +5,7 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.handler.ContextHandler;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import javax.servlet.ServletContext;
@@ -20,14 +20,16 @@ public class DelegateHelper {
         scontext.setAttribute(ORG_SMARTFROG_SERVICES_JETTY_OWNER, prim);
     }
 
-    public static Prim retrieveOwner(final ServletContext ctx) throws SmartFrogException {
+    public static Prim retrieveOwner(final ServletContext ctx) throws SmartFrogResolutionException {
         Object attribute = ctx.getAttribute(ORG_SMARTFROG_SERVICES_JETTY_OWNER);
         if (attribute == null) {
-            throw new SmartFrogException("No context attribute "
+            throw new SmartFrogResolutionException("No context attribute "
                     + ORG_SMARTFROG_SERVICES_JETTY_OWNER);
         }
         if (!(attribute instanceof Prim)) {
-            throw new SmartFrogException("Not a prim: " +attribute.getClass() + " : " +attribute); 
+            throw new SmartFrogResolutionException("Not a prim: " 
+                                                   +attribute.getClass() 
+                                                   + " : " +attribute); 
         }
         return (Prim) attribute;
     }
