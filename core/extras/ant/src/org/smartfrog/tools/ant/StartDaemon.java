@@ -52,6 +52,9 @@ public class StartDaemon extends DeployingTaskBase {
     /** {@value} */
     public static final String ERROR_FAILED_TO_START_DAEMON = "Failed to start the smartfrog daemon";
 
+    private String serverHostname;
+    
+
     /**
      * Initialise and set the failonerror flag to true
      */
@@ -69,11 +72,21 @@ public class StartDaemon extends DeployingTaskBase {
     }
 
     /**
+     * The hostname to export RMI objects under. If set to localhost this will
+     * only export objects over the loopback interface.
+     * @param serverHostname the hostname
+     */
+    public void setServerHostname(String serverHostname) {
+        this.serverHostname = serverHostname;
+    }
+
+    /**
      * Start the daemon in this thread or a new process.
      *
      * @throws BuildException if something goes wrong with the build
      */
     @SuppressWarnings({"RefusedBequest"})
+    @Override
     public void execute() throws BuildException {
         verifyHostUndefined();
         bindToLocalhost();
@@ -82,6 +95,13 @@ public class StartDaemon extends DeployingTaskBase {
         //smartfrog down.
         addJVMProperty(SmartFrogJVMProperties.PROCESS_NAME,
                 SmartFrogJVMProperties.ROOT_PROCESS);
+        //set the server hostname if it is defined
+        if (serverHostname != null && !serverHostname.isEmpty()) {
+            addJVMProperty("java.rmi.server.hostname", serverHostname);
+            addJVMProperty("org.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress",
+                           serverHostname);
+           
+        }
         addIniFile();
         deployApplications();
 
