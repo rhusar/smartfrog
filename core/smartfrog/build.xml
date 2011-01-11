@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+  /** (C) Copyright 1998-2011 Hewlett-Packard Development Company, LP
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
@@ -21,8 +21,8 @@
     ============
     The build script for the kernel SmartFrog framework.
     It requires
-      -Java1.5 or later. 
-      -Ant 1.7 or later
+      -Java1.8 or later. 
+      -Ant 1.8 or later
       -Ivy 2.0 or later from ant.apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
@@ -84,7 +84,7 @@
         </not>
       </condition>
       This version of Ant is not supported.
-      Please upgrade to Ant1.7 or later and build this project again
+      Please upgrade to Ant1.8 or later and build this project again
     </fail>
   </target>
   <!-- =================================================================== -->
@@ -391,7 +391,7 @@
         verify="true"
         compiler="${rmic.compiler}"
         compilerarg line="${rmic.forking.commandline}"
-        compiler="forking"</echo> 
+      </echo> 
       <rmic
         stubversion="1.2"
         base="${build.classes.dir}"
