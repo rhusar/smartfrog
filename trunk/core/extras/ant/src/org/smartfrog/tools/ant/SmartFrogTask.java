@@ -204,6 +204,11 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     private long timeout = 0;
 
+    /**
+     * flag to turn HTTP on or off in RMI; disabling leads to faster timeouts.
+     */
+    private boolean enableHttp = true;
+
 
     /**
      * add a file to the list
@@ -276,7 +281,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @param allowSpawning can the daemon start new processes?
      */
     public void setAllowSpawning(boolean allowSpawning) {
-        this.allowSpawning = Boolean.valueOf(allowSpawning);
+        this.allowSpawning = allowSpawning;
     }
 
     /**
@@ -306,6 +311,13 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         this.initialSmartFrogFile = initialSmartFrogFile;
     }
 
+    /**
+     * enable or disable HTTP
+     * @param enableHttp new value
+     */
+    public void setEnableHttp(boolean enableHttp) {
+        this.enableHttp = enableHttp;
+    }
 
     /**
      * get the current host
@@ -313,8 +325,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @return the current host value or "" for none defined
      */
     protected String getHost() {
-        if (host == null) return "";
-        return host;
+        return (host == null) ? "" : host;
     }
 
 
@@ -421,7 +432,6 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
 
-
     /**
      * assertions to enable in the new JVM.
      *
@@ -479,23 +489,24 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * set various standard properties if they are set in the task
      */
     protected void setStandardSmartfrogProperties() {
-        if(diagnostics) {
+        if (diagnostics) {
             addArg(SF_DIAGNOSTICS);
         }
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LOG_STACK_TRACE,
-                logStackTraces);
+                                      logStackTraces);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.ROOT_LOCATOR_PORT,
-                port);
+                                      port);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LIVENESS_DELAY,
-                livenessCheckPeriod);
+                                      livenessCheckPeriod);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LIVENESS_FACTOR,
-                livenessCheckRetries);
+                                      livenessCheckRetries);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.PROCESS_ALLOW,
-                allowSpawning);
+                                      allowSpawning);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.PROCESS_TIMEOUT,
-                spawnTimeout);
+                                      spawnTimeout);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.SF_DEFAULT,
-                initialSmartFrogFile);
+                                      initialSmartFrogFile);
+        addJVMProperty("java.rmi.server.disableHttp", Boolean.toString(!enableHttp));
     }
 
 
@@ -612,7 +623,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         //delayed setting only when the flag is true reduces the need to flip the bit
         propagateSpawnIncompatibleSettings();
         //do any security configurations we need
-        if(bindToSecurityManager()) {
+        if (bindToSecurityManager()) {
             if (securityHolder.isDefined()) {
                 securityHolder.applySecuritySettings(this);
             } else {
@@ -685,7 +696,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
             if (timeout > 0) {
                 setTimeout(0);
                 log(MESSAGE_IGNORING_TIMEOUT,
-                        Project.MSG_VERBOSE);
+                    Project.MSG_VERBOSE);
             }
             smartfrog.setSpawn(true);
         } else {
@@ -723,9 +734,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     protected void resetHostIfLocal() {
 
         if (LOCALHOST.equals(host) || LOCALHOST_IPV4.equals(host)
-                || LOCALHOST_IPV6_LONG.equals(host) || LOCALHOST_IPV6_SHORT.equals(host)) {
+            || LOCALHOST_IPV6_LONG.equals(host) || LOCALHOST_IPV6_SHORT.equals(host)) {
             host = null;
-            return;
         }
 
     }
@@ -756,7 +766,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     protected void propagateTimeout() {
         if (timeout > 0) {
             log("Setting JVM timeout to " + timeout, Project.MSG_VERBOSE);
-            smartfrog.setTimeout(new Long(timeout));
+            smartfrog.setTimeout(timeout);
         } else {
             //no valid timeout; ignore it.
             smartfrog.setTimeout(null);
@@ -804,8 +814,9 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     public boolean bindToSecurityManager() {
         String message;
         String jvmarg;
-        
-        if (securityManager == null || securityManager.length()==0 || NONE_SECURITY_OPTION.equals(securityManager)) {
+
+        if (securityManager == null || securityManager.length() == 0 
+            || NONE_SECURITY_OPTION.equals(securityManager)) {
             message = "No Security Manager";
             jvmarg = null;
         } else if (SUN_SECURITY_OPTION.equals(securityManager)) {
@@ -814,8 +825,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         } else if (DUMMY_SECURITY_OPTION.equals(securityManager)) {
             message = "Using Dummy Security Manager";
             jvmarg = DEFINE_JAVA_SECURITY_MANAGER + "=" + DUMMY_SECURITY_MANAGER;
-        } else if (SMARTFROG_SECURITY_OPTION.equals(securityManager) || 
-                DEFAULT_SECURITY_OPTION.equals(securityManager)) {
+        } else if (SMARTFROG_SECURITY_OPTION.equals(securityManager) ||
+                   DEFAULT_SECURITY_OPTION.equals(securityManager)) {
             message = "Using SmartFrog Security Manager";
             jvmarg = DEFINE_JAVA_SECURITY_MANAGER + "=" + SMARTFROG_SECURITY_MANAGER;
         } else {
