@@ -27,8 +27,13 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
- * This is a class for wrapping up non-remotable state to the SmartFrog context. This can be added, remote
- * users get an error message, while local callers get the real reference.
+ * This is a class for wrapping up non-remotable state to the SmartFrog context, and is used to
+ * attach in-JVM interfaces to the SF graph in a way that allows components in the same JVM to get
+ * the value, and the management console to see that it is present and the string description.
+ * <p/>
+ * When resolving the instance value remote users get an error message,
+ * while local callers get the real instance.
+ * <p.>
  * The description is something that can be seen in remote management consoles, and is useful for diagnostics.
  */
 
@@ -42,31 +47,44 @@ public class WrappedInstance<T> implements Serializable {
     /**
      * The toString value that is used in the {@link #toString()} operation.
      */
-    private String description;
+    private String description = "";
 
+
+    /**
+     * Create an empty instance.
+     */
+    public WrappedInstance() {
+    }
+
+    /**
+     * Set the new instance,
+     * @param instance the new instance, can be null
+     */
     public WrappedInstance(T instance) {
         setInstance(instance);
     }
-    
+
     /**
-     * Set the new instance
-     * @param instance the new instance
+     * Set the new instance,
+     * @param instance the new instance, can be null
      * @param description the description to use as a string value
      */
     public WrappedInstance(T instance, String description) {
         setInstance(instance,  description);
     }
 
-    public WrappedInstance() {
-    }
-
+    /**
+     * Get the instance, may be null.
+     * @return the instance
+     */
     public T getInstance() {
         return instance;
     }
 
     /**
-     * Set the new instance; the string value is derived from the toString() value of the instance, if not null
-     * @param instance the new instance
+     * Set the new instance; the string value is derived from the toString() value of the instance,
+     * if not null
+     * @param instance the new instance, can be null
      */
     public void setInstance(T instance) {
         this.instance = instance;
@@ -75,14 +93,27 @@ public class WrappedInstance<T> implements Serializable {
 
     /**
      * Set the new instance
-     * @param instance the new instance
+     * @param instance the new instance, can be null
      * @param description the description to use as a string value
      */
     public void setInstance(T instance, String description) {
+        this.instance = instance;
         this.description = description;
     }
 
 
+    /**
+     * Get the description string, may be null.
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Return the description and whether or not the instance is defined.
+     * @return
+     */
     @Override
     public String toString() {
         return "Wrapping of " + description
@@ -93,8 +124,8 @@ public class WrappedInstance<T> implements Serializable {
      * Resolve an instance
      * @param source source prim
      * @param attribute reference string
-     * @param mandatory is it mandatory
-     * @return the reference, null if exists but ias
+     * @param mandatory is it mandatory?
+     * @return the instance, null if was not found or its value isn't reachable over the network.
      * @throws SmartFrogResolutionException resolution failure
      * @throws RemoteException network problems
      */
@@ -102,6 +133,9 @@ public class WrappedInstance<T> implements Serializable {
             throws SmartFrogResolutionException, RemoteException {
         Reference r = new Reference(attribute);
         Object wrapper = source.sfResolve(r, mandatory);
+        if (wrapper == null && !mandatory) {
+            return null;
+        }
         if (!(wrapper instanceof WrappedInstance)) {
             throw new SmartFrogResolutionException(r,
                     source.sfCompleteName(),
