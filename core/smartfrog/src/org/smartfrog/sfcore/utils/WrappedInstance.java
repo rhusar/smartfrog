@@ -29,6 +29,7 @@ import java.rmi.RemoteException;
 /**
  * This is a class for wrapping up non-remotable state to the SmartFrog context. This can be added, remote
  * users get an error message, while local callers get the real reference.
+ * The description is something that can be seen in remote management consoles, and is useful for diagnostics.
  */
 
 public class WrappedInstance<T> implements Serializable {
@@ -41,10 +42,19 @@ public class WrappedInstance<T> implements Serializable {
     /**
      * The toString value that is used in the {@link #toString()} operation.
      */
-    private String stringValue;
+    private String description;
 
     public WrappedInstance(T instance) {
         setInstance(instance);
+    }
+    
+    /**
+     * Set the new instance
+     * @param instance the new instance
+     * @param description the description to use as a string value
+     */
+    public WrappedInstance(T instance, String description) {
+        setInstance(instance,  description);
     }
 
     public WrappedInstance() {
@@ -54,15 +64,28 @@ public class WrappedInstance<T> implements Serializable {
         return instance;
     }
 
+    /**
+     * Set the new instance; the string value is derived from the toString() value of the instance, if not null
+     * @param instance the new instance
+     */
     public void setInstance(T instance) {
         this.instance = instance;
-
-        stringValue = instance == null ? null : instance.toString();
+        description = instance == null ? null : instance.toString();
     }
+
+    /**
+     * Set the new instance
+     * @param instance the new instance
+     * @param description the description to use as a string value
+     */
+    public void setInstance(T instance, String description) {
+        this.description = description;
+    }
+
 
     @Override
     public String toString() {
-        return "Wrapping of " + stringValue
+        return "Wrapping of " + description
                 + (instance == null ? " instance not serialized" : "");
     }
 
