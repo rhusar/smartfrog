@@ -24,12 +24,12 @@ public class DelegateHelper {
         Object attribute = ctx.getAttribute(ORG_SMARTFROG_SERVICES_JETTY_OWNER);
         if (attribute == null) {
             throw new SmartFrogResolutionException("No context attribute "
-                    + ORG_SMARTFROG_SERVICES_JETTY_OWNER);
+                                                   + ORG_SMARTFROG_SERVICES_JETTY_OWNER);
         }
         if (!(attribute instanceof Prim)) {
-            throw new SmartFrogResolutionException("Not a prim: " 
-                                                   +attribute.getClass() 
-                                                   + " : " +attribute); 
+            throw new SmartFrogResolutionException("Not a prim: "
+                                                   + attribute.getClass()
+                                                   + " : " + attribute);
         }
         return (Prim) attribute;
     }
