@@ -2328,6 +2328,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      */
     @Override
     public String sfRemoteToString() throws RemoteException {
-        return toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("Object: ").append(super.toString()).append("; ");
+        builder.append(toString());
+        return builder.toString();
     }
 }
