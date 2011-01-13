@@ -590,7 +590,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          boolean overrideAttr = false;        
          try {
              overrideAttr = sfContext.sfContainsTag(key, "sfOverride");
-         } catch (SmartFrogContextException e1) {
+         } catch (SmartFrogException e1) {
          }
          if (overrideAttr) {
              if (!sContext.sfContainsAttribute(key)){
