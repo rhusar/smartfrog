@@ -585,6 +585,23 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          key = e.nextElement();
          value = sfContext.get(key);
          boolean finalAttr = false;
+         
+         //The following is code contributed by Ming Fang - thanks!
+         boolean overrideAttr = false;        
+         try {
+             overrideAttr = sfContext.sfContainsTag(key, "sfOverride");
+         } catch (SmartFrogContextException e1) {
+         }
+         if (overrideAttr) {
+             if (!sContext.sfContainsAttribute(key)){
+                 throw new SmartFrogTypeResolutionException(
+                      //note message key is not valid yet
+                      MessageUtil.formatMessage("Does Not Override " + key, sfCompleteName(), key)
+                 );
+             }
+         }          
+         // End of code
+         
          try {
             finalAttr = sContext.sfContainsTag(key, "sfFinal");
          } catch (SmartFrogException e1) {
