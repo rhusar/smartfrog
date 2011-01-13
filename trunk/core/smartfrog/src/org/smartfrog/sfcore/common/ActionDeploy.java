@@ -128,13 +128,18 @@ public class ActionDeploy extends ConfigurationAction {
         }
 
         //Check that there is not a null target at this point
+        String action = "deploy  '" + url + "' for '" + appName + "'";
         if (target == null) {
             throw new SmartFrogDeploymentException(
-                    "Unable to deploy  '" + url + "' for '" + appName + "' -null target parent component/process",
+                    "Unable to " + action + " -null target parent component/process",
                     null,
                     null,
                     context);
         }
+
+        //check that the target is reachable
+        checkConnectionWorks(target, context, action);
+
 
         //select the language first from the context, then from the URL itself
         String language;
@@ -148,18 +153,15 @@ public class ActionDeploy extends ConfigurationAction {
         try {
             cd = ComponentDescriptionImpl.sfComponentDescription(url, language, null, deployReference);
             parseTime = System.currentTimeMillis();
-
+        } catch (SmartFrogDeploymentException sfex) {
+            throw sfex;
         } catch (SmartFrogException sfex) {
-            if (sfex instanceof SmartFrogDeploymentException) {
-                throw sfex;
-            } else {
-                throw new SmartFrogDeploymentException(
-                        "deploying description '" + url + "' for '" + appName + "'"
-                        +" : " + sfex.toString(),
-                        sfex,
-                        null,
-                        context);
-            }
+            throw new SmartFrogDeploymentException(
+                    "deploying description '" + url + "' for '" + appName + "'"
+                    +" : " + sfex.toString(),
+                    sfex,
+                    null,
+                    context);
         }
         try {
              comp = target.sfDeployComponentDescription(appName, parent, cd, context);
@@ -167,20 +169,18 @@ public class ActionDeploy extends ConfigurationAction {
                 try {
                     comp.sfDeploy();
                     deployTime = System.currentTimeMillis();
+                } catch (SmartFrogLifecycleException thr) {
+                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
                 } catch (Throwable thr) {
-                    if (thr instanceof SmartFrogLifecycleException) {
-                        throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                    }
                     throw SmartFrogLifecycleException.sfDeploy("", thr, null);
                 }
 
                 try {
                     comp.sfStart();
                     startTime = System.currentTimeMillis();
+                } catch (SmartFrogLifecycleException thr) {
+                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
                 } catch (Throwable thr) {
-                    if (thr instanceof SmartFrogLifecycleException) {
-                        throw (SmartFrogLifecycleException) thr;
-                    }
                     throw SmartFrogLifecycleException.sfStart("", thr, null);
                 }
             }

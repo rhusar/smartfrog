@@ -20,6 +20,8 @@
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.prim.RemoteToString;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
@@ -76,6 +78,30 @@ public abstract class ConfigurationAction {
             //return last PC
             return pc;
         }
+
+    /**
+     * check that a connection to a remote target works by doing a low cost operation against it
+     * @param target target compound/process route
+     * @param context the context for the exception
+     * @param action the action which is being undertaking; this will be prefixed with a "Failed to "
+     * in any error raised
+     * @throws SmartFrogDeploymentException if the far end is not talking to the caller
+     */
+    protected static void checkConnectionWorks(final Compound target, final Context context,
+                                               final String action) throws SmartFrogDeploymentException {
+        try {
+            ((RemoteToString)target).sfRemoteToString();
+        } catch (RemoteException e) {
+            throw new SmartFrogDeploymentException(
+                    "Failed to " + action
+                    + "\n Unable to communicate with the remote process even though "
+                    + "an RMI stub was obtained."
+                    + " Firewalls or network configurations are the usual cause here.",
+                    e,
+                    target,
+                    context);
+        }
+    }
 
     /**
      * this has to be implemented by subclasses; execute a configuration command against
