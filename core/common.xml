@@ -191,7 +191,8 @@
         <!-- information about the ant tasks -->
     <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>
 
-
+    <!-- set to 127.0.0.1 for local only deployments, "" for everywhere -->
+    <property name="deploy.server.hostname" value="127.0.0.1"/>
 
     <!--this is the version used in artifact dependences inside ivy.xml files-->
     <property name="smartfrog.artifact.version" value="latest.integration" />
@@ -1015,6 +1016,7 @@ smartfrog.tasks.classpath=
         securityManager="${security.manager}"
         dir="${build.test.dir}"
         timeout="0"
+        serverHostname="${deploy.server.hostname}"
         >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -1641,6 +1643,7 @@ smartfrog.tasks.classpath=
       deploy.host =  "${deploy.host}"
       application = "${application.name}"
       deploy.sf = "${deploy.sf}"
+      deploy.server.hostname = ${deploy.server.hostname}
     </echo>
   </target>
 
