@@ -26,14 +26,14 @@ import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * JUnit test class for test cases related to "net" component
+ * JUnit test class for test cases related to "telnet" component
  */
-public class NetTest
+public class TelnetFailureTest
     extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/components/net/";
 
-    public NetTest(String s) {
+    public TelnetFailureTest(String s) {
         super(s);
     }
 

@@ -67,3 +67,71 @@ tcn72Action extends FTPClientPasswordFile {
 tcn72 extends ExpectNoPasswordFile {
   action tcn72Action;
 }
+
+
+TelnetTestProperties extends Compound {
+    password OPTIONAL("") PROPERTY test.telnet.pass;
+    host OPTIONAL("") PROPERTY test.telnet.host;
+    username OPTIONAL("") PROPERTY test.telnet.user;
+
+    windows.password OPTIONAL("") PROPERTY test.telnet.windows.pass;
+    windows.host OPTIONAL("") PROPERTY test.telnet.windows.host;
+    windows.username OPTIONAL("") PROPERTY test.telnet.windows.user;
+
+ }
+
+TelnetTestPropertiesSet extends Not {
+  condition extends StringEquals {
+    left "";
+    right OPTIONAL("") PROPERTY "test.telnet.host";
+  }
+}
+  
+TelnetWindowsTestPropertiesSet extends Not {
+  condition extends StringEquals {
+    left "";
+    right OPTIONAL("") PROPERTY "test.telnet.windows.host";
+  }
+}
+
+SimpleWindowsTelnetSession extends WindowsTelnetSessionInlinePassword {
+
+  password TelnetTestProperties:windows.password;
+  
+  Telnet:host TelnetTestProperties:windows.host;
+  Telnet:username TelnetTestProperties:windows.username;
+  Telnet:commands ["dir"];
+  
+}
+
+SimpleLinuxTelnetSession extends WindowsTelnetSessionInlinePassword {
+
+  password TelnetTestProperties:password;
+  
+  Telnet:host TelnetTestProperties:host;
+  Telnet:username TelnetTestProperties:username;
+  Telnet:commands ["ls"];
+  
+}
+BaseTelnetTest extends ExpectTerminate {
+  description "test for telnet operations";
+  condition extends TelnetTestPropertiesSet;
+  exitType EXIT_TYPE_NORMAL;
+}
+
+TestWindowsTelnet extends ExpectTerminate {
+  description "test for telnet operations";
+  condition extends TelnetWindowsTestPropertiesSet;
+  exitType EXIT_TYPE_NORMAL;
+  action extends SimpleWindowsTelnetSession {
+  }
+}
+
+
+TestLinuxTelnet extends ExpectTerminate {
+  description "test for telnet operations";
+  condition extends TelnetTestPropertiesSet;
+  exitType EXIT_TYPE_NORMAL;
+  action extends SimpleLinuxTelnetSession {
+  }
+}
