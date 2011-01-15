@@ -51,6 +51,7 @@ public class SmartFrogTelnetException extends SmartFrogException {
         failMessage = failMsg;
       
     }
+    
     /**
      * Gets error in string form.
      * @return Detailed exception message
