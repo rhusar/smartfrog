@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2011 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,6 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -165,16 +164,24 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             } else {
                 failureCause = "Failed to get login prompt '" + PROMPT_LOGIN + "'";
             }
+            String passwordDetails = (password == null) ?
+                    "NO PASSWORD"
+                    : "password length " + password.length();
+
             sfLog().debug("Entering password");
             if (operationStatus) {
                 String passWd = password + '\n';
                 opStream.write(passWd.getBytes());
                 opStream.flush();
-
                 sfLog().debug("Waiting for shell prompt '" + shellPrompt + "'");
-                if (!isLoginSuccessful(inpStream, shellPrompt, timeout)) {
+                LoginResults results = attemptLogin(inpStream, shellPrompt, timeout);
+                if (!results.promptFound) {
                     operationStatus = false;
-                    failureCause = "Password was not accepted";
+                    failureCause = "Password was not accepted for user \"" + user + "\""
+                            + " or shell prompt \"" + shellPrompt + "\" was not found."
+                            + " Password details: " + passwordDetails
+                            + " \n"
+                            + " remote server log: " + results.received;
                 }
 
             }
@@ -182,7 +189,8 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 throw new SmartFrogLifecycleException(
                         "Unable to login in remote machine " 
                                 + destination + " cause: "
-                                + failureCause, this);
+                                + failureCause,
+                        this);
             }
             
             //at this point, we are successfully logged in
@@ -345,7 +353,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
      * @return true if login sucessful else false
      * @throws IOException for network problems
      */
-    private boolean isLoginSuccessful(InputStream is,
+    private LoginResults attemptLogin(InputStream is,
                                       String end,
                                       long loginTimeout) throws IOException {
         byte[] buffer = new byte[32];
@@ -363,11 +371,30 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                     Thread.sleep(SLEEP_TIME_MS);
                 } catch (InterruptedException e) {
                     //interrupted
-                    return false;
+                    LoginResults results = new LoginResults(false, readbytes);
+                    results.interrupted = true;
+                    return results;
                 }
             }
         }
 
-        return readbytes.contains(end) || readbytes.contains(DEFAULT_PROMPT);
+        boolean found = readbytes.contains(end);
+        return new LoginResults(found, readbytes);
+    }
+
+    /**
+     * Results of the login attempt
+     */
+    private static class LoginResults {
+        boolean promptFound;
+        boolean interrupted;
+        String received;
+
+        private LoginResults(final boolean promptFound, final String received) {
+            this.promptFound = promptFound;
+            this.received = received;
+        }
+
+
     }
 }
