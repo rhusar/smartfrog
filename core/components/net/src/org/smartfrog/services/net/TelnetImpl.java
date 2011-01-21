@@ -22,12 +22,13 @@ package org.smartfrog.services.net;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetNotificationHandler;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.passwords.PasswordProvider;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -57,26 +58,19 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     public static final int SLEEP_TIME_MS = 500;
     private final int DEFAULT_TIMEOUT = 30000;
     private final int DEFAULT_PORT = 23;
-    private final String DEFAULT_PROMPT = "#";
 
-    private String host = null;
-    private String user = null;
-    private String ostype = null;
+    private String host;
+    private String user;
+    private String ostype;
     private String password = "";
     private String shellPrompt = "$";
     private int port = DEFAULT_PORT;
-    private Vector<String> commandsList = null;
-    private Vector<String> cmdsFailureMsgs = null;
-    private TelnetClient client = null;
-    private OutputStream opStream = null;
-    private InputStream inpStream = null;
+    private Vector<String> commandsList;
+    private Vector<String> cmdsFailureMsgs;
+    private TelnetClient client;
     private int timeout = DEFAULT_TIMEOUT;
-    private FileOutputStream fout = null;
-    private String logFile = null;
+    private String logFile;
     private Reference pwdProviderRef = new Reference(ATTR_PASSWORD_PROVIDER);
-    private PasswordProvider pwdProvider = null;
-    protected LogSF logCore = null;
-    protected LogSF logApp = null;
     private static final Reference attr_commands = new Reference(COMMANDS);
     private static final Reference attr_cmds_failure_msgs = new Reference(CMDS_FAILURE_MSGS);
 
@@ -116,6 +110,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        FileOutputStream fout = null;
         try {
             // create optional log file for the telnet session
             try {
@@ -136,8 +131,8 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 throw new SmartFrogDeploymentException("Failed to connect to " + destination, e, this);
             }
 
-            opStream = client.getOutputStream();
-            inpStream = client.getInputStream();
+            OutputStream opStream = client.getOutputStream();
+            InputStream inpStream = client.getInputStream();
             sfLog().debug("Waiting for prompt '" + PROMPT_LOGIN + "'");
             String failureCause = "";
             boolean operationStatus = waitForString(inpStream, PROMPT_LOGIN, timeout);
@@ -177,8 +172,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 LoginResults results = attemptLogin(inpStream, shellPrompt, timeout);
                 if (!results.promptFound) {
                     operationStatus = false;
-                    failureCause = "Password was not accepted for user \"" + user + "\""
-                            + " or shell prompt \"" + shellPrompt + "\" was not found."
+                    failureCause = "User \"" + user + "\" was not known, "
+                            + " their password was invalid "
+                            + " or the shell prompt \"" + shellPrompt + "\" was not found."
                             + " Password details: " + passwordDetails
                             + " \n"
                             + " remote server log: " + results.received;
@@ -199,7 +195,10 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 sfLog().info("Successful login to:" + destination);
             }
 
-            client.registerSpyStream(fout);
+            // register the output stream and set to null
+            FileOutputStream fout1 = fout;
+            fout = null;
+            client.registerSpyStream(fout1);
             boolean checkCmdExecStatus = false;
             if ((cmdsFailureMsgs != null) && (!cmdsFailureMsgs.isEmpty())) {
                 checkCmdExecStatus = true;
@@ -213,7 +212,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 opStream.flush();
 
                 // wait for prompt to return.
-                boolean getPrompt = waitForString(inpStream, shellPrompt, timeout); 
+                waitForString(inpStream, shellPrompt, timeout);
 
                 // check if command was successfully executed
                 if (checkCmdExecStatus) {
@@ -236,9 +235,12 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         } catch (Exception e) {
             throw SmartFrogLifecycleException.forward(e);
         } finally {
+            //stop the client if defined
             if (client != null) {
                 client.stopSpyStream();
             }
+            //and the output stream, if not null.
+            FileSystem.close(fout);
         }
     }
 
@@ -273,15 +275,15 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         host = sfResolve(HOST, host, true);
         user = sfResolve(USER, user, true);
         ostype = sfResolve(OSTYPE, ostype, true);
-        pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
+        PasswordProvider pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef, (Prim) null, true);
         password = pwdProvider.getPassword();
         commandsList = ListUtils.resolveStringList(this, attr_commands, true);
 
         //optional attributes
         cmdsFailureMsgs = ListUtils.resolveStringList(this, attr_cmds_failure_msgs, false);
-        port = sfResolve(PORT, port, false);
-        timeout = sfResolve(TIMEOUT, timeout, false);
-        shellPrompt = sfResolve(SHELL_PROMPT, shellPrompt, false);
+        port = sfResolve(PORT, port, true);
+        timeout = sfResolve(TIMEOUT, timeout, true);
+        shellPrompt = sfResolve(SHELL_PROMPT, shellPrompt, true);
         logFile = sfResolve(LOG_FILE, logFile, false);
     }
 
@@ -310,6 +312,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         } else if (negotiation_code == TelnetNotificationHandler.RECEIVED_WONT) {
             command = "WONT";
         }
+        sfLog().debug("Received negotiation code " + command);
     }
 
     /**
@@ -317,18 +320,19 @@ public class TelnetImpl extends PrimImpl implements Telnet,
      *
      * @param is      Input Stream which is searched
      * @param end     String to search
-     * @param timeout Timeout
+     * @param waitTime Timeout
      * @return true if string is located in the inp stream, false if search is
      *         timedout or string is not found
      * @throws IOException for network problems
      */
-    public boolean waitForString(InputStream is, String end, long timeout) throws IOException {
-        byte buffer[] = new byte[32];
+    @SuppressWarnings({"BusyWait"})
+    public boolean waitForString(InputStream is, String end, long waitTime) throws IOException {
+        byte[] buffer = new byte[32];
         long starttime = System.currentTimeMillis();
 
         String readbytes = "";
         while ((!readbytes.contains(end)) &&
-                ((System.currentTimeMillis() - starttime) < timeout)) {
+                ((System.currentTimeMillis() - starttime) < waitTime)) {
             if (is.available() > 0) {
                 int ret_read = is.read(buffer);
                 readbytes = readbytes + new String(buffer, 0, ret_read);
@@ -353,6 +357,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
      * @return true if login sucessful else false
      * @throws IOException for network problems
      */
+    @SuppressWarnings({"BusyWait"})
     private LoginResults attemptLogin(InputStream is,
                                       String end,
                                       long loginTimeout) throws IOException {
@@ -386,9 +391,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
      * Results of the login attempt
      */
     private static class LoginResults {
-        boolean promptFound;
-        boolean interrupted;
-        String received;
+        public boolean promptFound;
+        public boolean interrupted;
+        public String received;
 
         private LoginResults(final boolean promptFound, final String received) {
             this.promptFound = promptFound;
