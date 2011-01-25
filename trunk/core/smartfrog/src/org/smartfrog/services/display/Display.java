@@ -753,7 +753,7 @@ public class Display extends JFrame
 
             return true;
         } catch (IOException e) {
-            org.smartfrog.services.display.WindowUtilities.showError(this,
+            WindowUtilities.showError(this,
                     "Error saving file!");
         }
 
@@ -794,8 +794,6 @@ public class Display extends JFrame
         fileName = directory + fileName.replace(':', '_');
         fileName = fileName.replace('\\', File.pathSeparatorChar);
         fileName = fileName.replace('/', File.pathSeparatorChar);
-//      System.out.println(
-//            "*************************************To write in:    " + fileName);
         return fileName;
     }
 
@@ -823,7 +821,7 @@ public class Display extends JFrame
             // clears the text of the TextArea
             screen.setText("");
         } catch (java.lang.Throwable ex) {
-            System.err.println("Display.cleanScreen():" + ex.getMessage());
+            System.err.println("Display.cleanScreen():" + ex);
 
             try {
                 out.close();
@@ -849,7 +847,7 @@ public class Display extends JFrame
                 outstream.close();
             }
         } catch (Throwable ex) {
-            System.err.println("Display.cleanScreen():" + ex.getMessage());
+            System.err.println("Display.resetScreenFile():" + ex);
 
             try {
                 out.close();
@@ -1172,7 +1170,7 @@ public class Display extends JFrame
                             .getMessage());
             return;
         } catch (Exception e) {
-        	System.out.println("333"+e.getMessage());
+        	System.out.println("333"+e);
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName + ". " + e);
             return;
@@ -1228,7 +1226,7 @@ public class Display extends JFrame
                 mngConsole.dispose();
                 mngConsole = null;
             }
-            System.out.println("444"+e.getMessage());
+            System.out.println("444"+e);
             this.modalErrorDialog("startMngConsole",
                     "Couldn't start SFMngConsole for resource " + hostName);
         }
