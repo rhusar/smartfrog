@@ -518,7 +518,6 @@ SmartFrog to deploy complex systems.
         />
     </pack>
 
-<!-- SFOS-1562
     <pack name="Hadoop" required="no" preselected="no">
       <description>
         The sf-hadoop package contains the components needed to deploy a Hadoop filesystem
@@ -587,8 +586,6 @@ SmartFrog to deploy complex systems.
       <depends packname="Ant"/>
       <depends packname="WWW"/>
     </pack>
-    -->
-
     <pack name="Jersey" required="no" preselected="no">
       <description>
         The sf-jersey package adds Jersey and hence JAX-RS support

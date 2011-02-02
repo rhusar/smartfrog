@@ -268,15 +268,15 @@ This includes Groovy and the components needed to embed Groovy scripts inside .s
 
 # -----------------------------------------------------------------------------
 
-#%package hadoop
-#Group:         ${rpm.framework}
-#Summary:        Hadoop integration
-#Requires:       %{name} = %{version}-%{release}, %{name}-jetty
-#
-#%description hadoop
-#
-#This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
-#It does not contain the Apache Hadoop shell scripts
+%package hadoop
+Group:         ${rpm.framework}
+Summary:        Hadoop integration
+Requires:       %{name} = %{version}-%{release}, %{name}-jetty
+
+%description hadoop
+
+This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
+It does not contain the Apache Hadoop shell scripts
 
 # -----------------------------------------------------------------------------
 
@@ -866,35 +866,35 @@ fi
 %{libdir}/groovy-engine-${groovy-engine.version}.jar
 
 # -----------------------------------------------------------------------------
-#%files hadoop
-#%{linkdir}/sf-hadoop.jar
-#%{libdir}/sf-hadoop-${smartfrog.version}.jar
-#%{libdir}/hadoop-core-${hadoop.version}.jar
-#%{linkdir}/hadoop-core.jar
-#%{libdir}/hadoop-hdfs-${hadoop.version}.jar
-#%{linkdir}/hadoop-hdfs.jar
-#%{libdir}/hadoop-mapred-${hadoop.version}.jar
-#%{linkdir}/hadoop-mapred.jar
-#%{libdir}/hadoop-mapred-tools-${hadoop.version}.jar
-#%{linkdir}/hadoop-mapred-tools.jar
-#%{libdir}/hadoop-mapred-examples-${hadoop.version}.jar
-#%{linkdir}/hadoop-mapred-examples.jar
-#
-#
-#%{libdir}/avro-${avro.version}.jar
-#%{linkdir}/avro.jar
-#%{libdir}/commons-cli-${commons-cli.version}.jar
-#%{linkdir}/commons-cli.jar
-#%{libdir}/jackson-core-asl-${jackson-asl.version}.jar
-#%{linkdir}/jackson-core-asl.jar
-#%{libdir}/jackson-mapper-asl-${jackson-asl.version}.jar
-#%{linkdir}/jackson-mapper-asl.jar
-#%{libdir}/jets3t-${jets3t.version}.jar
-#%{linkdir}/jets3t.jar
-#%{libdir}/paranamer-${paranamer.version}.jar
-#%{linkdir}/paranamer.jar
-#%{libdir}/xmlenc-${xmlenc.version}.jar
-#%{linkdir}/xmlenc.jar
+%files hadoop
+%{linkdir}/sf-hadoop.jar
+%{libdir}/sf-hadoop-${smartfrog.version}.jar
+%{libdir}/hadoop-core-${hadoop.version}.jar
+%{linkdir}/hadoop-core.jar
+%{libdir}/hadoop-hdfs-${hadoop.version}.jar
+%{linkdir}/hadoop-hdfs.jar
+%{libdir}/hadoop-mapred-${hadoop.version}.jar
+%{linkdir}/hadoop-mapred.jar
+%{libdir}/hadoop-mapred-tools-${hadoop.version}.jar
+%{linkdir}/hadoop-mapred-tools.jar
+%{libdir}/hadoop-mapred-examples-${hadoop.version}.jar
+%{linkdir}/hadoop-mapred-examples.jar
+
+
+%{libdir}/avro-${avro.version}.jar
+%{linkdir}/avro.jar
+%{libdir}/commons-cli-${commons-cli.version}.jar
+%{linkdir}/commons-cli.jar
+%{libdir}/jackson-core-asl-${jackson-asl.version}.jar
+%{linkdir}/jackson-core-asl.jar
+%{libdir}/jackson-mapper-asl-${jackson-asl.version}.jar
+%{linkdir}/jackson-mapper-asl.jar
+%{libdir}/jets3t-${jets3t.version}.jar
+%{linkdir}/jets3t.jar
+%{libdir}/paranamer-${paranamer.version}.jar
+%{linkdir}/paranamer.jar
+%{libdir}/xmlenc-${xmlenc.version}.jar
+%{linkdir}/xmlenc.jar
 
 # -----------------------------------------------------------------------------
 %files jersey
