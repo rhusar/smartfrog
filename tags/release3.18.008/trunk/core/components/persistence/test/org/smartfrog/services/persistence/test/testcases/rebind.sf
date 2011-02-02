@@ -1,0 +1,9 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+sfConfig extends RComponent {
+   hello extends Compound {
+       sfProcessComponentName "hello";
+       sfClass "org.smartfrog.services.persistence.test.testcases.HelloSFRebindImpl";
+   }
+}

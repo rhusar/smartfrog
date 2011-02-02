@@ -1,0 +1,40 @@
+
+/**
+##########################################
+ 
+ Each view stores its own position coordinates for elements.
+ If an element is moved in one view, the move will not be
+ reflected in other views. Each view is like a virtual 
+ workspace.
+ 
+ View definitions can also use tags on elements to
+ select which elements are visible. For example:
+ 
+  Foo Elements With ShowMe Tags {
+   Foo[ShowMe]:true;
+ }
+ 
+ This view only shows elements with "ShowMe" tags. 
+ An element will automatically be added or removed from
+ a view when its tags change. Triggers that add or remove
+ tags can be used to create dynamic views.
+ 
+
+ 
+##########################################
+**/
+
+Dependency Model{
+ use-exclusion:true;
+ UnaryOperator:false;
+ PredicateResult:false;
+}
+
+
+Predicate Model {
+	use-exclusion:true;
+	Attribute:true;
+	UnaryOperator:true;
+	PredicateResult:true;
+}
+

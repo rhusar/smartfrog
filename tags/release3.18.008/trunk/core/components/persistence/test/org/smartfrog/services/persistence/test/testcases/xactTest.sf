@@ -1,0 +1,7 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+sfConfig extends Compound {
+       sfClass "org.smartfrog.services.persistence.test.testcases.TransactionTestImpl";
+       testTarget extends RComponent;
+}

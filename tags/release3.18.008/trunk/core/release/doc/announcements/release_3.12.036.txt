@@ -1,0 +1,157 @@
+SmartFrog 3.12.036
+======================
+
+This is a new release of SmartFrog, the Java-based, LPGL-licensed
+distributed deployment framework developed by HP Laboratories. SmartFrog
+enables applications to be deployed across multiple machines,
+configuring different aspects of the system so that they are all
+consistently configured, and managing the life-cycle of the application
+as a whole. The project's home page is http://smartfrog.org/
+
+The release artifacts are available at
+
+http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
+
+This release is 3.12.036; built from revision 6457
+of the SVN repository. This release has an extended language
+with the ability to tag attributes, and includes the following items:
+
+* Core smartfrog daemon, including services to manage files, start and stop
+  Java and native programs.
+* Example components and applications.  
+* Ant support: ant tasks to deploy and terminate applications from a build.
+* Ant components: the ability to execute ant tasks in a deployment.
+* Anubis: a partition aware tuple-space that can be used to implement fault 
+  tolerant systems.
+* Database: components to issue database commands, and deploy HSLDB and MySQL.
+* JMX: the ability to configure and manage JMX components, and to manage
+  SmartFrog components over JMX.
+* Logging: integration with Apache commons-logging and Log4J
+* Networking: email, FTP, SSH, DNS support.
+* Quartz: scheduled operations using Quartz libraries.
+* Scripting: support for BSF-hosted scripting languages
+* Testing: Distributed JUnit and component testing with SFUnit.
+* WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+  is provided for all application servers that support it, and sample templates
+  are provided to start and stop Tomcat and JBoss. The Jetty component can
+  configure and deploy individual servlets, eliminating much of the need for WAR
+  files and application servers.
+* XML: XML support with XOM.
+* XMPP: Presence and messaging over Jabber.
+
+Packaging
+=========
+
+This release is available as:
+
+* RPM files inside a .tar.gz file.
+* a JAR installer.
+* the original core smartfrog distribution as .zip and .tar.gz (deprecated)
+
+
+The RPM installation is for RPM-based Linux systems. The archive contains the
+following RPM files:
+
+smartfrog:        the core SmartFrog distribution.
+smartfrog-daemon: the shell scripts to add the smartfrog distribution to the
+                  path, and to run the daemon on start-up.
+smartfrog-demo:   example code and documentation.
+smartfrog-javadocs: javadocs for the project
+
+smartfrog-ant:    Ant task and build file execution
+smartfrog-anubis: Distributed partition-aware tuple space
+smartfrog-database: Database access
+smartfrog-jmx:    JMX integration though MX4J
+smartfrog-junit:  Junit 3.8.2 test execution
+smartfrog-logging: Logging through Log4J and commons-logging
+smartfrog-networking: SSH, SCP, FTP and email
+smartfrog-quartz:  Scheduled operations
+smartfrog-scripting: Scripted components
+smartfrog-www:      Web support: Deployment and liveness pages
+smartfrog-xml:      XML Support
+smartfrog-xmpp:     XMPP/Jabber communications
+smartfrog-xunit:    Distributed testing and reporting
+
+All the JAR files are also published to a repository that is compatible with
+Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or 
+Maven- based build.
+
+There are also SmartFrog components to retrieve artifacts from such a repository
+(the Library components under /org/smartfrog/services/os/java/library.sf ),
+which can be used for dynamic download of SmartFrog and other artifacts.
+
+
+Security warning
+================
+
+Unless SmartFrog is configured with security, a running daemon will
+listen on its configured port for incoming deployment requests, and
+deploy the applications with the rights of the user running the daemon.
+When the smartfrog-daemon RPM is installed, that means that a process
+running as root will be listening on an open port for incoming
+deployment requests. Do not deploy SmartFrog this way on any untrusted
+network, not without turning security on and, ideally, recreating the
+RPMs with signed JAR files.
+
+Building SmartFrog
+==================
+
+SmartFrog requires Java 1.5+ and Ant 1.7+ to build. The izpack and source .zip and
+.tar.gz distributions include a source tree adequate to build the
+entire system. To build a later release, please follow the instructions at
+  http://sourceforge.net/svn/?group_id=87384
+to check out smartfrog/trunk/core from our repository.
+
+This release was built with revision 6457 of the repository, which
+is available under the SVN branch
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.036
+
+We strongly encourage anyone interested in building or extending
+SmartFrog to get involved in the SmartFrog developer mailing list, which
+can be found from the sourceforge project page
+http://sourceforge.net/projects/smartfrog/
+
+Reporting Bugs
+==============
+
+Please file all bug reports at http://jira.smartfrog.org/
+
+Thank you!
+
+The SmartFrog Team        http://smartfrog.org/
+
+Changes since release 3.12.032
+==============================
+
+There are no major changes in this release. There are however, some bug fixes, especially in OS/X support,
+and a new component to append lines to a text file if they are not already present.
+This can be used to insert entries in host tables and SSH keyrings.
+
+** Bug
+  * [SFOS-810] - ShellScriptImpl can spin forever in restart
+  * [SFOS-826] - ConcurrentModificationException in startup on OS/X
+  * [SFOS-828] - sfDisplay does not terminate gracefully when there is no graphical display attached to a Mac OS X
+  * [SFOS-830] - Add test for 'darwin' == mac for the IsOS condition
+
+
+** Improvement
+  * [SFOS-795] - Factor out event registration code from EventPrimImpl and EventCompoundImpl into one helper class
+  * [SFOS-808] - Move to jetty 6.1.9
+  * [SFOS-812] - Add "system environment properties" to diagnostics report.
+  * [SFOS-816] - give FileExists a maxFileSize attribute; give it the option of being a workflow run (for use in test sequences)
+  * [SFOS-825] - fix spelling error in method name in org.smartfrog.sfcore.processcompound.ProcessCompoundImpl
+
+** New Feature
+  * [SFOS-809] - Modify sfParse to show a treeview of a parsed description using the management console code.
+  * [SFOS-817] - add AppendLines component to append lines to a text file in the filesystem, *if the lines are not already present*
+
+
+** Task
+  * [SFOS-814] - Remove jetty 4.24 artifacts from the repository
+  * [SFOS-827] - Upgrade IVY to 2.0 Beta 2
+
+
+
+
+  

@@ -1,0 +1,281 @@
+<html>
+<head>
+  <title>SmartFrog 3.12.006</title>
+</head>
+<body>
+<h1>SmartFrog 3.12.006</h1>
+
+<p>
+  This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
+  deployment framework developed by HP Laboratories. SmartFrog enables
+  applications to be deployed across multiple machines, configuring different
+  aspects of the system so that they are all consistently configured, and managing
+  the life-cycle of the application as a whole. The project's home page is
+  <a href="http://smartfrog.org/">http://smartfrog.org/</a>
+</p>
+
+<p>
+  The release artifacts are available at
+  <a
+          href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308">
+    http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308</a>
+</p>
+
+<p>
+  This release is 3.12.006; built from revision 5245
+  of the SVN repository. This release has an extended language
+  with the ability to tag attributes, and includes the following items:
+</p>
+<ul>
+  <li> Core smartfrog daemon, including services to manage files, start and stop
+    Java and native programs.
+  </li>
+  <li> Example components and applications.
+  </li>
+  <li> Ant support: ant tasks to deploy and terminate applications from a build.
+  </li>
+  <li> Ant components: the ability to execute ant tasks in a deployment.
+  </li>
+  <li> Anubis: a partition aware tuple-space that can be used to implement fault
+    tolerant systems.
+  </li>
+  <li> Database: components to issue database commands, and deploy HSLDB and MySQL.
+  </li>
+  <li> JMX: the ability to configure and manage JMX components, and to manage
+    SmartFrog components over JMX.
+  </li>
+  <li> Logging: integration with Apache commons-logging and Log4J
+  </li>
+  <li> Networking: email, FTP, SSH, DNS support.
+  </li>
+  <li> Quartz: scheduled operations using Quartz libraries.
+  </li>
+  <li> Scripting: support for BSF-hosted scripting languages
+  </li>
+  <li> Testing: Distributed JUnit and component testing with SFUnit.
+  </li>
+  <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+    is provided for all application servers that support, and a tomcat-specific
+    component can communicate with Apache Tomcat. The Jetty component can
+    configure and deploy individual servlets, eliminating much of the need for WAR
+    files themselves.
+  </li>
+  <li> XML: XML support with XOM.
+  </li>
+  <li> XMPP: Presence and messaging over Jabber.
+  </li>
+</ul>
+
+<h3>Packaging</h3>
+
+<p>
+  This release is available as:
+</p>
+<ol>
+  <li> RPM files inside a .tar.gz file.
+  </li>
+  <li> a JAR installer.
+  </li>
+  <li>the original core smartfrog distribution as .zip and .tar.gz (deprecated)
+  </li>
+</ol>
+<p>
+
+  The RPM installation is for RPM-based Linux systems. It comprises three RPM
+  files, smartfrog, smartfrog-daemon and smartfrog-demo:
+</p>
+
+<table>
+  <tr>
+    <td><code>smartfrog</code></td>
+    <td>The core SmartFrog distribution.</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-daemon</code></td>
+    <td>The shell scripts to add the smartfrog distribution to the
+      path, and to run the daemon on start-up.
+    </td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-demo</code></td>
+    <td>Example code and documentation</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-anubis</code></td>
+    <td>Anubis partition-aware "tuple space"</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-logging</code></td>
+    <td>Enhanced logging</td>
+  </tr>
+</table>
+<p>
+  All the JAR files are also published to a repository that is compatible with
+  Apache Maven and Ivy. Add
+  <a
+          href="http://smartfrog.sourceforge.net/repository">http://smartfrog.sourceforge.net/repository</a>
+  to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+</p>
+
+<p>
+  There are also SmartFrog components to retrieve artifacts from such a repository
+  (the Library components under /org/smartfrog/services/os/java/library.sf ),
+  which can be used for dynamic download of SmartFrog and other artifacts.
+</p>
+
+<h3>Security warning</h3>
+
+<p>
+
+  Unless SmartFrog is configured with security, a running daemon
+  will listen on its configured port for incoming deployment requests, and deploy
+  the applications with the rights of the user running the daemon. When the
+  smartfrog-daemon RPM is installed, that means that a process running as root
+  will be listening on an open port for incoming deployment requests. Do not
+  deploy SmartFrog this way on any untrusted network, not without turning security
+  on and, ideally, recreating the RPMs with signed JAR files.
+</p>
+
+<h3>Building SmartFrog</h3>
+
+<p>
+  SmartFrog requires Java 1.5 and Ant 1.7 to build. 
+</p>
+
+<p>
+
+  The distribution does not include a source tree adequate to build the entire
+  system. Please follow the instructions at
+  <a href="http://sourceforge.net/svn/?group_id=87384">http://sourceforge.net/svn/?group_id=87384
+  </a>
+  and check out smartfrog/trunk/core from our repository.
+</p>
+
+<p>
+
+  This release was built with revision 5245 of the repository, which
+  is available under the SVN branch
+  <a href="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.006">https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.006</a>
+</p>
+
+<p>
+  We strongly encourage anyone interested in building or extending smartfrog to
+  get involved in the smartfrog developer mailing list, which can be found from
+  the sourceforge project page
+  <a href="http://sourceforge.net/projects/smartfrog/">
+    http://sourceforge.net/projects/smartfrog/</a>
+</p>
+
+
+<h3>Reporting Bugs</h3>
+
+<p>
+  Please file all bug reports at <a
+        href="http://jira.smartfrog.org/">http://jira.smartfrog.org/</a>
+</p>
+
+<p>
+  The SmartFrog Team
+</p>
+
+
+<h3>Changes since last release</h3>
+
+<p>
+SFOS-486: Add property to SF CLI to be able to load descriptions from the filesystem 
+when security is on
+</p>
+
+<p>
+
+If you set the environment variable SFSECURERESOURCES_OFF=ENABLED, then resources
+can be loaded from unsigned JARs. In a daemon, this exposes in a security risk. 
+In the client-side programs, this is a useful feature, as it means that even when 
+SmartFrog is running in secure mode, it can parse and deploy SmartFrog descriptions
+from the local filesystem. In this case the client node itself must be trusted, 
+as malicious deployment descriptors could be instantiated. 
+</p>
+
+<p>
+
+SFOS-357: Move Jetty support up to Jetty 6 (ongoing)
+</p>
+
+<p>
+
+This release contains a preview of the Jetty-6 support in the Jetty component. This is not yet
+stable; anyone using Jetty under SmartFrog should remain with a previous release of SmartFrog 3.12. 
+Be advised that one change is not backwards compatible: the Jetty component is no longer a 
+compound; you can no longer nest servlet and web application components under Jetty. Removing 
+this feature makes the lifecyle of the server and its children more deterministic, and produces 
+more stable deployments. 
+</p>
+
+<p>
+
+However, it does mean that existing deployment descriptors will break. Plan for the change by 
+moving all children of Jetty components into a Compound that deploys Jetty and its contents. 
+</p>
+
+   
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-224'>SFOS-224</a>] -         headless mode isn't working
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-287'>SFOS-287</a>] -         org.smartfrog.services.ssh.FilePasswordProvider reads in a file without any current directory
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-470'>SFOS-470</a>] -         Clean up threadlocal instances during component termination, when appropriate
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-481'>SFOS-481</a>] -         TestCompound doesnt set its forcedTimeout attribute when the action or tests are terminated by a forced shutdown
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-485'>SFOS-485</a>] -         release build.xml isn't compatible with Ant1.7.0
+</li>
+</ul>
+        
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-133'>SFOS-133</a>] -         stop Cruise Control javadocs from complaining about various things in some components
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-428'>SFOS-428</a>] -         Eclipse whines about a lot of minor things
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-463'>SFOS-463</a>] -         adopt StringBuilder in common StringBuffer operations
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-469'>SFOS-469</a>] -         Hide ThreadLocal use in SFInputStream
+</li>
+</ul>
+    
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-486'>SFOS-486</a>] -         Add property to SF CLI to be able to load descriptions from the filesystem when security is on.
+</li>
+</ul>
+        
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-139'>SFOS-139</a>] -         Move up to Ivy 2.0.0 alpha/beta releases
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-421'>SFOS-421</a>] -         Run IDE code analysis over source to look for issues and Java5 upgrades
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-484'>SFOS-484</a>] -         Release SmartFrog 3.12.006
+</li>
+</ul>
+    
+<h4>        Sub-task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-41'>SFOS-41</a>] -         Make font bigger, in both gui and console (for demos etc)
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-426'>SFOS-426</a>] -         Move workflow components to Java5
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-477'>SFOS-477</a>] -         stop making jetty a compound, as it only confused the lifecycle of children
+</li>
+</ul>
+
+
+</body>
+</html>
+

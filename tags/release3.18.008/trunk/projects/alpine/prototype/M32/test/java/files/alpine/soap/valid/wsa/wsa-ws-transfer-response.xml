@@ -1,0 +1,19 @@
+<s:Envelope
+    xmlns:s="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+    xmlns:xxx="http://fabrikam123.example.com/resource-model">
+  <!-- from http://www.w3.org/Submission/2006/04/ with bugs fixed-->
+  <s:Header>
+    <wsa:To>soap://www.fabrikam123.example.org/sender</wsa:To>
+    <wsa:Action>
+      http://schemas.xmlsoap.org/ws/2004/09/transfer/PutResponse
+    </wsa:Action>
+    <wsa:MessageID>
+      uuid:0000010e-0000-0000-C000-000000000047
+    </wsa:MessageID>
+    <wsa:RelatesTo>
+      uuid:00000000-0000-0000-C000-000000000047
+    </wsa:RelatesTo>
+  </s:Header>
+  <s:Body/>
+</s:Envelope> 
