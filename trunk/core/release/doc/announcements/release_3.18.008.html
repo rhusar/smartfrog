@@ -1,0 +1,929 @@
+<html>
+<head>
+  <title>SmartFrog 3.18.008</title>
+</head>
+<body>
+<h1>SmartFrog 3.18.008</h1>
+
+<p>
+  This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
+  deployment framework developed by HP Laboratories. SmartFrog enables
+  applications to be deployed across multiple machines, configuring different
+  aspects of the system so that they are all consistently configured, and managing
+  the life-cycle of the application as a whole. The project's home page is
+  <a href="http://smartfrog.org/">http://smartfrog.org/</a>
+</p>
+
+<p>
+  The release artifacts are available at
+  <a
+          href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308">
+    http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308</a>
+</p>
+
+<p>
+  This release is 3.18.008; built from revision 8478
+  of the SVN repository.
+</p><p>
+  It was compiled with the Java version set to Java 6
+  -it will not work on Java1.5 JVMs.
+</p><p>
+  This release includes the following items:
+</p>
+<ul>
+
+  <li> Core smartfrog daemon, including services to manage files, start and stop
+    Java and native programs.
+  </li>
+  <li> Example components and applications.
+  </li>
+  <li> Ant support: ant tasks to deploy and terminate applications from a build.
+  </li>
+  <li> Ant components: the ability to execute ant tasks in a deployment.
+  </li>
+  <li> Anubis: a partition aware tuple-space that can be used to implement fault
+    tolerant systems.
+  </li>
+  <li> Database: components to issue database commands, and deploy HSLDB and MySQL
+   databases.
+  </li>
+  <li> JMX: the ability to configure and manage JMX components, and to manage
+    SmartFrog components over JMX.
+  </li>
+  <li> Logging: integration with Apache commons-logging and Log4J, and the 
+  SLF4J framework.
+  </li>
+  <li> Networking: email, FTP, SSH, DNS support.
+  </li>
+  <li> Quartz: scheduled operations using Quartz libraries.
+  </li>
+  <li> RpmTools: components for working with or deploying with RPMs</li>
+  <li> Scripting: support for BSF-hosted scripting languages
+  </li>
+  <li> Testing: Distributed JUnit and component testing with SFUnit.
+  </li>
+   <li>
+    Velocity: generation/transformation of text files during deployment
+  </li>
+  <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+    is provided for all application servers that support, and a tomcat-specific
+    component can communicate with Apache Tomcat.</li>
+  <li>Jetty: The Jetty component can
+    configure and deploy individual servlets, eliminating much of the need for WAR
+    files themselves.
+  </li>
+  <li> XML: XML support with XOM.
+  </li>
+  <li> XMPP: Presence and messaging over Jabber.
+  </li>
+</ul>
+
+<h3>Packaging</h3>
+
+<p>
+  This release is available as:
+</p>
+<ol>
+  <li>
+    RPM files inside a .tar.gz file.
+  </li>
+  <li>
+    A JAR installer.
+  </li>
+  <li>
+    A .tar.gz file containing everything needed to create a private set of RPM files
+    containing JAR files signed by a private Certification Authority.
+  </li>
+  <li>
+    The original smartfrog distribution as .zip and .tar.gz (deprecated)
+  </li>
+</ol>
+
+<p>
+  The RPM installation is for RPM-based Linux systems. It comprises the following RPMs:
+</p>
+
+<table>
+  <tr>
+    <td><code>smartfrog</code></td>
+    <td>The core SmartFrog distribution.</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-daemon</code></td>
+    <td>The shell scripts to add the smartfrog distribution to the
+      path, and to run the daemon on start-up.
+    </td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-javadoc</code></td>
+    <td>javadocs for the project</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-ant</code></td>
+    <td>Ant task and build file execution</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-anubis</code></td>
+    <td>Distributed partition-aware tuple space</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-csvfiles</code></td>
+    <td>CSV file support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-database</code></td>
+    <td>Database access</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-jetty</code></td>
+    <td>Jetty support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-jmx</code></td>
+    <td>JMX integration though MX4J</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-junit</code></td>
+    <td>Junit 3.8.2 test execution</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-logging</code></td>
+    <td>Logging through Log4J and commons-logging</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-networking</code></td>
+    <td>SSH, SCP, FTP and email</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-quartz</code></td>
+    <td>Scheduled operations</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-rpmtools</code></td>
+    <td>RPM support tools</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-scripting</code></td>
+    <td>Scripted components</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-velocity</code></td>
+    <td>Velocity template processing</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-www</code></td>
+    <td>Web support: Deployment and liveness pages</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xml</code></td>
+    <td>XML Support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xmpp</code></td>
+    <td>XMPP/Jabber communications</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xunit</code></td>
+    <td>Distributed testing and reporting</td>
+  </tr>
+</table>
+<p>
+  All the JAR files are also published to a repository that is compatible with
+  Apache Maven and Ivy. Add
+  <a href="http://smartfrog.sourceforge.net/repository">http://smartfrog.sourceforge.net/repository</a>
+  to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+</p>
+
+<p>
+  There are also SmartFrog components to retrieve artifacts from such a repository
+  (the Library components under /org/smartfrog/services/os/java/library.sf ),
+  which can be used for dynamic download of SmartFrog and other artifacts.
+</p>
+
+<h3>Security warning</h3>
+
+<p>
+  Unless SmartFrog is configured with security, a running daemon
+  will listen on its configured port for incoming deployment requests, and deploy
+  the applications with the rights of the user running the daemon. When the
+  smartfrog-daemon RPM is installed, that means that a process running as root
+  will be listening on an open port for incoming deployment requests.
+  Do not deploy SmartFrog this way on any untrusted
+  network, not without turning security on.
+</p>
+<p>
+  There is a special distribution .tar.gz file that can be used to generate
+  a private set of secure RPM files.
+</p>
+
+<h3>Building SmartFrog</h3>
+
+<p>
+  SmartFrog requires Java 1.6+ and Ant 1.7+ to build. 
+</p>
+
+<p>
+
+  The distribution does not include a source tree adequate to build the entire
+  system. Please follow the instructions at
+  <a href="http://sourceforge.net/svn/?group_id=87384">http://sourceforge.net/svn/?group_id=87384
+  </a>
+  and check out smartfrog/trunk/core from our repository.
+</p>
+
+<p>
+
+  This release was built with revision 8478 of the repository, which
+  is available under the SVN branch
+  <a href="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.18.008">https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.18.008</a>
+</p>
+
+<p>
+  We strongly encourage anyone interested in building or extending smartfrog to
+  get involved in the smartfrog developer mailing list, which can be found from
+  the sourceforge project page
+  <a href="http://sourceforge.net/projects/smartfrog/">
+    http://sourceforge.net/projects/smartfrog/</a>
+</p>
+
+
+<h3>Reporting Bugs</h3>
+
+<p>
+  Please file all bug reports at <a
+        href="http://jira.smartfrog.org/">http://jira.smartfrog.org/</a>
+</p>
+
+<p>
+  The SmartFrog Team
+</p>
+
+
+<h3>Changes since last release</h3>
+
+
+Release Notes - SmartFrog - Version 3.18.008
+
+<h4> Bug
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-201'>SFOS-201</a>] - functional Test descriptors
+    often have hard coded hostnames
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-512'>SFOS-512</a>] - rpmlint gives warnings and
+    errors
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-543'>SFOS-543</a>] - under jetty6, filesystem
+    webapps are not deploying -test testTcp27testFilesystemWar
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-628'>SFOS-628</a>] - JettySecurityRealmImpl does
+    not work -Jetty Security broken
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-685'>SFOS-685</a>] - Jetty fails to instantiate
+    servlet that is on the classpath
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1169'>SFOS-1169</a>] - connectivity test is
+    failing, routing oddness on OSX
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1274'>SFOS-1274</a>] - TT doesnt fail early when it
+    comes up with mapred.job.tracker set to 0:0:0:0
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1278'>SFOS-1278</a>] - Add new Hadoop JARs and
+    dependencies to the RPM
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1282'>SFOS-1282</a>] - Ant DeployingTaskBase task
+    doesn&#39;t log the expanded application it is deploying
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1283'>SFOS-1283</a>] - Spelling error in GUI
+    -replace instrospect with introspect
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1289'>SFOS-1289</a>] - sf-hadoop failing to build
+    on hudson
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1293'>SFOS-1293</a>] - Jetty isnt working
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1295'>SFOS-1295</a>] - release build of rpms
+    failing on a machine with hadoop built locally -kfs is creeping in
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1299'>SFOS-1299</a>] - The error text on a bad
+    password has changed with typica/EC2 updates, a test is now breaking
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1320'>SFOS-1320</a>] - jetty servlet context doesn&#39;t
+    support sessions
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1321'>SFOS-1321</a>] - Struts needs a
+    WEB-INF/web.xml file
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1323'>SFOS-1323</a>] - JSP under Jetty hard to bind
+    to jsp pages only
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1326'>SFOS-1326</a>] - classpath wrong in ant
+    target sfDaemon
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1329'>SFOS-1329</a>] - struts needs
+    /WEB-INF/struts-config.xml even if you deploy a webapp under a package
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1331'>SFOS-1331</a>] - Proxy settings are not
+    passed down to child processes
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1333'>SFOS-1333</a>] - Struts is not working in
+    cloudfarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1365'>SFOS-1365</a>] - move log level listing to a
+    separate component for ease of reference
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1370'>SFOS-1370</a>] - NPE in test
+    runs/ActionDeploy
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1375'>SFOS-1375</a>] - SSH deployment failing on
+    OS/X
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1378'>SFOS-1378</a>] - ConditionCompound should not
+    try and propagate null failure text or cause
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1379'>SFOS-1379</a>] - Farm Customer can fail if a
+    ping() happens while a creation operation is underway
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1381'>SFOS-1381</a>] -
+    SFComponentDescriptionImpl.getDescriptionURL(url, params) should fail with a meaningful message if the URL
+    doesnt resolve to a resource
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1389'>SFOS-1389</a>] - ssh components don&#39;t do
+    password auth
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1393'>SFOS-1393</a>] - All JVM properties should be
+    passed down
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1399'>SFOS-1399</a>] - SmartFrog Timer should use
+    volatile fields when communicating between threads
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1405'>SFOS-1405</a>] - ManualFarmer tests failing:
+    clusterLimit of -1 breaks HashMap constructor
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1406'>SFOS-1406</a>] - DeploymentFactory instances
+    aren&#39;t remoting properly
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1413'>SFOS-1413</a>] - rpm not building
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1415'>SFOS-1415</a>] - init.d smartfrogd script
+    status check doesn&#39;t check status, it starts smartfrog
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1416'>SFOS-1416</a>] - smartfrog-hadoop RPM not
+    installing as smartfrog-jasper not found
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1420'>SFOS-1420</a>] - init.d smartfrogd script
+    should fail early for no java on path
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1433'>SFOS-1433</a>] - json-lib doesnt come in from
+    ivy
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1435'>SFOS-1435</a>] - csh/tcsh scripts build the
+    path up wrong
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1436'>SFOS-1436</a>] - race condition in
+    deploy-over-SSH; need to wait for sfDaemon up
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1438'>SFOS-1438</a>] - json-lib depends on other
+    things that the RPM doesn&#39;t expect
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1439'>SFOS-1439</a>] - Hadoop build isn&#39;t
+    working with latest versions of apache hadoop build process
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1440'>SFOS-1440</a>] - Hadoop SVN_HEAD isn&#39;t
+    starting up under SF
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1450'>SFOS-1450</a>] - PortUtils.checkPort should
+    not bail out on a connectionRefused until the connect timeout is reached
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1461'>SFOS-1461</a>] - Cloudfarmer Web UI needs to
+    make the reference back to the cloudfarmer a singleton
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1467'>SFOS-1467</a>] - cloudfarmer isn&#39;t
+    accepting jobs from the hadoop-site xml file
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1468'>SFOS-1468</a>] - JobTracker only listening on
+    the localhost port
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1487'>SFOS-1487</a>] - jetty bulkio tests fail on
+    jetty as port 8080 is in use
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1488'>SFOS-1488</a>] - Hudson is failing
+    .IvyLibraryTest.testLocalSmartFrog
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1498'>SFOS-1498</a>] - restlet testwar test failing
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1499'>SFOS-1499</a>] - EC2 cloudfarmer test failing
+    w/ resolution problem
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1501'>SFOS-1501</a>] - Hudson OOM on
+    smartfrog-core-tests
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1504'>SFOS-1504</a>] - commons-logging bridge to
+    SmartFrog isn&#39;t working
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1510'>SFOS-1510</a>] - JavascriptTest failing -
+    Race Condition in TestCompoundImpl
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1511'>SFOS-1511</a>] - sf network failure tests
+    timing out, causing followon test problems
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1512'>SFOS-1512</a>] - mysql tests failing on
+    hudson
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1526'>SFOS-1526</a>] - Race condition still in
+    TestCompoundImpl
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1527'>SFOS-1527</a>] - subprocess tests failed in
+    hudson. Transient or real problem?
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1543'>SFOS-1543</a>] - rpmbuild failing,
+    serializer.jar
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1559'>SFOS-1559</a>] - telnet not logging in to
+    windows
+  </li>
+</ul>
+
+<h4> Improvement
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-420'>SFOS-420</a>] - add security options to the
+    servlet context
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-425'>SFOS-425</a>] - Metabug: Adopt Java5 Language
+    features
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-454'>SFOS-454</a>] - Make RPM code in avalanche
+    self contained component, and production ready
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-908'>SFOS-908</a>] - PrimDeployer could provide a
+    more meaningful message when deploying a component with sfClass &quot;&quot;
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1048'>SFOS-1048</a>] - add smartfrog-ec2 RPM
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1118'>SFOS-1118</a>] - Move up to the latest Xalan
+    release when Ivy can handle its SHA1
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1201'>SFOS-1201</a>] - add TestBlock lifecycle
+    events and attributes to xunit test runner
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1260'>SFOS-1260</a>] - move the ivy JAR in the SVN
+    repository to the appropriate place in the repository/ tree
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1267'>SFOS-1267</a>] - extend SFParse to parse
+    strings and input streams
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1286'>SFOS-1286</a>] - Move up to typica 1.5
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1288'>SFOS-1288</a>] - Provide a way to list roles
+    on a ClusterFarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1292'>SFOS-1292</a>] - Move EC2 image ID test up to
+    sfStart()
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1294'>SFOS-1294</a>] - Move some of the jetty test
+    .sf files into the sf-jetty JAR.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1296'>SFOS-1296</a>] - Move javax.scripting code
+    from components/groovy into sfServices
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1313'>SFOS-1313</a>] - servlet context to take
+    options from a nested CD, rather than a list of string tuples
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1314'>SFOS-1314</a>] - Jetty component to eliminate
+    need for JettyHome
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1317'>SFOS-1317</a>] - servlet context to use a
+    resource path as a source of files
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1319'>SFOS-1319</a>] - tests should run if a
+    testcase is set
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1330'>SFOS-1330</a>] - Include proxy settings in
+    diagnostics report
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1332'>SFOS-1332</a>] - make terminated gracefully!!
+    message more subtle
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1338'>SFOS-1338</a>] - Strip unneeded struts 1.3
+    dependencies from the ivy files and hence the RPMs
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1342'>SFOS-1342</a>] - Move up to slf4J 1.5.2
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1343'>SFOS-1343</a>] - move up to restlet 1.1.6
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1346'>SFOS-1346</a>] - Jetty to have a transient
+    context class to wrap its non-serializable contexts
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1347'>SFOS-1347</a>] - Servlet contexts (especialy
+    Jetty) to have an attributes CD
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1348'>SFOS-1348</a>] - Cloudfarmer webapp to pick
+    up controller URL from servlet context
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1350'>SFOS-1350</a>] - review subclasses of
+    SmartFrogThread.run() and move to execute() where appropriate
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1355'>SFOS-1355</a>] - ant sfManagementConsole
+    -started console to have the full test classpath
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1357'>SFOS-1357</a>] - clusterfarmer interface to
+    add {join, leave} cluster methods
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1360'>SFOS-1360</a>] - Move scp operations from a
+    component into utility class that can be called from different components
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1361'>SFOS-1361</a>] - Move up to 0.1.42 of jsch
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1368'>SFOS-1368</a>] - export ExpandFully&#39;s
+    code to save a CD to a file as a static method
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1376'>SFOS-1376</a>] - Clean up CDPrinter
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1382'>SFOS-1382</a>] - ExpandFullyTask to print
+    filename when reporting a file not found
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1384'>SFOS-1384</a>] - Have deploy-over-ssh
+    deployer take a directory for he SmartFrog binaries
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1391'>SFOS-1391</a>] - Move HadoopUtils to
+    core/smartfrog as PortUtils
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1395'>SFOS-1395</a>] - Make it possible for
+    workflow thread subclasses to override termination record creation
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1400'>SFOS-1400</a>] - subprocess liveness failure
+    should log at info and not debug
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1408'>SFOS-1408</a>] - Move EC2 cloudfarmer
+    implementation to ec2 component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1419'>SFOS-1419</a>] - add an optional lists of
+    ports for every role
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1428'>SFOS-1428</a>] - Cloudfarmer UI improvements
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1429'>SFOS-1429</a>] - Mark
+    /etc/sysconfig/smartfrog as a configuration file
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1434'>SFOS-1434</a>] - sfContext could identify
+    which value is null, when complaining of a null value
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1437'>SFOS-1437</a>] - Cloudfarmer SSH deployer to
+    spin waiting for a hostname to resolve
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1443'>SFOS-1443</a>] - exceptions other than
+    SFDeploymentExceptions should include fault toString() value when being wrapped
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1452'>SFOS-1452</a>] - Add a Spinner class which
+    sleeps for a period up to a timeout
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1453'>SFOS-1453</a>] - cloudfarmer node link parser
+    should handle strings that parse to integers
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1456'>SFOS-1456</a>] - Move cloudfarmer web front
+    end to styles, improve appearance
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1457'>SFOS-1457</a>] - Enhancements to Spinner
+    class
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1474'>SFOS-1474</a>] - make CloudFarmer SSH
+    deployer retry count and sleep times configurable
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1477'>SFOS-1477</a>] - Move WorkerThreadPrimImpl
+    into core
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1478'>SFOS-1478</a>] - add
+    **/*.html,**/xhtml,**/*.ico to the list of useful files
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1479'>SFOS-1479</a>] - move commons-fileupload from
+    sf-restlet to httpclient dependencies of sf-www
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1481'>SFOS-1481</a>] - Provide static operation to
+    create a commons-log instance from an SF log
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1484'>SFOS-1484</a>] - extended SF daemon ant task
+    to pass down log4j, commons-logging and jetty logging configuration properties
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1493'>SFOS-1493</a>] - move up to htmlunit 2.7
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1495'>SFOS-1495</a>] - Jetty component to include
+    binding details (host, port) when binding fails
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1505'>SFOS-1505</a>] - Move
+    LocalSmartFrogDescriptor to core
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1509'>SFOS-1509</a>] - reformat SFProcessExecution
+    code, place all kill logic into a single synchronized method
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1514'>SFOS-1514</a>] - move up to Ivy 2.2.0-rc1
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1516'>SFOS-1516</a>] - Move sf-www up to
+    commons-codec 1.4
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1517'>SFOS-1517</a>] - fix ivy conflicts so that
+    the strict conflict manager can be used
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1520'>SFOS-1520</a>] - copy JSP health checks from
+    Hadoop to jetty
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1521'>SFOS-1521</a>] - Move TestContextInjector
+    into the sfServices JAR
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1522'>SFOS-1522</a>] - PortCheckingTestBase to
+    include (Address, port) on connection refused problems
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1523'>SFOS-1523</a>] - Move up to SLF4J 1.6.1
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1524'>SFOS-1524</a>] - Add httpcommons 4.x to
+    sf-www component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1525'>SFOS-1525</a>] - move up to
+    jetty.version=6.1.25
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1528'>SFOS-1528</a>] - Move sf-json up to
+    commons-beanutils 1.8.3
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1530'>SFOS-1530</a>] - Move waitforPortOpen into
+    PortCheckingTestBase
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1532'>SFOS-1532</a>] - add the Connection header to
+    HttpHeaders
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1533'>SFOS-1533</a>] - Make sure the sf-tasks JAR
+    is in all SF distributions
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1534'>SFOS-1534</a>] - Improve error message on a
+    &lt;functionaltest&gt; timeout
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1535'>SFOS-1535</a>] - create extras/bulkiotests
+    module for bulk IO operations, tune its build for v. long test runs
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1536'>SFOS-1536</a>] - Move up to Ivy 2.2.0
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1538'>SFOS-1538</a>] - Have PrimHostDeployer be
+    slightly more helpful on failures
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1539'>SFOS-1539</a>] - switch utf-8 encoding in
+    SFParser to its proper name UTF-8, and place in a constant
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1547'>SFOS-1547</a>] - move sf-net to commons-net
+    2.2
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1549'>SFOS-1549</a>] - bind all jetty servlet
+    contexts to their owner
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1553'>SFOS-1553</a>] - Move WrappedInstance from
+    Jetty to smartfrog core
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1557'>SFOS-1557</a>] - WrappedInstance to take a
+    string description in the setInstance method and the constructor
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1558'>SFOS-1558</a>] - query that a process is
+    reachable before trying to deploy
+  </li>
+</ul>
+
+<h4> New Feature
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-392'>SFOS-392</a>] - Add Atom component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-440'>SFOS-440</a>] - Add SuSE support from the RPMs
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-557'>SFOS-557</a>] - add ant junit report format
+    for xunit test runs
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1129'>SFOS-1129</a>] - add sf-groovy RPM
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1206'>SFOS-1206</a>] - Add a component to
+    read/write the current headless setting
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1212'>SFOS-1212</a>] - hadoop-cluster to have the
+    ability to do a deployment over SCP
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1242'>SFOS-1242</a>] - add a citerank project to
+    stress test and benchmark hadoop clusters
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1279'>SFOS-1279</a>] - Create &quot;Farmer&quot;
+    interface for talking (remotely) to a cluster farmer -and Mock implementation
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1285'>SFOS-1285</a>] - EC2/AWS components to use
+    the PasswordProvider interface to get a password
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1297'>SFOS-1297</a>] - Add component
+    FarmHasDeployedInstances which can assert that a ClusterFarmer has a specified number of deployed
+    instances in a specific role
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1298'>SFOS-1298</a>] - Add a way to create string
+    lists from an attribute of a CD
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1316'>SFOS-1316</a>] - create some sample mime type
+    components
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1318'>SFOS-1318</a>] - MimeTypes component to take
+    a CD full of mime type mappings and set them up
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1327'>SFOS-1327</a>] - Add tests for Mombasa
+    webapps
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1345'>SFOS-1345</a>] - Cloud Farmers to have an
+    available() method
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1359'>SFOS-1359</a>] - add a remote smartfrog
+    daemon service to cloudfarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1372'>SFOS-1372</a>] - Add a string length
+    condition
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1377'>SFOS-1377</a>] - add ReleaseAllFarmResources
+    component that deletes all resources belonging to a specific user.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1385'>SFOS-1385</a>] - Add FarmCheckRoles component
+    to check both the role listing methods, and to verify the exact set of roles provided
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1403'>SFOS-1403</a>] - add diagnostics text to
+    every deployment factory
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1411'>SFOS-1411</a>] - Cloudfarmer webapp needs to
+    implement node deletion
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1418'>SFOS-1418</a>] - Automate rollout of RPMs to
+    mountable Volume
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1422'>SFOS-1422</a>] - add sfList shell script to
+    list deployed components
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1430'>SFOS-1430</a>] - automount setup script to
+    allow /etc/sysconfig/smartfrog to be overwritten
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1448'>SFOS-1448</a>] - implement a
+    FileSystem.close(Closeable) and redirect the other close operations to it
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1458'>SFOS-1458</a>] - Cloudfarmer web ui to serve
+    up the Hadoop XML file
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1471'>SFOS-1471</a>] - Restrict number of lines
+    that management console display text area will use to prevent out of memory problem
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1476'>SFOS-1476</a>] - add tests for big data
+    upload/download and long-lived connections
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1486'>SFOS-1486</a>] - Add support for filters in
+    the servlet context and jetty
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1494'>SFOS-1494</a>] - add grizzly ivy dependencies
+    for the jersey component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1496'>SFOS-1496</a>] - add grizzly component, jars,
+    rpm etc
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1537'>SFOS-1537</a>] - bind servlets to their
+    owning SF component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1552'>SFOS-1552</a>] - add a RemoteToString
+    interface in core for prim and other components to eventually implement
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1555'>SFOS-1555</a>] - add a way for the sf-daemon
+    task to set the server hostname that RMI exports things on
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1560'>SFOS-1560</a>] - add a way to install
+    certificates from ant into the current JVM
+  </li>
+</ul>
+
+<h4> Task
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-103'>SFOS-103</a>] - Finish ActiFrog - ProActive
+    deployer for SmartFrog
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-107'>SFOS-107</a>] - Improvements for Eclipse
+    Plugin
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-119'>SFOS-119</a>] - Prepare installer for
+    Avalanche.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-424'>SFOS-424</a>] - Implement TestContext
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1259'>SFOS-1259</a>] - Release 3.17.014
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1269'>SFOS-1269</a>] - Catch up my patches with
+    Hadoop core
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1270'>SFOS-1270</a>] - Move ping() logic out of
+    Hadoop code and into the SF extension classes
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1309'>SFOS-1309</a>] - Move unmaintained code into
+    the repository parallel to &quot;core&quot;, makes for faster checkups
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1363'>SFOS-1363</a>] - add a test for SSHexec using
+    a public key file, fix any breakages that show up
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1410'>SFOS-1410</a>] - Write up cloudfarmer for ACM
+    cloud conference
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1513'>SFOS-1513</a>] - Create a beta SF release,
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1562'>SFOS-1562</a>] - comment out Hadoop JARs and
+    RPM from SF release
+  </li>
+</ul>
+
+<h4> Sub-task
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-108'>SFOS-108</a>] - Update help documentation to
+    3.2 - Creating SmartFrog run configurations
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-109'>SFOS-109</a>] - Add functionality of NetBeans
+    plugin to this plugin
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-110'>SFOS-110</a>] - Check if it is possible to
+    create an IZpack installer for the plugin
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-111'>SFOS-111</a>] - Integrate plugin Help docs
+    into Forrest build.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-644'>SFOS-644</a>] - rpmlint complains about files
+    in /etc/profile.d
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-905'>SFOS-905</a>] - Move from direct inherited
+    configuration to a &quot;Cluster&quot; CD that defines the cluster
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-973'>SFOS-973</a>] - make the environment
+    construction less brittle
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1239'>SFOS-1239</a>] - choreograph tasktracker
+    deployment so they only come up after the Job Tracker is live and has published its live URL
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1301'>SFOS-1301</a>] - add jira category
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1302'>SFOS-1302</a>] - Move the services.farmer
+    code from sf-services to cloudfarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1303'>SFOS-1303</a>] - Patch the release RPM
+    process to include sf-cloudfarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1304'>SFOS-1304</a>] - Move the servlet prototype
+    from Mombasa into cloudfarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1305'>SFOS-1305</a>] - Write ant tasks to work with
+    the cloudfarmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1306'>SFOS-1306</a>] - add Manual farmer which
+    keeps a list of machines available for a role
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1307'>SFOS-1307</a>] - Move the EC2 cluster farmer
+    to the cloudfarmer component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1310'>SFOS-1310</a>] - Add more role operations
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1328'>SFOS-1328</a>] - Struts servlet hangs on
+    deployment - DTD download?
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1334'>SFOS-1334</a>] - Move dependencies to Struts
+    1.3.10 in ivy xml and hence RPMs
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1335'>SFOS-1335</a>] - remove dependencies on
+    portlet-api
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1336'>SFOS-1336</a>] - add struts happy pages and
+    test for struts working, independent of JSP support
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1337'>SFOS-1337</a>] - JSP2.1 error dispatch code
+    NPEs on struts 1.3
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1340'>SFOS-1340</a>] - Fix URL support in binding
+    to take a path to the cluster farmer
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1349'>SFOS-1349</a>] - add host operation must be
+    async to deal with infrastructure and install process
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1353'>SFOS-1353</a>] - Add cluster diagnostics
+    method, implementations and client page
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1369'>SFOS-1369</a>] - Drive ToolRunnerComponent
+    with inline configuration
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1424'>SFOS-1424</a>] - Have cloudfarmer bring up a
+    functional Hadoop cluster
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1444'>SFOS-1444</a>] - generate Hadoop XML config
+    files from deployments
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1544'>SFOS-1544</a>] - add sf-testharness to the
+    redistributables
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1545'>SFOS-1545</a>] - clean up some ivy files
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1546'>SFOS-1546</a>] - make the FilesCompound a
+    workflow component
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1548'>SFOS-1548</a>] - test DeleteFilesCompound
+  </li>
+</ul>
+
+</body>
+</html>
+
