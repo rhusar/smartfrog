@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hadoop-cluster" default="default">
+
+  <!--
+  /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Example/Demo hadoop cluster deployment.
+
+    This project contains no java source, just .sf files to deploy and anything else
+    needed to bring up a cluster.
+
+    To use the relevant targets, define properties for
+
+    namenode
+    datanode
+    tasktracker
+    jobtracker
+    filesystem  the filesystem
+    cluster     full cluster
+    cluster2     full cluster forked
+    simplejob simple data in/out test job
+
+    and run them. All will need the property namenode set,
+
+    targethost = single host for everything (default: localhost)
+    test.namenode = namenode host (default: targethost)
+    test.jobtracker = jobtracker host  (default: targethost)
+    test.datanode1 = datanode 1 host (default: targethost)
+    test.tasktracker1 = tasktracker 1 host (default: datanode1)
+    
+    for farm support
+    mockfarmer - create a mockfarmer
+
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <!-- override point -->
+  <property file="build.properties"/>
+    <!-- tests are on-->
+  <!--<property name="system.tests" value="true"/>-->
+  <property name="junit.timeout" value="120000000"/>
+  <!--ask for more memory-->
+  <property name="daemon.jvmargs" value="-Xmx256m" />
+  <!--time for a single test to execute-->
+  <property name="test.timeout.execute"    value="120000"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+
+  <target name="init-deploy-properties" depends="declare-extended-smartfrog-tasks">
+    <!-- work out our host address-->
+    <sf-localhost property="localhost" />
+    <sf-localhost property="localip" useAddress="true" />
+    <echo>localhost = "${localhost}" localip=${localip} </echo>
+    <property name="targethost" value="${localhost}" />
+    <property name="test.targethost" value="${targethost}" />
+    <property name="test.ipaddress" value="${localip}" />
+    <property name="test.namenode" value="${test.targethost}" />
+    <property name="test.jobtracker" value="${test.targethost}" />
+    <property name="test.datanode1" value="${test.targethost}" />
+    <property name="test.tasktracker1" value="${test.datanode1}" />
+
+    <property name="binding.master.hostname" value="${targethost}" />
+    <property name="binding.tasktracker.slots" value="4" />
+    
+    
+    <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
+    <property name="cluster.sf" value="${cluster}/cluster.sf" />
+    <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
+    <property name="cluster3.sf" value="${cluster}/cluster3.sf" />
+    <property name="cluster4.sf" value="${cluster}/cluster4.sf" />
+    <property name="default.sf" value="${cluster}/cluster4-default.sf" />
+    <property name="deploy.sf" value="${cluster4.sf}" />
+    <!--this sets the name for the tests-->
+    <property name="deploy.host" value="${test.namenode}" />
+    <property name="application.name" value="${project.name}"/>
+    <property name="deploy.timeout" value="600000" />
+    <echo>
+      test.targethost=${test.targethost}
+      test.ipaddress=${test.ipaddress}
+      deploy.host=${deploy.host}
+      application.name=${application.name}
+      deploy.sf=${deploy.sf}
+    </echo>
+    <property name="build.sf.dir" location="${build.dir}/sf" />
+    <mkdir  dir="${build.sf.dir}"/>
+
+    <property name="build.default.sf" location="${build.sf.dir}/default.sf" />
+    <property name="src.scripts.dir" location="src/org/smartfrog/extras/hadoop/cluster/services/scripts" />
+    <property name="envVariables.sh" location="${src.scripts.dir}/setSFEnvVariables.sh" />
+
+  </target>
+
+
+  <target name="hosts">
+  </target>
+
+  <target name="ready-to-deploy" depends="common.ready-to-deploy,echo-deploy-settings" />
+
+  <target name="echo-deploy-settings" depends="common.ready-to-deploy">
+    <echo>
+      Deploying to ${deploy.host}
+      Echo deploy.timeout=${deploy.timeout}
+      targethost=${targethost}
+      test.namenode=${test.namenode}
+      test.jobtracker=${test.jobtracker}
+      test.datanode1=${test.datanode1}
+      test.tasktracker1=${test.tasktracker1}
+      daemon.jvmargs ="${daemon.jvmargs}"
+    </echo>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="cluster" depends="ready-to-deploy"
+      description="deploy a cluster">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="cluster"
+              descriptor="/${cluster.sf}"/>
+    </deploy>
+  </target>
+
+  <target name="cluster2" depends="ready-to-deploy"
+          description="deploy a forked cluster">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="cluster"
+                   descriptor="/${cluster2.sf}"/>
+    </deploy>
+  </target>
+
+  <target name="cluster4" depends="ready-to-deploy"
+          description="deploy a full cluster">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="cluster"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/cluster4.sf"/>
+    </deploy>
+  </target>
+
+
+  <target name="filesystem" depends="ready-to-deploy"
+      description="deploy a filesystem">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="filesystem"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/filesystem.sf"/>
+    </deploy>
+  </target>
+  <target name="checksecurity" depends="ready-to-deploy"
+          description="deploy a component to check the security settings">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="checksecurity"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/checksecurity.sf"/>
+    </deploy>
+  </target>
+  <target name="healthy" depends="ready-to-deploy"
+      description="deploy basic health checks">
+    <property name="healthy.name" value="healthy"/>
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="${healthy.name}"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/healthy.sf"/>
+    </deploy>
+  </target>
+
+  <target name="hdfs" depends="ready-to-deploy"
+      description="deploy a hdfs filesystem">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="hdfs"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/hdfs.sf"/>
+    </deploy>
+  </target>
+
+   <target name="namenode" depends="ready-to-deploy"
+      description="deploy a namenode">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="namenode"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/namenode/default.sf"/>
+    </deploy>
+  </target>
+
+  <target name="datanode" depends="ready-to-deploy"
+   description="deploy a namenode">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="datanode"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/datanode/default.sf"/>
+    </deploy>
+  </target>
+
+  <target name="jobtracker" depends="ready-to-deploy"
+      description="deploy a jobtracker">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="jobtracker"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/jobtracker/default.sf"/>
+    </deploy>
+  </target>
+
+
+  <target name="tasktracker" depends="ready-to-deploy"
+      description="deploy a tasktracker">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="tasktracker"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/tasktracker/default.sf"/>
+    </deploy>
+  </target>
+
+  <target name="simplejob" depends="ready-to-deploy"
+          description="deploy a simple test job, requires cluster2 to point to live cluster">
+    <deploy>
+      <syspropertyset>
+        <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="simplejob"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/simplejob.sf"/>
+    </deploy>
+  </target>
+
+   <target name="cluster2file" depends="ready-to-deploy"
+          description="export the cluster resource to an expanded file">
+
+     <sf-expandfully
+        resource="/${default.sf}"
+        dest="${build.default.sf}"
+        classpathRef="tests.run.classpath">
+       <!--copy all relevant properties -->
+       <syspropertyset>
+         <propertyref prefix="test."/>
+         <propertyref prefix="run."/>
+         <propertyref prefix="binding."/>
+       </syspropertyset>
+     </sf-expandfully>
+     <echo> file is ${build.default.sf}</echo>
+  </target>
+
+   <target name="cluster4file" depends="ready-to-deploy"
+          description="export the cluster resource to an expanded file">
+
+     <sf-expandfully
+        resource="/${default.sf}"
+        dest="${build.default.sf}"
+        classpathRef="tests.run.classpath"
+        >
+        <jvmarg line="${daemon.jvmargs}" />
+        <syspropertyset refid="proxy.settings"/>
+        <!--copy all relevant properties -->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+          <propertyref prefix="run."/>
+          <propertyref prefix="binding."/>
+        </syspropertyset>
+       </sf-expandfully>
+     <echo> file is ${build.default.sf}</echo>
+  </target>
+
+  <!-- this target inits/prints -->
+  <target name="init-ssh" depends="ready-to-deploy">
+    <property name="ssh.host" value="localhost" />
+    <property name="ssh.user" value="${user.name}" />
+    <property name="ssh.pass" value="" />
+    <property name="ssh.trust" value="true" />
+    <property name="ssh.verbose" value="false" />
+    <property name="ssh.home.dir" value="${env.SFHOME}" />
+    <property name="ssh.bin.dir" value="${ssh.home.dir}/bin" />
+    <property name="ssh.lib.dir" value="${ssh.home.dir}/lib" />
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.host}:${ssh.bin.dir}"/>
+    <echo>
+      ssh.host = ${ssh.host}
+      ssh.user = ${ssh.user}
+      ssh.home.dir = ${ssh.home.dir}
+      ssh.bin.dir = ${ssh.bin.dir}
+      ssh.path = ${ssh.path}
+    </echo>
+    <fail  unless="ssh.host" >Not set: ${ssh.host}</fail>
+    <fail  unless="ssh.user" >Not set: ${ssh.user}</fail>
+    <fail  unless="ssh.pass" >Not set: ${ssh.pass}</fail>
+    <property name="ssh.command.timeout" value="60000"/>
+    <!--
+        passphrase="${rpm.ssh.passphrase}"
+        keyfile="${rpm.ssh.keyfile}
+    -->
+    <presetdef name="sshcommand">
+      <sshexec host="${ssh.host}"
+          username="${ssh.user}"
+          password="${ssh.pass}"
+          trust="${ssh.trust}"
+          failonerror="true"
+
+          timeout="${ssh.command.timeout}"
+          />
+    </presetdef>
+   <presetdef name="scpfile">
+    <scp
+        password="${ssh.pass}"
+        trust="${ssh.trust}"
+        verbose="${ssh.verbose}"/>
+    </presetdef>
+
+  </target>
+
+  <target name="ready-to-ssh" depends="init-ssh,cluster2file"
+      description="be ready to ssh">
+  </target>
+
+  <!-- issue a mkdir command. This is a good test for the parameters being
+  set up right.-->
+  <target name="ssh-mkdir" depends="init-ssh"
+      description="create the remote destination directory">
+    <sshcommand command="mkdir -p ${ssh.bin.dir}" />
+  </target>
+
+  <target name="ssh-cluster" depends="ready-to-ssh,ssh-mkdir" 
+      description="ssh the configuration to a remote machine">
+    <scpfile remoteToDir="${ssh.path}">
+      <fileset file="${build.default.sf}" />
+      <fileset dir="${src.scripts.dir}" includes="*.sh"/>
+    </scpfile>
+    <sshcommand command="chmod a+x ${ssh.bin.dir}/*.sh" />
+  </target>
+
+  <target name="ssh-start" depends="init-ssh"
+      description="start the remote daemon">
+    <sshcommand command="${ssh.bin.dir}/remoteSfDaemon.sh" />
+  </target>
+
+  <target name="ssh-start-blocking" depends="init-ssh"
+      description="start the remote daemon">
+    <sshcommand command="nohup ${ssh.bin.dir}/sfDaemon&amp;" />
+  </target>
+
+  
+  <target name="ssh-stop" depends="init-ssh"
+      description="stop the remote daemon">
+    <sshcommand command="nohup ${ssh.bin.dir}/sfStopDaemon&amp;" />
+  </target>
+
+  <target name="ssh-ls-lib" depends="init-ssh"
+      description="list the remote lib dir">
+    <sshcommand command="ls -l ${ssh.lib.dir}" />
+  </target>
+
+  <target name="ssh-ls-bin" depends="init-ssh"
+      description="list the remote bin dir">
+    <sshcommand command="ls -l ${ssh.bin.dir}" />
+  </target>
+
+  <target name="ready-to-deploy-master"
+      depends="ready-to-deploy">
+    <property name="binding.master.hostname" value="localhost"/>
+    <property name="binding.tasktracker.slots" value="4"/>
+    <echo>binding.master.hostname = ${binding.master.hostname}</echo>
+  </target>
+
+  <target name="master"
+      description="Deploy the master node"
+      depends="ready-to-deploy-master">
+    <deploy>
+      <syspropertyset>
+          <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="master"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/bondable/master.sf"/>
+    </deploy>
+  </target>
+
+  <target name="worker"
+      description="Deploy a worker node"
+      depends="ready-to-deploy-master">
+    <deploy>
+      <syspropertyset>
+          <propertyref prefix="binding."/>
+      </syspropertyset>
+      <application name="worker"
+          descriptor="/org/smartfrog/extras/hadoop/cluster/services/bondable/worker.sf"/>
+    </deploy>
+  </target>
+
+
+  <target name="mockfarmer" depends="ready-to-deploy"
+      description="Deploy a mock farm manager" >
+    <property name="mockfarmer.sf" value="org/smartfrog/services/farmer/example.sf" />
+    <deploy>
+      <application name="farmer"
+          descriptor="/${mockfarmer.sf}"/>
+    </deploy>
+  </target>
+</project>

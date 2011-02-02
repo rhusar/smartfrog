@@ -1,0 +1,143 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ Components for testing jetty
+ */
+
+
+#include "/org/smartfrog/services/filesystem/components.sf";
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/jetty/examples/ports.sf"
+#include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/jetty/examples/war/waitforpages.sf"
+//#include "/org/smartfrog/services/www/jetty/test/system/htmlpage.sf"
+#include "/org/smartfrog/services/www/bulkio/client/components.sf"
+#include "/org/smartfrog/services/jetty/examples/jetty_bulkio_servlets.sf"
+
+
+#include "/org/smartfrog/services/filesystem/textfile.sf"
+
+/**
+ * this creates an HTMLPage
+ */
+
+HtmlFile extends TextFileUtf8 {
+    title "HTML Page";
+    body title;
+    _header ( "<head><title>" ++ title ++ "</title></head>\n");
+    _body ("<body>\n" ++ body ++ "\n</body>\n");
+    _html ( "<html>\n" ++ _header ++ _body ++ "\n</html>\n");
+    text _html;
+}
+
+IndexPage extends HtmlFile {
+    filename "index.html";
+    title "Index Page";
+}
+
+ /*
+  * serves up the entire temp directory
+*/
+TempDirServletContext extends JettyServletContext {
+ contextPath "/";
+ resourceBase ROOT:test.tempdir;
+}
+
+
+
+
+/*
+* A jetty server that serves up the temp directory jetty under java.io.tmpdir
+*/
+TempDirServer extends Compound {
+
+
+    sfSyncTerminate true;
+    port TBD;
+
+    //integrate logging with smartfrog
+    logging extends IntegrateJettyLogging;
+
+    server extends CoreJettyServer {
+    }
+
+    listener extends JettySocketConnector {
+        port PARENT:port;
+        server LAZY PARENT:server;
+    }
+
+    
+    tempDir extends TempDirWithCleanup {
+        prefix "jetty";
+    }
+
+
+    indexPage extends IndexPage {
+        dir LAZY tempDir;    
+        indexfile "index.html";
+        title "Index Page";
+    }
+
+
+    tempDirServletContext extends TempDirServletContext {
+        resourceBase LAZY tempDir:absolutePath;
+        server LAZY PARENT:server;
+    }
+    
+    servlets LAZY tempDirServletContext;
+    
+  
+    mimemap extends CoreMimeTypes {
+      context LAZY servlets;
+    }
+
+/*    jasper extends JettyJSPServlet {
+      context LAZY server;
+      pathSpec "*.jsp";
+      mappings [];
+      initOptions:sendErrorToClient true;
+    }
+  */
+    /**
+     * default HTML pages &c. For dev, everything HTML is served up
+     */
+    defaultContent extends DefaultContentServlet {
+      context LAZY servlets;
+      pathSpec "/";
+      initOptions:dirAllowed true;
+    }
+    
+}
+
+/**
+This is  the test compound for jetty; it pulls in test timeout from the properties in ports.sf
+*/
+JettyTestCompound extends TestCompound {
+
+    testTimeout test.timeout;
+
+}
+
+
+RunFailingTests extends IsPropertySet {
+  property "run.failing.tests";
+}
+

@@ -1,0 +1,67 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+TestComponent extends RComponent {
+	sfClass "org.smartfrog.services.persistence.test.testcases.SimpleRComponent";
+}
+
+TestDriver extends Compound {
+    sfClass "org.smartfrog.services.persistence.test.testcases.LockCollision";
+}
+
+
+sfConfig extends RComponent {
+   A extends TestComponent;
+   B extends TestComponent {
+      child1 extends TestComponent {
+         child1 extends TestComponent;
+         child2 extends TestComponent;
+      }
+      child2 extends TestComponent {
+         child1 extends TestComponent;
+         C extends TestComponent;
+      }
+      child3 extends TestComponent {
+         child1 extends TestComponent;
+         child2 extends TestComponent;
+      }
+   }
+   D extends TestComponent {
+      child1 extends TestComponent {
+         child1 extends TestComponent;
+         E extends TestComponent;
+      }
+      child2 extends TestComponent {
+         child1 extends TestComponent;
+         F extends TestComponent;
+      }
+      child3 extends TestComponent {
+         child1 extends TestComponent;
+         child2 extends TestComponent;
+      }
+   }
+   G extends TestComponent {
+      child1 extends TestComponent {
+         child1 extends TestComponent;
+         child2 extends TestComponent;
+      }
+      child2 extends TestComponent {
+         child1 extends TestComponent;
+         child2 extends TestComponent;
+      }
+      child3 extends TestComponent {
+         child1 extends TestComponent;
+         child2 extends TestComponent;
+      }
+   }
+   
+   testDriver extends TestDriver {
+       A LAZY PARENT:A;
+       B LAZY PARENT:B;
+       C LAZY PARENT:B:child2:C;
+       D LAZY PARENT:D;
+       E LAZY PARENT:D:child1:E;
+       F LAZY PARENT:D:child2:F;
+       G LAZY PARENT:G;
+   }       
+}

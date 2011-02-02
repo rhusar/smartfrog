@@ -1,0 +1,3 @@
+"HOST localhost:rootProcess:anubisService":DEPLOY:org/smartfrog/avalanche/client/sf/anubis/AnubisDeployer.sf::localhost:
+"HOST localhost:rootProcess:moduleStateManager":DEPLOY:org/smartfrog/avalanche/client/sf/anubis/ModuleStateManager.sf::localhost:
+"HOST localhost:rootProcess:anubisListener":DEPLOY:org/smartfrog/avalanche/client/sf/anubis/AnubisListenerDeployer.sf::localhost:

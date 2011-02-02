@@ -1,0 +1,65 @@
+description extends { AntElement "description";}
+filterchain extends { AntElement "filterChain";}
+filterreader extends { AntElement "filterreader";}
+filterset extends { AntElement "filterset";}
+mapper extends { AntElement "mapper";}
+redirector extends { AntElement "redirector";}
+
+//# different filename mappers
+identitymapper extends { AntElement "identitymapper";}
+flattenmapper extends { AntElement "flattenmapper";}
+globmapper extends { AntElement "globmapper";}
+mergemapper extends { AntElement "mergemapper";}
+regexpmapper extends { AntElement "regexpmapper";}
+packagemapper extends { AntElement "packagemapper";}
+unpackagemapper extends { AntElement "unpackagemapper";}
+compositemapper extends { AntElement "compositemapper";}
+chainedmapper extends { AntElement "chainedmapper";}
+filtermapper extends { AntElement "filtermapper";}
+
+patternset extends { AntElement "patternset";}
+regexp extends { AntElement "regexp";}
+substitution extends { AntElement "substitution";}
+xmlcatalog extends { AntElement "xmlcatalog";}
+extensionSet extends { AntElement "extensionSet";}
+extension extends { AntElement "extension";}
+selector extends { AntElement "selector";}
+signedselector extends { AntElement "signedselector";}
+scriptfilter extends { AntElement "scriptfilter";}
+assertions extends { AntElement "assertions";}
+concatfilter extends { AntElement "concatfilter";}
+issigned extends { AntElement "issigned";}
+isfileselected extends { AntElement "isfileselected";}
+isreachable extends { AntElement "isreachable";}
+mavenrepository extends { AntElement "mavenrepository";}
+scriptselector extends { AntElement "scriptselector";}
+scriptcondition extends { AntElement "scriptcondition";}
+xor extends { AntElement "xor";}
+parsersupports extends { AntElement "parsersupports";}
+scriptmapper extends { AntElement "scriptmapper";}
+isfailure extends { AntElement "isfailure";}
+
+//#ResourceCollections:
+dirset extends { AntElement "dirset";}
+filelist extends { AntElement "filelist";}
+fileset extends { AntElement "fileset";}
+path extends { AntElement "path";}
+propertyset extends { AntElement "propertyset";}
+zipfileset extends { AntElement "zipfileset";}
+classfileset extends { AntElement "classfileset";}
+libfileset extends { AntElement "libfileset";}
+files extends { AntElement "files";}
+restrict extends { AntElement "restrict";}
+union extends { AntElement "union";}
+difference extends { AntElement "difference";}
+intersect extends { AntElement "intersect";}
+sort extends { AntElement "sort";}
+resources extends { AntElement "resources";}
+
+//#Resources (single-element ResourceCollections):
+resource extends { AntElement "resource";}
+file extends { AntElement "file";}
+url extends { AntElement "url";}
+string extends { AntElement "string";}
+zipentry extends { AntElement "zipentry";}
+propertyresource extends { AntElement "propertyresource";}

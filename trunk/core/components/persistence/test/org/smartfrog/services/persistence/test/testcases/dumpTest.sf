@@ -1,0 +1,12 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+
+
+sfConfig extends RComponent {
+   child extends RComponent {
+       another extends RComponent {
+          child extends RComponent;
+       }
+   }
+}

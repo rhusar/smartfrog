@@ -1,0 +1,70 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/version.sf"
+
+ProcessCompoundSchema extends CompoundSchema {
+  sfProcessJava extends OptionalString {description "name for Java runtime";}
+  sfProcessClass extends OptionalString {description "entry class to SmartFrog";}
+  sfProcessAllow extends OptionalBoolean {description "decides if subprocesses are allowed in root process";}
+  sfProcessTimeout extends OptionalInteger {description "timeout for subprocess deployment in seconds";}
+  sfRootLocatorPort extends Integer {description "root locator port for SmartFrog";}
+  sfRootLocatorBindAddress extends Optional {description "root locator bind address for SmartFrog";}
+  sfRootLocatorClass extends OptionalString {description "class that implements root locator";}
+}
+
+ProcessCompound extends Compound {
+  sfPrimSchema extends ProcessCompoundSchema;
+  sfClass "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
+  sfDeployerClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
+  sfLivenessDelay 15;
+  sfLivenessFactor 2;
+  sfSyncTerminate true;
+
+  sfSubprocessGCTimeout 30; // Number of pings a subprocess will check for components before terminating itself. O = no SubProcGC
+
+  sfProcessClass "org.smartfrog.SFSystem";
+  sfProcessJavaPath (LAZY PROPERTY "java.home" ++ "/bin/");
+  sfProcessJava "java";
+  //sfProcessClassPath "smartfrog.jar";
+  //sfProcessReplaceClassPath false;
+  //sfProcessCodeBase "smartfrogCodebase.jar";
+  //sfProcessReplaceCodeBase false;
+  //sfProcessConfig extends DATA {} //Component description for special attributes to pass to next subProcess.
+  //sfProcessEnvVars extends DATA {} //Component description for special attributes to pass as env. properties to next subProcess.
+
+  sfProcessAllow true;
+  sfProcessTimeout 60;
+
+  sfRootLocatorClass "org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl";
+
+  sfRootLocatorPort 3800;
+
+  //sfRootLocatorBindAddress "localhost"; //by default not defined
+
+  // reference to root of current heirachy of processes - not necessarily a root process compound
+  rootProcess LAZY ROOT;
+
+  sfVersionInfo Version;
+  sfVersion sfVersionInfo:version;
+}
+
+sfConfig extends ProcessCompound;

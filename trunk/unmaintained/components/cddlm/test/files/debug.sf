@@ -1,0 +1,16 @@
+#include "org/smartfrog/services/cddlm/cddlm.sf"
+/*
+file:/home/slo/Projects/SmartFrog/Forge/core/components/cddlm/test/files/debug.sf
+
+
+sfStart localhost test file:/home/slo/Projects/SmartFrog/Forge/core/components/cddlm/test/files/debug.sf -Dorg.smartfrog.codebase=file:/home/slo/Projects/SmartFrog/Forge/core/components/cddlm/build/dist/lib/cddlm.jar 
+
+-Dorg.smartfrog.sfcore.security.debug=true
+*/
+sfCodeBase "file:/home/slo/Projects/SmartFrog/Forge/core/components/cddlm/build/dist/lib/cddlm.jar";
+
+sfLivenessDelay 0;
+
+sfConfig extends CddlmSystem {
+    sfLivenessDelay 0;
+}  

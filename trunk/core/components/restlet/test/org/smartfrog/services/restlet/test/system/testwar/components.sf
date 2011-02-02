@@ -1,0 +1,122 @@
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/services/jetty/examples/war/components.sf"
+#include "/org/smartfrog/services/restlet/test/system/testwar/ports.sf"
+#include "/org/smartfrog/services/restlet/test/system/components.sf"
+
+
+
+
+
+  WarTest extends TestCompound {
+      testTimeout test.timeout;
+      contextPath JettyWarServer:contextPath;
+      port JettyWarServer:port;
+
+      action extends JettyWarServer {
+          contextPath PARENT:contextPath;
+          port PARENT:port;
+      }
+
+
+      tests extends Sequence {
+        //this is the base liveness check
+        wait extends waitForPageOK {
+            port PARENT:PARENT:action:port;
+            page PARENT:PARENT:action:contextPath;
+        }
+
+        operations extends Sequence {
+
+        }
+
+      }
+
+  }
+
+  LocalGet extends GetRestResource {
+      sfShouldTerminate true;
+      useSystemProxySettings false;
+      host hostname;
+      page "/";
+    }
+
+  testWarDeployed extends WarTest  {
+    description "test that the root page of the WAR is deployed";
+    sfProcessName "testWarDeployed";
+
+      tests:operations  extends Sequence {
+
+        get extends LocalGet {
+          port PARENT:PARENT:PARENT:port;
+          path contextPath;
+        }
+      }
+
+  }
+
+
+   LocalErrorGet extends LocalGet {
+      page "/error";
+      errorCode 419;
+      queries [["status",errorCode]];
+      maximumResponseCode errorCode;
+      minimumResponseCode errorCode;
+    }
+
+  testErrorPageMinMax extends WarTest  {
+
+    description ##test that error page of the WAR returns the error we want,
+        and that the restlet client can be controlled to ask for different error codes#;
+
+    tests:operations  extends Sequence {
+
+        get extends LocalErrorGet {
+          port PARENT:ATTRIB port;
+          path contextPath;
+        }
+      }
+
+  }
+
+  testErrorPage extends WarTest  {
+
+    sfProcessName "testErrorPage";
+
+    description ##test that error page of the WAR returns the error we want,
+        and that the restlet client can be controlled to ask for different error codes#;
+
+    tests:operations  extends Sequence {
+
+        get extends LocalErrorGet {
+          port PARENT:ATTRIB port;
+          path contextPath;
+          startActions    [[GET,  errorCode,  errorCode]];
+          livenessActions [[HEAD, errorCode,  errorCode]];
+        }
+      }
+
+  }
+
+
+
+

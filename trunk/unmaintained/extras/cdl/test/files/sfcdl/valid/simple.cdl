@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+    xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:base="http://smartfrog.org/services/cdl/base/">
+
+
+  <cdl:documentation>
+    Simple system. 
+  </cdl:documentation>
+
+  <cdl:configuration>
+  </cdl:configuration>
+  <cdl:system>
+  </cdl:system>
+</cdl:cdl>
+

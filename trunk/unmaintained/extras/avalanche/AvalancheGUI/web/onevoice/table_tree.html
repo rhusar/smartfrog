@@ -1,0 +1,448 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" />
+<html>
+<head>
+<title> Tree Tables </title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<link rel="stylesheet" href="css/aural.css" type="text/css" media="aural" /> 
+<script language="JavaScript" type="text/javascript" src="js/treeTableManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/tableManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+</head>
+
+<body style="margin:20px;">
+<h3>Tree Tables </h3>
+
+<h4>Standard Tree Table</h4>
+<table border="0" cellpadding="0" cellspacing="0" class="treeTable">
+	<caption class="displayForAuralBrowsersOnly">Optional Table Title, Suppressed for media="screen"</caption>
+	<thead>
+		<tr class="captionRow">
+			<th>Network Name</th>
+			<th>Last Test Result</th>
+			<th>Column Name</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="treeTableTopLevel">
+			<td>Network</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested1">Network A</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested1">Network B</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested1">Network C</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested2">Network C1</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested2">Network C2</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="treeTableTopLevel">
+			<td>Widgets</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested1">Widget A</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested1">Widget B</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested2">Widget B1</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested2">Widget B2</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested2">Widget B3</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr>
+			<td class="nested1">Widget C</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+
+	</tbody>
+</table>
+
+
+<br>
+<br>
+<br>
+<br>
+<h4>Tree Table with Disclosure Controls</h4>
+
+<table border="0" cellpadding="0" cellspacing="0" class="treeTable">
+	<caption class="displayForAuralBrowsersOnly">Optional Table Title, Suppressed for media="screen"</caption>
+	<thead>
+		<tr class="captionRow">
+			<th>Network Name</th>
+			<th>Last Test Result</th>
+			<th>Column Name</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="treeTableTitleRowOpen treeTableTopLevel" id="tc_1234">
+			<td><div class="treeTitle"><div class="treeControl"></div>Network A</div></td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234">
+			<td class="nested2">Network A</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234">
+			<td class="nested2">Network A</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234">
+			<td class="nested2">Network A</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+	
+		<tr class="treeTableTitleRowOpen treeTableTopLevel" id="tc_4567">
+			<td><div class="treeTitle"><div class="treeControl"></div>Network B</div></td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_4567">
+			<td class="nested2">Network B0</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+			
+		<tr class="treeTableTitleRowOpen" id="tc_7890" parentid="tc_4567">
+			<td class="nested2"><div class="treeTitle"><div class="treeControl"></div>Network B1</div></td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_4567_7890">
+			<td class="nested3">Network B1a</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_4567_7890">
+			<td class="nested3">Network B1b</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_4567_7890">
+			<td class="nested3">Network B1c</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+	
+		<tr class="contentsRow" parentid="tc_4567">
+			<td class="nested2">Network B2</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_4567">
+			<td class="nested2">Network B3</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+
+		<tr class="treeTableTitleRowOpen treeTableTopLevel" id="tc_2468">
+			<td><div class="treeTitle"><div class="treeControl"></div>Network C</div></td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_2468">
+			<td class="nested2">Network C1</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_2468">
+			<td class="nested2">Network C3</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_2468">
+			<td class="nested2">Network C3</td>
+			<td>Success</td>
+			<td>lorem ipsem</td>
+		</tr>
+	</tbody>
+</table>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<h4>Selectable Tree Table with Disclosure Controls</h4>
+
+<table border="0" cellpadding="0" cellspacing="0" class="treeTable" id="table_some_unique_id">
+	<caption class="displayForAuralBrowsersOnly">Optional Table Title, Suppressed for media="screen"</caption>
+	<thead>
+		<tr class="captionRow">
+			<th class="checkboxCell"><input type="checkbox" tableid="table_some_unique_id"></th>
+			<th>Name</th>
+			<th>Status</th>
+			<th>Device Type</th>
+			<th>Product Name</th>
+			<th>Alternate Weltanshauung</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="treeTableTitleRowOpen treeTableTopLevel" id="tc_1234">
+			<td class="checkboxCell"></td>
+			<td><div class="treeTitle"><div class="treeControl"></div>Networks</div></td>
+			
+			<td>dokeo2002</td>
+			<td>N/A</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+			<td>lorem ipsem</td>
+		</tr>
+		
+		<tr class="contentsRow" parentid="tc_1234">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested2">Voice Networks</td>
+			
+			<td>Ldcp2058</td>
+			<td>N/A</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="treeTableTitleRowOpen" id="tc_5678"  parentid="tc_1234">
+			<td class="checkboxCell"></td>
+			<td class="nested2"><div class="treeTitle"><div class="treeControl"></div>Data Networks</div></td>
+			
+			<td>allSysLab 12b</td>
+			<td>Unknown</td>
+			<td>lorem ipsem</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_5678">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3">Data Network A</td>
+			
+			<td>Ldcp2058</td>
+			<td>Unknown</td>
+			<td>lorem ipsem Dolor sit amet, consectetuer adipiscing</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_5678">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3">Data Network B</td>
+			
+			<td>dokeo2002</td>
+			<td>N/A</td>
+			<td>adipiscing</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_5678">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3">Data Network C</td>
+			
+			<td>Ldcp2058</td>
+			<td>Unknown</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		
+		<tr class="treeTableTitleRowClosed" id ="tc_3692" parentid="tc_1234_5678">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3"><div class="treeTitle"><div class="treeControl"></div>Data Network D</div></td>
+			
+			<td>dokeo2002</td>
+			<td>N/A</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_5678_3692" style="display:none;">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested4">Data Network D, Subnet 1</td>
+			
+			<td>dokeo2002</td>
+			<td>N/A</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_5678_3692" style="display:none;">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested4">Data Network D, Subnet 2</td>
+			
+			<td>Ldcp2058</td>
+			<td>Unknown</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_5678">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3">Data Network E</td>
+			
+			<td>allSysLab 12b</td>
+			<td>N/A</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		<tr class="treeTableTitleRowOpen" id="tc_4826" parentid="tc_1234">
+			<td class="checkboxCell"></td>
+			<td class="nested2"><div class="treeTitle"><div class="treeControl"></div>Mixed Networks</div></td>
+			
+			<td>Ldcp2058</td>
+			<td>N/A</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_4826">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3">Mixed Network A</td>
+			
+			<td>dokeo2002</td>
+			<td>Unknown</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234_4826">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested3">Mixed Network B</td>
+			
+			<td>Ldcp2058</td>
+			<td>Unknown</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		<tr class="contentsRow" parentid="tc_1234">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested2">Matter-Teleportation Networks</td>
+			
+			<td>Ldcp2058</td>
+			<td>N/A</td>
+			<td>consectetuer</td>
+			<td>lorem ipsem</td>
+		</tr>
+		<tr class="contentsRow treeTableTopLevel">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested1">Widgets</td>
+			
+			<td>allSysLab 12b</td>
+			<td>Unknown</td>
+			<td>consectetuer adipiscing lorem ipsem</td>
+			<td>lorem ipsem dolor sit amet consectueter</td>
+		</tr>
+		<tr class="contentsRow treeTableTopLevel">
+			<td class="checkboxCell"><input type="checkbox" rowselector="yes"></td>
+			<td class="nested1">Foo</td>
+			
+			<td>dokeo2002</td>
+			<td>N/A</td>
+			<td>consectetuer adipiscing</td>
+			<td>lorem ipsem</td>
+		</tr>
+
+	</tbody>
+</table>
+
+<br>
+<br>
+<br>
+<br>
+
+
+
+<h4>HTML/CSS</h4>
+
+Tree Tables without disclosure controls have the following features: 
+<ul>
+	<li>the table tag has class "treeTable". 
+	<li>Rows that are at the top-level of the tree's hierarchy are of class "treeTableTopLevel".  
+	<li>Nesting is indicating purely by a class of "nested1", "nested2", "nested3" on the first td element in the row. 
+</ul>
+		
+		
+<p>Tree Tables with disclosure controls use additional HTML and CSS as follows:  
+		
+<ul>
+	<li>Rows that are parents of individual trees are of class "treeTableTitleRowOpen", or "treeTableTitleRowClosed". 
+	<li>Rows that are parents and that are also at the top-level of the tree's hierarchy are given the additional class name "treeTableTopLevel".  The two classnames are seperated by a space. 
+	<li>These parent rows must also have a unique id attribute prefixed by "tc_".  eg id="tc_7890". Unique id's can be any length
+	<li>Within these rows, the "tree cell" contains two divs:
+		<ul>
+			<li>a div of class "treeControl" that is empty
+			<li>a div of class "treeTitle", containing the text for the title.
+		</ul>
+	<li>Children of a given individual tree are of class "contentsRow". 
+	<li>All child rows in tree tables must have a "parentid" attribute. 
+	<li>For children that are only nested one level deep, the value of their parentid attribute matches the id of their parentRow. eg parentid="tc_7890". 
+	<li>On the other hand for children nested more than one level deep, the multiple unique id's of its various parent rows are appended and seperated by underscores. For instance a row with  parentid="tc_4567_7890"  is the child of two trees;  one with id "tc_4567", and one with id "tc_7890".  Note that the sequence of concatenated id's need not match the hierarchy.
+	<li>horizontal indentation to visually denote the nesting relationship between rows is handled by a seperate layer of class naming.  Specifically, within a given row, the relevant Td element (the td whose column contains your treeTitles and treeControls) is given either class "nested1",  "nested2", "nested3", etc..   
+	<li>Note that the main row of a tree containing the treeTitle and treeControl always shares the nesting level (and thus nesting classname) of its siblings, not of its children. 
+	<li>To load a given branch of a Tree Table in its closed state, two things must change. 
+		<ul>
+			<li>The main row must be of class "treeTableTitleRowClosed"  instead of "treeTableTitleRowOpen".
+			<li>Make sure to give all of its child rows a style attribute of style="display:none;"
+		</ul>
+</ul>
+
+<h4>Javascript</h4>
+<ul>
+	<li>treeTableManager.js contains a number of methods to both initialize these components when loaded and to manage their state at runtime. 
+	<li>Most notably, a large init function whose execution is managed by the reconcileEventHandlers function within global.js, attaches all of the various event handlers required to power the component. 
+	<li>For further discussion about the Selectable Tree Table variation, developers can refer to documentation under Selectable Table.
+</ul>
+
+
+<br><br><br>
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+
+</body>
+</html>

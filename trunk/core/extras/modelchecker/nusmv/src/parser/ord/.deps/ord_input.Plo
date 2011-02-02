@@ -1,0 +1,381 @@
+ord_input.lo ord_input.o: ord_input.c \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdio.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/_mingw.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stddef.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdarg.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/sys/types.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/string.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/errno.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdlib.h \
+  ../../utils/utils.h ../../../config.h \
+  ../../../../cudd-2.4.1.0/include/util.h ../../../config.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/unistd.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/io.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/process.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/getopt.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/ctype.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/assert.h \
+  ../../utils/defs.h /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdbool.h \
+  ../../utils/list.h ../../utils/ustring.h ../../utils/error.h \
+  ../../utils/utils.h ../../node/node.h ../../utils/defs.h \
+  ../../../../cudd-2.4.1.0/include/util.h ../../utils/NodeList.h \
+  ../../utils/utils.h ../../prop/prop.h ../../../config.h \
+  ../../compile/symb_table/SymbTable.h \
+  ../../compile/symb_table/SymbLayer.h \
+  ../../compile/symb_table/SymbType.h ../../node/node.h \
+  ../../utils/utils.h ../../utils/NodeList.h \
+  ../../compile/symb_table/SymbCache.h ../../utils/array.h \
+  ../../fsm/FsmBuilder.h ../../fsm/sexp/SexpFsm.h ../../fsm/sexp/sexp.h \
+  ../../utils/utils.h ../../node/node.h ../../fsm/sexp/Expr.h \
+  ../../compile/FlatHierarchy.h ../../node/node.h \
+  ../../compile/symb_table/SymbLayer.h \
+  ../../compile/PredicateNormaliser.h \
+  ../../compile/type_checking/TypeChecker.h ../../node/MasterNodeWalker.h \
+  ../../node/NodeWalker.h ../../node/node.h ../../utils/object.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/memory.h \
+  ../../utils/utils.h ../../compile/symb_table/SymbType.h \
+  ../../compile/symb_table/SymbTable.h ../../utils/utils.h \
+  ../../utils/utils.h ../../enc/bdd/BddEnc.h ../../enc/bdd/bdd.h \
+  ../../utils/utils.h ../../dd/dd.h ../../utils/utils.h \
+  ../../utils/array.h ../../utils/avl.h ../../node/node.h \
+  ../../../../cudd-2.4.1.0/include/cudd.h \
+  ../../../../cudd-2.4.1.0/include/mtr.h ../../enc/base/BoolEncClient.h \
+  ../../enc/bool/BoolEnc.h ../../enc/base/BaseEnc.h \
+  ../../compile/symb_table/SymbTable.h ../../utils/object.h \
+  ../../utils/utils.h ../../compile/symb_table/SymbTable.h \
+  ../../utils/NodeList.h ../../node/node.h ../../utils/utils.h \
+  ../../utils/object.h ../../enc/bool/BoolEnc.h \
+  ../../enc/utils/OrdGroups.h ../../utils/utils.h ../../utils/NodeList.h \
+  ../../node/node.h ../../compile/symb_table/SymbTable.h \
+  ../../fsm/sexp/Expr.h ../../fsm/bdd/bdd.h ../../utils/utils.h \
+  ../../dd/dd.h ../../utils/object.h ../../enc/utils/AddArray.h \
+  ../../dd/dd.h ../../utils/array.h ../../utils/WordNumber.h \
+  ../../compile/type_checking/TypeChecker.h ../../fsm/bdd/BddFsm.h \
+  ../../fsm/bdd/bdd.h ../../fsm/bdd/FairnessList.h ../../utils/object.h \
+  ../../node/node.h ../../trans/bdd/BddTrans.h \
+  ../../trans/generic/GenericTrans.h ../../utils/utils.h \
+  ../../trans/trans.h ../../utils/utils.h ../../trans/bdd/ClusterList.h \
+  ../../trans/bdd/Cluster.h ../../trans/bdd/ClusterOptions.h \
+  ../../utils/utils.h ../../utils/object.h ../../dd/dd.h \
+  ../../node/node.h ../../enc/bdd/BddEnc.h ../../fsm/sexp/sexp.h \
+  ../../compile/symb_table/SymbTable.h ../../dd/dd.h \
+  ../../trans/bdd/ClusterList.h ../../utils/utils.h \
+  ../../fsm/sexp/SexpFsm.h ../../fsm/bdd/BddFsm.h ../../fsm/be/BeFsm.h \
+  ../../fsm/sexp/SexpFsm.h ../../enc/be/BeEnc.h \
+  ../../enc/base/BoolEncClient.h ../../enc/bool/BoolEnc.h \
+  ../../compile/symb_table/SymbTable.h ../../be/be.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/limits.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/syslimits.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/limits.h \
+  ../../be/beRbcManager.h ../../utils/utils.h ../../be/be.h \
+  ../../utils/list.h ../../node/node.h ../../utils/object.h \
+  ../../utils/utils.h ../../node/node.h ../../be/be.h ../../utils/utils.h \
+  ../../utils/utils.h ../../utils/ustring.h ../../set/set.h \
+  ../../utils/utils.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/setjmp.h \
+  ord_grammar.h ParserOrd.h ../../utils/NodeList.h ParserOrd_private.h \
+  ../../node/node.h
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdio.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/_mingw.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stddef.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdarg.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/sys/types.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/string.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/errno.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdlib.h:
+
+../../utils/utils.h:
+
+../../../config.h:
+
+../../../../cudd-2.4.1.0/include/util.h:
+
+../../../config.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/unistd.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/io.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/process.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/getopt.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/ctype.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/assert.h:
+
+../../utils/defs.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdbool.h:
+
+../../utils/list.h:
+
+../../utils/ustring.h:
+
+../../utils/error.h:
+
+../../utils/utils.h:
+
+../../node/node.h:
+
+../../utils/defs.h:
+
+../../../../cudd-2.4.1.0/include/util.h:
+
+../../utils/NodeList.h:
+
+../../utils/utils.h:
+
+../../prop/prop.h:
+
+../../../config.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../compile/symb_table/SymbLayer.h:
+
+../../compile/symb_table/SymbType.h:
+
+../../node/node.h:
+
+../../utils/utils.h:
+
+../../utils/NodeList.h:
+
+../../compile/symb_table/SymbCache.h:
+
+../../utils/array.h:
+
+../../fsm/FsmBuilder.h:
+
+../../fsm/sexp/SexpFsm.h:
+
+../../fsm/sexp/sexp.h:
+
+../../utils/utils.h:
+
+../../node/node.h:
+
+../../fsm/sexp/Expr.h:
+
+../../compile/FlatHierarchy.h:
+
+../../node/node.h:
+
+../../compile/symb_table/SymbLayer.h:
+
+../../compile/PredicateNormaliser.h:
+
+../../compile/type_checking/TypeChecker.h:
+
+../../node/MasterNodeWalker.h:
+
+../../node/NodeWalker.h:
+
+../../node/node.h:
+
+../../utils/object.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/memory.h:
+
+../../utils/utils.h:
+
+../../compile/symb_table/SymbType.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../utils/utils.h:
+
+../../utils/utils.h:
+
+../../enc/bdd/BddEnc.h:
+
+../../enc/bdd/bdd.h:
+
+../../utils/utils.h:
+
+../../dd/dd.h:
+
+../../utils/utils.h:
+
+../../utils/array.h:
+
+../../utils/avl.h:
+
+../../node/node.h:
+
+../../../../cudd-2.4.1.0/include/cudd.h:
+
+../../../../cudd-2.4.1.0/include/mtr.h:
+
+../../enc/base/BoolEncClient.h:
+
+../../enc/bool/BoolEnc.h:
+
+../../enc/base/BaseEnc.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../utils/object.h:
+
+../../utils/utils.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../utils/NodeList.h:
+
+../../node/node.h:
+
+../../utils/utils.h:
+
+../../utils/object.h:
+
+../../enc/bool/BoolEnc.h:
+
+../../enc/utils/OrdGroups.h:
+
+../../utils/utils.h:
+
+../../utils/NodeList.h:
+
+../../node/node.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../fsm/sexp/Expr.h:
+
+../../fsm/bdd/bdd.h:
+
+../../utils/utils.h:
+
+../../dd/dd.h:
+
+../../utils/object.h:
+
+../../enc/utils/AddArray.h:
+
+../../dd/dd.h:
+
+../../utils/array.h:
+
+../../utils/WordNumber.h:
+
+../../compile/type_checking/TypeChecker.h:
+
+../../fsm/bdd/BddFsm.h:
+
+../../fsm/bdd/bdd.h:
+
+../../fsm/bdd/FairnessList.h:
+
+../../utils/object.h:
+
+../../node/node.h:
+
+../../trans/bdd/BddTrans.h:
+
+../../trans/generic/GenericTrans.h:
+
+../../utils/utils.h:
+
+../../trans/trans.h:
+
+../../utils/utils.h:
+
+../../trans/bdd/ClusterList.h:
+
+../../trans/bdd/Cluster.h:
+
+../../trans/bdd/ClusterOptions.h:
+
+../../utils/utils.h:
+
+../../utils/object.h:
+
+../../dd/dd.h:
+
+../../node/node.h:
+
+../../enc/bdd/BddEnc.h:
+
+../../fsm/sexp/sexp.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../dd/dd.h:
+
+../../trans/bdd/ClusterList.h:
+
+../../utils/utils.h:
+
+../../fsm/sexp/SexpFsm.h:
+
+../../fsm/bdd/BddFsm.h:
+
+../../fsm/be/BeFsm.h:
+
+../../fsm/sexp/SexpFsm.h:
+
+../../enc/be/BeEnc.h:
+
+../../enc/base/BoolEncClient.h:
+
+../../enc/bool/BoolEnc.h:
+
+../../compile/symb_table/SymbTable.h:
+
+../../be/be.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/limits.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/syslimits.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/limits.h:
+
+../../be/beRbcManager.h:
+
+../../utils/utils.h:
+
+../../be/be.h:
+
+../../utils/list.h:
+
+../../node/node.h:
+
+../../utils/object.h:
+
+../../utils/utils.h:
+
+../../node/node.h:
+
+../../be/be.h:
+
+../../utils/utils.h:
+
+../../utils/utils.h:
+
+../../utils/ustring.h:
+
+../../set/set.h:
+
+../../utils/utils.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/setjmp.h:
+
+ord_grammar.h:
+
+ParserOrd.h:
+
+../../utils/NodeList.h:
+
+ParserOrd_private.h:
+
+../../node/node.h:

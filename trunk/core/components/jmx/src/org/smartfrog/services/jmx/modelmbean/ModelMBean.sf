@@ -1,0 +1,69 @@
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/jmx/mbean/mbean.sf"
+#include "org/smartfrog/services/jmx/mbean/metadata.sf"
+
+/**
+ * Default description of a ModelMBean
+ */
+
+ModelMBean extends MBean {
+  class "org.smartfrog.services.jmx.modelmbean.SFModelMBean";
+
+  // managedResource LAZY targetObject; // Compulsory. It is the object on which operations are invoked
+  // resourceType "RMIReference"; // It is not used anymore since the resource type is checked in runtime
+
+  properties:name "SFModelMBean";
+  properties:type "sf.jmx.modelmbean";
+
+  /* Predefined fields with a default value */
+  fields extends {
+    name ATTRIB properties:name;      // By default same name as in properties
+    displayName ATTRIB name;          // Same as name
+    descriptorType "MBean";           // It should be always this type
+    log "True";                       // Flag indicating if to log all sent notifications. Possible values "T"/"F"
+    logfile "jmxNotification.log";    // The fully qualified file name where notifications should be logged.
+    currencyTimeLimit 0;              // Time period in seconds from when an attribute value is current and not stale
+                                      // 0: value must be retrieved in every request, -1: value never stale
+    persistPolicy "Never";            // Possible values "Never"/"OnTimer"/"OnUpdate"/"NoMoreOftenThan"
+    persistPeriod 0;                  // Valid only if the persistPolicy fields value is "OnTimer" or "NoMoreOftenThan".
+    persistLocation "jmxRepository";  // The fully qualified directory where files representing the persistent MBeans should be stored
+    persistName ATTRIB name;          // The filename into which this MBean should be stored
+    export true;                      // Any object indicating that the MBean should be exposed to other Agents
+    visibility 1;                     // 1-4 where 1: always visible 4: rarely visible
+    //presentationString "";          // XML-encoded string which describes how the attribute should be presented
+  }
+
+  /**
+   * Specify here all the AttributeInfo of the attributes to be exposed.
+   */
+  attributes extends { }
+
+  operations extends { }
+
+  notifications extends {
+    generic extends Generic;
+    change extends Change;
+    load extends Load;
+    store extends Store;
+  }
+}
+

@@ -1,0 +1,6 @@
+<project>
+  <modelVersion>446</modelVersion>
+  <groupId>java</groupId>
+  <artifactId>jna</artifactId>
+  <version>446</version>
+</project>

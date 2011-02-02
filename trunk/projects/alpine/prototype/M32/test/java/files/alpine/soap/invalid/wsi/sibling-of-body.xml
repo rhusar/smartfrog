@@ -1,0 +1,9 @@
+<!-- An ENVELOPE MUST NOT have any element children of soap:Envelope following the soap:Body element.-->
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
+  <soap:Body>
+    <p:Process xmlns:p='http://example.org/Operations'/>
+  </soap:Body>
+  <m:Data xmlns:m='http://example.org/information'>
+  Here is some data with the message
+  </m:Data>
+</soap:Envelope>

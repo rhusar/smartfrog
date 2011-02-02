@@ -1,0 +1,162 @@
+/* (C) Copyright 2008-2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ * 
+ * This is the default port stuff
+ */
+HadoopPortConfiguration extends {
+  ANY_PORT "0";
+  /**
+    The address where the datanode server will listen to.
+    If the port is 0 then the server will start on a free port.
+  */
+  DFS_DATANODE_ADDRESS_DEFAULT_PORT "50010";
+  /**
+    The datanode http server address and port.
+    If the port is 0 then the server will start on a free port.
+  */
+  DFS_DATANODE_HTTP_DEFAULT_PORT "50075";
+  DFS_DATANODE_HTTPS_PORT "50475";
+  
+   /**
+     The address and the base port where the dfs namenode web ui will listen on.
+     If the port is 0 then the server will start on a free port.
+   */
+   DFS_HTTP_DEFAULT_PORT "50070";
+   DFS_HTTPS_DEFAULT_PORT "50470";
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  DFS_DATANODE_IPC_DEFAULT_PORT "50020";
+  /**
+  The secondary namenode http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  DFS_SECONDARY_HTTP_DEFAULT_PORT "50090";
+ 
+  /**
+  The job tracker http server address and port the server will listen on.
+  If the port is 0 then the server will start on a free port.
+  */
+  MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT "50030";
+  
+  /**
+  The task tracker http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT "50060";
+  
+}
+
+/**
+ * This is where all the hostnames are worked out. It is kept separate and merged in where needed
+ */
+HadoopHostnameConfiguration extends HadoopPortConfiguration {
+
+/**
+   * hostnames
+   */
+  LOCALHOST "127.0.0.1";
+  ALL_ZEROS "0.0.0.0";
+  ANY_HOST ALL_ZEROS;
+  DEFAULT_HOSTNAME ALL_ZEROS;
+  DFS_DATANODE_DEFAULT_HOSTNAME DEFAULT_HOSTNAME;
+  
+  
+   /**
+   The address and the base port where the dfs namenode web ui will listen on.
+   If the port is 0 then the server will start on a free port.
+   */
+  dfs.datanode.hostname DFS_DATANODE_DEFAULT_HOSTNAME;
+  dfs.datanode.port  DFS_DATANODE_ADDRESS_DEFAULT_PORT;
+  dfs.datanode.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.port);
+
+
+  dfs.datanode.http.port DFS_DATANODE_HTTP_DEFAULT_PORT;
+  dfs.datanode.http.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.http.port);
+
+  dfs.datanode.https.port DFS_DATANODE_HTTPS_PORT;
+  dfs.datanode.https.address  (dfs.datanode.hostname ++ ":" ++ dfs.datanode.https.port);
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.ipc.port DFS_DATANODE_IPC_DEFAULT_PORT;
+  dfs.datanode.ipc.address (dfs.datanode.hostname ++ ":" ++ dfs.datanode.ipc.port);
+  DFS_HOSTNAME DEFAULT_HOSTNAME;
+  dfs.hostname DFS_HOSTNAME;
+  dfs.http.port DFS_HTTP_DEFAULT_PORT;
+  dfs.https.port DFS_HTTPS_DEFAULT_PORT;
+
+  dfs.http.address  (dfs.hostname ++ ":" ++ dfs.http.port);
+  dfs.https.address  (dfs.hostname ++ ":" ++ dfs.https.port);
+
+   /**
+     The secondary namenode http server address and port.
+     If the port is 0 then the server will start on a free port.
+   */
+  DFS_SECONDARY_HOSTNAME DEFAULT_HOSTNAME;
+  dfs.secondary.hostname DFS_SECONDARY_HOSTNAME;
+  dfs.secondary.http.port DFS_SECONDARY_HTTP_DEFAULT_PORT;
+  dfs.secondary.http.address  (dfs.secondary.hostname ++ ":" ++ dfs.secondary.http.port);
+
+  /**
+  The host and port that the MapReduce job tracker runs
+  at.  If "local", then jobs are run in-process as a single map
+  and reduce task.
+  */
+  MAPRED_JOB_TRACKER_DEFAULT_PORT "8012";
+
+  MAPRED_JOB_TRACKER_HOSTNAME DEFAULT_HOSTNAME;
+  mapred.job.tracker.hostname MAPRED_JOB_TRACKER_HOSTNAME;
+  mapred.job.tracker.port MAPRED_JOB_TRACKER_DEFAULT_PORT;
+  mapred.job.tracker  (mapred.job.tracker.hostname ++ ":" ++ mapred.job.tracker.port);
+
+  /**
+  The job tracker http server address and port the server will listen on.
+  If the port is 0 then the server will start on a free port.
+  */
+  MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT "50030";
+  mapred.job.tracker.http.port MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT;
+  //mapred.job.tracker  ("localhost:" ++ MAPRED_JOB_TRACKER_DEFAULT_PORT);
+  mapred.job.tracker.http.address  (mapred.job.tracker.hostname ++ ":" ++ mapred.job.tracker.http.port);
+
+
+   /**
+  The interface and port that task tracker server listens on.
+  Since it is only connected to by the tasks, it uses the local interface.
+  EXPERT ONLY. Should only be changed if your host does not have the loopback
+  interface.*/
+  mapred.task.tracker.report.hostname  LOCALHOST;
+  mapred.task.tracker.report.port  ANY_PORT;
+  mapred.task.tracker.report.address  (mapred.task.tracker.report.hostname  ++ ":" ++ mapred.task.tracker.report.port);
+
+
+  /**
+  The task tracker http server address and port.
+  If the port is 0 then the server will start on a free port.
+  */
+  MAPRED_TASK_TRACKER_HOSTNAME DEFAULT_HOSTNAME;
+  mapred.task.tracker.hostname MAPRED_TASK_TRACKER_HOSTNAME;
+  mapred.task.tracker.http.port MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT;
+  mapred.task.tracker.http.address (mapred.task.tracker.hostname  ++ ":" ++ mapred.task.tracker.http.port);
+}
