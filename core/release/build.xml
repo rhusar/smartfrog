@@ -515,6 +515,7 @@
     <ln artifact="groovy-engine" version="${groovy-engine.version}"/>
     
     <!-- hadoop -->
+<!-- Commented out as part of SFOS-1562
     <rpmpackage package="hadoop"/>
     <ln artifact="sf-hadoop" version="${smartfrog.version}"/>
     <ln artifact="hadoop-core" version="${hadoop.version}"/>
@@ -529,6 +530,7 @@
     <ln artifact="jets3t" version="${jets3t.version}"/>
     <ln artifact="paranamer" version="${paranamer.version}"/>
     <ln artifact="xmlenc" version="${xmlenc.version}"/>
+-->
 
     <!-- jersey -->
     <rpmpackage package="jersey"/>
@@ -902,7 +904,11 @@
         <include name="sf-ec2/${smartfrog.version}/*"/>
         <include name="sf-emailer/${smartfrog.version}/*"/>
         <include name="sf-groovy/${smartfrog.version}/*"/>
+<!-- SFOS-1562
+
         <include name="sf-hadoop/${smartfrog.version}/*"/>
+
+-->
         <include name="sf-jersey/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
