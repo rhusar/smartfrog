@@ -1,0 +1,237 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/hadoop/examples/waitforservices.sf"
+
+LocalHadoopCompound extends Compound {
+  //ordered startup/shutdown of child components
+  //sfSyncTerminate true;
+  fs.default.name  FS.DEFAULT.NAME;
+  namenodeURL      NAME_NODE_URL;
+  datanodeURL      DATA_NODE_URL ;
+
+  logDir extends TempDir;
+
+  dataDir extends TempDir;
+
+  nameDir extends TempDir;
+  
+  editsDir extends TempDir;
+}
+
+LocalNameNodeCompound extends LocalHadoopCompound {
+  description "A name node";
+
+  cluster LAZY namenode;
+
+  namenode extends LightweightNameNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDir LAZY PARENT:dataDir;
+    dataDirectories [dataDir];
+    nameDirectory LAZY PARENT:nameDir;
+    nameDirectories [nameDirectory];
+    editsDir LAZY PARENT:editsDir:absolutePath;
+    editDirectories [editsDir];
+    logDir LAZY PARENT:logDir;
+    dfs.namenode.startup IF (TEST_MODE) THEN ACTION_FORMAT ELSE ACTION_REGULAR FI;
+    dfs.http.address namenodeURL;
+    dfs.permissions false;
+    minWorkerCount 0;
+  }
+}
+
+LocalDataNodeCompound extends LocalNameNodeCompound {
+  description "A data node bound to a temporary directory";
+
+  localDataDir extends TempDir {
+
+  }
+
+
+  datanode extends  LightweightDataNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+  }
+
+
+
+
+}
+
+FilesystemWithActions extends LocalDataNodeCompound {
+
+
+  clusterActions extends WaitForServiceLive {
+    service LAZY PARENT:datanode;
+    //sfShouldTerminate false;
+
+    then extends Compound {
+      //sfShouldTerminate false;
+    }
+
+  }
+
+
+}
+
+
+
+TwoDataNodeCluster extends LocalDataNodeCompound {
+  localDataDir2 extends TempDir {
+
+  }
+
+  datanode2 extends datanode {
+    dataDirectories [LAZY localDataDir2];
+    dfs.datanode.https.port ANY_PORT;
+  }
+}
+
+/**
+ * A complete filesystem
+ */
+LocalFileSystemCompound extends FilesystemWithActions {
+
+
+}
+
+
+LocalJobTrackerCompound extends LocalFileSystemCompound {
+  description "A cluster with a job tracker";
+
+
+
+  jobtracker extends LightweightJobTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    dataDir LAZY PARENT:ATTRIB dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:ATTRIB nameDir;
+    nameDirectories [nameDir];
+    logDir LAZY PARENT:ATTRIB logDir;
+  }
+}
+
+
+
+
+/**
+ * A full tasktracker compound is slightly problematic as we have to block until
+ * the job tracker is started and it knows what its hostname is. This
+ * could be determined by looking at its state, but as we want to get the url from
+ * the live.mapred.job.tracker value, we just spin until that resolves. 
+ */
+LocalTaskTrackerCompound extends LocalJobTrackerCompound {
+  description "A cluster with a task tracker";
+
+  /*
+   * to deal with this, we run a sequence
+   */
+  tasktrackerSequence extends Sequence {
+
+    blockForNamenode extends WaitForNameNodeLive  {
+      service LAZY ATTRIB namenode;
+    }
+
+    blockForJobTrackerStarted extends WaitForNameNodeLive {
+      service LAZY ATTRIB jobtracker;
+    }
+
+    blockForJobTrackerReference extends WaitForHadoopLiveWorkflow  {
+      condition extends ReferenceResolves {
+        reference LAZY ATTRIB jobtracker:live.mapred.job.tracker;
+        serviceDescription "waiting for jobtracker:live.mapred.job.tracker";
+      }
+    }
+    
+    tasktracker extends LightweightTaskTracker {
+      fs.default.name PARENT:ATTRIB fs.default.name;
+      mapred.job.tracker LAZY ATTRIB jobtracker:live.mapred.job.tracker;
+    }
+  }
+}
+
+
+LocalClusterCompound extends LocalTaskTrackerCompound {
+
+  description "a full cluster";
+
+
+}
+
+
+
+/**
+Test sequence that checks that when a namenode is shut down, it goes away
+*/
+NamenodeShutdownSequence extends Sequence {
+  namenode TBD;
+
+  waitForNameNode extends WaitForNameNodeLive {
+    service LAZY PARENT:namenode;
+  }
+
+
+  //detach and terminate
+  terminateNameNode extends Terminator {
+    kill LAZY PARENT:namenode;
+    detachFirst true;
+  }
+
+  //now assert that it is dead
+  assertIPCClosed extends AssertNameNodeIPCClosed;
+  assertHttpClosed extends AssertNameNodeHttpClosed;
+}
+
+FileSystemLiveSequence extends Sequence {
+
+    namenode TBD;
+    datanode TBD;
+    datanodeCount 1;
+    //the cluster for all the tests
+    cluster namenode;
+
+    waitForNameNode extends WaitForNameNodeLive {
+      service LAZY PARENT:namenode;
+    }
+
+    waitForDataNode extends WaitForDataNodeLive {
+      service LAZY PARENT:datanode;
+    }
+
+
+}
+
+
+
+
+
+LocalClusterStatus extends ClusterStatus {
+  jobtracker TBD;
+
+  fs.default.name jobtracker:fs.default.name;
+  mapred.job.tracker jobtracker;
+  hadoop.job.ugi jobtracker:hadoop.job.ugi;
+  sfShouldTerminate true;
+  supportedFileSystem true;
+}
+
+
+

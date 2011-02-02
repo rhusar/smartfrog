@@ -1,0 +1,309 @@
+checkers/checkersInt.lo checkers/checkersInt.o: checkers/checkersInt.c \
+  checkers/checkersInt.h checkers/CheckerBase.h ../../../src/node/node.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdio.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/_mingw.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stddef.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdarg.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/sys/types.h \
+  ../../../src/utils/defs.h ../../../config.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/assert.h \
+  ../../../../cudd-2.4.1.0/include/util.h ../../../config.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/unistd.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/io.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/process.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/getopt.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/ctype.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdlib.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/string.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdbool.h \
+  ../../../../cudd-2.4.1.0/include/util.h ../../../src/node/NodeWalker.h \
+  ../../../src/node/node.h ../../../src/utils/object.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/memory.h \
+  ../../../src/utils/utils.h ../../../src/utils/defs.h \
+  ../../../src/utils/list.h ../../../src/utils/utils.h \
+  ../../../src/compile/symb_table/SymbType.h ../../../src/node/node.h \
+  ../../../src/utils/utils.h ../../../src/utils/object.h \
+  ../../../src/utils/utils.h ../../../src/opt/opt.h ../../../config.h \
+  ../../../src/utils/utils.h ../../../src/sat/sat.h ../../../config.h \
+  ../../../src/utils/utils.h ../../../src/be/be.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/limits.h \
+  /usr/lib/gcc/i686-pc-cygwin/3.4.4/include/syslimits.h \
+  /usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/limits.h \
+  ../../../src/be/beRbcManager.h ../../../src/utils/utils.h \
+  ../../../src/be/be.h ../../../src/utils/list.h \
+  ../../../src/utils/list.h ../../../src/node/node.h \
+  ../../../src/sat/SatSolver.h ../../../src/utils/object.h \
+  ../../../src/sat/SatIncSolver.h ../../../src/trans/trans.h \
+  ../../../src/utils/utils.h ../../../src/enc/enc.h \
+  ../../../src/utils/utils.h ../../../src/enc/bool/BoolEnc.h \
+  ../../../src/enc/base/BaseEnc.h \
+  ../../../src/compile/symb_table/SymbTable.h \
+  ../../../src/compile/symb_table/SymbLayer.h \
+  ../../../src/compile/symb_table/SymbType.h \
+  ../../../src/utils/NodeList.h ../../../src/node/node.h \
+  ../../../src/compile/symb_table/SymbCache.h ../../../src/utils/array.h \
+  ../../../src/utils/object.h ../../../src/utils/utils.h \
+  ../../../src/compile/symb_table/SymbTable.h \
+  ../../../src/utils/NodeList.h ../../../src/node/node.h \
+  ../../../src/utils/utils.h ../../../src/utils/object.h \
+  ../../../src/enc/bdd/BddEnc.h ../../../src/enc/bdd/bdd.h \
+  ../../../src/utils/utils.h ../../../src/dd/dd.h \
+  ../../../src/utils/utils.h ../../../src/utils/array.h \
+  ../../../src/utils/avl.h ../../../src/node/node.h \
+  ../../../../cudd-2.4.1.0/include/cudd.h \
+  ../../../../cudd-2.4.1.0/include/mtr.h \
+  ../../../src/enc/base/BoolEncClient.h ../../../src/enc/bool/BoolEnc.h \
+  ../../../src/enc/bool/BoolEnc.h ../../../src/enc/utils/OrdGroups.h \
+  ../../../src/utils/utils.h ../../../src/utils/NodeList.h \
+  ../../../src/node/node.h ../../../src/compile/symb_table/SymbTable.h \
+  ../../../src/fsm/sexp/Expr.h ../../../src/utils/utils.h \
+  ../../../src/node/node.h ../../../src/fsm/bdd/bdd.h \
+  ../../../src/utils/utils.h ../../../src/dd/dd.h \
+  ../../../src/utils/object.h ../../../src/enc/utils/AddArray.h \
+  ../../../src/dd/dd.h ../../../src/utils/array.h \
+  ../../../src/utils/WordNumber.h ../../../src/utils/utils.h \
+  ../../../src/compile/type_checking/TypeChecker.h \
+  ../../../src/node/MasterNodeWalker.h ../../../src/node/NodeWalker.h \
+  ../../../src/compile/symb_table/SymbType.h \
+  ../../../src/compile/symb_table/SymbTable.h ../../../src/utils/utils.h \
+  ../../../src/enc/be/BeEnc.h ../../../src/enc/base/BoolEncClient.h \
+  ../../../src/enc/bool/BoolEnc.h \
+  ../../../src/compile/symb_table/SymbTable.h ../../../src/be/be.h \
+  ../../../src/node/node.h ../../../src/utils/object.h \
+  ../../../src/utils/utils.h
+
+checkers/checkersInt.h:
+
+checkers/CheckerBase.h:
+
+../../../src/node/node.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdio.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/_mingw.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stddef.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdarg.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/sys/types.h:
+
+../../../src/utils/defs.h:
+
+../../../config.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/assert.h:
+
+../../../../cudd-2.4.1.0/include/util.h:
+
+../../../config.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/unistd.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/io.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/process.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/getopt.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/ctype.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/stdlib.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/string.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/stdbool.h:
+
+../../../../cudd-2.4.1.0/include/util.h:
+
+../../../src/node/NodeWalker.h:
+
+../../../src/node/node.h:
+
+../../../src/utils/object.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/memory.h:
+
+../../../src/utils/utils.h:
+
+../../../src/utils/defs.h:
+
+../../../src/utils/list.h:
+
+../../../src/utils/utils.h:
+
+../../../src/compile/symb_table/SymbType.h:
+
+../../../src/node/node.h:
+
+../../../src/utils/utils.h:
+
+../../../src/utils/object.h:
+
+../../../src/utils/utils.h:
+
+../../../src/opt/opt.h:
+
+../../../config.h:
+
+../../../src/utils/utils.h:
+
+../../../src/sat/sat.h:
+
+../../../config.h:
+
+../../../src/utils/utils.h:
+
+../../../src/be/be.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/limits.h:
+
+/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/syslimits.h:
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../i686-pc-mingw32/include/limits.h:
+
+../../../src/be/beRbcManager.h:
+
+../../../src/utils/utils.h:
+
+../../../src/be/be.h:
+
+../../../src/utils/list.h:
+
+../../../src/utils/list.h:
+
+../../../src/node/node.h:
+
+../../../src/sat/SatSolver.h:
+
+../../../src/utils/object.h:
+
+../../../src/sat/SatIncSolver.h:
+
+../../../src/trans/trans.h:
+
+../../../src/utils/utils.h:
+
+../../../src/enc/enc.h:
+
+../../../src/utils/utils.h:
+
+../../../src/enc/bool/BoolEnc.h:
+
+../../../src/enc/base/BaseEnc.h:
+
+../../../src/compile/symb_table/SymbTable.h:
+
+../../../src/compile/symb_table/SymbLayer.h:
+
+../../../src/compile/symb_table/SymbType.h:
+
+../../../src/utils/NodeList.h:
+
+../../../src/node/node.h:
+
+../../../src/compile/symb_table/SymbCache.h:
+
+../../../src/utils/array.h:
+
+../../../src/utils/object.h:
+
+../../../src/utils/utils.h:
+
+../../../src/compile/symb_table/SymbTable.h:
+
+../../../src/utils/NodeList.h:
+
+../../../src/node/node.h:
+
+../../../src/utils/utils.h:
+
+../../../src/utils/object.h:
+
+../../../src/enc/bdd/BddEnc.h:
+
+../../../src/enc/bdd/bdd.h:
+
+../../../src/utils/utils.h:
+
+../../../src/dd/dd.h:
+
+../../../src/utils/utils.h:
+
+../../../src/utils/array.h:
+
+../../../src/utils/avl.h:
+
+../../../src/node/node.h:
+
+../../../../cudd-2.4.1.0/include/cudd.h:
+
+../../../../cudd-2.4.1.0/include/mtr.h:
+
+../../../src/enc/base/BoolEncClient.h:
+
+../../../src/enc/bool/BoolEnc.h:
+
+../../../src/enc/bool/BoolEnc.h:
+
+../../../src/enc/utils/OrdGroups.h:
+
+../../../src/utils/utils.h:
+
+../../../src/utils/NodeList.h:
+
+../../../src/node/node.h:
+
+../../../src/compile/symb_table/SymbTable.h:
+
+../../../src/fsm/sexp/Expr.h:
+
+../../../src/utils/utils.h:
+
+../../../src/node/node.h:
+
+../../../src/fsm/bdd/bdd.h:
+
+../../../src/utils/utils.h:
+
+../../../src/dd/dd.h:
+
+../../../src/utils/object.h:
+
+../../../src/enc/utils/AddArray.h:
+
+../../../src/dd/dd.h:
+
+../../../src/utils/array.h:
+
+../../../src/utils/WordNumber.h:
+
+../../../src/utils/utils.h:
+
+../../../src/compile/type_checking/TypeChecker.h:
+
+../../../src/node/MasterNodeWalker.h:
+
+../../../src/node/NodeWalker.h:
+
+../../../src/compile/symb_table/SymbType.h:
+
+../../../src/compile/symb_table/SymbTable.h:
+
+../../../src/utils/utils.h:
+
+../../../src/enc/be/BeEnc.h:
+
+../../../src/enc/base/BoolEncClient.h:
+
+../../../src/enc/bool/BoolEnc.h:
+
+../../../src/compile/symb_table/SymbTable.h:
+
+../../../src/be/be.h:
+
+../../../src/node/node.h:
+
+../../../src/utils/object.h:
+
+../../../src/utils/utils.h:

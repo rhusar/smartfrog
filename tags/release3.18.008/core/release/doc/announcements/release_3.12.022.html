@@ -1,0 +1,401 @@
+<html>
+<head>
+  <title>SmartFrog 3.12.022</title>
+</head>
+<body>
+<h1>SmartFrog 3.12.022</h1>
+
+<p>
+This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
+deployment framework developed by HP Laboratories. SmartFrog enables
+applications to be deployed across multiple machines, configuring different
+aspects of the system so that they are all consistently configured, and managing
+the life-cycle of the application as a whole. The project's home page is
+<a href="http://smartfrog.org/">http://smartfrog.org/</a>
+</p>
+
+<p>
+The release artifacts are available at
+<a
+        href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308">
+  http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=176308</a>
+</p>
+
+<p>
+This release is 3.12.022; built from revision 5963
+of the SVN repository. This release has an extended language
+with the ability to tag attributes, and includes the following items:
+</p>
+<ul>
+
+  <li> Core smartfrog daemon, including services to manage files, start and stop
+    Java and native programs.
+  </li>
+  <li> Example components and applications.
+  </li>
+  <li> Ant support: ant tasks to deploy and terminate applications from a build.
+  </li>
+  <li> Ant components: the ability to execute ant tasks in a deployment.
+  </li>
+  <li> Anubis: a partition aware tuple-space that can be used to implement fault
+    tolerant systems.
+  </li>
+  <li> Database: components to issue database commands, and deploy HSLDB and MySQL.
+  </li>
+  <li> JMX: the ability to configure and manage JMX components, and to manage
+    SmartFrog components over JMX.
+  </li>
+  <li> Logging: integration with Apache commons-logging and Log4J
+  </li>
+  <li> Networking: email, FTP, SSH, DNS support.
+  </li>
+  <li> Quartz: scheduled operations using Quartz libraries.
+  </li>
+  <li> Scripting: support for BSF-hosted scripting languages
+  </li>
+  <li> Testing: Distributed JUnit and component testing with SFUnit.
+  </li>
+  <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+    is provided for all application servers that support, and a tomcat-specific
+    component can communicate with Apache Tomcat. The Jetty component can
+    configure and deploy individual servlets, eliminating much of the need for WAR
+    files themselves.
+  </li>
+  <li> XML: XML support with XOM.
+  </li>
+  <li> XMPP: Presence and messaging over Jabber.
+  </li>
+</ul>
+
+<h3>Packaging</h3>
+
+<p>
+This release is available as:
+</p>
+<ol>
+  <li> RPM files inside a .tar.gz file.
+  </li>
+  <li> a JAR installer.
+  </li>
+  <li>the original core smartfrog distribution as .zip and .tar.gz (deprecated)
+  </li>
+</ol>
+<p>
+
+The RPM installation is for RPM-based Linux systems. It comprises the following RPMs:
+</p>
+
+<table>
+  <tr>
+    <td><code>smartfrog</code></td>
+    <td>The core SmartFrog distribution.</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-daemon</code></td>
+    <td>The shell scripts to add the smartfrog distribution to the
+      path, and to run the daemon on start-up.
+    </td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-javadoc</code></td>
+    <td>javadocs for the project</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-ant</code></td>
+    <td>Ant task and build file execution</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-anubis</code></td>
+    <td>Distributed partition-aware tuple space</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-database</code></td>
+    <td>Database access</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-jmx</code></td>
+    <td>JMX integration though MX4J</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-junit</code></td>
+    <td>Junit 3.8.2 test execution</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-logging</code></td>
+    <td>Logging through Log4J and commons-logging</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-networking</code></td>
+    <td>SSH, SCP, FTP and email</td>
+  </tr>
+  </tr>
+  <tr>
+    <td><code>smartfrog-quartz</code></td>
+    <td>Scheduled operations</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-scripting</code></td>
+    <td>Scripted components</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-www</code></td>
+    <td>Web support: Deployment and liveness pages</td>
+  </tr>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xml</code></td>
+    <td>XML Support</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xmpp</code></td>
+    <td>XMPP/Jabber communications</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-xunit</code></td>
+    <td>Distributed testing and reporting</td>
+  </tr>
+</table>
+</table>
+<p>
+All the JAR files are also published to a repository that is compatible with
+Apache Maven and Ivy. Add
+<a
+        href="http://smartfrog.sourceforge.net/repository">http://smartfrog.sourceforge.net/repository</a>
+to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+</p>
+
+<p>
+There are also SmartFrog components to retrieve artifacts from such a repository
+(the Library components under /org/smartfrog/services/os/java/library.sf ),
+which can be used for dynamic download of SmartFrog and other artifacts.
+</p>
+
+<h3>Security warning</h3>
+
+<p>
+
+Unless SmartFrog is configured with security, a running daemon
+will listen on its configured port for incoming deployment requests, and deploy
+the applications with the rights of the user running the daemon. When the
+smartfrog-daemon RPM is installed, that means that a process running as root
+will be listening on an open port for incoming deployment requests. Do not
+deploy SmartFrog this way on any untrusted network, not without turning security
+on and, ideally, recreating the RPMs with signed JAR files.
+</p>
+
+<h3>Building SmartFrog</h3>
+
+<p>
+SmartFrog requires Java 1.5 and Ant 1.7 to build.
+</p>
+
+<p>
+
+The distribution does not include a source tree adequate to build the entire
+system. Please follow the instructions at
+<a href="http://sourceforge.net/svn/?group_id=87384">http://sourceforge.net/svn/?group_id=87384
+</a>
+and check out smartfrog/trunk/core from our repository.
+</p>
+
+<p>
+
+This release was built with revision 5963 of the repository, which
+is available under the SVN branch
+<a href="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.022">https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.022</a>
+</p>
+
+<p>
+We strongly encourage anyone interested in building or extending smartfrog to
+get involved in the smartfrog developer mailing list, which can be found from
+the sourceforge project page
+<a href="http://sourceforge.net/projects/smartfrog/">
+  http://sourceforge.net/projects/smartfrog/</a>
+</p>
+
+
+<h3>Reporting Bugs</h3>
+
+<p>
+Please file all bug reports at <a
+        href="http://jira.smartfrog.org/">http://jira.smartfrog.org/</a>
+</p>
+
+<p>
+The SmartFrog Team
+</p>
+
+
+<h3>Changes since last release</h3>
+
+<p>
+The main areas that SmartFrog has been improved in the last fortnight are:
+</p>
+<ol>
+  <li>
+    Scripting: some bug fixes in shell script support.
+  </li>
+  <li>
+    Jetty: some bugs found and fixed in Jetty support
+  </li>
+  <li>
+    Web pages: the LivenessPage now does regular expression matching of the returned
+    text, adding each matched group as a numbered attribute. Interesting
+    uses for this are left as an exercise, other than the DynDns components
+    we are currently adding.
+  </li>
+  <li>
+    SSH: Much better logging and fault handling, SSH commands and SCP copies are
+    asynchronous, and a new BulkScpUpload component can upload a
+    regular-expression-described set of files to a remote site.
+  </li>
+</ol>
+
+<p>There have been changes to the testing framework and Xmpp components, but they are
+feature-incomplete.
+</p>
+
+<h4> Bug
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-175'>SFOS-175</a>] - There are no SSH tests that actually
+    test for a successful SSH connection
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-613'>SFOS-613</a>] - rpms are being created with a bad
+    ${rpm.docs.path} property
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-614'>SFOS-614</a>] - merge filename filter with filesets
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-615'>SFOS-615</a>] - SSH errors aren't that helpful
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-620'>SFOS-620</a>] - smartfrog dist/publish tasks don't
+    include dist/private/** when it contains a new CA
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-633'>SFOS-633</a>] - When the machine name is resolved into
+    an IP address. In this case the component does not detect the end of the script commands.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-635'>SFOS-635</a>] - SshExec operations should be
+    asynchronous
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-637'>SFOS-637</a>] - When the &quot;executed&quot;
+    application fails to start the component can potentially spin forever.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-651'>SFOS-651</a>] - TestCompoundImpl prints out wrong
+    message
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-655'>SFOS-655</a>] - changes.txt is obsolete and no longer
+    needed. Pull.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-656'>SFOS-656</a>] - ant install target does not copy Ivy
+    dependencies
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-657'>SFOS-657</a>] - bulkscp fails if it encounters a
+    directory
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-660'>SFOS-660</a>] - EventCompoundImpl.deployChildCD ignores
+    its &quot;required&quot; parameter
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-663'>SFOS-663</a>] - Null pointer exception when deploying a
+    jetty server, a listener, a servlet context and a servlet.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-664'>SFOS-664</a>] - java.lang.IllegalArgumentException when
+    deploying a jetty server + listener + context + servlet
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-666'>SFOS-666</a>] - &quot;wrong class found for attribute&quot;
+    error in listener, context and servlet.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-671'>SFOS-671</a>] - Xmpp Roster must default to 'do not
+    accept friend requests'
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-675'>SFOS-675</a>] - fileImpl has mustRead and mustWrite
+    attributes inverted
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-678'>SFOS-678</a>] - Change to Quartz have broken the build
+  </li>
+</ul>
+
+<h4> Improvement
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-618'>SFOS-618</a>] - SSH components need a single central
+    (and better) fault extraction from JSch exceptions
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-634'>SFOS-634</a>] - remove failonerror attribute from Ssh
+    components
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-636'>SFOS-636</a>] - sshexec logFile should take a File
+    component as well as a path string
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-641'>SFOS-641</a>] - add ability to specify connect timeout
+    for an ssh connection with the connectTimeout attribute
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-642'>SFOS-642</a>] - Hook jsch logging up to SmartFrog logger
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-652'>SFOS-652</a>] - FileStore components to move to Java5
+    templates
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-659'>SFOS-659</a>] - make TestRunnerImpl a subclass of
+    EventCompoundImpl
+  </li>
+</ul>
+
+<h4> New Feature
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-603'>SFOS-603</a>] - Design and implement components that
+    represent sets of files or other resources
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-619'>SFOS-619</a>] - core/release to include signed JARs of
+    all the components
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-640'>SFOS-640</a>] - Add methods to SmartFrogThread to
+    request (politely) the termination of the threads
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-647'>SFOS-647</a>] - Provide an OutputStream that relays its
+    output to a log
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-658'>SFOS-658</a>] - log number of files and bytes uploaded
+    in SCP
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-668'>SFOS-668</a>] - implement regexp validation of remote
+    web pages fetched with the LivenessPage component
+  </li>
+</ul>
+
+<h4> Task
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-95'>SFOS-95</a>] - Fix up security build targets
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-453'>SFOS-453</a>] - Add functional tests for SSH that run
+    under VMs
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-623'>SFOS-623</a>] - review project-template.pom files and
+    ensure that they are in sync with the ivy.xml files
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-632'>SFOS-632</a>] - Locate all uses of new TerminationRecord
+    and review them
+  </li>
+</ul>
+
+<h4> Sub-task
+</h4>
+<ul>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-411'>SFOS-411</a>] - When creating a copy of a master image
+    create a new UUID
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-412'>SFOS-412</a>] - Delete virtual HDD's, too, when deleting
+    a vm copy.
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-626'>SFOS-626</a>] - NPE in restlet mime type checking
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-629'>SFOS-629</a>] - Restlet Httpclient has no proxy
+    awareness
+  </li>
+  <li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-645'>SFOS-645</a>] - empty %post section in .spec file
+  </li>
+</ul>
+
+</body>
+</html>
+

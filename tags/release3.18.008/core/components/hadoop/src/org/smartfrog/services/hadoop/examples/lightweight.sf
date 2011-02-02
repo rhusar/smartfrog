@@ -1,0 +1,216 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+/**
+ * This file defines some lightweight versions of the SF nodes, for testing
+ * A lot of their predefined settings come from the options file.
+ */
+
+#include "/org/smartfrog/services/hadoop/components/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/options.sf"
+#include "/org/smartfrog/services/utils/security/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/healthchecks.sf"
+
+
+
+LightweightJobTracker extends JobTracker {
+  smartfrog.dump.conf DUMP_CONF;
+  fs.default.name FS.DEFAULT.NAME;
+  mapred.job.tracker.handler.count HandlerThreads;
+  //this is to fail faster when a namenode does not come up
+  ipc.client.connect.max.retries LIGHTWEIGHT_MAX_RETRIES;
+  mapred.job.tracker.hostname Hostnames:mapred.job.tracker.hostname;
+  mapred.job.reuse.jvm.num.tasks JVM_REUSE_COUNT;
+}
+
+LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
+  smartfrog.dump.conf DUMP_CONF;
+  tasktracker.http.threads ClientHandlerThreads;
+  mapred.task.tracker.connect.timeout IPC_CONNECT_TIMEOUT;
+  mapred.task.tracker.hostname Hostnames:mapred.task.tracker.hostname;
+}
+
+LightweightNameNode extends NameNode {
+  smartfrog.dump.conf DUMP_CONF;
+  dfs.namenode.handler.count HandlerThreads;
+  testModeDeleteDirectories TEST_MODE;
+  hostname ALL_ZEROS ;
+  //these properties set the HTTP ports. The NN gets its IPC port from the fs.default.name URL
+  dfs.hostname hostname;
+  dfs.http.port NameNodeHttpPort;
+  dfs.https.port NameNodeHttpPort;
+  dfs.replication DFS.REPLICATION;
+  //mapred.system.dir TBD;
+}
+
+LightweightDataNode extends DataNode {
+  smartfrog.dump.conf DUMP_CONF;
+  dfs.heartbeat.interval 1;
+  dfs.datanode.handler.count ClientHandlerThreads;
+  hostname ANY_HOST ;
+  dfs.datanode.http.port DataNodeHttpPort;
+  dfs.datanode.https.port DataNodeHttpsPort;
+  dfs.datanode.hostname hostname;
+  //IPC port
+  dfs.datanode.port DataNodePort;
+  dfs.datanode.ipc.port DataNodeIpcPort;
+
+  dfs.blockreport.intervalMsec DFS_BLOCKREPORT_INTERVALMSEC;
+  dfs.blockreport.initialDelay DFS_BLOCKREPORT_INITIALDELAY;
+  testModeDeleteDirectories TEST_MODE;
+}
+
+
+/**
+ * This defines a compound that creates temp directories for log, data and name data
+ */
+
+HadoopCompoundBase extends Compound {
+  fs.default.name  FS.DEFAULT.NAME;
+  mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
+
+  logDir extends TempDir {
+
+  }
+
+
+}
+
+TransientHadoopCompound extends HadoopCompoundBase {
+
+  dataDir extends TempDir;
+  nameDir extends TempDir;
+  tmpDir extends TempDir;
+  editsDir extends TempDir;
+}
+
+/**
+ * Creates a namenode
+ */
+TransientNameNodeCompound extends TransientHadoopCompound {
+  description "A name node";
+
+  cluster LAZY namenode;
+
+  hostname LOCALHOST;
+  IpcPort NameNodeIpcPort;
+  HttpPort NameNodeHttpPort
+  //systemDir extends TempDir;
+  fs.default.name ("hdfs://" ++ hostname ++ ":" ++ NameNodeIpcPort );
+  namenode.URL      ("http://" ++ hostname ++ ":" ++ HttpPort );
+
+  namenode extends LightweightNameNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDir LAZY PARENT:dataDir:absolutePath;
+    dataDirectories [dataDir];
+    //dataDirectories [LAZY PARENT:dataDir];
+    nameDirectory LAZY PARENT:nameDir:absolutePath;
+    nameDirectories [nameDirectory];
+    editsDir LAZY PARENT:editsDir:absolutePath;
+    editDirectories [editsDir];
+    //dfs.name.dir nameDirectories;
+    hadoop.tmp.dir LAZY PARENT:tmpDir;
+
+    logDir LAZY PARENT:logDir;
+    dfs.namenode.startup ACTION_FORMAT;
+    dfs.http.address namenode.URL;
+    dfs.permissions false;
+    minWorkerCount 0;
+
+  }
+}
+
+/**
+ * Creates a namenode
+ */
+TransientDataNodeCompound extends HadoopCompoundBase {
+  description "A data node bound to a temporary directory";
+
+  hostname ANY_HOST;
+
+  localDataDir extends TempDir;
+
+
+  datanode extends  LightweightDataNode {
+    hostname PARENT:hostname;
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+
+  }
+
+}
+
+
+/**
+ * Creates a namenode
+ */
+TransientNameDataNodeCompound extends TransientNameNodeCompound {
+  description "A data node bound to a temporary directory";
+
+  localDataDir extends TempDir {
+
+  }
+
+  datanode extends  LightweightDataNode {
+    hostname PARENT:hostname;
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+
+  }
+
+}
+
+/**
+ * This is a job tracker
+ */
+TransientJobTrackerCompound extends TransientHadoopCompound {
+  description "A job tracker";
+
+  jobtracker extends LightweightJobTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    dataDir LAZY PARENT:ATTRIB dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:ATTRIB nameDir;
+    nameDirectories [nameDir];
+    logDir LAZY PARENT:ATTRIB logDir;
+  }
+}
+
+/**
+ * This is a task tracker
+ */
+
+
+TransientTaskTrackerCompound extends HadoopCompoundBase  {
+
+  description "A compound with a task tracker";
+
+  tasktracker extends LightweightTaskTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
+
+  }
+}
+
+

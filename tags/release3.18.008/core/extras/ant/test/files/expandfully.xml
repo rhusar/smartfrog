@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<project name="parse" default="testNoop">
+
+  <description>
+ Tests for the parse. 
+ 
+ command line invocation
+
+ant -lib ../../dist/lib/sf-tasks-3.17.011dev.jar\
+    -lib  ../../../../smartfrog/dist/lib/smartfrog-3.17.011dev.jar \
+    -lib  ../../../../smartfrog/dist/lib/sfServices-3.17.011dev.jar -f expandfully.xml testValid
+  </description>
+
+  <import file="test-common.xml"/>
+
+  <property name="destfile.sf" location="${test.work.dir}/destfile.sf"/>
+  <property name="validresource.sf" value="/org/smartfrog/tools/ant/test/unit/resource.sf"/>
+  <property name="display.sf" value="/org/smartfrog/services/display/example.sf"/>
+
+  <target name="testNoop">
+    <sf-expandfully/>
+  </target>
+
+  <target name="testValid">
+    <delete file="${destfile.sf}"/>
+    <sf-expandfully
+      file="valid.sf"
+      dest="${destfile.sf}"/>
+    <echo>expanded to "${destfile.sf}</echo>
+    <concat><fileset file="${destfile.sf}"/></concat>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+  <target name="testBothAttributes">
+    <sf-expandfully
+        resource="${validresource.sf}"
+        file="valid.sf"
+        dest="${destfile.sf}"/>
+  </target>
+
+  
+  <target name="testInvalid">
+    <sf-expandfully
+      file="invalid.sf"
+      dest="${destfile.sf}"/>
+  </target>
+
+  <target name="testMissingFile">
+    <sf-expandfully
+      file="nonexistent-file.sf"
+      dest="${destfile.sf}"/>
+  </target>
+
+
+  
+  <target name="testSubdir">
+    <delete file="${destfile.sf}"/>
+    <sf-expandfully
+      file="subdir/subfile.sf"
+      dest="${destfile.sf}"/>
+    <concat><fileset file="${destfile.sf}"/></concat>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+  <target name="testNoProperty">
+    <delete file="${destfile.sf}"/>
+    <sf-expandfully
+      file="property.sf"
+      dest="${destfile.sf}"/>
+  </target>
+
+  <target name="testProperty">
+    <delete file="${destfile.sf}"/>
+    <sf-expandfully 
+      file="property.sf"
+      dest="${destfile.sf}">
+      <sysproperty key="echo.text" value="sysproperty"/>
+    </sf-expandfully>
+    <concat><fileset file="${destfile.sf}"/></concat>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+
+  <target name="testValidPropertyFile">
+    <delete file="${destfile.sf}"/>
+    <sf-expandfully 
+      file="property.sf"
+      dest="${destfile.sf}">
+
+      <propertyFile file="loaded.properties"/>
+    </sf-expandfully>
+    <concat><fileset file="${destfile.sf}"/></concat>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+  <target name="testPropertySet">
+    <delete file="${destfile.sf}"/>
+    <property name="echo.text" value="text to echo"/>
+    <sf-expandfully 
+      file="property.sf"
+      dest="${destfile.sf}">
+      
+      <syspropertyset>
+        <propertyref prefix="echo"/>
+      </syspropertyset>
+    </sf-expandfully>
+    <sf-parse file="${destfile.sf}"/>
+    <concat><fileset file="${destfile.sf}"/></concat>
+  </target>
+
+  <target name="testValidResource">
+    <delete file="${destfile.sf}"/>
+    <sf-expandfully
+        resource="${display.sf}"
+        dest="${destfile.sf}"/>
+    <concat><fileset file="${destfile.sf}"/></concat>
+    <sf-parse file="${destfile.sf}"/>
+  </target>
+
+  <target name="testMissingResource">
+    <sf-expandfully
+        resource="/org/smartfrog/tools/ant/test/unit/missing-resource.sf"
+        dest="${destfile.sf}"/>
+  </target>
+</project>

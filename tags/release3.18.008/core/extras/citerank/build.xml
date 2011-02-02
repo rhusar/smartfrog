@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="citerank" default="default">
+
+  <!--
+  /** (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Build up a citation rank JAR,
+    deploy it to test clusters
+
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <!-- override point -->
+
+  <property file="build.properties"/>
+  <!-- tests are on-->
+  <property name="system.tests" value="true"/>
+
+  <property name="junit.timeout" value="120000000"/>
+  <!--time for a single test to execute-->
+  <property name="test.timeout.execute"    value="120000"/>
+  <!--ask for more memory-->
+  <property name="daemon.jvmargs" value="-Xmx256m" />
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+
+  <!--must not depend on the common version, as that will restrict deployments to localhost-->
+  <target name="init-deploy-properties"
+          depends="declare-extended-smartfrog-tasks">
+    <!-- work out our host address-->
+    <sf-localhost property="localhost" />
+    <sf-localhost property="localip" useAddress="true" />
+    <echo>Local host = ${localhost} ${localip} </echo>
+    <property name="targethost" value="${localhost}" />
+    <!--<property name="deploy.sf" value="${cluster.sf}" />-->
+    <!--this sets the name for the tests-->
+    <property name="deploy.host" value="${targethost}" />
+    <property name="application.name" value="${project.name}"/>
+    <property name="deploy.timeout" value="60000" />
+    <property name="localcluster.sf" value="org/smartfrog/services/hadoop/benchmark/citerank/localcluster.sf" />
+    <property name="cluster" value="org/smartfrog/extras/hadoop/cluster" />
+    <property name="cluster.sf" value="${cluster}/cluster.sf" />
+    <property name="cluster2.sf" value="${cluster}/cluster2.sf" />
+    <property name="deploy.sf" value="${localcluster.sf}" />
+  </target>
+
+
+  <!--
+    we bind to a Hadoop cluster via a site/specific directory
+  -->
+  <target name="bind-to-hadoop-cluster" depends="init-deploy-properties">
+    <property name="main.class" value="org.smartfrog.services.hadoop.benchmark.citerank.CiteRank"/>
+    <property name="jvm.memory" value="512m"/>
+
+    <property name="test.sitename" value="localhost"/>
+    <property name="test.site.dir" location="conf/${test.sitename}/"/>
+    <property name="cluster.properties" location="${test.site.dir}/cluster.properties" />
+    <property name="test.dfs.dir" location="dfs" />
+    <loadproperties srcfile="${cluster.properties}" />
+    <property name="test.fs.default.name" value="${fs.default.name}" />
+    <property name="test.mapred.job.tracker" value="${mapred.job.tracker}" />
+
+    <property name="remote.hadoop.site.xml" location="conf/${test.sitename}/hadoop-site.xml"/>
+
+    <fail>
+      <condition>
+        <not>
+          <available file="${remote.hadoop.site.xml}"/>
+        </not>
+      </condition>
+      Not found: ${remote.hadoop.site.xml}
+      Is the value of test.sitename correct: "${test.sitename}"
+    </fail>
+  </target>
+
+
+  <target name="ready-to-deploy" depends="common.ready-to-deploy,echo-deploy-settings" />
+
+  <target name="echo-deploy-settings" depends="common.ready-to-deploy, bind-to-hadoop-cluster">
+    <echo>
+      Deploying to               ${deploy.host}
+      deploy.timeout             ${deploy.timeout}
+      targethost                 ${targethost}
+      cluster.properties         ${cluster.properties}
+      test JAR                   ${test.component.jar.path}
+      test.fs.default.name =     ${test.fs.default.name}
+      test.mapred.job.tracker =  ${test.mapred.job.tracker}
+    </echo>
+  </target>
+
+
+
+  <target name="simplejob" depends="ready-to-deploy"
+          description="deploy a simple test job">
+    <deploy>
+      <application name="simplejob"
+                   descriptor="/org/smartfrog/extras/hadoop/cluster/simplejob.sf"/>
+    </deploy>
+  </target>
+
+  <target  name="upload2" depends="ready-to-deploy"
+      description="copy the datasets to the target cluster">
+    <!-- timeout="${timeout}" -->
+    <sf-run-locally classpathref="tests.run.classpath">
+      <application name="upload">
+        #include "/org/smartfrog/services/hadoop/benchmark/citerank/components.sf"
+
+        sfConfig extends Upload;
+      </application>
+    </sf-run-locally>
+  </target>
+
+  <!--variant that does the upload via a local daemon-->
+  <target  name="upload" depends="ready-to-deploy"
+           description="copy the datasets to the target cluster">
+    <deploy host="localhost">
+      <application name="upload">
+        #include "/org/smartfrog/services/hadoop/benchmark/citerank/components.sf"
+
+        sfConfig extends Upload;
+      </application>
+    </deploy>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="cluster" depends="ready-to-deploy"
+      description="deploy a cluster">
+    <deploy>
+      <application name="cluster"
+              descriptor="/${localcluster.sf}"/>
+    </deploy>
+  </target>
+
+  <target name="cluster2" depends="ready-to-deploy"
+          description="deploy a forked cluster">
+    <deploy>
+      <application name="cluster2"
+                   descriptor="/${cluster2.sf}"/>
+    </deploy>
+  </target>
+
+  
+  <target name="submit" depends="ready-to-deploy"
+          description="Submit Hadoop job to a known site">
+    <!--
+    requires you to have copied up the data first, incidentally.
+    -->
+
+    <java classname="${main.class}" fork="true" maxmemory="${jvm.memory}"
+          failonerror="true"
+        classpathref="tests.run.classpath">
+      <arg value="-conf"/>
+      <arg value="${remote.hadoop.site.xml}"/>
+      <arg value="/datasets/citeseer"/>
+      <arg value="/playground/citeseer"/>
+      <arg value="100"/>
+      <arg value="0.0000001"/>
+      <syspropertyset  >
+        <propertyref prefix="test."/>
+        <propertyref prefix="runtime."/>
+      </syspropertyset>
+
+    </java>
+  </target>
+
+</project>

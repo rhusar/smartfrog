@@ -1,0 +1,20 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+FailComponent extends RComponent {
+	sfClass "org.smartfrog.services.persistence.test.testcases.FailingRComponentTestImpl";
+	// fail points are one of: 
+	//   deployWith, deploy, start, recoveryDeployWith, recoveryDeploy, recoveryStart
+	failPoint "recoveryStart";
+}
+
+
+
+sfConfig extends RComponent {
+   sfStorageData:sfUniqueComponentName "myUniqueName";
+   child2 extends RComponent {
+     child2 extends FailComponent {
+       child3 extends RComponent;
+     }
+   }
+}

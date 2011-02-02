@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+    xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+    xmlns:sf="http://www.gridforum.org/cddlm/smartfrog/2005/02"
+    xmlns:sfi="http://smartfrog.org/types/2006/01/"
+    xmlns:base="http://smartfrog.org/services/cdl/base/">
+
+
+  <cdl:documentation>
+    This set of components provides filesystem access
+  </cdl:documentation>
+  <!--smartfrog extra classes-->
+
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/base/components.cdl"/>
+
+  <cdl:configuration>
+
+
+    <base:FileUsingComponent cdl:extends="base:Prim"/>
+
+
+    <!--Declare the compound. sfSyncTerminate is trouble, as it is boolean not string-->
+    <base:File cdl:extends="base:Prim">
+      <sf:sfClass>org.smartfrog.services.filesystem.FileImpl</sfClass>
+    </base:File >
+
+    <base:Mkdir cdl:extends="base:Prim">
+      <sfClass>org.smartfrog.services.filesystem.MkdirImpl</sfClass>
+    </base:Mkdir>
+
+
+    <base:TempFile cdl:extends="base:FileUsingComponent">
+      <sfClass sfi:type="string">org.smartfrog.services.filesystem.TempFile</sfClass>
+      <sf:encoding sfi:type="string">UTF-8</sf:encoding>
+      <sf:prefix sfi:type="string">temp</sf:prefix>
+      <sf:suffix sfi:type="string">.tmp</sf:suffix>
+<!--
+      <sf:dir sfi:type="string"></sf:dir>
+      <sf:text sfi:type="string"></sf:text>
+-->
+    </base:TempFile>
+
+
+    <base:TouchFile cdl:extends="base:FileUsingComponent">
+      <sfClass>org.smartfrog.services.filesystem.TouchFileImpl</sfClass>
+    </base:TouchFile>
+
+    <base:CopyFile cdl:extends="base:Compound">
+      <sfClass>org.smartfrog.services.filesystem.CopyFile</sfClass>
+<!--
+      <sf:source  sfi:type="string"/>
+      <sf:destination sfi:type="string"/>
+-->
+    </base:CopyFile>
+
+  </cdl:configuration>
+</cdl:cdl>
+
