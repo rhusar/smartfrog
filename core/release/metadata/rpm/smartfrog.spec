@@ -193,16 +193,16 @@ It does not contain any of the Ant optional libraries, or their dependencies.
 
 # -----------------------------------------------------------------------------
 
-%package cloudfarmer
-
-Group:         ${rpm.framework}
-Summary:        Cloud Infrastructure Management
-Requires:       %{name} = %{version}-%{release}, %{name}-jetty,  %{name}-json
+#%package cloudfarmer
 #
-%description cloudfarmer 
-Components and tools to deal with different cloud infrastructures.
-
-This RPM includes everything needed to host struts 1.x under Jetty.
+#Group:         ${rpm.framework}
+#Summary:        Cloud Infrastructure Management
+#Requires:       %{name} = %{version}-%{release}, %{name}-jetty,  %{name}-json
+##
+#%description cloudfarmer
+#Components and tools to deal with different cloud infrastructures.
+#
+#This RPM includes everything needed to host struts 1.x under Jetty.
 
 # -----------------------------------------------------------------------------
 
@@ -809,22 +809,22 @@ fi
 
 
 # -----------------------------------------------------------------------------
-%files cloudfarmer
-
-%{libdir}/sf-cloudfarmer-${smartfrog.version}.jar
-%{linkdir}/sf-cloudfarmer.jar
-%{libdir}/commons-chain-${commons-chain.version}.jar
-%{linkdir}/commons-chain.jar
-%{libdir}/commons-digester-${commons-digester.version}.jar
-%{linkdir}/commons-digester.jar
-%{libdir}/commons-validator-${commons-validator.version}.jar
-%{linkdir}/commons-validator.jar
-%{libdir}/struts-core-${struts.version}.jar
-%{linkdir}/struts-core.jar
-%{libdir}/struts-taglib-${struts.version}.jar
-%{linkdir}/struts-taglib.jar
-%{libdir}/struts-tiles-${struts.version}.jar
-%{linkdir}/struts-tiles.jar
+#%files cloudfarmer
+#
+#%{libdir}/sf-cloudfarmer-${smartfrog.version}.jar
+#%{linkdir}/sf-cloudfarmer.jar
+#%{libdir}/commons-chain-${commons-chain.version}.jar
+#%{linkdir}/commons-chain.jar
+#%{libdir}/commons-digester-${commons-digester.version}.jar
+#%{linkdir}/commons-digester.jar
+#%{libdir}/commons-validator-${commons-validator.version}.jar
+#%{linkdir}/commons-validator.jar
+#%{libdir}/struts-core-${struts.version}.jar
+#%{linkdir}/struts-core.jar
+#%{libdir}/struts-taglib-${struts.version}.jar
+#%{linkdir}/struts-taglib.jar
+#%{libdir}/struts-tiles-${struts.version}.jar
+#%{linkdir}/struts-tiles.jar
 
 # -----------------------------------------------------------------------------
 %files csvfiles
