@@ -382,6 +382,7 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH"
           unpack="true"/>
     </pack>
+ <!-- SFOS-1562
     <pack name="CloudFarmer" required="no" preselected="no">
       <description>
         The cloudfarmer package contains components and client code to assist in 
@@ -413,6 +414,7 @@ SmartFrog to deploy complex systems.
       <depends packname="Jetty"/>
       <depends packname="JSON"/>
     </pack>
+    -->
     <pack name="CSVfiles" required="no" preselected="no">
       <description>
         The csvfiles package contains components that can work with CSV files, turning the data

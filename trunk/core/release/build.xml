@@ -481,6 +481,7 @@
     <ln artifact="sf-anubis" version="${smartfrog.version}"/>
     
     <!-- cloudfarmer -->
+<!-- SFOS-1562
     <rpmpackage package="cloudfarmer"/>
     <ln artifact="sf-cloudfarmer" version="${smartfrog.version}"/>
     <ln artifact="commons-chain" version="${commons-chain.version}"/>
@@ -489,6 +490,7 @@
     <ln artifact="struts-core" version="${struts.version}"/>
     <ln artifact="struts-taglib" version="${struts.version}"/>
     <ln artifact="struts-tiles" version="${struts.version}"/>
+-->
 
     
     <!-- csvfiles -->
@@ -897,7 +899,9 @@
         <!--components-->
         <include name="sf-ant/${smartfrog.version}/*"/>
         <include name="sf-anubis/${smartfrog.version}/*"/>
+<!-- SFOS-1562
         <include name="sf-cloudfarmer/${smartfrog.version}/*"/>
+-->
         <include name="sf-csvfiles/${smartfrog.version}/*"/>
         <include name="sf-database/${smartfrog.version}/*"/>
         <include name="sf-dns/${smartfrog.version}/*"/>
@@ -1256,8 +1260,13 @@
     <property name="rpms.core.list"
         value="${rpm.base.list} ${rpms.components.list} ${rpms.www.list} ${rpms.testing.list} "/>
 
+<!-- SFOS-1562
     <property name="rpms.cloud.list"
         value="smartfrog-hadoop smartfrog-cloudfarmer smartfrog-ec2"/>
+-->
+    <property name="rpms.cloud.list"
+      value="smartfrog-ec2"/>
+
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
     
