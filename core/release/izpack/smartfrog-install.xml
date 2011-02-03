@@ -493,7 +493,6 @@ SmartFrog to deploy complex systems.
         targetdir="$INSTALL_PATH/lib"
         />
       <depends packname="Restlet"/>
-      <depends packname="CloudFarmer"/>
     </pack>
 
 
