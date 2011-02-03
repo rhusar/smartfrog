@@ -21,7 +21,7 @@
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"
-        extends="redist"
+        extends="redist,cloudfarmer"
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
@@ -29,6 +29,7 @@
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="typica" description="contains the typica dependencies"/>
+    <conf name="cloudfarmer" description="contains the typica dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"
         extends="typica"/>
     <conf name="runtime" description="runtime but not the artifact"
@@ -72,7 +73,7 @@
         name="sf-cloudfarmer"
         changing="true"
         rev="latest.integration"
-        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+        conf="cloudfarmer->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-restlet"
