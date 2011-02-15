@@ -112,7 +112,7 @@ public class WrappedInstance<T> implements Serializable {
 
     /**
      * Return the description and whether or not the instance is defined.
-     * @return
+     * @return the description and whether it is defined or not, but not the instance value
      */
     @Override
     public String toString() {
