@@ -147,7 +147,7 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
      */
     public SmartFrogAntBuildException(InvocationTargetException te) {
         super(te.getCause() != null ? te.getCause().getMessage() : te.getMessage(),
-                te.getCause() != null ? te.getCause() : te);
+              te.getCause() != null ? te.getCause() : te);
         Throwable rootCause = te.getCause();
         if (rootCause != null) {
             maybeBind(rootCause);
@@ -221,7 +221,7 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
         }
         if (thr instanceof InvocationTargetException) {
             InvocationTargetException ite = (InvocationTargetException) thr;
-            if(ite.getCause() instanceof BuildException) {
+            if (ite.getCause() instanceof BuildException) {
                 return new SmartFrogAntBuildException((BuildException) ite.getCause());
             } else {
                 return new SmartFrogAntBuildException(ite);
