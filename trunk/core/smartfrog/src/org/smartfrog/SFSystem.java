@@ -75,11 +75,13 @@ public class SFSystem implements MessageKeys {
     /**
      * A flag that ensures only one system initialisation.
      */
+    @SuppressWarnings({"StaticNonFinalField"})
     private static boolean alreadySystemInit = false;
 
     /**
      * Core Log
      */
+    @SuppressWarnings({"StaticNonFinalField"})
     private static LogSF sflog = null;
 
 
@@ -206,8 +208,8 @@ public class SFSystem implements MessageKeys {
      * @throws SmartFrogException failed to create or set output/error streams
      */
     public static void setOutputStreams() throws SmartFrogException {
-        String outClass = SFSystem.getProperty(SmartFrogCoreProperty.propOutStreamClass);
-        String errClass = SFSystem.getProperty(SmartFrogCoreProperty.propErrStreamClass);
+        String outClass = getProperty(SmartFrogCoreProperty.propOutStreamClass);
+        String errClass = getProperty(SmartFrogCoreProperty.propErrStreamClass);
 
         try {
             if (errClass != null) {
@@ -385,8 +387,8 @@ public class SFSystem implements MessageKeys {
      *
      * @param args execution arguments
      */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public void execute(String args[]) {
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "CallToPrintStackTrace"})
+    public void execute(String[] args) {
 
         //First things first: system gets initialized
         try {
@@ -396,7 +398,7 @@ public class SFSystem implements MessageKeys {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(ex, ex);
                 }
-            } catch (Throwable ex1) {
+            } catch (Throwable ignored) {
                 ex.printStackTrace();
             }
             exitWith("Failed to initialize SmartFrog", ExitCodes.EXIT_ERROR_CODE_GENERAL);
