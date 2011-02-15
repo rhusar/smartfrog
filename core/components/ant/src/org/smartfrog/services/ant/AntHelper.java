@@ -1,22 +1,22 @@
 /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 package org.smartfrog.services.ant;
 
 import org.apache.tools.ant.BuildException;
@@ -85,7 +85,7 @@ public class AntHelper {
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);
         logger.setMessageOutputLevel(level);
-        InterruptibleLogger irq=new InterruptibleLogger(logger);
+        InterruptibleLogger irq = new InterruptibleLogger(logger);
         project.addBuildListener(irq);
         return irq;
     }
@@ -98,8 +98,8 @@ public class AntHelper {
      */
     public void setUserProperties(Project project, Vector propList) throws SmartFrogResolutionException {
         if (propList != null) {
-            Properties props= ListUtils.convertToProperties(propList);
-            addUserProperties(project,props);
+            Properties props = ListUtils.convertToProperties(propList);
+            addUserProperties(project, props);
         }
     }
 
@@ -109,8 +109,8 @@ public class AntHelper {
      * @param props properties
      */
     public void addUserProperties(Project project, Properties props) {
-        for(Object key:props.keySet()) {
-            String name=(String) key;
+        for (Object key : props.keySet()) {
+            String name = (String) key;
             project.setUserProperty(name, props.getProperty(name));
         }
     }
@@ -145,7 +145,7 @@ public class AntHelper {
      * @return the ant log level
      */
     public int extractLogLevel(String logLevel, int initialLevel) {
-        int level=initialLevel;
+        int level = initialLevel;
         level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_DEBUG, Project.MSG_DEBUG);
         level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_VERBOSE, Project.MSG_VERBOSE);
         level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_INFO, Project.MSG_INFO);

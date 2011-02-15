@@ -22,6 +22,7 @@ package org.smartfrog.services.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -30,6 +31,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
@@ -42,10 +45,10 @@ import java.util.Iterator;
  */
 public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     private AntProject antProject;
-    private AntRuntime runtime;
+    private AntRuntimeImpl runtime;
     private Prim propertyTarget;
     private SmartFrogException caughtException;
-    private volatile boolean exitAntNow=false;
+    private volatile boolean exitAntNow = false;
     private SmartFrogThread worker;
 
 
@@ -67,7 +70,14 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
         super.sfDeploy();
         LogSF log = sfLog();
         antProject = new AntProject(this, log);
-        runtime = new AntRuntime(this);
+        runtime = new AntRuntimeImpl(this);
+        //export the runtime
+        try {
+            SecureRemoteObject.exportObject(runtime);
+        } catch (SFGeneralSecurityException e) {
+            throw SmartFrogDeploymentException.forward(e);
+        }
+        //now replace the attribute
         sfReplaceAttribute(ATTR_RUNTIME, runtime);
     }
 
@@ -95,9 +105,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
                                 task.execute();
                             } else if (((ComponentDescription) value).sfContainsAttribute(ATTR_ANT_ELEMENT)) {
                                 Object element = antProject.getElement(attributeName, (ComponentDescription) value);
-                                sfLog().warn("Ignoring: something with elements/datatypes"+ attributeName);
+                                sfLog().warn("Ignoring: something with elements/datatypes" + attributeName);
                             } else {
-                                sfLog().debug("Ignoring: something with attribute: "+ attributeName+ " "+value+";");
+                                sfLog().debug("Ignoring: something with attribute: " + attributeName + " " + value + ";");
                             }
                         } catch (SmartFrogResolutionException e) {
                             throw e;
@@ -128,11 +138,11 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
             }
         } finally {
             //set the static properties after we finish
-            Hashtable<String,String> results = antProject.getProject().getProperties();
+            Hashtable<String, String> results = antProject.getProject().getProperties();
             runtime.setStaticProperties(results);
             //copy them to any property target specified
-            if(propertyTarget!=null) {
-                AntRuntime.propagateAntProperties(propertyTarget,results);
+            if (propertyTarget != null) {
+                AntRuntimeImpl.propagateAntProperties(propertyTarget, results);
             }
         }
 
@@ -146,7 +156,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
         super.sfStart();
         propertyTarget = sfResolve(ATTR_PROPERTY_TARGET, propertyTarget, false);
         boolean asynch = false;
-        if ( (sfResolve(ATTR_ASYNCH, asynch , asynch))) {
+        if ((sfResolve(ATTR_ASYNCH, asynch, asynch))) {
             worker = new SmartFrogThread(this);
             worker.start();
         } else {
@@ -176,7 +186,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      * @return the property; or null for no match or no ant
      */
     public synchronized String getAntProperty(String name) {
-        if(antProject!=null) {
+        if (antProject != null) {
             return antProject.getProject().getProperty(name);
         }
         return null;
@@ -191,7 +201,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
         if (antProject == null) {
             return;
         }
-        exitAntNow=true;
+        exitAntNow = true;
     }
 
 
