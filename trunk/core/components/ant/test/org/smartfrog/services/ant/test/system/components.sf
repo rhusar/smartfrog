@@ -58,4 +58,59 @@ AssertPropertyEquals extends AssertPropertySet {
   attributeEquals value;
 }
 
+TestPropertiesWorkflow extends AntWorkflowRun {
+
+  echoTask extends echo {
+    message "hello world!";
+  }
+
+  echoMedTask extends echo {
+    message "--------------------------------";
+  }
+
+  setProperty extends property {
+    name "sfhome";
+    value "SFHOME is <${env.SFHOME}>";
+  }
+
+
+  echoSFHOMETask extends echo {
+    message "${sfhome}";
+   }
+
+  setCwdProperty extends property {
+    name "cwd";
+    location ".";
+  }
+
+  -- extends echo {
+    message "cwd=${cwd}";
+   }
+
+  testProperty extends property {
+    name "test.value";
+    value "47";
+  }
+
+  
+  setPath1 extends property {
+    name "env.PATH";
+    value "${env.Path}";
+  }
+
+  setPath2 extends property {
+    name "path";
+    value "${env.PATH}";
+  }
+
+  setPath3 extends property {
+    name "pathtext";
+    value "path=${path}";
+  }
+
+  echoPath extends echo {
+    message "${pathtext}";
+   }
+
+}
 

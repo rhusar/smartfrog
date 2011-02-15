@@ -21,37 +21,4 @@ For more information: www.smartfrog.org
 
 
 
-sfConfig extends ExpectBuildSuccess {
-
-  action extends Compound {
-  }
-
-  tests extends Sequence {
-    antRun extends TestPropertiesWorkflow {
-      propertyTarget LAZY action;
-    }
-
-    sfHome extends AssertPropertySet {
-      propertyTarget LAZY action;
-      name "sfhome";
-    }
-
-
-    java.version extends sfHome {
-      name "java.version";
-    }
-
-    antHome extends sfHome {
-      name "ant.home";
-    }
-
-    test.property extends AssertPropertyEquals {
-      propertyTarget LAZY action;
-      name "test.value";
-      value TestPropertiesWorkflow:testProperty:value;
-    }
-
-
-  }
-
-}
+sfConfig extends TestPropertiesWorkflow;

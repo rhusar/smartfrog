@@ -47,7 +47,7 @@ public interface AntWorkflowComponent extends Remote {
     /**
      * log level: {@value}
      */
-    String ATTR_LOG_LEVEL_DEBUG="debug";
+    String ATTR_LOG_LEVEL_DEBUG = "debug";
     /**
      * log level: {@value}
      */
