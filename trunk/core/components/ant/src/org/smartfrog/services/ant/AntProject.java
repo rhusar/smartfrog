@@ -84,28 +84,28 @@ public class AntProject {
             RemoteException {
         try {
             this.log = log;
-            this.owner=owner;
-            antHelper=new AntHelper(owner);
+            this.owner = owner;
+            antHelper = new AntHelper(owner);
             antHelper.validateAnt();
             log.debug("Ant version: " + org.apache.tools.ant.Main.getAntVersion());
             project = antHelper.createNewProject();
             helper = new ComponentHelper(owner);
             String codebase = helper.getCodebase();
 
-            String logLevel=owner.sfResolve(Ant.ATTR_LOG_LEVEL,Ant.ATTR_LOG_LEVEL_INFO,false);
-            int level=antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
+            String logLevel = owner.sfResolve(Ant.ATTR_LOG_LEVEL, Ant.ATTR_LOG_LEVEL_INFO, false);
+            int level = antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
 
             //Register build listener
-            interruptibleLogger = antHelper.listenToProject(project,level,log);
+            interruptibleLogger = antHelper.listenToProject(project, level, log);
 
             // set this with a SmartFrog property
-            String basedirpath= FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR,".",
-                    new File("."),false,null);
+            String basedirpath = FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR, ".",
+                                                               new File("."), false, null);
             project.setBaseDir(new File(basedirpath));
             tasks = loadNamedPropertyResource(Ant.ATTR_TASKS_RESOURCE);
             types = loadNamedPropertyResource(Ant.ATTR_TYPES_RESOURCE);
 
-            setUserProperties(Ant.ATTR_PROPERTIES,project);
+            setUserProperties(Ant.ATTR_PROPERTIES, project);
 
             // Set environment.
             Property env_prop = new Property();
@@ -118,7 +118,7 @@ public class AntProject {
     }
 
     private Properties loadNamedPropertyResource(String attribute) throws SmartFrogResolutionException, RemoteException {
-        String resource = owner.sfResolve(attribute,"",true);
+        String resource = owner.sfResolve(attribute, "", true);
         Properties props = new Properties();
         try {
             //TODO: better classloader
@@ -136,8 +136,8 @@ public class AntProject {
      * @throws SmartFrogResolutionException if the vector of properties isn't a list of pairs
      * @throws RemoteException In case of Remote/network error
      *  */
-    private void setUserProperties(String attribute,Project project) throws SmartFrogResolutionException, RemoteException {
-        Vector<Vector<String>> propList=ListUtils.resolveStringTupleList(owner,new Reference(attribute),true);
+    private void setUserProperties(String attribute, Project project) throws SmartFrogResolutionException, RemoteException {
+        Vector<Vector<String>> propList = ListUtils.resolveStringTupleList(owner, new Reference(attribute), true);
         antHelper.setUserProperties(project, propList);
     }
 
@@ -236,7 +236,7 @@ public class AntProject {
             final boolean isTextAttribute = "text".equals(attrLower);
 
             if (method.getName().toLowerCase(Locale.ENGLISH).equals("set" + attrLower) ||
-                    (isTextAttribute && isAddTextMethod)) {
+                (isTextAttribute && isAddTextMethod)) {
 
                 Class[] ptypes = method.getParameterTypes();
                 if (ptypes.length != 1) {
@@ -253,9 +253,13 @@ public class AntProject {
                     if (!ptypes[0].equals(value.getClass())) {
                         value = convType(value.toString(), ptypes[0]);
                     }
-                    if (log.isDebugEnabled()) log.debug("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
+                    if (log.isDebugEnabled()) {
+                        log.debug("    +  " + method.getName() + " - TO beAdded attribute " + attribute + " for " + task.getClass().getName() + ", value " + value + ", " + value.getClass().getName());
+                    }
                     method.invoke(task, value);
-                    if (log.isDebugEnabled()) log.debug("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
+                    if (log.isDebugEnabled()) {
+                        log.debug("    +  " + method.getName() + "    - Added attribute " + attribute + " for " + task.getClass().getName() + ", value " + value);
+                    }
                     return;
                 } catch (BuildException e) {
                     throw new SmartFrogAntBuildException(e);
@@ -298,7 +302,7 @@ public class AntProject {
                         //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
                         return method.invoke(task);
                     } else if (lowerName.equals("add" + elementType)
-                            || lowerName.equals("addConfigured" + elementType)) {
+                               || lowerName.equals("addConfigured" + elementType)) {
                         Class[] ptypes = method.getParameterTypes();
                         if (ptypes.length == 1) {
                             Object[] args = new Object[]{ptypes[0].newInstance()};
@@ -336,9 +340,11 @@ public class AntProject {
         } catch (BuildException e) {
             throw new SmartFrogAntBuildException(e);
         } catch (Exception ex1) {
-            log.error("cound ot create a datatype ",ex1);
+            log.error("cound ot create a datatype ", ex1);
             String taskName = "noTask";
-            if (task != null) taskName = task.getClass().getName();
+            if (task != null) {
+                taskName = task.getClass().getName();
+            }
             IllegalArgumentException ex = new IllegalArgumentException(
                     "No such inner element: " + elementType + " in " + taskName);
             ex.initCause(ex1);
@@ -394,7 +400,7 @@ public class AntProject {
             if (typename.equals("boolean")) {
                 String ucArg = arg.toUpperCase(Locale.ENGLISH);
                 return ((ucArg.equals("TRUE") || ucArg.equals("ON") ||
-                        ucArg.equals("YES")) ? Boolean.TRUE : Boolean.FALSE);
+                         ucArg.equals("YES")) ? Boolean.TRUE : Boolean.FALSE);
             } else if (typename.equals("int")) {
                 return Integer.valueOf(arg);
             } else if (typename.equals("short")) {
@@ -466,7 +472,7 @@ public class AntProject {
 
 
     public void setenv(String key, String value) {
-        project.setProperty(Ant.ENV_PREFIX+"." + key, value);
+        project.setProperty(Ant.ENV_PREFIX + "." + key, value);
     }
 
 

@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -37,7 +38,6 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -54,7 +54,7 @@ import java.util.Vector;
 public class AntBuildImpl extends PrimImpl implements AntBuild {
 
     public static final String ERROR_NO_DIRS = "no build directories specified: one of '" + ATTR_BASEDIR + "' or '"
-            + ATTR_DIRECTORIES + "' must be set, or " + ATTR_ANTFILE + " must point to a file";
+                                               + ATTR_DIRECTORIES + "' must be set, or " + ATTR_ANTFILE + " must point to a file";
     public static final String ERROR_MISSING_BUILD_FILE = "Missing build file: ";
     public static final String BUILD_SUCCESSFUL = "Build successful";
     public static final String BUILD_FAILED = "Build failed ";
@@ -210,8 +210,8 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
          */
         public synchronized String toString() {
             return "Building " + buildFile + " in " + basedir
-                    + (exception != null ? ("\nExited with " + exception.getMessage())
-                        : "");
+                   + (exception != null ? ("\nExited with " + exception.getMessage())
+                    : "");
 
         }
     }
@@ -285,16 +285,16 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 }
             }
             TerminationRecord tr;
-            if (errors==0) {
+            if (errors == 0) {
                 tr = TerminationRecord.normal(BUILD_SUCCESSFUL,
-                        sfCompleteNameSafe(),
-                        result);
+                                              sfCompleteNameSafe(),
+                                              result);
             } else {
                 tr = TerminationRecord.abnormal(BUILD_FAILED +
-                        (errors>1? ("error count=" + errors + "; ") : " ")
-                        + result.getMessage(),
-                        sfCompleteNameSafe(),
-                        result);
+                                                (errors > 1 ? ("error count=" + errors + "; ") : " ")
+                                                + result.getMessage(),
+                                                sfCompleteNameSafe(),
+                                                result);
             }
             helper.targetForWorkflowTermination(tr);
         }
@@ -351,7 +351,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 project.setKeepGoingMode(keepGoingInSingleBuild);
                 //project.
                 project.setUserProperty(MagicNames.ANT_FILE,
-                        buildFile.getAbsolutePath());
+                                        buildFile.getAbsolutePath());
                 project.setExecutor(executor);
 
                 //it's not clear what to do when there is a basedir in the project itself.
@@ -393,7 +393,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 //raised in a <fail> operation.
                 int status = ese.getStatus();
                 if (status != 0) {
-                    sfLog().debug("Build failed with non-zero exit code :"+ese.getMessage());
+                    sfLog().debug("Build failed with non-zero exit code :" + ese.getMessage());
                     throw new SmartFrogAntBuildException(ese);
                 } else {
                     sfLog().debug("Build exited successfully");
@@ -416,7 +416,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         private void propagateProperties(Project project) throws RemoteException {
             if (propertyTarget != null) {
                 try {
-                    AntRuntime.propagateAntProperties(propertyTarget, project.getProperties());
+                    AntRuntimeImpl.propagateAntProperties(propertyTarget, project.getProperties());
                 } catch (SmartFrogRuntimeException e) {
                     //we don't throw anything else here, log it and continue
                     sfLog().warn(WARN_COULD_NOT_PROPAGATE_PROPERTIES, e);
@@ -475,7 +475,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 }
                 try {
                     if (skipMissingTargets
-                            && project.getTargets().get(target) == null) {
+                        && project.getTargets().get(target) == null) {
                         project.log("Skipping missing target " + target, Project.MSG_WARN);
                     } else {
                         project.executeTarget(target);

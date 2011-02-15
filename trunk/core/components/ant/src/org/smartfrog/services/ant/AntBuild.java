@@ -67,5 +67,5 @@ public interface AntBuild extends AntWorkflowComponent {
     /**
      * SmartFrog attribute {@value}
      */
-    String ATTR_SKIPUNIMPLEMENTEDTARGETS="skipUnimplementedTargets";
+    String ATTR_SKIPUNIMPLEMENTEDTARGETS = "skipUnimplementedTargets";
 }
