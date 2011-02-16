@@ -75,6 +75,7 @@ public class InstallCertificate extends Task {
     private String passphrase;
     private int timeout = 10000;
     private int certificateIndex = -1;
+    private File certificateFile;
 
     public void setUrl(final String url) {
         this.url = url;
@@ -92,6 +93,27 @@ public class InstallCertificate extends Task {
         this.certificateIndex = certificateIndex;
     }
 
+
+    public void setCertificateFile(final File certificateFile) {
+        this.certificateFile = certificateFile;
+    }
+
+    @Override
+    public void init() throws BuildException {
+        super.init();
+        useHomeCAFile();
+    }
+
+    private void useHomeCAFile() {
+        char SEP = File.separatorChar;
+        File dir = new File(System.getProperty("java.home") + SEP
+                + "lib" + SEP + "security");
+        certificateFile = new File(dir, "jssecacerts");
+        if (!certificateFile.isFile()) {
+            certificateFile = new File(dir, "cacerts");
+        }
+    }
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -104,6 +126,11 @@ public class InstallCertificate extends Task {
             } catch (MalformedURLException e) {
                 throw new BuildException("Bad URL " + url, e);
             }
+            if (!certificateFile.exists()) {
+                throw new BuildException("Missing File " + certificateFile);
+            }
+
+
             String host = target.getHost();
             //set the port, defaulting to 443 if not set
             int port = target.getPort();
@@ -113,21 +140,11 @@ public class InstallCertificate extends Task {
             char[] passphraseArray;
             passphraseArray = (passphrase != null) ? passphrase.toCharArray() : null;
 
-            File file = new File("jssecacerts");
-            if (!file.isFile()) {
-                char SEP = File.separatorChar;
-                File dir = new File(System.getProperty("java.home") + SEP
-                        + "lib" + SEP + "security");
-                file = new File(dir, "jssecacerts");
-                if (!file.isFile()) {
-                    file = new File(dir, "cacerts");
-                }
-            }
-            log("Loading KeyStore " + file + " with "
+            log("Loading KeyStore " + certificateFile + " with "
                     + (passphraseArray == null ? "null"
                     : ("" + passphrase.length() + " char"))
                     + " passphrase ");
-            InputStream in = new FileInputStream(file);
+            InputStream in = new FileInputStream(certificateFile);
             KeyStore ks;
             try {
                 ks = KeyStore.getInstance(KeyStore.getDefaultType());
