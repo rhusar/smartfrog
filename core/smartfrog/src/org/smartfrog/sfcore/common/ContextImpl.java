@@ -596,7 +596,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	 * @throws IOException failure while writing
 	 */
 	protected void writeKeyOn(Writer ps, int indent, Object key) throws IOException {
-		ps.write(key.toString());
+		ps.write("\"" + unfixEscapes(key.toString()) + "\"");
 	}
 
 	/**
