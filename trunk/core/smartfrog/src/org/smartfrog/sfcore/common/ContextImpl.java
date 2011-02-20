@@ -82,7 +82,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			otherChars.add('>');
 			otherChars.add('?');
 			otherChars.add('/');
-			otherChars.add('\\');
+			otherChars.add('¬');
 			otherChars.add('|');
 			otherChars.add('`');
 			otherChars.add('£');
