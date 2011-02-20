@@ -715,7 +715,11 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	
 	private static boolean isSpecial(char c) {
 		return specialChars.contains(c);
-	}
+	} 
+
+	private static final char[] toHex = 
+		{'0', '1', '2', '3', '4', '5', '6', '7',  
+		'8','9', 'A', 'B', 'C', 'D', 'E', 'F'};
 	
 	private static String convertToEscape(char c) {
 		if (c == '\\') return ("\\\\");
@@ -725,7 +729,13 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		if (c == '\r') return ("\\r");
 		if (c == '\f') return ("\\f");
 		if (c == '\"') return ("\\\"");
-		return "\\u0000";
+		
+		int ci = (int)c;
+		return "\\u" + 
+			toHex[(ci & 0xf000)>>12] +
+			toHex[(ci & 0x0f00)>>8] + 
+			toHex[(ci & 0x00f0)>>4] + 
+			toHex[ci & 0x000f];
 	}
 	
 	private static String unfixEscapes(String s) {
