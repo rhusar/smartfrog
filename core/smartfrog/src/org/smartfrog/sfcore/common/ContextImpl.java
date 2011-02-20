@@ -48,6 +48,22 @@ import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
  */
 public class ContextImpl extends OrderedHashtable implements Context, Serializable, PrettyPrinting, Copying {
 
+
+	static HashSet<Character> specialChars = new HashSet<Character>();	
+	static { 
+		specialChars.add('.');
+		specialChars.add('_');
+		specialChars.add('-');
+		specialChars.add('+');
+		specialChars.add('@');
+		specialChars.add('#');
+		specialChars.add('~');
+		specialChars.add('$');
+		specialChars.add('%');
+		specialChars.add('^');
+		specialChars.add('&');
+		};
+
 	protected Map attributeTags = new HashMap();
 	protected Map attributeTagsWrappers = new HashMap();
 
@@ -459,7 +475,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	 * Return whether or not a tag is in the list of tags for an attribute
 	 *
 	 * @param name the name of the attribute
-	 * @param tag the tag to chack
+	 * @param tag the tag to check
 	 *
 	 * @return whether or not the attribute has that tag
 	 * @throws SmartFrogContextException the attribute does not exist
@@ -545,7 +561,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	 *
 	 * @param ps writer to write on
 	 * @param indent level
-	 * @param keys enumeation over the keys of the context to write out
+	 * @param keys enumeration over the keys of the context to write out
 	 *
 	 * @throws IOException failure while writing
 	 */
@@ -596,11 +612,22 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	 * @throws IOException failure while writing
 	 */
 	protected void writeKeyOn(Writer ps, int indent, Object key) throws IOException {
-		ps.write("\"" + unfixEscapes(key.toString()) + "\"");
+		boolean requiresQuotes = false;
+		String keyS = key.toString();
+		String s = unfixEscapes(keyS);
+
+		if (keyS.length() != s.length()) 
+			requiresQuotes = true;
+		else if (!isLetter(s.charAt(0)))
+			requiresQuotes = true;
+		
+		if (requiresQuotes) ps.write("\"");
+		ps.write(s);
+		if (requiresQuotes) ps.write("\"");
 	}
 
 	/**
-	 * Writes a given value on a writer. Recognizes descriptions, strings and
+	 * Writes a given value on a writer. Recognises descriptions, strings and
 	 * vectors of basic values and turns them into string representation.
 	 * Default is to turn into string using normal toString() call
 	 *
@@ -628,7 +655,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		}
 	}
 	/**
-	 * Writes a given value on a writer. Recognizes descriptions, strings and
+	 * Writes a given value on a writer. Recognises descriptions, strings and
 	 * vectors of basic values and turns them into string representation.
 	 * Default is to turn into string using normal toString() call
 	 *
@@ -664,19 +691,61 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	 * @param s  String to be fixed
 	 * @return String
 	 */
+	private static boolean isLetter(char c) {
+		return (
+				((c >= '\u0061') && (c<= '\u007a')) ||
+				((c >= '\u0041') && (c<= '\u005a')) ||
+				(c == '\u0024') ||
+				(c == '\u005f') ||
+				((c >= '\u00A1') && (c<= '\u00A5')) ||
+				(c == '\u00AA') ||
+				(c == '\u00B5') ||
+				(c == '\u00BA') ||
+				((c >= '\u00C0') && (c<= '\u00D6')) ||
+				((c >= '\u00D8') && (c<= '\u00F6')) ||
+				((c >= '\u00F8') && (c<= '\u00FF'))
+			) ;
+	}
+	
+	private static boolean isDigit(char c ) {
+		return (
+				((c >= '\u0030') && (c<= '\u0039')) 
+			) ;		
+	}
+	
+	private static boolean isSpecial(char c) {
+		return specialChars.contains(c);
+	}
+	
+	private static String convertToEscape(char c) {
+		if (c == '\\') return ("\\\\");
+		if (c == '\n') return ("\\n");
+		if (c == '\t') return ("\\t");
+		if (c == '\b') return ("\\b");
+		if (c == '\r') return ("\\r");
+		if (c == '\f') return ("\\f");
+		if (c == '\"') return ("\\\"");
+		return "\\u0000";
+	}
+	
 	private static String unfixEscapes(String s) {
-		s = s.replaceAll("\\\\", "\\\\\\\\");
-		s = s.replaceAll("\n", "\\\\n");
-		s = s.replaceAll("\t", "\\\\t");
-		s = s.replaceAll("\b", "\\\\b");
-		s = s.replaceAll("\r", "\\\\r");
-		s = s.replaceAll("\f", "\\\\f");
-		s = s.replaceAll("\"", "\\\\\"");
-		return s;
+		StringBuilder sb = new StringBuilder(s);
+		int i = 0;
+		while (i < sb.length()) {
+			char c = sb.charAt(i);
+			if (!(isLetter(c) || isDigit(c) || isSpecial(c))) {
+				String x = convertToEscape(c);
+				sb.replace(i, i+1, x);
+				i += x.length();
+			} else {				
+				i++;
+			}
+		}	
+		return sb.toString();
 	}
 
 	/**
-	 * Gets a given value in its String form. Recognizes descriptions, strings and
+	 * Gets a given value in its String form. Recognises descriptions, strings and
 	 * vectors of basic values and turns them into string representation.
 	 * Default is to turn into string using normal toString() call
 	 *
@@ -761,7 +830,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 
 
 	/**
-	 * Renames an entry in the otable, leaving its position in the table
+	 * Renames an entry in the table, leaving its position in the table
 	 * unchanged. Overrides method in OrderedHashtable.
 	 *
 	 * @param key1 the initial key to be renamed
