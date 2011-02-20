@@ -63,7 +63,32 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		specialChars.add('^');
 		specialChars.add('&');
 		};
-
+		static HashSet<Character> otherChars = new HashSet<Character>();	
+		static { 
+			otherChars.add(' ');
+			otherChars.add('!');
+			otherChars.add('\'');
+			otherChars.add('*');
+			otherChars.add('(');
+			otherChars.add(')');
+			otherChars.add('[');
+			otherChars.add(']');
+			otherChars.add('{');
+			otherChars.add('}');
+			otherChars.add(':');
+			otherChars.add(';');
+			otherChars.add(',');
+			otherChars.add('<');
+			otherChars.add('>');
+			otherChars.add('?');
+			otherChars.add('/');
+			otherChars.add('\\');
+			otherChars.add('|');
+			otherChars.add('`');
+			otherChars.add('£');
+			otherChars.add('=');
+			};
+			
 	protected Map attributeTags = new HashMap();
 	protected Map attributeTagsWrappers = new HashMap();
 
@@ -616,9 +641,15 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		String keyS = key.toString();
 		String s = unfixEscapes(keyS);
 
-		if (keyS.length() != s.length()) 
-			requiresQuotes = true;
-		else if (!isLetter(s.charAt(0)))
+		for (int i=0; i<keyS.length(); i++) {
+			char c = keyS.charAt(i);
+			if (!isLetter(c) && !isDigit(c) && !isSpecial(c)) {
+				requiresQuotes = true;
+				break;
+			}
+		}
+		
+		if (!isLetter(s.charAt(0)))
 			requiresQuotes = true;
 		
 		if (requiresQuotes) ps.write("\"");
@@ -717,6 +748,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		return specialChars.contains(c);
 	} 
 
+	private static boolean isOther(char c) {
+		return otherChars.contains(c);
+	} 
+	
 	private static final char[] toHex = 
 		{'0', '1', '2', '3', '4', '5', '6', '7',  
 		'8','9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -743,7 +778,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		int i = 0;
 		while (i < sb.length()) {
 			char c = sb.charAt(i);
-			if (!(isLetter(c) || isDigit(c) || isSpecial(c))) {
+			if (!(isLetter(c) || isDigit(c) || isSpecial(c) || isOther(c))) {
 				String x = convertToEscape(c);
 				sb.replace(i, i+1, x);
 				i += x.length();
