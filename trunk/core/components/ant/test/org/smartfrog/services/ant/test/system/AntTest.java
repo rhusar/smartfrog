@@ -23,7 +23,6 @@ package org.smartfrog.services.ant.test.system;
 
 import org.smartfrog.services.ant.Ant;
 import org.smartfrog.services.ant.AntRuntime;
-import org.smartfrog.services.ant.AntRuntimeImpl;
 import org.smartfrog.sfcore.annotations.Description;
 import org.smartfrog.sfcore.annotations.SkippedTest;
 import org.smartfrog.sfcore.prim.Prim;
@@ -50,7 +49,7 @@ public class AntTest
         application = deployExpectingSuccess(FILES + "testSimpleProperty.sf",
                                              "testSimpleProperty");
         Prim antprim;
-        antprim = application.sfResolve("ant",(Prim)null, true);
+        antprim = application.sfResolve("ant", (Prim) null, true);
         Ant ant = (Ant) antprim;
     }
 
@@ -63,11 +62,11 @@ public class AntTest
         Ant ant = (Ant) antprim;
         AntRuntime runtime = (AntRuntime) antprim.sfResolve(Ant.ATTR_RUNTIME, (Prim) null, true);
     }
-    
+
     @Description("Test properties can be set/got")
     @SkippedTest("fails to resolve")
     public void NOtestPropertiesAdvanced() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf", 
+        application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf",
                                              "testPropertiesAdvanced");
         Prim antprim;
         //antprim = application.sfResolve("",(Prim)null, true);
