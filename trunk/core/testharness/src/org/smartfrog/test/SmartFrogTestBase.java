@@ -151,7 +151,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     /**
      * Text to look for in classname when seeking a SmartFrogLazyResolutionException. Value: {@value}
      */
-    public static final String EXCEPTION_SMARTFROG_LAZY_RESOLUTION_EXCEPTION = "org.smartfrog.sfcore.common.SmartFrogLazyResolutionException";
+    public static final String EXCEPTION_SMARTFROG_LAZY_RESOLUTION_EXCEPTION =
+            "org.smartfrog.sfcore.common.SmartFrogLazyResolutionException";
 
     /**
      * This is an application that will be undeployed at teardown time
@@ -163,7 +164,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
             = "Unresolved Reference during phase type resolution";
 
     /**
-     * Construct the base class, extract hostname and test classes directory from the JVM parameters -but do not complain if they are missing
+     * Construct the base class, extract hostname and test classes directory from the JVM parameters
+     * -but do not complain if they are missing
      *
      * @param name test case name
      */
@@ -636,8 +638,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     }
 
     /**
-     * Look through what we got back from deployment; if it is a CD containing an exception then it is checked for an exception, which is then thrown if not
-     * null
+     * Look through what we got back from deployment; if it is a CD containing an exception then it is
+     * checked for an exception, which is then thrown if not null
      *
      * @param deployedApp the application
      *
@@ -734,8 +736,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     }
 
     /**
-     * parse a smartfrog file; throw an exception if something went wrong The language of the parser is determined from the file extension; if there is none,
-     * then 'sf' is assumed.
+     * parse a smartfrog file; throw an exception if something went wrong The language of the parser is
+     * determined from the file extension; if there is none, then 'sf' is assumed.
      *
      * @param resource resource to parse
      *
@@ -1104,8 +1106,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     }
 
     /**
-     * Assert that a termination record contains the expected values. If either the throwableClass or throwableText attributes are non-null, then the record
-     * must contain a fault
+     * Assert that a termination record contains the expected values. If either the throwableClass or
+     * throwableText attributes are non-null, then the record must contain a fault
      *
      * @param record          termination record
      * @param descriptionText text to look for in the description (optional; can be null)

@@ -185,16 +185,29 @@ public class LocalSmartFrogDescriptor {
      * @return the exception, or null if there is none
      */
     public SmartFrogCompilationException createExceptionFromErrors() {
+        return createExceptionFromErrors("", null);
+    }
+
+    /**
+     * Create an exception from errors
+     * @param message any message before the parser error
+     * @param source to include, the sf Description is handy. Can be null
+     * @return the exception, or null if there is none
+     */
+    public SmartFrogCompilationException createExceptionFromErrors(String message, String source) {
         if (!hasErrors()) {
             return null;
         }
-        return new SmartFrogCompilationException(errorList.get(0));
+        return new SmartFrogCompilationException(message + " "
+                + errorList.get(0)
+                + ((source == null) ? "" : ("\n" + source)));
     }
+
 
     /**
      * Extract and throw an exception if there is one
      *
-     * @throws SmartFrogException if something went wrong with the parse
+     * @throws SmartFrogCompilationException if something went wrong with the parse
      */
     public void throwParseExceptionIfNeeded() throws SmartFrogCompilationException {
         SmartFrogCompilationException sfe = createExceptionFromErrors();

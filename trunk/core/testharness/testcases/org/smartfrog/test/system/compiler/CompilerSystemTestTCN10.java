@@ -27,6 +27,7 @@ import org.smartfrog.test.SmartFrogTestBase;
 /**
  * JUnit test class for compiler/parser functional tests.
  */
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class CompilerSystemTestTCN10 extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/compiler/";
