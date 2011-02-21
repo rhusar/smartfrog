@@ -27,6 +27,7 @@ import org.smartfrog.test.SmartFrogTestBase;
 /**
  * JUnit test class for compiler/parser functional tests.
  */
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class CompilerSystemTest extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/compiler/";
@@ -44,7 +45,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
         deployExpectingException(FILES+"tcn5.sf",
                 "tcn5",
                 EXCEPTION_DEPLOYMENT,
-                "error in schema: wrong class found for attribute 'sfClass (class that implements component)', expected: java.lang.String, found: org.smartfrog.sfcore.common.SFNull",
+                "error in schema: wrong class found for attribute 'sfClass (class that implements component)',"
+                        + " expected: java.lang.String, found: org.smartfrog.sfcore.common.SFNull",
                 EXCEPTION_LINKRESOLUTION,
                 ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION);
     }
