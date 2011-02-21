@@ -88,7 +88,42 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			otherChars.add('£');
 			otherChars.add('=');
 			};
+
 			
+
+			static HashSet<String> reservedWords = new HashSet<String>();	
+			static { 
+				reservedWords.add("APPLY");
+				reservedWords.add("ASSERT");
+				reservedWords.add("DATA");
+				reservedWords.add("extends");
+				reservedWords.add("false");
+				reservedWords.add("HERE");
+				reservedWords.add("HOST");
+				reservedWords.add("PROPERTY");
+				reservedWords.add("IPROPERTY");
+				reservedWords.add("ENVPROPERTY");
+				reservedWords.add("IENVPROPERTY");
+				reservedWords.add("CONSTANT");
+				reservedWords.add("LAZY");
+				reservedWords.add("NULL");
+				reservedWords.add("OPTIONAL");
+				reservedWords.add("PARENT");
+				reservedWords.add("PROCESS");
+				reservedWords.add("ROOT");
+				reservedWords.add("TBD");
+				reservedWords.add("THIS");
+				reservedWords.add("true");
+				reservedWords.add("IF");
+				reservedWords.add("THEN");
+				reservedWords.add("ELSE");
+				reservedWords.add("FI");
+				reservedWords.add("SWITCH");
+				reservedWords.add("ENDSWITCH");
+				reservedWords.add("VAR");
+				};		
+				
+				
 	protected Map attributeTags = new HashMap();
 	protected Map attributeTagsWrappers = new HashMap();
 
@@ -647,10 +682,9 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 				requiresQuotes = true;
 				break;
 			}
-		}
+		} 
 		
-		if (!isLetter(s.charAt(0)))
-			requiresQuotes = true;
+		requiresQuotes |= (!isLetter(s.charAt(0))) || reservedWords.contains(s);
 		
 		if (requiresQuotes) ps.write("\"");
 		ps.write(s);
