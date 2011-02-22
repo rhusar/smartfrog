@@ -915,6 +915,7 @@
 -->
         <include name="sf-jersey/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
+        <include name="sf-json/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
         <include name="sf-net/${smartfrog.version}/*"/>
         <include name="sf-quartz/${smartfrog.version}/*"/>
