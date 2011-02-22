@@ -1128,7 +1128,7 @@
   </target>
 
 
-  <target name="sftp-upload" depends="upload-init" if="sftp.enabled"
+   <target name="sftp-ready-to-upload" depends="upload-init" if="sftp.enabled"
       description="Upload the artifacts to a secure sftp server">
     <property name="sftp.server" value="frs.sourceforge.net"/>
     <property name="sftp.user" value="${ssh.user}"/>
@@ -1138,13 +1138,20 @@
     <property name="sftp.release.dir" value="smartfrog-${smartfrog.version}"/>
     <property name="sftp.dir" value="${sftp.project.dir}${sftp.branch.dir}${sftp.release.dir}"/>
     <property name="sftp.path"
-        value="${sftp.user}@${sftp.server}:${sftp.dir}"/>
+      value="${sftp.user}@${sftp.server}:${sftp.dir}"/>
     <echo>SFTP target is ${sftp.server}</echo>
     <echo level="verbose">
       echo uploading to "${sftp.path}"
       files
       ${toString:upload.fileset}
+      Trust = "${ssh.trust}"
+      Verbose = "${sftp.verbose}
+      Pass = "${sftp.password}"
     </echo>
+  </target>
+
+  <target name="sftp-upload" depends="sftp-ready-to-upload" if="sftp.enabled"
+      description="Upload the artifacts to a secure sftp server">
     <scp remoteToDir="${sftp.path}"
         sftp="true"
         password="${sftp.password}"
@@ -1152,7 +1159,6 @@
         verbose="${sftp.verbose}">
       <fileset refid="upload.fileset"/>
     </scp>
-
   </target>
 
   <target name="can-upload"
