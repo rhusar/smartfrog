@@ -979,7 +979,7 @@
     <ssh-remote command="chmod a+r ${ssh.maven.dir}"/>
   </target>
 
-  <target name="upload-rm-maven-zip" depends="init-maven-artifacts,upload-init">
+  <target name="upload-rm-maven-zip" depends="init-maven-artifacts,upload-maven-init">
     <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
   </target>
 
