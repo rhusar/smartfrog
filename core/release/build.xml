@@ -947,8 +947,10 @@
 
   <target name="maven-artifacts" depends="expand-maven-artifacts"/>
 
-
   <target name="upload-maven-artifacts"
+    depends="upload-expand-maven-artifacts, upload-rm-maven-zip"/>
+
+  <target name="upload-maven-zip"
       depends="init-maven-artifacts,upload-init,ssh-test">
     <fail>
       <condition>
@@ -968,11 +970,18 @@
         verbose="${ssh.verbose}">
       <fileset file="${maven.zip}"/>
     </scp>
+  </target>
+
+  <target name="upload-expand-maven-artifacts" depends="upload-maven-zip">
     <ssh-remote
-        command="unzip -o ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
-    <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
+      command="unzip -o ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
     <ssh-remote command="chmod a+r ${ssh.maven.dir}"/>
   </target>
+
+  <target name="upload-rm-maven-zip" depends="init-maven-artifacts">
+    <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
+  </target>
+
 
   <!--
     this target calls the kernel's release process to create some release artifacts
@@ -1147,6 +1156,7 @@
       Trust = "${ssh.trust}"
       Verbose = "${sftp.verbose}
       Pass = "${sftp.password}"
+      Upload source dir = ${upload.dir}
     </echo>
   </target>
 
