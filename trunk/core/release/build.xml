@@ -952,7 +952,7 @@
     depends="upload-expand-maven-artifacts, upload-rm-maven-zip"/>
 
   <target name="upload-maven-zip"
-      depends="init-maven-artifacts,upload-init,ssh-test">
+      depends="init-maven-artifacts,upload-maven-init,ssh-test">
     <fail>
       <condition>
         <not>
@@ -1069,8 +1069,12 @@
 
   <!--iniitialise the upload process by copying all the relevant artifacts and creating
   the upload fileset-->
+
+  <target name="upload-maven-init"
+    depends="init,check-scp,load-server-settings,locate-core-artifacts"/>
+
   <target name="upload-init"
-      depends="init,init-rpm,check-scp,load-server-settings,locate-core-artifacts">
+      depends="init,upload-maven-init">
 
     <copy todir="${upload.dir}" file="${izpack.jar}"/>
     <copy todir="${upload.dir}" file="${release.dir}/smartfrog.${smartfrog.version}_all.tar.gz"/>
