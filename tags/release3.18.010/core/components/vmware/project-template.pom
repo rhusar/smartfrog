@@ -1,0 +1,27 @@
+<!-- This POM file is authored by the SmartFrog project. 
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+   ${pom.comments}
+  -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.smartfrog</groupId>
+  <artifactId>sf-vmware</artifactId>
+  <packaging>jar</packaging>
+  <version>${smartfrog.version}</version>
+  <description>VMWare controller</description>
+    <dependencies>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-xmpp</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
+      <dependency>
+        <groupId>java</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
+  </dependencies>
+</project>

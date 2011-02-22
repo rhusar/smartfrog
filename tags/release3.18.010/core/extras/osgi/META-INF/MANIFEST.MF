@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Name: SmartFrog
+Bundle-SymbolicName: smartfrog
+Bundle-Version: 1.0.0
+Bundle-Description: SmartFrog Daemon
+Bundle-Vendor: HP Labs
+Bundle-Classpath: smartfrog-3.10.051dev.jar,sfServices-3.10.051dev.jar,.
+Bundle-Activator: org.smartfrog.osgi.SmartFrogActivator
+Import-Package: org.osgi.framework
+

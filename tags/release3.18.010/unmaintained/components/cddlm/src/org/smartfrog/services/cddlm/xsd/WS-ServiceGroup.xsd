@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Legal Disclaimer
+  
+  Copyright Notice
+  
+   (c) Copyright Computer Associates International, Inc., 
+       Fujitsu Limited, Hewlett-Packard Development Company, 
+       International Business Machines Corporation and 
+       The University of Chicago 2003, 2004. All Rights Reserved. 
+-->
+<xsd:schema
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:wsrp=
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties"
+  xmlns:wssg=
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-ServiceGroup"
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+  elementFormDefault="qualified" attributeFormDefault="unqualified"
+  targetNamespace=
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-ServiceGroup">
+  <!-- ======================== Imports ============================ -->
+
+  <xsd:import
+    namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+    schemaLocation=
+    "http://schemas.xmlsoap.org/ws/2003/03/addressing"/>
+  <xsd:import
+    namespace="http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties"
+    schemaLocation="http://www-106.ibm.com/developerworks/webservices/library/ws-resource/WS-ResourceProperties.xsd"/>
+
+  <!-- =============== Resource Property Related  =================== -->
+  <!-- ============ Resource Properties for ServiceGroup ============ -->
+
+  <xsd:simpleType name="ContentElementsType">
+    <xsd:list itemType="xsd:QName"/>
+  </xsd:simpleType>
+
+  <xsd:element name="MembershipContentRule">
+    <xsd:complexType>
+      <xsd:attribute name="MemberInterface" type="xsd:QName"/>
+      <xsd:attribute name="ContentElements"
+        type="wssg:ContentElementsType"
+        use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="EntryType">
+    <xsd:sequence>
+      <xsd:element name="ServiceGroupEntryEPR"
+        type="wsa:EndpointReferenceType"
+        minOccurs="1" maxOccurs="1"
+        nillable="true"/>
+      <xsd:element name="MemberServiceEPR"
+        type="wsa:EndpointReferenceType"
+        minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Content"
+        type="xsd:anyType"
+        minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ========== Resource Properties for ServiceGroupEntry ========= -->
+
+  <xsd:element name="Entry"
+    type="wssg:EntryType"/>
+
+  <xsd:element name="Content"
+    type="xsd:anyType"/>
+
+  <xsd:element name="MemberEPR"
+    type="wsa:EndpointReferenceType"/>
+
+  <xsd:element name="ServiceGroupEPR"
+    type="wsa:EndpointReferenceType"/>
+
+  <!-- = Messages Related to ServiceGroup Change Notification ======= -->
+  <xsd:complexType name="ServiceGroupModificationNotificationType">
+    <xsd:sequence>
+      <xsd:element name="ServiceGroupEntryEPR"
+        type="wsa:EndpointReferenceType"
+        minOccurs="1" maxOccurs="1"
+        nillable="true"/>
+      <xsd:element name="MemberServiceEPR"
+        type="wsa:EndpointReferenceType"
+        minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Content"
+        type="xsd:anyType"
+        minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ServiceGroupRemovalNotificationType">
+    <xsd:complexContent>
+      <xsd:extension
+        base="wssg:ServiceGroupModificationNotificationType">
+        <xsd:sequence>
+          <xsd:element name="Reason"
+            type="xsd:string"
+            minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="EntryAdditionNotification"
+    type="wssg:ServiceGroupModificationNotificationType"/>
+
+  <xsd:element name="EntryRemovalNotification"
+    type="wssg:ServiceGroupRemovalNotificationType"/>
+
+</xsd:schema>

@@ -1,0 +1,30 @@
+<!--
+HTTP/1.1 500 Internal Server Error
+Content-Type: text/xml; charset="utf-8"
+Content-Length: nnnn
+-->
+
+<soap:Envelope
+  xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Body>
+    <soap:Fault>
+      <soap:Role>soap:Server</soap:Role>
+      <soap:Code>
+        <soap:Value>soap:Server</soap:Value>
+      </soap:Code>
+      <soap:Reason>
+        <soap:Text xml:lang="en">Server Error</soap:Text>
+      </soap:Reason>
+      <soap:Detail>
+        <e:myfaultdetails xmlns:e="http://example.org/uri">
+          <message>
+                   My application didn't work
+          </message>
+          <errorcode>
+                   1001
+          </errorcode>
+        </e:myfaultdetails>
+      </soap:Detail>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>

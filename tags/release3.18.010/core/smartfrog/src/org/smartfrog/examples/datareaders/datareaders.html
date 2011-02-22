@@ -1,0 +1,62 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>DataReaders Component</title>
+</head>
+<body>
+<b>DataReaders</b>
+<p><b><i>Goal of this example:</i></b>
+<p>This example shows how the references are resolved at run-time.
+<p><b><i>Internal Functionality:</i></b>
+<p>The datareaders example uses two components: <a href="dataConsumer.sf">dataConsumer</a>
+which reads the data and <a href="dataProvider.sf">dataProvider</a> which
+provides the data. The dataConsumer has Lazy references for the attributes
+defined in dataProvider. These references remain unresolved untill dataProvider
+is started. Once dataProvider is started the references are resolved at
+run-time and the values attributes defined in dataConsumer are read.
+<p><b><i>Running the example (using SmartFrog Management
+Console):</i></b>
+<p><b><i>Scenario 1(consumer started before provider):</i></b>
+<p>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/startDaemon.bat">Start daemon
+</a>on localhost
+<br>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/startdataConsumer.bat">Start
+dataConsumer.sf</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Start sf management console using the "sub-proc" gui menu&nbsp; Help
+-> SF Mng Console.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Check references with console. The references are not resolved and cannot
+be read.
+<p><b>Expected Output of SF Mng Console:</b>
+<p><img SRC="htmlDoc/imageI5F.JPG" alt=""/>
+<p>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/startdataProvider.bat">Start dataProvider.sf</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Go to sf management console.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Check references with console. The references are now resolved and can
+be read.
+<p><b>Expected Output of SF Mng Console:</b>
+<p><img SRC="htmlDoc/imageN50.JPG" alt=""/>
+<p>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/stopDaemon.bat">Stop daemon</a>
+<p><b><i>Scenario 2 ( provider started before comsumer):</i></b>
+<br>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/startDaemon.bat">Start daemon
+</a>on
+localhost
+<br>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/startdataProvider.bat">Start
+dataProvider.sf</a>
+<br>&nbsp;&nbsp;&nbsp; - <a href="htmlDoc/startdataConsumer.bat">Start
+dataConsumer.sf</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Start sf management console using the "sub-proc" gui menu&nbsp; Help
+-> SF Mng Console.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Check references with console. The references are resolved and can be
+read.
+<br>&nbsp;&nbsp;&nbsp; -<a href="htmlDoc/stopDaemon.bat">Stop daemon</a>
+<p><b>Expected Output:</b>
+<p><img SRC="htmlDoc/imageBLP.JPG" alt=""/>
+<p><b>Expected Output of Management Console:</b>
+<p><img SRC="htmlDoc/imageN50.JPG" alt=""/>
+<p><b><a href="../examples.html">Backto examples</a></b>
+</body>
+</html>

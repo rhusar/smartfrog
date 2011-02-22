@@ -1,0 +1,185 @@
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/examples/orchdws/thresholder/components.sf"
+#include "/org/smartfrog/examples/orchdws/sf/webTemplate.sf"
+#include "/org/smartfrog/examples/orchdws/balancer/components.sf"
+#include "/org/smartfrog/services/dependencies/statemodel/components.sf"
+
+
+ServerInstance extends Composite {  
+   instance extends DesiredObservedStateComponent {  
+   	  sfClass "org.smartfrog.examples.orchdws.balancer.ServerInstanceImpl";   
+      template extends LAZY WebServerTemplate;
+      lb LAZY PARENT:ATTRIB loadbal;
+   }
+   
+   observedDependency extends Dependency {
+      on extends PolicyRef { reference ( "lbbs:server"++ sfIndex ++ ":binding" );}
+      by LAZY instance; 
+      relevant (LAZY by:oup);
+      enabled (!LAZY on:bound);
+   } 
+}
+
+loadbalBinding extends Composite {  
+   binding extends SimpleStateComponent {
+   		sfClass "org.smartfrog.examples.orchdws.balancer.LoadBalancerBindingImpl";      
+   	    bound LAZY up;  //From SimpleStateComponent
+   	    lb LAZY PARENT:ATTRIB loadbal;
+   }
+
+   on extends PolicyRef { reference ("servers:server"++ sfIndex ++ ":instance" );}
+
+   loadbalStartDependency extends Dependency {
+      on PARENT:on;
+      by LAZY binding;
+      relevant (!LAZY by:bound);
+      enabled (LAZY on:oup && LAZY on:dup);      
+   }
+   loadbalStopDependency extends Dependency {
+      on PARENT:on;
+      by LAZY binding;
+      relevant (LAZY by:bound);
+      enabled (!LAZY on:dup);
+   }
+}
+
+Shutdown extends EnableDisableComponent{}
+
+EnableDisableComponent extends Effect {
+   array LAZY servers;
+   prefix "server";
+   path LAZY instance; 
+   key "dup";
+   update false;
+}
+
+EnableComponent extends EnableDisableComponent {
+   pred ((LAZY sfIndex < LAZY minInstances) || (LAZY sfIndex == (LAZY noserversUp)));
+   update true;
+}
+
+DisableComponent extends EnableDisableComponent {
+   pred (((LAZY sfIndex)+2) > (LAZY noserversUp));
+}
+
+ServiceOrchestration extends Model {
+   sfProcessHost           balancerHost;
+   sfProcessComponentName "serviceOrch";
+   
+   -- extends Array {
+      extent maxInstances;
+      prefix "PARENT:servers:server";	
+      generator extends ArrayGenerator, ServerInstance;
+   }
+
+   -- extends Array {
+      extent maxInstances;
+      prefix "PARENT:lbbs:server";	
+      generator extends ArrayGenerator, loadbalBinding;
+   }
+
+   servers extends Composite;
+   lbbs extends Composite;
+   
+   loadgen extends SimpleStateComponent {
+      ok LAZY up;  //From SimpleStateComponent
+   }
+   
+   loadgenStartDependency extends Dependency {
+      on LAZY servers:server0:instance;
+      by LAZY loadgen;
+      relevant (!LAZY by:ok);
+      enabled ((LAZY on:oup) && (LAZY on:dup));
+   } 
+   
+   loadgenStopDependency extends Dependency {
+      on LAZY servers:server0:instance;
+      by LAZY loadgen;
+      relevant (LAZY by:ok);
+      enabled (!LAZY on:dup);
+   } 
+   
+   serverHosts extends ROOT:serverHosts;
+   maxInstances ROOT:noServerHosts;
+   minInstances 1;
+   
+   loadbal extends Balancer {
+      upper 800;
+      lower 350;
+      delay 0;
+      up true; 
+      shutdown false;
+      timer false;
+      sleep 30000;
+
+      serverHosts LAZY PARENT:serverHosts;
+      dataSource LAZY loadGenerators;
+      lbbs LAZY PARENT:lbbs;
+
+       handleupper extends DynamicPolicyEvaluation {
+          guard ( (!LAZY timer) && (LAZY up) && ((LAZY delay>upper) || ((LAZY noserversUp) < minInstances)) && ((LAZY noserversUp) < maxInstances));
+		  effects extends PolicyEffects {
+		     -- extends EnableComponent;
+		     startTimer extends Effect {
+		        key "timer";
+		        update true;
+		     } 
+		  }	  
+	  }
+  
+      handlelower extends DynamicPolicyEvaluation {
+         guard  ( (!LAZY timer) && (LAZY up) && (LAZY delay<lower) && ((LAZY noserversUp) > minInstances));
+         effects extends PolicyEffects {
+            -- extends DisableComponent;
+            startTimer extends Effect {
+               key "timer";
+               update true;
+	        }
+	     }
+      }
+      
+      timerstop extends Transition{
+         guard (LAZY timer);
+         effects extends PolicyEffects {
+            //stopTimer
+            key "timer";
+            update false;
+         }
+      }
+      
+      handleshutdown extends DynamicPolicyEvaluation {
+         guard ( (LAZY shutdown && LAZY up) && ((LAZY noserversObservedUp)>0));
+         effects extends PolicyEffects { 
+            -- extends Shutdown;
+            clearUpStatus extends Effect {
+                  key "up";
+                  update false;
+            }
+         }
+      }
+   }
+  
+   noserversUp extends LazyConstraint {
+      array LAZY servers;
+      prefix "server";
+      path LAZY instance:dup; 
+      dups extends AggregateSpecifier { pred LAZY instance:dup; }   //Based on desire
+      [sfReturn] size VAR;
+      [sfConstraint] -- "length(dups, size)";
+   }
+
+   noserversObservedUp extends LazyConstraint {
+      array LAZY servers;
+      prefix "server";
+      path LAZY instance:oup; 
+      oups extends AggregateSpecifier { pred LAZY instance:oup; }   //Based on desire
+      [sfReturn] size VAR;
+      [sfConstraint] -- "length(oups, size)";
+   }
+
+   -- extends HTTPResponseMeasure;
+   -- extends ConnectionMeter;   
+}
+
+
+

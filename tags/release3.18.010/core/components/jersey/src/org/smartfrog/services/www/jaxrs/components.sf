@@ -1,0 +1,140 @@
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
+
+Disclaimer of Warranty
+
+The Software is provided "AS IS," without a warranty of any kind. ALL
+EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES,
+INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE HEREBY
+EXCLUDED. SmartFrog is not a Hewlett-Packard Product. The Software has
+not undergone complete testing and may contain errors and defects. It
+may not function properly and is subject to change or withdrawal at
+any time. The user must assume the entire risk of using the
+Software. No support or maintenance is provided with the Software by
+Hewlett-Packard. Do not install the Software if you are not accustomed
+to using experimental software.
+
+Limitation of Liability
+
+TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL HEWLETT-PACKARD
+OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
+OR RELATED TO THE FURNISHING, PERFORMANCE, OR USE OF THE SOFTWARE, OR
+THE INABILITY TO USE THE SOFTWARE, EVEN IF HEWLETT-PACKARD HAS BEEN
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FURTHERMORE, SINCE THE
+SOFTWARE IS PROVIDED WITHOUT CHARGE, YOU AGREE THAT THERE HAS BEEN NO
+BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
+HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
+ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
+
+*/
+
+#include "/org/smartfrog/sfcore/prim/prim.sf"
+
+JaxRsServices extends Prim {
+
+  sfClass "org.smartfrog.services.www.jaxrs.JaxRsServicesImpl";
+
+  /**
+   * Classes to list in the Classes() method
+   */
+  classes extends DATA {
+  
+  }
+
+  /**
+   * Classes to list in the singleton() method
+   */
+  singletonClasses extends DATA {
+  
+  }
+  
+  
+  /**
+   * classes to dynamically register after the application is deployed
+   */
+  endpointClasses extends DATA {
+  
+  }
+  
+}
+
+JaxRsConstants extends DATA {
+  //servlet name
+  servletName "javax.ws.rs.application";
+}
+
+JaxRsServlet extends Servlet {
+  name "JaxRsServlet";
+  pathSpec "/*";
+}
+
+/**
+ * add jersey-specific options here
+ */
+JaxRsServletContext extends ServletContext {
+
+}
+
+/**
+ * Jersey specific values
+ */
+JerseyConstants extends DATA {
+
+  servletClassName jersey10className;
+  jersey10className "com.sun.jersey.spi.container.servlet.ServletContainer";
+  jersey11className "com.sun.jersey.server.impl.container.servlet.ServletAdaptor";
+  initParamResourceConfigClass "com.sun.jersey.config.property.resourceConfigClass";
+  initParamResourceConfigClassName "com.sun.jersey.api.core.PackagesResourceConfig";
+   //set to a ; separated list of packages
+  initParamPackagesToScan "com.sun.jersey.config.property.packages";
+}
+
+/**
+ * This stuff isn't very well documented -use your search engine of choice
+ * to find details on it
+ * http://kingsfleet.blogspot.com/2008/10/running-jax-rcjerseyjsr311-on-weblogic.html
+ * http://publib.boulder.ibm.com/infocenter/wasinfo/v6r1/index.jsp?topic=/com.ibm.websphere.web20fepjaxrs.doc/info/ae/ae/twbs_jaxrs_configwebxml.html
+ 
+ */
+ 
+JerseyServlet extends JaxRsServlet {
+  //packages to Scan
+  //packagesToScan "org.smarfrog.services.www.jaxrs";
+  packagesToScan "none";
+  
+  initParams [
+      [JerseyConstants:initParamResourceConfigClass, JerseyConstants:initParamResourceConfigClassName],
+      [JerseyConstants:initParamPackagesToScan, packagesToScan]
+    ];
+
+  className JerseyConstants:servletClassName;
+}
+
+/**
+ * add jersey-specific options here
+ */
+JerseyServletContext extends JaxRsServletContext {
+
+}
+
+
+/**
+ * A compound that deploys the servlet context and related servlets
+ */
+JerseyCompound extends Compound {
+  server TBD;
+  contextPath "/";
+
+  context extends JerseyServletContext {
+    server LAZY PARENT:server;
+    contextPath PARENT:contextPath;
+    resourcePackage "/org/smartfrog/services/www/jaxrs/jetty/webresources/";
+  }
+  
+  jerseyServlet extends JerseyServlet {
+    context LAZY PARENT:context;
+  }
+  
+}

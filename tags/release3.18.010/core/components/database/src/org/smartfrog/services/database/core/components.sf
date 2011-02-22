@@ -1,0 +1,215 @@
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+
+/*
+ * This is the binding to a database.
+ * The component does a check on sfStart() for the driver class; this
+ * should also force load it into the runtime so that database-specific
+ * JBC URLs will resolve.
+ */
+DatabaseBinding extends Prim {
+  sfClass "org.smartfrog.services.database.core.JdbcBindingImpl";
+  //this is not exported across processes, as it does VM-specific setup, and
+  //will in future export non-Remoteable methods for pooling
+  //sfExport false;
+  jdbcBindingSchema extends Schema {
+      //driver classname. No extra loading stuff here other than SF codebase.
+      driver extends OptionalString {
+        description "the classname of the driver, which must be in the current classpath";
+      };
+      //URL of the system
+      url extends String {
+        description "URL of the jdbc connection";
+      }
+
+      username extends OptionalString {
+        description "username for the database";
+      };
+      //password
+      password extends OptionalString{
+        description "password for the database";
+      };
+      //any extra properties
+      properties extends OptionalVector {
+        description "list of name,value pairs for the JDBC connection";
+      };
+
+/*      classpath extends OptionalCD {
+        description "a classpath component describing classes needed by the JDBC driver";
+      }*/
+  }
+}
+
+/**
+ * an operation under a database
+ */
+DatabaseOperation extends WorkflowPrim {
+  operationSchema extends Schema {
+    database extends Compulsory {
+      description "reference to a database";
+    }
+    autocommit extends Boolean {
+        description "should every command commit after execution";
+    }
+  }
+  autocommit true;
+}
+
+
+/**
+ * A transaction is a list of commands in a file, a string, or resource.
+ * Every SQL statement must end with the delimiter, followed by a newline.
+ * delimiters in the middle of a line are treated as part of a statement.
+ * Comments are left alone, and a delimiter at the end of the comment
+
+ */
+Transaction extends DatabaseOperation {
+  transactionSchema extends Schema {
+
+    delimiter extends String {
+      description "delimiter char between SQL statements, usually ;";
+    }
+    escapeProcessing extends Boolean {
+      description "should SQL commands be escaped before execution?";
+    }
+    expectedStatementCount extends Integer {
+      description ##
+        this is primarily for internal testing, but can be used for debugging
+        statement parsing problems. It is the count of statements expected
+        after the string/file/resource is parsed. If there is a mismatch,
+        an exception is thrown. Omit or use -1 for do not care' #;
+    }
+    failOnSqlError extends Boolean {
+      description "should we fail on an SQL error?";
+    }
+    printResults extends Boolean {
+      description "should the results be printed?";
+    }
+    printHeaders extends Boolean {
+      description "should the column headers be printed?";
+    }
+    sql extends OptionalString {
+      description "inline commands seperated by the delimiter";
+    }
+    sqlCommands extends OptionalVector {
+        description "a list of commands to execute, each undelimited command in a separate element";
+      };
+    sqlFile extends OptionalFilenameType {
+      description "UTF-8 encoded file containing SQL commands to run";
+    }
+    sqlResource extends OptionalString {
+      description "name of UTF-8 encoded text resource containing SQL commands to run";
+    }
+  }
+
+  sfClass "org.smartfrog.services.database.core.TransactionImpl";
+  sfShouldTerminate true;
+  delimiter ";";
+  escapeProcessing false;
+  expectedStatementCount -1;
+  failOnSqlError true;
+  printResults true;
+  printHeaders true;
+}
+
+/**
+ * A CounterTransaction issues a sequence of CounterCommands to
+ * the database (synchronously) when undeploying.
+ * Failures of these commands are reported and the sequence halts.
+ */
+CounterTransaction extends Transaction {
+  counterTransactionSchema extends Schema {
+    counterCommands extends Vector {
+      description "a list of commands to execute when undeploying ";
+    };
+  }
+  //we do not terminate
+  sfShouldTerminate false;
+  counterCommands [];
+}
+
+/**
+ * This component runs the SQL commands synchronously during termination.
+ * It is where to put shutdown operations like "DROP TABLE table1"
+ */
+TerminationTransaction extends Transaction {
+  //we do not terminate
+  sfShouldTerminate false;
+  sfClass "org.smartfrog.services.database.core.TerminationTransactionImpl";
+}
+
+/**
+ * This is a condition which checks that a connection to the URL can be opened
+ */
+IsJdbcConnectionOpen extends DatabaseOperation {
+  sfClass "org.smartfrog.services.database.core.ConnectionOpenCondition";
+}
+
+/**
+ * make a selection, results go into the results vector as a nested vector, columns becomes the vector of columns
+ */
+/*
+Selection extends Transaction {
+  selectionSchema extends Schema {
+     minResultSize extends OptionalInteger {
+      description "minimum count of the results, -1 for no minumum";
+     }
+     maxResultSize extends OptionalInteger {
+       description "maximum count of the results, -1 or for no maximum";
+     }
+  }
+}
+*/
+
+
+
+/**
+ * this is an operation that should succeed
+ * if the database is present
+ */
+/*
+LivenessTransaction extends Transaction {
+
+}
+*/
+
+
+/**
+ * This component runs selections as a liveness test, so
+ * that you can use the state of the database as a health check
+ * use the min/max result size attributes to set the min/max number
+ * of results.
+ */
+
+/*
+LivenessSelection extends Selection {
+
+}
+*/

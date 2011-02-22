@@ -1,0 +1,83 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+/*
+ * components for MySQL integration
+ */
+
+
+#include "/org/smartfrog/services/database/core/components.sf"
+#include "/org/smartfrog/services/os/java/library.sf"
+
+/**
+ * We don't redist MySQL as it has interesting license
+ * ramifications for non-OSS applications, though (LGPL) smartfrog
+ * is free to redist it and retain its license
+ * http://mysql.com
+ */
+
+MysqlBinding extends DatabaseBinding {
+  binding_prefix "jdbc:mysql://";
+  driver "com.mysql.jdbc.Driver";
+  url "jdbc:mysql://localhost/";
+}
+
+/**
+ * Add host, port and database names to the binding
+ * Note that SmartFrog requires a ++ to have spaces between things as it can be
+ * used in a reference name
+ */
+MysqlTargetedBinding extends MysqlBinding {
+  host "locahost";
+  //port
+  port 3306;
+  database "";
+  _db LAZY database;
+  url (((((binding_prefix ++ host) ++ ":" ) ++ port) ++ "/") ++ _db);
+}
+
+/**
+ * The administrator account
+ */
+MysqlAdministrator extends MysqlTargetedBinding {
+  username "root";
+  password "";
+}
+
+/**
+ * Test for a live database
+ * Requires a database > 3.22, and a compatible mysql driver.
+ */
+IsMysqlLive extends IsJdbcConnectionOpen {
+  sfClass "org.smartfrog.services.database.mysql.IsMysqlLive";
+}
+
+
+/**
+ * This is the definition for mysql 5. To use you need to instantiate the JAR component
+ * with the library attribute set to a relevant library
+ */
+mysql5.jar extends JarArtifact {
+    project "mysql";
+    artifact "mysql-connector-java";
+    version "5.0.4";
+    sha1 "ce259b62d08cce86a68a8f17f5f9c8218371b235";
+}

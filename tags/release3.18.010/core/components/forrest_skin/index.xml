@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>Welcome to SmartFrog</title> 
+  </header> 
+  <body> 
+	  <section id="titlepage">
+	  <title>Smart Framework for Object Groups</title>
+
+<p>
+  SmartFrog is a technology
+for describing distributed software systems as collections of
+cooperating components, and then activating and managing them. It was
+developed at HP Labs in Bristol, in the UK. The core SmartFrog
+framework is released under the
+ <a href="http://www.gnu.org/copyleft/lesser.html" >LGPL</a>.
+</p>
+<p >SmartFrog project
+development is hosted on Sourceforge:</p>
+<ul>
+	<li>
+      Project development web site:&nbsp;&nbsp;&nbsp;
+	<a href="http://sourceforge.net/projects/smartfrog">http://sourceforge.net/projects/smartfrog</a>.
+  </li>
+	<li>
+    Package downloads:
+	<a href="http://sourceforge.net/project/showfiles.php?group_id=87384&amp;package_id=108447">downloads</a>
+	page. 
+  </li>
+</ul>
+<p>SmartFrog consists of a
+language for describing component collections and component
+configuration parameters, and a runtime environmentwhich
+activates and manages the components to deliver and maintain running
+systems.
+</p>
+  <img src="smartfrogdoc/overview_html_39c627ce.gif" alt="frog" />
+<p>
+SmartFrog has wide applicability across domains ranging from utility computing
+to large-scale system configuration. 
+</p>
+<p >SmartFrog is a framework
+to build from, not a packaged solution. Typically, we write new
+components for each new service, and then use SmartFrog to describe
+and activate them. However, the framework is populated with a number
+of general purpose components that can be reused across services, and
+we are adding to their number.</p>
+<p >SmartFrog and its
+components are implemented in Java, though SmartFrog
+components can easily be written to encapsulate software components
+based on other technologies.</p>
+  </section>
+   </body>
+</document>

@@ -1,0 +1,113 @@
+#include "/org/smartfrog/services/www/webapplication.sf"
+#include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
+#include "/org/smartfrog/services/utils/concat/components.sf"
+
+ /*
+  * these are the properties of the database
+  */
+   DatabaseProperties extends SystemProperties {
+        
+        
+        dbport TBD;
+        dbpassword TBD;
+        dburl TBD;
+        dbdriver TBD;
+        dbuser TBD;
+        setOnStartup true;
+        setOnDeploy false;
+        properties [
+            ["db.port",dbport],
+            ["db.passwd",dbpassword],
+            ["db.url",dburl],
+            ["db.driver",dbdriver],
+            ["db.user",dbuser]
+        ];
+        
+    }
+    
+    
+TestWar extends Compound {
+    
+    //port to deploy to 
+    port TBD;
+    
+    //bind this to an application sever
+    server TBD;
+    
+    //flag to turn liveness checking on/off
+    liveness true;
+    
+    //page to check for happness
+    happy.page "/happy";
+
+    //import our properties
+    props extends DatabaseProperties;
+    
+    //declare the file, bound to the test.war.file value
+    TestWarFile extends File {
+    
+        //deployment time property
+        filename PROPERTY test.war.file;
+        //check it exists when we deploy
+        testOnDeploy true;
+        
+    }
+    
+    
+    webapp extends WebApplication {
+        contextPath "/testwar";
+        filename LAZY TestWarFile;
+        server LAZY PARENT:server;
+    }
+
+    
+    happyPath extends LazyConcat {
+       string extends  {
+          -- webapp:contextPath;
+          -- happy.page;
+       }
+    }
+    
+    //fetch the page every so often, just to see that we are happy
+    
+    ping extends LivenessPage {
+        enabled PARENT:liveness;
+        host "localhost";
+        port PARENT:port;
+        page LAZY PARENT:happyPath:concat;
+        checkFrequency 10;
+    }
+}
+
+/*
+  This is a binding to the mysql database
+  */
+TestWarBoundToMySql extends TestWar {
+
+
+    port 5050;
+    liveness true;
+    
+    dbhost "localhost";
+    dbdatabase "test";
+    props:dbport 80;
+    props:dbuser "root";
+    props:dbpassword "password";
+
+    props:dbdriver "com.mysql.jdbc.Driver";
+    dburl extends LazyConcat {
+       string extends  {
+          -- "jdbc:mysql://";
+          -- dbhost;
+          -- "/";
+          -- dbdatabase;
+       }
+    }    
+    props:dburl "jdbc:mysql://localhost/test";
+    
+    
+    //props:dburl LAZY dburl:concat;
+
+}        

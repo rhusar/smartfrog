@@ -1,0 +1,98 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title> Titles and Subtitles</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<script language="JavaScript" type="text/javascript" src="js/buttonManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+
+
+
+</head>
+
+<body style="margin:20px;">
+<h3>Titles and Subtitles,</h3>
+
+
+
+<h4>Primary Title / PageTitle</h4>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="greyPanel">
+	<tr valign="top">
+		<td width="100%">
+			<h1 class="pageTitle">Page Title</h1>
+		</td>
+		<td>
+			<div class="buttonSet pad10">
+				<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="?"></div></div>
+			</div>
+			
+		</td>
+	</tr>
+</table>
+
+<br>
+<br>
+
+<h4>Secondary Title</h4>
+<h3 class="subTitle">Lorem Ipsem</h3>
+<div class="subTitleBottomEdge"></div>
+<br>
+<br>
+
+<h4>Subhead Style</h4>
+<h5>Lorem Ipsem</h5>
+
+
+
+<br>
+<br>
+
+
+
+
+<h4>HTML/CSS</h4>
+<ul>
+	<li>Primary titles are implemented as an H1 tag of class "pageTitle".  The pagetitle is shown here inside a grey panel, showing also a button element on its right.
+	<li>Secondary titles are implemented as an H3 tag of class "subTitle", followed by a div of class "subTitleBottomEdge". The div is necessary to implement the 3px line in the darker grey color. (A more straightforward bottom-border of 3px cannot be used on the subTitle as this can introduces subtle box-model bugs on IE6.)
+</ul>
+
+<h4>Javascript</h4>
+<ul>
+	<li>No additional javascript is used for the layout or behaviour of this component, although the ButtonManager is used to set up the button shown
+</ul>
+
+
+
+
+
+<br><br><br>
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+
+</body>
+</html>
