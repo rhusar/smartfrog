@@ -53,16 +53,20 @@
             <artifactId>dom4j</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>jaxme</groupId>
+            <artifactId>jaxme</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>jdom</groupId>
             <artifactId>jdom</artifactId>
           </exclusion>
           <exclusion>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>jaxme</groupId>
-            <artifactId>jaxme</artifactId>
           </exclusion>
           <exclusion>
             <groupId>xerces</groupId>
