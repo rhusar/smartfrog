@@ -64,6 +64,10 @@
             <groupId>jaxme</groupId>
             <artifactId>jaxme</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
     </dependencies>
