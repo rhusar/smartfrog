@@ -23,5 +23,10 @@
       <artifactId>sf-loggingservices</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-xml</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
   </dependencies>
 </project>

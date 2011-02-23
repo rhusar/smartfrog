@@ -24,10 +24,11 @@
       <version>${smartfrog.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>${servletapi.version}</version>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-jetty</artifactId>
+      <version>${smartfrog.version}</version>
     </dependency>
+
     <!--restlet api-->
     <dependency>
       <groupId>org.restlet</groupId>
@@ -46,11 +47,24 @@
       <version>${restlet.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>${commons-fileupload.version}</version>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet.ext.httpclient</artifactId>
+      <version>${restlet.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-httpclient</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
-
+    <dependency>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet.ext.httpclient</artifactId>
+      <version>${restlet.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-fileupload</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 </project>

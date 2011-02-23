@@ -1,4 +1,4 @@
-<!-- This POM file is authored by the SmartFrog project. 
+<!-- This POM file is authored by the SmartFrog project.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8,11 +8,16 @@
   -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-database</artifactId>
+  <artifactId>sf-groovy</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>JDBC components for database configuration</description>
+  <description>
+    SmartFrog Groovy Support
+  </description>
+
+
   <dependencies>
+
     <dependency>
       <groupId>org.smartfrog</groupId>
       <artifactId>sfServices</artifactId>
@@ -20,20 +25,14 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>${commons-dbcp.version}</version>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all-minimal</artifactId>
+      <version>${groovy.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>${commons-pool.version}</version>
+      <groupId>com.sun.script</groupId>
+      <artifactId>groovy-engine</artifactId>
+      <version>${groovy-engine.version}</version>
     </dependency>
-    <dependency>
-      <groupId>commons-dbutils</groupId>
-      <artifactId>commons-dbutils</artifactId>
-      <version>${commons-dbutils.version}</version>
-    </dependency>
-
   </dependencies>
 </project>

@@ -33,14 +33,26 @@
       <artifactId>sf-json</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
+    <!--grab mail and activation-->
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-emailer</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
 
     <!--typica-->
 
     <dependency>
-      <groupId>typica</groupId>
+      <groupId>com.google.code.typica</groupId>
       <artifactId>typica</artifactId>
       <version>${typica.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
 
   </dependencies>
 

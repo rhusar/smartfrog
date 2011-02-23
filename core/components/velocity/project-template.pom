@@ -28,26 +28,17 @@
       <artifactId>sf-net</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-json</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>${velocity.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>${commons-collections.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>${commons-lang.version}</version>
-    </dependency>
-
 
   </dependencies>
 </project>
