@@ -27,8 +27,6 @@
       description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
       extends="redist"/>
-    <conf name="antxml"
-      description="extra dependencies for Ant XML output"/>
     <conf name="documentation"
       description="all documentation artifacts"/>
   </configurations>
@@ -65,7 +63,7 @@
     <dependency org="org.smartfrog"
       name="sf-xml" changing="true"
       rev="latest.integration"
-      conf="redist->default"/>
+      conf="compile, redist->default"/>
 
     <!-- ant is pulled in to test the AntXML; if junitreport can handle it,
          then it must be OK -->
