@@ -62,7 +62,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		specialChars.add('%');
 		specialChars.add('^');
 		specialChars.add('&');
-		};
+		}
 		static HashSet<Character> otherChars = new HashSet<Character>();	
 		static { 
 			otherChars.add(' ');
@@ -85,7 +85,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 			otherChars.add('|');
 			otherChars.add('`');
 			otherChars.add('=');
-			};
+			}
 
 			
 
@@ -119,7 +119,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 				reservedWords.add("SWITCH");
 				reservedWords.add("ENDSWITCH");
 				reservedWords.add("VAR");
-				};		
+				}		
 				
 				
 	protected Map attributeTags = new HashMap();
