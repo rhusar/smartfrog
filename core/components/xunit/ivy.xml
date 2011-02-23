@@ -15,11 +15,11 @@
     <conf name="default" extends="master,runtime"/>
     <conf name="build" visibility="private"
       description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private" extends="antxml"
+    <conf name="compile" visibility="private"
       description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private" extends="test"
       description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="default,compile,antxml"
+    <conf name="test" extends="default,compile"
       description="the classpath needed to run tests"/>
     <conf name="master"
       description="contains the artifact but no dependencies"/>
