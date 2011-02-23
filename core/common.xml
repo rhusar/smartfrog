@@ -2336,10 +2336,24 @@ Exist.
 
   <target name="ivy-purge-cache" depends="ivy-properties"
       description="purge all smartfrog artifacts from the cache">
-    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true" includes="**/*"/>
+    <delete dir="${ivy2.cache.dir}/${ivy.package.name}"
+      defaultexcludes="false" includeEmptyDirs="true"
+      includes="**/*"/>
+
+    <delete dir="${ivy.cache.dir}/${ivy.package.name}"
+      defaultexcludes="false" includeEmptyDirs="true"
+      includes="**/*"/>
     <delete includeEmptyDirs="true">
-      <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
+      <fileset dir="${ivy.cache.dir}"
+        includes="resolved-${ivy.package.name}-*"
+        defaultexcludes="false"/>
     </delete>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.dir}"
+        includes="resolved-${ivy.package.name}-*"
+        defaultexcludes="false"/>
+    </delete>
+
   </target>
 
   <!--This is quite traumatic, as it cleans the cache which can take a while to download
