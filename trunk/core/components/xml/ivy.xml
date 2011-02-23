@@ -9,7 +9,7 @@
       We don't (yet) include JAXB, though this is an option.
     </description>
   </info>
-<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
     <include file="../../antbuild/ivy/configurations.xml"/>
   </configurations>
@@ -17,28 +17,31 @@
   <configurations defaultconfmapping="default">
     <conf name="default" extends="master,runtime"/>
     <conf name="build" visibility="private"
-        description="artifacts needed to build the application"/>
+      description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private" extends="parser"
-        description="artifacts needed to compile the application"/>
+      description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
-        description="the classpath needed to run smartfrog daemons"/>
+      description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="default,parser,master"
-        description="the classpath needed to run tests"/>
-    <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"
-        extends="parser,xslt"/>
+      description="the classpath needed to run tests"/>
+    <conf name="master"
+      description="contains the artifact but no dependencies"/>
+    <conf name="redist"
+      description="redistributals excluding smartfrog artifacts"
+      extends="parser,xslt"/>
     <conf name="runtime" description="runtime but not the artifact"
-        extends="redist"/>
+      extends="redist"/>
     <conf name="parser" description="Xerces XML parser"/>
     <conf name="xslt" description="XSLT support"/>
     <conf name="documentation"
-        description="all documentation artifacts"/>    
+      description="all documentation artifacts"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
     <artifact name="sf-xml-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-xml-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-xml-documentation" conf="documentation"
+      ext="zip"/>
   </publications>
 
   <dependencies>
@@ -48,51 +51,51 @@
       rev="latest.integration"
       conf="compile,runtime,daemon->services"/>
     <dependency org="org.smartfrog"
-        name="sf-tasks"
-        changing="true"
-        rev="latest.integration"
-        conf="build->default"/>
+      name="sf-tasks"
+      changing="true"
+      rev="latest.integration"
+      conf="build->default"/>
     <dependency org="org.smartfrog"
-        name="sf-testharness"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+      name="sf-testharness"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default"/>
     <dependency org="org.smartfrog"
-        name="sf-csvfiles"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+      name="sf-csvfiles"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default"/>
     <dependency org="xerces"
-        name="xercesImpl"
-        rev="${xerces.version}"
-        conf="parser->master"/>
+      name="xercesImpl"
+      rev="${xerces.version}"
+      conf="parser->master"/>
     <dependency org="xml-apis"
-        name="xml-apis"
-        rev="${xml-apis.version}"
-        conf="parser->master"/>
+      name="xml-apis"
+      rev="${xml-apis.version}"
+      conf="parser->master"/>
     <!--xom depends on Jaxen, which is a mess. exclude it-->
     <dependency org="xom"
-        name="xom"
-        rev="${xom.version}"
-        conf="compile,redist->master">
+      name="xom"
+      rev="${xom.version}"
+      conf="compile,redist->master">
       <exclude org="xerces"/>
     </dependency>
     <!--xalan is added in here, for efficient XML operations.
     The version built in to Java 5 is very memory hungry
     -->
     <dependency org="xalan"
-        name="xalan"
-        rev="${xalan.version}"
-        conf="compile,xslt->master"/>
+      name="xalan"
+      rev="${xalan.version}"
+      conf="compile,xslt->master"/>
     <dependency org="xalan"
-        name="serializer"
-        rev="${xalan.version}"
-        conf="compile,xslt->master"/>
+      name="serializer"
+      rev="${xalan.version}"
+      conf="compile,xslt->master"/>
     
     <dependency org="jdom"
-        name="jdom"
-        rev="${jdom.version}"
-        conf="compile,redist->default"/>
+      name="jdom"
+      rev="${jdom.version}"
+      conf="compile,redist->default"/>
 
   </dependencies>
 </ivy-module>
