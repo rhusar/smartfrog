@@ -6,120 +6,125 @@
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>SmartFrog Restlet components</description>
   </info>
-<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
     <include file="../../antbuild/ivy/configurations.xml"/>
   </configurations>
   -->
   <configurations defaultconfmapping="default">
     <conf name="default" extends="master,runtime"
-        description="default configuration contains artifacts and runtime dependencies"/>
+      description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
-        description="artifacts needed to build the application"/>
+      description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private" extends="runtime"
-        description="artifacts needed to compile the application"/>
+      description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private" extends="default"
-        description="the classpath needed to run smartfrog daemons"/>
+      description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="default,compile,redist"
-        description="the classpath needed to run tests"/>
-    <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+      description="the classpath needed to run tests"/>
+    <conf name="master"
+      description="contains the artifact but no dependencies"/>
+    <conf name="redist"
+      description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
-        extends="redist"/>
+      extends="redist"/>
     <conf name="documentation"
-          description="all documentation artifacts"/>
+      description="all documentation artifacts"/>
     <conf name="testwar"
-        description="the test WAR File" visibility="private"/>
-    <conf name="restlet" description="contains the restlet dependencies"/>
+      description="the test WAR File" visibility="private"/>
+    <conf name="restlet"
+      description="contains the restlet dependencies"/>
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-restlet-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-restlet-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-restlet-javadocs" conf="documentation"
+      ext="zip"/>
+    <artifact name="sf-restlet-documentation" conf="documentation"
+      ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-        name="smartfrog"
-        changing="true"
-        rev="latest.integration"
-        conf="daemon->services;compile,runtime->default"/>
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="daemon->services;compile,runtime->default"/>
 
     <dependency org="org.smartfrog"
-        name="sf-tasks"
-        changing="true"
-        rev="latest.integration"
-        conf="build->default"/>
-    
+      name="sf-tasks"
+      changing="true"
+      rev="latest.integration"
+      conf="build->default"/>
+
     <!--testharness for test time-->
     <dependency org="org.smartfrog"
-        name="sf-testharness"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+      name="sf-testharness"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default"/>
 
     <!-- logging-->
     <dependency org="org.smartfrog"
-        name="sf-loggingservices"
-        changing="true"
-        rev="latest.integration"
-        conf="compile,runtime->default;redist->redist"/>
+      name="sf-loggingservices"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime->default;redist->redist"/>
 
 
     <!--we pull in www stuff -->
     <dependency org="org.smartfrog"
-        name="sf-www"
-        changing="true"
-        rev="latest.integration"
-        conf="compile,runtime,daemon,test->default,httpclient,servletapi;testwar->testwar"/>
+      name="sf-www"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime,daemon,test->default,httpclient,servletapi;testwar->testwar"/>
 
     <!--XML content-->
     <dependency org="org.smartfrog"
-        name="sf-xml"
-        changing="true"
-        rev="latest.integration"
-        conf="compile,runtime,daemon->default"/>
+      name="sf-xml"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime,daemon->default"/>
     <!--httpclient needs commons logging; logging services pulls it in-->
     <dependency org="org.smartfrog"
-        name="sf-loggingservices"
-        changing="true"
-        rev="latest.integration"
-        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+      name="sf-loggingservices"
+      changing="true"
+      rev="latest.integration"
+      conf="daemon,compile->default;runtime->runtime;redist->redist"/>
     <!--jetty for testing-->
     <dependency org="org.smartfrog"
-        name="sf-jetty"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default,jsp"/>
+      name="sf-jetty"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default,jsp"/>
 
 
     <!--restlet api-->
     <dependency org="org.restlet"
-        name="org.restlet"
-        rev="${restlet.version}"
-        conf="redist->default"/>
+      name="org.restlet"
+      rev="${restlet.version}"
+      conf="redist->default"/>
 
     <!--this is the implementation and java.net integration-->
     <dependency org="com.noelios.restlet"
-        name="com.noelios.restlet"
-        rev="${restlet.version}"
-        conf="redist->default"/>
+      name="com.noelios.restlet"
+      rev="${restlet.version}"
+      conf="redist->default"/>
     <dependency org="com.noelios.restlet"
-        name="com.noelios.restlet.ext.net"
-        rev="${restlet.version}"
-        conf="redist->default"/>
+      name="com.noelios.restlet.ext.net"
+      rev="${restlet.version}"
+      conf="redist->default"/>
     <dependency org="com.noelios.restlet"
-        name="com.noelios.restlet.ext.httpclient"
-        rev="${restlet.version}"
-        conf="redist->default">
+      name="com.noelios.restlet.ext.httpclient"
+      rev="${restlet.version}"
+      conf="redist->default">
       <exclude org="commons-httpclient"/>
     </dependency>
 
     <!--file upload-->
     <dependency org="org.restlet"
-        name="org.restlet.ext.fileupload"
-        rev="${restlet.version}"
-        conf="redist->default">
+      name="org.restlet.ext.fileupload"
+      rev="${restlet.version}"
+      conf="redist->default">
       <exclude org="commons-fileupload"/>
     </dependency>
 

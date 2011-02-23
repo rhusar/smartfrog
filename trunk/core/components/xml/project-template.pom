@@ -29,10 +29,11 @@
         <version>${xerces.version}</version>
       </dependency>
       <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xmlParserAPIs</artifactId>
-        <version>${xerces.version}</version>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>${xml-apis.version}</version>
       </dependency>
+
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
@@ -43,6 +44,7 @@
         <artifactId>jdom</artifactId>
         <version>${jdom.version}</version>
       </dependency>
+
       <dependency>
         <groupId>xom</groupId>
         <artifactId>xom</artifactId>

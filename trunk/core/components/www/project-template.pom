@@ -18,6 +18,14 @@
       <artifactId>sfServices</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-loggingservices</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
+
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -58,5 +66,37 @@
       <version>${commons-fileupload.version}</version>
       <optional>true</optional>
     </dependency>
+
+    <!--HTTP core is considered optional-->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>${apache.httpcommons.core.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${apache.httpcommons.client.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
+      <optional>true</optional>
+    </dependency>
+
   </dependencies>
 </project>

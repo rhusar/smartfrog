@@ -49,17 +49,8 @@ clients do not need it. All server-side deployments will need
       <version>${servletapi.version}</version>
       <scope>optional</scope>
     </dependency>
-    <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>org.mortbay.jetty</artifactId>
-      <version>${jetty.version}</version>
-      <scope>optional</scope>
-    </dependency>
-
 
     <!--JSP support -->
-
-
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jsp-2.1</artifactId>
@@ -88,6 +79,12 @@ clients do not need it. All server-side deployments will need
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>core</artifactId>
       <version>${org.eclipse.jdt.core.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+      <version>${commons-el.version}</version>
       <optional>true</optional>
     </dependency>
 

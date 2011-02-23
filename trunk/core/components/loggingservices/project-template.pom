@@ -17,6 +17,12 @@
 
 
   <dependencies>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>smartfrog</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
+
     <!-- always include commons-logging and log4J -->
     <dependency>
       <groupId>commons-logging</groupId>
@@ -87,10 +93,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.smartfrog</groupId>
-      <artifactId>smartfrog</artifactId>
-      <version>${smartfrog.version}</version>
-    </dependency>    
+
+
   </dependencies>
 </project>
