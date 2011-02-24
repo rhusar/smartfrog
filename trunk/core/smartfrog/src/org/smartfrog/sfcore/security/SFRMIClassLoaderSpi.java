@@ -87,8 +87,17 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public Class<?> loadClass(String codebase, String name,
         ClassLoader defaultLoader)
         throws MalformedURLException, ClassNotFoundException {
-        Class<?> result = defaultProviderInstance.loadClass(codebase, name,
-                defaultLoader);
+        Class<?> result = null;
+        try {
+            result = defaultProviderInstance.loadClass(codebase, name,
+                    defaultLoader);
+        } catch (SecurityException e) {
+            //on a security error, provide more diagnostics about what is going on
+            throw new SecurityException("When loading " + name
+                    + " in codebase "+ codebase
+                    + " : " + e,
+                    e);
+        }
 
         if (debug != null) {
             debug.println("loadclass:#1 codebase=" + codebase + " name=" +
