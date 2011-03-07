@@ -103,7 +103,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      */
     public SFComponentDescriptionImpl(Vector types, SFComponentDescription parent, Context cxt, boolean eager) {
        super(parent, cxt, eager);
-       if (types != null) this.types = types;
+        if (types != null) {
+            this.types = types;
+        }
     }
         
     /**
@@ -331,10 +333,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  resolution. Failure to locate the destination description is remembered
     *  in the state as well.
     *
-    *@param  key       attribute key
-    *@param  value     attribute value
-    *@param  resState  resolution state
-    * @return tye if the placement worked
+    * @param  key       attribute key
+    * @param  value     attribute value
+    * @param  resState  resolution state
+    * @return type if the placement worked
     * @throws SmartFrogPlaceResolutionException if there was a failure to place (including final attributes)
     */
    protected boolean place(Reference key, Object value, Set tags, ResolutionState resState) throws SmartFrogPlaceResolutionException {
@@ -373,7 +375,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       // place value under simple name in destination
       destDescription.sfContext().put(nam, value);
       try {
-         if (tags != null) destDescription.sfContext().sfAddTags(nam, tags);
+          if (tags != null) {
+              destDescription.sfContext().sfAddTags(nam, tags);
+          }
       } catch (SmartFrogException e) {
          // shouldn't happen
       }
@@ -443,7 +447,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       System.out.println("parent " + sfParent());
       System.out.println("parent parent " + sfParent().sfParent());
 */
-      if (!resolveTypes(resState)) return;
+       if (!resolveTypes(resState)) {
+           return;
+       }
       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
          Object key = e.nextElement();
          Object value = sfContext.get(key);
@@ -452,10 +458,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              // Attribute value is resolvable, ask it to resolve itself
              ( (ComponentResolver) value).doTypeResolve(resState);
            }
+         } catch (SmartFrogTypeResolutionException thr) {
+             throw thr;
          } catch (Throwable thr) {
-           if (thr instanceof SmartFrogTypeResolutionException)  {
-             throw (SmartFrogResolutionException)thr;
-           }
 
            StringBuffer msg = new StringBuffer ( "Failed to resolve '");
            msg.append (key.toString());
@@ -486,11 +491,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       boolean ok = true;
       for (int i = types.size() - 1; ok && i>=0;  i--) {
          Object o = types.elementAt(i);
-         if (o instanceof Reference)
-           ok &= resolveType(resState, (Reference) o);
-         else
-           ok &= resolveType(resState, (SFComponentDescription) o);
-         if (ok) types.remove(i);
+          if (o instanceof Reference) {
+              ok &= resolveType(resState, (Reference) o);
+          } else {
+              ok &= resolveType(resState, (SFComponentDescription) o);
+          }
+          if (ok) {
+              types.remove(i);
+          }
       }
       return ok;
    }
@@ -590,7 +598,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          boolean overrideAttr = false;        
          try {
              overrideAttr = sfContext.sfContainsTag(key, "sfOverride");
-         } catch (SmartFrogException e1) {
+         } catch (SmartFrogException ignored) {
          }
          if (overrideAttr) {
              if (!sContext.sfContainsAttribute(key)){
@@ -700,7 +708,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        currentLRSRecord = currentLRSRecord.par;
        currentLRSIndex++;
     }
-        		
+
     /**
      * Create and add an LRSRecord (link resolution state record) to the end of the chain of link records being kept  
      * @param sfcd
@@ -711,12 +719,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         lrsr.sfcd = sfcd;
         lrsr.par = currentLRSRecord;
         lrsr.my_idx = idx;
-        		
         currentLRSIndex = 0;
         currentLRSRecord = lrsr;
         return currentLRSRecord;
     }
-    	
+
     private void resetLRSState(){
         currentLRSRecord = new LRSRecord();
         currentLRSRecord.sfcd = this;
@@ -724,7 +731,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         currentLRSRecord.par = null;
         currentLRSIndex=0;
     }
-    	
+
    /**  
     * Internal method to iteratively perform link resolution
     * @param resState resolutionState
@@ -755,27 +762,30 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                }
                continue; //around while...
            }
-                	    
+
            //Get attribute key
            Object key = sfcd.sfContext().getKey(currentLRSIndex);
-                       	    	   
+
            //Get value
-           Object value = sfcd.sfContext().getVal(currentLRSIndex);  	   
-                       	    	   
+           Object value = sfcd.sfContext().getVal(currentLRSIndex);  
+
            //System.out.println("key:"+key+", value:"+value);
-              	  
+
            //Do we need to do some additional constraints work?
            try {
               CoreSolver.getInstance().doConstraintsWork(key);  
            } catch (SmartFrogConstraintBacktrackError sfbe){
-               if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
-               else continue; //need to try the latest again... 
+               if (CoreSolver.getInstance().getOriginalDescription() != this) {
+                   throw sfbe;
+               } else {
+                   continue; //need to try the latest again... 
+               }
            }
-                  	      
+   
            //Is value SFComponentDescription?
            if (value instanceof SFComponentDescription) {
                sfcd = (SFComponentDescription) value;
-                       	   
+
                if (!CoreSolver.getInstance().ignoreComponentDescription(sfcd)) {
                    //Yes, add a new record to link resolution state, which will determine that 
                    //value is next explored (Depth First exploration)
@@ -787,47 +797,54 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                Reference rv = (Reference)value;
                if (!rv.getData() && !Constraint.leaveResolve(sfcd, key)){
                    try {
-                                   		   
+
                        //Resolve reference
                        Object result = sfcd.sfResolve((Reference) value);
-                                   		   
+
                        //Setting key to have value should be undoable
                        CoreSolver.getInstance().setShouldUndo(true);
-                                   		   
+
                        //Set key to have value
                        //System.out.println("Putting..."+key+":"+result);
                        sfcd.sfContext().put(key, result);
-                                   		   
+
                        //No more should we undo
                        CoreSolver.getInstance().setShouldUndo(false);
-                                   		   
+
                        if (result instanceof SFComponentDescription) {
                            SFComponentDescription res_sfcd = (SFComponentDescription) result;
                            // need to do this as it may link to the file root!
-                           if (res_sfcd.sfParent() == null) res_sfcd.setParent(sfcd);
+                           if (res_sfcd.sfParent() == null) {
+                               res_sfcd.setParent(sfcd);
+                           }
                            continue; //round while to resolve it...
                        } 
                                               
 
-                   } catch (SmartFrogConstraintBacktrackError sfbe){ 
-                       if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
-                       else continue; //need to try the latest again...
+                   } catch (SmartFrogConstraintBacktrackError sfbe){
+                       if (CoreSolver.getInstance().getOriginalDescription() != this) {
+                           throw sfbe;
+                       } else {
+                           continue; //need to try the latest again...
+                       }
                    } catch (SmartFrogLazyResolutionException slrex) {
                        rv.setEager(false);
                    } catch (Exception resex) {
-                       if (sfLog().isDebugEnabled()) {
+                       if (sfLog() != null && sfLog().isDebugEnabled()) {
                            sfLog().debug(Thread.currentThread().getStackTrace()[1]);
-                           sfLog().debug("EXCEPTION in link resolution: " + value + ":" + sfcd.sfCompleteName() + ":" + key.toString() + ":" + resex+"***");
+                           sfLog().debug("EXCEPTION in link resolution: " + value + ":" + sfcd.sfCompleteName() + ":"
+                                   + key.toString() + ":" + resex+"***");
                        }
                        resState.addUnresolved(value, sfcd.sfCompleteName(), key.toString(), resex);
-                   } catch (Throwable thr){
-                      if (thr instanceof CoreSolverFatalError) throw (CoreSolverFatalError) thr;
+                   } catch (CoreSolverFatalError thr) {
+                       throw thr;
+                   } catch (Throwable thr) {
                       throw new SmartFrogLinkResolutionException(
                                "Failed to resolve '"+key+" "+value+"'"+
                                    (thr instanceof StackOverflowError || thr instanceof java.lang.OutOfMemoryError?
                                            (". "+POSSIBLE_CAUSE_CYCLIC_REFERENCE):""),
                                thr, sfCompleteName(), resState.unresolved()
-                               );                	   
+                               );
                   }
                } 
            }  
@@ -846,18 +863,22 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
     public static ComponentDescription simpleLinkResolve(ComponentDescription comp) throws SmartFrogException {
         //Simple link resolve...
-       if (SFSystem.sfLog().isDebugEnabled()) SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        if (SFSystem.sfLog().isDebugEnabled()) {
+            SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+        }
         ComponentDescription newcomp = new SFComponentDescriptionImpl();
         newcomp.setParent(comp.sfParent());
         newcomp.setEager(comp.getEager());
-        		
+
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
            Object name = v.next();
            Reference ref = new Reference(ReferencePart.here(name));
            Object value=comp.sfResolve(ref);
            SFSystem.sfLog().debug("key:value, "+ name +" : "+value);
 
-           if (value instanceof ComponentDescription) value=simpleLinkResolve((ComponentDescription)value);           
+            if (value instanceof ComponentDescription) {
+                value = simpleLinkResolve((ComponentDescription) value);
+            }           
                     
            newcomp.sfAddAttribute(name, value);
            newcomp.sfAddTags(name, comp.sfGetTags(name));     
@@ -911,11 +932,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      * @throws IOException failure while writing
      */
     protected void writeOn(Writer ps, int indent, boolean includeExtends) throws IOException {
-        if (includeExtends) ps.write("extends "+ (getEager()?"":"DATA "));
+        if (includeExtends) {
+            ps.write("extends " + (getEager() ? "" : "DATA "));
+        }
         boolean first = true;
         for (Enumeration e = getTypes().elements(); e.hasMoreElements(); ) {
            Object elem = e.nextElement();
-           if (!first) ps.write(", ");
+            if (!first) {
+                ps.write(", ");
+            }
            if (elem instanceof SFComponentDescriptionImpl) {
               ((SFComponentDescriptionImpl) elem).writeOn(ps, indent+1, false);
            } else {
@@ -967,10 +992,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                   ((ComponentDescription) value).setParent(res);
                   newContext.put(key, value);
              } else if (value instanceof ReferencePhases) {
-                  value = ((ReferencePhases) value).sfAsReference();
-                  newContext.put(key, value);
-             } else
-                  newContext.put(key, copyValue(value));
+                 value = ((ReferencePhases) value).sfAsReference();
+                 newContext.put(key, value);
+             } else {
+                 newContext.put(key, copyValue(value));
+             }
           } catch (SmartFrogException e1) {
               throw  ((SmartFrogCompilationException)SmartFrogCompilationException.forward(e1));
           }
@@ -999,13 +1025,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     * @throws FileNotFoundException if the resource does not resolve
     */
    public static ComponentDescription getDescriptionURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-       if (SFSystem.sfLog().isDebugEnabled()) SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+       if (SFSystem.sfLog().isDebugEnabled()) {
+           SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
+       }
        InputStream instream = SFClassLoader.getResourceAsStream(url);
        if (instream == null) {
            throw new FileNotFoundException("Unable to load " + url);
        }
        Phases p = new SFParser().sfParse(instream);
-           	   	   
+
            // add params
            if (params != null) {
                for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
@@ -1017,14 +1045,30 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    }
 
     protected Object copyValue(Object v) throws SmartFrogCompilationException {
-        if (v instanceof Number) return v;
-        if (v instanceof Boolean) return v;
-        if (v instanceof SFNull) return v;
-        if (v instanceof SFTempValue) return v;
-        if (v instanceof String) return v;
-        if (v instanceof FreeVar) return ((FreeVar)v).copy();
-        if (v instanceof Reference) return v;
-        if (v instanceof SFByteArray) return v;
+        if (v instanceof Number) {
+            return v;
+        }
+        if (v instanceof Boolean) {
+            return v;
+        }
+        if (v instanceof SFNull) {
+            return v;
+        }
+        if (v instanceof SFTempValue) {
+            return v;
+        }
+        if (v instanceof String) {
+            return v;
+        }
+        if (v instanceof FreeVar) {
+            return ((FreeVar) v).copy();
+        }
+        if (v instanceof Reference) {
+            return v;
+        }
+        if (v instanceof SFByteArray) {
+            return v;
+        }
         if (v instanceof Vector) {
              return copyVector((Vector)v);
         }
@@ -1145,12 +1189,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     *@return    Vector of Phases
     */
-   public Vector sfGetPhases() throws SmartFrogException {	
+   public Vector sfGetPhases() throws SmartFrogException {
        if (phases==null){
            Object phases_obj = sfContext.get(PHASE_LIST);
            if (phases_obj!=null){
-                if (!(phases_obj instanceof java.util.Vector)) throw new SmartFrogParseException("phaseList must be a primitive vector");
-                phases = (java.util.Vector) phases_obj;		   
+               if (!(phases_obj instanceof java.util.Vector)) {
+                   throw new SmartFrogParseException("phaseList must be a primitive vector");
+               }
+                phases = (java.util.Vector) phases_obj; 
                 sfContext.remove(PHASE_LIST);
            } else {
                 phases = new java.util.Vector();
