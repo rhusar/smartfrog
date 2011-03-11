@@ -88,7 +88,7 @@
     <copy todir="${site.target.dir}" >
        <fileset dir="site" />
     </copy>
-    </target>
+  </target>
 
 
   <target name="ready-to-test" depends="common.ready-to-test">

@@ -51,7 +51,9 @@
 
   <!-- override this to get a different release, such as a hard coded version.
   -->
-  <property name="ivy.smartfrog.version" value="latest.integration"/>
+  <!-- <property name="ivy.smartfrog.version" value="latest.integration"/>-->
+  <property file="../smartfrog/sf-build-version.properties" />
+  <property name="ivy.smartfrog.version" value="${sf.full.version}"/>
 
   <echo
       message="==================================================================="/>

@@ -84,7 +84,7 @@ For more information: www.smartfrog.org
     <echo message="  ${Name.Company}"/>
     <echo message="   Java: ${java.version} ${java.vendor} "/>
     <echo message="         ${java.home} "/>
-	<echo message="         ${java.vm.name} "/>
+  	<echo message="         ${java.vm.name} "/>
     <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message="   Build dir: ${basedir}"/>
     <echo message="   Core dir: ${core.dir}"/>

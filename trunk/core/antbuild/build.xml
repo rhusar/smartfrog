@@ -357,7 +357,7 @@
   <target name="package" depends="minimal-zip,full-zip,minimal-tar,full-tar,src-zip"/>
   <target name="packaged" depends="package,unzip,untar"/>
 
-
+  <target name="ready-to-test" depends="state.ready-to-test,published"/>
 
 
 </project>

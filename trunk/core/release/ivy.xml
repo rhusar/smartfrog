@@ -128,7 +128,7 @@
     <dependency org="org.smartfrog"
       name="sf-testharness"
       changing="true"
-      rev="latest.integration"
+      rev="${ivy.smartfrog.version}"
       conf="test->default,testjar;package-testing,package-testharness->master"/>
 
     <!-- the ant build, which contains the zipped/tarred directory tree-->
