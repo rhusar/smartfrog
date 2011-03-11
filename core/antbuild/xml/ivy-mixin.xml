@@ -12,33 +12,72 @@
   <!--define the published state-->
   <target name="published" depends="ivy-publish"/>
 
+
+  <target name="ivy-properties" depends="init">
+    <property name="ivy.user.dir" location="${user.home}/.ivy"/>
+    <property name="ivy.local.dir" location="${ivy.user.dir}/local"/>
+    <property name="ivy.cache.dir" location="${ivy.user.dir}/cache"/>
+
+    <property name="ivy.package.name" value="org.smartfrog"/>
+    <property name="ivy.smartfrog.version" value="latest.integration"/>
+    <property name="ivy.jar" location="${root.dir}/antbuild/repository/org.apache.ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"/>
+    <!--Ivy 2 uses some separate directories, that also need cleanup-->
+    <property name="ivy2.user.dir" location="${user.home}/.ivy2"/>
+    <property name="ivy2.local.dir" location="${ivy2.user.dir}/local"/>
+    <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache"/>
+    <echo level="verbose">
+      ivy.user.dir = ${ivy.user.dir}
+      ivy2.user.dir = ${ivy2.user.dir}
+    </echo>
+  </target>
+
+  <target name="ivy-dirs" depends="ivy-properties">
+    <!--here to ensure that any operations on the caches have somewhere to
+   work from-->
+    <mkdir dir="${ivy.cache.dir}"/>
+    <mkdir dir="${ivy.local.dir}"/>
+    <mkdir dir="${ivy2.cache.dir}"/>
+    <mkdir dir="${ivy2.local.dir}"/>
+  </target>
+
+
   <target name="ivy-probe-antlib" >
     <condition property="ivy.found">
       <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
     </condition>
   </target>
 
-  <target name="ivy-init-dir" depends="init-core">
+  <target name="ivy-init-dir" depends="init-core, ivy-dirs">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
   </target>
   
-  <target name="ivy-init-antlib" depends="ivy-init-dir,load-version-info,artifact-names,ivy-probe-antlib" unless="ivy.found">
-
-    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
-        loaderRef="ivyLoader">
-      <classpath>
-        <pathelement location="${ivy.dir}/lib/ivy-${ivy.version}.jar"/>
-      </classpath>
-    </typedef>
-    <fail >
-      <condition >
+  <target name="ivy-init-antlib" depends="ivy-init-dir,load-version-info,artifact-names,ivy-probe-antlib"
+    unless="ivy.found"
+    xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!--load up ivy-->
+    <fail>
+      <condition>
         <not>
-          <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+          <available file="${ivy.jar}"/>
         </not>
       </condition>
-      You need the ivy tasks from http://ant.apache.org/
+      Unable to locate "${ivy.jar}"
+      Either part of the directory tree is missing, or the ivy version,
+      currently set to "${ivy.version}" is wrong.
     </fail>
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+      resource="fr/jayasoft/ivy/ant/antlib.xml"
+      loaderRef="ivyLoader">
+      <classpath>
+        <pathelement location="${ivy.jar}"/>
+      </classpath>
+    </typedef>
+    <!--create the external dir if it is missing-->
+    <mkdir dir="external"/>
+    <property name="ivysettings.xml" location="${ivy.dir}/ivysettings.xml"/>
+    <ivy:configure file="${ivysettings.xml}" override="true"/>
   </target>
+  
 
 
   <target name="ivy-init" depends="ivy-init-antlib" >
