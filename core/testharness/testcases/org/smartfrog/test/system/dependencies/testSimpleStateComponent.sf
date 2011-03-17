@@ -1,7 +1,0 @@
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/services/dependencies/statemodel/components.sf"
-#include "/org/smartfrog/services/dependencies/threadpool/components.sf"
-
-sfConfig extends SimpleStateComponent {
-
-}
