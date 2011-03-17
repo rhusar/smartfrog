@@ -25,11 +25,12 @@
     <conf name="test" extends="default,compile"
       description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts" extends="eclipse"/>
     <conf name="runtime" description="runtime but not the artifact"
       extends="redist"/>
     <conf name="documentation"
       description="all documentation artifacts"/>
+    <conf name="eclipse" description="contains the eclipse JAR"/>
 </configurations> 
 
   <publications>
@@ -55,6 +56,6 @@
     <dependency org="eclipse-clp"
       name="eclipse-clp"
       rev="${eclipse-clp.version}"
-      conf="redist->default"/>
+      conf="eclipse->default"/>
   </dependencies>
 </ivy-module>
