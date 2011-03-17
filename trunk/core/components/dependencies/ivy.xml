@@ -41,7 +41,7 @@
       name="smartfrog"
       changing="true"
       rev="latest.integration"
-      conf="compile->services;runtime->services;daemon->services"/>
+      conf="compile->services,examples;runtime->services,examples;daemon->services,examples"/>
     <dependency org="org.smartfrog"
       name="sf-tasks"
       changing="true"
