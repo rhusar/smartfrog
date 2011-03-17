@@ -236,7 +236,7 @@ sffromjava(Binds) :-
 %sfsolve_process/2: Processes coms from Java
 %%%
 sfsolve_process(sfstop, _). 
-sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars, Verbose), Binds) :-
+sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars, Verbose, _), Binds) :-
         %set particular constraint index
         hash_set(Binds, sf_evalcidx, CIndex),
         %populate hash table with info (attrs, vals) from current description
