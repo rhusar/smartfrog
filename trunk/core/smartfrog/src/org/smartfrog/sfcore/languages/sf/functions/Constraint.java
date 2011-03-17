@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SFNull;
@@ -139,6 +140,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
      * @throws SmartFrogFunctionResolutionException if any of the parameters are not there or of the wrong type
      *  */
     protected Object doFunction()  throws SmartFrogFunctionResolutionException {
+        if (SFSystem.sfLog().isDebugEnabled()) SFSystem.sfLog().debug(Thread.currentThread().getStackTrace()[1]);
     	//If constraint resolution is not pertinent or possible return
     	    	    	
     	/**
@@ -173,38 +175,40 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	
     	HashMap<FreeVar, Object> assigns = new HashMap<FreeVar, Object>(); 
     	
-    	//System.out.println("In constraint...");
+    	SFSystem.sfLog().debug("In constraint...");
     	
-    	if (!CoreSolver.getInstance().getConstraintsPossible()) return comp; 
+    	if (!CoreSolver.getInstance().getConstraintsPossible()) return comp;
+
+        SFSystem.sfLog().debug("Going on...");
     	
 		CoreSolver.getInstance().setShouldUndo(true);
 
 		Vector<CompositeSource> aggs=new Vector<CompositeSource>();
-		
-		//System.out.println("Fetching aggregate sources");
+
+        SFSystem.sfLog().debug("Fetching aggregate sources");
 		getAggregateSources(comp, aggs);
 		
 		for (int i=0;i<aggs.size();i++){
 			CompositeSource cs = aggs.get(i);
+
+            SFSystem.sfLog().debug("%%%%%%%%%%%%%%%%%%%%%%"+cs+orgContext.get(cs.key));
 	    	
-	    	//System.out.println("%%%%%%%%%%%%%%%%%%%%%%"+cs+orgContext.get(cs.key));
-	    	
-	    	extractArgumentsFromSource(cs);		    	
-	    	
-	    	//System.out.println("+++++++++++++++++++++"+cs.key+":"+cs.arguments);
+	    	extractArgumentsFromSource(cs);
+
+            SFSystem.sfLog().debug("+++++++++++++++++++++"+cs.key+":"+cs.arguments);
 	    	
 	    	//Unify arguments...
 	    	unify(cs.arguments, cs.unify, assigns);
 	    	String csargs = cs.arguments.toString();
-	    	//System.out.println("CSARGS!!!"+cs.key+":"+csargs);
+            SFSystem.sfLog().debug("CSARGS!!!"+cs.key+":"+csargs);
 	    	orgContext.put(cs.key, cs.arguments.getArgs());
 	    	
 	    	try {
 	    		if (cs.freevars) orgContext.sfAddTag(cs.key, ConstraintConstants.FREEVARS_TAG);	
 	    	} catch (SmartFrogContextException context){/*Shouldn't happen*/}
-		}	
-				
-		//System.out.println("111");
+		}
+
+        SFSystem.sfLog().debug("111");
 		
 		CoreSolver.getInstance().setShouldUndo(false);
 		
@@ -242,8 +246,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    				if (cd.sfContext().get("IsConstraintVar")!=null){
 	    					
 	    					FreeVar fv = new FreeVar();
-		    				
-		    				//System.out.println("cd:"+cd);
+
+                            SFSystem.sfLog().debug("cd:"+cd);
 	    					
 	    					//range
 	    					Object range = null;
@@ -251,15 +255,15 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    					else if ((range=cd.sfContext().get(ConstraintConstants.RANGEREF))!=null) fv.setRangeRef(range);
 	    					else if (cd.sfContext().get(ConstraintConstants.IRANGE)!=null) fv.setRange(new Integer(0));
 	    					else if (cd.sfContext().get(ConstraintConstants.BRANGE)!=null) fv.setRange(new Boolean(true));
-	    						
-	    					//System.out.println("22222");
+
+                            SFSystem.sfLog().debug("22222");
 	    					
 	    					//qualification
 	    					Object qual_val=null;
 	    					if ((qual_val=cd.sfContext().get(ConstraintConstants.AUTOVAR))!=null){
-	    						//System.out.println("Yes we have an autovar!");
+                                SFSystem.sfLog().debug("Yes we have an autovar!");
 	    						if (qual_val instanceof SFNull) {
-	    							//System.out.println("Yes we are null...");
+                                    SFSystem.sfLog().debug("Yes we are null...");
 	    							autos.add(key);
 	    						} else if (qual_val instanceof SFReference){
 	    							Reference auto_ref=null;
@@ -267,7 +271,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    								auto_ref=((SFReference) qual_val).sfAsReference();
 	    							} catch (SmartFrogCompilationException sfce){ throw new SmartFrogFunctionResolutionException(sfce);}
     								Object label = cd.sfResolve(auto_ref);
-    								//System.out.println("label:"+(label==null));
+                                    SFSystem.sfLog().debug("label:"+(label==null));
 	    							
     								ComponentDescription label_cd = null;
     								try {
@@ -285,9 +289,9 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    						isuservars=true;
     							orgContext.sfAddTag(key, ConstraintConstants.USERVAR_TAG);
 	    					}
-	    						
-	    					
-	    					//System.out.println("AUTOEFFECTCDPARENT"+cd);
+
+
+                            SFSystem.sfLog().debug("AUTOEFFECTCDPARENT"+cd);
 	    						
 	    					//effects
 	    					ComponentDescription autoEffectsCD=null;
@@ -295,7 +299,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    					catch (ClassCastException cce){/**do**/}
 	    					
 	    					if (autoEffectsCD!=null){
-	    						//System.out.println("AUTOEFFECTCD"+autoEffectsCD);
+                                SFSystem.sfLog().debug("AUTOEFFECTCD"+autoEffectsCD);
 	    						
 	    						Enumeration ae_enum = autoEffectsCD.sfContext().keys();
 	    						
@@ -315,16 +319,16 @@ public class Constraint extends BaseFunction implements MessageKeys {
 		    				val=fv;  //so that freevar gets added instead...
 		    				//Insert this new FreeVar...
 		    				orgContext.put(key, fv);
-		    				
-			    			
-		    				//System.out.println("In In In4"+key+":"+val+":"+orgContext);
+
+
+                            SFSystem.sfLog().debug("In In In4"+key+":"+val+":"+orgContext);
 	    					
 	    				}		    				
 	    			}
 	    			
 	    			attrs.add(key);  
     				values.add(val);
-    				//System.out.println("Just Added"+key+":"+val);
+                    SFSystem.sfLog().debug("Just Added"+key+":"+val);
 	    		}
     		} catch (Exception e){/**Shouldn't happen*/}
     	}
@@ -347,13 +351,13 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	ConstraintContext cc = new ConstraintContext((ComponentDescription)rr, comp, arkey, ar, ret_key);
     	
     	//System.out.println("333");
-    	
-    	//Solve goal
+
+        SFSystem.sfLog().debug("Solve goal..."+cc+":"+attrs + ":"+values + ":"+goal + ":"+autos + ":"+isuservars + ":"+assigns);
     	try {
     	   CoreSolver.getInstance().solve(cc, attrs, values, goal, autos, isuservars, assigns);
     	} catch (Exception e){ 
     		e.printStackTrace();
-    		////System.out.println("WE ARE IN ERROR!!!");
+            SFSystem.sfLog().debug("WE ARE IN ERROR!!!");
     	    throw new Error("Error in solving constraints:"+e+" in: "+orgContext);
     	}   
         	
@@ -375,8 +379,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	boolean hasBacktracked = (cc_new!=null);
     	
     	//System.out.println("�1");
-    	
-    	////System.out.println("HAS BACKTRACKED!!!"+hasBacktracked);
+
+        SFSystem.sfLog().debug("HAS BACKTRACKED!!!"+hasBacktracked);
     	
     	//Mark (poss. backtracked) constraint as done...
     	CoreSolver.getInstance().setShouldUndo(true);
@@ -433,7 +437,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 		
 		
     	Object ret_val = (ret_key!=null?orgContext.get(ret_key):comp);
-    	//System.out.println("RETURNING!!!"+ret_val);
+        SFSystem.sfLog().debug("RETURNING!!!"+ret_val);
     	
     	return ret_val; 
     }
