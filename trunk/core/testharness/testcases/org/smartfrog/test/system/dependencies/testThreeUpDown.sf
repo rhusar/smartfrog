@@ -1,5 +1,0 @@
-#include "/org/smartfrog/test/system/dependencies/components.sf"
-
-sfConfig extends testThreeUpDown {
-
-}
