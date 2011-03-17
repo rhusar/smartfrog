@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
@@ -314,9 +313,9 @@ public class ApplyEffects extends BaseFunction implements MessageKeys {
     	String fullname="";
     	try {
             if (source instanceof Prim) {
-                PrimImpl p = (PrimImpl) source;
+                Prim p = (Prim) source;
                 fullname = p.sfCompleteName().toString();
-                if (p.sfLog().isInfoEnabled())  p.sfLog().info("Replacing: "+key+" with: "+update+ " in: "+fullname);
+                if (SFSystem.sfLog().isInfoEnabled())  SFSystem.sfLog().info("Replacing: "+key+" with: "+update+ " in: "+fullname);
             }
             else {
                 fullname = ((ComponentDescription)source).sfCompleteName().toString();
