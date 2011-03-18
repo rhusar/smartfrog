@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-constraints">
+  <info organisation="org.smartfrog" module="sf-dependencies">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
