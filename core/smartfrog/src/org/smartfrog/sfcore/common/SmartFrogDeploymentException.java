@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.sfcore.common;
@@ -36,13 +36,13 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
 
     /** String name for the deployed component description. */
     public final static String COMPONENT_DESCRIPTION =
-                                            "deployedComponentDescription";
+            "deployedComponentDescription";
 
     /** String name for the context in which component is deployed. */
-    public final static String DEPLOY_CONTEXT="deployedContext";
+    public final static String DEPLOY_CONTEXT = "deployedContext";
 
     /** String name for object name. */
-    public final static String OBJECT_NAME="objectName";
+    public final static String OBJECT_NAME = "objectName";
 
     /**
      * Constructs a SmartFrogDeploymentException with specified message.
@@ -70,8 +70,8 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @param sfObject The Component that has encountered the exception
      */
     public SmartFrogDeploymentException(Throwable cause, Prim sfObject) {
-       super(cause);
-       init(sfObject);
+        super(cause);
+        init(sfObject);
     }
 
     /**
@@ -93,7 +93,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @param sfObject The Component that has encountered the exception
      */
     public SmartFrogDeploymentException(String message, Throwable cause, Prim sfObject) {
-        super(message, cause,sfObject);
+        super(message, cause, sfObject);
     }
 
     /**
@@ -116,11 +116,11 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @param deployContext The context in which a component is deployed
      * @param sfObject The Component that has encountered the exception
      */
-    public SmartFrogDeploymentException(String message,  Prim sfObject,
-            Context deployContext) {
+    public SmartFrogDeploymentException(String message, Prim sfObject,
+                                        Context deployContext) {
         super(message, sfObject);
         init(sfObject);
-        put (DEPLOY_CONTEXT,serializableContext(deployContext));
+        put(DEPLOY_CONTEXT, serializableContext(deployContext));
     }
 
     /**
@@ -134,10 +134,10 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * description
      */
     public SmartFrogDeploymentException(String message, Throwable cause,
-            Prim sfObject, Context deployContext) {
+                                        Prim sfObject, Context deployContext) {
         super(message, cause);
         init(sfObject);
-        put (DEPLOY_CONTEXT,serializableContext(deployContext));
+        put(DEPLOY_CONTEXT, serializableContext(deployContext));
     }
 
     /** Constructs a deployment exception.
@@ -151,16 +151,20 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @param message message for exception
      * @param cause cause for exception
      * @param data additional data for exception */
-    public SmartFrogDeploymentException(Reference ref, Reference source,
-        Object name, ComponentDescription deployedCompDesc,
-        Context deployedContext, String message, Throwable cause,
-                Object data) {
-      super(message,cause);
-      if ((source!=null)) put(SOURCE,source.copy());
-      if ((ref!=null))put(REFERENCE,ref.copy());
-      if (name!=null)put(OBJECT_NAME,name);
-      if (deployedCompDesc!=null) put(DEPLOY_CONTEXT,serializableContext(deployedContext));
-      if (data!=null) put(DATA,data.toString());
+    public SmartFrogDeploymentException(Reference ref,
+                                        Reference source,
+                                        Object name,
+                                        ComponentDescription deployedCompDesc,
+                                        Context deployedContext,
+                                        String message,
+                                        Throwable cause,
+                                        Object data) {
+        super(message, cause);
+        if ((source != null)) put(SOURCE, source.copy());
+        if ((ref != null)) put(REFERENCE, ref.copy());
+        if (name != null) put(OBJECT_NAME, name);
+        if (deployedCompDesc != null) put(DEPLOY_CONTEXT, serializableContext(deployedContext));
+        if (data != null) put(DATA, data.toString());
     }
 
     /**
@@ -168,7 +172,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      *
      * @param sfObject The Component that has encountered the exception
      */
-    public void init (Prim sfObject){
+    public void init(Prim sfObject) {
         if (sfObject == null) return;
         super.init(sfObject);
     }
@@ -180,11 +184,11 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      *
      * @return SmartFrogException that is a SmartFrogDeploymentException
      */
-    public static SmartFrogException forward (Throwable thr){
+    public static SmartFrogException forward(Throwable thr) {
         if (thr instanceof SmartFrogDeploymentException) {
-            return (SmartFrogDeploymentException)thr;
+            return (SmartFrogDeploymentException) thr;
         } else {
-            return new SmartFrogDeploymentException (thr);
+            return new SmartFrogDeploymentException(thr);
         }
     }
 
@@ -197,12 +201,12 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogDeploymentException
      */
-    public static SmartFrogException forward (String message, Throwable thr){
+    public static SmartFrogException forward(String message, Throwable thr) {
         if (thr instanceof SmartFrogDeploymentException) {
-            if (message!=null){
-                ((SmartFrogException)thr).add("msg: ",message);
+            if (message != null) {
+                ((SmartFrogException) thr).add("msg: ", message);
             }
-            return (SmartFrogDeploymentException)thr;
+            return (SmartFrogDeploymentException) thr;
         } else {
             return new SmartFrogDeploymentException(message, thr);
         }
@@ -214,16 +218,16 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      *
      * @return the message value
      */
-    public String getMessage(){
+    public String getMessage() {
         StringBuilder strb = new StringBuilder();
-        strb.append ((((this.containsKey(SOURCE)&&
-                                (this.get(SOURCE)!=null)&&
-                                (((Reference)this.get(SOURCE)).size()!=0)))
-                                ? (get(SOURCE)+ " failed to deploy ") : "" ));
-        strb.append ((((this.containsKey(OBJECT_NAME)))? ("'"+get(OBJECT_NAME)
-                                 +"' component") : "unnamed component" ));
-        strb.append ((super.getMessage() == null)  ? "" : ". "+super.getMessage());
-       return strb.toString();
+        strb.append((((this.containsKey(SOURCE) &&
+                (this.get(SOURCE) != null) &&
+                (((Reference) this.get(SOURCE)).size() != 0)))
+                ? (get(SOURCE) + " failed to deploy ") : ""));
+        strb.append((((this.containsKey(OBJECT_NAME))) ? ("'" + get(OBJECT_NAME)
+                + "' component") : "unnamed component"));
+        strb.append((super.getMessage() == null) ? "" : ". " + super.getMessage());
+        return strb.toString();
     }
 
 
@@ -238,31 +242,31 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
         StringBuilder strb = new StringBuilder();
         strb.append("").append(shortClassName()).append(": ");
 
-        if (getMessage()!=null){
-            if ((getCause()!=null) && (getCause().toString().equals(getMessage()))) {
-               strb.append (getCauseMessage(nm));
+        if (getMessage() != null) {
+            if ((getCause() != null) && (getCause().toString().equals(getMessage()))) {
+                strb.append(getCauseMessage(nm));
             } else {
                 //Only print message when message != cause
-                strb.append (getMessage());
-                strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
+                strb.append(getMessage());
+                strb.append((((getCause() == null)) ? "" : (nm + "cause: " + getCauseMessage(nm))));
             }
         } else {
-            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
+            strb.append((((getCause() == null)) ? "" : (getCauseMessage(nm))));
         }
 
-        strb.append ((((this.containsKey(REFERENCE)
-                       && (this.get(REFERENCE)!=null)
-                       &&(((Reference)this.get(REFERENCE)).size()!=0)))
-                        ? (nm+REFERENCE+  ": " + get(REFERENCE)) : "" ));
-        strb.append ((((this.containsKey(COMPONENT_DESCRIPTION)))
-                    ? (nm+COMPONENT_DESCRIPTION+  ": "
-                        + "included") : "" ));
-        strb.append ((((this.containsKey(DEPLOY_CONTEXT)))
-                    ? (nm+DEPLOY_CONTEXT+  ": " + "included") : "" ));
-        strb.append ((((this.containsKey(PRIM_CONTEXT)))
-                    ? (nm+PRIM_CONTEXT+  ": " + "included") : "" ));
-        strb.append ((((this.containsKey(DATA)))
-                    ? (nm+DATA+  ": " + get(DATA)) : ""));
+        strb.append((((this.containsKey(REFERENCE)
+                && (this.get(REFERENCE) != null)
+                && (((Reference) this.get(REFERENCE)).size() != 0)))
+                ? (nm + REFERENCE + ": " + get(REFERENCE)) : ""));
+        strb.append((((this.containsKey(COMPONENT_DESCRIPTION)))
+                ? (nm + COMPONENT_DESCRIPTION + ": "
+                + "included") : ""));
+        strb.append((((this.containsKey(DEPLOY_CONTEXT)))
+                ? (nm + DEPLOY_CONTEXT + ": " + "included") : ""));
+        strb.append((((this.containsKey(PRIM_CONTEXT)))
+                ? (nm + PRIM_CONTEXT + ": " + "included") : ""));
+        strb.append((((this.containsKey(DATA)))
+                ? (nm + DATA + ": " + get(DATA)) : ""));
         return strb.toString();
     }
 
