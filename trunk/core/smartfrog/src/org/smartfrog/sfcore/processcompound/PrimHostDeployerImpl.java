@@ -45,7 +45,9 @@ import java.rmi.ConnectException;
  */
 public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
+    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
+     * Although unused, it forces the logging to be set up, so must not be removed
+     * */
     private LogSF sflog = LogFactory.sfGetProcessLog();
 
     /** Efficiency holder of sfProcessHost attribute. */
@@ -120,34 +122,42 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      */
     protected Prim deploy(Prim parent)
             throws SmartFrogDeploymentException {
-        String processName = "(unknown process)";
+        String targetProcessName = "(unknown process)";
+        ProcessCompound targetProcess = null;
+        ProcessCompound local;
+        String stage= "";
         try {
-            ProcessCompound pc = null;
-
-            try {
-                pc = getProcessCompound();
-            } catch (Exception e) {
-                throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-            }
-
-            ProcessCompound local = SFProcess.getProcessCompound();
-            processName = pc.sfProcessName();
-            if (pc.equals(local)) {
+            stage = "retrieving local process compound";
+            local = SFProcess.getProcessCompound();
+            stage = "retrieving target process compound";
+            targetProcess = getProcessCompound();
+            targetProcessName = targetProcess.toString();
+            stage = "determining process name of target process " + targetProcessName;
+            targetProcessName = targetProcess.sfProcessName() + " [" + targetProcess.toString() + "]";
+            if (targetProcess.equals(local)) {
+                targetProcessName = "local process "+ targetProcessName;
                 if (parent == null) {
-                    return local.sfDeployComponentDescription(null, parent, target,
-                            null);
+                    stage ="deploying to the root of the local process";
+                    return local.sfDeployComponentDescription(null, null, target, null);
                 } else {
+                    stage = "deploying under the parent node";
                     return super.deploy(parent);
                 }
             } else {
-                return pc.sfDeployComponentDescription(null, parent, target, null);
+                stage = "deploying remotely to " + targetProcessName;
+                return targetProcess.sfDeployComponentDescription(null, parent, target, null);
             }
         } catch (ConnectException ex) {
+            //failure 
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException
-                    .forward("PrimHostDeployerImpl.deploy failed to connect to " + processName, ex);
+                    .forward("PrimHostDeployerImpl.deploy failed to connect to " + targetProcessName
+                            + " while " + stage,
+                            ex);
         } catch (Exception ex) {
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException
-                    .forward("PrimHostDeployerImpl.deploy failed to deploy to " + processName, ex);
+                    .forward("PrimHostDeployerImpl.deploy failed to deploy to " + targetProcessName
+                            + " while " + stage,
+                            ex);
         }
     }
 }
