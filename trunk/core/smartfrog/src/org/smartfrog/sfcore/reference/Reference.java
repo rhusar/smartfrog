@@ -50,14 +50,14 @@ public class Reference implements Copying, Cloneable, Serializable {
      * propBase). Defaults to 5 if not there
      * @see Reference
      */
-    public static int initCap = Integer.getInteger(SmartFrogCoreProperty.initCapReference, 5).intValue();
+    public static int initCap = Integer.getInteger(SmartFrogCoreProperty.initCapReference, 5);
 
     /**
      * Capacity increment for references. Looks up Reference.inc (offset by
      * propBase). Defaults to 2 if not there
      * @see Reference
      */
-    public static int inc = Integer.getInteger(SmartFrogCoreProperty.incReference, 2).intValue();
+    public static int inc = Integer.getInteger(SmartFrogCoreProperty.incReference, 2);
 
 
     /** Actual reference. */
