@@ -251,7 +251,7 @@ commons-dbcp-${commons-dbcp.version}.jar
 %package ec2
 Group:         ${rpm.framework}
 Summary:        Amazon EC2 support
-Requires:       %{name} = %{version}-%{release}, %{name}-cloudfarmer, %{name}-restlet,
+Requires:       %{name} = %{version}-%{release}, %{name}-restlet,
 
 %description ec2
 Components for working with S3 files and EC2 instances.
