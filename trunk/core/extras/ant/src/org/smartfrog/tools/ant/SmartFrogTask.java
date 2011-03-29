@@ -754,7 +754,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * set the timeout for execution. This is incompatible with spawning.
      *
-     * @param timeout timeout time
+     * @param timeout timeout time in milliseconds
      */
     public void setTimeout(long timeout) {
         this.timeout = timeout;
