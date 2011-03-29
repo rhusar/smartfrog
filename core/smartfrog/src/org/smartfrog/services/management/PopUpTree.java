@@ -519,7 +519,7 @@ public class PopUpTree extends JComponent implements ActionListener {
     void remove() {
       Object obj = getNode();
       //we need to check is the parent is a copy
-      if (isParentNodeACopy()  || getRDNNode().endsWith("*copy*") ) {
+      if (isParentNodeACopy()  || getRDNNode().endsWith(ComponentDescriptionImpl.COPY_MARKER) ) {
           String msg = "The node selected is a copy and no action can be applied\n Use a console running in the local process of this node";
           if (sfLog().isErrorEnabled()) sfLog().error (msg);
           WindowUtilities.showError(this,msg);

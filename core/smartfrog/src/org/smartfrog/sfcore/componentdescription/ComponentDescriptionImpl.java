@@ -70,6 +70,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     ComponentDescription, MessageKeys, PrettyPrinting {
 
 
+    public static final String COPY_MARKER = "*copy*";
     /** Context of attributes (key value pairs). */
     public Context sfContext;
 
@@ -172,7 +173,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 } catch (Throwable e) {
                     if (sfLog().isIgnoreEnabled()) { sfLog().ignore("Problem trying to get the real name of a copied CD",e);}
                 }
-                sfCompleteName.addElement(new HereReferencePart(name+"*copy*"));
+                sfCompleteName.addElement(new HereReferencePart(name+ COPY_MARKER));
                if (((sfLog()!= null) && sfLog().isTraceEnabled())){
                     sfLog().trace("Internal error generating CD complete name - CD is a copy: "+sfCompleteName); //or child not named in parent yet
                }
