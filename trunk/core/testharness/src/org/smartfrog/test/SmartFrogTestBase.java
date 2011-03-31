@@ -141,7 +141,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     /**
      * Text to look for in classname when seeking a SmartFrogParseException. Value: {@value}
      */
-    public static final String EXCNetEPTION_PARSE = "org.smartfrog.sfcore.common.SmartFrogParseException";
+    public static final String EXCEPTION_PARSE = "org.smartfrog.sfcore.common.SmartFrogParseException";
 
     /**
      * Text to look for in classname when seeking a SmartFrogCompileResolutionException. Value: {@value}
