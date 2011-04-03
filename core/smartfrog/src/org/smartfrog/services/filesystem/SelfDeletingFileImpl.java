@@ -46,6 +46,7 @@ public class SelfDeletingFileImpl extends FileUsingComponentImpl
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -59,6 +60,7 @@ public class SelfDeletingFileImpl extends FileUsingComponentImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         maybeStartTerminator("Deleting file");
@@ -69,6 +71,7 @@ public class SelfDeletingFileImpl extends FileUsingComponentImpl
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         deleteFileIfNeeded();

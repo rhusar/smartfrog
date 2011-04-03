@@ -76,6 +76,7 @@ public class TestCompletedEvent extends LifecycleEvent {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getEventName() {
         return "TestCompletedEvent";
     }
@@ -87,6 +88,7 @@ public class TestCompletedEvent extends LifecycleEvent {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(super.toString());
         if (description != null && description.length() > 0) {

@@ -44,6 +44,7 @@ public class IvyLocalCachePolicy extends AbstractPolicy implements LocalCachePol
      * @throws  RemoteException for network problems
      * @throws SmartFrogRuntimeException for SmartFrog problems
      */
+    @Override
     public String createLocalPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogRuntimeException {
         SerializedArtifact.assertValid(artifact, true);
@@ -64,6 +65,7 @@ public class IvyLocalCachePolicy extends AbstractPolicy implements LocalCachePol
      * @see LibraryCachePolicy#getDescription() 
      * @throws  RemoteException for network problems
      */
+    @Override
     public String getDescription() throws RemoteException {
         return "Ivy local cache policy";
     }

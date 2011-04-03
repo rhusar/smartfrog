@@ -1,38 +1,37 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.utils.concat;
-
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.Log;
+
+import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 
 /**
@@ -67,8 +66,9 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      * @throws SmartFrogException In case of error while deployment
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
-    RemoteException {
+            RemoteException {
         // TODO: Exception handling mechanism need to be revisited
         super.sfDeploy();
         log = sfGetApplicationLog();
@@ -89,7 +89,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
             } else {
                 try {
                     this.sfAddAttribute(ATR_REFERENCE,
-                        Reference.fromString(concat.toString()));
+                                        Reference.fromString(concat.toString()));
                 } catch (Exception ex) {
                     error("SFConcat.sfDeploy", ex.toString());
 
@@ -118,21 +118,11 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
     }
 
     /**
-     * sfStart.
-     *
-     * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of Remote/nework error
-     */
-    public synchronized void sfStart() throws SmartFrogException,
-    RemoteException {
-        super.sfStart();
-    }
-
-    /**
      * sfTerminate.
      *
      * @param t TerminationRecord object
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord t) {
         super.sfTerminateWith(t);
     }
@@ -153,7 +143,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
             createReference = sfResolve(REF_CREATE_REFERENCE, createReference, false);
         } catch (SmartFrogResolutionException e) {
             error("readSFAttributes",
-                "Failed to read optional attribute: " + e.toString());
+                  "Failed to read optional attribute: " + e.toString());
             throw e;
         }
 
@@ -163,7 +153,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
             stringCompDesc = sfResolve(REF_STRING, stringCompDesc, true);
         } catch (SmartFrogResolutionException e) {
             error("readSFAttributes",
-                "Failed to read mandatory attribute: " + e.toString());
+                  "Failed to read mandatory attribute: " + e.toString());
             throw e;
         }
 
@@ -180,7 +170,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
         StringBuilder auxString = new StringBuilder();
 
         for (Enumeration e = compDesc.sfContext().elements();
-                e.hasMoreElements();) {
+             e.hasMoreElements();) {
             value = e.nextElement();
 
             try {
@@ -197,9 +187,9 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
 
                     if (value instanceof java.net.InetAddress) {
                         auxString.append(((java.net.InetAddress) value).
-                            getCanonicalHostName());
+                                getCanonicalHostName());
                     } else {
-                        auxString.append(""+value);
+                        auxString.append("" + value);
                     }
                 }
             } catch (Exception ex) {
@@ -229,7 +219,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      */
     private void log(String method, String message) {
 
-        String text = method+": "+message;
+        String text = method + ": " + message;
         log.debug(text);
     }
 
@@ -242,9 +232,9 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
     public void append(Object obj) {
         concat.append(obj);
         try {
-          this.sfAddAttribute(ATR_CONCAT, concat.toString());
-        } catch (Exception ex){
-            log.trace("ignoring",ex);
+            this.sfAddAttribute(ATR_CONCAT, concat.toString());
+        } catch (Exception ex) {
+            log.trace("ignoring", ex);
         }
     }
 
@@ -252,6 +242,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      *
      * @return textual representation
      */
+    @Override
     public String toString() {
         concat.append(createConcatFromContext(stringCompDesc));
         return concat.toString();

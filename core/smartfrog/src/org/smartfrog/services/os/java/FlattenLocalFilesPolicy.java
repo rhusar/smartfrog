@@ -21,11 +21,11 @@ import java.rmi.RemoteException;
  * policy for flattening local files
  *
  */
-public class FlattenLocalFilesPolicy 
-    extends AbstractPolicy 
-    implements LocalCachePolicy {
+public class FlattenLocalFilesPolicy
+        extends AbstractPolicy
+        implements LocalCachePolicy {
 
-    
+
     /**
      * @throws RemoteException
      */
@@ -36,16 +36,18 @@ public class FlattenLocalFilesPolicy
      * This is the maven filename and nothing else; no directory tree.  
      * @see LocalCachePolicy#createLocalPath(SerializedArtifact)
      */
+    @Override
     public String createLocalPath(SerializedArtifact artifact) throws SmartFrogRuntimeException {
-        String filename=LibraryHelper.createMavenArtifactName(artifact);
+        String filename = LibraryHelper.createMavenArtifactName(artifact);
         return filename;
     }
 
     /**
      * @see org.smartfrog.services.os.java.LibraryCachePolicy#getDescription()
      */
+    @Override
     public String getDescription() throws RemoteException {
         return "FlattenLocalFilesPolicy ";
     }
-    
+
 }

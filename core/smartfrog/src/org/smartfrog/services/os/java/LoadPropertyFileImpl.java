@@ -60,6 +60,7 @@ public class LoadPropertyFileImpl extends FileUsingComponentImpl implements Load
      * @throws SmartFrogException  failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         bindWithDir(false, null);

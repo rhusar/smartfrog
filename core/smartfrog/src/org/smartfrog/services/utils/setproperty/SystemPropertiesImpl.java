@@ -66,6 +66,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * @throws SmartFrogDeploymentException failure to read attributes, or a wrapped security exception
      * @throws RemoteException    network trouble
      */
+    @Override
     public synchronized void sfDeployWith(Prim parent, Context cxt)
             throws SmartFrogDeploymentException, RemoteException {
         try {
@@ -88,7 +89,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     private boolean resolveBool(Context cxt, String name) throws SmartFrogContextException {
         try {
-            return ((Boolean) cxt.sfResolveAttribute(name)).booleanValue();
+            return (Boolean) cxt.sfResolveAttribute(name);
         } catch (SmartFrogContextException e) {
             if (log.isErrorEnabled()) {
                 log.error("Failed to read mandatory attribute: " + e.toString(), e);
@@ -105,6 +106,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
      * @throws RemoteException    network trouble
      */
+    @Override
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -124,6 +126,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
      * @throws RemoteException    network trouble
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -145,6 +148,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         if (unsetOnTerminate && proplist != null) {
             clearProperties();
@@ -206,6 +210,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * @param value value of the property
      * @throws SmartFrogException may wrap a security exception
      */
+    @Override
     public void setProperty(String name, String value)
             throws SmartFrogException {
         String action = "setting " + name + " to " + value;
@@ -238,6 +243,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * @param name name of the property
      * @throws SmartFrogException may wrap a security exception
      */
+    @Override
     public void unsetProperty(String name)
             throws SmartFrogException {
         String action = "clearing " + name;

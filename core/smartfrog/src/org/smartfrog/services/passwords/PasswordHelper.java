@@ -36,7 +36,6 @@ public class PasswordHelper {
      */
     public static final String ERROR_NOT_A_PASSWORD = "Not a password: ";
 
-
     /**
      * Extract a password from an attribute
      *

@@ -33,10 +33,10 @@ import java.rmi.RemoteException;
  * a scheduled delay. Useful for testing child-death-handling logic
  * of containers and workflow.
  */
-public class FailComponent extends PrimImpl implements Fail,Runnable {
+public class FailComponent extends PrimImpl implements Fail, Runnable {
 
     private boolean normal;
-    private int delay=0;
+    private int delay = 0;
     private String message;
     private boolean detach;
     private boolean notifyParent;
@@ -52,16 +52,17 @@ public class FailComponent extends PrimImpl implements Fail,Runnable {
      * @throws SmartFrogException
      * @throws RemoteException
      */
+    @Override
     public synchronized void sfStart()
-        throws SmartFrogException, RemoteException {
+            throws SmartFrogException, RemoteException {
         super.sfStart();
         boolean condition = sfResolve(ATTR_CONDITION, false, true);
         delay = sfResolve(ATTR_DELAY, 0, true);
-        detach= sfResolve(ATTR_DETACH, false, true);
+        detach = sfResolve(ATTR_DETACH, false, true);
         message = sfResolve(ATTR_MESSAGE, "", true);
         normal = sfResolve(ATTR_NORMAL, false, true);
         notifyParent = sfResolve(ATTR_NOTIFY, false, true);
-        if(condition) {
+        if (condition) {
             Thread thread = new Thread(this);
             thread.start();
         }
@@ -70,6 +71,7 @@ public class FailComponent extends PrimImpl implements Fail,Runnable {
     /**
      * Entry point for the run
      */
+    @Override
     public void run() {
         if (delay > 0) {
             try {
@@ -89,8 +91,11 @@ public class FailComponent extends PrimImpl implements Fail,Runnable {
     private TerminationRecord createTerminationRecord() {
         TerminationRecord record;
         Reference name = sfCompleteNameSafe();
-        record=new TerminationRecord(normal?TerminationRecord.NORMAL:TerminationRecord.ABNORMAL,
-                message,name);
+        record = new TerminationRecord(normal ? 
+                                               TerminationRecord.NORMAL 
+                                               : TerminationRecord.ABNORMAL,
+                                       message,
+                                       name);
         return record;
     }
 }

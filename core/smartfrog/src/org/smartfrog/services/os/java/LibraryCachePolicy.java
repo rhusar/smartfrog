@@ -28,6 +28,6 @@ public interface LibraryCachePolicy extends Remote {
      * @return description text
          * @throws RemoteException network problems
      */
-    public String getDescription() throws RemoteException;
+    String getDescription() throws RemoteException;
     
 }

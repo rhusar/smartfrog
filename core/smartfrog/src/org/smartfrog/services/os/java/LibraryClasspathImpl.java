@@ -45,24 +45,13 @@ public class LibraryClasspathImpl extends PrimImpl implements LibraryClasspath {
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        repository=sfResolve(ATTR_REPOSITORY,repository,true);
-        libraries=sfResolve(ATTR_LIBRARIES,libraries,true);
+        repository = sfResolve(ATTR_REPOSITORY, repository, true);
+        libraries = sfResolve(ATTR_LIBRARIES, libraries, true);
         //TODO, see SFOS-13.
     }
-
-    /**
-     * {@inheritDoc}
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     */
-    public synchronized void sfStart()
-            throws SmartFrogException, RemoteException {
-        super.sfStart();
-    }
-
 
 }

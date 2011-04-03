@@ -112,8 +112,8 @@ public class ReplaceVar {
      *          from the starting position (-1 if nothing was found)
      */
     private int inString(String string,
-                         String search,
-                         int startPosition) {
+            String search,
+            int startPosition) {
 
         //Create a variable that will hold the position of the search string
         int pos = -1;
@@ -153,7 +153,9 @@ public class ReplaceVar {
      */
     public void setCachedState(boolean cached) {
         this.cached = cached;
-        if (!cached) this.cache.clear();
+        if (!cached) {
+            this.cache.clear();
+        }
     }
 
 //----------------------------------------------------------------------------
@@ -307,7 +309,9 @@ public class ReplaceVar {
      * @param data
      */
     public void setSetting(Vector data) {
-        if (data == null) return;
+        if (data == null) {
+            return;
+        }
         //If the file is cached in memory
         if (this.cached) {
             setSettingCached(data);
@@ -329,10 +333,14 @@ public class ReplaceVar {
      * @param data
      */
     public void setSettingCached(Vector data) {
-        if (data == null) return;
+        if (data == null) {
+            return;
+        }
         String key = null;
         Vector dataElement = null;
-        if (data == null) return;
+        if (data == null) {
+            return;
+        }
         data.trimToSize();
         int size = data.size();
         if (size == 0) {
@@ -357,7 +365,9 @@ public class ReplaceVar {
      * @param appendData
      */
     public void append(Vector appendData) {
-        if (appendData == null) return;
+        if (appendData == null) {
+            return;
+        }
         //If the file is cached in memory
         if (this.cached) {
             appendCached(appendData);
@@ -377,10 +387,14 @@ public class ReplaceVar {
      * @param appendData
      */
     public void appendCached(Vector appendData) {
-        if (appendData == null) return;
+        if (appendData == null) {
+            return;
+        }
         String key = null;
         Object dataElement = null;
-        if (appendData == null) return;
+        if (appendData == null) {
+            return;
+        }
         appendData.trimToSize();
         int size = appendData.size();
         if (size == 0) {
@@ -407,7 +421,9 @@ public class ReplaceVar {
 
      */
     public synchronized void flush() {
-        if (errorLoading) return;
+        if (errorLoading) {
+            return;
+        }
         if (this.cached) {
             try {
                 String file = this.filename;
@@ -452,7 +468,9 @@ public class ReplaceVar {
 
      */
     private void setSettingCached(String key, String value) {
-        if (errorLoading) return;
+        if (errorLoading) {
+            return;
+        }
 
         String currentLine = new String("");
         String newLine = new String("");
@@ -470,12 +488,12 @@ public class ReplaceVar {
                     newLine = new String("");
                     if ((index > 0)) {
                         newLine = currentLine.substring(0, index - 1)
-                                + value
-                                + currentLine.substring(index + key.length() - 1);
+                                  + value
+                                  + currentLine.substring(index + key.length() - 1);
                     } else {
                         index = 0;
                         newLine = value
-                                + currentLine.substring(index + key.length() - 1);
+                                  + currentLine.substring(index + key.length() - 1);
                     }
                     //newLine.trim();
                     this.cache.set(i, newLine);

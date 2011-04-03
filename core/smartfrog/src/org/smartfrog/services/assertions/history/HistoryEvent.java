@@ -22,7 +22,7 @@ package org.smartfrog.services.assertions.history;
 import java.io.Serializable;
 
 /**
-     * This is an event that we log
+ * This is an event that we log
  */
 public class HistoryEvent implements Serializable {
 
@@ -45,7 +45,7 @@ public class HistoryEvent implements Serializable {
      * @return a useful string value
      */
     public String toString() {
-        return '['+index+"]  [ "+Long.toString(timestamp)+"] "+message;
+        return '[' + index + "]  [ " + Long.toString(timestamp) + "] " + message;
     }
 
 }

@@ -39,6 +39,7 @@ public class TestStartedEvent extends LifecycleEvent {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getEventName() {
         return "TestStartedEvent";
     }

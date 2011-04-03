@@ -62,14 +62,15 @@ public class FilePasswordProvider extends PrimImpl implements Prim,
      * @throws RemoteException in case of network or RMI error
      * @throws SmartFrogDeploymentException if there is no password file
      */
+    @Override
     public String getPassword() throws SmartFrogException, RemoteException {
         File file =
                 FileSystem.lookupAbsoluteFile(this,
-                        PASSWORD_FILE,
-                        null,
-                        null,
-                        true,
-                        null);
+                                              PASSWORD_FILE,
+                                              null,
+                                              null,
+                                              true,
+                                              null);
         if (!file.exists()) {
             throw new SmartFrogDeploymentException(ERROR_MISSING_PASSWORD_FILE + file.getAbsolutePath(), this);
         }

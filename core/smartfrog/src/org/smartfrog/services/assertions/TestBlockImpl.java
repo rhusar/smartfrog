@@ -64,6 +64,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      *
      * @return true if we are finished
      */
+    @Override
     public boolean isFinished() {
         return finished;
     }
@@ -71,6 +72,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     /**
      * @return true only if the test has finished and failed
      */
+    @Override
     public boolean isFailed() {
         return failed;
     }
@@ -78,7 +80,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     /**
      * @return true iff the test succeeded
      */
-
+    @Override
     public boolean isSucceeded() {
         return succeeded;
     }
@@ -88,6 +90,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      *
      * @return the exit record, will be null for an unfinished child
      */
+    @Override
     public TerminationRecord getStatus() {
         return status;
     }
@@ -97,6 +100,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      *
      * @return the child component. this will be null after termination.
      */
+    @Override
     public Prim getAction() {
         return actionPrim;
     }
@@ -106,6 +110,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      *
      * @return false always
      */
+    @Override
     public boolean isSkipped() {
         return false;
     }
@@ -117,6 +122,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @throws RemoteException    In case of network/rmi error
      * @throws SmartFrogException In case of any error while deploying the component
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         description = sfResolve(ATTR_DESCRIPTION, description, false);
@@ -134,6 +140,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException    In case of Remote/nework error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
             super.sfStart();
@@ -173,6 +180,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      *
      * @param record exit status
      */
+    @Override
     public void sfTerminateWith(TerminationRecord record) {
         sendEvent(new TerminatedEvent(this, record));
         super.sfTerminateWith(record);
@@ -239,6 +247,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @throws SmartFrogRuntimeException for runtime exceptions
      * @throws RemoteException           for network problems
      */
+    @Override
     protected boolean onChildTerminated(TerminationRecord record, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
         if (comp == actionPrim) {

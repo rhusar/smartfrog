@@ -24,9 +24,6 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
     }
 
 
-
-
-
     /**
      * Called after instantiation for deployment purposes. Heart monitor is
      * started and if there is a parent the deployed component is added to the
@@ -37,6 +34,7 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
      *                                  error while deploying
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -53,6 +51,7 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
      *                                  failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();

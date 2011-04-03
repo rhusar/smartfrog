@@ -59,6 +59,7 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
      * @throws SmartFrogException in case of error in starting
      * @throws RemoteException in case of network/emi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -111,6 +112,7 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         deleteFileIfNeeded();

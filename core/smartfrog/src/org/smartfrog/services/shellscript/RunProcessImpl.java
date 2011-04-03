@@ -20,21 +20,20 @@
 
 package org.smartfrog.services.shellscript;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
-
 
 
 //------------------- RUNProcess -------------------------------
@@ -143,6 +142,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
         this(name, cmd, null);
     }
 
+    @Override
     public int getProcessState() {
         return state;
     }
@@ -151,6 +151,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
      * Flag that is true if the process is considered active
      * @return true if the the process is working
      */
+    @Override
     public boolean ready() {
         return (getProcessState() == STATE_PROCESSING);
     }
@@ -207,8 +208,12 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
 
         if (sfLog.isDebugEnabled()) {
-            if (ready()) sfLog.debug("WaitForReady- Ready");
-            if (state == STATE_INACTIVE) sfLog.debug("Finished WaitForReady-STATE_INACTIVE");
+            if (ready()) {
+                sfLog.debug("WaitForReady- Ready");
+            }
+            if (state == STATE_INACTIVE) {
+                sfLog.debug("Finished WaitForReady-STATE_INACTIVE");
+            }
         }
         if (numberOfTries < 1) {
             sfLog.warn("Finished WaitForReady-time out: " + time);
@@ -248,6 +253,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
     /**
      * this operates in the private thread
      */
+    @Override
     public void run() {
         do {
             startProcess();
@@ -276,8 +282,8 @@ public class RunProcessImpl extends Thread implements RunProcess {
             }
             TerminationRecord termR;
             termR = new TerminationRecord(terminationType, "Exit code: " + exitValue, null);
-            ComponentHelper ch=new ComponentHelper(prim);
-            ch.targetForTermination(termR, !cmd.terminate(), cmd.detach(),false) ;
+            ComponentHelper ch = new ComponentHelper(prim);
+            ch.targetForTermination(termR, !cmd.terminate(), cmd.detach(), false);
             prim = null;
         }
     }
@@ -297,7 +303,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
                     sfLog.debug(cmd.toString());
                 }
                 process = runtime.exec(cmd.getCmdArray(), cmd.getEnvp(),
-                        cmd.getFile());
+                                       cmd.getFile());
                 setState(STATE_STARTED);
                 if (sfLog.isTraceEnabled()) {
                     sfLog.trace("attaching data output stream");
@@ -306,9 +312,9 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
                 replaceFilters(
                         new FilterImpl(sfLog.getLogName(), process.getInputStream(), "out",
-                                cmd.getFiltersOut(), cmd.getFilterOutListener(), cmd.passPositives()),
+                                       cmd.getFiltersOut(), cmd.getFilterOutListener(), cmd.passPositives()),
                         new FilterImpl(sfLog.getLogName(), process.getErrorStream(), "err",
-                                cmd.getFiltersErr(), cmd.getFilterErrListener(), cmd.passPositives())
+                                       cmd.getFiltersErr(), cmd.getFilterErrListener(), cmd.passPositives())
                 );
 
                 // process may be null by the time we get here after the synchronized
@@ -514,6 +520,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
     }
 
+    @Override
     public void kill() {
         // It is possible to request a kill before the process has actually been
         // created.  If this is the case just prevent the run() method from creating
@@ -550,7 +557,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
             try {
                 processDos.close();
             } catch (IOException e) {
-                sfLog.ignore("when closing the process stream ",e);
+                sfLog.ignore("when closing the process stream ", e);
             }
             // Wait for filters to stop before issuing Terminated
             stopFilters();
@@ -564,6 +571,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
      *
      * @param command command to be exceuted
      */
+    @Override
     public void execCommand(String command) {
         if ((command == null) || killRequested || state != STATE_PROCESSING) {
             //@TODO thow exception? Log return cause
@@ -600,6 +608,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
      * @return the input stream connected to the normal output of the subprocess.
      */
 
+    @Override
     public synchronized InputStream getInputStream() {
         return process.getInputStream();
     }
@@ -611,6 +620,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
      *
      * @return the input stream connected to the error stream of the subprocess.
      */
+    @Override
     public synchronized InputStream getErrorStream() {
         return process.getErrorStream();
     }
@@ -622,6 +632,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
      *
      * @return the output stream connected to the normal input of the subprocess.
      */
+    @Override
     public synchronized OutputStream getOutputStream() {
         return process.getOutputStream();
     }

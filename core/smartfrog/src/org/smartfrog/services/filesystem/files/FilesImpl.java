@@ -79,6 +79,7 @@ public class FilesImpl extends PrimImpl implements Files {
      * @throws SmartFrogLifecycleException if it could  not do this
      */
 
+    @Override
     public File[] listFiles() throws SmartFrogLifecycleException {
         if (!sfIsStarted()) {
             throw new SmartFrogLifecycleException(ERROR_NOT_LIVE);
@@ -93,6 +94,7 @@ public class FilesImpl extends PrimImpl implements Files {
      * @throws RemoteException    when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
+    @Override
     public File getBaseDir() throws RemoteException, SmartFrogException {
         return fileset.getBaseDir();
     }
@@ -109,11 +111,11 @@ public class FilesImpl extends PrimImpl implements Files {
     public static Fileset resolveFileset(Object component)
             throws SmartFrogException, RemoteException {
         return Fileset.createFileset(component,
-                FILES_ATTRIBUTE,
-                DIR_ATTRIBUTE,
-                PATTERN_ATTRIBUTE,
-                CASE_ATTRIBUTE,
-                HIDDEN_ATTRIBUTE);
+                                     FILES_ATTRIBUTE,
+                                     DIR_ATTRIBUTE,
+                                     PATTERN_ATTRIBUTE,
+                                     CASE_ATTRIBUTE,
+                                     HIDDEN_ATTRIBUTE);
     }
 
     /**
@@ -158,9 +160,9 @@ public class FilesImpl extends PrimImpl implements Files {
      * @return an exception to throw
      */
     private static SmartFrogDeploymentException exceptionBadFileCount(Prim component,
-                                                                      Fileset fileset,
-                                                                      int length,
-                                                                      int filecount, String prefix) {
+            Fileset fileset,
+            int length,
+            int filecount, String prefix) {
 
         StringBuilder builder = new StringBuilder();
         builder.append(ERROR_FILE_COUNT_MISMATCH)

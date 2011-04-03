@@ -119,6 +119,7 @@ public class StreamGobbler extends Thread {
     /**
      * Main processing method.
      */
+    @Override
     public void run() {
         if (type == null) {
             type = "GOBBLER";

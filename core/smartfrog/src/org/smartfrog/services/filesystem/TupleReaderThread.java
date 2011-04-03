@@ -60,6 +60,7 @@ public class TupleReaderThread extends WorkflowThread {
      *
      * @throws Throwable if anything went wrong
      */
+    @Override
     public void execute() throws Throwable {
         source.start();
         currentLine = 0;

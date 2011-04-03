@@ -43,17 +43,17 @@ public class DirectoryApplication implements Serializable {
     private boolean resourceExists;
     private Properties propertySet;
     private ConfigurationDescriptor configuration;
-    
+
     private static final String TRUE = "true";
     private static final String PROPFILE_NAME = "application";
     /**
      * XML file of properties to look for
      */
-    public static final String APPLICATION_XML = PROPFILE_NAME +".xml";
+    public static final String APPLICATION_XML = PROPFILE_NAME + ".xml";
     /**
      * Classic properties file to look for
      */
-    public static final String APPLICATION_PROPERTIES = PROPFILE_NAME +".properties";
+    public static final String APPLICATION_PROPERTIES = PROPFILE_NAME + ".properties";
 
     /**
      * name of the file
@@ -152,6 +152,7 @@ public class DirectoryApplication implements Serializable {
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("Directory Application ").append(name);

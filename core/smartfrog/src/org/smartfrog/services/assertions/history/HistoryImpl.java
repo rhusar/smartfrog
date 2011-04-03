@@ -24,14 +24,13 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /** created 09-Jul-2007 12:11:03 */
 
 public class HistoryImpl extends PrimImpl implements History {
 
-    private List<HistoryEvent> events=new ArrayList<HistoryEvent>();
+    private List<HistoryEvent> events = new ArrayList<HistoryEvent>();
 
     public HistoryImpl() throws RemoteException {
     }
@@ -41,13 +40,14 @@ public class HistoryImpl extends PrimImpl implements History {
      * @param event a new event to add
      * @return the index value of the event
      */
+    @Override
     public synchronized int addEvent(HistoryEvent event) throws SmartFrogAssertionException {
-        if(event.message==null) {
+        if (event.message == null) {
             throw new SmartFrogAssertionException("No null messages are allowed");
         }
         events.add(event);
         int index = events.size() - 1;
-        event.index=index;
+        event.index = index;
         return index;
     }
 
@@ -56,8 +56,9 @@ public class HistoryImpl extends PrimImpl implements History {
      * @param message
      * @return the index value of the event
      */
+    @Override
     public int log(String message) throws SmartFrogAssertionException {
-        HistoryEvent event=new HistoryEvent(System.currentTimeMillis(), message);
+        HistoryEvent event = new HistoryEvent(System.currentTimeMillis(), message);
         return addEvent(event);
     }
 
@@ -65,10 +66,12 @@ public class HistoryImpl extends PrimImpl implements History {
     /**
      * Clear the event history
      */
+    @Override
     public synchronized void clear() {
         events.clear();
     }
 
+    @Override
     public int size() {
         return events.size();
     }
@@ -78,12 +81,13 @@ public class HistoryImpl extends PrimImpl implements History {
      * @param expected the expected size
      * @throws SmartFrogAssertionException
      */
+    @Override
     public void assertSizeEquals(int expected) throws SmartFrogAssertionException {
-        int s=size();
-        if(s!=expected) {
-            throw new SmartFrogAssertionException("Expected a history of size "+expected+" -actual size="+s
-                    + "\nin\n" + toString(),
-                this);
+        int s = size();
+        if (s != expected) {
+            throw new SmartFrogAssertionException("Expected a history of size " + expected + " -actual size=" + s
+                                                  + "\nin\n" + toString(),
+                                                  this);
         }
     }
 
@@ -93,12 +97,13 @@ public class HistoryImpl extends PrimImpl implements History {
      * @param minimum the expected size
      * @throws SmartFrogAssertionException
      */
+    @Override
     public void assertSizeAtLeast(int minimum) throws SmartFrogAssertionException {
         int s = size();
         if (s <= minimum) {
             throw new SmartFrogAssertionException("Expected a history of minimum size " + minimum + " -actual size=" + s
-                    +"\nin\n"+toString(),
-                    this);
+                                                  + "\nin\n" + toString(),
+                                                  this);
         }
     }
 
@@ -108,6 +113,7 @@ public class HistoryImpl extends PrimImpl implements History {
      * @return the element there or
      * @throws IndexOutOfBoundsException if the offset is out of range 
      */
+    @Override
     public HistoryEvent elementAt(int offset) {
         return events.get(offset);
     }
@@ -120,16 +126,17 @@ public class HistoryImpl extends PrimImpl implements History {
      * @param partialMatch flag to set to true for substring matching
      * @return the first event that matched, or null for no match
      */
-    public synchronized HistoryEvent lookup(String text,boolean partialMatch) {
-        boolean match=false;
-        for(HistoryEvent event:events) {
-            String message=event.message;
-            if(partialMatch) {
-                match= message.indexOf(text)>=0;
+    @Override
+    public synchronized HistoryEvent lookup(String text, boolean partialMatch) {
+        boolean match = false;
+        for (HistoryEvent event : events) {
+            String message = event.message;
+            if (partialMatch) {
+                match = message.indexOf(text) >= 0;
             } else {
-                match=message.equals(text);
+                match = message.equals(text);
             }
-            if(match) {
+            if (match) {
                 return event;
             }
         }
@@ -144,15 +151,16 @@ public class HistoryImpl extends PrimImpl implements History {
      * @return the event found (which is always non-null)
      * @throws SmartFrogAssertionException if the condition is not met
      */
-    public HistoryEvent assertEventFound(String text, boolean partialMatch,String errorText) throws SmartFrogAssertionException {
-        HistoryEvent event=lookup(text,partialMatch);
-        if(event==null) {
-            String message=errorText;
-            if(message==null) {
-                message="Did not find any event "+(partialMatch?"containing":"matching")+" "+text
-                        +"\nin\n"+toString();
+    @Override
+    public HistoryEvent assertEventFound(String text, boolean partialMatch, String errorText) throws SmartFrogAssertionException {
+        HistoryEvent event = lookup(text, partialMatch);
+        if (event == null) {
+            String message = errorText;
+            if (message == null) {
+                message = "Did not find any event " + (partialMatch ? "containing" : "matching") + " " + text
+                          + "\nin\n" + toString();
             }
-            throw new SmartFrogAssertionException(message,this);
+            throw new SmartFrogAssertionException(message, this);
         }
         return event;
     }
@@ -163,8 +171,9 @@ public class HistoryImpl extends PrimImpl implements History {
      * @param text2 partial matching text for the second event
      * @throws SmartFrogAssertionException if the condition is not met
      */
-    public void assertEventsOrdered(String text1,String text2) throws SmartFrogAssertionException {
-        HistoryEvent event1 = assertEventFound(text1,true,null);
+    @Override
+    public void assertEventsOrdered(String text1, String text2) throws SmartFrogAssertionException {
+        HistoryEvent event1 = assertEventFound(text1, true, null);
         HistoryEvent event2 = assertEventFound(text2, true, null);
         if (event1.index > event2.index) {
             throw new SmartFrogAssertionException(
@@ -177,8 +186,9 @@ public class HistoryImpl extends PrimImpl implements History {
      * Dumps the entire history; used in assertion messages
      */
 
+    @Override
     public synchronized String toString() {
-        StringBuffer buffer=new StringBuffer(super.toString());
+        StringBuffer buffer = new StringBuffer(super.toString());
         buffer.append('\n');
         buffer.append("size=");
         buffer.append(size());

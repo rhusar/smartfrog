@@ -49,6 +49,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * @return path to the file
      * @throws NullPointerException if the file is null
      */
+    @Override
     public String getAbsolutePath() {
         return file.getAbsolutePath();
     }
@@ -59,6 +60,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * @return URI
      * @throws NullPointerException if the file is null
      */
+    @Override
     public URI getURI() {
         return file.toURI();
     }

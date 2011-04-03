@@ -95,6 +95,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
      * @throws SmartFrogException Deployment problems
      * @throws RemoteException    netork problems
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -160,7 +161,9 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
             }
             next = cd.sfResolve(ATTR_NEXT, next, true);
         } catch (Exception e) {
-            if (log().isErrorEnabled()) log().err(e);
+            if (log().isErrorEnabled()) {
+                log().err(e);
+            }
             failure = cd.sfResolve(ATTR_FAILURE, (ComponentDescription) null, false);
         }
         if (next != null) {
@@ -205,6 +208,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
     /**
      * sfTerminateWith lifecycle method terminates the thread
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         try {
             if (sfLog().isInfoEnabled()) {
@@ -240,7 +244,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
         libDir = cd.sfResolve(ATTR_LIB_DIR, libDir, false);
         List<String> jars = new ArrayList<String>();
         List<URL> urls = null;
-        String pattern=cd.sfResolve(ATTR_LIB_PATTERN,"",true);
+        String pattern = cd.sfResolve(ATTR_LIB_PATTERN, "", true);
         if (libDir != null) {
             FileSystem.scanDir(libDir, jars, pattern, true);
             urls = FileSystem.toFileURLs(jars);
@@ -261,7 +265,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
         }
         // get the right constructor method method
         Constructor jConstructor = jClass.getConstructor(toClassesArray(parameters));
-        setSystemProperties(cd.sfResolve(ATTR_SYSTEM_PROPERTIES,(ComponentDescription)null, false));
+        setSystemProperties(cd.sfResolve(ATTR_SYSTEM_PROPERTIES, (ComponentDescription) null, false));
         // Invoke the constructor
         Object object = jConstructor.newInstance(parameters);
 
@@ -350,7 +354,9 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
 
     static public Object setFields(Object object, ComponentDescription cd) throws
             IllegalAccessException, NoSuchFieldException, SmartFrogResolutionException {
-        if (cd == null) return object;
+        if (cd == null) {
+            return object;
+        }
         Iterator attributes = cd.sfAttributes();
         String attribute = null;
         Object value = null;
@@ -368,7 +374,9 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
     }
 
     static public void setSystemProperties(ComponentDescription cd) throws SmartFrogResolutionException {
-        if (cd == null) return;
+        if (cd == null) {
+            return;
+        }
         Iterator attributes = cd.sfAttributes();
         String attribute = null;
         Object value = null;
@@ -390,7 +398,9 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
      * @throws Exception
      */
     public static Class[] toClassesArray(Object[] objects) throws Exception {
-        if (objects == null) return null;
+        if (objects == null) {
+            return null;
+        }
         int len = objects.length;
         // get the parameters classes
         Class[] classes = new Class[len];

@@ -47,6 +47,7 @@ public class InlinePasswordProviderImpl extends PrimImpl implements PasswordProv
      * @throws SmartFrogException If unable to get the password
      * @throws RemoteException in case of network or RMI error
      */
+    @Override
     public String getPassword() throws SmartFrogException, RemoteException {
         return sfResolve(ATTR_PASSWORD, (String) null, true);
     }

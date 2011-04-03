@@ -57,6 +57,7 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -86,6 +87,7 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @Override
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         File f = getFile();
         if (!f.exists()) {
@@ -105,13 +107,13 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
         }
         if (minSize >= 0 && f.length() < minSize) {
             lastError = "Too short " + file + " - size of " + f.length() + " is below the minSize of "
-                    + minSize;
+                        + minSize;
             sfLog().debug(lastError);
             return false;
         }
         if (maxSize >= 0 && f.length() > maxSize) {
             lastError = "Too long " + file + " - size of " + f.length() + " is above the maxSize of "
-                    + maxSize;
+                        + maxSize;
             sfLog().debug(lastError);
             return false;
         }

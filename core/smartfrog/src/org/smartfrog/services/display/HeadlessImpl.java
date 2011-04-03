@@ -44,6 +44,7 @@ public class HeadlessImpl extends PrimImpl implements Headless {
      *
      * @return true iff the system is headless
      */
+    @Override
     public boolean evaluate() {
         return GraphicsEnvironment.isHeadless();
     }
@@ -54,6 +55,7 @@ public class HeadlessImpl extends PrimImpl implements Headless {
      *
      * @param headless the new headless value
      */
+    @Override
     public void setHeadless(boolean headless) {
         System.setProperty(AWT_HEADLESS, Boolean.toString(headless));
     }
@@ -67,9 +69,10 @@ public class HeadlessImpl extends PrimImpl implements Headless {
      * @return the resolved value
      * @throws SmartFrogResolutionException
      */
+    @Override
     public Object sfResolveHere(Object name) throws SmartFrogResolutionException {
         if (ATTR_HEADLESS.equals(name)) {
-            return Boolean.valueOf(evaluate());
+            return evaluate();
         } else {
             return super.sfResolveHere(name);
         }
@@ -86,6 +89,7 @@ public class HeadlessImpl extends PrimImpl implements Headless {
      * @throws SmartFrogRuntimeException
      * @throws RemoteException
      */
+    @Override
     public synchronized Object sfReplaceAttribute(Object name, Object value)
             throws SmartFrogRuntimeException, RemoteException {
         Object result = super.sfReplaceAttribute(name, value);

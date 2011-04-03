@@ -68,7 +68,7 @@ public class ScriptHelper {
         ScriptEngine engine = manager.getEngineByName(language);
         if (engine == null) {
             throw new SmartFrogLifecycleException(ERROR_NO_ENGINE
-                    + language);
+                                                  + language);
         }
         return new LoadedEngine(language, engine);
     }
@@ -168,7 +168,7 @@ public class ScriptHelper {
         }
 
         /**
-         * Put a name value pair into the context of the engine. This extends {@link ScriptEngine#put(String,Object)} by
+         * Put a name value pair into the context of the engine. This extends {@link ScriptEngine#put(String, Object)} by
          * special support for JavaFX naming policy, copying Ant's example
          *
          * @param name name to use

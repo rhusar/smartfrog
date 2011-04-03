@@ -62,7 +62,6 @@ public interface FileEntry extends Remote {
      */
     String getMimetype() throws RemoteException;
 
-
     /**
      * Set MIME type
      * @param mimetype String

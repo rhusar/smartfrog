@@ -44,7 +44,7 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
     private boolean caseSensitive = false;
     private boolean hiddenFiles = false;
     public static final String BAD_PATTERN = "Pattern syntax not understood by the Java Pattern class"
-            + "\nConsult " + "http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html";
+                                             + "\nConsult " + "http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html";
 
     /**
      * Create a new filter. Consult {@link Pattern#compile(String)} for the syntax.
@@ -77,6 +77,7 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
      * @return <code>true</code> if and only if the name should be included in the file list; <code>false</code>
      *         otherwise.
      */
+    @Override
     public boolean accept(File dir, String name) {
         File targetFile = new File(dir, name);
         if (!hiddenFiles && targetFile.isHidden()) {
@@ -92,6 +93,7 @@ public class FilenamePatternFilter implements FilenameFilter, Serializable {
      * Returns the pattern we are maching on
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return "matching on " + pattern + " caseSensitive=" + caseSensitive + " hiddenFiles=" + hiddenFiles;
     }

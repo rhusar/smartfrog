@@ -40,18 +40,18 @@ public interface JavaPackage extends Remote {
     requiredClasses extends OptionalVector;
     */
 
-    final String ATTR_REQUIRED_CLASSES="requiredClasses";
-    final String ATTR_REQUIRED_RESOURCES = "requiredResources";
-    final String ATTR_SOURCE = "source";
-    final String ATTR_URICLASSPATH = "uriClasspath";
-    final String ATTR_URICLASSPATHLIST = "uriClasspathList";
-    final String ATTR_CLASSPATH = "classpath";
-    final String ATTR_CLASSPATHLIST = "classpathList";
-    final String ATTR_USECODEBASE ="useCodebase";
+    String ATTR_REQUIRED_CLASSES="requiredClasses";
+    String ATTR_REQUIRED_RESOURCES = "requiredResources";
+    String ATTR_SOURCE = "source";
+    String ATTR_URICLASSPATH = "uriClasspath";
+    String ATTR_URICLASSPATHLIST = "uriClasspathList";
+    String ATTR_CLASSPATH = "classpath";
+    String ATTR_CLASSPATHLIST = "classpathList";
+    String ATTR_USECODEBASE ="useCodebase";
 
     /**
      * get the vector of uris
      * @return  vector
      */
-    public Vector getUriClasspathList() throws RemoteException;
+    Vector getUriClasspathList() throws RemoteException;
 }

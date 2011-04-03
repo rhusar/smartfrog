@@ -44,7 +44,7 @@ public interface ScriptResults {
    *
    * @return true if the results are ready, false otherwise
    */
-  public boolean resultsReady();
+  boolean resultsReady();
 
   /**
    * wait for the results to be ready for the timeout, and return them when they are
@@ -58,7 +58,7 @@ public interface ScriptResults {
    *
    * @throws SmartFrogException if the results are not ready in time
    */
-  public ComponentDescription waitForResults(long timeout) throws SmartFrogException;
+  ComponentDescription waitForResults(long timeout) throws SmartFrogException;
 
   /**
    * wait for the results to be ready for the timeout
@@ -67,40 +67,40 @@ public interface ScriptResults {
    * @throws SmartFrogException if the results are not ready in time
    */
 
-  public void waitFor(long timeout) throws SmartFrogException;
+  void waitFor(long timeout) throws SmartFrogException;
 
   /**
    * Script result will be verbose using system.out and system.err streams
    */
-  public void verbose();
+  void verbose();
 
   /**
    *
    * @throws SmartFrogException if called before results are ready
    * @return List list containing lines output to stderr by the command
    */
-  public List getStderr() throws SmartFrogException;
+  List getStderr() throws SmartFrogException;
 
   /**
    *
    * @throws SmartFrogException if called before results are ready
    * @return List list containing lines output to stdout by the command
    */
-  public List getStdout() throws SmartFrogException;
+  List getStdout() throws SmartFrogException;
 
   /**
    *
    * @throws SmartFrogException if called before results are ready
    * @return Integer exit code from command process
    */
-  public Integer getExitCode() throws SmartFrogException;
+  Integer getExitCode() throws SmartFrogException;
 
     /**
      * Get any exception from the invocation
      * @return the exception; may be null
      * @throws SmartFrogException
      */
-  public InvocationTargetException getException() throws SmartFrogException;
+  InvocationTargetException getException() throws SmartFrogException;
 
   /**
    * Gets the tail end of the stderr output
@@ -108,7 +108,7 @@ public interface ScriptResults {
    * @throws SmartFrogException if called before results are ready
    * @return String containing last <num> lines from stderr
    */
-  public String tailStderr(int num) throws SmartFrogException;
+  String tailStderr(int num) throws SmartFrogException;
 
   /**
    * Gets the tail end of the stdout output
@@ -116,6 +116,6 @@ public interface ScriptResults {
    * @throws SmartFrogException if called before results are ready
    * @return String containing last <num> lines from stdout
    */
-  public String tailStdout(int num) throws SmartFrogException;
+  String tailStdout(int num) throws SmartFrogException;
 
 }

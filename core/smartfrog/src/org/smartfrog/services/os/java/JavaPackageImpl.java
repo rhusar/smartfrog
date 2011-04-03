@@ -66,6 +66,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -258,6 +259,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      *
      * @return the classpath as a vector
      */
+    @Override
     public Vector getUriClasspathList() {
         return uriClasspathList;
     }

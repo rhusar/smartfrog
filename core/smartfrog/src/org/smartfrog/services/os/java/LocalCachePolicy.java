@@ -28,7 +28,7 @@ import java.rmi.RemoteException;
  *
  */
 public interface LocalCachePolicy extends LibraryCachePolicy {
-    
+
     /**
      * Form a local path, 
      * @param artifact
@@ -38,6 +38,6 @@ public interface LocalCachePolicy extends LibraryCachePolicy {
      * @throws SmartFrogException for other problems
 
      */
-    public String createLocalPath(SerializedArtifact artifact) throws RemoteException,SmartFrogException;
+    String createLocalPath(SerializedArtifact artifact) throws RemoteException, SmartFrogException;
 
 }

@@ -91,6 +91,7 @@ public class PasswordChecker extends PrimImpl implements Remote {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -131,8 +132,6 @@ public class PasswordChecker extends PrimImpl implements Remote {
                 throw new SmartFrogDeploymentException(ERROR_UNABLE_TO_COMPILE + regexp, e);
             }
         }
-
-
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.normal(sfCompleteName()));
 
     }

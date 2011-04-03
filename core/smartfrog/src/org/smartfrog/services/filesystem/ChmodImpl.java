@@ -72,6 +72,7 @@ public class ChmodImpl extends PrimImpl implements Chmod {
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
@@ -106,6 +107,7 @@ public class ChmodImpl extends PrimImpl implements Chmod {
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 

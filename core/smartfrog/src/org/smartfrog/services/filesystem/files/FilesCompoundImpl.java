@@ -27,7 +27,6 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -59,6 +58,7 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException    In case of Remote/network error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         //start all our children
         super.sfStart();
@@ -83,7 +83,7 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
         sfReplaceAttribute(Files.ATTR_FILELIST, fileVector);
         int count = checkAndUpdateFileCount();
         ComponentHelper helper = new ComponentHelper(this);
-        TerminationRecord record = TerminationRecord.normal("File count "+count, sfCompleteName());
+        TerminationRecord record = TerminationRecord.normal("File count " + count, sfCompleteName());
         helper.sfSelfDetachAndOrTerminate(record);
     }
 
@@ -168,11 +168,11 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
         int maxFilecount = sfResolve(ATTR_MAXFILECOUNT, -1, false);
 
         if ((filecount >= 0 && length != filecount)
-                || (minFilecount >= 0 && length < minFilecount)
-                || (maxFilecount >= 0 && length > maxFilecount)) {
+            || (minFilecount >= 0 && length < minFilecount)
+            || (maxFilecount >= 0 && length > maxFilecount)) {
             throw new SmartFrogDeploymentException(
                     FilesImpl.ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files "
-                            + "in the list [ " + filePath + "]", this);
+                    + "in the list [ " + filePath + "]", this);
         }
 
         if (filecount < 0) {
@@ -205,5 +205,5 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
         return filePath;
     }
 
-    
+
 }

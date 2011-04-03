@@ -92,9 +92,9 @@ public interface LocalFilestore extends FileUsingComponent {
      */
 
     FileEntry uploadNewFile(String prefix,
-                            String suffix,
-                            byte[] content,
-                            Object metadata)
+            String suffix,
+            byte[] content,
+            Object metadata)
             throws SmartFrogException, RemoteException;
 
 }

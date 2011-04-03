@@ -169,6 +169,7 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
      * @throws SmartFrogException execution failure
      * @throws RemoteException network trouble
      */
+    @Override
     public synchronized Object eval(String script) throws SmartFrogException,
             RemoteException {
         try {

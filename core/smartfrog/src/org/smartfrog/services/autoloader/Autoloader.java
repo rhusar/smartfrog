@@ -28,11 +28,11 @@ import java.io.InputStream;
 
 
 public class Autoloader extends CompoundImpl implements Compound {
-    final Reference prefixRef = new Reference(ReferencePart.here("URLPrefix"));
-    final Reference validLoadsRef = new Reference(ReferencePart.here("validLoads"));
-    final Reference postfixRef = new Reference(ReferencePart.here("URLPostfix"));
-    final Reference matchesRef = new Reference(ReferencePart.here("matches"));
-    final Reference languageRef = new Reference(ReferencePart.here("language"));
+    private final Reference prefixRef = new Reference(ReferencePart.here("URLPrefix"));
+    private final Reference validLoadsRef = new Reference(ReferencePart.here("validLoads"));
+    private final Reference postfixRef = new Reference(ReferencePart.here("URLPostfix"));
+    private final Reference matchesRef = new Reference(ReferencePart.here("matches"));
+    private final Reference languageRef = new Reference(ReferencePart.here("language"));
 
     private Vector validLoads = null;
     private String URLPrefix = "";
@@ -129,7 +129,7 @@ public class Autoloader extends CompoundImpl implements Compound {
         return super.sfResolve(name, index);
     }
 
-    boolean matchesName(String s) {
+    private boolean matchesName(String s) {
         Matcher m = matchesPattern.matcher(s);
         return m.matches();
     }

@@ -27,9 +27,6 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
  */
 public final class LibraryHelper {
 
-
-
-
     private LibraryHelper() {
 
     }

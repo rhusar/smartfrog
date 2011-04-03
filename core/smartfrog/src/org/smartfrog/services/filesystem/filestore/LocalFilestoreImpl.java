@@ -59,6 +59,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -74,6 +75,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         filestore.deleteAllEntries();
@@ -97,6 +99,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @throws SmartFrogException error while creating file
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public FileEntry createNewFile(String prefix, String suffix)
             throws SmartFrogException, RemoteException {
         try {
@@ -119,6 +122,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @throws RemoteException In case of network/rmi error
      */
 
+    @Override
     public FileEntry uploadNewFile(String prefix,
                                    String suffix,
                                    byte[] content,
@@ -142,6 +146,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @throws SmartFrogException error while deleting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public boolean delete(URI uri)
             throws SmartFrogException, RemoteException {
         return filestore.delete(uri);
@@ -155,6 +160,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @throws SmartFrogException error while lookup
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public FileEntry lookup(URI uri)
             throws SmartFrogException, RemoteException {
         return filestore.lookup(uri);

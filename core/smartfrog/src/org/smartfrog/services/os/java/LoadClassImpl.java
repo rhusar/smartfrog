@@ -86,6 +86,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         log = LogFactory.getOwnerLog(this);
@@ -255,6 +256,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         cleanup();
@@ -267,6 +269,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass, Condition {
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         try {
             loadResourcesAndClasses();

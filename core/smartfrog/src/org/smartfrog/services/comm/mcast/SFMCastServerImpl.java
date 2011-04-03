@@ -53,20 +53,20 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
     private MulticastSocket sock = null;
 
     /** SF cached Attribute - inetaddress. */
-    InetAddress address = null;
+    private InetAddress address = null;
     /** SF cached Attribute - port. */
-    int port = 64206;
+    private int port = 64206;
     /** Message. */
-    Object message = "Hola Mundo!";
+    private Object message = "Hola Mundo!";
     /** Thread object. */
-    Thread action = null;
+    private Thread action = null;
 
     /** Shows debug messages. */
     private boolean debug = true;
     /** String name for component used for debug messages. */
     private String myName = "SFMCastServerImpl";
     /** Flag indicating if server is started in root process or not. */
-    boolean onlyInRoot = true;
+    private boolean onlyInRoot = true;
 
     /**
      *Constructs the multicast server object.
@@ -297,23 +297,4 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
         }
       }
     }
-
-
-/*
-
-
-     class mcastServer implements Runnable {
-
-       public mcastServer() {
-
-       }
-
-
-
-       public static void main(String[] args) {
-
-       }
-     }
-
-*/
 }

@@ -1,32 +1,32 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.trace;
 
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 import java.util.HashMap;
 import java.util.Iterator;
-
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
@@ -34,7 +34,6 @@ import org.smartfrog.sfcore.logging.LogFactory;
  *
  */
 public final class BrowserEntry implements Entry {
-
 
 
     //public static String CRLF = "\r\n";
@@ -73,12 +72,12 @@ public final class BrowserEntry implements Entry {
      */
     public void add(String msg) {
         //msg format: system:demoA, DEPLOYED, 15:51:37.187 22/06/01,
-    //guijarro-j-5/15.144.25.153
+        //guijarro-j-5/15.144.25.153
         //add children
         //parseMsg(msg);
         //String msgDN = getMsgDN(msg);
         // check if DN is this component, if it is not looks for a clidren
-    // and pass msg
+        // and pass msg
         // if children doesn't exist, create it.
         // Only create 1 level in the hierarchy!
         //System.out.println("adding in: "+this.getDN()+"/"+msg);
@@ -86,13 +85,13 @@ public final class BrowserEntry implements Entry {
         if (this.getDN().equals(this.getMsgDN(msg))) {
             //this is the node referenced
             //System.out.println("   Node adding attributes to itself: "+
-        //this.getDN());
-            addAtribute(this.getMsgAction(msg), this.getMsgLocation(msg));
+            //this.getDN());
+            addAttribute(this.getMsgAction(msg), this.getMsgLocation(msg));
         } else {
             //check if this child exist
             //ROOT=ROOT:(System)
             //System.out.println(this.getDN()+"=?"+this.getParentDN(
-        //this.getMsgDN(msg)));
+            //this.getMsgDN(msg)));
             if (this.getDN().equals(this.getParentDN(this.getMsgDN(msg)))) {
                 // The node referenced is a children of this node
                 try {
@@ -101,50 +100,54 @@ public final class BrowserEntry implements Entry {
 
                         //Create new Child (as children were null)
                         BrowserEntry newChild = new BrowserEntry(this.
-                    getMsgDN(msg));
+                                getMsgDN(msg));
                         newChild.add(msg);
                         children.put(newChild.getName(), newChild);
 
                         //System.out.println("  Created Node (and Children): "+
-            //this.getDN());
+                        //this.getDN());
                     } else {
                         String nameChild = this.getRDN(this.getMsgDN(msg));
 
                         // Check if already exist, if not create it
                         //Only first level!!! So last position in MsgDN should
-            //be Name.
+                        //be Name.
                         try {
                             if (children.containsKey(nameChild)) {
                                 // Already exist so we add attributes to it.
-                                BrowserEntry newChild = (BrowserEntry)children.
-                    get(nameChild);
+                                BrowserEntry newChild = (BrowserEntry) children.
+                                        get(nameChild);
 
                                 if (newChild != null) {
                                     newChild.add(msg);
                                     children.put(newChild.getName(), newChild);
 
                                     //System.out.println("  Added attribs to
-                    //existing node: "+this.getDN());
+                                    //existing node: "+this.getDN());
                                     // To add more than one level... if it
-                    // doesn't exist, create...
+                                    // doesn't exist, create...
                                 }
                             } else {
                                 //Child didn't exist so, it is created and
-                //added attribs
+                                //added attribs
                                 BrowserEntry newChild = new BrowserEntry(this.
-                        getMsgDN(msg));
+                                        getMsgDN(msg));
                                 newChild.add(msg);
                                 children.put(newChild.getName(), newChild);
 
                                 //System.out.println("  Created Node and
-                //attribs: "+this.getDN());
+                                //attribs: "+this.getDN());
                             }
                         } catch (Exception ex) {
-                            if (sfLog().isErrorEnabled()) sfLog().error("Child " + nameChild +" not contained in " + this.getDN(),ex);
+                            if (sfLog().isErrorEnabled()) {
+                                sfLog().error("Child " + nameChild + " not contained in " + this.getDN(), ex);
+                            }
                         }
                     }
                 } catch (Exception ex) {
-                    if (sfLog().isErrorEnabled()) sfLog().error("Failed in adding new child:" + getDN(),ex);
+                    if (sfLog().isErrorEnabled()) {
+                        sfLog().error("Failed in adding new child:" + getDN(), ex);
+                    }
                 }
             } else {
                 // if it is for one or our children we pass the ball
@@ -152,11 +155,11 @@ public final class BrowserEntry implements Entry {
                 if (this.getMsgDN(msg).startsWith(this.getDN())) {
                     // Look for child and pass the hot potato
                     String nameChild = getMsgChild4Parent(this.getDN(),
-                            getMsgDN(msg));
+                                                          getMsgDN(msg));
 
                     //System
                     //System.out.println("hot patato to(namechild): "+
-            //nameChild);
+                    //nameChild);
                     try {
                         if (children == null) {
                             this.children = new HashMap();
@@ -164,21 +167,21 @@ public final class BrowserEntry implements Entry {
 
                         if (children.containsKey(nameChild)) {
                             BrowserEntry newChild = (BrowserEntry) children.
-                    get(nameChild);
+                                    get(nameChild);
 
                             if (newChild != null) {
                                 newChild.add(msg);
                                 children.put(newChild.getName(), newChild);
 
                                 //System.out.println("  Passed hot potato to
-                //grandchild...: "+newChild.getDN());
+                                //grandchild...: "+newChild.getDN());
                             }
                         } else {
                             // And for entries not ordered!
                             // Example you receive ROOT:system:foo before ROOT:
-                // system
+                            // system
                             BrowserEntry newChild = new BrowserEntry(this.
-                        getDN() +":" + nameChild);
+                                    getDN() + ":" + nameChild);
 
                             if (newChild != null) {
                                 newChild.add(msg);
@@ -188,10 +191,14 @@ public final class BrowserEntry implements Entry {
                             // ----
                         }
                     } catch (Exception ex) {
-                        if (sfLog().isErrorEnabled()) sfLog().error("xChild " + nameChild +" not contained in " + this.getDN(),ex);
+                        if (sfLog().isErrorEnabled()) {
+                            sfLog().error("xChild " + nameChild + " not contained in " + this.getDN(), ex);
+                        }
                     }
                 } else {
-                    if (sfLog().isErrorEnabled()) sfLog().error("ERROR: Trying to add: \n" + getMsgDN(msg) + " to \n" + this.getDN());
+                    if (sfLog().isErrorEnabled()) {
+                        sfLog().error("ERROR: Trying to add: \n" + getMsgDN(msg) + " to \n" + this.getDN());
+                    }
                 }
             }
         }
@@ -203,7 +210,7 @@ public final class BrowserEntry implements Entry {
      * @param  attrib  The feature to be added to the Atribute attribute
      * @param  value   The feature to be added to the Atribute attribute
      */
-    private void addAtribute(String attrib, String value) {
+    private void addAttribute(String attrib, String value) {
         if (attributes == null) {
             attributes = new HashMap();
 
@@ -230,13 +237,13 @@ public final class BrowserEntry implements Entry {
         System.out.println("    location:" + this.getMsgLocation(msg));
         System.out.println("    RDN:" + this.getRDN(this.getMsgDN(msg)));
         System.out.println("    ParentDN:" +
-            this.getParentDN(this.getMsgDN(msg)));
+                           this.getParentDN(this.getMsgDN(msg)));
         System.out.println("    getMsgChild4Parent(System): " +
-            getMsgChild4Parent(SmartFrogCoreKeys.SF_ROOT, getMsgDN(msg)));
+                           getMsgChild4Parent(SmartFrogCoreKeys.SF_ROOT, getMsgDN(msg)));
         System.out.println("    getMsgChild4Parent(System): " +
-            getMsgChild4Parent("ROOT:System", getMsgDN(msg)));
+                           getMsgChild4Parent("ROOT:System", getMsgDN(msg)));
         System.out.println("    getMsgChild4Parent(System:foo): " +
-            getMsgChild4Parent("ROOT:System:foo", getMsgDN(msg)));
+                           getMsgChild4Parent("ROOT:System:foo", getMsgDN(msg)));
 
         // -- end test block
     }
@@ -245,7 +252,7 @@ public final class BrowserEntry implements Entry {
      *  Gets the msgDN attribute of the BrowserEntry object
      *
      * @param  msg message
-     * @return      The msgDN value
+     * @return The msgDN value
      */
     private String getMsgDN(String msg) {
         String msgDN = msg.substring(0, msg.indexOf(','));
@@ -257,7 +264,7 @@ public final class BrowserEntry implements Entry {
      *  Gets the msgAction attribute of the BrowserEntry object
      *
      *@param  msg  message
-     *@return      The msgAction value
+     *@return The msgAction value
      */
     private String getMsgAction(String msg) {
         String msgAction = msg.substring(msg.indexOf(',') + 1, msg.length());
@@ -270,11 +277,11 @@ public final class BrowserEntry implements Entry {
      *  Gets the msgLocation attribute of the BrowserEntry object
      *
      *@param  msg  message
-     *@return      The msgLocation value
+     *@return The msgLocation value
      */
     private String getMsgLocation(String msg) {
-        String msgLocation = msg.substring(msg.lastIndexOf('[') ,
-                msg.length());
+        String msgLocation = msg.substring(msg.lastIndexOf('['),
+                                           msg.length());
 
         return msgLocation;
     }
@@ -283,7 +290,7 @@ public final class BrowserEntry implements Entry {
      *  Gets the rDN attribute of the BrowserEntry object
      *
      *@param  DN  dN attribute
-     *@return     The rDN value
+     *@return The rDN value
      */
     private String getRDN(String DN) {
         return DN.substring(DN.lastIndexOf(':') + 1, DN.length());
@@ -293,7 +300,7 @@ public final class BrowserEntry implements Entry {
      *  Gets the parentDN attribute of the BrowserEntry object
      *
      * @param  DN  dN attribute
-     * @return     The parentDN value
+     * @return The parentDN value
      */
     private String getParentDN(String DN) {
         if (DN.lastIndexOf(':') > 0) {
@@ -308,7 +315,7 @@ public final class BrowserEntry implements Entry {
      *
      *@param  parent  parentdN attribute
      *@param  fullDN    fulldN attribute
-     *@return           The msgChild4Parent value
+     *@return The msgChild4Parent value
      */
     private String getMsgChild4Parent(String parent, String fullDN) {
         if (fullDN.equals(parent)) {
@@ -317,7 +324,7 @@ public final class BrowserEntry implements Entry {
 
         if (fullDN.startsWith(parent)) {
             int index = fullDN.lastIndexOf(parent + ":") + parent.length() +
-                1;
+                        1;
             int indexEnd = fullDN.indexOf(":", index);
 
             if (indexEnd > index) {
@@ -338,7 +345,7 @@ public final class BrowserEntry implements Entry {
      *  Adds a feature to the Attributes attribute of the BrowserEntry object
      *
      *@param  msg  The feature to be added to the Attributes attribute
-     *@return      if added true else false
+     *@return if added true else false
      */
     private boolean addAttributes(String msg) {
         return false;
@@ -349,12 +356,12 @@ public final class BrowserEntry implements Entry {
      *
      * @param  DN     dN attribute
      * @param  value  value
-     * @return        if added true else false
+     * @return if added true else false
      */
     public boolean add(String DN, Object value) {
         // Is this the right node?
         throw new java.lang.UnsupportedOperationException(
-            "Method add(DN, value) not completed yet");
+                "Method add(DN, value) not completed yet");
 
         // add in present node
         //      if (value instanceof BrowserEntry) {
@@ -377,11 +384,11 @@ public final class BrowserEntry implements Entry {
      *  Removes a child.
      *
      * @param  DN  dN attribute
-     * @return     if removed true else false
+     * @return if removed true else false
      */
     public boolean remove(String DN) {
         throw new java.lang.UnsupportedOperationException(
-            "Method remove(DN) not yet implemented.");
+                "Method remove(DN) not yet implemented.");
 
         //return false;
     }
@@ -389,11 +396,11 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the leaf attribute of the BrowserEntry object.
      *
-     * @return    The leaf value
+     * @return The leaf value
      */
     public boolean isLeaf() {
         //if (children !=null) System.out.println("isLeaf() ["+this.getDN()+"]"
-    //+children.size());
+        //+children.size());
         if ((children != null) && (children.size() > 0)) {
             return false;
         } else {
@@ -404,7 +411,7 @@ public final class BrowserEntry implements Entry {
     /**
      * Gets the rDN attribute of the BrowserEntry object.
      *
-     * @return    rDN attribute
+     * @return rDN attribute
      */
     public String toString() {
         return this.getRDN();
@@ -413,7 +420,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Return a textual representation of the File object.
      *
-     * @return   textual representation of the File object
+     * @return textual representation of the File object
      */
     public String toStringAll() {
         //return parentDN+":"+name+"/"+childrenString()+"/"+attributesString();
@@ -436,7 +443,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Returns the childern string.
      *
-     * @return    children string
+     * @return children string
      */
     public String childrenString() {
         if (children != null) {
@@ -450,12 +457,12 @@ public final class BrowserEntry implements Entry {
     /**
      *  Returns the attributes string.
      *
-     * @return    attributes string
+     * @return attributes string
      */
     public String attributesString() {
         if (attributes != null) {
             //return (attributes.keySet().toString()+":"+attributes.values().
-        //toString());
+            //toString());
             return ("  attributes: " + dumpHashMap(attributes));
         } else {
             return "";
@@ -466,7 +473,7 @@ public final class BrowserEntry implements Entry {
      *  Dumps the hash map.
      *
      * @param  hashmap  hashmap
-     * @return         textual representation of hash map
+     * @return textual representation of hash map
      */
     public static String dumpHashMap(HashMap hashmap) {
         StringBuffer desc = new StringBuffer("");
@@ -477,7 +484,7 @@ public final class BrowserEntry implements Entry {
 
             if (obj instanceof BrowserEntry) {
                 desc.append("\n     \"" + key + "\" --> \"" +
-                    ((BrowserEntry) obj).toStringAll() + "\"");
+                            ((BrowserEntry) obj).toStringAll() + "\"");
             } else {
                 desc.append("\n     \"" + key + "\" --> \"" + obj + "\"");
             }
@@ -486,11 +493,11 @@ public final class BrowserEntry implements Entry {
         return new String(desc);
     }
 
-     /**
+    /**
      *  Dumps the hash map to array.
      *
      * @param  hashmap  hashmap
-     * @return         array of hash map
+     * @return array of hash map
      */
     public static Object[][] dumpHashMap2Array(HashMap hashmap) {
         Object[][] data = new Object[hashmap.size()][2];
@@ -513,7 +520,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the root attribute of the BrowserEntry object.
      *
-     * @return    The root value
+     * @return The root value
      */
     public String getRoot() {
         if ((parentDN == null)) {
@@ -530,7 +537,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the name attribute of the BrowserEntry object.
      *
-     * @return    The name value
+     * @return The name value
      */
     public String getName() {
         return name;
@@ -539,7 +546,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the rDN attribute of the BrowserEntry object.
      *
-     * @return    The rDN value
+     * @return The rDN value
      */
     public String getRDN() {
         return name;
@@ -548,7 +555,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the parentDN attribute of the BrowserEntry object.
      *
-     * @return    The parentDN value
+     * @return The parentDN value
      */
     public String getParentDN() {
         return parentDN;
@@ -557,7 +564,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the dN attribute of the BrowserEntry object.
      *
-     * @return    The dN value
+     * @return The dN value
      */
     public String getDN() {
         //System.out.println("name: "+ name + ", parentDN "+parentDN);
@@ -567,7 +574,7 @@ public final class BrowserEntry implements Entry {
             DN = name;
         } else {
             if (parentDN.startsWith("ROOT[") && parentDN.endsWith("]>")) {
-        // Special case for the SFTRACE added tag: ROOT[port]>
+                // Special case for the SFTRACE added tag: ROOT[port]>
                 DN = (parentDN + "" + name);
             } else {
                 DN = parentDN + ":" + name;
@@ -581,7 +588,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  To Get the children of the entry.
      *
-     * @return    The children value
+     * @return The children value
      */
     public HashMap getChildren() {
         return children;
@@ -591,7 +598,7 @@ public final class BrowserEntry implements Entry {
      *  Gets the child attribute of the BrowserEntry object.
      *
      * @param  index  index for searching
-     *@return        The child value
+     *@return The child value
      */
     public BrowserEntry getChild(int index) {
         // index starts with 0!
@@ -611,7 +618,7 @@ public final class BrowserEntry implements Entry {
                 Object key = i.next();
 
                 //System.out.println("Key/entry: "+key+"/"+this.getRDN()+"/"+
-        //count+"/"+index);
+                //count+"/"+index);
                 if (count == index) {
                     return (BrowserEntry) children.get(key);
                 }
@@ -628,7 +635,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  To Get the number of children of the entry.
      *
-     * @return    The childrenCount value
+     * @return The childrenCount value
      */
     public int getChildrenCount() {
         if (children != null) {
@@ -641,7 +648,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the attributes attribute of the BrowserEntry object.
      *
-     * @return    The attributes value
+     * @return The attributes value
      */
     public HashMap getAttributes() {
         return this.attributes;
@@ -650,7 +657,7 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the attributesArray attribute of the BrowserEntry object.
      *
-     * @return    The attributesArray value
+     * @return The attributesArray value
      */
     public Object[][] getAttributesArray() {
         if (this.attributes == null) {
@@ -667,12 +674,12 @@ public final class BrowserEntry implements Entry {
      *
      *@param  DN        dN attribute
      *@param  allLevel  bollean indicating to search 1 or all levels
-     *@return           The entry value
+     *@return The entry value
      */
     public BrowserEntry getEntry(String DN, boolean allLevel) {
         // Search 1 or all levels bellow this object
         throw new java.lang.UnsupportedOperationException(
-            "Method remove(DN) not yet implemented.");
+                "Method remove(DN) not yet implemented.");
 
         //return null;
     }
@@ -723,16 +730,16 @@ public final class BrowserEntry implements Entry {
 //        System.out.println("...Finished");
 //    }
 
-   /** Log for this class, created using class name*/
+    /** Log for this class, created using class name*/
     static LogSF sfLog = LogFactory.getLog(BrowserEntry.class);
 
     /**
      * Log for this class
-      * @return
+     * @return
      */
-   private LogSF sfLog(){
+    private LogSF sfLog() {
         return sfLog;
-   }
+    }
 }
 
 

@@ -30,5 +30,5 @@ public interface SFReadConfig extends Remote {
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public void readConfig() throws SmartFrogException, RemoteException;
+    void readConfig() throws SmartFrogException, RemoteException;
 }

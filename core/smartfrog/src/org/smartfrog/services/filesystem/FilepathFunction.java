@@ -34,6 +34,7 @@ public class FilepathFunction extends BaseOperator {
      * @param right child
      * @return result
      */
+    @Override
     protected Object doOperator(Object left, Object right) {
 
         PlatformHelper platform = PlatformHelper.getLocalPlatform();

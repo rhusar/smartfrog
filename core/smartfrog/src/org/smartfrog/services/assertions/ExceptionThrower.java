@@ -26,15 +26,15 @@ import java.rmi.Remote;
  */
 
 public interface ExceptionThrower extends Remote {
-    public String ATTR_CLASSNAME="classname";
+    String ATTR_CLASSNAME="classname";
 
-    public String ATTR_MESSAGE="message";
+    String ATTR_MESSAGE="message";
 
     /** {@value} */
-    public String ATTR_THROW_ON_STARTUP = "throwOnStartup";
+    String ATTR_THROW_ON_STARTUP = "throwOnStartup";
     /** {@value} */
-    public String ATTR_THROW_ON_DEPLOY = "throwOnDeploy";
+    String ATTR_THROW_ON_DEPLOY = "throwOnDeploy";
     /** {@value} */
-    public String ATTR_THROW_ON_PING = "throwOnPing";
+    String ATTR_THROW_ON_PING = "throwOnPing";
 
 }

@@ -119,16 +119,12 @@ public class ExceptionThrowerImpl extends PrimImpl implements ExceptionThrower {
             instance = e;
         } catch (NoSuchMethodException e) {
             instance = e;
-
         } catch (InstantiationException e) {
             instance = e;
-
         } catch (IllegalAccessException e) {
             instance = e;
-
         } catch (InvocationTargetException e) {
             instance = e;
-
         }
         if(instance instanceof RuntimeException) {
             throw (RuntimeException)instance;

@@ -126,6 +126,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -201,6 +202,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * {@inheritDoc}
      * @param status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if (thread != null) {
@@ -211,6 +213,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     /**
      * Runnable entry point to a background download
      */
+    @Override
     public void run() {
         try {
             Throwable caught=null;
@@ -647,6 +650,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      *
      * @return a serialized representation of the artifact's state.
      */
+    @Override
     public SerializedArtifact createSerializedArtifact() {
         SerializedArtifact pojo = new SerializedArtifact();
         pojo.project = project;
@@ -662,6 +666,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     /** 
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         StringBuilder b=new StringBuilder();
         b.append(project);

@@ -30,11 +30,11 @@ import java.rmi.RemoteException;
 /**
  * A component to log things to the history log
  * <pre>
-  HistoryLog extends Prim {
-     log TBD;
-     deployMessage "";
-     startMessage "";
-     terminateMessage "";
+ HistoryLog extends Prim {
+ log TBD;
+ deployMessage "";
+ startMessage "";
+ terminateMessage "";
  }
  </pre>
  */
@@ -42,9 +42,9 @@ import java.rmi.RemoteException;
 public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
 
 
-    public static final String ATTR_DEPLOY_MESSAGE="deployMessage";
-    public static final String ATTR_START_MESSAGE="startMessage";
-    public static final String ATTR_TERMINATE_MESSAGE="terminateMessage";
+    public static final String ATTR_DEPLOY_MESSAGE = "deployMessage";
+    public static final String ATTR_START_MESSAGE = "startMessage";
+    public static final String ATTR_TERMINATE_MESSAGE = "terminateMessage";
 
     public HistoryLogImpl() throws RemoteException {
     }
@@ -58,7 +58,7 @@ public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
      * @throws SmartFrogAssertionException
      */
     protected void log(String attribute) throws SmartFrogResolutionException, RemoteException, SmartFrogAssertionException {
-        String message=sfResolve(attribute,"",false);
+        String message = sfResolve(attribute, "", false);
         logMessage(message);
     }
 
@@ -70,24 +70,27 @@ public class HistoryLogImpl extends AbstractHistoryPrimImpl implements Remote {
      * @throws SmartFrogAssertionException
      */
     private void logMessage(String message) throws SmartFrogResolutionException, RemoteException, SmartFrogAssertionException {
-        if(message!=null && message.length()>0) {
+        if (message != null && message.length() > 0) {
             History history = resolveHistory();
             history.log(message);
             sfLog().info(message);
         }
     }
 
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         log(ATTR_DEPLOY_MESSAGE);
     }
 
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         log(ATTR_START_MESSAGE);
         queueForTermination("HistoryLog");
     }
 
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         try {

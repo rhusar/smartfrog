@@ -19,12 +19,11 @@
  */
 package org.smartfrog.services.assertions;
 
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
@@ -44,15 +43,16 @@ public interface TestBlock extends EventRegistration {
      * {@value}
      */
     String ATTR_STATUS = "status";
+    
     /**
      * {@value}
      */
     String ATTR_FAILED = "failed";
+    
     /**
      * {@value}
      */
     String ATTR_SUCCEEDED = "succeeded";
-
 
     /**
      * Timeout time in millis.
@@ -116,7 +116,6 @@ public interface TestBlock extends EventRegistration {
      * @throws SmartFrogException on other problems
      */
     TerminationRecord getStatus() throws RemoteException, SmartFrogException;
-
 
     /**
      * return the current action

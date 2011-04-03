@@ -50,6 +50,7 @@ public class TestInterruptedEvent extends LifecycleEvent {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getEventName() {
         return "TestInterruptedEvent";
     }

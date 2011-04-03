@@ -181,19 +181,19 @@ public class Fileset implements Serializable {
      * @throws SmartFrogException if something else went wrong
      */
     public static Fileset createFileset(Object component,
-                                        String filesAttribute,
-                                        String dirAttribute,
-                                        String patternAttribute,
-                                        String caseAttribute,
-                                        String hiddenAttribute)
+            String filesAttribute,
+            String dirAttribute,
+            String patternAttribute,
+            String caseAttribute,
+            String hiddenAttribute)
             throws SmartFrogException, RemoteException {
 
         return createFileset(component,
-                Reference.fromString(filesAttribute),
-                Reference.fromString(dirAttribute),
-                Reference.fromString(patternAttribute),
-                Reference.fromString(caseAttribute),
-                Reference.fromString(hiddenAttribute));
+                             Reference.fromString(filesAttribute),
+                             Reference.fromString(dirAttribute),
+                             Reference.fromString(patternAttribute),
+                             Reference.fromString(caseAttribute),
+                             Reference.fromString(hiddenAttribute));
     }
 
     /**
@@ -212,11 +212,11 @@ public class Fileset implements Serializable {
      * @throws SmartFrogException if something else went wrong
      */
     public static Fileset createFileset(Object component,
-                                        Reference filesAttribute,
-                                        Reference dirAttribute,
-                                        Reference patternAttribute,
-                                        Reference caseAttribute,
-                                        Reference hiddenAttribute)
+            Reference filesAttribute,
+            Reference dirAttribute,
+            Reference patternAttribute,
+            Reference caseAttribute,
+            Reference hiddenAttribute)
             throws SmartFrogException, RemoteException {
 
         Fileset result;
@@ -232,7 +232,7 @@ public class Fileset implements Serializable {
         } else {
             throw new SmartFrogResolutionException(
                     "Wrong object type. It does not implement Resolve() interfaces: "
-                            + component.getClass().getName());
+                    + component.getClass().getName());
         }
 
 
@@ -255,7 +255,7 @@ public class Fileset implements Serializable {
             }
 
             FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles,
-                    caseSensitive);
+                                                                     caseSensitive);
             result = new Fileset(baseDir, filter);
         }
         return result;
@@ -266,6 +266,7 @@ public class Fileset implements Serializable {
      * Returns a list of files in String format using the platform file separator.
      * @return String list of files separated by the platform's path separator.
      */
+    @Override
     public String toString() {
         String fileSetString = Arrays.toString(listFiles());
         fileSetString = fileSetString.substring(1, fileSetString.length() - 1);

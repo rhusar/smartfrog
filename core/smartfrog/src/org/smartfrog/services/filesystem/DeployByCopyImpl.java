@@ -37,6 +37,7 @@ public class DeployByCopyImpl extends CopyFileImpl implements CopyFile {
     public DeployByCopyImpl() throws RemoteException {
     }
 
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -51,6 +52,7 @@ public class DeployByCopyImpl extends CopyFileImpl implements CopyFile {
      *
      * @param status  TerminationRecord object
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if (shouldDelete && getToFile() != null) {

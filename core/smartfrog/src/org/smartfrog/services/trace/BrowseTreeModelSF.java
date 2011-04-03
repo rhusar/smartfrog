@@ -69,6 +69,7 @@ public class BrowseTreeModelSF implements TreeModel {
      *
      * @return    The root value
      */
+    @Override
     public Object getRoot() {
         //System.out.println("getRoot():"+entry);
         return entry;
@@ -81,11 +82,11 @@ public class BrowseTreeModelSF implements TreeModel {
      * @param  index   index
      * @return         The child value
      */
+    @Override
     public Object getChild(Object parent, int index) {
         if (parent instanceof BrowserEntry) {
             BrowserEntry auxEntry = (BrowserEntry) parent;
 
-            //System.out.println("getChild():["+index+"/"+parent+"]"+auxEntry.
         //getChild(index));
             return auxEntry.getChild(index);
         } else {
@@ -99,12 +100,11 @@ public class BrowseTreeModelSF implements TreeModel {
      * @param  parent  parent
      * @return         The childCount value
      */
+    @Override
     public int getChildCount(Object parent) {
         if (parent instanceof BrowserEntry) {
             BrowserEntry auxEntry = (BrowserEntry) parent;
 
-            //System.out.println("getChildCount():"+auxEntry.
-        //getChildrenCount());
             return auxEntry.getChildrenCount();
         } else {
             return 0;
@@ -117,10 +117,9 @@ public class BrowseTreeModelSF implements TreeModel {
      * @param  node  the node whose leaf attribute is returned
      * @return       The leaf value
      */
+    @Override
     public boolean isLeaf(Object node) {
         if (node instanceof BrowserEntry) {
-            //System.out.println("isLeaf():("+node+")"+"/"+((BrowserEntry)node)
-        //.isLeaf()+"/"+((BrowserEntry)node).toStringAll());
             return ((BrowserEntry) node).isLeaf();
         } else {
             return false;
@@ -166,6 +165,7 @@ public class BrowseTreeModelSF implements TreeModel {
      *
      * @see #removeTreeModelListener
      */
+    @Override
     public void addTreeModelListener(TreeModelListener l) {
         if ((l != null) && !listeners.contains(l)) {
             listeners.addElement(l);
@@ -180,6 +180,7 @@ public class BrowseTreeModelSF implements TreeModel {
      *
      * @see #addTreeModelListener
      */
+    @Override
     public void removeTreeModelListener(TreeModelListener l) {
         listeners.removeElement(l);
     }
@@ -198,6 +199,7 @@ public class BrowseTreeModelSF implements TreeModel {
      *
      * @return   textual representation of the File object
      */
+    @Override
     public String toString() {
         return entry.toStringAll();
     }

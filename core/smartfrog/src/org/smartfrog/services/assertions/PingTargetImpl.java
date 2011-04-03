@@ -19,11 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.assertions;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -50,9 +50,9 @@ public class PingTargetImpl extends PrimImpl implements PingTarget {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        target = sfResolve(ATTR_TARGET,(Prim)null,true);
+        target = sfResolve(ATTR_TARGET, (Prim) null, true);
         target.sfPing(this);
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,null,null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, null, null);
     }
 
     /**

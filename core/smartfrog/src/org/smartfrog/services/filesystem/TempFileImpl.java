@@ -53,6 +53,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         createOnDeploy = sfResolve(ATTR_CREATE_ON_DEPLOY, createOnDeploy, true);
@@ -106,6 +107,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
     }
 
 
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -123,6 +125,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         deleteFileIfNeeded();
@@ -133,6 +136,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      *
      * @return String filename
      */
+    @Override
     public String getFilename() {
         return getFile().toString();
     }

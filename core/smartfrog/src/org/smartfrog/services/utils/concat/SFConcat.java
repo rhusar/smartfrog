@@ -28,26 +28,26 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public interface SFConcat {
     /** Attribute name - concat. */
-    final String ATR_CONCAT = "concat";
+    String ATR_CONCAT = "concat";
     /** Attribute name - reference. */
-    final String ATR_REFERENCE = "reference";
+    String ATR_REFERENCE = "reference";
     /** Attribute name - creat reference. */
-    final String ATR_CREATE_REFERENCE = "createReference";
+    String ATR_CREATE_REFERENCE = "createReference";
     /** Attribute name - debug. */
-    final String ATR_DEBUG = "debug";
+    String ATR_DEBUG = "debug";
     /** Attribute name - string. */
-    final String ATR_STRING = "string";
+    String ATR_STRING = "string";
 
     /** References for attribute - concat. */
-    final Reference REF_CONCAT = new Reference(ATR_CONCAT);
+    Reference REF_CONCAT = new Reference(ATR_CONCAT);
     /** References for attribute - debug. */
-    final Reference REF_DEBUG = new Reference(ATR_DEBUG);
+    Reference REF_DEBUG = new Reference(ATR_DEBUG);
     /** References for attribute - string. */
-    final Reference REF_STRING = new Reference(ATR_STRING);
+    Reference REF_STRING = new Reference(ATR_STRING);
     /** References for attribute - reference. */
-    final Reference REF_REFERENCE = new Reference(
+    Reference REF_REFERENCE = new Reference(
                 ATR_REFERENCE);
     /** References for attribute - create reference. */
-    final Reference REF_CREATE_REFERENCE = new Reference(
+    Reference REF_CREATE_REFERENCE = new Reference(
                 ATR_CREATE_REFERENCE);
 }

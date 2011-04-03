@@ -38,12 +38,12 @@ public final class NoRemoteArtifactPolicy extends AbstractPolicy
         
     }
     
-    
     /**
      * Always return null from the operation
      * @param artifact
      * @return null, always.
      */
+    @Override
     public String createRemotePath(SerializedArtifact artifact) {
         return null;
     }
@@ -52,6 +52,7 @@ public final class NoRemoteArtifactPolicy extends AbstractPolicy
      * Get the description
      * @return a description of this policy
      */
+    @Override
     public String getDescription() {
         return "No Remote Artifacts";
     }

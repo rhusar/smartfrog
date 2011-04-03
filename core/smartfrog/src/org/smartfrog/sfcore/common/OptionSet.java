@@ -28,6 +28,7 @@ import java.io.LineNumberReader;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.processcompound.RootLocator;
 
 
 /**
@@ -103,7 +104,7 @@ public class OptionSet {
         "                   rootProcess:DUMP:::localhost:\n" +
         "\n" +
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +"\n" +
-        "    -p or -port: port where to locate/start the daemon (default 3800)." + "\n" +
+        "    -p or -port: port where to locate/start the daemon (default " + RootLocator.DEFAULT_RMI_PORT +")." + "\n" +
         "    -t (terminate): Terminate successfull deployments if one of the listed (with -a or -f) deployments failed." + "\n" +
         "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
         "    -d or -diagnostics: print information that might be helpful to diagnose or report problems." + "\n" +

@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.display.WindowUtilities;
+import org.smartfrog.sfcore.processcompound.RootLocator;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.parser.SFParser;
@@ -284,7 +285,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         StringBuffer message=new StringBuffer();
         String name = "error";
         String hostname = "localhost";
-        int port = 3800;
+        int port = RootLocator.DEFAULT_RMI_PORT;
         if (node instanceof Prim) {
             try {
                 Prim objPrim = ((Prim)node);

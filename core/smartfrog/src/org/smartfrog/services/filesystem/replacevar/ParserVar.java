@@ -124,7 +124,9 @@ public class ParserVar extends Thread {
                 // Proper termination of a component!
                 Runnable terminator = new Runnable() {
                     public void run() {
-                        if (log.isDebugEnabled()) log.debug("ReplaceVar terminated.");
+                        if (log.isDebugEnabled()) {
+                            log.debug("ReplaceVar terminated.");
+                        }
                         ((PrimImpl) sfObj).sfTerminate(termR);
                     }
                 };
@@ -137,7 +139,9 @@ public class ParserVar extends Thread {
             }
             //this.log("ReplaceVar terminated.",2);
         } else {
-            if (log.isDebugEnabled()) log.debug("ReplaceVar: Wrong component to terminate.");
+            if (log.isDebugEnabled()) {
+                log.debug("ReplaceVar: Wrong component to terminate.");
+            }
         }
     }
 
@@ -151,7 +155,7 @@ public class ParserVar extends Thread {
             } catch (Exception ex) {
                 if (log.isErrorEnabled()) {
                     log.error("ParserVar.detach (" + this.dataParser.getFileName() + "):" + ex.getMessage(),
-                            ex);
+                              ex);
                 }
             }
         }
@@ -161,33 +165,52 @@ public class ParserVar extends Thread {
     /**
      *  Main processing method for the RunProcess object
      */
+    @Override
     public void run() {
         status = "running";
         try {
             //this.log("Command Start: "+command,3);
             //this.log("RunProcessInfo > " + this.toString(), 5);
-            if (log.isDebugEnabled()) log.debug("Parsing > " + this.dataParser.getFileName() + " ");
+            if (log.isDebugEnabled()) {
+                log.debug("Parsing > " + this.dataParser.getFileName() + " ");
+            }
             ReplaceVar replaceVar = new ReplaceVar(dataParser.getFileName(), dataParser.getNewFileName(),
-                    false);
+                                                   false);
             //First: append
             replaceVar.append(dataParser.getDataAppend());
-            if (log.isDebugEnabled()) log.debug("Append. > " + dataParser.getFileName() + "");
+            if (log.isDebugEnabled()) {
+                log.debug("Append. > " + dataParser.getFileName() + "");
+            }
             //Second: replace
             replaceVar.setSetting(dataParser.getDataReplace());
-            if (log.isDebugEnabled()) log.debug("Replace. > " + dataParser.getFileName() + "");
+            if (log.isDebugEnabled()) {
+                log.debug("Replace. > " + dataParser.getFileName() + "");
+            }
             replaceVar.flush(); //This sould be handle in the component. REVIEW. TODO
-            if (log.isDebugEnabled()) log.debug("Finished Parsing > " + dataParser.getFileName() + "");
+            if (log.isDebugEnabled()) {
+                log.debug("Finished Parsing > " + dataParser.getFileName() + "");
+            }
             Thread.sleep(delay);
         } catch (Exception ex) {
-            if (log.isErrorEnabled()) log.error("Problem parsing > " + ex.getMessage() + "", ex);
+            if (log.isErrorEnabled()) {
+                log.error("Problem parsing > " + ex.getMessage() + "", ex);
+            }
         }
         finish();
         try {
-            if (dataParser.shouldDetach()) detach();
-            if (dataParser.shouldTerminate()) terminate();
-            if (log.isDebugEnabled()) log.debug("Terminating > " + dataParser.getFileName() + "");
+            if (dataParser.shouldDetach()) {
+                detach();
+            }
+            if (dataParser.shouldTerminate()) {
+                terminate();
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Terminating > " + dataParser.getFileName() + "");
+            }
         } catch (Exception e) {
-            if (log.isErrorEnabled()) log.error("Error during termination:" + e.getMessage() + "", e);
+            if (log.isErrorEnabled()) {
+                log.error("Error during termination:" + e.getMessage() + "", e);
+            }
         }
     }
 

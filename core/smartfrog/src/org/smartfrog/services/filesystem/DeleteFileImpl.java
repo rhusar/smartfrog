@@ -71,7 +71,7 @@ public class DeleteFileImpl extends FileUsingComponentImpl
         } catch (SecurityException e) {
             //failure is turned into a security problem; we catch it and make it meaningful
             throw new SmartFrogDeploymentException(
-                    "Security blocked the deletion of the file directories " + target,
+                    "Security blocked the deletion of the file " + target,
                     e,
                     this);
         }

@@ -40,5 +40,5 @@ public interface BulkPasswordProvider extends Remote {
      * @throws SmartFrogException If unable to get the password
      * @throws RemoteException in case of network or RMI error
      */
-    public String getPassword(String user, String domain) throws SmartFrogException, RemoteException;
+    String getPassword(String user, String domain) throws SmartFrogException, RemoteException;
 }

@@ -46,7 +46,7 @@ public interface RootLocator {
      *
      * @see #getRootProcessCompound
      */
-    public void setRootProcessCompound(ProcessCompound c)
+    void setRootProcessCompound(ProcessCompound c)
         throws SmartFrogException, RemoteException;
 
 
@@ -58,7 +58,7 @@ public interface RootLocator {
      * @throws SmartFrogException if failed to unbind
      *
      */
-    public void unbindRootProcessCompound()
+    void unbindRootProcessCompound()
         throws SmartFrogException, RemoteException;
 
 
@@ -76,7 +76,7 @@ public interface RootLocator {
      *
      * @see #setRootProcessCompound
      */
-    public ProcessCompound getRootProcessCompound(InetAddress host)
+    ProcessCompound getRootProcessCompound(InetAddress host)
         throws Exception;
 
     /**
@@ -96,6 +96,8 @@ public interface RootLocator {
      *
      * @see #setRootProcessCompound
      */
-    public ProcessCompound getRootProcessCompound(InetAddress hostAddress,
+    ProcessCompound getRootProcessCompound(InetAddress hostAddress,
         int portNum) throws Exception;
+    
+    int DEFAULT_RMI_PORT = 3800;
 }
