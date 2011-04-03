@@ -28,5 +28,4 @@ public interface FileExists extends Condition, FileIntf {
     /** Check on startup : {@value}*/
     String ATTR_CHECKONSTARTUP = "checkOnStartup";
 
-
 }

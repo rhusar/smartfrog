@@ -31,12 +31,12 @@ public interface StopResume {
     /**
      * Stops the component
      */
-    public void stop();
+    void stop();
 
     // method to resume
 
     /**
      *  Resumes the component.
      */
-    public void resume();
+     void resume();
 }

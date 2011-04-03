@@ -49,6 +49,7 @@ public class PropertyPasswordProvider extends PrimImpl implements PasswordProvid
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         property = sfResolve(ATTR_PROPERTY, "", true);
@@ -61,6 +62,7 @@ public class PropertyPasswordProvider extends PrimImpl implements PasswordProvid
      * @throws SmartFrogException If unable to get the password
      * @throws RemoteException in case of network or RMI error
      */
+    @Override
     public String getPassword() throws SmartFrogException, RemoteException {
 
         String value = System.getProperty(property);

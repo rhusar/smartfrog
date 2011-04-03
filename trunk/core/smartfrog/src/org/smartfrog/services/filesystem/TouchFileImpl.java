@@ -43,6 +43,7 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
     public TouchFileImpl() throws RemoteException {
     }
 
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -56,6 +57,7 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      * @throws SmartFrogException error while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -72,6 +74,7 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException for IO error
      */
+    @Override
     public void touch() throws RemoteException, SmartFrogException {
         //get the file
         String touchFile = getFile().getAbsolutePath();

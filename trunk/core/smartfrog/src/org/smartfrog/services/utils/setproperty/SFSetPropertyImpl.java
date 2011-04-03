@@ -58,6 +58,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
      * @throws SmartFrogDeploymentException In case of error while deployment
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized void sfDeployWith(Prim parent, Context cxt)
             throws SmartFrogDeploymentException, RemoteException {
         try {
@@ -113,6 +114,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,

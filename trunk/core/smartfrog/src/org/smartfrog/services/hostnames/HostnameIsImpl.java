@@ -37,6 +37,7 @@ public class HostnameIsImpl extends AbstractConditionPrim implements HostnameIs 
         refHostname = new Reference(ATTR_HOSTNAMES);
     }
 
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         Vector<String> hostnames = ListUtils.resolveStringList(this, refHostname, true);
         String actual = HostnameUtils.getLocalHostname();

@@ -1,40 +1,39 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.trace;
 
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.smartfrog.services.display.PrintMsgInt;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimHook;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Implements the trace component in SmartFrog System. It traces the lifecycle
@@ -86,6 +85,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * @throws SmartFrogException in case of error while deploying
      * @throws RemoteException in case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 
         super.sfDeploy();
@@ -95,7 +95,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                 localhost = SFProcess.getProcessCompound().sfDeployedHost();
             } catch (Exception ex) {
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error("sfTRACE: Exception deployment: " + ex.toString(),ex);
+                    sfLog().error("sfTRACE: Exception deployment: " + ex.toString(), ex);
                 }
             }
 
@@ -105,7 +105,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                         .toString();
             } catch (Exception ex) {
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error("sfTRACE: Exception deployment:" + ex.toString(),ex);
+                    sfLog().error("sfTRACE: Exception deployment:" + ex.toString(), ex);
                 }
             }
 
@@ -174,7 +174,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
             // TODO: Check
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error("sfTRACE: Exception(getUniqueID :" + ex.toString(),ex);
+                sfLog().error("sfTRACE: Exception(getUniqueID :" + ex.toString(), ex);
             }
             id = "defaultUniqueID";
         }
@@ -188,6 +188,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * @throws SmartFrogException in case of error in starting
      * @throws RemoteException in case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
     }
@@ -197,22 +198,23 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      *
      * @param r TerminationRecord object
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord r) {
         try {
             sfDeployHooks.removeHook(sfDeployTracer);
         } catch (Exception e) {
-            printMsg(" Couldn't remove all deploy hooks " + e,  new Date(System.currentTimeMillis()));
+            printMsg(" Couldn't remove all deploy hooks " + e, new Date(System.currentTimeMillis()));
         }
 
         try {
             sfStartHooks.removeHook(sfStartTracer);
         } catch (Exception e) {
-            printMsg(" Couldn't remove all start hooks " + e,  new Date(System.currentTimeMillis()));
+            printMsg(" Couldn't remove all start hooks " + e, new Date(System.currentTimeMillis()));
         }
         try {
             sfTerminateWithHooks.removeHook(sfTerminateWithTracer);
         } catch (Exception e) {
-            printMsg(" Couldn't remove terminate all hooks " + e,  new Date(System.currentTimeMillis()));
+            printMsg(" Couldn't remove terminate all hooks " + e, new Date(System.currentTimeMillis()));
         }
 
         super.sfTerminateWith(r);
@@ -264,10 +266,11 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * @param date termination date
      */
     private void printMsgTerminate(String msg, String terminationType, String terminationMsg, Date date) {
-        printMsgPhase(msg, "TERMINATED - "+terminationType+" (" + terminationMsg + ")", date);
+        printMsgPhase(msg, "TERMINATED - " + terminationType + " (" + terminationMsg + ")", date);
     }
 
-   SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd");
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd");
+
     /**
      * Prints message.
      *
@@ -275,7 +278,9 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * @param date date
      */
     private void printMsg(String msg, Date date) {
-        if (date == null) date =  new Date(System.currentTimeMillis());
+        if (date == null) {
+            date = new Date(System.currentTimeMillis());
+        }
         try {
             //counter++;
             if (verbose) {
@@ -288,22 +293,24 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                         msg = msg + ":" + rootLocatorPort;
                     }
                 }
-                msg = msg + ", [" +(dateFormatter.format(date)) + "]";
+                msg = msg + ", [" + (dateFormatter.format(date)) + "]";
             }
 
             if (printMsgImp == null) {
-                sfLog().out("[sfTRACE] "+msg);
+                sfLog().out("[sfTRACE] " + msg);
             } else {
                 try {
                     printMsgImp.printMsg(msg + "\n");
                 } catch (Exception ex) {
-                    if (sfLog().isErrorEnabled())
-                        sfLog().error("sfTRACE: "+ex, ex);
+                    if (sfLog().isErrorEnabled()) {
+                        sfLog().error("sfTRACE: " + ex, ex);
+                    }
                 }
             }
         } catch (Throwable th) {
-	    if (sfLog().isErrorEnabled())
-            sfLog().error("sfTRACE.printMsg " + th.toString(),th);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("sfTRACE.printMsg " + th.toString(), th);
+            }
         }
     }
 
@@ -311,20 +318,21 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * Utility inner class- deploy tracer
      */
     private class SfDeployTracer implements PrimHook {
-    /**
-     * sfHookAction for deploying
-     *
-     * @param prim prim component
-     * @param terminationRecord TerminationRecord object
-     *
-     * @throws SmartFrogException in case of any error
-     */
+        /**
+         * sfHookAction for deploying
+         *
+         * @param prim prim component
+         * @param terminationRecord TerminationRecord object
+         *
+         * @throws SmartFrogException in case of any error
+         */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
-            throws SmartFrogException {
+                throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());
-            try { prim.sfReplaceAttribute("sfTraceDeployLifeCycle",date);
-            } catch (RemoteException rex){
-                printMsg(rex.toString(),null);
+            try {
+                prim.sfReplaceAttribute("sfTraceDeployLifeCycle", date);
+            } catch (RemoteException rex) {
+                printMsg(rex.toString(), null);
             }
             printMsgDeploy(getDN(prim), date);
         }
@@ -334,21 +342,21 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * Utility inner class- start tracer
      */
     private class SfStartTracer implements PrimHook {
-    /**
-     * sfHookAction for starting
-     *
-     * @param prim prim component
-     * @param terminationRecord TerminationRecord object
-     *
-     * @throws SmartFrogException in case of any error
-     */
+        /**
+         * sfHookAction for starting
+         *
+         * @param prim prim component
+         * @param terminationRecord TerminationRecord object
+         *
+         * @throws SmartFrogException in case of any error
+         */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
-            throws SmartFrogException {
+                throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());
             try {
-                prim.sfReplaceAttribute("sfTraceStartLifeCycle",date);
-            } catch (RemoteException rex){
-                printMsg(rex.toString(),null);
+                prim.sfReplaceAttribute("sfTraceStartLifeCycle", date);
+            } catch (RemoteException rex) {
+                printMsg(rex.toString(), null);
             }
             printMsgStart(getDN(prim), date);
         }
@@ -358,21 +366,22 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
      * Utility inner class- terminate tracer
      */
     private class SfTerminateWithTracer implements PrimHook {
-    /**
-     * sfHookAction for terminating
-     *
-     * @param prim prim component
-     * @param terminationRecord TerminationRecord object
-     *
-     * @throws SmartFrogException in case of any error
-     */
+        /**
+         * sfHookAction for terminating
+         *
+         * @param prim prim component
+         * @param terminationRecord TerminationRecord object
+         *
+         * @throws SmartFrogException in case of any error
+         */
+        @Override
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
-            throws SmartFrogException {
+                throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());
             try {
-                prim.sfReplaceAttribute("sfTracesfTraceTerminateLifeCycle",date);
-            } catch (RemoteException rex){
-                printMsg(rex.toString(),null);
+                prim.sfReplaceAttribute("sfTracesfTraceTerminateLifeCycle", date);
+            } catch (RemoteException rex) {
+                printMsg(rex.toString(), null);
             }
             printMsgTerminate(getDN(prim), terminationRecord.errorType, terminationRecord.toString(), date);
         }

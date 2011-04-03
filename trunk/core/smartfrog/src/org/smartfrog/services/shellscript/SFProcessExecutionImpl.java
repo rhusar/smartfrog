@@ -60,6 +60,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
      * Reads SF description = initial configuration. Override this to read/set properties before we read ours, but
      * remember to call the superclass afterwards
      */
+    @Override
     public void readConfig() throws SmartFrogException, RemoteException {
         this.autoStart = sfResolve(ATR_AUTO_START, autoStart, false);
         this.name = sfResolve(ATR_NAME, name, false);
@@ -76,6 +77,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
      * @throws SmartFrogException deployment failure
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         readConfig();
@@ -84,7 +86,9 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
             runProcess = new RunProcessImpl(name, cmd, this);
             ((RunProcessImpl) runProcess).start();
             runProcess.waitForReady(200);
-            if (sfLog().isInfoEnabled()) sfLog().info("Process started");
+            if (sfLog().isInfoEnabled()) {
+                sfLog().info("Process started");
+            }
         }
     }
 
@@ -94,6 +98,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
      *
      * @param tr TerminationRecord object
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         try {
             if (sfLog().isDebugEnabled()) {
@@ -113,6 +118,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
      * @return the input stream connected to the normal output of the subprocess.
      */
 
+    @Override
     public InputStream getStdOutStream() {
         if (runProcess != null) {
             return runProcess.getInputStream();
@@ -127,6 +133,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
      *
      * @return the input stream connected to the error stream of the subprocess.
      */
+    @Override
     public InputStream getStdErrStream() {
         if (runProcess != null) {
             return runProcess.getErrorStream();
@@ -142,6 +149,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
      *
      * @return the output stream connected to the normal input of the subprocess.
      */
+    @Override
     public OutputStream getStdInpStream() {
         if (runProcess != null) {
             return runProcess.getOutputStream();
@@ -153,6 +161,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
     /**
      * Kill the process
      */
+    @Override
     public synchronized void kill() {
         if (runProcess == null) {
             return;
@@ -165,6 +174,7 @@ public class SFProcessExecutionImpl extends PrimImpl implements Prim, SFProcessE
     /**
      * Restarts the process
      */
+    @Override
     public void restart() throws SmartFrogException {
         kill();
         try {

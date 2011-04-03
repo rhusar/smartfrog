@@ -44,15 +44,18 @@ public class JavaxScriptingConditionImpl extends JavaxScriptingImpl implements J
         super.bindAttributes();
     }
 
+    @Override
     public boolean isCondition() {
         return condition;
     }
 
+    @Override
     public void setCondition(boolean condition) throws SmartFrogRuntimeException, RemoteException {
         this.condition = condition;
         sfReplaceAttribute(ATTR_CONDITION, condition);
     }
 
+    @Override
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         Object result = resolveAndEvaluate(ATTR_SF_CONDITION_RESOURCE, ATTR_SF_CONDITION_CODE);
         return isCondition();

@@ -42,9 +42,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  */
 public class DeployTreeModelSF  implements TreeModel {
     /** Log for this class, created using class name*/
-    LogSF sfLog = LogFactory.getLog("sfManagementConsole");
+    private LogSF sfLog = LogFactory.getLog("sfManagementConsole");
 
-    DeployEntry entry = null;
+    private DeployEntry entry = null;
 
     //Prim or Compound
     // Listeners for the tree model.

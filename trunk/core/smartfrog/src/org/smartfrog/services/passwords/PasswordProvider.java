@@ -40,6 +40,6 @@ public interface PasswordProvider extends Remote {
      * @throws SmartFrogException If unable to get the password
      * @throws RemoteException in case of network or RMI error
      */
-    public String getPassword() throws SmartFrogException, RemoteException;
+    String getPassword() throws SmartFrogException, RemoteException;
 
 }

@@ -1,24 +1,34 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
  */
 package org.smartfrog.services.display;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+
+import javax.swing.Timer;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -30,17 +40,6 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import javax.swing.Timer;
-
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 
 /**
  * Implements PrintMsgInt interface and prints the message remotely.
@@ -108,7 +107,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     private int width = 500;
     /**
      * Definition of component attribute - fontSize
-     * 
+     *
      * @value.
      */
     private int fontSize = 12;
@@ -122,19 +121,19 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     private boolean formatMsg = false;
     /**
      * Definition of component attribute - screenEditable.
-     * 
+     *
      * @value
      */
     private boolean screenEditable = true;
     /**
      * Definition of component attribute - terminateSFProcessOnExit.
-     * 
+     *
      * @value
      */
     boolean terminateSFProcessOnExit = false;
     /**
      * Definition of component attribute - ask save changes. Default:
-     * 
+     *
      * @value
      */
     private boolean askSaveChanges = false;
@@ -171,7 +170,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Constructs SFDisplay object
-     * 
+     *
      * @throws RemoteException
      *             If RMI or network error
      */
@@ -181,7 +180,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Deploys the component and reads the components attributes.
-     * 
+     *
      * @throws SmartFrogException
      *             if there is any error during reading attributes or deploying
      *             the components
@@ -203,7 +202,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
             }
             if (showSfProcessName) {
                 sfProcessName = sfResolve(SmartFrogCoreKeys.SF_PROCESS,
-                        sfProcessName, false);
+                                          sfProcessName, false);
 
                 if (sfProcessName == null) {
                     nameDisplay = "[" + "" + "] " + nameDisplay;
@@ -223,7 +222,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
                 display.setVisible(true);
                 display.setAskSaveChanges(askSaveChanges);
                 display.setMaxDisplayLines(maxDisplayLines);
-                
+
                 // Redirecting standard output:
                 // TODO: redirect to other objects here???
                 if (screenEditable) {
@@ -241,23 +240,23 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
                 }
                 if (autoClean) {
                     timerAutoClean = new Timer(cleanEveryNumSec * 1000,
-                            new ActionListener() {
-                                String storedMsg = "";
+                                               new ActionListener() {
+                                                   String storedMsg = "";
 
-                                public void actionPerformed(ActionEvent evt) {
-                                    storedMsg = "["
-                                            + (new SimpleDateFormat(
-                                                    "HH:mm:ss.SSS dd/MM/yy")
-                                                    .format(new Date(
-                                                            System
-                                                                    .currentTimeMillis())))
-                                            + "] ";
-                                    display.append("------------ Stored: "
-                                            + storedMsg + " ------------\n");
-                                    display.cleanScreen(autoSave,
-                                            directoryAutoSave);
-                                }
-                            });
+                                                   public void actionPerformed(ActionEvent evt) {
+                                                       storedMsg = "["
+                                                                   + (new SimpleDateFormat(
+                                                               "HH:mm:ss.SSS dd/MM/yy")
+                                                               .format(new Date(
+                                                                       System
+                                                                               .currentTimeMillis())))
+                                                                   + "] ";
+                                                       display.append("------------ Stored: "
+                                                                      + storedMsg + " ------------\n");
+                                                       display.cleanScreen(autoSave,
+                                                                           directoryAutoSave);
+                                                   }
+                                               });
                     timerAutoClean.start();
                     if (autoSave) {
                         display.resetScreenFile(directoryAutoSave);
@@ -287,7 +286,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Reads attributes defined in SF description. All attributes are optional.
-     * 
+     *
      * @throws SmartFrogResolutionException
      *             if it fails to read an attribute
      * @throws RemoteException
@@ -305,7 +304,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
             attribToRead = POSITION_DISPLAY;
             positionDisplay = sfResolve(POSITION_DISPLAY, positionDisplay,
-                    false);
+                                        false);
             attribToRead = TEXT_DISPLAY;
             text = sfResolve(TEXT_DISPLAY, text, false);
 
@@ -338,40 +337,40 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
             attribToRead = CLEAN_EVERY_NUM_SEC;
             cleanEveryNumSec = sfResolve(CLEAN_EVERY_NUM_SEC, cleanEveryNumSec,
-                    false);
+                                         false);
 
             attribToRead = DIRECTORY_AUTO_SAVE;
             directoryAutoSave = sfResolve(DIRECTORY_AUTO_SAVE,
-                    directoryAutoSave, false);
+                                          directoryAutoSave, false);
 
             attribToRead = MAX_DISPLAY_LINES;
             maxDisplayLines = sfResolve(MAX_DISPLAY_LINES, maxDisplayLines,
-                    false);
+                                        false);
 
             attribToRead = SHOW_IP;
             showIP = sfResolve(SHOW_IP, showIP, false);
 
             attribToRead = SHOW_SFPROCESSNAME;
             showSfProcessName = sfResolve(SHOW_SFPROCESSNAME,
-                    showSfProcessName, false);
+                                          showSfProcessName, false);
 
             attribToRead = TERMINATE_SFPROCESS_ON_EXIT;
             terminateSFProcessOnExit = sfResolve(TERMINATE_SFPROCESS_ON_EXIT,
-                    terminateSFProcessOnExit, false);
+                                                 terminateSFProcessOnExit, false);
         } catch (SmartFrogResolutionException e) {
             System.err.println("Failed to read optional attribute: "
-                    + attribToRead + "Exception:" + e.getMessage());
+                               + attribToRead + "Exception:" + e.getMessage());
             throw e;
         } catch (RemoteException e) {
             System.err.println("Failed to read optional attribute: "
-                    + attribToRead + "Exception:" + e.getMessage());
+                               + attribToRead + "Exception:" + e.getMessage());
             throw e;
         }
     }
 
     /**
      * Terminates the component
-     * 
+     *
      * @param t
      *            Object having termination description
      */
@@ -384,8 +383,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
                 System.setIn(sysIn);
             }
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled())
+            if (sfLog().isErrorEnabled()) {
                 sfLog().error("Error in SFDisplay.sfTerminateWith():" + e, e);
+            }
         }
 
         try {
@@ -401,7 +401,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Sets the positionDisplay attribute of the SFDisplay object
-     * 
+     *
      * @param positionDisplay
      *            The new positionDisplay value
      * @param window
@@ -415,7 +415,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Interface method from interface PrintMsgInt.
-     * 
+     *
      * @param msg
      *            Message to be displayed
      */
@@ -434,8 +434,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
             try {
                 printMsgImp.printMsg(msg + "");
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled())
+                if (sfLog().isErrorEnabled()) {
                     sfLog().error(ex, ex);
+                }
             }
         } else {
             // System.out.println("" + msg);
@@ -444,7 +445,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Prefixes token "ERR" with the message.
-     * 
+     *
      * @param msg
      *            Error Message
      */
@@ -463,8 +464,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
             try {
                 printMsgImp.printMsg(msg + "");
             } catch (Exception ex) {
-                if (sfLog().isErrorEnabled())
+                if (sfLog().isErrorEnabled()) {
                     sfLog().error(ex, ex);
+                }
             }
         } else {
             // System.out.println("" + msg);
@@ -474,7 +476,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     /**
      * Formats the message by putting time stamp in HH:mm:ss.SSS dd/MM/yy format
      * before the message.
-     * 
+     *
      * @param msg
      *            Message
      * @return Formatted message
@@ -483,9 +485,9 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
         // msg = msg + ", [" + (new SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy").
         // format(new Date(System.currentTimeMillis()))) + "]";
         msg = "["
-                + (new SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy")
-                        .format(new Date(System.currentTimeMillis()))) + "] "
-                + msg;
+              + (new SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy")
+                .format(new Date(System.currentTimeMillis()))) + "] "
+              + msg;
 
         // msg = msg + " / " + getSfProcessName();
         // msg = msg + " / " + localhost.toString();
@@ -496,7 +498,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Gets the outputStream attribute of the SFDisplay object
-     * 
+     *
      * @return The outputStream value
      */
     public OutputStream getOutputStream() {
@@ -509,7 +511,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Gets the errorStream attribute of the SFDisplay object
-     * 
+     *
      * @return The errorStream value
      */
     public OutputStream getErrorStream() {
@@ -520,7 +522,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
     /**
      * Gets the inputStream attribute of the SFDisplay object
-     * 
+     *
      * @return The inputStream value
      */
     public InputStream getInputStream() {

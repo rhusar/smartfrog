@@ -33,16 +33,16 @@ public interface LoadPropertyFile extends FileUsingComponent {
      resource extends OptionalString;
      */
 
-     String ATTR_RESOURCE="resource";
+    String ATTR_RESOURCE = "resource";
     /**
      required flag; you can set this to false for optional property loads
      required extends Boolean;
      */
 
-    String ATTR_REQUIRED="required";
+    String ATTR_REQUIRED = "required";
 
     /**
      * {@value}
      */
-    String ATTR_PROPERTIES="properties";
+    String ATTR_PROPERTIES = "properties";
 }

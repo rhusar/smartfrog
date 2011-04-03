@@ -33,20 +33,20 @@ public interface LifecycleTester extends Remote {
     /**
      * {@value}
      */
-    public static final String ATTR_TERMINATE_BEFORE_DEPLOY = "terminateBeforeDeploy";
+    String ATTR_TERMINATE_BEFORE_DEPLOY = "terminateBeforeDeploy";
 
     /**
      * {@value}
      */
-    public static final String ATTR_TERMINATE_BEFORE_START = "terminateBeforeStart";
+    String ATTR_TERMINATE_BEFORE_START = "terminateBeforeStart";
 
     /**
      * {@value}
      */
-    public static final String ATTR_PING_BEFORE_DEPLOY = "pingBeforeDeploy";
+    String ATTR_PING_BEFORE_DEPLOY = "pingBeforeDeploy";
 
     /**
      * {@value}
      */
-    public static final String ATTR_PING_BEFORE_START = "pingBeforeStart";
+    String ATTR_PING_BEFORE_START = "pingBeforeStart";
 }

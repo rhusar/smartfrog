@@ -19,12 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.assertions;
 
+import java.rmi.Remote;
+
 /**
  * Created 15-Aug-2008 14:35:49
  */
 
 
-public interface PingTarget {
+public interface PingTarget extends Remote {
 
     String ATTR_TARGET = "target";
 }

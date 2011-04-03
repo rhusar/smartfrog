@@ -50,36 +50,36 @@ public interface Library extends FileUsingComponent {
      */
     String ATTR_CACHE_DIR = "cacheDir";
 
-    
+
     /**
      * {@value}
      */
     //String ATTR_FLATTEN = "flatten";
-	
+
     /**
      * Name of class implementing local cache policy
      */
-    String ATTR_LOCAL_CACHE_POLICY ="localCachePolicy";
-    
+    String ATTR_LOCAL_CACHE_POLICY = "localCachePolicy";
+
     /**
      * Name of class implementing remote cache policy
      */
-    String ATTR_REMOTE_CACHE_POLICY ="remoteCachePolicy";
-    
+    String ATTR_REMOTE_CACHE_POLICY = "remoteCachePolicy";
+
     /**
      * Determine the absolute path of an artifact in the local library cache. 
      * @return the path to the artifact. It may or may not exist. 
      * @throws RemoteException
      */
-	public String determineArtifactPath(SerializedArtifact artifact)
-        throws RemoteException,SmartFrogException;
-    
+    String determineArtifactPath(SerializedArtifact artifact)
+            throws RemoteException, SmartFrogException;
+
     /**
      * Determine the relative path of an artifact in the current policy
      * This is not an absolute URL, as there may be a list of full URLs to work with. 
      * @return the path to the artifact. It may or may not exist. 
      * @throws RemoteException
      */
-    public String determineArtifactRelativeURLPath(SerializedArtifact artifact)
-        throws RemoteException,SmartFrogException;
+    String determineArtifactRelativeURLPath(SerializedArtifact artifact)
+            throws RemoteException, SmartFrogException;
 }

@@ -171,7 +171,8 @@ public final class FileSystem {
     }
 
     /**
-     * recursive directory deletion. If handed a file, will delete that.
+     * Recursive directory deletion -deletes the directory too. 
+     * If handed a file,it  will delete that.
      *
      * @param dir directory
      */

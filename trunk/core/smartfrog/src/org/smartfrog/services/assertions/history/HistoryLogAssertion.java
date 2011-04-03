@@ -40,12 +40,13 @@ public class HistoryLogAssertion extends AbstractHistoryPrimImpl implements Remo
      * @throws SmartFrogException
      * @throws RemoteException
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        String message=sfResolve(ATTR_MESSAGE,"",true);
-        String errorText=sfResolve(ATTR_ERRORTEXT,(String)null,false);
+        String message = sfResolve(ATTR_MESSAGE, "", true);
+        String errorText = sfResolve(ATTR_ERRORTEXT, (String) null, false);
         History history = resolveHistory();
-        history.assertEventFound(message,true, errorText);
+        history.assertEventFound(message, true, errorText);
         queueForTermination("HistoryLogAssertion");
     }
 

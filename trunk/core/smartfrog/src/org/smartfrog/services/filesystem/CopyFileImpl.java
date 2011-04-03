@@ -76,6 +76,7 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         copyOnDeploy = sfResolve(ATTR_COPY_ON_DEPLOY, copyOnDeploy, true);
@@ -147,6 +148,7 @@ public class CopyFileImpl extends CompoundImpl implements CopyFile, Compound {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         Throwable thrown = null;

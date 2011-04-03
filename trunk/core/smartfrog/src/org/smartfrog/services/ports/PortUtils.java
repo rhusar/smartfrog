@@ -21,15 +21,14 @@ package org.smartfrog.services.ports;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.utils.Spinner;
-import org.smartfrog.sfcore.utils.TimedOutIOException;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.net.InetAddress;
-import java.net.ConnectException;
 
 /**
  * Created 28-May-2008 15:22:20
@@ -64,7 +63,7 @@ public class PortUtils {
             }
         }
     }
-    
+
     /**
      * probe a port for being open
      *
@@ -77,12 +76,12 @@ public class PortUtils {
         InetSocketAddress address = new InetSocketAddress(hostname, port);
         checkPort(address, connectTimeout);
     }
-    
+
 
     /**
      * Probe a port for being open.
      * DNS and connect failures are handled by sleeping and trying again, up to the end of the connectTimeout period.
-     *  
+     *
      * @param address        address to check
      * @param connectTimeout timeout in milliseconds
      * @throws IOException failure to connect, including timeout
@@ -94,7 +93,7 @@ public class PortUtils {
         do {
             try {
                 //check for and handle a repeat cycle
-                if(!firstRun) {
+                if (!firstRun) {
                     spinner.sleep();
                 } else {
                     firstRun = false;
@@ -104,15 +103,14 @@ public class PortUtils {
             } catch (SecurityException e) {
                 throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
             } catch (SocketTimeoutException ste) {
-                throw (SocketTimeoutException)new SocketTimeoutException("Timeout connecting to "+ address).initCause(ste);
+                throw (SocketTimeoutException) new SocketTimeoutException("Timeout connecting to " + address).initCause(ste);
             } catch (UnknownHostException unknownHost) {
                 //DNS could still catch up, so retry
                 spinner.setLastThrown(unknownHost);
             } catch (ConnectException connectionRefused) {
                 //connection failure
                 spinner.setLastThrown(connectionRefused);
-            }
-            finally {
+            } finally {
                 FileSystem.close(socket);
                 socket = null;
             }
@@ -128,7 +126,7 @@ public class PortUtils {
     public static boolean isLocalPortOpen(int port, int connectTimeout) {
         InetSocketAddress localPort = new InetSocketAddress("localhost", port);
         try {
-            checkPort(localPort,connectTimeout);
+            checkPort(localPort, connectTimeout);
             return true;
         } catch (IOException e) {
             return false;

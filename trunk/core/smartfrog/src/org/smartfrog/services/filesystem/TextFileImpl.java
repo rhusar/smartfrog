@@ -45,6 +45,7 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
      * @throws SmartFrogException error while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         //now write the string value if needed.

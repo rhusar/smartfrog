@@ -22,18 +22,17 @@ package org.smartfrog.services.assertions.events;
 import org.smartfrog.services.assertions.TestFailureException;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 import org.smartfrog.sfcore.workflow.eventbus.EventSink;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.StartedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
@@ -126,7 +125,7 @@ public class TestEventSink implements EventSink {
     public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException {
         if (!(application instanceof EventRegistration)) {
             throw new SmartFrogRuntimeException(ERROR_WRONG_TYPE
-                    + application.getClass(), application);
+                                                + application.getClass(), application);
         }
         subscribe((EventRegistration) application);
     }
@@ -301,7 +300,7 @@ public class TestEventSink implements EventSink {
             if (event == null) {
                 return null;
             }
-            if(event instanceof TestInterruptedEvent) {
+            if (event instanceof TestInterruptedEvent) {
                 throw new InterruptedException();
             }
             isNotInstance = !clazz.isInstance(event);
@@ -317,6 +316,7 @@ public class TestEventSink implements EventSink {
      * @param event the received event
      * @throws RemoteException if the event is not a LifecyleEvent
      */
+    @Override
     public void event(Object event) throws RemoteException {
         if (!(event instanceof LifecycleEvent)) {
             throw new RemoteException("Only instances of LifecycleEvent are supported");
@@ -378,7 +378,7 @@ public class TestEventSink implements EventSink {
             invokeStart();
         } catch (SmartFrogLifecycleException e) {
             Object termRec;
-            TerminationRecord status=null;
+            TerminationRecord status = null;
             try {
                 termRec = app.sfResolveHere("sfTerminateWith", false);
                 if (termRec != null && termRec instanceof TerminationRecord) {
@@ -389,12 +389,12 @@ public class TestEventSink implements EventSink {
             } catch (Exception e1) {
                 status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
             }
-            TerminatedEvent te=new TerminatedEvent(app,status);
-            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,te);
+            TerminatedEvent te = new TerminatedEvent(app, status);
+            throw new TestFailureException(ERROR_PREMATURE_TERMINATION, te);
         } catch (RemoteException e) {
             throw new TestFailureException(ERROR_PREMATURE_TERMINATION,
-                    new TerminatedEvent(app,
-                        TerminationRecord.abnormal("termination during startup", appNameRef, e)));
+                                           new TerminatedEvent(app,
+                                                               TerminationRecord.abnormal("termination during startup", appNameRef, e)));
         }
         TimeoutTracker timedout = new TimeoutTracker(timeout);
         LifecycleEvent event;
@@ -423,10 +423,10 @@ public class TestEventSink implements EventSink {
      */
     public LifecycleEvent runTestsToCompletion(long startupTimeout, long executeTimeout)
             throws SmartFrogException, InterruptedException, RemoteException {
-        if(getApplication().sfIsTerminated()) {
+        if (getApplication().sfIsTerminated()) {
             //we are (somehow) already terminated, so report this as a problem
-            LifecycleEvent termEvent=new TerminatedEvent(getApplication(),
-                    TerminationRecord.abnormal("Test component has already terminated",getApplication().sfCompleteName()));
+            LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
+                                                           TerminationRecord.abnormal("Test component has already terminated", getApplication().sfCompleteName()));
             return termEvent;
         }
         try {
@@ -435,7 +435,7 @@ public class TestEventSink implements EventSink {
             //this is caused by a failure to start the application, which invariably triggers
             //termination of one kind or another
             LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
-                    TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
+                                                           TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
             return termEvent;
         } catch (TestFailureException tfe) {
             //startup failed and was intercepted during startup
@@ -449,7 +449,7 @@ public class TestEventSink implements EventSink {
                 throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
             }
         } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
-                && !timedout.isTimedOut());
+                 && !timedout.isTimedOut());
         return event;
     }
 
@@ -481,6 +481,7 @@ public class TestEventSink implements EventSink {
             this.owner = owner;
         }
 
+        @Override
         public void run() {
             try {
                 owner.unsubscribe();

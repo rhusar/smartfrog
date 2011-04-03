@@ -35,5 +35,5 @@ public interface PrintMsgInt extends Remote {
      *@param  msg Message to be printed
      *@throws  RemoteException  If any network or RMI error
      */
-    public void printMsg(String msg) throws RemoteException;
+    void printMsg(String msg) throws RemoteException;
 }

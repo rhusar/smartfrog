@@ -25,13 +25,14 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 public class TestTimeoutException extends SmartFrogException {
 
-    long timeout;
+    public final long timeout;
+
     public TestTimeoutException(String message) {
-        super(message);
+        this(message, 0);
     }
 
     public TestTimeoutException(String message, long timeout) {
-        super(message+"\n - time limit: "+timeout);
-        this.timeout=timeout;
+        super(message + "\n - time limit: " + timeout);
+        this.timeout = timeout;
     }
 }

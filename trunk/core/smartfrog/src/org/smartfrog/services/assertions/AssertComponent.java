@@ -55,6 +55,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * @throws RemoteException
      * @throws SmartFrogException
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         String result = check();
         if (result != null) {
@@ -414,6 +415,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         super.sfPing(source);
@@ -442,6 +444,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();

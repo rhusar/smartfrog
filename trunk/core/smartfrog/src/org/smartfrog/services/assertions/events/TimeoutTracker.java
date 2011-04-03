@@ -44,6 +44,6 @@ public final class TimeoutTracker {
      * @return true iff the current time is greater than th end time,
      */
     public boolean isTimedOut() {
-        return delay>=0 && System.currentTimeMillis() > endtime;
+        return delay >= 0 && System.currentTimeMillis() > endtime;
     }
 }

@@ -56,6 +56,7 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         resolveAttributes();
@@ -68,6 +69,7 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         SmartFrogThread.requestThreadTermination(watcher);
@@ -114,8 +116,9 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException    network problems
      */
+    @Override
     public void directoryChanged(List<File> current, List<File> added, List<File> removed)
-        throws SmartFrogException,RemoteException {
+            throws SmartFrogException, RemoteException {
         for (File file : added) {
             sfLog().info("Added " + file);
         }
@@ -152,6 +155,7 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             final boolean repeating = interval > 0;
             do {

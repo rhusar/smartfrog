@@ -1,24 +1,36 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.utils.logtofile;
+
+import org.smartfrog.services.display.PrintErrMsgInt;
+import org.smartfrog.services.display.PrintMsgInt;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,19 +40,6 @@ import java.io.PrintStream;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-
-import org.smartfrog.services.display.PrintErrMsgInt;
-import org.smartfrog.services.display.PrintMsgInt;
 
 /**
  * Class used to log system.out and system.err messages into a file.
@@ -59,7 +58,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     String fileName;
     /** Reference for file extension. */
     Reference fileExtensionRef = new Reference(
-                "fileExtension");
+            "fileExtension");
     /** String name for file extension. */
     String fileExtension;
     /** Reference for path. */
@@ -70,7 +69,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     String fullFileName;
     /** Reference for logOnlyInRootProcess. */
     Reference logOnlyInRootProcessRef = new Reference(
-                "logOnlyInRootProcess");
+            "logOnlyInRootProcess");
     /** Flag indicating whether logOnlyInRootProcess or not. */
     boolean logOnlyInRootProcess;
     /** Reference for processName. */
@@ -127,8 +126,9 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      * @throws SmartFrogException in case of error while deploying
      * @throws RemoteException if there is any newwork or remote error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
-    RemoteException {
+            RemoteException {
         super.sfDeploy();
 
         // get path , filename & fileExtension
@@ -138,7 +138,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
         useDate = sfResolve(useDateRef, false, false);
         useTime = sfResolve(useTimeRef, false, false);
         logOnlyInRootProcess = sfResolve(logOnlyInRootProcessRef, true,
-                                                                 false);
+                                         false);
         processName = sfResolve(processNameRef, "", false);
 
         // create the file & redirect the outputs
@@ -151,9 +151,10 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
                 detachAndTerminate = true;
             }
         } catch (Throwable t) { // catch all throwable ??
-            SmartFrogLifecycleException.sfDeploy(t.getMessage(),t,this);
+            SmartFrogLifecycleException.sfDeploy(t.getMessage(), t, this);
         }
     }
+
     /**
      * Life cycle method to start the component.
      * @throws SmartFrogException if there is any error while reading the
@@ -162,15 +163,17 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      * @throws SmartFrogException in case of error while starting
      * @throws RemoteException if there is any newwork or remote error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
-    RemoteException {
+            RemoteException {
         super.sfStart();
         if (detachAndTerminate) {
             termR = TerminationRecord.normal("Not deployed in rootProcess", this.sfCompleteName());
-            TerminatorThread terminator = new TerminatorThread(this,termR).detach();
+            TerminatorThread terminator = new TerminatorThread(this, termR).detach();
             terminator.start();
         }
     }
+
     /**
      * Creates the file using attributes.
      *
@@ -235,7 +238,9 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
             } catch (Exception e) {
                 System.setOut(originalSysOut);
                 System.setErr(originalSysErr);
-                if (sfLog().isErrorEnabled()) sfLog().error("Error in SFDisplay.sfDeploy():" + e,e);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("Error in SFDisplay.sfDeploy():" + e, e);
+                }
             }
         }
     }
@@ -246,6 +251,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      *
      *  @param t TerminationRecord object
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord t) {
         if (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)) {
             try {
@@ -263,6 +269,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      *
      *@param  msg  message
      */
+    @Override
     public synchronized void printMsg(String msg) {
     }
 
@@ -270,6 +277,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      * Method of interface PrintErrMsgInt
      *@param  msg  error message
      */
+    @Override
     public synchronized void printErrMsg(String msg) {
     }
 
@@ -278,10 +286,10 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      * HH:mm:ss.SSS dd/MM/yy format.
      *
      *@param  msg  The message to be logged
-     *@return  The formatted message
+     *@return The formatted message
      */
     private String formatMsg(String msg) {
-        msg = "[" +(dateFormat.format(new Date(System.currentTimeMillis()))) + "] " + msg;
+        msg = "[" + (dateFormat.format(new Date(System.currentTimeMillis()))) + "] " + msg;
         return msg;
     }
 
@@ -290,7 +298,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     /**
      *  Gets the outputStream attribute of the SFDisplay object
      *
-     *@return    The outputStream value
+     *@return The outputStream value
      */
     public OutputStream getOutputStream() {
         if (this.logFile != null) {
@@ -303,7 +311,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     /**
      *  Gets the errorStream attribute of the SFDisplay object
      *
-     *@return    The errorStream value
+     *@return The errorStream value
      */
     public OutputStream getErrorStream() {
         return newOut;
@@ -312,7 +320,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     /**
      *  Gets the inputStream attribute of the SFDisplay object
      *
-     *@return    The inputStream value
+     *@return The inputStream value
      */
     public InputStream getInputStream() {
         return null;

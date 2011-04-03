@@ -59,6 +59,7 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
      * @throws SmartFrogException smartfrog trouble
      * @throws RemoteException    network trouble
      */
+    @Override
     protected void resolveAttributes() throws SmartFrogException, RemoteException {
         super.resolveAttributes();
         applicationPrefix = sfResolve(ATTR_APP_PREFIX, "", true);
@@ -84,6 +85,7 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
      * @throws SmartFrogException SmartFrog problems
      * @throws RemoteException    network problems
      */
+    @Override
     public void directoryChanged(List<File> current, List<File> added, List<File> removed)
             throws SmartFrogException, RemoteException {
         super.directoryChanged(current, added, removed);

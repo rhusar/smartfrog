@@ -24,19 +24,17 @@ import org.smartfrog.services.os.runshell.RunShell;
 /**
  * created 21-May-2004 17:23:10
  */
-
-
 public interface RunJava extends RunShell {
 
-    String ATTR_JARFILE="jar";
+    String ATTR_JARFILE = "jar";
     String ATTR_ENVIRONMENT = "environment";
     String ATTR_CLASSNAME = "classname";
-    String ATTR_CLASSPATH="classpath";
-    String ATTR_SYSPROPERTIES="sysProperties";
+    String ATTR_CLASSPATH = "classpath";
+    String ATTR_SYSPROPERTIES = "sysProperties";
     String ATTR_MAXMEMORY = "maxMemory";
-    String ATTR_ASSERTIONS ="assertions";
-    String ATTR_SYSTEMASSERTIONS ="systemAssertions";
-    String ATTR_JVM_ARGS="jvmargs";
-    String ATTR_ARGUMENTS="arguments";
-    String ATTR_ENDORSED_DIRS="endorsedDirs";
+    String ATTR_ASSERTIONS = "assertions";
+    String ATTR_SYSTEMASSERTIONS = "systemAssertions";
+    String ATTR_JVM_ARGS = "jvmargs";
+    String ATTR_ARGUMENTS = "arguments";
+    String ATTR_ENDORSED_DIRS = "endorsedDirs";
 }

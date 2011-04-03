@@ -30,7 +30,7 @@ package org.smartfrog.services.trace;
  */
 public interface Entry {
     /** String for return carriage.*/
-    public static String CRLF = "\r\n";
+    static String CRLF = "\r\n";
 
     /**
      *  Removes a child.
@@ -38,7 +38,7 @@ public interface Entry {
      * @param  DN  dN attribute
      * @return     if removed true else false
      */
-    public boolean remove(String DN);
+    boolean remove(String DN);
 
 
      /**
@@ -48,57 +48,57 @@ public interface Entry {
      * @param  value  value
      * @return        if added true else false
      */
-    public boolean add(String DN, Object value);
+    boolean add(String DN, Object value);
 
     /**
      * Gets the leaf attribute of the Entry object.
      *
      * @return The leaf value
      */
-    public boolean isLeaf();
+    boolean isLeaf();
 
     /**
      * Return the textual representation.
      *
      * @return textual representation
      */
-    public String toString();
+    String toString();
 
     /**
      * Gets the name attribute of the Entry object.
      *
      * @return The name value
      */
-    public String getName();
+    String getName();
 
     /**
      * Gets the parentDN attribute of the Entry object.
      *
      * @return The parentDN value
      */
-    public String getParentDN();
+    String getParentDN();
 
     /**
      * Gets the dN attribute of the Entry object.
      *
      * @return The dN value
      */
-    public String getDN();
+    String getDN();
 
     /**
      * Gets the rDN attribute of the Entry object.
      *
      * @return The rDN value
      */
-    public String getRDN();
+    String getRDN();
 
     /**
      * Gets the childrenCount attribute of the Entry object.
      *
      * @return The childrenCount value
      */
-    public int getChildrenCount();
+    int getChildrenCount();
 
-    //public Object getChildren();
-    //public Object getAttributes();
+    //Object getChildren();
+    //Object getAttributes();
 }

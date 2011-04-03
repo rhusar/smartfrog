@@ -87,6 +87,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.RootLocator;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -1151,7 +1152,7 @@ public class Display extends JFrame
     }
     
     public void startMngConsole(String hostName) {
-    	int port = 3800;
+    	int port = RootLocator.DEFAULT_RMI_PORT;
         try {
             java.net.InetAddress.getByName(hostName);
             SFProcess.getRootLocator()

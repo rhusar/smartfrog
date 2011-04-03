@@ -25,92 +25,92 @@ public interface Assert extends Remote {
     /**
      * {@value}
      */
-    public String ATTR_IS_TRUE = "isTrue";
+    String ATTR_IS_TRUE = "isTrue";
     /**
      * {@value}
      */
-    public String ATTR_IS_FALSE = "isFalse";
+    String ATTR_IS_FALSE = "isFalse";
     /**
      * {@value}
      */
-    public String ATTR_REFERENCE = "reference";
+    String ATTR_REFERENCE = "reference";
     /**
      * {@value}
      */
-    public String ATTR_REFERENCE_REQUIRED = "referenceRequired";
+    String ATTR_REFERENCE_REQUIRED = "referenceRequired";
     /**
      * {@value}
      */
-    public String ATTR_HAS_ATTRIBUTE = "hasAttribute";
+    String ATTR_HAS_ATTRIBUTE = "hasAttribute";
     /**
      * {@value}
      */
-    public String ATTR_EVALUATES_TRUE = "evaluatesTrue";
+    String ATTR_EVALUATES_TRUE = "evaluatesTrue";
     /**
      * {@value}
      */
-    public String ATTR_EVALUATES_FALSE = "evaluatesFalse";
+    String ATTR_EVALUATES_FALSE = "evaluatesFalse";
     /**
      * check when we start up {@value}
      */
-    public String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
+    String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
     /**
      * check on a ping {@value}
      */
-    public String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
+    String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
 
     /**
      * {@value}
      */
-    public String ATTR_FILE_EXISTS = "fileExists";
+    String ATTR_FILE_EXISTS = "fileExists";
     /**
      * {@value}
      */
-    public String ATTR_DIR_EXISTS = "dirExists";
+    String ATTR_DIR_EXISTS = "dirExists";
     /**
      * {@value}
      */
-    public String ATTR_ATTRIBUTE_EQUALS = "attributeEquals";
+    String ATTR_ATTRIBUTE_EQUALS = "attributeEquals";
 
     /**
      * first equality string {@value}
      */
-    public String ATTR_EQUALS_STRING1 = "equalsString1";
+    String ATTR_EQUALS_STRING1 = "equalsString1";
 
     /**
      * second equality string {@value}
      */
-    public String ATTR_EQUALS_STRING2 = "equalsString2";
+    String ATTR_EQUALS_STRING2 = "equalsString2";
 
     /**
      * {@value}
      */
-    public String ATTR_EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
+    String ATTR_EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
 
 
     /**
      * {@value}
      */
-    public String ATTR_MESSAGE = "message";
+    String ATTR_MESSAGE = "message";
 
     //
     /**
      * value of a vector element to test {@value}
      */
-    public String ATTR_VECTOR_VALUE = "attributeVectorValue";
+    String ATTR_VECTOR_VALUE = "attributeVectorValue";
     //the index to look for
     /**
      * the index to look for {@value}
      */
-    public String ATTR_VECTOR_INDEX = "attributeVectorIndex";
+    String ATTR_VECTOR_INDEX = "attributeVectorIndex";
 
     /**
      * the min length of the vector {@value}
      */
-    public String ATTR_VECTOR_MIN_LENGTH = "attributeVectorMinLength";
+    String ATTR_VECTOR_MIN_LENGTH = "attributeVectorMinLength";
     /**
      * the max length of the vector {@value}
      */
-    public String ATTR_VECTOR_MAX_LENGTH = "attributeVectorMaxLength";
+    String ATTR_VECTOR_MAX_LENGTH = "attributeVectorMaxLength";
 
 }

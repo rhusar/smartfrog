@@ -49,7 +49,7 @@ public interface RemoteScriptPrim
      * @throws SmartFrogException SF problems
      * @throws RemoteException network problems
      */
-    public Object eval(String script) throws SmartFrogException, RemoteException;
+    Object eval(String script) throws SmartFrogException, RemoteException;
 
     /**
      * Bind an object to a name in the beanshell interpreter.
@@ -59,7 +59,7 @@ public interface RemoteScriptPrim
      * @throws SmartFrogException SF problems
      * @throws RemoteException network problems
      */
-    public void setRemote(String name, Object obj) throws SmartFrogException,
+    void setRemote(String name, Object obj) throws SmartFrogException,
             RemoteException;
 
 }

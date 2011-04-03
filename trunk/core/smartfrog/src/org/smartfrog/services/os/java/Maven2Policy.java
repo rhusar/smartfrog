@@ -41,6 +41,7 @@ public class Maven2Policy extends AbstractPolicy implements LocalCachePolicy,
      * @throws SmartFrogRuntimeException on a validity error
      * @throws RemoteException on network errors
      */
+    @Override
     public String createLocalPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogRuntimeException {
         return createRemotePath(artifact);
@@ -52,6 +53,7 @@ public class Maven2Policy extends AbstractPolicy implements LocalCachePolicy,
      * @throws SmartFrogRuntimeException on a validity error
      * @throws RemoteException on network errors
      */
+    @Override
     public String createRemotePath(SerializedArtifact library)
             throws SmartFrogRuntimeException,
             RemoteException {
@@ -73,6 +75,7 @@ public class Maven2Policy extends AbstractPolicy implements LocalCachePolicy,
      * @see org.smartfrog.services.os.java.LibraryCachePolicy#getDescription()
      * @throws RemoteException on network errors
      */
+    @Override
     public String getDescription() throws RemoteException {
         return "Maven2 policy";
     }

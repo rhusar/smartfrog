@@ -97,6 +97,7 @@ public class IsOSCondition extends PrimImpl implements Condition {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -166,6 +167,7 @@ public class IsOSCondition extends PrimImpl implements Condition {
      *
      * @return true if it is successful, false if not
      */
+    @Override
     public boolean evaluate() {
         return supported;
     }

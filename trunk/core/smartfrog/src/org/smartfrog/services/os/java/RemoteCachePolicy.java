@@ -37,6 +37,6 @@ public interface RemoteCachePolicy extends LibraryCachePolicy {
      * @throws RemoteException for network problems
      * @throws SmartFrogException for other problems
      */
-    public String createRemotePath(SerializedArtifact artifact) throws RemoteException,SmartFrogException;
+    String createRemotePath(SerializedArtifact artifact) throws RemoteException,SmartFrogException;
 
 }

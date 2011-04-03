@@ -117,11 +117,16 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
      *
      *@exception Exception  Description of Exception
      */
+    @Override
     public void sfDeploy() throws RemoteException, SmartFrogException {
-        if (sfLog().isInfoEnabled()) sfLog().info("Deploying...");
+        if (sfLog().isInfoEnabled()) {
+            sfLog().info("Deploying...");
+        }
         super.sfDeploy();
         readSFAttributes();
-        if (sfLog().isInfoEnabled()) sfLog().info("SFdeployed");
+        if (sfLog().isInfoEnabled()) {
+            sfLog().info("SFdeployed");
+        }
 
     }
 
@@ -131,23 +136,31 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
      *
      *@exception Exception  Description of Exception
      */
+    @Override
+
     public void sfStart() throws RemoteException, SmartFrogException {
         //@ToDo: it should check if the file exist an produce an appropiate message
-        if (sfLog().isInfoEnabled()) sfLog().info("Starting...");
+        if (sfLog().isInfoEnabled()) {
+            sfLog().info("Starting...");
+        }
         super.sfStart();
 
         //Appending lines to file
 
         if ((dataParser.isValid()) && ((dataParser.getDataReplace() != null) || (dataParser.getDataAppend()
-                != null))) {
+                                                                                 != null))) {
             parserVar = new ParserVar(this, dataParser);
         }
         if (parserVar != null) {
             parserVar.start();
         } else {
-            if (sfLog().isWarnEnabled()) sfLog().warn("sfStart: No data to parse.");
+            if (sfLog().isWarnEnabled()) {
+                sfLog().warn("sfStart: No data to parse.");
+            }
         }
-        if (sfLog().isInfoEnabled()) sfLog().info("SFstarted");
+        if (sfLog().isInfoEnabled()) {
+            sfLog().info("SFstarted");
+        }
     }
 
 
@@ -156,8 +169,11 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
      *
      *@param  r  Description of Parameter
      */
+    @Override
     public void sfTerminateWith(TerminationRecord r) {
-        if (sfLog().isInfoEnabled()) sfLog().info("SFterminatedWith " + r.toString());
+        if (sfLog().isInfoEnabled()) {
+            sfLog().info("SFterminatedWith " + r.toString());
+        }
         this.kill();
         super.sfTerminateWith(r);
     }
@@ -186,13 +202,15 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                 fileName = (String) sfResolve(varSFfileName);
             } catch (SmartFrogResolutionException e) {
                 this.dataParser.setValid(false);
-                if (sfLog().isErrorEnabled()) sfLog().error(varSFfileName + " not found.", e);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(varSFfileName + " not found.", e);
+                }
             }
 
             if (fileName != null) {
                 //data for parsing
                 this.dataParser = new DataParser(fileName, readVarData(appendVariables),
-                        readVarData(varVariables));
+                                                 readVarData(varVariables));
             }
 
             try {
@@ -203,7 +221,9 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                     }
                 }
             } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varSFnewFileName + " not found.", e);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(varSFnewFileName + " not found.", e);
+                }
             }
 
             try {
@@ -212,7 +232,9 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                     this.setShouldTerminate(((Boolean) shouldTerminateObj).booleanValue());
                 }
             } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varShouldTerminate + " not found.", e);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(varShouldTerminate + " not found.", e);
+                }
             }
             try {
                 Object shouldDetachObj = sfResolve(varShouldDetach);
@@ -220,11 +242,15 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                     this.setShouldDetach(((Boolean) shouldDetachObj).booleanValue());
                 }
             } catch (SmartFrogResolutionException e) {
-                if (sfLog().isErrorEnabled()) sfLog().error(varShouldDetach + " not found.", e);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(varShouldDetach + " not found.", e);
+                }
             }
 
         } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().error("Error reading SF attributes: " + e.getMessage(), e);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Error reading SF attributes: " + e.getMessage(), e);
+            }
         }
     }
 

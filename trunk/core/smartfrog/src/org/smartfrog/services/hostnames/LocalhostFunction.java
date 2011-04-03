@@ -39,6 +39,7 @@ public class LocalhostFunction extends BaseFunction {
      * @throws SmartFrogFunctionResolutionException
      *
      */
+    @Override
     protected Object doFunction() throws SmartFrogFunctionResolutionException {
         return HostnameUtils.getLocalHostname();
     }

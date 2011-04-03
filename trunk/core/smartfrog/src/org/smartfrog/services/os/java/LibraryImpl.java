@@ -47,7 +47,6 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
      */
     private File cacheDir;
 
-
     /**
      * Local cache policy
      */
@@ -67,6 +66,7 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
      * @throws RemoteException network problems
      * @throws SmartFrogException any other error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         //this implicitly deploys all our children too
@@ -114,6 +114,7 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
      * @throws RemoteException network problems
      * @throws SmartFrogException any other error
      */
+    @Override
     public String determineArtifactPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogException {
         return determineArtifactFile(artifact).getAbsolutePath();
@@ -128,6 +129,7 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
      * @throws SmartFrogException any other error
      * @see org.smartfrog.services.os.java.Library#determineArtifactRelativeURLPath(org.smartfrog.services.os.java.SerializedArtifact)
      */
+    @Override
     public String determineArtifactRelativeURLPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogException {
         SerializedArtifact.assertValid(artifact, false);

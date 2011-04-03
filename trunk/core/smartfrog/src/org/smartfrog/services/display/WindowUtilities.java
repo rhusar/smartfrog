@@ -19,11 +19,8 @@
  */
 package org.smartfrog.services.display;
 
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
-
-import java.awt.*;
-import java.util.Hashtable;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -32,6 +29,17 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JWindow;
 import javax.swing.border.SoftBevelBorder;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.util.Hashtable;
 
 /**
  * Window Utilities to handle some common window and frame representation problems
@@ -134,7 +142,7 @@ public class WindowUtilities {
         // then our bounding rectangle is the
         // whole screen
         if ((parent == null) || (parent.getBounds().width < compSize.width) ||
-                (parent.getBounds().height < compSize.height)) {
+            (parent.getBounds().height < compSize.height)) {
             parentBounds = new Rectangle(comp.getToolkit().getScreenSize());
             parentBounds.setLocation(0, 0);
         }
@@ -162,7 +170,7 @@ public class WindowUtilities {
      * @param positionW The new position value at x axis
      */
     public static void setPositionWindow(Container parent, Component comp,
-                                         int positionN, int positionW) {
+            int positionN, int positionW) {
         // Positions: false=0, true=max, null=center
         // Positions: N(1), S(-1), E(-1), W(1), NE(y=0,x=max), NW, SE, SW,C(0);
         int x;
@@ -179,7 +187,7 @@ public class WindowUtilities {
         // then our bounding rectangle is the
         // whole screen
         if ((parent == null) || (parent.getBounds().width < compSize.width) ||
-                (parent.getBounds().height < compSize.height)) {
+            (parent.getBounds().height < compSize.height)) {
             parentBounds = new Rectangle(comp.getToolkit().getScreenSize());
             parentBounds.setLocation(0, 0);
         }
@@ -210,7 +218,7 @@ public class WindowUtilities {
                 y = parentBounds.y;
             } else {
                 y = parentBounds.y +
-                        ((parentBounds.height) - (compSize.height));
+                    ((parentBounds.height) - (compSize.height));
             }
         }
         comp.setLocation(x, y);
@@ -225,7 +233,7 @@ public class WindowUtilities {
      * @param positionDisplay The new direction for value
      */
     public static void setPositionDisplay(Container parent, Component comp,
-                                          String positionDisplay) {
+            String positionDisplay) {
         int north = 0;
 
         //C
@@ -263,8 +271,7 @@ public class WindowUtilities {
             west = 1;
         }
 
-        org.smartfrog.services.display.WindowUtilities.setPositionWindow(parent,
-                comp, north, west);
+        WindowUtilities.setPositionWindow(parent, comp, north, west);
     }
 
 

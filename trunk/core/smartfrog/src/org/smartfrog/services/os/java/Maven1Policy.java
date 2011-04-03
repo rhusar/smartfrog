@@ -43,6 +43,7 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
      * @see RemoteCachePolicy#createRemotePath(SerializedArtifact)
      * @throws SmartFrogRuntimeException on a validtity error
      */
+    @Override
     public String createRemotePath(SerializedArtifact artifact)
             throws SmartFrogRuntimeException {
         return createMavenURL(artifact);
@@ -53,6 +54,7 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
      * @see LocalCachePolicy#createLocalPath(SerializedArtifact)
      * @throws SmartFrogRuntimeException on a validtity error
      */
+    @Override
     public String createLocalPath(SerializedArtifact artifact)
             throws SmartFrogRuntimeException {
         // the policy here is the same as with remote names
@@ -79,6 +81,7 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
     /**
      * @see org.smartfrog.services.os.java.LibraryCachePolicy#getDescription()
      */
+    @Override
     public String getDescription() throws RemoteException {
         return "Maven1 policy";
     }

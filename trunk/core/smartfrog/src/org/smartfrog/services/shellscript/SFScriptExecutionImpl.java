@@ -1,289 +1,324 @@
 /** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.services.shellscript;
-
-import java.util.List;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptExecution, SFReadConfig {
+import java.rmi.RemoteException;
+import java.util.List;
 
-  private String name = null;
+public class SFScriptExecutionImpl extends PrimImpl implements Prim, SFScriptExecution, SFReadConfig {
 
-  /**
-   * Exec data
-   */
-  private Cmd cmd = new Cmd();
+    private String name = null;
 
-  /**
-   * This component should terminate when exec terminates
-   */
-  private boolean shouldTerminate = true;
+    /**
+     * Exec data
+     */
+    private Cmd cmd = new Cmd();
 
-  /**
-   * This component should detach when exec terminates
-   */
-  private boolean shouldDetatch = false;
+    /**
+     * This component should terminate when exec terminates
+     */
+    private boolean shouldTerminate = true;
 
-  /**
-   * Script Exec component
-   */
-  private  ScriptExecution scriptExec = null;
+    /**
+     * This component should detach when exec terminates
+     */
+    private boolean shouldDetatch = false;
 
-  // For Prim
-  public SFScriptExecutionImpl() throws RemoteException {
+    /**
+     * Script Exec component
+     */
+    private ScriptExecution scriptExec = null;
 
-  }
+    // For Prim
+    public SFScriptExecutionImpl() throws RemoteException {
 
-  //Component and LiveCycle methods
+    }
 
-  /**
-   *  Reads SF description = initial configuration.
-   * Override this to read/set properties before we read ours, but remember to call
-   * the superclass afterwards
-   */
-  public void readConfig () throws SmartFrogException, RemoteException {
+    //Component and LiveCycle methods
 
-        this.name = sfResolve(ATR_NAME, name , false);
+    /**
+     *  Reads SF description = initial configuration.
+     * Override this to read/set properties before we read ours, but remember to call
+     * the superclass afterwards
+     */
+    @Override
+    public void readConfig() throws SmartFrogException, RemoteException {
+
+        this.name = sfResolve(ATR_NAME, name, false);
         if (name == null) {
             name = this.sfCompleteNameSafe().toString();
         }
 
-        this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
+        this.cmd = new Cmd(sfResolve(ATR_EXEC, new ComponentDescriptionImpl(null, null, false), true));
 
-  }
+    }
 
-  /**
-   *  This method retrieves the paramters from the .sf file. For the purposes
-   *  of a demo default paramteres could be hard coded.
-   *
-   * @exception SmartFrogException deployment failure
-   * @exception  RemoteException In case of network/rmi error
-   */
-  public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-      super.sfDeploy();
-      readConfig();
-      scriptExec = new ScriptExecutionImpl (name, cmd,this);
-      sfLog().info("Init done");
-  }
-  /**
-  *  This sets a flag that will start the httpd process running.
-  *
-  * @exception  SmartFrogException starting failure
-  * @exception  RemoteException In cas eof network/rmi error
-  */
- public synchronized void sfStart() throws SmartFrogException,RemoteException {
-     super.sfStart();
- }
+    /**
+     *  This method retrieves the paramters from the .sf file. For the purposes
+     *  of a demo default paramteres could be hard coded.
+     *
+     * @exception SmartFrogException deployment failure
+     * @exception RemoteException In case of network/rmi error
+     */
+    @Override
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        readConfig();
+        scriptExec = new ScriptExecutionImpl(name, cmd, this);
+        sfLog().info("Init done");
+    }
 
-
- /**
-  *  This shuts down Apache by requesting that the ApacheState variable be
-  *  set to false.
-  *
-  * @param  tr  TerminationRecord object
-  */
- public synchronized void sfTerminateWith(TerminationRecord tr) {
-     try {
-         if (sfLog().isDebugEnabled()){
-             sfLog().debug("Terminating.",null,tr);
-          }
-         if (scriptExec != null) {
-             ((ScriptExecutionImpl)scriptExec).kill();
-             scriptExec = null;
-         }
-     } catch (Exception ex) {
-     }
-     super.sfTerminateWith(tr);
- }
-
-  //-----------------
+    /**
+     *  This sets a flag that will start the httpd process running.
+     *
+     * @exception SmartFrogException starting failure
+     * @exception RemoteException In cas eof network/rmi error
+     */
+    @Override
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+    }
 
 
-  /**
-   *
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the lock
-   * @param command String
-   * @param lock ScriptLock
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(command,lock);
-  }
+    /**
+     *  This shuts down Apache by requesting that the ApacheState variable be
+     *  set to false.
+     *
+     * @param  tr  TerminationRecord object
+     */
+    @Override
+    public synchronized void sfTerminateWith(TerminationRecord tr) {
+        try {
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("Terminating.", null, tr);
+            }
+            if (scriptExec != null) {
+                ((ScriptExecutionImpl) scriptExec).kill();
+                scriptExec = null;
+            }
+        } catch (Exception ex) {
+        }
+        super.sfTerminateWith(tr);
+    }
+
+    //-----------------
 
 
-  /**
-   *
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the lock
-   * @param command String
-   * @param lock ScriptLock
-   * @param verbose determines if results output will be shown using out/err streams.
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(command,lock,verbose);
-  }
-
-  /**
-    * submit  a list of commands to the shell
-    * @param commands the list of commands
-    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
-    *   wait, -1 is wait forever
-   * @param verbose determines if the shell output will be shown using out/err streams.
-    * @throws SmartFrogException if the lock is not obtained in the requisite
-    *   time
-    * @return ScriptResults
+    /**
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     *   not currently holding the lock
+     * @param command String
+     * @param lock ScriptLock
+     * @return ScriptResults
     // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-    *   method
-    */
-   public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException{
-     if (this.scriptExec==null) return null;
-     return scriptExec.execute(commands,timeout,verbose);
-   }
+     *   method
+     */
+    @Override
+    public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(command, lock);
+    }
 
 
-  /**
-   * submit  a list of commands to the shell
-   * @param commands the list of commands
-   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
-   *   wait, -1 is wait forever
-   * @throws SmartFrogException if the lock is not obtained in the requisite
-   *   time
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(List commands, long timeout) throws SmartFrogException{
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(commands,timeout);
-  }
+    /**
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     *   not currently holding the lock
+     * @param command String
+     * @param lock ScriptLock
+     * @param verbose determines if results output will be shown using out/err streams.
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(command, lock, verbose);
+    }
 
-  /**
-   * submit a command to the shell
-   * @param command the command
-   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
-   *   wait, -1 is wait forever
-   * @throws SmartFrogException if the lock is not obtained in the requisite
-   *   time
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(String command, long timeout) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(command,timeout);
-  }
+    /**
+     * submit  a list of commands to the shell
+     * @param commands the list of commands
+     * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+     *   wait, -1 is wait forever
+     * @param verbose determines if the shell output will be shown using out/err streams.
+     * @throws SmartFrogException if the lock is not obtained in the requisite
+     *   time
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(commands, timeout, verbose);
+    }
 
-  /**
-   * submit a command to the shell
-   * @param command the command
-   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
-   *   wait, -1 is wait forever
-   * @param verbose determines if the shell output will be shown using out/err streams.
-   * @throws SmartFrogException if the lock is not obtained in the requisite
-   *   time
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(command,timeout,verbose);
-  }
 
-  /**
-   * @throws SmartFrogException if the lock object is not valid, i.e.
-   *
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the lock
-   * @param commands List
-   * @param lock ScriptLock
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(List commands, ScriptLock lock) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(commands,lock);
-  }
+    /**
+     * submit  a list of commands to the shell
+     * @param commands the list of commands
+     * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+     *   wait, -1 is wait forever
+     * @throws SmartFrogException if the lock is not obtained in the requisite
+     *   time
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(List commands, long timeout) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(commands, timeout);
+    }
 
-  /**
-   * @throws SmartFrogException if the lock object is not valid, i.e.
-   *
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the lock
-   * @param commands List
-   * @param lock ScriptLock
-   * @param verbose determines if results output will be shown using out/err streams.
-   * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public ScriptResults execute(List commands, ScriptLock lock, boolean verbose) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.execute(commands,lock, verbose);
-  }
+    /**
+     * submit a command to the shell
+     * @param command the command
+     * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+     *   wait, -1 is wait forever
+     * @throws SmartFrogException if the lock is not obtained in the requisite
+     *   time
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(String command, long timeout) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(command, timeout);
+    }
 
-  /**
-   *
-   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
-   *   wait, -1 is wait forever
-   * @throws SmartFrogException if the lock is not obtained in the requisite
-   *   time
-   * @return ScriptLock
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public synchronized ScriptLock lockShell(long timeout) throws SmartFrogException {
-    if (this.scriptExec==null) return null;
-    return scriptExec.lockShell(timeout);
-  }
+    /**
+     * submit a command to the shell
+     * @param command the command
+     * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+     *   wait, -1 is wait forever
+     * @param verbose determines if the shell output will be shown using out/err streams.
+     * @throws SmartFrogException if the lock is not obtained in the requisite
+     *   time
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(command, timeout, verbose);
+    }
 
-  /**
-   * @throws SmartFrogException if the lock object is not valid, i.e.
-   *
-   * @param lock the lock object receieved from the lockShell
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the l0ck
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
-   */
-  public synchronized void releaseShell(ScriptLock lock) throws SmartFrogException {
-    if (this.scriptExec == null) return;
-    scriptExec.releaseShell(lock);
-  }
+    /**
+     * @throws SmartFrogException if the lock object is not valid, i.e.
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     *   not currently holding the lock
+     * @param commands List
+     * @param lock ScriptLock
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(List commands, ScriptLock lock) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(commands, lock);
+    }
+
+    /**
+     * @throws SmartFrogException if the lock object is not valid, i.e.
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     *   not currently holding the lock
+     * @param commands List
+     * @param lock ScriptLock
+     * @param verbose determines if results output will be shown using out/err streams.
+     * @return ScriptResults
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public ScriptResults execute(List commands, ScriptLock lock, boolean verbose) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.execute(commands, lock, verbose);
+    }
+
+    /**
+     *
+     * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+     *   wait, -1 is wait forever
+     * @throws SmartFrogException if the lock is not obtained in the requisite
+     *   time
+     * @return ScriptLock
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public synchronized ScriptLock lockShell(long timeout) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return null;
+        }
+        return scriptExec.lockShell(timeout);
+    }
+
+    /**
+     * @throws SmartFrogException if the lock object is not valid, i.e.
+     *
+     * @param lock the lock object receieved from the lockShell
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     *   not currently holding the l0ck
+    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
+     *   method
+     */
+    @Override
+    public synchronized void releaseShell(ScriptLock lock) throws SmartFrogException {
+        if (this.scriptExec == null) {
+            return;
+        }
+        scriptExec.releaseShell(lock);
+    }
 
 //----------------------------------------------
 //  private void test1() throws SmartFrogException {

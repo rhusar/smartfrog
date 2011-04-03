@@ -54,6 +54,7 @@ public class FileEntryImpl implements FileEntry {
      * Get File
      * @return File
      */
+    @Override
     public File getFile() {
         return file;
     }
@@ -63,6 +64,7 @@ public class FileEntryImpl implements FileEntry {
      * @return URI
      *
      */
+    @Override
     public URI getUri() {
         return uri;
     }
@@ -84,6 +86,7 @@ public class FileEntryImpl implements FileEntry {
      * @param key String name
      * @return the object stored under there
      */
+    @Override
     public Object lookupMetadata(String key) {
         return data().get(key);
     }
@@ -103,6 +106,7 @@ public class FileEntryImpl implements FileEntry {
      * @return String
      *
      */
+    @Override
     public String getMimetype() {
         return mimetype;
     }
@@ -112,6 +116,7 @@ public class FileEntryImpl implements FileEntry {
      * @param mimetype String
      *
      */
+    @Override
     public void setMimetype(String mimetype) {
         this.mimetype = mimetype;
     }
@@ -121,6 +126,7 @@ public class FileEntryImpl implements FileEntry {
      * @return Object
      *
      */
+    @Override
     public Object getMetadata() {
         return metadata;
     }
@@ -130,11 +136,13 @@ public class FileEntryImpl implements FileEntry {
      * @param metadata Object
      *
      */
+    @Override
     public void setMetadata(Object metadata) {
         this.metadata = metadata;
     }
 
     /** @return a string representation of the object. */
+    @Override
     public String toString() {
         return file.getAbsolutePath();
     }
@@ -144,6 +152,7 @@ public class FileEntryImpl implements FileEntry {
      * @param o Object
      * @return boolean
      */
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -165,6 +174,7 @@ public class FileEntryImpl implements FileEntry {
      * Returns the hashcode
      * @return int
      */
+    @Override
     public int hashCode() {
         return uri.hashCode();
     }
@@ -183,6 +193,7 @@ public class FileEntryImpl implements FileEntry {
      * @throws RemoteException if something went wrong over the wire
      * @throws IOException     if something went wrong saving the content
      */
+    @Override
     public void append(byte[] content) throws RemoteException, IOException {
 
         BufferedOutputStream out = null;
@@ -201,6 +212,7 @@ public class FileEntryImpl implements FileEntry {
      * @return boolean
      * @throws RemoteException  In case of network/rmi error
      */
+    @Override
     public boolean exists() throws RemoteException {
         return file.exists();
     }

@@ -1,50 +1,58 @@
 /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.services.management;
 
-import java.awt.event.MouseEvent;
+import org.smartfrog.services.display.FontSize;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
 
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.*;
-import java.awt.*;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.rmi.RemoteException;
 import javax.swing.tree.TreePath;
-import java.io.StringWriter;
-import java.io.PrintWriter;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.Vector;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
 import java.util.Set;
-
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.services.display.FontSize;
-import org.smartfrog.services.display.WindowUtilities;
+import java.util.Vector;
 
 /**
  * Tree panel for SmartFrog hierarchy of components.
@@ -91,10 +99,12 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      */
     public DeployTreePanel() {
         try {
-            treeInit(null,false , false,true);
+            treeInit(null, false, false, true);
             jbInit();
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(ex, ex);
+            }
         }
     }
 
@@ -106,14 +116,16 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @param inRootPanel flag indicating to show in root panel
      * @param showCDasChild flag indicating to show CD as child
      */
-    public DeployTreePanel(Object root, boolean isCopy, boolean inRootPanel,boolean showCDasChild) {
+    public DeployTreePanel(Object root, boolean isCopy, boolean inRootPanel, boolean showCDasChild) {
         try {
             this.inRootPanel = inRootPanel;
-            treeInit(root, isCopy , inRootPanel,showCDasChild);
+            treeInit(root, isCopy, inRootPanel, showCDasChild);
             jbInit();
             popupinit();
         } catch (Exception ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex, ex);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(ex, ex);
+            }
         }
     }
 
@@ -129,7 +141,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
     /**
      * Initializes the JPanel.
      *
-     *@throws  Exception  If any error during initialization
+     *@throws Exception  If any error during initialization
      */
     void jbInit() throws Exception {
         this.setLayout(borderLayout2);
@@ -142,13 +154,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
         jSplitPane1.setResizeWeight(0.3);
         jSplitPane1.setDividerLocation(200);
         systemViewTree.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseReleased(MouseEvent e) {
-                    systemViewTree_mouseClicked(e);
-                }
-                public void mousePressed(MouseEvent e) {
-                    systemViewTree_mouseClicked(e);
-                }
-            });
+            public void mouseReleased(MouseEvent e) {
+                systemViewTree_mouseClicked(e);
+            }
+
+            public void mousePressed(MouseEvent e) {
+                systemViewTree_mouseClicked(e);
+            }
+        });
         jSplitPane2.setDividerSize(2);
         jSplitPane2.setDividerLocation(220);
         statusPanel.setLayout(borderLayout3);
@@ -167,26 +180,28 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
         tableScrollPane.getViewport().add(table, null);
         jSplitPane2.add(tableScrollPane, JSplitPane.TOP);
         jSplitPane2.add(jScrollPane1, JSplitPane.BOTTOM);
-        this.add(statusPanel,  BorderLayout.SOUTH);
+        this.add(statusPanel, BorderLayout.SOUTH);
         statusPanel.add(completeName, BorderLayout.SOUTH);
         this.add(jSplitPane1, BorderLayout.CENTER);
         tableScrollPane.getViewport().addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseReleased(MouseEvent e) {
-                    table_mouseClicked(e);
-                }
-                public void mousePressed(MouseEvent e) {
-                    table_mouseClicked(e);
-                }
-            });
+            public void mouseReleased(MouseEvent e) {
+                table_mouseClicked(e);
+            }
+
+            public void mousePressed(MouseEvent e) {
+                table_mouseClicked(e);
+            }
+        });
 
         table.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseReleased(MouseEvent e) {
-                    table_mouseClicked(e);
-                }
-                public void mousePressed(MouseEvent e) {
-                    table_mouseClicked(e);
-                }
-            });
+            public void mouseReleased(MouseEvent e) {
+                table_mouseClicked(e);
+            }
+
+            public void mousePressed(MouseEvent e) {
+                table_mouseClicked(e);
+            }
+        });
     }
 
     /**
@@ -199,7 +214,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      */
     private void treeInit(Object root, boolean isCopy, boolean isInRootPanel, boolean shouldShowCDasChild) {
         if (root != null) {
-            treeModel = new DeployTreeModelSF(root, isCopy, isInRootPanel,shouldShowCDasChild);
+            treeModel = new DeployTreeModelSF(root, isCopy, isInRootPanel, shouldShowCDasChild);
         } else {
             treeModel = new DeployTreeModelSF();
         }
@@ -211,8 +226,8 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
         //systemViewJTree.setPreferredSize(new Dimension(200, 100));
     }
 
-    public void showCDasChild(boolean shouldShowCDasChild){
-       treeModel.showCDasChild(shouldShowCDasChild);
+    public void showCDasChild(boolean shouldShowCDasChild) {
+        treeModel.showCDasChild(shouldShowCDasChild);
     }
 
     /**
@@ -231,6 +246,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      *
      *@param  e  Tree selection event
      */
+    @Override
     public void valueChanged(TreeSelectionEvent e) {
         updateTable();
     }
@@ -248,9 +264,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
 
         if (treeNode instanceof DeployEntry) {
             Object[][] data = ((DeployEntry) treeNode).getAttributes();
-            String[] title = { "Attribute", "Value","Tag(s)" };
+            String[] title = {"Attribute", "Value", "Tag(s)"};
             table.setModel(new DefaultTableModel(data, title));
-            this.completeName.setText (((DeployEntry) treeNode).getDN());
+            this.completeName.setText(((DeployEntry) treeNode).getDN());
 
             //org.smartfrog.services.utils.gui.TableUtilities.setColumnWidths(table,new java.awt.Insets(4,4,4,4),true,false);
             //table.sizeColumnsToFit(table.AUTO_RESIZE_ALL_COLUMNS);
@@ -266,7 +282,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @param isCopy is root a copy?
      */
     public void setModel(Object root, boolean isCopy) {
-        treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel,showCDasChild);
+        treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel, showCDasChild);
         this.systemViewTree.setModel(treeModel);
     }
 
@@ -276,9 +292,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
     public void refresh() {
         this.jTextArea1.setText("");
         this.completeName.setText(" ");
-        String[] title = { "Attribute", "Value", "Tag(s)" };
+        String[] title = {"Attribute", "Value", "Tag(s)"};
         Object[][] data = {
-            { " ", " ","" }
+                {" ", " ", ""}
         };
         this.table.setModel(new DefaultTableModel(data, title));
         updateTable();
@@ -288,7 +304,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
 
     }
 
-    public void refreshSelectedNode(){
+    public void refreshSelectedNode() {
         try {
             Vector selectedRows = new Vector();
             boolean[] openClosed = new boolean[(systemViewTree.getRowCount())];
@@ -325,9 +341,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
             int[] aux = {2};
             systemViewTree.setSelectionRows(aux);
         } catch (Exception e) {
-            if (sfLog().isIgnoreEnabled()) sfLog().ignore(e);
-            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            //Ignore. It happens when a node is removed.
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(e);
+            }
         }
     }
 
@@ -377,13 +393,15 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
             Object attrib = this.table.getValueAt(this.table.getSelectedRow(), 0);
             resolveAttrib(attrib);
         } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()) sfLog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(ex);
+            }
         }
 
         if (e.isPopupTrigger()) {
             // Make the jPopupMenu visible relative to the current mouse position in the container.
             this.tablePopUp.show(this.systemViewTree, this.table, e.getX(),
-                e.getY(), this);
+                                 e.getY(), this);
         }
     }
 
@@ -392,107 +410,117 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      *  @param attribName  name of the attribute
      */
     void resolveAttrib(Object attribName) {
-      Object value;
-      String tags="";
-      StringBuffer solvedValue = new StringBuffer();
-      try {
-          Object node = getNode();
-          value = sfResolveHere(attribName, node);
-          tags = sfGetTags(attribName, node).toString();
-          String solvedValueClass = "class not found";
-          String stackTrace = null;
-          try {
-              Object objSolvedValue = sfResolve(attribName.toString(), node);
-              String tempString = objSolvedValue.toString();
-              try {
-                  if (objSolvedValue instanceof ComponentDescription) {
-                    tempString = prettyPrint(objSolvedValue);
-                  } else {
-                    tempString = ContextImpl.getBasicValueFor(objSolvedValue);
-                  }
-
-              } catch (Exception ex1){}
-              solvedValue.append(prettyPrint(tempString));
-              solvedValueClass = objSolvedValue.getClass().toString();
-          } catch (Exception ex) {
-              solvedValue.append(" Failed to resolve ("+attribName+"): "+ ex.toString());
-              try {
-                  StringWriter sw = new StringWriter();
-                  PrintWriter pw = new PrintWriter(sw);
-                  ex.printStackTrace(pw);
-                  stackTrace = ("\r\n"+sw.toString()+"\r\n");
-              } catch (Exception e2) {
-                  if (sfLog().isErrorEnabled()) sfLog().error (e2, e2);
-              }
-          }
-          String tempString = "";
-          StringBuffer text = new StringBuffer();
-          text.append("* Attribute: "+attribName);
-          text.append("\n * Tags: "+tags);
-          text.append("\n * Value: ");
-          tempString = value.toString();
-          try {
+        Object value;
+        String tags = "";
+        StringBuffer solvedValue = new StringBuffer();
+        try {
+            Object node = getNode();
+            value = sfResolveHere(attribName, node);
+            tags = sfGetTags(attribName, node).toString();
+            String solvedValueClass = "class not found";
+            String stackTrace = null;
             try {
-              if (value instanceof ComponentDescription) {
-                tempString = prettyPrint(value);
-              } else {
-                tempString = ContextImpl.getBasicValueFor(value);
-              }
-            } catch (Exception ex1){}
-          } catch (Exception ex1) {
-              tempString= tempString + "\n["+"Error when parsing value, defaulting to String\n"+ex1.toString()+"]";
-          }//ignore exception }
-          text.append("\n"+tempString);
-          text.append("\n * Value resolved: \n"+ prettyPrint(solvedValue));
-          text.append("\n\n"+"+ Value class:"+value.getClass().toString());
-          text.append("\n"+"+ Solved Value class:"+solvedValueClass);
-          if (stackTrace !=null) text.append("\n\n"+"+ StackTrace:"+stackTrace);
-          jTextArea1.setText(text.toString());
-      } catch (Throwable rex) {
-          String err =
-              "sfManagementConsole.deployEntry.getAttributes: error reading "+
-              attribName+" >"+rex.getMessage();
-          jTextArea1.setText(err);
-          if (sfLog().isErrorEnabled()) sfLog().error (err,rex);
-      }
-   }
+                Object objSolvedValue = sfResolve(attribName.toString(), node);
+                String tempString = objSolvedValue.toString();
+                try {
+                    if (objSolvedValue instanceof ComponentDescription) {
+                        tempString = prettyPrint(objSolvedValue);
+                    } else {
+                        tempString = ContextImpl.getBasicValueFor(objSolvedValue);
+                    }
 
-   private String prettyPrint (Object obj){
-       StringBuffer sb = new StringBuffer();
-       if (obj instanceof String[]){
-           Object[] objects = (Object[]) obj;
-           int length = objects.length;
-           for (int i=0; i<length; i++ ){
-              sb.append(objects[i]);
-              sb.append("\n");
-           }
-       } else if (obj instanceof ComponentDescription) {
-           StringWriter sw = new StringWriter();
+                } catch (Exception ex1) {
+                }
+                solvedValue.append(prettyPrint(tempString));
+                solvedValueClass = objSolvedValue.getClass().toString();
+            } catch (Exception ex) {
+                solvedValue.append(" Failed to resolve (" + attribName + "): " + ex.toString());
+                try {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    stackTrace = ("\r\n" + sw.toString() + "\r\n");
+                } catch (Exception e2) {
+                    if (sfLog().isErrorEnabled()) {
+                        sfLog().error(e2, e2);
+                    }
+                }
+            }
+            String tempString = "";
+            StringBuffer text = new StringBuffer();
+            text.append("* Attribute: " + attribName);
+            text.append("\n * Tags: " + tags);
+            text.append("\n * Value: ");
+            tempString = value.toString();
             try {
-                ((ComponentDescription)obj).writeOn(sw,0);
+                try {
+                    if (value instanceof ComponentDescription) {
+                        tempString = prettyPrint(value);
+                    } else {
+                        tempString = ContextImpl.getBasicValueFor(value);
+                    }
+                } catch (Exception ex1) {
+                }
+            } catch (Exception ex1) {
+                tempString = tempString + "\n[" + "Error when parsing value, defaulting to String\n" + ex1.toString() + "]";
+            }//ignore exception }
+            text.append("\n" + tempString);
+            text.append("\n * Value resolved: \n" + prettyPrint(solvedValue));
+            text.append("\n\n" + "+ Value class:" + value.getClass().toString());
+            text.append("\n" + "+ Solved Value class:" + solvedValueClass);
+            if (stackTrace != null) {
+                text.append("\n\n" + "+ StackTrace:" + stackTrace);
+            }
+            jTextArea1.setText(text.toString());
+        } catch (Throwable rex) {
+            String err =
+                    "sfManagementConsole.deployEntry.getAttributes: error reading " +
+                    attribName + " >" + rex.getMessage();
+            jTextArea1.setText(err);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(err, rex);
+            }
+        }
+    }
+
+    private String prettyPrint(Object obj) {
+        StringBuffer sb = new StringBuffer();
+        if (obj instanceof String[]) {
+            Object[] objects = (Object[]) obj;
+            int length = objects.length;
+            for (int i = 0; i < length; i++) {
+                sb.append(objects[i]);
+                sb.append("\n");
+            }
+        } else if (obj instanceof ComponentDescription) {
+            StringWriter sw = new StringWriter();
+            try {
+                ((ComponentDescription) obj).writeOn(sw, 0);
             } catch (IOException ioex) {
                 // ignore should not happen
-                if (sfLog().isIgnoreEnabled()) sfLog().ignore (ioex);
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ioex);
+                }
             }
-           return sw.toString();
-       } else {
+            return sw.toString();
+        } else {
 
-           return obj.toString();
-       }
+            return obj.toString();
+        }
 
-       return sb.toString();
-   }
+        return sb.toString();
+    }
 
     /**
      * Get Node
      * @return Object
      */
-   private Object getNode() {
-       Object node;
-       TreePath tpath = (this.systemViewTree).getSelectionPath();
-       node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
-       return node;
-   }
+    private Object getNode() {
+        Object node;
+        TreePath tpath = (this.systemViewTree).getSelectionPath();
+        node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
+        return node;
+    }
 
     /**
      * Resolve an attribute
@@ -502,15 +530,15 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException in case of remote/network error
      */
-   private Object sfResolveHere(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
-    Object value=null;
-    if (node instanceof Prim){
-        value = ((Prim)node).sfResolveHere(attribName);
-    } else if (node instanceof ComponentDescription){
-        value = ((ComponentDescription)node).sfResolveHere(attribName);
+    private Object sfResolveHere(Object attribName, Object node) throws SmartFrogResolutionException, RemoteException {
+        Object value = null;
+        if (node instanceof Prim) {
+            value = ((Prim) node).sfResolveHere(attribName);
+        } else if (node instanceof ComponentDescription) {
+            value = ((ComponentDescription) node).sfResolveHere(attribName);
+        }
+        return value;
     }
-    return value;
-   }
 
     /**
      * Resolve an attribute
@@ -520,15 +548,15 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException in case of remote/network error
      */
-   private Object sfResolve(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
-    Object value=null;
-    if (node instanceof Prim){
-        value = ((Prim)node).sfResolve(attribName.toString());
-    } else if (node instanceof ComponentDescription){
-        value = ((ComponentDescription)node).sfResolve(attribName.toString());
+    private Object sfResolve(Object attribName, Object node) throws SmartFrogResolutionException, RemoteException {
+        Object value = null;
+        if (node instanceof Prim) {
+            value = ((Prim) node).sfResolve(attribName.toString());
+        } else if (node instanceof ComponentDescription) {
+            value = ((ComponentDescription) node).sfResolve(attribName.toString());
+        }
+        return value;
     }
-    return value;
-   }
 
     /**
      * Get tags for an attribute
@@ -538,23 +566,23 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @throws SmartFrogContextException error in resolving
      * @throws RemoteException in case of remote/network error
      */
-   private Set sfGetTags(Object attribName, Object node) throws SmartFrogRuntimeException, RemoteException {
-    Set tags=null;
-    if (node instanceof Prim){
-        tags = ((Prim)node).sfGetTags(attribName);
-    } else if (node instanceof ComponentDescription){
-        tags = ((ComponentDescription)node).sfGetTags(attribName);
+    private Set sfGetTags(Object attribName, Object node) throws SmartFrogRuntimeException, RemoteException {
+        Set tags = null;
+        if (node instanceof Prim) {
+            tags = ((Prim) node).sfGetTags(attribName);
+        } else if (node instanceof ComponentDescription) {
+            tags = ((ComponentDescription) node).sfGetTags(attribName);
+        }
+        return tags;
     }
-    return tags;
-   }
 
     /**
      * Log for this class
-      * @return
+     * @return
      */
-   private LogSF sfLog(){
+    private LogSF sfLog() {
         return sfLog;
-   }
+    }
 
     public void setFontSize(int fontSize) {
         //JTree
@@ -565,17 +593,20 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
     }
 
     public void increaseFontSize() {
-        table.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()+1));
-        jTextArea1.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()+1));
-        systemViewTree.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()+1));
+        table.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize() + 1));
+        jTextArea1.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize() + 1));
+        systemViewTree.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize() + 1));
     }
 
-     public void reduceFontSize() {
-        if (table.getFont().getSize()>1)
-          table.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize()-1));
-        if (jTextArea1.getFont().getSize()>1)
-          jTextArea1.setFont(new java.awt.Font("DialogInput", 0, jTextArea1.getFont().getSize()-1));
-        if (systemViewTree.getFont().getSize()>1)
-          systemViewTree.setFont(new java.awt.Font("DialogInput", 0, systemViewTree.getFont().getSize()-1));
+    public void reduceFontSize() {
+        if (table.getFont().getSize() > 1) {
+            table.setFont(new java.awt.Font("DialogInput", 0, table.getFont().getSize() - 1));
+        }
+        if (jTextArea1.getFont().getSize() > 1) {
+            jTextArea1.setFont(new java.awt.Font("DialogInput", 0, jTextArea1.getFont().getSize() - 1));
+        }
+        if (systemViewTree.getFont().getSize() > 1) {
+            systemViewTree.setFont(new java.awt.Font("DialogInput", 0, systemViewTree.getFont().getSize() - 1));
+        }
     }
 }

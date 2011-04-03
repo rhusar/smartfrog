@@ -52,6 +52,7 @@ public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, Lif
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     protected void startChildAction() throws RemoteException, SmartFrogException {
         //do not call the super, as we want to start ourselves, differently.
 
@@ -67,6 +68,7 @@ public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, Lif
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         //now start the child

@@ -47,6 +47,7 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
@@ -78,6 +79,7 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
      * @throws SmartFrogException  failure in starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -109,6 +111,7 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
      * @param status  TerminationRecord object
      */
 
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if (delete) {

@@ -19,11 +19,11 @@
  */
 package org.smartfrog.services.assertions.history;
 
+import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.assertions.SmartFrogAssertionException;
 
 import java.rmi.RemoteException;
 
@@ -32,7 +32,7 @@ import java.rmi.RemoteException;
 public abstract class AbstractHistoryPrimImpl extends PrimImpl {
 
     public static final String ATTR_HISTORY = "history";
-    
+
     protected AbstractHistoryPrimImpl() throws RemoteException {
     }
 

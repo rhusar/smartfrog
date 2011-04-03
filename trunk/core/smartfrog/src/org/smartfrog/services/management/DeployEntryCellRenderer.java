@@ -19,85 +19,89 @@
 
 package org.smartfrog.services.management;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
-
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Component;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-
 public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
 
-  /** Log for this class, created using class name*/
-  static LogSF sfLogStatic = LogFactory.getLog("sfManagementConsole");
+    /** Log for this class, created using class name*/
+    static LogSF sfLogStatic = LogFactory.getLog("sfManagementConsole");
 
-  // icons for the Tree
-  ImageIcon icon = null;
-  private String image_path = "org/smartfrog/services/management/icons/";
-  private String prim_icon_name = "prim.gif";
-  private String icon_name = prim_icon_name;
-  private String compound_icon_name = "compound.gif";
-  private String processCompound_icon_name = "processCompound.gif";
-  private String componentDescription_icon_name = "componentDescription.gif";
+    // icons for the Tree
+    private ImageIcon icon = null;
+    private String image_path = "org/smartfrog/services/management/icons/";
+    private String prim_icon_name = "prim.gif";
+    private String icon_name = prim_icon_name;
+    private String compound_icon_name = "compound.gif";
+    private String processCompound_icon_name = "processCompound.gif";
+    private String componentDescription_icon_name = "componentDescription.gif";
 
-  private String image = null;
+    private String image = null;
 
-  String name ="";
+    String name = "";
 
-  public DeployEntryCellRenderer() {
-    //ImageIcon icon;
-    image = image_path + prim_icon_name;
-    icon = createImageIcon(image);
-  }
+    public DeployEntryCellRenderer() {
+        //ImageIcon icon;
+        image = image_path + prim_icon_name;
+        icon = createImageIcon(image);
+    }
 
-  public Component getTreeCellRendererComponent(JTree tree,
-                                                Object value,
-                                                boolean isSelected,
-                                                boolean expanded,
-                                                boolean leaf,
-                                                int row,
-                                                boolean componentHasFocus) {
-    super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, componentHasFocus);
+    public Component getTreeCellRendererComponent(JTree tree,
+            Object value,
+            boolean isSelected,
+            boolean expanded,
+            boolean leaf,
+            int row,
+            boolean componentHasFocus) {
+        super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, componentHasFocus);
 
-    if (value instanceof DeployEntry) value = ((DeployEntry)value).getEntry();
-
-    if ((value instanceof Prim)||(value instanceof ComponentDescription)) {
-        if (value instanceof ProcessCompound) {
-          icon_name = processCompound_icon_name;
-        } else if (value instanceof Compound) {
-          icon_name = compound_icon_name;
-        } else if (value instanceof Prim) {
-          icon_name = prim_icon_name;
-        } else if (value instanceof ComponentDescription) {
-          icon_name = componentDescription_icon_name;
+        if (value instanceof DeployEntry) {
+            value = ((DeployEntry) value).getEntry();
         }
-      image = image_path + icon_name;
-      icon = createImageIcon(image);
-    }
-    // if(data != null) {
-    setIcon(icon);
-    return this;
-  }
 
-  /**
-   * Returns an ImageIcon, or null if the path was invalid.
-   * @return ImageIcon or null
-   */
-  protected static ImageIcon createImageIcon(String path) {
-    try {
-      return new ImageIcon(org.smartfrog.SFSystem.getByteArrayForResource(path));
-    } catch (SmartFrogException ex) {
-      if (sfLogStatic.isErrorEnabled()) sfLogStatic.error(ex, ex);
+        if ((value instanceof Prim) || (value instanceof ComponentDescription)) {
+            if (value instanceof ProcessCompound) {
+                icon_name = processCompound_icon_name;
+            } else if (value instanceof Compound) {
+                icon_name = compound_icon_name;
+            } else if (value instanceof Prim) {
+                icon_name = prim_icon_name;
+            } else if (value instanceof ComponentDescription) {
+                icon_name = componentDescription_icon_name;
+            }
+            image = image_path + icon_name;
+            icon = createImageIcon(image);
+        }
+        // if(data != null) {
+        setIcon(icon);
+        return this;
     }
-    return null;
-  }
+
+    /**
+     * Returns an ImageIcon, or null if the path was invalid.
+     * @return ImageIcon or null
+     */
+    protected static ImageIcon createImageIcon(String path) {
+        try {
+            return new ImageIcon(SFSystem.getByteArrayForResource(path));
+        } catch (SmartFrogException ex) {
+            if (sfLogStatic.isErrorEnabled()) {
+                sfLogStatic.error(ex, ex);
+            }
+        }
+        return null;
+    }
 
 
 }
