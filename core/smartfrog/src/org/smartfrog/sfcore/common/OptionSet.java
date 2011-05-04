@@ -169,7 +169,6 @@ public class OptionSet {
                         cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
                     } catch (SmartFrogInitException ex) {
                         exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
-                        //Logger.log(ex);
                         if (SFSystem.sfLog().isErrorEnabled()) {
                             SFSystem.sfLog().error(ex.getMessage(), ex);
                         }
@@ -179,7 +178,6 @@ public class OptionSet {
                         cfgDescriptors = readCfgDescriptorsFile(args[++i]);
                     } catch (SmartFrogInitException ex) {
                         exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
-                        //Logger.log(ex);
                         if (SFSystem.sfLog().isErrorEnabled()) {
                             SFSystem.sfLog().error(ex.getMessage(), ex);
                         }
@@ -187,12 +185,23 @@ public class OptionSet {
                 } else if ("-p".equals(currentArg)|| "-port".equals(currentArg)) {
                         String port = args[++i];
                         try {
-                            System.setProperty(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, readLocationPort(port));
+                            String newPort = readLocationPort(port);
+                            System.setProperty(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, newPort);
+                            System.setProperty("org.smartfrog.sfcore.processcompound." 
+                                               + SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, 
+                                               newPort);
+                            if (SFSystem.sfLog().isDebugEnabled()) {
+                                SFSystem.sfLog().debug("Setting port to " + newPort);
+                            }
                         } catch  (NumberFormatException nex) {
                             exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                             errorString = ("Wrong port number (-p option): "+port);
-                            if ((Logger.logStackTrace) && SFSystem.sfLog().isErrorEnabled()) {
-                               SFSystem.sfLog().error(errorString, nex);
+                            if (SFSystem.sfLog().isErrorEnabled()) {
+                                if((Logger.logStackTrace)) {
+                                    SFSystem.sfLog().error(errorString, nex);
+                                } else {
+                                    SFSystem.sfLog().error(errorString);
+                                }
                             }
                         }
                 } else if ("-d".equals(currentArg) || "-diagnostics".equals(currentArg)) {
@@ -246,11 +255,11 @@ public class OptionSet {
      * @throws SmartFrogException if failed to read
      * @return the parsed file
      */
-    public static Vector readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
+    public static Vector<ConfigurationDescriptor> readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
         String line;
         LineNumberReader file=null;
         /** Vector for configurationDescriptors to be deployed. */
-        Vector cfgDescriptors = new Vector();
+        Vector<ConfigurationDescriptor> cfgDescriptors = new Vector<ConfigurationDescriptor>();
         try {
             file = new LineNumberReader (new BufferedReader(new InputStreamReader(
                (org.smartfrog.SFSystem.getInputStreamForResource(fileURL)))));
@@ -282,7 +291,7 @@ public class OptionSet {
         } finally {
             try {
                 if(file!=null) {
-                	file.close();
+                    file.close();
                 }
             } catch (Exception ex) {
                 SFSystem.sfLog().ignore(ex);

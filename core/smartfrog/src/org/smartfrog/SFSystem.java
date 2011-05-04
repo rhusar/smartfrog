@@ -411,6 +411,9 @@ public class SFSystem implements MessageKeys {
         //read command line options
         OptionSet opts = new OptionSet(args);
 
+        //add some more logging
+        logPostOptionsInitStatus();
+        
         //engage headless mode
         maybeGoHeadless(opts);
 
@@ -485,6 +488,10 @@ public class SFSystem implements MessageKeys {
         Logger.logStatus();
         //SmartFrog classpath
         logClassPath();
+        //SmartFrog network status checks
+    }
+
+    public void logPostOptionsInitStatus() {
         //SmartFrog network status checks
         logNetworkStatus();
     }
