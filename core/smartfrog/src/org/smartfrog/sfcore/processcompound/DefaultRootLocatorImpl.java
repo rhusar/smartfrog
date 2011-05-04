@@ -22,6 +22,8 @@ package org.smartfrog.sfcore.processcompound;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.ConnectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
@@ -321,12 +323,22 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
             portNum = getRegistryPort(localCompound);
         }
 
-        Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(), portNum);
+        String registryHostAddress = hostAddress.getHostAddress();
+        Registry reg = SFSecurity.getRegistry(registryHostAddress, portNum);
 
-        ProcessCompound pc = (ProcessCompound) reg.lookup(defaultName);
+        ProcessCompound pc = null;
+        try {
+            pc = (ProcessCompound) reg.lookup(defaultName);
+        } catch (ConnectException e) {
+            //include the port number in the exception
+            throw new ConnectException("Failed to connect to " + registryHostAddress + ":" 
+                                       + portNum
+                                       + " : " + e, 
+                                       e);
+        }
 
         // Get rid of the stub if local
-        if ((localCompound != null)&&(pc.equals(localCompound))) {
+        if ((localCompound != null) && (pc.equals(localCompound))) {
             return localCompound;
         }
         String internalState = pc.toString();
