@@ -196,21 +196,23 @@ public class SFProcess implements MessageKeys {
     public static synchronized int getRootLocatorPort(ProcessCompound c) throws RemoteException, SmartFrogException {
         Object portObj=null;
         try {
-            if (c!=null) {
-              portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false));
+            if (c != null) {
+                portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false));
             } else {
-              portObj = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false);
+                portObj = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false);
             }
             if (portObj == null) {
-              throw new SmartFrogResolutionException("Unable to locate registry port from ", c);
+                throw new SmartFrogResolutionException("Unable to locate registry port from ", c);
             }
             Number port = (Number) portObj;
             return port.intValue();
-        } catch (ClassCastException ccex){
+        } catch (ClassCastException ccex) {
             throw new SmartFrogResolutionException(
-                "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-                +": "+portObj+", "+portObj!=null?portObj.getClass().getName():"",
-                ccex, c);
+                    "Wrong object for " + SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
+                    + ": " + portObj + ", " 
+                    + portObj != null ? portObj.getClass().getName() : "",
+                    ccex,
+                    c);
         }
     }
 
@@ -627,6 +629,7 @@ public class SFProcess implements MessageKeys {
                                                         String subProcess)
             throws SmartFrogException, RemoteException {
         ProcessCompound target = null;
+        int port = DefaultRootLocatorImpl.getRegistryPort(SFProcess.getProcessCompound());
         try {
             target = SFProcess.getProcessCompound();
             if (host != null) {
@@ -660,9 +663,11 @@ public class SFProcess implements MessageKeys {
                     MSG_UNKNOWN_HOST,
                     host), uhex);
         } catch (ConnectException cex) {
+            //include the port in this exception
             throw new SmartFrogException(MessageUtil.formatMessage(
-                    MSG_CONNECT_ERR,
-                    host), cex);
+                    MSG_CONNECT_ERR_WITH_PORT,
+                    host, Long.toString(port)),
+                    cex);
         } catch (RemoteException rmiEx) {
             throw new SmartFrogException(MessageUtil.formatMessage(
                     MSG_REMOTE_CONNECT_ERR,

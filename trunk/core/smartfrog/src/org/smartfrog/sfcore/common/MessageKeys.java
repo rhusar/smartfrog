@@ -202,6 +202,10 @@ public interface MessageKeys {
      */
     String MSG_CONNECT_ERR = "MSG_CONNECT_ERR";
     /**
+     * Message key: unable to connect to daemon. -include the port
+     */
+    String MSG_CONNECT_ERR_WITH_PORT = "MSG_CONNECT_ERR_WITH_PORT";
+    /**
      * Message key: unable to connect to daemon.
      */
     String MSG_REMOTE_CONNECT_ERR = "MSG_REMOTE_CONNECT_ERR";

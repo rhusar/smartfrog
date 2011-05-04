@@ -84,6 +84,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_UNKNOWN_HOST, "Unable to locate IP address of the host: {0}"},
         { MSG_CONNECT_ERR,
         "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be running on {0}"},
+        { MSG_CONNECT_ERR_WITH_PORT,
+                "Unable to connect to sfDaemon on: {0}:{1}.\nReason: sfDaemon may not be running on {0}:{1}"},
         { MSG_REMOTE_CONNECT_ERR,
         "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be authenticated properly"},
         { MSG_PARENT_LOCATION_FAILED,
