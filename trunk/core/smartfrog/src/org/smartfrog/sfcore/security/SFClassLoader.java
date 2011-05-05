@@ -405,7 +405,7 @@ public class SFClassLoader {
         throws ClassNotFoundException {
         Class cl = Class.forName(className, true, getClassLoader(codebase));
 
-		/* The classes referenced by cl, and loaded by the same class loader
+          /* The classes referenced by cl, and loaded by the same class loader
            when cl is linked, are not checked here. This implies that if
            they are in a different jar file they might not have the same
            priviledges. For this reason, we have to use sealed packages
@@ -532,7 +532,7 @@ public class SFClassLoader {
             debug.println(msg + " cannot find "+name+" in codebase \"" + codebase +
                 "\" getting exception " + t); // printing toString() rather than getMessages() yields more information
         }
-	}
+    }
 
     /**
      * This method is equivalent to Class.forName but it uses the SmartFrog
@@ -560,21 +560,21 @@ public class SFClassLoader {
             return (Class) result;
         }
 
-		try {
-			// try to load the class without references
-			// this will produce NoClassDefFoundError's if
-			// dependencies are missing
-			getClassLoader(codebase).loadClass(className);
+        try {
+            // try to load the class without references
+            // this will produce NoClassDefFoundError's if
+            // dependencies are missing
+            getClassLoader(codebase).loadClass(className);
 
-			// don't know a case where this would be reached..
-			throw new ClassNotFoundException("forName: loading of " + className
+            // don't know a case where this would be reached..
+            throw new ClassNotFoundException("forName: loading of " + className
                     + " failed, but loading it without references succeeded. Check references.");
-		} catch (ClassNotFoundException e) {
-			throw new ClassNotFoundException("forName: Cannot find " + className + " : " + e, e);
-		} catch (NoClassDefFoundError err) {
-			throw new ClassNotFoundException("forName: Error while loading "
+        } catch (ClassNotFoundException e) {
+            throw new ClassNotFoundException("forName: Cannot find " + className + " : " + e, e);
+        } catch (NoClassDefFoundError err) {
+            throw new ClassNotFoundException("forName: Error while loading "
                     + className + ": " + err, err);
-		}
+        }
     }
 
     /**
