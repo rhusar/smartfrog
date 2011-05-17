@@ -19,6 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
+import org.smartfrog.services.hadoop.operations.core.BindingTuple;
+
 import java.util.List;
 
 

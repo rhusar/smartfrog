@@ -22,13 +22,13 @@ package org.smartfrog.services.hadoop.components.tracker;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.util.LifecycleService;
-import org.smartfrog.services.hadoop.components.HadoopCluster;
+import org.smartfrog.services.hadoop.operations.core.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
-import org.smartfrog.services.hadoop.components.cluster.PortEntry;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.services.hadoop.operations.core.PortEntry;
+import org.smartfrog.services.hadoop.operations.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.operations.exceptions.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -110,10 +110,10 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             FileSystem fs = FileSystem.get(conf);
             if (fs == null) {
                 throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -unable to bind to the filesystem "
-                        +" defined in "+ ConfigurationAttributes.FS_DEFAULT_NAME + ": "+ fsName,
-                        null,
-                        this,
-                        conf);
+                                                + " defined in " + ConfigurationAttributes.FS_DEFAULT_NAME + ": " + fsName,
+                                                null,
+                                                this,
+                                                conf);
             }
             //fs.close();
         } catch (IOException e) {

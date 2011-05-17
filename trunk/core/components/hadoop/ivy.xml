@@ -228,7 +228,7 @@
     <!-- needed for the junit MR-->
     <dependency org="junit"
                 name="junit"
-                rev="${junit3.version}"
+                rev="${junit.version}"
                 conf="compile->default"/>
 
   </dependencies>

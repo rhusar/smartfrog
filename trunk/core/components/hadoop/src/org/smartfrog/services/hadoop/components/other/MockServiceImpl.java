@@ -22,9 +22,9 @@ package org.smartfrog.services.hadoop.components.other;
 import org.apache.hadoop.util.LifecycleService;
 import org.apache.hadoop.PingableMockService;
 import org.apache.hadoop.util.MockLifecycleService;
-import org.smartfrog.services.hadoop.components.HadoopCluster;
+import org.smartfrog.services.hadoop.operations.core.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;

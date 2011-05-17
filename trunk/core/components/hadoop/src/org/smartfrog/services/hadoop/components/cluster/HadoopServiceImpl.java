@@ -20,11 +20,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.LifecycleService;
+import org.smartfrog.services.hadoop.operations.core.BindingTuple;
+import org.smartfrog.services.hadoop.operations.core.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.operations.core.PortEntry;
+import org.smartfrog.services.hadoop.operations.exceptions.SFHadoopException;
 import org.smartfrog.services.ports.PortUtils;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.BindingTuple;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.services.hadoop.operations.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServicePingStatus;

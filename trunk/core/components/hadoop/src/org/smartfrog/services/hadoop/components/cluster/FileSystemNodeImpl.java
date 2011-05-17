@@ -22,7 +22,7 @@
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
 

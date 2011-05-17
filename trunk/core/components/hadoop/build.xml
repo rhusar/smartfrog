@@ -171,7 +171,7 @@
     <manifest file="${manifest.mf}">
       <attribute name="Built-By" value="${user.name}"/>
       <attribute name="Premain-Class"
-         value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
+         value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
     </manifest>
   </target>
 
@@ -179,7 +179,7 @@
   <target name="sizeof" depends="sizeof32, sizeof64" />
 
   <target name="sizeof32" depends="ready-to-test" >
-   <property name="sizeof" value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
+   <property name="sizeof" value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
    <sf-java
      classpathref="tests.run.classpath"
      classname="${sizeof}">
@@ -188,7 +188,7 @@
   </target>
 
   <target name="sizeof64" depends="ready-to-test" >
-    <property name="sizeof" value="org.smartfrog.services.hadoop.common.SizeOfAgent"/>
+    <property name="sizeof" value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
     <sf-java failonerror="false"
       classpathref="tests.run.classpath"
       classname="${sizeof}">
