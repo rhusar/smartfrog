@@ -1,11 +1,12 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-  <info organisation="org.smartfrog" module="sf-citerank">
+  <info organisation="org.smartfrog" module="sf-pagerank">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-      Demonstration hadoop cluster
+      A demonstration of the PageRank algorithm running on
+      Apache Hadoop.
     </description>
   </info>
   <!-- FIXME: Ivy 1.4.1 buildlist bug
@@ -57,16 +58,16 @@
 
 
     <dependency org="org.smartfrog"
-                name="sf-hadoop"
+                name="sf-hadoop-operations"
                 changing="true"
                 rev="latest.integration"
                 conf="runtime->runtime;server->server;compile->default"/>
 
-
+<!--
     <dependency org="org.smartfrog"
                 name="sf-hadoop-cluster"
                 changing="true"
                 rev="latest.integration"
-                conf="runtime->runtime;server->server;compile->default"/>
+                conf="runtime->runtime;server->server;compile->default"/>-->
   </dependencies>
 </ivy-module>
