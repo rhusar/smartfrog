@@ -1,0 +1,11 @@
+
+
+/**
+ * Define a Hadoop Cluster
+ */
+  
+  
+ HadoopCluster extends Prim {
+  namenode TBD;
+  jobtracker TBD;
+}

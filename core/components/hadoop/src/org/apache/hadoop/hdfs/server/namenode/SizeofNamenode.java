@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.apache.hadoop.hdfs.server.namenode;
 
-import org.smartfrog.services.hadoop.common.SizeOfAgent;
+import org.smartfrog.services.hadoop.operations.utils.SizeOfAgent;
 import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.fs.permission.PermissionStatus;
 import org.apache.hadoop.fs.permission.FsPermission;

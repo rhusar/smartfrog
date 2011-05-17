@@ -22,11 +22,11 @@ package org.smartfrog.services.hadoop.components.datanode;
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
 import org.apache.hadoop.util.LifecycleService;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.components.HadoopCluster;
+import org.smartfrog.services.hadoop.operations.core.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
-import org.smartfrog.services.hadoop.components.cluster.PortEntry;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.operations.core.PortEntry;
+import org.smartfrog.services.hadoop.operations.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 

@@ -62,7 +62,7 @@
       conf="compile->master;runtime->default"/>
     <dependency org="junit"
       name="junit"
-      rev="${junit3.version}"
+      rev="${junit.version}"
       conf="compile->default;redist->default"/>
   </dependencies>
 </ivy-module>

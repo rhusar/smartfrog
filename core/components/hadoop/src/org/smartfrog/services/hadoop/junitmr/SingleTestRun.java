@@ -23,7 +23,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestListener;
 import org.apache.hadoop.io.Writable;
-import org.smartfrog.services.hadoop.core.ThrowableWritable;
+import org.smartfrog.services.hadoop.operations.exceptions.ThrowableWritable;
 
 import java.io.DataInput;
 import java.io.DataOutput;

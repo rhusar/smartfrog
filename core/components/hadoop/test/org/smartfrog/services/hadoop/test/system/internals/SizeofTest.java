@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.test.system.internals;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.hadoop.common.SizeOfAgent;
+import org.smartfrog.services.hadoop.operations.utils.SizeOfAgent;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.hdfs.server.namenode.SizeofNamenode;

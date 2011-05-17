@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.LifecycleService;
-import org.smartfrog.services.hadoop.conf.ClusterBound;
+import org.smartfrog.services.hadoop.operations.core.ClusterBound;
 import org.smartfrog.services.hadoop.core.ServicePingStatus;
 
 import java.io.IOException;

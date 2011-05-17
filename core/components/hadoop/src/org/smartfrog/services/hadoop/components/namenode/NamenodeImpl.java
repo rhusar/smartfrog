@@ -25,9 +25,9 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
-import org.smartfrog.services.hadoop.components.cluster.PortEntry;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.operations.core.PortEntry;
+import org.smartfrog.services.hadoop.operations.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
