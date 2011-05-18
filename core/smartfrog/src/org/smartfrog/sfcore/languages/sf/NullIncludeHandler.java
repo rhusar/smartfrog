@@ -40,7 +40,7 @@ public class NullIncludeHandler implements IncludeHandler {
     /**
      * Constructor.
      */
-    public DefaultIncludeHandler() {
+    public NullIncludeHandler() {
         baseCodebase = null;
     }
 
@@ -50,7 +50,7 @@ public class NullIncludeHandler implements IncludeHandler {
      * @param baseCodebase the codebase for this include handler to which will be appended the codebase passed in the
      * parseIncldue method.
      */
-    public DefaultIncludeHandler(String baseCodebase) {
+    public NullIncludeHandler(String baseCodebase) {
         this.baseCodebase = baseCodebase;
     }
 
