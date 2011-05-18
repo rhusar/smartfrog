@@ -22,11 +22,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.tools.eclipse.ui.runner;
 
+import org.smartfrog.tools.eclipse.SmartFrogPlugin;
 import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.model.Util;
 import org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage;
-import org.smartfrog.tools.eclipse.SmartFrogPlugin;
-
 
 /**
  * all information for SmartFrog external tools:file name, configuration, environment
@@ -98,82 +97,48 @@ abstract class ISfRunnerExt
         return ( mProcess != null );
     }
 
+
+    /** The OS name. */
+    private static final String OS_NAME = System.getProperty("os.name");
+    /** The OS version. */
+    private static final String OS_VERSION = System.getProperty("os.version");
+    /** Windows OS Prefix String */
+    private static final String WINDOWS_OS_PREFIX = "Windows";
+    private static final String WINDOWS_OS_9x_PREFIX = "Windows 9";
+    private static final String WINDOWS_OS_95_MINOR = "4.0";
+    private static final String WINDOWS_OS_98_MINOR = "4.1";
+
     /**
-     * return the command name in different OS
-     * @return
+     * Matches the JAVA OS String with the strings provided.
+     *
+     * @param osName    the OS to check, e.g. WINDOWS
+     * @param osVersion the version e.g. 4.0
+     * @return true if match, false otherwise
      */
-    protected String getCommandGeneral()
-    {
-        String osName = System.getProperty("os.name"); //$NON-NLS-1$
-        String cmdGeneral = ""; //$NON-NLS-1$
+    private static boolean checkOS(final String osName, final String osVersion) {
 
-        if (osName.equals("Windows 2000") || osName.equals("Windows NT") || //$NON-NLS-1$ //$NON-NLS-2$
-                osName.equals("Windows XP")) { //$NON-NLS-1$
-            cmdGeneral = "cmd.exe /C"; //$NON-NLS-1$
-
-            //            if (this.securityCheckBox.isSelected()) {
-            //               dir = dir + cmdAddSecurity + "\\" ;
-            //               cmdStop = dir + cmdAddSecurity + "\\" ;
-            //            }
-
-        } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) { //$NON-NLS-1$ //$NON-NLS-2$
-            cmdGeneral = "command.exe /C"; //$NON-NLS-1$
-
-            //            if (this.securityCheckBox.isSelected()) {
-            //               dir = dir + cmdAddSecurity + "\\" ;
-            //               cmdStop = dir + cmdAddSecurity + "\\" ;
-            //            }
-        } else {
-            cmdGeneral = "bash"; //$NON-NLS-1$
-
-            //            if (this.securityCheckBox.isSelected()) {
-            //               dir = dir + cmdAddSecurity + "/" ;
-            //               cmdStop = dir + cmdAddSecurity + "/" ;
-            //            }
-        }
-
-        return cmdGeneral;
+        return !(osName == null || osVersion == null) && OS_NAME.startsWith(osName) && OS_VERSION.startsWith(osVersion);
     }
-    
-    
+
     /**
      * return the command name in different OS
-     * @return
+     *
+     * @return the command array
      */
-    protected String[] getCommandGeneralArray()
-    {
-    	String cmds[] = null;
-        String osName = System.getProperty("os.name"); //$NON-NLS-1$
+    protected String[] getCommandGeneralArray() {
+        String cmds[];
 
-        if (osName.equals("Windows 2000") || osName.equals("Windows NT") || //$NON-NLS-1$ //$NON-NLS-2$
-                osName.equals("Windows XP")) { //$NON-NLS-1$
-        	cmds = new String[2];
-        	cmds[0] = "cmd.exe";
-        	cmds[1]= "/C";
-
-            //            if (this.securityCheckBox.isSelected()) {
-            //               dir = dir + cmdAddSecurity + "\\" ;
-            //               cmdStop = dir + cmdAddSecurity + "\\" ;
-            //            }
-
-        } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) { //$NON-NLS-1$ //$NON-NLS-2$
-        	cmds = new String[2];
-        	cmds[0] = "command.exe";
-        	cmds[1]= "/C";
-
-            //            if (this.securityCheckBox.isSelected()) {
-            //               dir = dir + cmdAddSecurity + "\\" ;
-            //               cmdStop = dir + cmdAddSecurity + "\\" ;
-            //            }
+        if (OS_NAME.startsWith(WINDOWS_OS_PREFIX)) {
+            // windows OS
+            // windows 95/98 ?
+            if (checkOS(WINDOWS_OS_9x_PREFIX, WINDOWS_OS_95_MINOR) || checkOS(WINDOWS_OS_9x_PREFIX, WINDOWS_OS_98_MINOR)) {
+                cmds = new String[]{"command.exe", "/C"};
+            } else {
+                // assume all other windows versions have a cmd.exe on the path
+                cmds = new String[]{"cmd.exe", "/C"};
+            }
         } else {
-            cmds = new String[1];
-        	cmds[0] = "bash";
-
-
-            //            if (this.securityCheckBox.isSelected()) {
-            //               dir = dir + cmdAddSecurity + "/" ;
-            //               cmdStop = dir + cmdAddSecurity + "/" ;
-            //            }
+            cmds = new String[]{"bash.exe"};
         }
 
         return cmds;
