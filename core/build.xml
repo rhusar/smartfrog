@@ -346,10 +346,12 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- cruise control/hudson test of hadoop                   -->
   <!-- =================================================================== -->
+<!--
   <target name="cc-hadoop-test"
       depends="clean, ivy-hadoop-tested"
       description="CI test run of Hadoop"/>
-  
+-->
+
   <!-- =================================================================== -->
   <!-- Start cruise control from inside ant  -->
   <!-- Currently we fork and use whichever version of ant is in CC, not -->
@@ -519,7 +521,9 @@ For more information: www.smartfrog.org
           <exclude name="VAST/build.xml" unless="vast.enabled"/>
           <!--these are slow and normally run in their own test runs-->
           <exclude name="bulkiotests/build.xml" unless="bulkiotests.enabled"/>
+          <exclude name="hadoop-cluster/build.xml"/>
         </fileset>
+        
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
           <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
@@ -539,6 +543,10 @@ For more information: www.smartfrog.org
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
           <exclude name="documentation/build.xml" unless="forrest.enabled"/>
+
+          <!-- remove the hadoop stuff while things change-->
+          <exclude name="hadoop/build.xml"/>
+
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
@@ -587,7 +595,6 @@ For more information: www.smartfrog.org
   <target name="published" depends="ivy-publish"/>
 
   <target name="ivy-list-order" depends="ivy-init">
-    <echo>java1.6+=${java1.6+}</echo>
     <pathconvert pathsep="&#10;" refid="child.projects"
       property="child.projects.list" />
     <echo>
@@ -653,14 +660,14 @@ ${child.projects.list}
     <ivy-delegate target="pdf-doc-folder" />
   </target>
 
-  <target name="ivy-hadoop-tested" depends="ivy-init">
+<!--  <target name="ivy-hadoop-tested" depends="ivy-init">
     <ivy-projects reference="hadoop.projects" root="sf-citerank">
     </ivy-projects>
     <subant target="test" verbose="true">
       <buildpath refid="hadoop.projects"/>
       <property name="system.tests" value="true" />
     </subant>
-  </target>
+  </target>-->
 
   <target name="ivy-www" depends="ivy-init">
     <ivy-projects reference="www.projects" leaf="sf-www"/>

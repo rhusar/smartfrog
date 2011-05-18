@@ -143,11 +143,12 @@
         conf="compile,runtime,daemon->default"/>
     
     <!--Hadoop-->
-    <dependency org="org.smartfrog"
+    <!--only used in examples, and disabled right now-->
+<!--    <dependency org="org.smartfrog"
         name="sf-hadoop-cluster"
         changing="true"
         rev="latest.integration"
-        conf="hadoop->default,server"/>
+        conf="hadoop->default,server"/>-->
 
     <!-- HtmlUnit is for testing; as we are compiling tests in the main tree, it is needed for compile and test -->
 
