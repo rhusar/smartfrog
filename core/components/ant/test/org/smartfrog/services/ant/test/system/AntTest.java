@@ -25,7 +25,6 @@ import org.smartfrog.services.ant.Ant;
 import org.smartfrog.services.ant.AntRuntime;
 import org.smartfrog.sfcore.annotations.Description;
 import org.smartfrog.sfcore.annotations.SkippedTest;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.DeployingTestBase;
 
@@ -51,8 +50,7 @@ public class AntTest
                                              "testSimpleProperty");
         Prim antprim;
         antprim = application.sfResolve("ant", (Prim) null, true);
-        ComponentDescription ant = (ComponentDescription) antprim;
-        //Ant ant = (Ant) antprim;
+        Ant ant = (Ant) antprim;
     }
 
     @Description("Test properties can be set/got")
