@@ -376,8 +376,8 @@ TOKEN : /* Literals */
 void Attributes(SFComponentDescription descr) :
 {
 }
-{
-  AttributesNoEOF(descr) <EOF>
+{ ((<EXTENDS> <LBRACE> AttributesNoEOF(descr) <RBRACE>) | AttributesNoEOF(descr))
+  <EOF>
 }
 
 /*
