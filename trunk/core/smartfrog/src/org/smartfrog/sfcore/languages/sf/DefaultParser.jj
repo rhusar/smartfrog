@@ -388,8 +388,8 @@ Vector AttributeList() :
 {
     Vector res;
 }
-{
-    res = AttributeListNoEOF() <EOF>
+{   ((<EXTENDS> <LBRACE> (res = AttributeListNoEOF()) <RBRACE>) | (res = AttributeListNoEOF()))
+    <EOF>
     { return res; }
 }
 
