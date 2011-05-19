@@ -879,7 +879,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * children.
      */
     public void sfParentageChanged() throws RemoteException {
-    	for (Prim p:sfChildList()) {
+        for (Prim p:sfChildList()) {
              p.sfParentageChanged();
         }
         super.sfParentageChanged();
