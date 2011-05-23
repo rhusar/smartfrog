@@ -142,6 +142,10 @@ date extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Date";
 }
 
+Set extends Function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Set";
+}
+
 userinput extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
 }
