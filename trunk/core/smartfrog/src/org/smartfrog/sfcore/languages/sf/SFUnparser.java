@@ -26,6 +26,11 @@ public class SFUnparser implements WriterLanguageUnparser {
     *          error unparsing stream
     */
    public void sfUnparse(Writer w, ComponentDescription data) throws SmartFrogParseException {
+       try {
+            data.writeOn(w);
+       } catch (IOException e) {
+           throw new SmartFrogParseException("IO exception during unparse", e);
+       }
    }
 
    /**
