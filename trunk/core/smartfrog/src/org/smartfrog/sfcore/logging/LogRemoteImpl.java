@@ -19,11 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.logging;
 
-import org.smartfrog.sfcore.security.SecureRemoteObject;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 /**
  * This bridges from a local log to a remote one, allowing logging over RMI
@@ -40,7 +39,8 @@ public class LogRemoteImpl implements LogRemote {
      * @throws RemoteException problems exporting the object
      * @throws SFGeneralSecurityException security problems
      */
-    public static LogRemote createExportedLog(Log localLog) throws RemoteException, SFGeneralSecurityException {
+    public static LogRemote createExportedLog(Log localLog)
+            throws RemoteException, SFGeneralSecurityException {
         LogRemoteImpl instance = new LogRemoteImpl(localLog);
         return (LogRemote) SecureRemoteObject.exportObject(instance, 0);
     }

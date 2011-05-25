@@ -1,27 +1,28 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 
@@ -33,13 +34,13 @@ import java.sql.Timestamp;
  */
 public class LogImplAsyncWrapper implements LogSF {
 
-    private        Log            logImpl;
-    private static LogAsyncQueue  logQueue;
+    private Log logImpl;
+    private static LogAsyncQueue logQueue;
     private static LogAsyncThread worker;
 
     static {
         logQueue = new LogAsyncQueue();
-        worker   = new LogAsyncThread(logQueue);
+        worker = new LogAsyncThread(logQueue);
         worker.setName("Async Logging");
         worker.setDaemon(true);
         worker.start();
@@ -58,7 +59,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param logSF logger
      */
     public LogImplAsyncWrapper(LogSF logSF) {
-        this((Log)logSF);
+        this((Log) logSF);
     }
 
 
@@ -98,10 +99,12 @@ public class LogImplAsyncWrapper implements LogSF {
      * <p> Get log name. </p>
      * @return String log name
      */
-    public String getLogName(){
-        if (logImpl instanceof LogSF){
-            return ((LogSF)logImpl).getLogName();
-        } else return "AsyncLogger";
+    public String getLogName() {
+        if (logImpl instanceof LogSF) {
+            return ((LogSF) logImpl).getLogName();
+        } else {
+            return "AsyncLogger";
+        }
     }
 
     /**
@@ -110,8 +113,8 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param currentLogLevel new logging level
      */
     public void setLevel(int currentLogLevel) {
-        if (logImpl instanceof LogLevel){
-            ((LogLevel)logImpl).setLevel(currentLogLevel);
+        if (logImpl instanceof LogLevel) {
+            ((LogLevel) logImpl).setLevel(currentLogLevel);
         } else {
             //ignore
         }
@@ -122,8 +125,8 @@ public class LogImplAsyncWrapper implements LogSF {
      * @return int log level
      */
     public int getLevel() {
-        if (logImpl instanceof LogLevel){
-            return ((LogLevel)logImpl).getLevel();
+        if (logImpl instanceof LogLevel) {
+            return ((LogLevel) logImpl).getLevel();
         } else {
             return LogImpl.getLevel(logImpl);
         }
@@ -137,8 +140,8 @@ public class LogImplAsyncWrapper implements LogSF {
      * @return boolean true if given log level is currently enabled
      */
     public boolean isLevelEnabled(int logLevel) {
-        if (logImpl instanceof LogLevel){
-            return ((LogLevel)logImpl).isLevelEnabled(logLevel);
+        if (logImpl instanceof LogLevel) {
+            return ((LogLevel) logImpl).isLevelEnabled(logLevel);
         } else {
             return (logLevel >= getLevel());
         }
@@ -178,7 +181,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * when the log level is more than error. </p>
      * @return boolean true if error level is currently enabled
      */
-    public boolean isErrorEnabled(){
+    public boolean isErrorEnabled() {
         return logImpl.isErrorEnabled();
     }
 
@@ -191,7 +194,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * when the log level is more than fatal. </p>
      * @return boolean true if fatal level is currently enabled
      */
-    public boolean isFatalEnabled(){
+    public boolean isFatalEnabled() {
         return logImpl.isFatalEnabled();
     }
 
@@ -204,7 +207,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * when the log level is more than info. </p>
      * @return boolean true if info level is currently enabled
      */
-    public boolean isInfoEnabled(){
+    public boolean isInfoEnabled() {
         return logImpl.isInfoEnabled();
     }
 
@@ -217,7 +220,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * when the log level is more than trace. </p>
      * @return boolean true if trace level is currently enabled
      */
-    public boolean isTraceEnabled(){
+    public boolean isTraceEnabled() {
         return logImpl.isTraceEnabled();
     }
 
@@ -230,7 +233,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * when the log level is more than warn. </p>
      * @return boolean true if warn level is currently enabled
      */
-    public boolean isWarnEnabled(){
+    public boolean isWarnEnabled() {
         return logImpl.isWarnEnabled();
     }
 
@@ -241,7 +244,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void ignore(Object message) {
-        queue(LogImpl.TRACE_O, new Object[]{"IGNORE- "+message.toString()});
+        queue(LogImpl.TRACE_O, new Object[]{"IGNORE- " + message.toString()});
     }
 
 
@@ -252,7 +255,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void ignore(Object message, Throwable t) {
-        queue(LogImpl.TRACE_O_T,new Object[]{"IGNORE - "+message.toString(),t});
+        queue(LogImpl.TRACE_O_T, new Object[]{"IGNORE - " + message.toString(), t});
     }
 
 
@@ -264,7 +267,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void ignore(Object message, SmartFrogException t, TerminationRecord tr) {
-        ignore(message, (Throwable)t);
+        ignore(message, (Throwable) t);
     }
 
 
@@ -275,7 +278,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void ignore(Object message, SmartFrogException t) {
-        ignore(message, (Throwable)t);
+        ignore(message, (Throwable) t);
     }
 
 
@@ -285,7 +288,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void trace(Object message) {
-        queue(LogImpl.TRACE_O,new Object[]{message});
+        queue(LogImpl.TRACE_O, new Object[]{message});
     }
 
 
@@ -296,7 +299,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void trace(Object message, Throwable t) {
-        queue(LogImpl.TRACE_O_T,new Object[]{message,t});
+        queue(LogImpl.TRACE_O_T, new Object[]{message, t});
     }
 
 
@@ -308,7 +311,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void trace(Object message, SmartFrogException t, TerminationRecord tr) {
-        trace(message, (Throwable)t);
+        trace(message, (Throwable) t);
     }
 
 
@@ -319,7 +322,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void trace(Object message, SmartFrogException t) {
-        trace(message, (Throwable)t);
+        trace(message, (Throwable) t);
     }
 
 
@@ -329,7 +332,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void debug(Object message) {
-        queue(LogImpl.DEBUG_O,new Object[]{message});
+        queue(LogImpl.DEBUG_O, new Object[]{message});
     }
 
 
@@ -340,7 +343,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
-        queue(LogImpl.DEBUG_O_T,new Object[]{message,t});
+        queue(LogImpl.DEBUG_O_T, new Object[]{message, t});
     }
 
 
@@ -352,7 +355,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void debug(Object message, SmartFrogException t, TerminationRecord tr) {
-        debug(message, (Throwable)t);
+        debug(message, (Throwable) t);
     }
 
 
@@ -363,7 +366,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void debug(Object message, SmartFrogException t) {
-        debug(message, (Throwable)t);
+        debug(message, (Throwable) t);
     }
 
 
@@ -373,7 +376,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void info(Object message) {
-        queue(LogImpl.INFO_O,new Object[]{message});
+        queue(LogImpl.INFO_O, new Object[]{message});
     }
 
 
@@ -384,7 +387,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void info(Object message, Throwable t) {
-        queue(LogImpl.INFO_O_T,new Object[]{message,t});
+        queue(LogImpl.INFO_O_T, new Object[]{message, t});
     }
 
 
@@ -396,7 +399,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void info(Object message, SmartFrogException t, TerminationRecord tr) {
-        info(message, (Throwable)t);
+        info(message, (Throwable) t);
     }
 
 
@@ -407,7 +410,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void info(Object message, SmartFrogException t) {
-        info(message, (Throwable)t);
+        info(message, (Throwable) t);
     }
 
 
@@ -417,7 +420,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void warn(Object message) {
-        queue(LogImpl.WARN_O,new Object[]{message});
+        queue(LogImpl.WARN_O, new Object[]{message});
     }
 
 
@@ -428,7 +431,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
-        queue(LogImpl.WARN_O_T,new Object[]{message,t});
+        queue(LogImpl.WARN_O_T, new Object[]{message, t});
     }
 
 
@@ -440,7 +443,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void warn(Object message, SmartFrogException t, TerminationRecord tr) {
-        warn(message, (Throwable)t);
+        warn(message, (Throwable) t);
     }
 
 
@@ -451,7 +454,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void warn(Object message, SmartFrogException t) {
-        warn(message, (Throwable)t);
+        warn(message, (Throwable) t);
     }
 
 
@@ -461,7 +464,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void error(Object message) {
-        queue(LogImpl.ERROR_O,new Object[]{message});
+        queue(LogImpl.ERROR_O, new Object[]{message});
     }
 
 
@@ -472,7 +475,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void error(Object message, Throwable t) {
-        queue(LogImpl.ERROR_O_T,new Object[]{message,t});
+        queue(LogImpl.ERROR_O_T, new Object[]{message, t});
     }
 
 
@@ -484,7 +487,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void error(Object message, SmartFrogException t, TerminationRecord tr) {
-        error(message, (Throwable)t);
+        error(message, (Throwable) t);
     }
 
 
@@ -495,7 +498,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void error(Object message, SmartFrogException t) {
-        error(message, (Throwable)t);
+        error(message, (Throwable) t);
     }
 
 
@@ -505,7 +508,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void fatal(Object message) {
-        queue(LogImpl.FATAL_O,new Object[]{message});
+        queue(LogImpl.FATAL_O, new Object[]{message});
     }
 
 
@@ -516,7 +519,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
-        queue(LogImpl.FATAL_O_T,new Object[]{message,t});
+        queue(LogImpl.FATAL_O_T, new Object[]{message, t});
     }
 
 
@@ -528,7 +531,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param tr log this TerminationRecord
      */
     public void fatal(Object message, SmartFrogException t, TerminationRecord tr) {
-        fatal(message, (Throwable)t);
+        fatal(message, (Throwable) t);
     }
 
 
@@ -539,7 +542,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void fatal(Object message, SmartFrogException t) {
-        fatal(message, (Throwable)t);
+        fatal(message, (Throwable) t);
     }
 
 

@@ -1,30 +1,30 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.PrintStream;
 
@@ -32,7 +32,7 @@ import java.io.PrintStream;
 /**
  * <p>Only out and err output are printed. </p>
  */
-public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel  {
+public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel {
 
     /** Configuration for class  */
     protected ComponentDescription classComponentDescription = null;
@@ -71,7 +71,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param initialLogLevel level to log at
      */
     public LogToNothingImpl(String name, Integer initialLogLevel) {
-       this(name, initialLogLevel, System.out, System.err);
+        this(name, initialLogLevel, System.out, System.err);
     }
 
     /**
@@ -81,9 +81,12 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param componentComponentDescription A component description to overwrite class configuration
      * @param initialLogLevel level to log at.
      */
-    public LogToNothingImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel) {
+    public LogToNothingImpl(String name,
+                            ComponentDescription componentComponentDescription,
+                            Integer initialLogLevel) {
         this(name, componentComponentDescription, initialLogLevel, System.out, System.err);
     }
+
     /**
      * Construct a simple log with given name and log level
      * and log to output level
@@ -94,7 +97,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      */
 
     public LogToNothingImpl(String name, Integer initialLogLevel, PrintStream out, PrintStream err) {
-        this (name,null, initialLogLevel, out, err);
+        this(name, null, initialLogLevel, out, err);
     }
 
     /**
@@ -107,45 +110,54 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param err error stream to log to
      */
 
-    public LogToNothingImpl(String name,ComponentDescription componentComponentDescription, Integer initialLogLevel, PrintStream out, PrintStream err) {
+    public LogToNothingImpl(String name,
+                            ComponentDescription componentComponentDescription,
+                            Integer initialLogLevel,
+                            PrintStream out,
+                            PrintStream err) {
         assert name != null;
         logName = name;
         setOutstream(out);
         setErrstream(err);
         try {
-          classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true, null);
+            classComponentDescription =
+                    ComponentDescriptionImpl.getClassComponentDescription(this, true, null);
         } catch (SmartFrogException ex) {
-           this.warn(ex.toString());
+            this.warn(ex.toString());
         }
         try {
-          readSFNothingAttributes(classComponentDescription);
+            readSFNothingAttributes(classComponentDescription);
         } catch (SmartFrogException ex1) {
-           this.error("",ex1);
+            this.error("", ex1);
         }
         try {
-          readSFNothingAttributes(componentComponentDescription);
+            readSFNothingAttributes(componentComponentDescription);
         } catch (SmartFrogException ex1) {
-           this.error("",ex1);
+            this.error("", ex1);
         }
-        if (errToOut) setErrstream(outstream);
+        if (errToOut) {
+            setErrstream(outstream);
+        }
         if (isDebugEnabled() && this.getClass().toString().endsWith("LogToNothingImpl")) {
-                    //This will go to the std output only if system.out is not redirected
-                    out("[DEBUG] Log using LogToNothing.");
+            //This will go to the std output only if system.out is not redirected
+            out("[DEBUG] Log using LogToNothing.");
         }
     }
 
     /**
      * Reads optional and mandatory attributes.
      * @param cd ComponentDescription A component description to read attributes from
-     * @throws  SmartFrogException error while reading attributes
+     * @throws SmartFrogException error while reading attributes
      */
     protected void readSFNothingAttributes(ComponentDescription cd) throws SmartFrogException {
         //Optional attributes.
-        if (cd==null) return;
+        if (cd == null) {
+            return;
+        }
         try {
-          errToOut = cd.sfResolve(ATR_ERR_TO_OUT, errToOut, false);
-        } catch (Exception sex){
-           this.warn("",sex);
+            errToOut = cd.sfResolve(ATR_ERR_TO_OUT, errToOut, false);
+        } catch (Exception sex) {
+            this.warn("", sex);
         }
     }
 
@@ -155,7 +167,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param outstream Output stream to set
      */
     public void setOutstream(PrintStream outstream) {
-        assert(outstream != null);
+        assert (outstream != null);
         this.outstream = outstream;
     }
 
@@ -164,7 +176,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param errstream Error stream to set
      */
     public void setErrstream(PrintStream errstream) {
-        assert(errstream != null);
+        assert (errstream != null);
         this.errstream = errstream;
     }
 
@@ -211,7 +223,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void debug(Object message) {
-        return;
     }
 
 
@@ -221,7 +232,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
-        return;
     }
 
 
@@ -230,7 +240,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void trace(Object message) {
-        return;
     }
 
 
@@ -249,7 +258,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void info(Object message) {
-        return;
     }
 
 
@@ -259,7 +267,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void info(Object message, Throwable t) {
-        return;
     }
 
 
@@ -268,7 +275,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void warn(Object message) {
-        return;
     }
 
 
@@ -278,7 +284,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
-        return;
     }
 
 
@@ -287,7 +292,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void error(Object message) {
-        return;
     }
 
 
@@ -297,7 +301,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void error(Object message, Throwable t) {
-        return;
     }
 
 
@@ -306,7 +309,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void fatal(Object message) {
-        return;
     }
 
 
@@ -316,7 +318,6 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
-        return;
     }
 
 
@@ -396,8 +397,8 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
     }
 
 
-
     // Special LogMessages interface to produce output.
+
     /**
      * <p> Log an error with message log level. </p>
      * <p> Same as info messages but without Labels.</p>
@@ -405,7 +406,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void out(Object message) {
-         outstream.println(message.toString());
+        outstream.println(message.toString());
     }
 
 
@@ -416,7 +417,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param message log this message
      */
     public void err(Object message) {
-          err(message,null);
+        err(message, null);
     }
 
 
@@ -428,10 +429,10 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void err(Object message, Throwable t) {
-          errstream.println(message.toString());
-          if (t!=null){
-              t.printStackTrace(errstream);
-          }
+        errstream.println(message.toString());
+        if (t != null) {
+            t.printStackTrace(errstream);
+        }
     }
 
     /**
@@ -455,7 +456,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
      * @param t log this cause
      */
     public void err(Object message, SmartFrogException t) {
-        err(message, (Throwable)t);
+        err(message, (Throwable) t);
     }
 }
 

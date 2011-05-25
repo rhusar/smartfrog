@@ -569,7 +569,7 @@ public final class SFParse implements MessageKeys {
             showVersionInfo();
             ParseOptionSet optionSet = new ParseOptionSet(args);
             //stack trace flag comes from the verbose option
-            org.smartfrog.sfcore.common.Logger.logStackTrace = optionSet.verbose;
+            Logger.logStackTrace = optionSet.verbose;
 
 
 

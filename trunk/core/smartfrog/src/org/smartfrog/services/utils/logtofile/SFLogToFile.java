@@ -50,64 +50,98 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     /*
       Date format
      */
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS yyyy/MM/dd");
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS yyyy/MM/dd");
 
+    /**
+     * Filename attribute: {@value}
+     */
+    public static final String ATTR_FILE_NAME = "fileName";
+    /**
+     * Path attribute: {@value}
+     */
+    public static final String ATTR_PATH = "path";
+    /**
+     * File extension attribute: {@value}
+     */
+    public static final String ATTR_FILE_EXTENSION = "fileExtension";
+    /**
+     *  flag to say only log in the root process attribute: {@value}
+     */
+    public static final String ATTR_LOG_ONLY_IN_ROOT_PROCESS = "logOnlyInRootProcess";
+    /**
+     * flag to say use the date in the filename : {@value}
+     */
+    public static final String ATTR_USE_DATE = "useDate";
+    /**
+     *  flag to use the time attribute: {@value}
+     */
+    public static final String ATTR_USE_TIME = "useTime";
+
+    /**
+     * Default filename: {@value}
+     */
+    public static final String LOG_FILE = "logFile";
+    /**
+     * Default extension: {@value}
+     */
+    public static final String LOG_FILE_EXTENSION = ".log";
     /** Reference for filename. */
-    Reference fileNameRef = new Reference("fileName");
-    /** String name for file name. */
-    String fileName;
-    /** Reference for file extension. */
-    Reference fileExtensionRef = new Reference(
-            "fileExtension");
-    /** String name for file extension. */
-    String fileExtension;
+    private static final Reference fileNameRef = new Reference(ATTR_FILE_NAME);
     /** Reference for path. */
-    Reference pathRef = new Reference("path");
-    /** String name for path. */
-    String path;
-    /** String name for full filename. */
-    String fullFileName;
+    private static final Reference pathRef = new Reference(ATTR_PATH);
+    /** Reference for file extension. */
+    private static final Reference fileExtensionRef = new Reference(
+            ATTR_FILE_EXTENSION);
     /** Reference for logOnlyInRootProcess. */
-    Reference logOnlyInRootProcessRef = new Reference(
-            "logOnlyInRootProcess");
-    /** Flag indicating whether logOnlyInRootProcess or not. */
-    boolean logOnlyInRootProcess;
+    private static final Reference logOnlyInRootProcessRef = new Reference(
+            ATTR_LOG_ONLY_IN_ROOT_PROCESS);
     /** Reference for processName. */
-    Reference processNameRef = new Reference(SmartFrogCoreKeys.SF_PROCESS);
-    /** String name for processName. */
-    String processName;
+    private static final Reference processNameRef = new Reference(SmartFrogCoreKeys.SF_PROCESS);
     /** Reference for useDate. */
-    Reference useDateRef = new Reference("useDate");
+    private static final Reference useDateRef = new Reference(ATTR_USE_DATE);
     /** Reference for useTime. */
-    Reference useTimeRef = new Reference("useTime");
+    private static final Reference useTimeRef = new Reference(ATTR_USE_TIME);
+
+
+    /** String name for file name. */
+    private String fileName;
+    /** String name for file extension. */
+    private String fileExtension;
+    /** String name for path. */
+    private String path;
+    /** String name for full filename. */
+    private String fullFileName;
+    /** Flag indicating whether logOnlyInRootProcess or not. */
+    private boolean logOnlyInRootProcess;
+    /** String name for processName. */
+    private String processName;
 
     /** cache the standard output, we'll need to put them back on termination */
-    OutputStream dout = System.out;
+    private final OutputStream dout = System.out;
 
     //   InputStream din = System.in;
     /** Output stream. */
-    PrintStream originalSysOut = System.out;
+    private PrintStream originalSysOut = System.out;
     /** Error stream. */
-    PrintStream originalSysErr = System.err;
+    private PrintStream originalSysErr = System.err;
 
     /** Direct brand new outputs to a file. */
-    PrintStream newOut = null;
+    private PrintStream newOut = null;
 
     /** The file itself. */
-    File logFile;
+    private File logFile;
     /** PrintMsgInt object. */
-    PrintMsgInt printMsgImp = null;
+    private PrintMsgInt printMsgImp = null;
     /** Flag indicating whether to redirect to std or not. */
-    boolean redirectStd = false;
+    private boolean redirectStd = false;
     /** Flag indicating whether to use time or not. */
-    boolean useTime = false;
+    private boolean useTime = false;
     /** Flag indicating whether to useDate or not. */
-    boolean useDate = false;
+    private boolean useDate = false;
 
     /** Will terminate the component if it is in a subProcess during sfStart. */
-    boolean detachAndTerminate = false;
-    /** TerminationRecord object. */
-    TerminationRecord termR;
+    private boolean detachAndTerminate = false;
+    private String logFilePath;
 
     /**
      * Constructor.
@@ -115,7 +149,6 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      * @throws RemoteException in case of metwork/rmi error.
      */
     public SFLogToFile() throws RemoteException {
-        super();
     }
 
     /**
@@ -133,8 +166,8 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
 
         // get path , filename & fileExtension
         path = sfResolve(pathRef, "." + File.pathSeparator, false);
-        fileName = sfResolve(fileNameRef, "logFile", false);
-        fileExtension = sfResolve(fileExtensionRef, ".log", false);
+        fileName = sfResolve(fileNameRef, LOG_FILE, false);
+        fileExtension = sfResolve(fileExtensionRef, LOG_FILE_EXTENSION, false);
         useDate = sfResolve(useDateRef, false, false);
         useTime = sfResolve(useTimeRef, false, false);
         logOnlyInRootProcess = sfResolve(logOnlyInRootProcessRef, true,
@@ -168,7 +201,8 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
             RemoteException {
         super.sfStart();
         if (detachAndTerminate) {
-            termR = TerminationRecord.normal("Not deployed in rootProcess", this.sfCompleteName());
+            TerminationRecord termR =
+                    TerminationRecord.normal("Not deployed in rootProcess", this.sfCompleteName());
             TerminatorThread terminator = new TerminatorThread(this, termR).detach();
             terminator.start();
         }
@@ -199,7 +233,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
 
         // FORMAT THE DATE
         Date now = new Date(System.currentTimeMillis());
-        String formatDateString = "dd-MM-yyyy";
+        String formatDateString = "yyyy-MM-dd";
         String formatTimeString = "HH-mm";
 
         String timeFileName = "";
@@ -217,7 +251,8 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
         // add the extension
         fullFileName += (dateFileName + timeFileName + fileExtension);
         logFile = new File(fullFileName);
-        System.out.println("Log File created at " + logFile.getAbsolutePath());
+        logFilePath = logFile.getAbsolutePath();
+        System.out.println("Log File created at " + logFilePath);
     }
 
     /**
@@ -324,5 +359,9 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
      */
     public InputStream getInputStream() {
         return null;
+    }
+
+    public String getLogFilePath() {
+        return logFilePath;
     }
 }

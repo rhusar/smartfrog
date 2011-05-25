@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.logging;
 
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 /**
  * This creates an output stream from a log, an output stream that is buffered on a line-by-line basis.
@@ -51,17 +51,17 @@ public class OutputStreamLog extends OutputStream {
      * Reset the buffer to a new empty ByteArrayOutputStream
      */
     private void resetBuffer() {
-        buffer=new ByteArrayOutputStream();
+        buffer = new ByteArrayOutputStream();
     }
 
     /**
      * Print then reset the buffer
      */
     private void printBuffer() {
-        String contents=buffer.toString();
-        if(contents.length()>0) {
+        String contents = buffer.toString();
+        if (contents.length() > 0) {
             resetBuffer();
-            LogUtils.log(log,level,contents);
+            LogUtils.log(log, level, contents);
         }
     }
 
@@ -86,9 +86,9 @@ public class OutputStreamLog extends OutputStream {
      * Writes the specified byte to this output stream.
      * @param b the <code>byte</code>.
      */
-    public void write(int b)  {
+    public void write(int b) {
         buffer.write(b);
-        if (b=='\n') {
+        if (b == '\n') {
             printBuffer();
         }
     }
