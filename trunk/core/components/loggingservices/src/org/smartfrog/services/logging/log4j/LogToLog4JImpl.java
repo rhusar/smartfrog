@@ -40,7 +40,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -52,7 +51,6 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     public static final String[] LOG4J_LEVELS =
             {"ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"};
 
-    private static final String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
     /**
      * LogToLog4JImpl configuration description.
      */
@@ -306,7 +304,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
              */
             if (configuratorURL == null) {
                 //Optional attributes.
-                configuratorURL = System.getProperty("log4j.configuration");
+                configuratorURL = System.getProperty(LOG4J_CONFIGURATION_PROPERTY);
                 if (isTraceEnabled()) {
                     this.trace("ConfigURL (from log4j.configuration sys property): " + configuratorURL);
                 }
@@ -328,9 +326,9 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
                 //true so that if it is present we can issue a warning. configureAndWatch not supported in Log4J new versions.
                 boolean configureAndWatch = false;
 
-                configureAndWatch = cd.sfResolve(ATR_CONFIGURE_AND_WATCH, configureAndWatch, true);
+                configureAndWatch = cd.sfResolve(ATTR_CONFIGURE_AND_WATCH, configureAndWatch, true);
                 if (isWarnEnabled()) {
-                    warn(ATR_CONFIGURE_AND_WATCH + " not supported any more");
+                    warn(ATTR_CONFIGURE_AND_WATCH + " not supported any more");
                 }
                 //        configureAndWatchDelay = (long)delay;
             } catch (SmartFrogResolutionException ignored) {

@@ -34,7 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 Example extends Compound {
     logger extends Logger {
-	      logFile "tcp36.log";
+        logFile "tcp36.log";
     }
     Foo extends LoggerTest {
         sfProcessHost "localhost";

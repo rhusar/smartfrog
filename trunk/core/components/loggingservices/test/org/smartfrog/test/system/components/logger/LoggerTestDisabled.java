@@ -32,12 +32,14 @@ import java.io.FileReader;
 /**
  * JUnit test class for test cases related to "logger" component
  */
-public class LoggerTest
+public class LoggerTestDisabled
     extends SmartFrogTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/components/logger/";
+    public static final String LOGS_DIR = "logsDir";
+    public static final String LOG_FILE = "logFile";
 
-    public LoggerTest(String s) {
+    public LoggerTestDisabled(String s) {
         super(s);
     }
 
@@ -48,8 +50,8 @@ public class LoggerTest
         try {
             assertNotNull(application);
             Prim logger = (Prim) application.sfResolve("logger");
-            logsDir = logger.sfResolve("logsDir", (String) null, false);
-            logsFile = logger.sfResolve("logFile", (String) null, false);
+            logsDir = logger.sfResolve(LOGS_DIR, (String) null, false);
+            logsFile = logger.sfResolve(LOG_FILE, (String) null, false);
         } finally {
             terminateApplication();
         }
@@ -65,8 +67,8 @@ public class LoggerTest
         try {
             assertNotNull(application);
             Prim logger = (Prim) application.sfResolve("logger");
-            logsDir = logger.sfResolve("logsDir", (String) null, false);
-            logsFile = logger.sfResolve("logFile", (String) null, false);
+            logsDir = logger.sfResolve(LOGS_DIR, (String) null, false);
+            logsFile = logger.sfResolve(LOG_FILE, (String) null, false);
         } finally {
             terminateApplication();
         }
@@ -100,8 +102,8 @@ public class LoggerTest
         String logsFile;
         try {
             Prim logger = (Prim) application.sfResolve("logger");
-            logsDir = logger.sfResolve("logsDir", (String) null, false);
-            logsFile = logger.sfResolve("logFile", (String) null, false);
+            logsDir = logger.sfResolve(LOGS_DIR, (String) null, false);
+            logsFile = logger.sfResolve(LOG_FILE, (String) null, false);
         } finally {
             terminateApplication();
         }
@@ -126,8 +128,8 @@ public class LoggerTest
         try {
             assertNotNull(application);
             Prim logger = (Prim) application.sfResolve("logger");
-            logsDir = logger.sfResolve("logsDir", (String) null, false);
-            logsFile = logger.sfResolve("logFile", (String) null, false);
+            logsDir = logger.sfResolve(LOGS_DIR, (String) null, false);
+            logsFile = logger.sfResolve(LOG_FILE, (String) null, false);
         } finally {
             terminateApplication();
         }

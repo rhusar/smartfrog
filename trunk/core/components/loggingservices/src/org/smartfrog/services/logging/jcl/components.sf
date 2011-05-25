@@ -37,7 +37,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * Attributes for commons log binding
  */
 CommonsLogFactory extends {
-  //classname "org.smartfrog.services.logging.jcl.front.CommonsLogFactory";
   classname "org.smartfrog.services.logging.jcl.front.CommonsLogFrontEnd";
   factoryResource "org.apache.commons.logging.Log";
 }
