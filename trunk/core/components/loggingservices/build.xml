@@ -43,23 +43,5 @@ For more information: www.smartfrog.org
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
-    <copy todir="${dist.lib.dir}">
-      <fileset dir="${lib.dir}"/>
-    </copy>
-    <copy todir="${dist.doc.dir}">
-      <fileset dir="${doc.dir}"/>
-    </copy>
-    <copy todir="${dist.src.dir}">
-      <fileset dir="${src.dir}">
-        <include name="**/examples/**"/>
-      </fileset>
-    </copy>
-    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
-    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-  </target>
 
 </project>
