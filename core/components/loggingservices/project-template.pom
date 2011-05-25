@@ -56,7 +56,6 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>${log4j.version}</version>
-      <scope>optional</scope>
       <exclusions>
         <exclusion>
           <groupId>javax.mail</groupId>
@@ -77,6 +76,7 @@
       </exclusions>
     </dependency>
 
+    <!--SLF4J API and commons-logging back end-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
