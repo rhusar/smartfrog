@@ -3,30 +3,31 @@ package org.smartfrog.sfcore.logging;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  *  Log Factory
  */
-public  class LogFactory {
+public class LogFactory {
 
     /**
      * hashtable of loggers
      */
-    protected static Hashtable<String, LogSF> loggers      = new Hashtable<String, LogSF>();
+    protected static Hashtable<String, LogSF> loggers = new Hashtable<String, LogSF>();
 
     /**
      * Protected constructor that is not available for public use.
      */
-    protected LogFactory() { }
+    protected LogFactory() {
+    }
 
     /**
      * get a log for a component
@@ -34,24 +35,23 @@ public  class LogFactory {
      * @return a new log.
      * @throws SmartFrogLogException when something went wrong with getting a log
      */
-    public static synchronized LogSF getLog(Prim prim) throws SmartFrogLogException
-    {
-        LogSF log=null;
+    public static synchronized LogSF getLog(Prim prim) throws SmartFrogLogException {
+        LogSF log = null;
         try {
             final Reference completeName = prim.sfCompleteName();
             //look for a log
             final String name = completeName.toString();
             log = loggers.get(name);
             //if found, return it
-            if (log!=null) {
+            if (log != null) {
                 return log;
             }
             //else create a new one
-            log = new LogImpl (completeName.toString());
+            log = new LogImpl(completeName.toString());
             //and remember it
             loggers.put(name, log);
-        } catch (RemoteException e){
-            throw (SmartFrogLogException)SmartFrogLogException.forward(e);
+        } catch (RemoteException e) {
+            throw (SmartFrogLogException) SmartFrogLogException.forward(e);
         }
         return log;
     }
@@ -65,8 +65,7 @@ public  class LogFactory {
      * @return a new log.
      * @throws SmartFrogLogException when something went wrong with getting a log
      */
-    public static synchronized LogSF getLog(Object obj) throws SmartFrogLogException
-    {
+    public static synchronized LogSF getLog(Object obj) throws SmartFrogLogException {
         LogSF log;
         try {
             if (obj instanceof Prim) {
@@ -78,36 +77,35 @@ public  class LogFactory {
             } else {
                 log = getLog(obj.getClass());
             }
-        } catch (Exception e){
-            throw (SmartFrogLogException)SmartFrogLogException.forward(e);
+        } catch (Exception e) {
+            throw (SmartFrogLogException) SmartFrogLogException.forward(e);
         }
         return log;
     }
 
-        /**
+    /**
      * get a log for a component
      * @param cd component description
      * @return a new log.
      * @throws SmartFrogLogException when something went wrong with getting a log
      */
-    public static synchronized LogSF getLog(ComponentDescription cd) throws SmartFrogLogException
-    {
-        LogSF log=null;
+    public static synchronized LogSF getLog(ComponentDescription cd) throws SmartFrogLogException {
+        LogSF log = null;
         try {
             final Reference completeName = cd.sfCompleteName();
             //look for a log
             final String name = completeName.toString();
             log = loggers.get(name);
             //if found, return it
-            if (log!=null) {
+            if (log != null) {
                 return log;
             }
             //else create a new one
             log = new LogImpl(name);
             //and remember it
             loggers.put(name, log);
-        } catch (Exception e){
-            throw (SmartFrogLogException)SmartFrogLogException.forward(e);
+        } catch (Exception e) {
+            throw (SmartFrogLogException) SmartFrogLogException.forward(e);
         }
         return log;
     }
@@ -118,10 +116,9 @@ public  class LogFactory {
      * @return a log from cache or new.
      *
      */
-    public static synchronized LogSF getLog(String name)
-    {
-        LogSF log  = loggers.get(name);
-        if (log!=null) {
+    public static synchronized LogSF getLog(String name) {
+        LogSF log = loggers.get(name);
+        if (log != null) {
             return log;
         }
         log = new LogImpl(name);
@@ -152,7 +149,7 @@ public  class LogFactory {
      * @throws SmartFrogLogException if the prim name could not be completed, or when registration failed.
      *
      */
-    public static LogSF getLog(Prim prim, boolean registerWithCoreLog) throws SmartFrogLogException{
+    public static LogSF getLog(Prim prim, boolean registerWithCoreLog) throws SmartFrogLogException {
         LogSF log = getLog(prim);
         if (registerWithCoreLog) {
             String name = null;
@@ -161,7 +158,7 @@ public  class LogFactory {
             } catch (RemoteException e) {
                 throw (SmartFrogLogException) SmartFrogLogException.forward(e);
             }
-            registerWithCore(name,log);
+            registerWithCore(name, log);
         }
         return log;
     }
@@ -179,9 +176,9 @@ public  class LogFactory {
      * @exception SmartFrogLogException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public static LogSF getLog (String name, boolean registerWithCoreLog) throws SmartFrogLogException {
+    public static LogSF getLog(String name, boolean registerWithCoreLog) throws SmartFrogLogException {
         LogSF log = getLog(name);
-        if ( registerWithCoreLog ) {
+        if (registerWithCoreLog) {
             registerWithCore(name, log);
         }
         return log;
@@ -196,8 +193,8 @@ public  class LogFactory {
         LogSF sflog = _internal_getCoreLog();
         _internal_trace("getProcessLog()");
         /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */
-       ComponentDescriptionImpl.initLog(sflog);
-       return sflog;
+        ComponentDescriptionImpl.initLog(sflog);
+        return sflog;
     }
 
     /**
@@ -228,7 +225,7 @@ public  class LogFactory {
     private static void registerWithCore(String name, LogSF log) throws SmartFrogLogException {
         try {
             LogSF coreLog = _internal_getCoreLog();
-            if(!(coreLog instanceof LogRegistration )) {
+            if (!(coreLog instanceof LogRegistration)) {
                 throw new SmartFrogLogException("Core log does not implement LogRegistration");
             }
             LogRegistration logRegistration = ((LogRegistration) coreLog);
@@ -256,20 +253,20 @@ public  class LogFactory {
      * @return a log
      */
     public static Log getOwnerLog(final Prim owner, final Class clazz) {
-        Log log=null;
+        Log log = null;
         try {
-            if(owner instanceof PrimImpl) {
-                log= ((PrimImpl)owner).sfGetApplicationLog();
+            if (owner instanceof PrimImpl) {
+                log = ((PrimImpl) owner).sfGetApplicationLog();
             } else {
-                _internal_trace("Cannot get the owner log of a remote reference "+owner);
+                _internal_trace("Cannot get the owner log of a remote reference " + owner);
             }
         } catch (SmartFrogException ignored) {
 
         } catch (RemoteException ignored) {
         }
-        if(log==null) {
-            log=getLog(clazz.getName());
-            assert log!=null;
+        if (log == null) {
+            log = getLog(clazz.getName());
+            assert log != null;
         }
         return log;
     }
@@ -301,13 +298,13 @@ public  class LogFactory {
      * @param out StringBuffer
      */
     public static void doReportLoggers(StringBuffer out) {
-        for (Enumeration e = loggers.keys(); e.hasMoreElements(); ) {
-           out.append ((String) e.nextElement());
-           out.append ("\n");
+        for (Enumeration e = loggers.keys(); e.hasMoreElements();) {
+            out.append((String) e.nextElement());
+            out.append("\n");
         }
     }
 
-    public String toString () {
+    public String toString() {
         StringBuffer out = new StringBuffer();
         doReportLoggers(out);
         return out.toString();

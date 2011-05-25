@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.sfcore.logging;
@@ -24,6 +24,7 @@ package org.smartfrog.sfcore.logging;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+
 /**
  * A simple logging interface abstracting logging APIs based on Apache Jakarta
  * logging.
@@ -43,7 +44,7 @@ public interface LogRemote extends Remote {
      * @return boolean true if debug level is currently enabled
      * @throws RemoteException in case of remote/network error
      */
-    public boolean isDebugEnabled() throws RemoteException;
+    boolean isDebugEnabled() throws RemoteException;
 
 
     /**
@@ -55,7 +56,7 @@ public interface LogRemote extends Remote {
      * @return boolean true if error level is currently enabled
      * @throws RemoteException in case of remote/network error
      */
-    public boolean isErrorEnabled() throws RemoteException;
+    boolean isErrorEnabled() throws RemoteException;
 
 
     /**
@@ -67,7 +68,7 @@ public interface LogRemote extends Remote {
      * @return boolean true if fatal level is currently enabled
      * @throws RemoteException in case of remote/network error
      */
-    public boolean isFatalEnabled() throws RemoteException;
+    boolean isFatalEnabled() throws RemoteException;
 
 
     /**
@@ -79,7 +80,7 @@ public interface LogRemote extends Remote {
      * @return boolean true if info level is currently enabled
      * @throws RemoteException in case of remote/network error
      */
-    public boolean isInfoEnabled() throws RemoteException;
+    boolean isInfoEnabled() throws RemoteException;
 
 
     /**
@@ -91,7 +92,7 @@ public interface LogRemote extends Remote {
      * @return boolean true if trace level is currently enabled
      * @throws RemoteException in case of remote/network error
      */
-    public boolean isTraceEnabled() throws RemoteException;
+    boolean isTraceEnabled() throws RemoteException;
 
 
     /**
@@ -103,7 +104,7 @@ public interface LogRemote extends Remote {
      * @return boolean true if warn level is currently enabled
      * @throws RemoteException in case of remote/network error
      */
-    public boolean isWarnEnabled() throws RemoteException;
+    boolean isWarnEnabled() throws RemoteException;
 
 
     // -------------------------------------------------------- Logging Methods
@@ -114,7 +115,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
-    public void trace(Object message) throws RemoteException;
+    void trace(Object message) throws RemoteException;
 
 
     /**
@@ -124,7 +125,7 @@ public interface LogRemote extends Remote {
      * @param t log this cause
      * @throws RemoteException in case of remote/network error
      */
-    public void trace(Object message, Throwable t) throws RemoteException;
+    void trace(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -133,7 +134,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
-    public void debug(Object message) throws RemoteException;
+    void debug(Object message) throws RemoteException;
 
 
     /**
@@ -143,7 +144,7 @@ public interface LogRemote extends Remote {
      * @param t log this cause
      * @throws RemoteException in case of remote/network error
      */
-    public void debug(Object message, Throwable t) throws RemoteException;
+    void debug(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -152,7 +153,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
-    public void info(Object message) throws RemoteException;
+    void info(Object message) throws RemoteException;
 
 
     /**
@@ -162,7 +163,7 @@ public interface LogRemote extends Remote {
      * @param t log this cause
      * @throws RemoteException in case of remote/network error
      */
-    public void info(Object message, Throwable t) throws RemoteException;
+    void info(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -171,7 +172,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
-    public void warn(Object message) throws RemoteException;
+    void warn(Object message) throws RemoteException;
 
 
     /**
@@ -181,7 +182,7 @@ public interface LogRemote extends Remote {
      * @param t log this cause
      * @throws RemoteException in case of remote/network error
      */
-    public void warn(Object message, Throwable t) throws RemoteException;
+    void warn(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -190,7 +191,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
-    public void error(Object message) throws RemoteException;
+    void error(Object message) throws RemoteException;
 
 
     /**
@@ -200,7 +201,7 @@ public interface LogRemote extends Remote {
      * @param t log this cause
      * @throws RemoteException in case of remote/network error
      */
-    public void error(Object message, Throwable t) throws RemoteException;
+    void error(Object message, Throwable t) throws RemoteException;
 
 
     /**
@@ -209,7 +210,7 @@ public interface LogRemote extends Remote {
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
-    public void fatal(Object message) throws RemoteException;
+    void fatal(Object message) throws RemoteException;
 
 
     /**
@@ -219,7 +220,7 @@ public interface LogRemote extends Remote {
      * @param t log this cause
      * @throws RemoteException in case of remote/network error
      */
-    public void fatal(Object message, Throwable t) throws RemoteException;
+    void fatal(Object message, Throwable t) throws RemoteException;
 
 
 }

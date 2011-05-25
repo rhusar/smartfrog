@@ -67,12 +67,12 @@ public class Logger implements MessageKeys {
     /** Property to enable stack trace. The default value is overridden by the
      * value specified in default.ini file.
      */
-    public static boolean logStackTrace = true;
+    public static volatile boolean logStackTrace = true;
 
     /** Property to enable sfPing log. The default value is overridden by the
      * value specified in default.ini file.
      */
-    public static boolean logLiveness = false;
+    public static volatile boolean logLiveness = false;
 
     /** Property to create a sfDiagnosticsReport in every ProcessCompound
      */
@@ -98,7 +98,7 @@ public class Logger implements MessageKeys {
       */
     public static String[] testJarRepeat = {SMARTFROG_JAR, SFSERVICES_JAR};
 
-    private static boolean initialized = false;
+    private static volatile boolean initialized = false;
 
     /** Property to define if to log classpaht during startup. The default value can be overridden by the
       * value specified in default.ini file.

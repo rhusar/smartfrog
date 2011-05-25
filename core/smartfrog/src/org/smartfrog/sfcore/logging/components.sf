@@ -19,11 +19,11 @@ For more information: www.smartfrog.org
 */
 
 logger extends DATA {
-      //loggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl";
-      loggerClass "org.smartfrog.sfcore.logging.LogImpl";
-      //loggerClass "org.smartfrog.sfcore.logging.LogToFileImpl";
-      fileNameDateFormat "yyyy.MM.dd_HH.mm";//""yyyyMMdd-HHmmss_SSSzzz";
-      fileNamePrefix "myTest";  //it is possible to overwrite any logger attributes here
+    //loggerClass "org.smartfrog.sfcore.logging.LogToStreamsImpl";
+    loggerClass "org.smartfrog.sfcore.logging.LogImpl";
+    //loggerClass "org.smartfrog.sfcore.logging.LogToFileImpl";
+    fileNameDateFormat "yyyy.MM.dd_HH.mm";//""yyyyMMdd-HHmmss_SSSzzz";
+    fileNamePrefix "myTest";  //it is possible to overwrite any logger attributes here
 }
 
 SFLog extends Prim {

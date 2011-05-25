@@ -25,6 +25,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 /** created 05-Mar-2007 12:15:51 */
 
 public final class LogUtils {
+    
+    private LogUtils() {
+    }
+
     /**
      * Get an exception from either the cause parameter, or, if that is null, from anything in
      * the termination record
@@ -34,8 +38,8 @@ public final class LogUtils {
      */
     public static Throwable extractCause(SmartFrogException cause, TerminationRecord tr) {
         Throwable throwable = cause;
-        if(cause==null && tr!=null && tr.getCause()!=null) {
-            throwable=tr.getCause();
+        if (cause == null && tr != null && tr.getCause() != null) {
+            throwable = tr.getCause();
         }
         return throwable;
     }
@@ -46,7 +50,7 @@ public final class LogUtils {
      * @return a string including the preceeding newline
      */
     public static String stringify(TerminationRecord tr) {
-        return "\n" + tr != null ? tr.toString() : "";
+        return "\n" + (tr != null ? tr.toString() : "");
     }
 
     /**
@@ -55,8 +59,8 @@ public final class LogUtils {
      * @param level level to log at
      * @param message message to log
      */
-    public static void log(LogSF log,int level, String message) {
-        switch(level) {
+    public static void log(LogSF log, int level, String message) {
+        switch (level) {
             case LogLevel.LOG_LEVEL_DEBUG:
                 log.debug(message);
                 break;

@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.sfcore.logging;
@@ -41,7 +41,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * Get log name.
      * @return the log name
      */
-    public String getLogName();
+    String getLogName();
 
 
     /**
@@ -52,7 +52,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * when the log level is more than ignore. </p>
      * @return boolean true if ignore level is currently enabled
      */
-    public boolean isIgnoreEnabled();
+    boolean isIgnoreEnabled();
 
 
     /**
@@ -60,7 +60,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      *
      * @param message log this message
      */
-    public void ignore(Object message);
+    void ignore(Object message);
 
 
     /**
@@ -69,7 +69,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void ignore(Object message, Throwable t);
+    void ignore(Object message, Throwable t);
 
 
     /**
@@ -80,7 +80,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void ignore(Object message, SmartFrogException t, TerminationRecord tr);
+    void ignore(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -89,7 +89,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void ignore(Object message, SmartFrogException t);
+    void ignore(Object message, SmartFrogException t);
 
 
     /**
@@ -100,7 +100,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void trace(Object message, SmartFrogException t, TerminationRecord tr);
+    void trace(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -109,7 +109,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void trace(Object message, SmartFrogException t);
+    void trace(Object message, SmartFrogException t);
 
 
     /**
@@ -120,7 +120,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void debug(Object message, SmartFrogException t, TerminationRecord tr);
+    void debug(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -129,7 +129,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void debug(Object message, SmartFrogException t);
+    void debug(Object message, SmartFrogException t);
 
 
     /**
@@ -140,7 +140,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void info(Object message, SmartFrogException t, TerminationRecord tr);
+    void info(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -149,7 +149,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void info(Object message, SmartFrogException t);
+    void info(Object message, SmartFrogException t);
 
 
     /**
@@ -160,7 +160,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void warn(Object message, SmartFrogException t, TerminationRecord tr);
+    void warn(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -169,7 +169,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void warn(Object message, SmartFrogException t);
+    void warn(Object message, SmartFrogException t);
 
 
     /**
@@ -180,7 +180,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void error(Object message, SmartFrogException t, TerminationRecord tr);
+    void error(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -189,7 +189,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void error(Object message, SmartFrogException t);
+    void error(Object message, SmartFrogException t);
 
 
     /**
@@ -200,7 +200,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param tr log this TerminationRecord
      *
      */
-    public void fatal(Object message, SmartFrogException t, TerminationRecord tr);
+    void fatal(Object message, SmartFrogException t, TerminationRecord tr);
 
 
     /**
@@ -209,7 +209,7 @@ public interface LogSF extends Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
-    public void fatal(Object message, SmartFrogException t);
+    void fatal(Object message, SmartFrogException t);
 
 }
 
