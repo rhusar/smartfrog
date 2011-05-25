@@ -46,4 +46,6 @@ public interface LogToLog4J {
      */
     String ATTR_IGNORE_SET_LOG_LEVEL = "ignoreSetLogLevel";
 
+    String ATTR_CONFIGURE_AND_WATCH = "configureAndWatch";
+    String LOG4J_CONFIGURATION_PROPERTY = "log4j.configuration";
 }

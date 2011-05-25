@@ -34,7 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 Example extends Compound {
     logger extends Logger {
-	      logFile "tcp37.log"; 
+        logFile "tcp37.log"; 
     }
 }
 
