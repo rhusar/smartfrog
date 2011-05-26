@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/services/hadoop/conf/hostnames.sf"
+#include "/org/smartfrog/services/hadoop/operations/conf/hostnames.sf"
 
 /**
  * This file defines SF components to work with Hadoop configuration files
@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
  * If apache introduce attributes with the same prefix, these will have to be renamed
  */
 EmptyHadoopConfiguration extends Prim {
-  sfClass "org.smartfrog.services.hadoop.conf.HadoopConfigurationImpl";
+  sfClass "org.smartfrog.services.hadoop.operations.conf.HadoopConfigurationImpl";
   //list of resources to load
   conf.resources [];
   //list of files to load; these are pulled in after the resources
@@ -63,7 +63,7 @@ HadoopConfigurationWithHostnameSetup extends DefaultHadoopConfiguration, HadoopH
  */
 ConfChecker extends Prim {
 
-  sfClass "org.smartfrog.services.hadoop.conf.ConfCheckerImpl";
+  sfClass "org.smartfrog.services.hadoop.operations.conf.ConfCheckerImpl";
 
   cluster TBD;
 

@@ -46,7 +46,7 @@ JobTrackingWorkflowComponent extends WorkflowPrim {
 
 
 Job extends JobConfiguration {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.JobImpl";
+  sfClass "org.smartfrog.services.hadoop.operations.components.submitter.JobImpl";
   //do we need a filename attribute?
   fileRequired true;
 

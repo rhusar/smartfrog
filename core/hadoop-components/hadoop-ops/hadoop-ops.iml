@@ -10,12 +10,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Csvfiles" exported="" />
-    <orderEntry type="module" module-name="Smartfrog" exported="" />
-    <orderEntry type="module" module-name="Testharness" scope="TEST" />
     <orderEntry type="library" exported="" name="hadoop-0.21" level="application" />
-    <orderEntry type="module" module-name="Jetty" exported="" />
-    <orderEntry type="module" module-name="Ssh" exported="" />
+    <orderEntry type="module" module-name="csvfiles" exported="" />
+    <orderEntry type="module" module-name="ssh" exported="" />
+    <orderEntry type="module" module-name="jetty" exported="" />
+    <orderEntry type="module" module-name="SmartFrog" exported="" />
+    <orderEntry type="module" module-name="testharness" exported="" />
   </component>
 </module>
 

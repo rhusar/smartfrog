@@ -26,7 +26,7 @@ import org.smartfrog.test.DeployingTestBase;
  */
 
 public class HadoopConfigurationTest extends DeployingTestBase {
-    public static final String PACKAGE = "/org/smartfrog/services/operations/hadoop/test/system/conf/";
+    public static final String PACKAGE = "/org/smartfrog/services/hadoop/operations/test/system/conf/";
 
     public HadoopConfigurationTest(String name) {
         super(name);

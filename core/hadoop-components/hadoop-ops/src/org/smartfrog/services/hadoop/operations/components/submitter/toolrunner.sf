@@ -28,7 +28,7 @@ For more information: www.smartfrog.org
  */
 
 ToolRunner extends HadoopJobRunner  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.ToolRunnerComponentImpl";
+  sfClass "org.smartfrog.services.hadoop.operations.components.submitter.ToolRunnerComponentImpl";
 
 
   //the cluster reference is optional
