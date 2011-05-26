@@ -41,8 +41,8 @@ CheckDiskSpace extends WorkflowPrim {
   checkOnStartup true;
   checkOnLiveness true;
 
-  ERROR_NO_DIRECTORY CONSTANT "org.smartfrog.services.hadoop.components.cluster.CheckDiskSpaceImpl.ERROR_NO_DIRECTORY";
-  ERROR_NOT_ENOUGH_SPACE CONSTANT org.smartfrog.services.hadoop.components.cluster.CheckDiskSpaceImpl.ERROR_NOT_ENOUGH_SPACE;
+  ERROR_NO_DIRECTORY CONSTANT org.smartfrog.services.hadoop.operations.components.cluster.CheckDiskSpaceImpl.ERROR_NO_DIRECTORY;
+  ERROR_NOT_ENOUGH_SPACE CONSTANT org.smartfrog.services.hadoop.operations.components.cluster.CheckDiskSpaceImpl.ERROR_NOT_ENOUGH_SPACE;
   //ERROR_NOT_ENOUGH_SPACE "Not enough space";
 
 }

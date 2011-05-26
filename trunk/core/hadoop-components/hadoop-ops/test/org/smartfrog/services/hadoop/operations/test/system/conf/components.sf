@@ -121,7 +121,7 @@ testNoDefault extends testDefaultConf {
 }
 
 ManagedConfTestPrim extends Prim {
-  sfClass "org.smartfrog.services.hadoop.test.system.conf.ManagedConfTestPrimImpl";
+  sfClass "org.smartfrog.services.hadoop.operations.test.system.conf.ManagedConfTestPrimImpl";
 }
 
 /**

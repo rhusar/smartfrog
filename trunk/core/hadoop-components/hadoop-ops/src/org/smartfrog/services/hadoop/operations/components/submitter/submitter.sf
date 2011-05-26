@@ -35,7 +35,7 @@ HadoopJobRunner extends WorkflowPrim  {
  * A component that takes a job and submits it.
  */
 JobSubmitter extends HadoopJobRunner  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
+  sfClass "org.smartfrog.services.hadoop.operations.components.submitter.SubmitterImpl";
 
 
   //the cluster reference is optional
