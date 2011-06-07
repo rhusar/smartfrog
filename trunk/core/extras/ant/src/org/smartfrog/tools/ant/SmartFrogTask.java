@@ -169,7 +169,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * Allow spawning of subprocess # org.smartfrog.ProcessCompound.sfProcessAllow=true;
      */
-    protected Boolean allowSpawning; // = true;
+    protected Boolean allowSpawning = true;
 
     /**
      * Subprocess creation/failure timeout - default=60 seconds (slower machines might need longer periods to start a
