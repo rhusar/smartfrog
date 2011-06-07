@@ -56,14 +56,8 @@
       changing="true"
       rev="latest.integration"
       conf="test->default"/>
-    <dependency org="org.codehaus.groovy"
-      name="groovy-all-minimal"
-      rev="${groovy.version}"
-      conf="groovy->default"/>
-    <dependency org="com.sun.script"
-      name="groovy-engine"
-      rev="${groovy-engine.version}"
-      conf="groovy->default"/>
-    
+    <dependency org="org.codehaus.groovy" name="groovy-all" rev="${groovy.version}"
+      conf="compile->default;runtime->default;daemon->default"/>
+
   </dependencies>
 </ivy-module>
