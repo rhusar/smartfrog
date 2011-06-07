@@ -860,10 +860,8 @@ fi
 %files groovy
 %{linkdir}/sf-groovy.jar
 %{libdir}/sf-groovy-${smartfrog.version}.jar
-%{linkdir}/groovy-all-minimal.jar
-%{libdir}/groovy-all-minimal-${groovy.version}.jar
-%{linkdir}/groovy-engine.jar
-%{libdir}/groovy-engine-${groovy-engine.version}.jar
+%{linkdir}/groovy-all.jar
+%{libdir}/groovy-all-${groovy.version}.jar
 
 # -----------------------------------------------------------------------------
 #%files hadoop
