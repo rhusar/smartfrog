@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="grinstaller" default="default">
+
+    <description>
+        This build file exists to build and test the SmartFrog installer
+
+        It generates
+        * installer-${installer.version}.jar, containing the binaries of installer and the default
+        * SF description files.
+
+        These artifacts can be published locally, or written to the
+        ${antbuild.dir}/repository/internal repository, where
+        ${antbuild.dir} defaults to ../antbuild
+    </description>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="false"/>
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"/>
+  <property name="org.apache.commons.logging.diagnostics.dest" value="STDERR"/>
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+
+   <target name="pre-compile" depends="common.pre-compile, ivy-classpaths">
+     <taskdef name="groovyc"
+         classname="org.codehaus.groovy.ant.Groovyc"
+         classpathref="compile.classpath"/>
+
+       <!-- define a new groovyc task with new default options -->
+      <presetdef name="sf-groovyc">
+        <groovyc fork="true"
+          memoryMaximumSize="${javac.max.memory}">
+        </groovyc>
+      </presetdef>
+    </target>
+
+    <!-- override the compile target to use groovyc instead of javac -->
+    <target name="compile" depends="common.compile">
+      <echo>compiling groovy source</echo>
+      <sf-groovyc classpathref="compile.classpath"
+          srcdir="${src.dir}"
+          destdir="${build.classes.dir}"/>
+    </target>
+
+</project>

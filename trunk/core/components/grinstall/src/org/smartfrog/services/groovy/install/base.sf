@@ -1,0 +1,38 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/parallel.sf"
+
+Architecture extends Parallel {
+    asynchCreateChild true; // deploy all components in parallel
+    repository TBD; // define a repository which provides the component directory
+                    // (such as ftp://installer-vif0.cell-ko.vms.sup.hpl.hp.com)
+                    // we could also define a default repository here
+}
+
+Component extends Compound {
+    sfClass "org.smartfrog.services.groovy.install.Component";
+
+    directory "/service";
+
+    install extends Task {
+        file "install.groovy";
+    }
+    preConfigure extends Task {
+        file "preConfigure.groovy";
+    }
+    start extends Task {
+        file "start.groovy";
+    }
+    postConfigure extends Task {
+        file "postConfigure.groovy";
+    }
+}
+
+// at the moment only Groovy tasks are supported
+Task extends Prim {
+    sfClass "org.smartfrog.services.groovy.install.task.GroovyTask";
+}
+
+// copy a file or directory
+Source extends Prim {
+    sfClass "org.smartfrog.services.groovy.install.download.Source";
+}
