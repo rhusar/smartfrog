@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="grinstall">
+    <ivyauthor name="Hewlett-Packard" url="http://www.hp.com"/>
+    <description>
+      grinstall: Groovy Installer components
+      Created 21-Feb-2011 by koenigbe
+    </description>
+  </info>
+
+  <configurations defaultconfmapping="default">
+   <conf name="default" extends="master,runtime"
+     description="default configuration contains artifacts and runtime dependencies"/>
+    <conf name="build" visibility="private"
+      description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private" extends="runtime"
+      description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private"
+      description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default,compile"
+      description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+      extends="redist"/>
+    <conf name="documentation"
+      description="all documentation artifacts"/>
+  </configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master" type="jar"/>
+  </publications>
+
+  <dependencies>
+   <dependency org="org.smartfrog" name="smartfrog" rev="latest.integration" changing="true"
+     conf="runtime->services"/>
+   <dependency org="org.smartfrog" name="sf-groovy" rev="latest.integration" changing="true"
+     conf="runtime->default"/>
+   <dependency org="org.smartfrog" name="sf-ssh" rev="latest.integration" changing="true"
+     conf="runtime->default"/>
+   <dependency org="org.smartfrog" name="sf-www" rev="latest.integration" changing="true"
+     conf="runtime->default"/>
+   <dependency org="commons-vfs" name="commons-vfs" rev="svn1069844" force="true"
+     conf="runtime->default">
+    <exclude org="httpclient"/>
+    <exclude org="commons-codec"/>
+  </dependency>
+
+  </dependencies>
+</ivy-module>
