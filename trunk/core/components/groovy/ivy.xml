@@ -57,7 +57,7 @@
       rev="latest.integration"
       conf="test->default"/>
     <dependency org="org.codehaus.groovy" name="groovy-all" rev="${groovy.version}"
-      conf="compile->default;runtime->default;daemon->default"/>
+      conf="redist->default"/>
 
   </dependencies>
 </ivy-module>
