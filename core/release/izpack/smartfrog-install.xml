@@ -511,10 +511,7 @@ SmartFrog to deploy complex systems.
         targetdir="$INSTALL_PATH"
         unpack="true"/>
 
-      <file src="ivy/lib/package-groovy/groovy-all-minimal-${groovy.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-groovy/groovy-engine-${groovy-engine.version}.jar"
+      <file src="ivy/lib/package-groovy/groovy-all-${groovy.version}.jar"
         targetdir="$INSTALL_PATH/lib"
         />
     </pack>
