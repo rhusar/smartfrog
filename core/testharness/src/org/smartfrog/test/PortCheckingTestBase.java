@@ -214,7 +214,9 @@ public class PortCheckingTestBase extends DeployingTestBase {
             socket = new Socket();
             socket.connect(address, connectTimeout);
         } catch (Exception e) {
-            throw (IOException) new IOException("Failed to connect to " + address + ": " + e).initCause(e);
+            throw (IOException) new IOException("Failed to connect to " + address
+                    + " after " + connectTimeout + " millisconds"
+                    + ": " + e).initCause(e);
         } finally {
             if (socket != null) {
                 try {
