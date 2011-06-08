@@ -43,6 +43,7 @@ public class AntToSmartFrogLogger extends DefaultLogger {
      *
      * @param message Message being logged. Should not be <code>null</code>.
      */
+    @Override
     protected void log(String message) {
         realLog.info(message);
     }

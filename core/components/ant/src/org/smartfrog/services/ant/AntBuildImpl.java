@@ -54,7 +54,7 @@ import java.util.Vector;
 public class AntBuildImpl extends PrimImpl implements AntBuild {
 
     public static final String ERROR_NO_DIRS = "no build directories specified: one of '" + ATTR_BASEDIR + "' or '"
-                                               + ATTR_DIRECTORIES + "' must be set, or " + ATTR_ANTFILE + " must point to a file";
+            + ATTR_DIRECTORIES + "' must be set, or " + ATTR_ANTFILE + " must point to a file";
     public static final String ERROR_MISSING_BUILD_FILE = "Missing build file: ";
     public static final String BUILD_SUCCESSFUL = "Build successful";
     public static final String BUILD_FAILED = "Build failed ";
@@ -210,7 +210,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
          */
         public synchronized String toString() {
             return "Building " + buildFile + " in " + basedir
-                   + (exception != null ? ("\nExited with " + exception.getMessage())
+                    + (exception != null ? ("\nExited with " + exception.getMessage())
                     : "");
 
         }
@@ -287,14 +287,14 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
             TerminationRecord tr;
             if (errors == 0) {
                 tr = TerminationRecord.normal(BUILD_SUCCESSFUL,
-                                              sfCompleteNameSafe(),
-                                              result);
+                        sfCompleteNameSafe(),
+                        result);
             } else {
                 tr = TerminationRecord.abnormal(BUILD_FAILED +
-                                                (errors > 1 ? ("error count=" + errors + "; ") : " ")
-                                                + result.getMessage(),
-                                                sfCompleteNameSafe(),
-                                                result);
+                        (errors > 1 ? ("error count=" + errors + "; ") : " ")
+                        + result.getMessage(),
+                        sfCompleteNameSafe(),
+                        result);
             }
             helper.targetForWorkflowTermination(tr);
         }
@@ -351,7 +351,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 project.setKeepGoingMode(keepGoingInSingleBuild);
                 //project.
                 project.setUserProperty(MagicNames.ANT_FILE,
-                                        buildFile.getAbsolutePath());
+                        buildFile.getAbsolutePath());
                 project.setExecutor(executor);
 
                 //it's not clear what to do when there is a basedir in the project itself.
@@ -442,6 +442,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
          * Create an instance; pass in its policy w.r.t. missing targets
          *
          * @param skipMissingTargets should we skip missing targets
+         * @param log the log to use
          */
         InterruptibleExecutor(boolean skipMissingTargets, LogSF log) {
             this.skipMissingTargets = skipMissingTargets;
@@ -475,7 +476,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 }
                 try {
                     if (skipMissingTargets
-                        && project.getTargets().get(target) == null) {
+                            && project.getTargets().get(target) == null) {
                         project.log("Skipping missing target " + target, Project.MSG_WARN);
                     } else {
                         project.executeTarget(target);

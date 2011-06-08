@@ -94,6 +94,7 @@ public class InterruptibleLogger implements BuildLogger {
      *
      * @param level the logging level for the logger.
      */
+    @Override
     public void setMessageOutputLevel(int level) {
         checkForHalt();
         logger.setMessageOutputLevel(level);
@@ -104,6 +105,7 @@ public class InterruptibleLogger implements BuildLogger {
      *
      * @param out The output stream for the logger. Must not be <code>null</code>.
      */
+    @Override
     public void setOutputPrintStream(PrintStream out) {
         checkForHalt();
         logger.setOutputPrintStream(out);
@@ -115,6 +117,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @param emacsMode <code>true</code> if output is to be unadorned so that emacs and other editors can parse files
      *                  names, etc.
      */
+    @Override
     public void setEmacsMode(boolean emacsMode) {
         checkForHalt();
         logger.setEmacsMode(emacsMode);
@@ -125,6 +128,7 @@ public class InterruptibleLogger implements BuildLogger {
      *
      * @param err The error stream for the logger. Must not be <code>null</code>.
      */
+    @Override
     public void setErrorPrintStream(PrintStream err) {
         checkForHalt();
         logger.setErrorPrintStream(err);
@@ -135,6 +139,7 @@ public class InterruptibleLogger implements BuildLogger {
      *
      * @param event An event with any relevant extra information. Must not be <code>null</code>.
      */
+    @Override
     public void buildStarted(BuildEvent event) {
         checkForHalt();
         logger.buildStarted(event);
@@ -146,6 +151,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @param event An event with any relevant extra information. Must not be <code>null</code>.
      * @see BuildEvent#getException()
      */
+    @Override
     public void buildFinished(BuildEvent event) {
         checkForHalt();
         logger.buildFinished(event);
@@ -157,6 +163,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @param event An event with any relevant extra information. Must not be <code>null</code>.
      * @see BuildEvent#getTarget()
      */
+    @Override
     public void targetStarted(BuildEvent event) {
         checkForHalt();
         logger.targetStarted(event);
@@ -169,6 +176,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @param event An event with any relevant extra information. Must not be <code>null</code>.
      * @see BuildEvent#getException()
      */
+    @Override
     public void targetFinished(BuildEvent event) {
         checkForHalt();
         logger.targetFinished(event);
@@ -180,6 +188,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @param event An event with any relevant extra information. Must not be <code>null</code>.
      * @see BuildEvent#getTask()
      */
+    @Override
     public void taskStarted(BuildEvent event) {
         checkForHalt();
         logger.taskStarted(event);
@@ -191,6 +200,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @param event An event with any relevant extra information. Must not be <code>null</code>.
      * @see BuildEvent#getException()
      */
+    @Override
     public void taskFinished(BuildEvent event) {
         checkForHalt();
         logger.taskFinished(event);
@@ -204,6 +214,7 @@ public class InterruptibleLogger implements BuildLogger {
      * @see BuildEvent#getException()
      * @see BuildEvent#getPriority()
      */
+    @Override
     public void messageLogged(BuildEvent event) {
         checkForHalt();
         logger.messageLogged(event);

@@ -66,6 +66,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      * @throws SmartFrogException In case of error in deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         LogSF log = sfLog();
@@ -152,6 +153,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         propertyTarget = sfResolve(ATTR_PROPERTY_TARGET, propertyTarget, false);
@@ -168,6 +170,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     /**
      * @param t TerminationRecord object
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord t) {
         shutDownAnt();
         super.sfTerminateWith(t);
