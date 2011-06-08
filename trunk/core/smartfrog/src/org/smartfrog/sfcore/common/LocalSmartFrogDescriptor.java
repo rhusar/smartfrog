@@ -22,17 +22,21 @@ package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFParse;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.NullIncludeHandler;
+import org.smartfrog.sfcore.languages.sf.SFParser;
+import org.smartfrog.sfcore.parser.Phases;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 /**
  * This class parses .sf files locally; it is used to load up a {@link ComponentDescription}, with the option of turning
- * errors into an exception
+ * errors into an exception. <p/>
  *
  * Most of the content is null/invalid until an attempt to parse is made
  */
@@ -128,6 +132,11 @@ public class LocalSmartFrogDescriptor {
         setParsedDescriptor(SFParse.parseInputStreamToResults(filename, is, null,
                 getOptions()));
         return !buildErrorList();
+    }
+
+    public ComponentDescription parseWithoutPhasesOrIncludes(Reader is) throws SmartFrogCompilationException {
+        Phases phases = new SFParser().sfParse(is, new NullIncludeHandler());
+        return phases.sfAsComponentDescription();
     }
 
     /**
