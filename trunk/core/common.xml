@@ -391,26 +391,28 @@ java.class.path=
     -->
     <property name="security.manager" value="none" />
 
-    <property name="daemon.jvmargs"  value=""/> 
+    <!--the default JVM arguments force IPv4 only-->
+    <property name="daemon.jvmargs"  value="-Djava.net.preferIPv4Stack=true"/>
+    <property name="junit.jvmargs" value="-Djava.net.preferIPv4Stack=true"/>
     
-   <!--preset to copy with ant property expansion (and always overwrite)-->
-   <presetdef name="expandingcopy">
+    <!--preset to copy with ant property expansion (and always overwrite)-->
+    <presetdef name="expandingcopy">
      <copy overwrite="true">
        <filterchain>
          <expandproperties/>
        </filterchain>
      </copy>
-   </presetdef>
+    </presetdef>
 
-   <!-- a macro to define a property to a new directory, and create the directory-->
-   <macrodef name="newdir">
-     <attribute name="name"/>
-     <attribute name="location"/>
-     <sequential>
-       <property name="@{name}" location="@{location}" />
-       <mkdir dir="@{location}" />
-     </sequential>
-   </macrodef>
+    <!-- a macro to define a property to a new directory, and create the directory-->
+    <macrodef name="newdir">
+    <attribute name="name"/>
+    <attribute name="location"/>
+    <sequential>
+      <property name="@{name}" location="@{location}" />
+      <mkdir dir="@{location}" />
+    </sequential>
+    </macrodef>
 
     <!-- define a new javac task with new default options -->
     <presetdef name="sf-javac">
@@ -497,8 +499,9 @@ java.class.path=
         >
         <jvmarg value="-ea"/>
         <jvmarg value="-esa"/>
-	    	<jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma" />
+        <jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma" />
         <jvmarg value="-Demma.coverage.out.merge=true" />
+        <jvmarg line="${junit.jvmargs}"/>
 
         <!--copy all proxy settings from the running JVM-->
         <syspropertyset refid="proxy.settings"/>
