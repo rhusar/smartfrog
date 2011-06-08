@@ -83,7 +83,7 @@ if test "$SFUSERHOME"; then
     export SFLIBPATH="$SFUSERHOME"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
     if [ $? -eq 0 ]; then
-	  for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+          for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
         export CLASSPATH
     fi
 fi
@@ -92,7 +92,7 @@ if test "$SFUSERHOME1"; then
     export SFLIBPATH="$SFUSERHOME1"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
     if [ $? -eq 0 ]; then
-	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
         export CLASSPATH
     fi
 fi
@@ -101,7 +101,7 @@ if test "$SFUSERHOME2"; then
     export SFLIBPATH="$SFUSERHOME2"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
     if [ $? -eq 0 ]; then
-	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
         export CLASSPATH
     fi
 fi
@@ -110,7 +110,7 @@ if test "$SFUSERHOME3"; then
     export SFLIBPATH="$SFUSERHOME3"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
     if [ $? -eq 0 ]; then
-	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
         export CLASSPATH
     fi
 fi
@@ -119,7 +119,7 @@ if test "$SFUSERHOME4"; then
     export SFLIBPATH="$SFUSERHOME4"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
     if [ $? -eq 0 ]; then
-	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
         export CLASSPATH
     fi
 fi
@@ -134,5 +134,5 @@ if [ -f ${SHELL}.exe ]; then
 fi
 
 if test "$DEBUG_SCRIPT_ON"; then
-	echo AFTER $CLASSPATH
+        echo AFTER $CLASSPATH
 fi	

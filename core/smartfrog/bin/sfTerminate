@@ -30,18 +30,18 @@ else
 fi
 
 if [ "$1" = "-p" ] || [ "$2" = "-p" ];then
-   	echo "Insufficient arguments to use sfTerminate"
-   	echo "Usage: sfTerminate HostName ComponentName [-p port]"
-	exit 69
+        echo "Insufficient arguments to use sfTerminate"
+        echo "Usage: sfTerminate HostName ComponentName [-p port]"
+        exit 69
 fi
 
 if [ "$3" = "-p" ];then
-	if [ -z $4 ] ; then
-   		echo "Insufficient arguments to use sfTerminate"
-   		echo "Usage: sfTerminate HostName ComponentName [-p port]"
-		exit 69
-	fi
-	export OPTION="$3 $4";
+        if [ -z $4 ] ; then
+                echo "Insufficient arguments to use sfTerminate"
+                echo "Usage: sfTerminate HostName ComponentName [-p port]"
+                exit 69
+        fi
+        export OPTION="$3 $4";
 fi
 
 #java $SFCMDPARAMETERS org.smartfrog.SFSystem -a $2:TERMINATE:::$1: -e
