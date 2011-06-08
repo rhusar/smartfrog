@@ -44,7 +44,7 @@ if ! test $SFSECURITYMANAGER; then
 fi
 
 if ! test "$SFDEFAULTSECURITY";then
-	export SFDEFAULTSECURITY="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager=$SFSECURITYMANAGER"
+        export SFDEFAULTSECURITY="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager=$SFSECURITYMANAGER"
 fi
 
 if  test "$SFSERVERHOSTNAME";then

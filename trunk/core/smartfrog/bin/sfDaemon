@@ -45,12 +45,12 @@ while [ $# -ge 1 ]; do
         JVMARGS="$JVMARGS $1"
         ;;
     -p) if [ -z $2 ]; then
-		echo Usage: sfDaemon -?
-		exit 69
-	else 
-   		CLASSARGS="$CLASSARGS $1"
-	fi	
-	;;	
+                echo Usage: sfDaemon -?
+                exit 69
+        else
+                CLASSARGS="$CLASSARGS $1"
+        fi
+        ;;
     *) CLASSARGS="$CLASSARGS $1"
         ;;
     esac
