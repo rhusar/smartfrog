@@ -21,7 +21,7 @@ public abstract class DelegatingScript extends Script {
     private LogSF sfLog = LogFactory.sfGetProcessLog()
 
     private Component component
-    private Helper helper
+    private GroovyComponentHelper helper
 
     public void setComponent(Component comp) {
         if (comp) {
@@ -35,7 +35,7 @@ public abstract class DelegatingScript extends Script {
         }
 
         // ScriptHelper needs component to bind it within task scripts
-        helper = new Helper(comp)
+        helper = new GroovyComponentHelper(comp)
     }
 
     @Override

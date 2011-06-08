@@ -103,7 +103,7 @@ class GroovyTask extends PrimImpl implements ITask {
         try {
             s = new GroovyShell(conf).parse(f.getText())
         } catch (Exception e) {
-            sfLog().error(e.message)
+            sfLog().error(e.toString(), e)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
         s?.setComponent((Component)sfParent())

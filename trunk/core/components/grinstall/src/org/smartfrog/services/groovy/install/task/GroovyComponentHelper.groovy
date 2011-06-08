@@ -15,12 +15,13 @@ import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 
 /**
  * Provides access to worker functions which may be used in Source components and in task files.
  *
  */
-class Helper {
+class GroovyComponentHelper {
 
     private LogSF sfLog = LogFactory.sfGetProcessLog()
 
@@ -30,27 +31,27 @@ class Helper {
 
     private Component component
 
-    public Helper(Component comp) {
+    public GroovyComponentHelper(Component comp) {
 
         if (comp) {
             component = comp
             try {
                 sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "Helper", true))
             } catch (Exception e) {
-                sfLog.error(e.message)
+                sfLog.error(e.toString(),e)
                 throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
             }
         }
 
         options = new FileSystemOptions();
         // TODO define proxy in config file
-        HttpFileSystemConfigBuilder.getInstance().setProxyHost(options, "sup-prj-372301.sup.hpl.hp.com")
-        HttpFileSystemConfigBuilder.getInstance().setProxyPort(options, 3128)
+        /*        HttpFileSystemConfigBuilder.getInstance().setProxyHost(options, "sup-prj-372301.sup.hpl.hp.com")
+       HttpFileSystemConfigBuilder.getInstance().setProxyPort(options, 3128)
 
-        SftpFileSystemConfigBuilder.getInstance().setProxyHost(options, "sup-prj-372301.sup.hpl.hp.com")
-        SftpFileSystemConfigBuilder.getInstance().setProxyPort(options, 3128)
-        SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(options, false)
-        SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(options, "no")
+       SftpFileSystemConfigBuilder.getInstance().setProxyHost(options, "sup-prj-372301.sup.hpl.hp.com")
+       SftpFileSystemConfigBuilder.getInstance().setProxyPort(options, 3128)
+       SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(options, false)
+       SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(options, "no")*/
 
         manager = VFS.getManager()
         root = manager.resolveFile(component.sfResolve("directory").toString())
@@ -65,12 +66,12 @@ class Helper {
         sfLog.debug("Executing command $c in directory $directory")
         try {
             if (directory) {
-                return c.execute((String[])null, new File(directory))
+                return c.execute((String[]) null, new File(directory))
             } else {
                 return c.execute()
             }
         } catch (Exception e) {
-            sfLog.error(e.message)
+            sfLog.error(e.toString(), e)
             // We have to catch exceptions and throw our own.
             // Otherwise we get an Unmarshallexception (Script1)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
@@ -95,9 +96,15 @@ class Helper {
      */
     public Process unpack(String file, String directory) {
         sfLog.debug("Unpacking $file")
-        if (file.endsWith("gz")) return command("tar zxf $file", directory)
-        else if (file.endsWith("bz2")) return command("tar jxf $file", directory)
-        else throw new NotImplementedException("Unknown archive type")
+        if (file.endsWith("gz")) {
+            return command("tar zxf $file", directory)
+        }
+        else if (file.endsWith("bz2")) {
+            return command("tar jxf $file", directory)
+        }
+        else {
+            throw new SmartFrogDeploymentException("Unknown archive type: $file")
+        }
     }
 
     public Process unpack(String file) {
@@ -130,19 +137,17 @@ class Helper {
         if (!src.exists()) sfLog.warn("Cannot delete. The file or directory does not exist.")
         def delete = src.delete(Selectors.SELECT_ALL)
         src.close()
-        return delete!=0
+        return delete != 0
     }
 
     public void copy(String source, String destination) {
         sfLog.debug("Copying $source to $destination")
         FileObject src = resolve(source);
         if (!src.exists()) {
-            sfLog.error("Source URL does not exist!")
-            return
+            throw new SmartFrogDeploymentException("Source URL $source does not exist!")
         }
         if (!src.isReadable()) {
-            sfLog.error("Source URL cannot be read!")
-            return
+            throw new SmartFrogDeploymentException("Source URL $source cannot be read")
         }
         FileObject dest = resolve(destination);
         if (src.getType() == FileType.FILE) {
@@ -162,7 +167,7 @@ class Helper {
         } else if (src.getType() == FileType.FOLDER) {
             if (dest.exists()) {
                 if (dest.getType() == FileType.FILE) {
-                    throw new IllegalArgumentException("Cannot copy directory $source into file $destination")
+                    throw new SmartFrogDeploymentException("Cannot copy directory $source into file $destination")
                 } else {
                     sfLog.info("Copying directory contents of $source into directory $destination")
                     dest.copyFrom(src, Selectors.EXCLUDE_SELF)
@@ -205,7 +210,7 @@ class Helper {
         } else if (src.getType() == FileType.FOLDER) {
             if (dest.exists()) {
                 if (dest.getType() == FileType.FILE) {
-                    throw new IllegalArgumentException("Cannot move directory $source into file $destination")
+                    throw new SmartFrogDeploymentException("Cannot move directory $source into file $destination")
                 } else {
                     sfLog.info("Moving directory contents of $source into directory $destination")
                     src.getChildren().each { srcChild ->
@@ -242,7 +247,7 @@ class Helper {
             sfLog.debug("Evaluated template as: $replacedText")
             input.write(replacedText)
         } catch (e) {
-            sfLog.error(e.message)
+            sfLog.error(e.toString(), e)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
     }
