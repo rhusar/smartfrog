@@ -26,13 +26,8 @@
 
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all-minimal</artifactId>
+      <artifactId>groovy-all</artifactId>
       <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.script</groupId>
-      <artifactId>groovy-engine</artifactId>
-      <version>${groovy-engine.version}</version>
     </dependency>
   </dependencies>
 </project>
