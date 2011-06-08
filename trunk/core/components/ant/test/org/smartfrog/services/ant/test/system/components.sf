@@ -35,6 +35,7 @@ ExpectBuildFailure extends ExpectDeployFailure {
 
 
 ExpectBuildSuccess extends ExpectDeployFailure {
+    description "expect the build to exit with success";
     exitText CONSTANT "org.smartfrog.services.ant.AntBuildImpl.BUILD_SUCCESSFUL";
 }
 

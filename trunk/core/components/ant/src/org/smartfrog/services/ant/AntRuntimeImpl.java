@@ -54,6 +54,7 @@ public class AntRuntimeImpl extends PrimImpl implements RemoteReferenceResolver,
      * @return resolved attribute
      * @throws SmartFrogResolutionException failed to find attribute
      */
+    @Override
     public Object sfResolveHere(Object name) throws SmartFrogResolutionException {
 
         if (owner != null) {
@@ -88,9 +89,8 @@ public class AntRuntimeImpl extends PrimImpl implements RemoteReferenceResolver,
      */
     public static void propagateAntProperties(Prim component, Hashtable<String, String> properties)
             throws SmartFrogRuntimeException, RemoteException {
-        Hashtable<String, String> props = properties;
-        for (String property : props.keySet()) {
-            String value = props.get(property);
+        for (String property : properties.keySet()) {
+            String value = properties.get(property);
             if (value != null) {
                 component.sfReplaceAttribute(property, value);
             }

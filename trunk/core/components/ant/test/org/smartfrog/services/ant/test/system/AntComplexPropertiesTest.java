@@ -31,34 +31,20 @@ import org.smartfrog.test.DeployingTestBase;
 /**
  * JUnit test class for test cases related to Ant
  */
-public class AntTest
+public class AntComplexPropertiesTest
         extends DeployingTestBase {
 
     private static final String FILES = "/org/smartfrog/services/ant/test/system/";
 
-    public AntTest(String s) {
+    public AntComplexPropertiesTest(String s) {
         super(s);
     }
 
-
-    @Description("Test setting a simple property and reading the value")
-    public void testSimpleProperty() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testSimpleProperty.sf",
-                                             "testSimpleProperty");
-        Prim antprim;
-        antprim = application.sfResolve("ant", (Prim) null, true);
-        Ant ant = (Ant) antprim;
+    @Description("Execute a long sequence of operations")
+    public void testProperties() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testProperties");
     }
 
-    @Description("Test properties can be set/got")
-    public void testAntRuntimeRemote() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf",
-                                             "testPropertiesAdvanced");
-        Prim antprim;
-        antprim = application;
-        Ant ant = (Ant) antprim;
-        AntRuntime runtime = (AntRuntime) antprim.sfResolve(Ant.ATTR_RUNTIME, (Prim) null, true);
-    }
 
     @Description("Test properties can be set/got")
     @SkippedTest("fails to resolve")
@@ -78,9 +64,6 @@ public class AntTest
         assertFalse("unexpanded text in " + message, message.contains("${env."));
     }
 
-    @Description("Echo to standard out, no formal testing")
-    public void testEcho() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testEcho.sf", "testEcho");
-    }
+
 }
 

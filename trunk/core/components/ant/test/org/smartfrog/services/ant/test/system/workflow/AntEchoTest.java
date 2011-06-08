@@ -24,17 +24,18 @@ import org.smartfrog.test.DeployingTestBase;
 /**
  * JUnit test class for test cases related to Ant
  */
-public class AntWorkflowTest
+public class AntEchoTest
         extends DeployingTestBase {
 
     private static final String FILES = "/org/smartfrog/services/ant/test/system/workflow";
 
-    public AntWorkflowTest(String s) {
+    public AntEchoTest(String s) {
         super(s);
     }
 
-    public void testProperties() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testProperties");
+    public void testEcho() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testEcho");
     }
+
 
 }

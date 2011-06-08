@@ -139,8 +139,8 @@ testPropertyPassdown extends BuildFileTest {
   description "test that properties can be passed down";
 
   tests:antbuild:properties [
-      ["p1","overwrite"],
-      ["new.prop","new.value"]
+        ["p1","overwrite"],
+        ["new.prop","new.value"]
       ];
 
    tests:assertions extends Sequence {
