@@ -36,6 +36,17 @@
   <dependencies>
    <dependency org="org.smartfrog" name="smartfrog" rev="latest.integration" changing="true"
      conf="runtime->services"/>
+   <dependency org="org.smartfrog"
+     name="sf-tasks"
+     rev="latest.integration"
+     changing="true"
+     conf="build->default"/>
+    <dependency org="org.smartfrog"
+      name="sf-testharness"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default"/>
+
    <dependency org="org.smartfrog" name="sf-groovy" rev="latest.integration" changing="true"
      conf="runtime->default"/>
    <dependency org="org.smartfrog" name="sf-ssh" rev="latest.integration" changing="true"
