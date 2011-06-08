@@ -56,7 +56,7 @@ public class StartTest extends TaskTestBase {
                 ERROR_FAILED_TO_START_DAEMON);
     }
 
-    public void testIncompatibleProcessAllow() {
+    public void NotestIncompatibleProcessAllow() {
         expectLogContaining("testIncompatibleProcessAllow", "Not allowed to create process");
     }
 
