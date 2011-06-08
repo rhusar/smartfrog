@@ -555,8 +555,10 @@ java.class.path=
       <attribute name="failed"/>
       <sequential>
         <sf-junitreport data="@{data}" reports="@{reports}" />
+        <!-- DO NOT ATTEMPT TO ALIGN THE TEXT IT ONLY RUINS THE PRESENTATION-->
         <fail if="@{failed}">Tests failed see:
-		@{reports}</fail>
+@{reports}
+        </fail>
       </sequential>
     </macrodef>
 
