@@ -60,24 +60,6 @@ public class AntTest
         AntRuntime runtime = (AntRuntime) antprim.sfResolve(Ant.ATTR_RUNTIME, (Prim) null, true);
     }
 
-    @Description("Test properties can be set/got")
-    @SkippedTest("fails to resolve")
-    public void NOtestPropertiesAdvanced() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf",
-                                             "testPropertiesAdvanced");
-        Prim antprim;
-        //antprim = application.sfResolve("",(Prim)null, true);
-        antprim = application;
-        Ant ant = (Ant) antprim;
-        Prim runtime = antprim.sfResolve(Ant.ATTR_RUNTIME, (Prim) null, true);
-        String message = runtime.sfResolve("sfhome", "", true);
-        assertTrue("missing text from " + message, message.contains("SFHOME is"));
-        message = runtime.sfResolve("pathtext", "", true);
-        assertTrue("missing text from " + message, message.contains("path="));
-        assertFalse("unexpanded text in " + message, message.contains("${path}"));
-        assertFalse("unexpanded text in " + message, message.contains("${env."));
-    }
-
     @Description("Echo to standard out, no formal testing")
     public void testEcho() throws Throwable {
         application = deployExpectingSuccess(FILES + "testEcho.sf", "testEcho");

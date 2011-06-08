@@ -48,7 +48,7 @@ public class AntComplexPropertiesTest
 
     @Description("Test properties can be set/got")
     @SkippedTest("fails to resolve")
-    public void NOtestPropertiesAdvanced() throws Throwable {
+    public void testPropertiesAdvanced() throws Throwable {
         application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf",
                                              "testPropertiesAdvanced");
         Prim antprim;
