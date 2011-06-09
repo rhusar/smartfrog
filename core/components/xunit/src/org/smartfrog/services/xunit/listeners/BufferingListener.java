@@ -23,6 +23,7 @@ package org.smartfrog.services.xunit.listeners;
 
 import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.serial.TestInfo;
+import org.smartfrog.sfcore.prim.Liveness;
 
 import java.rmi.RemoteException;
 
@@ -38,7 +39,7 @@ import java.rmi.RemoteException;
  * Time: 17:08:37
  */
 
-public interface BufferingListener extends TestListenerFactory {
+public interface BufferingListener extends TestListenerFactory, Liveness {
 
     /**
      * get the number of errors

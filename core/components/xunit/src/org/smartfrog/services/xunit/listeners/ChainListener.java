@@ -22,8 +22,8 @@ package org.smartfrog.services.xunit.listeners;
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
-import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.LogEntry;
+import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -36,9 +36,9 @@ import java.util.List;
  * created 03-Jun-2005 16:49:03
  */
 
-public class ChainListener implements TestListener,Iterable<TestListener> {
+public class ChainListener implements TestListener, Iterable<TestListener> {
 
-    private List<TestListener> listeners =new ArrayList<TestListener>();
+    private List<TestListener> listeners = new ArrayList<TestListener>();
 
 
     public ChainListener() {
@@ -48,7 +48,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
                          String hostname,
                          String processname, String suitename,
                          long timestamp) throws SmartFrogException, RemoteException {
-        createAndAddListeners(factories,suite,hostname, processname, suitename,timestamp);
+        createAndAddListeners(factories, suite, hostname, processname, suitename, timestamp);
     }
 
     /**
@@ -71,9 +71,9 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
                                       String suitename,
                                       long timestamp) throws SmartFrogException, RemoteException {
         //reset the list of listeners
-        listeners =new ArrayList<TestListener>(factories.size());
+        listeners = new ArrayList<TestListener>(factories.size());
         //run through the factories
-        for(TestListenerFactory factory:factories) {
+        for (TestListenerFactory factory : factories) {
             TestListener listener = factory.listen(suite, hostname, processname, suitename, timestamp);
             addListener(listener);
         }
@@ -98,7 +98,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      * {@inheritDoc}
      */
     public void endSuite() throws RemoteException, SmartFrogException {
-        for(TestListener testListener:this) {
+        for (TestListener testListener : this) {
             testListener.endSuite();
         }
     }

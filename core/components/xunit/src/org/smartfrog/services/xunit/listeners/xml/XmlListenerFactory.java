@@ -52,7 +52,7 @@ public interface XmlListenerFactory extends TestListenerFactory {
     /**
      * {@value}
      */
-    String INDEX_FILE="indexFile";
+    String INDEX_FILE = "indexFile";
 
     /**
      * {@value}
@@ -84,7 +84,7 @@ public interface XmlListenerFactory extends TestListenerFactory {
      * @throws RemoteException network problems
      */
     String lookupFilename(String hostname,
-                                 String suitename) throws RemoteException;
+                          String suitename) throws RemoteException;
 
     /**
      * Unregister a listener instance. Harmless if the instance is not registered

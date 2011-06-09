@@ -111,7 +111,7 @@ public final class LogEntry implements Serializable, Cloneable {
      * @param text text
      */
     public LogEntry(int level, String text) {
-        this(level,text,(ThrowableTraceInfo)null);
+        this(level, text, (ThrowableTraceInfo) null);
     }
 
     /**
@@ -151,6 +151,7 @@ public final class LogEntry implements Serializable, Cloneable {
      * @return a clone of this instance.
      * @see Cloneable
      */
+    @Override
     protected Object clone() {
         return new LogEntry(this);
     }
@@ -184,7 +185,7 @@ public final class LogEntry implements Serializable, Cloneable {
      * @return the level as a text string
      */
     public String levelToText() {
-        switch(level) {
+        switch (level) {
             case LOG_LEVEL_STDERR:
                 return "stderr";
             case LOG_LEVEL_STDOUT:
@@ -207,24 +208,24 @@ public final class LogEntry implements Serializable, Cloneable {
                 return "unknown";
         }
     }
-    
+
     /**
      * Creates a full log string with the log level
      * @return the full log string
      */
     public String logString() {
-        if(level==LOG_LEVEL_STDERR || level==LOG_LEVEL_STDOUT) {
-            return text+"\n";
+        if (level == LOG_LEVEL_STDERR || level == LOG_LEVEL_STDOUT) {
+            return text + "\n";
         }
-        StringBuilder buffer=new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
         buffer.append('[');
         buffer.append(levelToText().toUpperCase(Locale.ENGLISH));
         buffer.append(" ]");
         buffer.append(text);
-        if(thrown!=null) {
+        if (thrown != null) {
             buffer.append(thrown.toString());
         }
-        
+
         return buffer.toString();
     }
 }

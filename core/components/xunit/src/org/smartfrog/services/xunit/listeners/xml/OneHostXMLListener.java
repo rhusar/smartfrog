@@ -117,7 +117,7 @@ public class OneHostXMLListener implements FileListener {
         this.suitename = suitename;
         this.startTime = startTime;
         this.preamble = preamble;
-        
+
         tests = new HashMap<String, TestInfo>();
     }
 
@@ -138,7 +138,7 @@ public class OneHostXMLListener implements FileListener {
      * {@inheritDoc}
      */
     @Override
-    public void setOwner(XmlListenerFactory owner){
+    public void setOwner(XmlListenerFactory owner) {
         this.owner = owner;
     }
 

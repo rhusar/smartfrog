@@ -141,7 +141,7 @@ public class EventRegistrar implements EventRegistration,
                     sStr = s.toString() + "[" + s.getClass().toString() + "]";
                 }
                 if (sfLog().isErrorEnabled()) {
-                    sfLog().error("Failed to send event: '" + evStr + "' to '" + sStr + "', cause: " + ex1.getMessage(), ex1);
+                    sfLog().error("Failed to send event: '" + evStr + "' to '" + sStr + "', cause: " + ex1, ex1);
                 }
             }
         }

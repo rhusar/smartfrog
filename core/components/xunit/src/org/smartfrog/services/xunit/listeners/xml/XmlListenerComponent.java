@@ -1,7 +1,5 @@
 package org.smartfrog.services.xunit.listeners.xml;
 
-import org.smartfrog.services.xunit.listeners.xml.OneHostXMLListener;
-
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -32,9 +30,9 @@ public class XmlListenerComponent
      */
     @Override
     public FileListener createNewSingleHostListener(String hostname,
-                                                             File destFile,
-                                                             String processname, String suitename,
-                                                             Date start) throws
+                                                    File destFile,
+                                                    String processname, String suitename,
+                                                    Date start) throws
             IOException {
         return new OneHostXMLListener(hostname,
                 processname,

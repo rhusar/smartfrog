@@ -27,8 +27,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * An abstract base class for XML Listeners
@@ -158,7 +158,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
         useHostname = sfResolve(XmlListenerFactory.ATTR_USE_HOSTNAME, true, true);
         useProcessname = sfResolve(XmlListenerFactory.ATTR_USE_PROCESSNAME, true, true);
         suffix = sfResolve(XmlListenerFactory.ATTR_SUFFIX, suffix, true);
-        
+
         prefix = sfResolve(XmlListenerFactory.ATTR_PREFIX, prefix, true);
         if (log.isInfoEnabled()) {
             log.info("output dir is " + outputDir
@@ -170,7 +170,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * 
+     *
      * register an instance in the instance list
      * @param instance new instance
      */
@@ -179,11 +179,11 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-    * Close and Unregister a listener instance. Harmless if the instance is not registered
-    *
-    * @param instance instance to unregister
-    * @throws RemoteException network problems
-    */
+     * Close and Unregister a listener instance. Harmless if the instance is not registered
+     *
+     * @param instance instance to unregister
+     * @throws RemoteException network problems
+     */
     @Override
     public void unregisterInstance(FileListener instance) throws RemoteException {
         if (instance != null) {
@@ -191,7 +191,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             synchronized (this) {
                 removed = instances.remove(instance);
             }
-            if(removed) {
+            if (removed) {
                 try {
                     instance.close();
                 } catch (IOException e) {
@@ -202,8 +202,8 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             }
         }
     }
-    
-    
+
+
     /**
      * Start listening to a test suite
      *
@@ -216,6 +216,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @throws RemoteException    network problems
      * @throws SmartFrogException code problems
      */
+    @Override
     public TestListener listen(TestSuite suite,
                                String hostname,
                                String processname,

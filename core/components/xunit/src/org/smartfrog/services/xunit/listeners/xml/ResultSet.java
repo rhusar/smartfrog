@@ -1,31 +1,31 @@
 /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 package org.smartfrog.services.xunit.listeners.xml;
 
-import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.base.TestSuite;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 
-import java.io.Serializable;
 import java.io.File;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
@@ -40,9 +40,9 @@ public final class ResultSet implements Serializable {
     public File filename;
 
     public ResultSet(
-                     TestSuite suite,
-                     String hostname,
-                     String processname, String suitename, File filename) {
+            TestSuite suite,
+            String hostname,
+            String processname, String suitename, File filename) {
         this.suite = suite;
         this.hostname = hostname;
         this.processname = processname;
@@ -56,7 +56,7 @@ public final class ResultSet implements Serializable {
      * @return true if we are considered finished.
      */
     public boolean isFinished() {
-        return suite==null;
+        return suite == null;
     }
 
     /**
@@ -70,17 +70,17 @@ public final class ResultSet implements Serializable {
      */
     public synchronized boolean update(Statistics ongoingTotal) throws SmartFrogResolutionException,
             RemoteException {
-        boolean changed=false;
-        if(suite!=null) {
-            Statistics updated=new Statistics();
-            boolean finished=updated.retrieveResultAttributes((Prim) suite);
-            if(finished) {
+        boolean changed = false;
+        if (suite != null) {
+            Statistics updated = new Statistics();
+            boolean finished = updated.retrieveResultAttributes((Prim) suite);
+            if (finished) {
                 //stop updating
-                suite=null;
+                suite = null;
             }
-            if(!statistics.isEqual(updated)) {
-                statistics=updated;
-                changed=true;
+            if (!statistics.isEqual(updated)) {
+                statistics = updated;
+                changed = true;
             }
         }
         ongoingTotal.add(statistics);

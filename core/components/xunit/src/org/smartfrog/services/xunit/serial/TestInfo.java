@@ -344,6 +344,7 @@ public final class TestInfo implements Serializable, Cloneable {
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return getTitle();
     }
@@ -386,15 +387,15 @@ public final class TestInfo implements Serializable, Cloneable {
         buffer.append("\nOutcome : ").append(getOutcome());
         buffer.append("\nDuration: ").append(getDuration());
         buffer.append("\nOn host: ").append(getHostname());
-        if(getProcessName()!=null) {
+        if (getProcessName() != null) {
             buffer.append(" PID ").append(getProcessName());
         }
-        if(getDescription()!=null) {
+        if (getDescription() != null) {
             buffer.append("\ndescription : ").append(getDescription());
         }
         return buffer.toString();
     }
-    
+
     /**
      * Create a skipped test message with the current start time/end time
      *

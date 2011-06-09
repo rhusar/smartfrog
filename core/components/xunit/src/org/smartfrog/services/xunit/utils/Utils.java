@@ -54,9 +54,9 @@ public class Utils {
     public static String getIpAddr() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException ignored ) {
+        } catch (UnknownHostException ignored) {
             return "(unknown address)";
-        }   
+        }
     }
 
     /**

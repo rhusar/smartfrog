@@ -19,12 +19,12 @@ import java.rmi.RemoteException;
  * work with this is to run the child components in their own processes.
  <pre>
  TimeoutCompoundSchema extends Schema {
-    failOnTimeout extends Boolean;
-     //message to get logged at info level
-     timeoutMessage extends String;
-     //timeout in seconds. If <=0 the timeout is disabled
-     timeout extends Integer;
-    }
+ failOnTimeout extends Boolean;
+ //message to get logged at info level
+ timeoutMessage extends String;
+ //timeout in seconds. If <=0 the timeout is disabled
+ timeout extends Integer;
+ }
  </pre>
  */
 
@@ -33,7 +33,7 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
     private boolean failOnTimeout;
 
     //message to get logged at info level
-    private String timeoutMessage ;
+    private String timeoutMessage;
     //timeout in milliseconds. If <=0 the timeout is disabled
     private int timeout;
 
@@ -52,15 +52,16 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        timeoutMessage=sfResolve(ATTR_TIMEOUT_MESSAGE,timeoutMessage,true);
-        timeout=sfResolve(ATTR_TIMEOUT,timeout, true);
+        timeoutMessage = sfResolve(ATTR_TIMEOUT_MESSAGE, timeoutMessage, true);
+        timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
         failOnTimeout = sfResolve(ATTR_FAIL_ON_TIMEOUT, failOnTimeout, true);
-        sfLog().debug("Starting new TimeoutCompound with timeout="+timeout
-            +" and message="+timeoutMessage);
-        watchdog=new WatchDogThread(timeout);
+        sfLog().debug("Starting new TimeoutCompound with timeout=" + timeout
+                + " and message=" + timeoutMessage);
+        watchdog = new WatchDogThread(timeout);
         watchdog.start();
     }
 
@@ -71,10 +72,11 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        if(watchdog!=null) {
+        if (watchdog != null) {
             watchdog.stopWatching();
-            watchdog=null;
+            watchdog = null;
         }
         super.sfTerminateWith(status);
     }
@@ -86,8 +88,8 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
     synchronized void initiateTimeoutProcess() {
         //forget about the (self-terminating) watchdog
         //and catch any cleanup states
-        synchronized(this) {
-            if(watchdog==null) {
+        synchronized (this) {
+            if (watchdog == null) {
                 return;
             }
             watchdog = null;
@@ -97,19 +99,19 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
                 timeoutMessage,
                 null);
 
-        int terminated=0;
-        for (Prim child:sfChildList()) {
+        int terminated = 0;
+        for (Prim child : sfChildList()) {
             try {
-                if(!child.sfIsTerminated() && !child.sfIsTerminating()) {
+                if (!child.sfIsTerminated() && !child.sfIsTerminating()) {
                     terminated++;
                     child.sfDetachAndTerminate(terminationRecord);
                 }
             } catch (RemoteException rex) {
-                sfLog().ignore("When terminating a child",rex);
+                sfLog().ignore("When terminating a child", rex);
             }
         }
         //if we were to fail on a timeout, then terminate
-        if(terminated>0 && failOnTimeout) {
+        if (terminated > 0 && failOnTimeout) {
             sfTerminate(terminationRecord);
         }
     }
@@ -127,7 +129,7 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
          * {@inheritDoc}
          *
          */
-        public WatchDogThread(int timeout) {
+        WatchDogThread(int timeout) {
             timeoutMillis = timeout;
         }
 
@@ -144,7 +146,7 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
          *
          */
         public void execute() throws Throwable {
-            if(timeoutMillis <=0) {
+            if (timeoutMillis <= 0) {
                 return;
             }
             int sleepTime = timeoutMillis;

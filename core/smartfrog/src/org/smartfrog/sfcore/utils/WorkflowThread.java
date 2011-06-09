@@ -57,6 +57,8 @@ public class WorkflowThread extends SmartFrogThread {
         bind(owner, workflowTermination);
     }
 
+
+
     public Prim getOwner() {
         return owner;
     }

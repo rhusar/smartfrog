@@ -78,6 +78,7 @@ public class ConsoleListenerImpl extends PrimImpl
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         outputstream.flush();
         super.sfTerminateWith(status);
@@ -134,7 +135,7 @@ public class ConsoleListenerImpl extends PrimImpl
         flush();
         //recurse
         ThrowableTraceInfo cause = fault.getCause();
-        if(cause!=null && cause!=fault) {
+        if (cause != null && cause != fault) {
             logTrace(cause);
         }
     }
@@ -152,6 +153,7 @@ public class ConsoleListenerImpl extends PrimImpl
      * @throws RemoteException network problems
      * @throws SmartFrogException code problems
      */
+    @Override
     public TestListener listen(TestSuite suite, String hostname,
                                String processname, String suitename,
                                long timestamp) throws RemoteException,
@@ -169,18 +171,22 @@ public class ConsoleListenerImpl extends PrimImpl
          * references; they may no longer be valid. <i>No further methods may be
          * called</i>
          */
+        @Override
         public void endSuite() throws RemoteException, SmartFrogException {
 
         }
 
+        @Override
         public void addError(TestInfo test) throws RemoteException {
             logTrouble("Error:", test);
         }
 
+        @Override
         public void addFailure(TestInfo test) throws RemoteException {
             logTrouble("Failure:", test);
         }
 
+        @Override
         public void endTest(TestInfo test) throws RemoteException {
             println("   ending " +
                     test.getName() +
@@ -189,6 +195,7 @@ public class ConsoleListenerImpl extends PrimImpl
 
         }
 
+        @Override
         public void startTest(TestInfo test) throws RemoteException {
             println("Starting " +
                     test.getName() +
@@ -196,6 +203,7 @@ public class ConsoleListenerImpl extends PrimImpl
                     test.getHostname());
         }
 
+        @Override
         public void log(LogEntry event) throws RemoteException {
             println(event.toString());
         }

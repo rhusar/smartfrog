@@ -31,6 +31,7 @@ import java.rmi.RemoteException;
  * created 18-May-2006 15:48:08
  */
 
+@SuppressWarnings({"AbstractClassExtendsConcreteClass"})
 public abstract class AbstractTestLog extends PrimImpl implements LogRemote, LogListener {
 
 
@@ -66,6 +67,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * Always return true for this test
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public boolean isDebugEnabled() throws RemoteException {
         return true;
     }
@@ -74,6 +76,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * Always return true for this test
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public boolean isErrorEnabled() throws RemoteException {
         return true;
     }
@@ -82,6 +85,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * Always return true for this test
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public boolean isFatalEnabled() throws RemoteException {
         return true;
     }
@@ -90,6 +94,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * Always return true for this test
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public boolean isInfoEnabled() throws RemoteException {
         return true;
     }
@@ -98,6 +103,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * Always return true for this test
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public boolean isTraceEnabled() throws RemoteException {
         return true;
     }
@@ -106,6 +112,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * Always return true for this test
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public boolean isWarnEnabled() throws RemoteException {
         return true;
     }
@@ -116,6 +123,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void trace(Object message) throws RemoteException {
         trace(message, null);
     }
@@ -127,6 +135,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param t       log this cause
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void trace(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_TRACE, message.toString(), t);
     }
@@ -137,6 +146,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void debug(Object message) throws RemoteException {
         debug(message, null);
     }
@@ -148,6 +158,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param t       log this cause
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void debug(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_DEBUG, message.toString(), t);
 
@@ -159,6 +170,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void info(Object message) throws RemoteException {
         info(message, null);
     }
@@ -170,6 +182,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param t       log this cause
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void info(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_INFO, message.toString(), t);
 
@@ -181,6 +194,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void warn(Object message) throws RemoteException {
         warn(message, null);
     }
@@ -192,6 +206,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param t       log this cause
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void warn(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_WARN, message.toString(), t);
     }
@@ -202,6 +217,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void error(Object message) throws RemoteException {
         error(message, null);
     }
@@ -213,6 +229,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param t       log this cause
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void error(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_ERROR, message.toString(), t);
 
@@ -224,6 +241,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param message log this message
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void fatal(Object message) throws RemoteException {
         fatal(message, null);
     }
@@ -235,6 +253,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param t       log this cause
      * @throws RemoteException in case of remote/network error
      */
+    @Override
     public void fatal(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_FATAL, message.toString(), t);
     }

@@ -17,29 +17,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/sfunit/components.sf"
-#include "/org/smartfrog/services/xunit/all.sf"
-#include "/org/smartfrog/services/xunit/listeners/antxml/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/ant/components.sf"
+
+#include "/org/smartfrog/services/sfunit/test/system/components.sf"
 
 
 test.data.dir (PROPERTY test.data.dir ++ "/sfdata");
 
 test.reports.dir (PROPERTY test.data.dir ++ "/reports");
-
-//these are components we run underneath
-SimpleTestCompound extends ExpectTerminate {
-    action extends Sequence {
-    }
-}
-
-
-FailingTestCompound extends TestCompound {
-    action extends FailAbnormal;
-}
-
 
 
 antxml extends AntXmlTestListener {
@@ -80,8 +64,8 @@ testRunnerAntXml extends TestRunner {
     description "run some basic tests";
     sfShouldTerminate true;
     
-    one extends SimpleTestCompound;
-    two extends FailingTestCompound;
+    simpleTest extends SimpleTestCompound;
+    failingTest extends FailingTestCompound;
 
   }
 }

@@ -44,7 +44,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
     private String cssURL;
     private String cssResource;
     private String cssData;
-    ComponentHelper helper;
+    private ComponentHelper helper;
 
     /**
      * construct a base interface
@@ -62,6 +62,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -107,6 +108,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();

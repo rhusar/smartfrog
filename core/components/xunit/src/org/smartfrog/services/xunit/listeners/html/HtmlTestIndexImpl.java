@@ -50,6 +50,7 @@ public class HtmlTestIndexImpl extends XmlTestIndexImpl implements HtmlTestIndex
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -60,7 +61,6 @@ public class HtmlTestIndexImpl extends XmlTestIndexImpl implements HtmlTestIndex
             helper.loadResourceToString(cssResource, Charset.forName("UTF-8"));
         }
         cssData = sfResolve(ATTR_CSS_DATA, cssData, false);
-
     }
 
     /**
@@ -76,7 +76,7 @@ public class HtmlTestIndexImpl extends XmlTestIndexImpl implements HtmlTestIndex
      * @throws SmartFrogException SmartFrog trouble
      * @throws RemoteException    In case of network/rmi error
      */
-
+    @Override
     public void testSuiteStarted(TestSuite suite,
                                  String hostname,
                                  String processname,
