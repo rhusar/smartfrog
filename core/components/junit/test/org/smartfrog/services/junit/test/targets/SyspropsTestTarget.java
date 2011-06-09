@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -18,23 +18,31 @@
 
  */
 
-
 package org.smartfrog.services.junit.test.targets;
 
 import junit.framework.TestCase;
 
 /**
- * Date: 05-Jul-2004
- * Time: 22:03:11
+
  */
-public class SuccessTest extends TestCase {
+public class SyspropsTestTarget extends TestCase {
 
-    
-    public SuccessTest(String s) {
-        super(s);
+    public void assertPropertySet(String key, String expected) {
+        String prop = System.getProperty(key);
+        assertNotNull("unset property " + key, prop);
+        assertEquals("property " + key + " is [" + prop + "] -expected " + expected, expected, prop);
     }
 
-    public void testSuccess() {
-        //we succeed here
+    public void testOne() throws Exception {
+        assertPropertySet("one", "1");
     }
+
+    public void testTwo() throws Exception {
+        assertPropertySet("two", "2");
+    }
+
+    public void testThree() throws Exception {
+        assertPropertySet("three", "3");
+    }
+
 }

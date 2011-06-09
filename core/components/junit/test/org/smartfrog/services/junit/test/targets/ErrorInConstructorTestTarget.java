@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,29 @@
  For more information: www.smartfrog.org
 
  */
-
 package org.smartfrog.services.junit.test.targets;
 
 import junit.framework.TestCase;
 
 /**
- * Test system.out, system.err output
+ * created Nov 25, 2004 3:34:58 PM
  */
-public class OutputTest extends TestCase {
+
+public class ErrorInConstructorTestTarget extends TestCase {
 
 
-    /** Constructs a test case with the given name. */
-    public OutputTest(String name) {
+    /**
+     * a test case designed to fail in the constructor
+     * @param name test name
+     */
+    public ErrorInConstructorTestTarget(String name) {
         super(name);
+        throw new IllegalArgumentException("fail in constructor");
     }
 
-    public void testOut() {
-        System.out.println("printing to System.out");
+    public void testNothing() {
+        fail("We should never get here");
     }
 
-    public void testErr() {
-        System.out.println("printing to System.err");
-    }
 
 }

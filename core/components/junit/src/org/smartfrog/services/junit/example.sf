@@ -39,6 +39,9 @@ sfConfig extends TestRunner {
     JUnitTestSuite extends JUnit3TestSuite {
         package "org.example";
 
-        classes ["firstTest","secondTest"];
+        classes [
+          "firstTest",
+          "secondTest"
+          ];
     }
 }

@@ -62,6 +62,8 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
 
 */
         //now fetch from the tests
+        ping("test runner", runner);
+        ping("test application", application);
         Prim tests;
         tests =
                 application.sfResolve(DeployedHtmlListenerTest.TEST_SUITE_COMPONENT_NAME,

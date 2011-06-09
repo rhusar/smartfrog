@@ -25,44 +25,16 @@ import junit.framework.TestCase;
 
 /**
  * Date: 05-Jul-2004
- * Time: 22:09:54
+ * Time: 22:03:11
  */
-public class ThrowingTest extends TestCase {
+public class SuccessTestTarget extends TestCase {
 
 
-    /**
-     * No-arg constructor to enable serialization. This method is not intended to be used by mere mortals without
-     * calling setName().
-     */
-    public ThrowingTest() {
-    }
-
-    public ThrowingTest(String s) {
+    public SuccessTestTarget(String s) {
         super(s);
     }
 
-    public void testThrowing() {
-        throw new RuntimeException("This was meant to happen");
+    public void testSuccess() {
+        //we succeed here
     }
-
-    public void testDoubleThrow() throws Exception{
-        try {
-            throw new Exception("nested");
-        } catch (Exception e) {
-            throw new RuntimeException("caught exception",e);
-        }
-    }
-
-    public void testTripleThrow() throws Exception {
-        try {
-            try {
-                throw new Exception("nested");
-            } catch (Exception e) {
-                throw new RuntimeException("caught exception", e);
-            }
-        } catch (RuntimeException e) {
-            throw new Exception("nested exception", e);
-        }
-    }
-
 }

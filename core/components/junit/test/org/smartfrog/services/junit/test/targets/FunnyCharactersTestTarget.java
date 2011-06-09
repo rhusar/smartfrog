@@ -22,13 +22,30 @@ package org.smartfrog.services.junit.test.targets;
 import junit.framework.TestCase;
 
 /**
- * This is a tricky test as it calls system.exit to shut down the VM.
- * It is only picked up if there ia security manager to catch it
- * or you fork the JVM and detect a JVM outage
+ * Each test here fails with a funny character
  */
-public class SystemExitTest extends TestCase {
+public class FunnyCharactersTestTarget extends TestCase {
 
-    public void testExit() {
-        System.exit(0);
+
+    /**
+     * test
+     * @param name test name
+     */
+
+    public FunnyCharactersTestTarget(String name) {
+        super(name);
     }
+
+    public void testAmpersand() {
+        fail("[&]");
+    }
+
+    public void testAngleBrackets() {
+        fail("[<]");
+    }
+
+    public void testIllegalChar() {
+        fail("[\u0007]");
+    }
+
 }

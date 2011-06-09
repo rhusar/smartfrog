@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.junit.junit3;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.xunit.base.TestContextInjector;
+import org.smartfrog.services.testcontext.TestContextInjector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,9 +28,9 @@ import java.util.Properties;
 
 /**
  * This is a test case with context. 
- * 
+ *
  * This design is intended to work inside SmartFrog or outside; it creates a stub context which can be overwritten
- * by {@link TestContextInjector#setTestContext(HashMap)} when the SF test runner forces a context
+ * by {@link TestContextInjector#setTestContext(Map)} when the SF test runner forces a context
  */
 
 public abstract class TestCaseWithContext extends TestCase implements TestContextInjector {
@@ -63,7 +63,7 @@ public abstract class TestCaseWithContext extends TestCase implements TestContex
         this.testContext = testContext;
         contextSet = testContext != null;
         //set the properties, with a bit of contingency planning
-        if(contextSet) {
+        if (contextSet) {
             properties = (Properties) getContextEntry(TestContextInjector.ATTR_PROPERTIES);
         }
         if (properties == null) {

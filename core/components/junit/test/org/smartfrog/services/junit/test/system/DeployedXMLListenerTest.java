@@ -43,7 +43,7 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
 
         int seconds = getTimeout();
         application = deployExpectingSuccess(url, "XmlTest");
-        TestRunner runner = getTestRunner();
+        TestRunner runner = getApplicationAsTestRunner();
         XmlListenerFactory listenerFactory = null;
         listenerFactory =
                 (XmlListenerFactory) application.sfResolve(
@@ -52,7 +52,9 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
                         true);
         boolean finished = spinTillFinished(runner, seconds);
         assertTrue("Test run timed out", finished);
-
+        ping("test runner", runner);
+        ping("test application", application);
+        ping("listenerFactory", listenerFactory);
         String path = listenerFactory.lookupFilename(null, SUITENAME);
         assertNotNull("path of test suite " + SUITENAME, path);
 

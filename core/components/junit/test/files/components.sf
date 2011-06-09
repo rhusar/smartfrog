@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/junit/all.sf"
 #include "/org/smartfrog/services/filesystem/tempfile.sf"
 #include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
-//sfCodeBase PROPERTY org.smartfrog.codebase;
 
 
 /**
@@ -87,9 +86,9 @@ MostTests extends TestBase {
         SuccessTest:classes,
         SetupTearDownTests:classes,
         BadClassnameTest:classes,
-        "ThrowingTest",
-        "FunnyCharactersTest",
-        "OutputTest"];
+        "ThrowingTestTarget",
+        "FunnyCharactersTestTarget",
+        "OutputTestTarget"];
 }
 
 /**
@@ -105,7 +104,7 @@ NamedTest extends TestBase {
  * system exit handling
  */
 SystemExitTest extends NamedTest {
-    name "SystemExitTest";
+    name "SystemExitTestTarget";
 }
 
 
@@ -113,7 +112,7 @@ SystemExitTest extends NamedTest {
  * test failure
  */
 FailureTest extends NamedTest {
-    name "FailureTest";
+    name "FailureTestTarget";
 }
 
 
@@ -121,21 +120,21 @@ FailureTest extends NamedTest {
  * test that arbitrary exceptions are processed
  */
 ThrowingTest extends NamedTest {
-    name "ThrowingTest";
+    name "ThrowingTestTarget";
 }
 
 /**
  * test success
  */
 SuccessTest extends NamedTest {
-    name "SuccessTest";
+    name "SuccessTestTarget";
 }
 
 /**
  * test success
  */
 SyspropsTest extends NamedTest {
-    name "SyspropsTest";
+    name "SyspropsTestTarget";
 }
 
 /**
@@ -143,8 +142,10 @@ SyspropsTest extends NamedTest {
  */
 SetupTearDownTests extends TestBase {
     name "SetupTearDownTests";
-    classes ["ErrorInSetupTest",
-        "ErrorInTeardownTest"];
+    classes [
+        "ErrorInSetupTestTarget",
+        "ErrorInTeardownTestTarget"
+        ];
 }
 
 
@@ -153,7 +154,7 @@ SetupTearDownTests extends TestBase {
  * This is a classname that we dont know of
  */
 BadClassnameTest extends NamedTest {
-    name "BadClassnameTest";
+    name "BadClassnameTestTarget";
 }
 
 

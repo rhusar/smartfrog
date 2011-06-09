@@ -31,7 +31,7 @@ sfConfig extends BufferingTestRunner {
 
     tests extends SyspropsTest {
     
-      properties [["one","1"],"two","2",[["three"],"3"]];
+      properties [["one","1"],["two","2"],[["three"],"3"]];
     }
 }
 

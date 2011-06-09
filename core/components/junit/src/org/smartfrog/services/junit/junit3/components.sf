@@ -37,6 +37,7 @@
         unless extends OptionalBoolean;
     }
     sfClass "org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl";
+    sfShouldTerminate false;
     if true;
     unless false;
   }
