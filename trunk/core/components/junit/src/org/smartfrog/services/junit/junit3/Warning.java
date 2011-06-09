@@ -23,7 +23,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
- * A variant on how JUnit3 reports problems. This pseudo-test case class throws whichever fault is passed in created
+ * A variant on how JUnit3 reports problems. This pseudo-test case class throws whichever fault is passed in during creation
  * 24-Oct-2006 13:38:22
  */
 
@@ -74,6 +74,7 @@ public class Warning extends TestCase {
      *
      * @throws Throwable whatever we were constructed with
      */
+    @SuppressWarnings({"ProhibitedExceptionThrown"})
     public void testReportError() throws Throwable {
         if (thrown != null) {
             throw thrown;

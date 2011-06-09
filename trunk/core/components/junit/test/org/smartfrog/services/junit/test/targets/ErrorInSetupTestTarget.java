@@ -25,18 +25,21 @@ import junit.framework.TestCase;
  * created Nov 25, 2004 3:34:58 PM
  */
 
-public class ErrorInSetupTest extends TestCase {
+public class ErrorInSetupTestTarget extends TestCase {
 
 
-    /** Constructs a test case with the given name. */
-    public ErrorInSetupTest(String name) {
+    /**
+     * a test case designed to fail in the setup
+     * @param name test name
+     */
+    public ErrorInSetupTestTarget(String name) {
         super(name);
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
+     * @throws IllegalArgumentException always
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         throw new IllegalArgumentException("fail in setUp()");

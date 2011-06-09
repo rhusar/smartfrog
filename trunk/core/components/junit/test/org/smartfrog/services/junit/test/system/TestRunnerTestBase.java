@@ -21,9 +21,13 @@
 
 package org.smartfrog.services.junit.test.system;
 
+import junit.framework.AssertionFailedError;
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
 import org.smartfrog.services.xunit.serial.Statistics;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -59,25 +63,24 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
      * If the application is null: a JUnit exception is trown
      * @return the application as a test runner.
      */
-    TestRunner getTestRunner() {
+    TestRunner getApplicationAsTestRunner() {
         TestRunner runner = (TestRunner) application;
         assertNotNull(runner);
         return runner;
     }
-    
+
     /**
      * Spin till a component is finished
      *
      * @param runner
      * @param timeoutSeconds
      * @return whether it finished or false for timeout
-     * @throws InterruptedException
-     * @throws RemoteException
+     * @throws InterruptedException if interrupted
+     * @throws RemoteException on network problems
      */
     protected boolean spinTillFinished(TestRunner runner,
                                        int timeoutSeconds) throws InterruptedException,
             RemoteException {
-
         try {
             do {
                 Thread.sleep(1000);
@@ -127,15 +130,15 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
     }
 
     /**
-     * execute a test run to a buffer
+     * execute a test run to a buffer, and make assertions about the results
      * @param name the test to run (base-relative; no .sf extension needed)
      * @param run number of tests to run; -1 means no
-     * @param errors
-     * @param failures
-     * @throws Throwable
+     * @param errors number of errors expected
+     * @param failures number of failures expected
+     * @throws Throwable on any failure
      */
     protected void executeBufferedTestRun(String name, int run, int errors, int failures) throws Throwable {
-        application = deployExpectingSuccess(BASE+name+".sf", name);
+        application = deployExpectingSuccess(BASE + name + ".sf", name);
         int seconds = getTimeout();
         TestRunner runner = (TestRunner) application;
         assertTrue(runner != null);
@@ -146,8 +149,11 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
                         listener,
                         true);
         boolean finished = spinTillFinished(runner, seconds);
+        ping("test runner", runner);
+        ping("BufferingListener", listener);
+
         assertTrue("Test run timed out", finished);
-        if(run>=0) {
+        if (run >= 0) {
             assertTrue("expected tests to run", listener.getStartCount() == 1);
             assertTrue("session started",
                     listener.getSessionStartCount() == 1);
@@ -155,13 +161,23 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
                     listener.getSessionEndCount() == 1);
             //assertTrue("all tests passed", listener.testsWereSuccessful());
             Statistics statistics = runner.getStatistics();
-            assertEquals("statistics.testRun"+run, run, statistics.getTestsRun());
+            assertEquals("statistics.testRun" + run, run, statistics.getTestsRun());
             assertEquals("statistics.errors", errors, statistics.getErrors());
-            assertEquals("statistics.failures",failures,
+            assertEquals("statistics.failures", failures,
                     statistics.getFailures());
         } else {
             assertEquals("expected tests to be skipped and startcount==0",
-                    0,listener.getStartCount());
+                    0, listener.getStartCount());
+        }
+    }
+
+    protected void ping(final String component, final Liveness runner) throws SmartFrogLivenessException, RemoteException {
+        try {
+            runner.sfPing(null);
+        } catch (NoSuchObjectException e) {
+            //if we get here then the test runner finished, but it isn't hanging around. This usually indicates some kind of
+            //deployment failure
+            throw new SmartFrogLivenessException("The "+ component +" is no longer live", e);
         }
     }
 }

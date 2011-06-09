@@ -39,26 +39,26 @@ public class SyspropsTest extends TestRunnerTestBase {
 
         int seconds = getTimeout();
         application = deployExpectingSuccess(url, "localhostTest");
-        TestRunner runner =  getTestRunner();
+        TestRunner runner = getApplicationAsTestRunner();
         BufferingListener listener = null;
         listener =
                 (BufferingListener) application.sfResolve(TestRunner.ATTR_LISTENER,
                         listener,
                         true);
         boolean finished = spinTillFinished(runner, seconds);
-        assertTrue("Test run timed out", finished);
+        ping("test runner", runner);
+        assertTrue("Test run timed out after " + seconds + " seconds", finished);
         assertEquals("session started", 1,
                 listener.getSessionStartCount());
         assertEquals("session ended", 1,
                 listener.getSessionEndCount());
         Statistics statistics = runner.getStatistics();
-        System.out.println(statistics.toString());
+        getLog().info(statistics.toString());
         assertTrue("testsWereSuccessful() is false", listener.testsWereSuccessful());
         assertEquals("statistics.errors!=0 -is " + statistics.getErrors(), 0, statistics.getErrors());
         assertEquals("statistics.failures!=0",
                 0,
                 statistics.getFailures());
-
     }
 
 }

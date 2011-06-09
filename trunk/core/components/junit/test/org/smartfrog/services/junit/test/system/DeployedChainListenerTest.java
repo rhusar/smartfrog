@@ -43,7 +43,8 @@ public class DeployedChainListenerTest extends TestRunnerTestBase {
                 true);
         boolean finished = spinTillFinished(runner, seconds);
         assertTrue("Test run timed out", finished);
-
+        ping("test runner", runner);
+        ping("application", application);
         StatisticsTestListener statsListener = null;
         statsListener = (StatisticsTestListener) application.sfResolve(
                 "statistics",

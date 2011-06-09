@@ -33,5 +33,5 @@ public interface SFUnitTestSuite extends TestCompound, TestSuite, Conditional {
     /**
      * flag to request parallel deployments
      */
-    String ATTR_PARALLEL="parallel";
+    String ATTR_PARALLEL = "parallel";
 }

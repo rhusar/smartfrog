@@ -49,20 +49,30 @@
       rev="latest.integration"
       conf="build->default"/>
     <dependency org="org.smartfrog"
+      name="sf-loggingservices"
+      changing="true"
+      rev="latest.integration"
+      conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+
+    <dependency org="org.smartfrog"
       name="sf-xml" changing="true"
       rev="latest.integration"
-      conf="compile->master;runtime->default"/>
+      conf="compile->master;runtime->master"/>
+
+    <!--avoid asking for junit so that this component can play with different versions-->
     <dependency org="org.smartfrog"
       name="sf-testharness" changing="true"
       rev="latest.integration"
-      conf="test->default"/>
+      conf="test->master">
+      </dependency>
     <dependency org="org.smartfrog"
       name="sf-xunit" changing="true"
       rev="latest.integration"
-      conf="compile->master;runtime->default"/>
+      conf="compile->master;runtime->master"/>
     <dependency org="junit"
       name="junit"
-      rev="${junit.version}"
+      rev="${junit4.version}"
       conf="compile->default;redist->default"/>
+
   </dependencies>
 </ivy-module>
