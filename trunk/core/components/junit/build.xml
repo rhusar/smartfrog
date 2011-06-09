@@ -54,9 +54,12 @@
     <sf-system-test>
       <test>
         <sf-system-test-junit>
+          <batchtest todir="${test.data.dir}" if="testcase">
+            <fileset dir="${test.classes.dir}" includes="**/${testcase}.class"/>
+          </batchtest>
           <batchtest todir="${test.data.dir}" unless="testcase">
             <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/*/test/**/*Test.class"/>
+              <include name="${sf-system-test-class-pattern}"/>
               <exclude name="**/LoggingChainListenerTest.class" unless="run.failing.tests" />
               <!--these are the tests that we expect to fail, because they are called in the test runs-->
               <exclude name="org/smartfrog/**/test/targets/*Test.class"/>
