@@ -142,6 +142,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException for other problems
      */
+    @Override
     public void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException {
         boolean overwriting = false;
         boolean overwritingourselves = false;
@@ -309,5 +310,13 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
             testSuiteContext = new ThreadLocal<Prim>();
         }
         return testSuiteContext;
+    }
+
+    /**
+     * Log at whatever level is chosen for the default logging
+     * @param message message to log
+     */
+    protected void log(String message) {
+        sfLog().info(message);
     }
 }

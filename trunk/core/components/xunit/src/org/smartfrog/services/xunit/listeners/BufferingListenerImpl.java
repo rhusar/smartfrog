@@ -23,10 +23,9 @@ package org.smartfrog.services.xunit.listeners;
 
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestSuite;
-import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.LogEntry;
+import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

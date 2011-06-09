@@ -61,12 +61,12 @@ import java.util.Date;
  * This is a listener of tests
  * Implement the {@link XmlListenerFactory} interface and so provide a component
  * for XML logging. Note that we are only a factory
- * 
+ *
  */
 
 public class AntXmlTestListenerComponent
         extends AbstractXmlListenerComponent implements XmlListenerFactory {
-    
+
 
     /**
      * construct a base interface
@@ -83,10 +83,10 @@ public class AntXmlTestListenerComponent
      */
     @Override
     public FileListener createNewSingleHostListener(String hostname,
-                                                      File destFile,
-                                                      String processname,
-                                                      String suitename,
-                                                      Date start)
+                                                    File destFile,
+                                                    String processname,
+                                                    String suitename,
+                                                    Date start)
             throws IOException {
         return new AntXmlListener(hostname,
                 destFile,

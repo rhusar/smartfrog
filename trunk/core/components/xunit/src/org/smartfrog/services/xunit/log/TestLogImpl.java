@@ -32,10 +32,10 @@ import java.util.List;
  * created 27-Apr-2006 12:53:07
  */
 
-public class TestLogImpl extends AbstractTestLog implements TestLog {
+public final class TestLogImpl extends AbstractTestLog implements TestLog {
 
 
-    private List<LogEntry> logEntries = new ArrayList<LogEntry>();
+    private final List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
 
     public TestLogImpl() throws RemoteException {
@@ -46,6 +46,7 @@ public class TestLogImpl extends AbstractTestLog implements TestLog {
      *
      * @param entry entry to log
      */
+    @Override
     public void log(LogEntry entry) {
         logEntries.add(entry);
     }

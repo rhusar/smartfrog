@@ -55,7 +55,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * @throws RemoteException in case of remote/network error
      */
     public void log(LogEntry entry) throws RemoteException {
-        for(LogListener listener:listeners) {
+        for (LogListener listener : listeners) {
             listener.log(entry);
         }
     }
@@ -67,7 +67,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * @throws SmartFrogException if a duplicate is added
      */
     public void addLogListener(LogListener listener) throws SmartFrogException {
-        if(listeners.indexOf(listener)>=0) {
+        if (listeners.indexOf(listener) >= 0) {
             throw new SmartFrogException(ERROR_DUPLICATE_ADD);
         }
         listeners.add(listener);
@@ -78,7 +78,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      *
      * @param listener listener to remove
      */
-    public void removeLogListener(LogListener listener)  {
+    public void removeLogListener(LogListener listener) {
         listeners.remove(listener);
     }
 

@@ -41,6 +41,7 @@ public interface TestListenerLog extends LogRemote {
      * listener is already listed as listening to the log
      * @throws RemoteException network problems
      */
+
     public void addLogListener(LogListener listener) throws SmartFrogException, RemoteException;
 
     /**

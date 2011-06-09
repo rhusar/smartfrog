@@ -46,7 +46,7 @@ public final class Statistics implements Serializable, Cloneable {
     /**
      * Hash table by outcome
      */
-    private HashMap<String,Integer> outcomes=new HashMap<String, Integer>();
+    private HashMap<String, Integer> outcomes = new HashMap<String, Integer>();
 
 
     /**
@@ -94,7 +94,7 @@ public final class Statistics implements Serializable, Cloneable {
         loggedMessages = node.sfResolve(TestResultAttributes.ATTR_LOGGED_MESSAGES,
                 0,
                 false);
-        boolean finished=
+        boolean finished =
                 node.sfResolve(TestResultAttributes.ATTR_FINISHED,
                         false,
                         false);
@@ -113,8 +113,8 @@ public final class Statistics implements Serializable, Cloneable {
         addTestsStarted(that.getTestsStarted());
         addLoggedMessages(that.getLoggedMessages());
         //add all the outcomes
-        for(String outcome:that.outcomes.keySet()) {
-            increment(outcome,that.getOutcome(outcome));
+        for (String outcome : that.outcomes.keySet()) {
+            increment(outcome, that.getOutcome(outcome));
         }
     }
 
@@ -137,7 +137,7 @@ public final class Statistics implements Serializable, Cloneable {
      * @param outcome outcome name
      * @param count number to increment
      */
-    public synchronized void increment(String outcome,int count) {
+    public synchronized void increment(String outcome, int count) {
         int value = getOutcome(outcome);
         value += count;
         outcomes.put(outcome, new Integer(value));
@@ -229,6 +229,7 @@ public final class Statistics implements Serializable, Cloneable {
     public int getLoggedMessages() {
         return loggedMessages;
     }
+
     /**
      * get number of tests that did not succeed, the sum
      * of failures+errors. Synchronised.
@@ -266,12 +267,13 @@ public final class Statistics implements Serializable, Cloneable {
      * String operator gives the summary statistics
      * @return a summary of the test run
      */
+    @Override
     public String toString() {
         String s = "Statistics: testsRun=" + testsRun
                 + " errors=" + errors
                 + " failures=" + failures
                 + " loggedMessages=" + loggedMessages
-                + " testsStarted="+testsStarted;
+                + " testsStarted=" + testsStarted;
         return s;
     }
 
@@ -279,10 +281,11 @@ public final class Statistics implements Serializable, Cloneable {
      * Cloning copies the statistics
      * and the hashmap of events.
      */
+    @Override
     public Object clone() {
         try {
-            Statistics that = (Statistics)super.clone();
-            outcomes=new HashMap<String, Integer>(that.outcomes);
+            Statistics that = (Statistics) super.clone();
+            outcomes = new HashMap<String, Integer>(that.outcomes);
             return that;
         } catch (CloneNotSupportedException e) {
             //not possible except by a subclass, and, being final,

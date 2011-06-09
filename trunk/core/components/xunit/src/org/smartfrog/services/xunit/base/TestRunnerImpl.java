@@ -26,14 +26,24 @@ import org.smartfrog.services.assertions.events.TestStartedEvent;
 import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.*;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.Executable;
+import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.workflow.events.DeployedEvent;
+import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 
 import java.rmi.RemoteException;
@@ -56,11 +66,11 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     /**
      * a cached exception that is thrown on a liveness failure
      */
-    private Throwable cachedException = null;
+    private volatile Throwable cachedException = null;
     /**
      * flag set when the tests are finished
      */
-    private boolean finished = false;
+    private volatile boolean finished = false;
 
     /**
      * should we fail messily if a test failed
@@ -280,7 +290,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
                 sendEvent(new TestStartedEvent(this));
                 skipped = true;
                 updateFlags(false);
-                String message = getName() + " skipping test run " +  description;
+                String message = getName() + " skipping test run " + description;
                 sfLog().info(message);
                 //send a test started event
                 //followed by a the closing results
@@ -333,7 +343,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         sendEvent(new TerminatedEvent(this, status));
         super.sfTerminateWith(status);
         WorkflowThread.requestThreadTerminationWithInterrupt(getWorker());
-        if(listenerPrim != null) {
+        if (listenerPrim != null) {
             //do anything with the listener?
         }
     }
@@ -352,7 +362,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         TestRunnerThread thread = new TestRunnerThread();
         thread.setName("tester");
         thread.setPriority(threadPriority);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.info("Starting new tester at priority " + threadPriority);
         }
         setWorker(thread);
@@ -361,8 +371,8 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     }
 
     /**
-     * Run the tests in a new thread
-     * @throws Throwable
+     * Run the tests in the test runner thread.
+     * @throws Throwable if it doesn't work
      */
     @Override
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
@@ -371,25 +381,38 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         log.info("Beginning tests");
         try {
             if (!executeTests()) {
+                sfLog().info("Test execution failed");
                 throw new TestsFailedException(TESTS_FAILED + description);
             }
         } catch (Throwable e) {
             catchException(e);
-        } finally {
-            boolean testFailed = getCachedException() != null;
-            log.info("Completed tests "
-                    + (testFailed ? "with errors " : "successfully"));
-            //declare ourselves finished
-            setFinished(true);
-            //unset the worker field
-            setWorker(null);
-            TerminationRecord record = createTerminationRecord();
-            sendEvent(createTestCompletedEvent(record));
+        }
 
-            //the workflow thread handles the inner work
+        boolean testFailed = getCachedException() != null;
+        log.info("Completed tests "
+                + (testFailed ? "with errors " : "successfully"));
+        //notify any listener of the event
+        sendTestCompleteEvent();
 
-            //now look at our termination actions
-/*            if (shouldTerminate) {
+        //declare ourselves finished
+        setFinished(true);
+        //unset the worker field
+        setWorker(null);
+
+
+        //at this point the thread is finished. It notifies its parent.
+
+        if (shouldTerminate) {
+            log.info("Test runner will now terminate");
+        } else {
+            log.info("Test runner is not terminating");
+        }
+
+        //the workflow thread handles the inner work
+
+        //now look at our termination actions
+/*
+            if (shouldTerminate) {
                 if (!testFailed || !failOnError) {
                     record = TerminationRecord.normal(self);
                 } else {
@@ -397,36 +420,24 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
                 }
                 log.info("terminating test component" + record);
                 helper.targetForTermination(record, shouldDetach, false);
-            }*/
-        }
+            }
+*/
     }
 
-  
-    /**
-     * Thread that runs the tests
-     */
-    private class TestRunnerThread extends WorkflowThread {
-        private TestRunnerThread() {
-            super(TestRunnerImpl.this, TestRunnerImpl.this, true);
-        }
-
-
-        /**
-         * The termination record is created slighlty differently
-         * @return
-         */
-        @Override
-        protected TerminationRecord createTerminationRecord() {
-            return TestRunnerImpl.this.createTerminationRecord();
-        }
-    }
 
     /**
      * send out a completion event
      */
     private void sendTestCompleteEvent() {
         TerminationRecord record = createTerminationRecord();
-        sendEvent(createTestCompletedEvent(record));
+        TestCompletedEvent event = createTestCompletedEvent(record);
+
+        send(event);
+    }
+
+    private void send(final LifecycleEvent event) {
+        log("Sending event " + event);
+        sendEvent(event);
     }
 
     protected TerminationRecord createTerminationRecord() {
@@ -456,7 +467,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     private void sendTestSkippedEvent() {
         TerminationRecord record;
         record = TerminationRecord.normal(description, self);
-        sendEvent(new TestCompletedEvent(this, false, false, true, record, description));
+        send(new TestCompletedEvent(this, false, false, true, record, description));
     }
 
     /**
@@ -495,10 +506,10 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
 /*        setStatus(record);
         actionTerminationRecord = record;
         updateFlags(success);*/
-        sendEvent(new TestCompletedEvent(this, success, false , testSkipped, record, description));
+        send(new TestCompletedEvent(this, success, false, testSkipped, record, description));
     }
 
-        /**
+    /**
      * update finished and succeeded/failed flags when we finish
      *
      * @param success flag to indicated whether we considered the run a success
@@ -528,7 +539,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         */
         boolean forcedTimeout = false;
         //send out a completion event
-        sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
+        send(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
         setTestBlockAttributes(record, forcedTimeout);
     }
 
@@ -547,11 +558,11 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         boolean success = record.isNormal();
         sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
         sfReplaceAttribute(ATTR_STATUS, record);
-        sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));
-        sfReplaceAttribute(ATTR_FAILED, Boolean.valueOf(!success));
-        sfReplaceAttribute(ATTR_FORCEDTIMEOUT, Boolean.valueOf(timeout));
+        sfReplaceAttribute(ATTR_SUCCEEDED, success);
+        sfReplaceAttribute(ATTR_FAILED, !success);
+        sfReplaceAttribute(ATTR_FORCEDTIMEOUT, timeout);
     }
-    
+
     /**
      * run all the tests; this is the routine run in the worker thread. Break out (between suites) if we are
      * interrupted. Sets the {@link TestResultAttributes#ATTR_FINISHED} attribute to true on completion.
@@ -562,7 +573,6 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @throws InterruptedException if the tests get blocked
      */
     public boolean executeTests() throws SmartFrogException, RemoteException, InterruptedException {
-
         boolean succeeded;
         try {
             if (singleTest == null || singleTest.length() == 0) {
@@ -608,6 +618,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @return true iff it worked
      * @throws RemoteException      network trouble
+     * @throws TestsFailedException if the test failed to start up
      * @throws SmartFrogException   other problems
      * @throws InterruptedException if the test run is interrupted
      */
@@ -616,8 +627,9 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         Prim child = null;
         child = sfResolve(singleTest, child, false);
         if (child == null) {
-            log.info("No test suite called " + singleTest);
-            return false;
+            String message = "No test suite called " + singleTest;
+            log.info(message);
+            throw new TestsFailedException(message);
         }
         TestSuite suiteComponent = (TestSuite) child;
         return executeTestSuite(suiteComponent);
@@ -639,12 +651,33 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         boolean result;
         try {
             result = suiteComponent.runTests();
+        } catch (SmartFrogException e) {
+            logExceptionEvent("running a test suite", e);
+            throw e;
+        } catch (RemoteException e) {
+            logExceptionEvent("running a test suite", e);
+            throw e;
+        } catch (InterruptedException e) {
+            logExceptionEvent("running a test suite", e);
+            throw e;
         } finally {
             //unbind from this test
             suiteComponent.bind(null);
             updateResultAttributes((Prim) suiteComponent);
         }
         return result;
+    }
+
+    private void logExceptionEvent(final String activity, final Throwable t) {
+        sfLog().info("During " + activity + ": " + t, t);
+    }
+
+    /**
+     * Log at whatever level is chosen for the default logging
+     * @param message message to log
+     */
+    protected void log(String message) {
+        sfLog().info(message);
     }
 
 
@@ -662,10 +695,12 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     }
 
 
+    @Override
     public TestListenerFactory getListenerFactory() throws RemoteException {
         return configuration.getListenerFactory();
     }
 
+    @Override
     public void setListenerFactory(TestListenerFactory listener) {
         configuration.setListenerFactory(listener);
     }
@@ -704,6 +739,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         cachedException = caught;
     }
 
+    @Override
     public synchronized boolean isFinished() throws RemoteException {
         return finished;
     }
@@ -718,6 +754,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @return statistics
      * @throws RemoteException
      */
+    @Override
     public Statistics getStatistics() throws RemoteException {
         return statistics;
     }
@@ -726,6 +763,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     /**
      * @return true only if the test has finished and failed
      */
+    @Override
     public boolean isFailed() {
         return !isSucceeded();
     }
@@ -734,6 +772,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      * @return true iff the test succeeded
      */
 
+    @Override
     public boolean isSucceeded() {
         return statistics.isSuccessful();
     }
@@ -743,6 +782,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @return the exit record, will be null for an unfinished child
      */
+    @Override
     public TerminationRecord getStatus() {
         return null;
     }
@@ -752,6 +792,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @return the child component. this will be null after termination.
      */
+    @Override
     public Prim getAction() {
         return null;
     }
@@ -761,7 +802,35 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
      *
      * @return whether or not the test block skipped deployment of children.
      */
-    public boolean isSkipped()  {
+    @Override
+    public boolean isSkipped() {
         return false;
     }
+
+
+    /**
+     * Thread that runs the tests and whose notify object can be waited for
+     */
+    private class TestRunnerThread extends WorkflowThread {
+
+        private TestRunnerThread() {
+            //super(new Object());
+            super(TestRunnerImpl.this, true, new Object());
+        }
+
+        /**
+         * The termination record is created slightly differently
+         * @return
+         */
+        @Override
+        protected TerminationRecord createTerminationRecord() {
+            return TestRunnerImpl.this.createTerminationRecord();
+        }
+
+        @Override
+        public void execute() throws Throwable {
+            TestRunnerImpl.this.execute();
+        }
+    }
+
 }

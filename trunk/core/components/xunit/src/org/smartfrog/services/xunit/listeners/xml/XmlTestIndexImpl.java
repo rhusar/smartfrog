@@ -36,14 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     protected Log log;
     protected ComponentHelper helper = new ComponentHelper(this);
     protected String outputDir;
-    protected List<ResultSet> results=new ArrayList<ResultSet>();
-    protected boolean dirty=true;
+    protected List<ResultSet> results = new ArrayList<ResultSet>();
+    protected boolean dirty = true;
     private Statistics total = new Statistics();
 
 
@@ -101,9 +101,9 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
                                  TestListener listener,
                                  File filename)
             throws RemoteException, SmartFrogException {
-        ResultSet rs = new ResultSet(suite,hostname, processname,suitename, filename);
+        ResultSet rs = new ResultSet(suite, hostname, processname, suitename, filename);
         results.add(rs);
-        dirty=true;
+        dirty = true;
     }
 
 
@@ -144,7 +144,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     public boolean updateResults() throws SmartFrogResolutionException,
             RemoteException {
         total = new Statistics();
-        boolean changed=false;
+        boolean changed = false;
         for (Object result : results) {
             ResultSet resultSet = (ResultSet) result;
             changed |= resultSet.update(total);

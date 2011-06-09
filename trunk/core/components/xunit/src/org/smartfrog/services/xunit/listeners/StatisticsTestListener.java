@@ -32,15 +32,15 @@ import java.rmi.RemoteException;
 
 public interface StatisticsTestListener extends TestListenerFactory {
 
-    int getTestsStarted() throws RemoteException ;
+    int getTestsStarted() throws RemoteException;
 
-    int getTestsRun() throws RemoteException ;
+    int getTestsRun() throws RemoteException;
 
-    int getFailures() throws RemoteException ;
+    int getFailures() throws RemoteException;
 
-    int getErrors() throws RemoteException ;
+    int getErrors() throws RemoteException;
 
-    int getUnsuccessfulTests() throws RemoteException ;
+    int getUnsuccessfulTests() throws RemoteException;
 
     Statistics getStatistics() throws RemoteException;
 }

@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.xunit.base;
 
-import org.smartfrog.services.xunit.utils.Utils;
 import org.smartfrog.services.xunit.log.TestListenerLog;
+import org.smartfrog.services.xunit.utils.Utils;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -87,7 +87,6 @@ public class RunnerConfiguration implements Serializable, Cloneable {
     public void setTestLog(TestListenerLog testLog) {
         this.testLog = testLog;
     }
-
 
 
     /**

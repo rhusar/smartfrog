@@ -171,6 +171,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      * @param that the other instance
      * @return true if there is a match
      */
+    @Override
     public boolean equals(Object that) {
         if (this == that) {
             return true;
@@ -196,6 +197,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      * Hash code
      * @return a hash code from the classname and the message
      */
+    @Override
     public int hashCode() {
         int result;
         result = classname.hashCode();
@@ -209,6 +211,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      * @return a clone
      * @throws CloneNotSupportedException
      */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         ThrowableTraceInfo cloned = (ThrowableTraceInfo) super.clone();
         if (cause != null) {
@@ -221,6 +224,7 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      * convert to a string
      * @return the string value
      */
+    @Override
     public String toString() {
         if (classname == null) {
             return "uninitialized";
@@ -247,11 +251,11 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
      * @return the stack, or "" if ther eis no stack
      */
     public String getStackString() {
-        if(!hasStack()) {
+        if (!hasStack()) {
             return "";
         }
         StringBuilder builder = new StringBuilder(stack.length * 80);
-        for (StackTraceElement elt: stack) {
+        for (StackTraceElement elt : stack) {
             builder.append("at ");
             builder.append(elt.toString());
             builder.append('\n');

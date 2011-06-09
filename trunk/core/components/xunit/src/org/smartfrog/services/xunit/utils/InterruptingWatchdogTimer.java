@@ -9,7 +9,7 @@ public class InterruptingWatchdogTimer implements Runnable {
 
     private long timeout;
 
-    private volatile boolean didInterrupt=false;
+    private volatile boolean didInterrupt = false;
     private Thread watcher;
 
     public InterruptingWatchdogTimer(Thread target, long timeout) {
@@ -23,7 +23,7 @@ public class InterruptingWatchdogTimer implements Runnable {
     }
 
     public synchronized boolean beginWatch() {
-        if(watcher!=null) {
+        if (watcher != null) {
             return false;
         }
         watcher = new Thread(this);
@@ -33,11 +33,11 @@ public class InterruptingWatchdogTimer implements Runnable {
 
     public synchronized void endWatch() {
         try {
-            if(watcher!=null) {
+            if (watcher != null) {
                 watcher.interrupt();
             }
         } finally {
-            watcher=null;
+            watcher = null;
         }
     }
 
@@ -51,14 +51,15 @@ public class InterruptingWatchdogTimer implements Runnable {
      *
      * @see Thread#run()
      */
+    @Override
     public void run() {
         try {
             Thread.sleep(timeout);
             //ok, time to wake the target.
-            if(target.isAlive()) {
+            if (target.isAlive()) {
                 target.interrupt();
             }
-            didInterrupt=true;
+            didInterrupt = true;
         } catch (InterruptedException ignored) {
 
         }

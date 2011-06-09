@@ -16,7 +16,8 @@
 
  For more information: www.smartfrog.org
 
- */package org.smartfrog.services.xunit.listeners;
+ */
+package org.smartfrog.services.xunit.listeners;
 
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestSuite;
@@ -46,13 +47,13 @@ public interface TestIndex extends Remote {
      * @throws RemoteException In case of network/rmi error
      */
     void testSuiteStarted(
-           TestSuite suite,
-           String hostname,
-           String processname,
-           String suitename,
-           long timestamp,
-           TestListener listener,
-           File filename)
+            TestSuite suite,
+            String hostname,
+            String processname,
+            String suitename,
+            long timestamp,
+            TestListener listener,
+            File filename)
             throws RemoteException, SmartFrogException;
 
 }

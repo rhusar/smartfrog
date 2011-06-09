@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.xunit.listeners;
 
-import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -52,7 +52,9 @@ public class NullListenerImpl extends AbstractListenerImpl implements TestListen
      * @throws RemoteException    network problems
      * @throws SmartFrogException code problems
      */
-    public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp) throws RemoteException, SmartFrogException {
+    @Override
+    public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
+            throws RemoteException, SmartFrogException {
         return this;
     }
 }

@@ -19,27 +19,27 @@
  */
 package org.smartfrog.services.sfunit;
 
-import org.smartfrog.services.xunit.base.RunnerConfiguration;
-import org.smartfrog.services.xunit.base.AbstractTestSuite;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.TestTimeoutException;
-import org.smartfrog.services.assertions.events.TestEventSink;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.assertions.events.TestEventSink;
+import org.smartfrog.services.xunit.base.AbstractTestSuite;
+import org.smartfrog.services.xunit.base.RunnerConfiguration;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 
+import java.net.InetAddress;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.net.InetAddress;
 
 /** created 08-Jan-2007 14:57:40 */
 
@@ -54,7 +54,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     private volatile TerminationRecord status;
     private RunnerConfiguration configuration;
     private ComponentHelper helper;
-    SFUnitChildTester testThread;
+    private SFUnitChildTester testThread;
     private long startupTimeout;
     private long testTimeout;
     private ArrayList<TestSuiteRun> testSuites;
@@ -67,17 +67,19 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * @return true if we have finished
      */
+    @Override
     public boolean isFinished() {
         return finished;
     }
 
     /** @return true only if the test has finished and failed */
+    @Override
     public boolean isFailed() {
         return failed;
     }
 
     /** @return true iff the test succeeded */
-
+    @Override
     public boolean isSucceeded() {
         return succeeded;
     }
@@ -87,6 +89,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * @return the skipped state
      */
+    @Override
     public boolean isSkipped() {
         return skipped;
     }
@@ -97,7 +100,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @return the exit record, will be null for an unfinished child
      */
 
-
+    @Override
     public TerminationRecord getStatus() {
         return status;
     }
@@ -107,6 +110,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * @return null, always
      */
+    @Override
     public Prim getAction() {
         return null;
     }
@@ -116,7 +120,8 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * @return null always
      */
-    public TerminationRecord getActionTerminationRecord()  {
+    @Override
+    public TerminationRecord getActionTerminationRecord() {
         return null;
     }
 
@@ -125,6 +130,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * @return null always
      */
+    @Override
     public TerminationRecord getTestsTerminationRecord() throws RemoteException {
         return null;
     }
@@ -137,13 +143,14 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException    In case of Remote/network error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         helper = new ComponentHelper(this);
 
         //deploy all children. but do not (yet) start them
         Context children = getActions();
-        Iterator<Object> iterator = children.sfAttributes();
+        Iterator<Object> iterator = (Iterator<Object>) children.sfAttributes();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             ComponentDescription act = (ComponentDescription) children.get(key);
@@ -152,41 +159,44 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         }
 
         //now start anything that is not a test
-        for (Prim elem:sfChildList()) {
+        for (Prim elem : sfChildList()) {
             if (!(elem instanceof TestBlock)) {
-                sfLog().info("Starting "+elem.sfCompleteName().toString());
+                log("Starting " + elem.sfCompleteName().toString());
                 elem.sfStart();
             }
         }
 
-        startupTimeout = sfResolve(ATTR_STARTUP_TIMEOUT,0L,true);
+        startupTimeout = sfResolve(ATTR_STARTUP_TIMEOUT, 0L, true);
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
-        //so here everything is started; the tests are ready to run.
+        //so here everything is started; the tests are ready to run, which is not done ourselves
     }
 
     /**
      * Deregisters from all current registrations.
      *
-     * @param status Termination  Record
+     * @param terminationRecord Termination  Record
      */
     @Override
-    public synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
+    public synchronized void sfTerminateWith(TerminationRecord terminationRecord) {
+        super.sfTerminateWith(terminationRecord);
         SmartFrogThread.requestThreadTermination(testThread);
     }
 
     /**
      * Run the tests.
      *
-     * This is done by running through every child test in turn, and deploying it.
+     * This is done by running through every child test in turn, and adding it to the list
+     * of test suites to run with the {@link SFUnitChildTester} thread. This thread
+     * then runs the tests.
      *
-     * When it terminates, it is evaluated. No, that doesn't work. We need notification?
+     *  ??When it terminates, it is evaluated. No, that doesn't work. We need notification???
      *
-     * @return true if they worked
+     * @return true if the tests were started
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for other problems
      * @throws InterruptedException if the test run is interrupted
      */
+    @Override
     public boolean runTests() throws RemoteException, SmartFrogException, InterruptedException {
         InetAddress host = sfDeployedHost();
         String hostname = host.getHostName();
@@ -216,12 +226,12 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
                 testSuites.add(new TestSuiteRun(testBlock));
             }
         }
-        testThread=new SFUnitChildTester(testSuites);
+        testThread = new SFUnitChildTester(testSuites);
         testThread.start();
+        testThread.waitForNotification(testTimeout);
 
         return successful;
     }
-
 
 
     /**
@@ -240,8 +250,9 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @param comp   child component that is terminating
      * @return true whenever a child component is not started
      */
+    @Override
     protected boolean onChildTerminated(TerminationRecord record, Prim comp) {
-        if(comp instanceof TestBlock) {
+        if (comp instanceof TestBlock) {
             //its a test block. so let the test block handling handle it
 
             //we just remove it from liveness
@@ -286,7 +297,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         }
 
         public TestSuiteRun(TestBlock testBlock) {
-            target=testBlock;
+            target = testBlock;
         }
     }
 
@@ -302,9 +313,10 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         /**
          * Create a tester run
          * @param testRuns the list of tests to run
-         * @see Thread#Thread(ThreadGroup,Runnable,String)
+         * @see Thread#Thread(ThreadGroup, Runnable, String)
          */
         private SFUnitChildTester(List<TestSuiteRun> testRuns) {
+            super(new Object());
             this.testRuns = testRuns;
         }
 
@@ -315,6 +327,8 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
          *
          * @throws Throwable if anything went wrong
          */
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
+        @Override
         public void execute() throws Throwable {
             for (TestSuiteRun testRun : testRuns) {
                 if (isTerminationRequested()) {
@@ -329,6 +343,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
          * Request termination by triggering the superclass termination logic, and forcing an
          * interruption into the test queue
          */
+        @Override
         public synchronized void requestTermination() {
             super.requestTermination();
             if (currentTest != null && currentTest.events != null) {
@@ -354,15 +369,15 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         private synchronized boolean testOneChild(TestSuiteRun testRun) throws SmartFrogException, RemoteException {
             Prim testPrim;
             synchronized (this) {
-                TestBlock testBlock=testRun.target;
-                testRun.events=new TestEventSink(testBlock);
+                TestBlock testBlock = testRun.target;
+                testRun.events = new TestEventSink(testBlock);
                 currentTest = testRun;
                 testPrim = (Prim) testBlock;
             }
             boolean success = false;
             boolean isSkipped = false;
             boolean isFailed = false;
-            ComponentHelper ch=new ComponentHelper(testPrim);
+            ComponentHelper ch = new ComponentHelper(testPrim);
             String testName = ch.completeNameSafe().toString();
             sfLog().info("Starting " + testName);
             try {
@@ -374,12 +389,12 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
                     isFailed = test.isFailed();
                 } else {
                     //got a termination before the tests completed.
-                    sfLog().error("terminated "+ testName+" -assuming failure");
+                    sfLog().error("terminated " + testName + " -assuming failure");
                     success = false;
                     isFailed = true;
                 }
                 //record the output status
-                testRun.status=event.getStatus();
+                testRun.status = event.getStatus();
             } catch (TestTimeoutException e) {
                 //test timed out
                 success = false;

@@ -23,9 +23,8 @@ import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class ChainListenerImpl extends CompoundImpl implements TestListenerFacto
     /**
      * The name of a factory
      */
-    public static final String ATTR_LISTENERS="listeners";
+    public static final String ATTR_LISTENERS = "listeners";
 
     private List<TestListenerFactory> factories;
 
@@ -78,10 +77,10 @@ public class ChainListenerImpl extends CompoundImpl implements TestListenerFacto
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        Vector factoryList=null;
-        factoryList=sfResolve(ATTR_LISTENERS, factoryList,true);
-        factories=new ArrayList<TestListenerFactory>(factoryList.size());
-        for(Object elt:factoryList) {
+        Vector factoryList = null;
+        factoryList = sfResolve(ATTR_LISTENERS, factoryList, true);
+        factories = new ArrayList<TestListenerFactory>(factoryList.size());
+        for (Object elt : factoryList) {
             TestListenerFactory factory = (TestListenerFactory) elt;
             factories.add(factory);
         }
@@ -109,6 +108,6 @@ public class ChainListenerImpl extends CompoundImpl implements TestListenerFacto
      */
     public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
             throws RemoteException, SmartFrogException {
-        return new ChainListener(factories, suite, hostname, processname, suitename,timestamp);
+        return new ChainListener(factories, suite, hostname, processname, suitename, timestamp);
     }
 }

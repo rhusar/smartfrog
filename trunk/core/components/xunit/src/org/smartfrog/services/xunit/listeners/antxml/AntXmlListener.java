@@ -25,16 +25,16 @@ import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Serializer;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xunit.listeners.xml.FileListener;
 import org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory;
 import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -44,8 +44,8 @@ import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 
 /**
@@ -95,14 +95,14 @@ public class AntXmlListener implements FileListener, XMLConstants {
     private Element root, stdout, stderr;
 
     protected XmlListenerFactory owner;
-    
+
     private SimpleDateFormat dateFormat;
 
     /**
      * log failed tests so we don't log them more than once
      */
     private HashMap<String, TestInfo> failedTests = new HashMap<String, TestInfo>();
-    
+
 
     public AntXmlListener(String hostname,
                           File destFile,
@@ -161,8 +161,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
         logMessage("logging to" + destFile);
         touchDestFile();
     }
-    
-    
+
 
     /**
      * close the file. This call must be harmless if the file is already closed
@@ -356,7 +355,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
     public void endTest(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incTestsRun();
-        if(!isFailedTest(test)) {
+        if (!isFailedTest(test)) {
             recordResult("end", test);
         }
     }
@@ -366,7 +365,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
     }
 
     protected boolean isFailedTest(TestInfo test) {
-        return failedTests.get(test.getName())!=null;
+        return failedTests.get(test.getName()) != null;
     }
 
     protected void logMessage(String text) {
@@ -380,11 +379,11 @@ public class AntXmlListener implements FileListener, XMLConstants {
     }
 
     /**
-    * Log an event
-    *
-    * @param event what happened
-    * @throws RemoteException on network trouble
-    */
+     * Log an event
+     *
+     * @param event what happened
+     * @throws RemoteException on network trouble
+     */
     @Override
     public void log(LogEntry event) {
         String text = event.logString();
@@ -508,6 +507,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
        at org.smartfrog.services.restlet.test.system.testwar.TestwarTest.testErrorPage(TestwarTest.java:41)
    </failure>
     */
+
     /**
      * Record the outcome of a test
      *

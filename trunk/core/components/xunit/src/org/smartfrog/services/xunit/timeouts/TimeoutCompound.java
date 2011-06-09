@@ -29,15 +29,15 @@ public interface TimeoutCompound extends Remote {
      * what is the timeout in milliseconds?
      * {@value}
      */
-    String ATTR_TIMEOUT="timeout";
+    String ATTR_TIMEOUT = "timeout";
 
     /**
      * should the component fail with an abnormal termination if it timed out
      * {@value}
      */
-    String ATTR_FAIL_ON_TIMEOUT="failOnTimeout";
+    String ATTR_FAIL_ON_TIMEOUT = "failOnTimeout";
 
-    String ATTR_TIMEOUT_MESSAGE="timeoutMessage";
+    String ATTR_TIMEOUT_MESSAGE = "timeoutMessage";
 
 
 }

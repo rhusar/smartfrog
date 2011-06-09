@@ -21,8 +21,8 @@ package org.smartfrog.services.xunit.listeners;
 
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestSuite;
-import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.LogEntry;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -51,6 +51,7 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
      * @throws RemoteException network problems
      * @throws SmartFrogException code problems
      */
+    @Override
     public TestListener listen(TestSuite suite, String hostname, String processname, String suitename, long timestamp)
             throws RemoteException, SmartFrogException {
         return this;
@@ -59,12 +60,13 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
     /**
      * The statistics
      */
-    private Statistics stats=new Statistics();
+    private Statistics stats = new Statistics();
 
 
     /**
      * An error occurred.
      */
+    @Override
     public void addError(TestInfo test) {
         stats.incErrors();
     }
@@ -72,13 +74,15 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
     /**
      * A failure occurred.
      */
+    @Override
     public void addFailure(TestInfo test) {
         stats.incFailures();
     }
 
     /**
      * A test ended.
-     */
+    */
+    @Override
     public void endTest(TestInfo test) {
         stats.incTestsRun();
     }
@@ -87,31 +91,37 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
      * A test started.
      * @param test test info
      */
+    @Override
     public void startTest(TestInfo test) {
         stats.incTestsStarted();
     }
 
-
+    @Override
     public int getTestsStarted() {
         return stats.getTestsStarted();
     }
 
+    @Override
     public int getTestsRun() {
         return stats.getTestsRun();
     }
 
+    @Override
     public int getFailures() {
         return stats.getFailures();
     }
 
+    @Override
     public int getErrors() {
         return stats.getErrors();
     }
 
+    @Override
     public int getUnsuccessfulTests() {
         return stats.getUnsuccessfulTests();
     }
 
+    @Override
     public Statistics getStatistics() {
         return stats;
     }
@@ -120,6 +130,7 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
      * Log the fact that another message was logged
      * @param event event to log
      */
+    @Override
     public void log(LogEntry event) {
         stats.incLoggedMessages();
     }

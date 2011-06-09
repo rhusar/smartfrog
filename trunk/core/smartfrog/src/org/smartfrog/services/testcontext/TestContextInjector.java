@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.xunit.base;
+package org.smartfrog.services.testcontext;
 
 import java.util.HashMap;
 

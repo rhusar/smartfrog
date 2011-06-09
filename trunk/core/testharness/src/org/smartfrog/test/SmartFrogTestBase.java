@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.xunit.base.TestContextInjector;
+import org.smartfrog.services.testcontext.TestContextInjector;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;

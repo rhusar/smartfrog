@@ -47,7 +47,7 @@ public interface FileListener extends TestListener {
      * @throws RemoteException  network trouble
      */
     void setOwner(XmlListenerFactory owner) throws RemoteException;
-    
+
     /**
      * get the filename of this
      *
@@ -55,7 +55,7 @@ public interface FileListener extends TestListener {
      * @throws RemoteException network trouble
      */
     String getFilename() throws RemoteException;
-    
+
     /**
      * Open the listener. This can be a no-op, or it can open a file and throw
      * An exception on demand
@@ -76,7 +76,7 @@ public interface FileListener extends TestListener {
      * @throws RemoteException network trouble
      * @throws SmartFrogException for anything else.
      */
-   void close() throws IOException, SmartFrogException;
+    void close() throws IOException, SmartFrogException;
 
 
     /**
@@ -85,6 +85,6 @@ public interface FileListener extends TestListener {
      * @return true iff the file is not null
      * @throws RemoteException network trouble
      */
-    boolean isOpen()  throws RemoteException;
+    boolean isOpen() throws RemoteException;
 
 }

@@ -93,9 +93,9 @@ public interface TestSuite extends TestResultAttributes, Conditional {
             SmartFrogException;
 
     /**
-     * run the tests
+     * Begin running the tests
      *
-     * @return true if they worked
+     * @return true if the tests started.
      * @throws RemoteException      for network problems
      * @throws SmartFrogException   for other problems
      * @throws InterruptedException if the thread got interrupted while the tests were running
