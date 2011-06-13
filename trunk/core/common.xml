@@ -514,6 +514,7 @@ java.class.path=
         <syspropertyset>
           <propertyref prefix="org.apache.commons.logging"/>
           <propertyref prefix="log4j.properties"/>
+          <propertyref prefix="org.smartfrog"/>
         </syspropertyset>
       </junit>
     </presetdef>
@@ -1015,6 +1016,20 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
   <target name="declare-extended-smartfrog-tasks"
       depends="init,use-smartfrog-tasks,declare-classpaths">
+
+    <propertyset id="daemon-properties">
+      <propertyref prefix="test."/>
+      <propertyref prefix="run."/>
+      <!-- Log settings for various tools-->
+      <propertyref prefix="org.mortbay.log."/>
+      <propertyref prefix="log4j."/>
+      <propertyref prefix="org.apache.commons.logging."/>
+      <!-- smartfrog properties -->
+      <propertyref prefix="org.smartfrog"/>
+      <!-- RMI options-->
+      <propertyref prefix="java.rmi."/>
+    </propertyset>
+
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="tests.run.classpath"
         logStackTraces="true" spawn="true"
@@ -1032,18 +1047,8 @@ smartfrog.tasks.classpath=
         <propertyfile file="${runtime.properties}" optional="true"/>
         <!--copy all proxy settings from the running JVM-->
         <syspropertyset refid="proxy.settings"/>
-        <!--copy all properties beginning with test. or run.-->
-        <syspropertyset>
-          <propertyref prefix="test."/>
-          <propertyref prefix="run."/>
-          <!-- HTTP settings-->
-          <propertyref prefix="http.proxy"/>
-          <propertyref prefix="https.proxy"/>
-          <!-- Log settings for various tools-->
-          <propertyref prefix="org.mortbay.log."/>
-          <propertyref prefix="log4j."/>
-          <propertyref prefix="org.apache.commons.logging."/>
-        </syspropertyset>
+        <!--copy all properties intended to be passed down-->
+        <syspropertyset refid="daemon-properties"/>
       </sf-startdaemon>
     </presetdef>
 
@@ -1057,6 +1062,7 @@ smartfrog.tasks.classpath=
         </assertions>
           <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="daemon-properties"/>
       </sf-gui>
     </presetdef>
 
@@ -1069,6 +1075,7 @@ smartfrog.tasks.classpath=
         </assertions>
           <!-- load in a property file if it is present -->
         <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="daemon-properties"/>
       </sf-management-console>
     </presetdef>
 
@@ -1083,18 +1090,8 @@ smartfrog.tasks.classpath=
         <!--copy all proxy settings from the running JVM-->
         <propertyfile file="${runtime.properties}" optional="true"/>
         <syspropertyset refid="proxy.settings"/>
+        <syspropertyset refid="daemon-properties"/>
         <!--copy all properties beginning with test. or run.-->
-        <syspropertyset>
-          <propertyref prefix="test."/>
-          <propertyref prefix="run."/>
-          <!-- HTTP settings-->
-          <propertyref prefix="http.proxy"/>
-          <propertyref prefix="https.proxy"/>
-          <!-- Log settings for various tools-->
-          <propertyref prefix="org.mortbay.log."/>
-          <propertyref prefix="log4j."/>
-          <propertyref prefix="org.apache.commons.logging."/>          
-        </syspropertyset>
       </sf-run>
     </presetdef>
 
@@ -1108,10 +1105,7 @@ smartfrog.tasks.classpath=
         <propertyfile file="${runtime.properties}" optional="true"/>
         <syspropertyset refid="proxy.settings"/>
         <!--copy all properties beginning with test. or run.-->
-        <syspropertyset>
-          <propertyref prefix="test."/>
-          <propertyref prefix="run."/>
-        </syspropertyset>
+        <syspropertyset refid="daemon-properties"/>
       </sf-expandfully>
     </presetdef>
     

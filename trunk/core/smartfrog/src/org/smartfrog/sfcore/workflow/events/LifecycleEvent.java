@@ -21,13 +21,13 @@ package org.smartfrog.sfcore.workflow.events;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.Serializable;
+import java.rmi.Remote;
 import java.util.Date;
 import java.util.HashMap;
-import java.rmi.Remote;
 
 /**
  * Base class for lifecycle events that components may send
@@ -64,8 +64,8 @@ public abstract class LifecycleEvent implements Serializable {
      * Set the event to a component
      * @param component component the event came from
      */
-    protected LifecycleEvent( Prim component) {
-        this(component,null);
+    protected LifecycleEvent(Prim component) {
+        this(component, null);
     }
 
 
@@ -86,7 +86,7 @@ public abstract class LifecycleEvent implements Serializable {
      * @param component the component, may be null
      */
     protected void extractComponentName(Prim component) {
-        if (component!=null && componentName != null) {
+        if (component != null && componentName != null) {
             Reference reference = new ComponentHelper(component).completeNameOrNull();
             componentName = reference != null ? reference.toString() : UNKNOWN_COMPONENT;
         } else {
@@ -151,15 +151,15 @@ public abstract class LifecycleEvent implements Serializable {
      * @return a readable outcome
      */
     public String toString() {
-        StringBuilder buf=new StringBuilder();
+        StringBuilder buf = new StringBuilder();
         buf.append(getComponentName());
         buf.append(" -").append(getEventName());
         buf.append(" at ");
         buf.append(new Date(getTimestamp()).toString());
         buf.append(" alive: ");
         buf.append(Boolean.valueOf(isAlive()));
-        if(getStatus()!=null) {
-            buf.append("\nstatus: \n");
+        if (getStatus() != null) {
+            buf.append("\nstatus: ");
             buf.append(getStatus().toString());
         }
         return buf.toString();

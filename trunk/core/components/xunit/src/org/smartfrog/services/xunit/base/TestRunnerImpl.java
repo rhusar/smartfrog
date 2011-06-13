@@ -39,7 +39,6 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.Executable;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.workflow.events.DeployedEvent;
@@ -56,8 +55,7 @@ import java.rmi.RemoteException;
  * running code that has been written for TestBlock instances.
  */
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-public class TestRunnerImpl extends ConditionCompound implements TestRunner,
-        TestBlock, Executable {
+public class TestRunnerImpl extends ConditionCompound implements TestRunner, Executable {
 
     private Log log;
     private ComponentHelper helper;
@@ -112,7 +110,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     /**
      * keeper of statistics
      */
-    private Statistics statistics = new Statistics();
+    private Statistics statistics = new Statistics(sfLog());
 
     /**
      * who listens to the tests? This is potentially remote
@@ -363,7 +361,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
         thread.setName("tester");
         thread.setPriority(threadPriority);
         if (log.isDebugEnabled()) {
-            log.info("Starting new tester at priority " + threadPriority);
+            log.debug("Starting new test thread at priority " + threadPriority);
         }
         setWorker(thread);
         thread.start();
@@ -378,34 +376,35 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public void execute() throws Throwable {
         setFinished(false);
-        log.info("Beginning tests");
+        log.debug("Beginning test run");
         try {
             if (!executeTests()) {
                 sfLog().info("Test execution failed");
-                throw new TestsFailedException(TESTS_FAILED + description);
+                catchException(new TestsFailedException(TESTS_FAILED + description));
             }
         } catch (Throwable e) {
             catchException(e);
+        } finally {
+            //notify any listener of the event
+            sendTestCompleteEvent();
+
+            //declare ourselves finished
+            setFinished(true);
+            //unset the worker field
+            setWorker(null);
+
         }
 
         boolean testFailed = getCachedException() != null;
-        log.info("Completed tests "
-                + (testFailed ? "with errors " : "successfully"));
-        //notify any listener of the event
-        sendTestCompleteEvent();
-
-        //declare ourselves finished
-        setFinished(true);
-        //unset the worker field
-        setWorker(null);
-
+        String outcome = testFailed ? "with errors " : "successfully";
+        log.info("Completed tests " + outcome);
 
         //at this point the thread is finished. It notifies its parent.
 
         if (shouldTerminate) {
-            log.info("Test runner will now terminate");
+            log.debug("Test runner will now terminate " + outcome);
         } else {
-            log.info("Test runner is not terminating");
+            log.debug("Test runner is not terminating " + outcome);
         }
 
         //the workflow thread handles the inner work
@@ -426,26 +425,34 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
 
 
     /**
-     * send out a completion event
+     * send out a completion event. This should be called by the child runners in their threads
      */
-    private void sendTestCompleteEvent() {
+    protected void sendTestCompleteEvent() {
         TerminationRecord record = createTerminationRecord();
         TestCompletedEvent event = createTestCompletedEvent(record);
-
         send(event);
     }
 
     private void send(final LifecycleEvent event) {
-        log("Sending event " + event);
         sendEvent(event);
     }
 
+    /**
+     * Create a termination record based on whether or not there is a cached exception.
+     * If there is an exception: failure. otherwise, success. The record text also includes
+     * the test run statistics
+     * @return a termination record to use in events and termination
+     */
     protected TerminationRecord createTerminationRecord() {
         TerminationRecord record;
         if (getCachedException() == null) {
-            record = TerminationRecord.normal(description, self);
+            record = TerminationRecord.normal(description
+                    + ": " + statistics,
+                    self);
         } else {
-            record = TerminationRecord.abnormal(TEST_FAILURE_IN + description,
+            record = TerminationRecord.abnormal(TEST_FAILURE_IN + description
+                    + ": " + getCachedException()
+                    + ": " + statistics,
                     self,
                     getCachedException());
         }
@@ -583,7 +590,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
             return succeeded;
         } finally {
             //this is here as it can throw an exception
-            sfReplaceAttribute(TestRunner.ATTR_FINISHED, Boolean.TRUE);
+            sfReplaceAttribute(TestBlock.ATTR_FINISHED, Boolean.TRUE);
         }
     }
 
@@ -696,7 +703,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
 
 
     @Override
-    public TestListenerFactory getListenerFactory() throws RemoteException {
+    public TestListenerFactory getListenerFactory() {
         return configuration.getListenerFactory();
     }
 
@@ -740,22 +747,22 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner,
     }
 
     @Override
-    public synchronized boolean isFinished() throws RemoteException {
+    public synchronized boolean isFinished()  {
         return finished;
     }
 
     public synchronized void setFinished(boolean finished) {
+        if(sfLog().isDebugEnabled()) sfLog().debug("Setting finished flag to " + finished);
         this.finished = finished;
     }
 
     /**
      * Get test execution statistics
      *
-     * @return statistics
-     * @throws RemoteException
+     * @return statistics the statistics
      */
     @Override
-    public Statistics getStatistics() throws RemoteException {
+    public Statistics getStatistics() {
         return statistics;
     }
 

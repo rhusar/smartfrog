@@ -37,6 +37,17 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/ant/components.sf"
 
+
+test.data.dir (PROPERTY test.data.dir ++ "/sfdata");
+
+test.reports.dir (PROPERTY test.data.dir ++ "/reports");
+
+
+
+AssertFileExists extends FileMustExist {
+    sfShouldTerminate true;
+}
+
 //these are components we run underneath
 SimpleTestCompound extends ExpectTerminate {
     action extends Sequence {
@@ -48,3 +59,24 @@ FailingTestCompound extends TestCompound {
     action extends FailAbnormal;
 }
 
+singleSucceedingTestSuite extends SFUnitTestSuite {
+  name "singleSucceedingTestSuite";
+  description "run a simple test compound that is expected to succeed";
+
+  simpleTestCompound extends SimpleTestCompound;
+
+}
+
+simpleSfUnitTestSuite extends SFUnitTestSuite {
+  name "simpleSfUnitTestSuite";
+  description "run sa test compound with a succeeding and a failing child";
+
+
+  simpleTest extends SimpleTestCompound;
+  failingTest extends FailingTestCompound;
+
+}
+
+terminatingSimpleSfUnitTestSuite  extends simpleSfUnitTestSuite {
+  sfShouldTerminate true;
+}

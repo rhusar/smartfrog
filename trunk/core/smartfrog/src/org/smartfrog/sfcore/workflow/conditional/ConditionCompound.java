@@ -35,6 +35,8 @@ import java.rmi.RemoteException;
 
 public class ConditionCompound extends EventCompoundImpl implements Conditional, Condition {
 
+    public static final String ERROR_CONDITION_NOT_PRESENT
+            = "Cannot evaluate the condition as it is not present, or has not been deployed";
     //the deployed condition
     private Condition condition;
 
@@ -92,6 +94,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * @see #isConditionRequired()
      */
     protected void deployCondition() throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
+        sfLog().debug("Deploying condition component");
         condition = (Condition) deployChildCD(ATTR_CONDITION, isConditionRequired());
     }
 
@@ -127,7 +130,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * @throws SmartFrogException throws an exception as there is no deployed condition.
      */
     protected boolean onEvaluateNoCondition() throws SmartFrogException {
-        throw new SmartFrogException("Cannot evaluate the condition as it is not present, or has not been deployed");
+        throw new SmartFrogException(ERROR_CONDITION_NOT_PRESENT);
     }
 
     /**

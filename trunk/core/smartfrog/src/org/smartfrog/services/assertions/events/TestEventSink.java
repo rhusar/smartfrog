@@ -24,6 +24,9 @@ import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.SFLogRegistration;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -50,10 +53,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Important: this component does not unsubscribe in its finalizer, because finalizers are so unreliable. Manually
  * {@link #unsubscribe()} or use {@link #unsubscribeQuietly()} in the teardown
  *
- * Created 10-Jul-2007 12:23:27
- *
- * Currently this tool uses simple RMI to register itself. At some point it will need to switch to smartfrog
- * registration when running under a daemon, so that all the security kicks in.
+ * This tool uses simple RMI to register itself, so that it can be used in JUnit test clients running outside SmartFrog.
  *
  * Important: be very careful with synchronisation here, because RMI calls come in on different threads. It is easy to
  * deadlock, especially during teardown operations.
@@ -97,6 +97,7 @@ public class TestEventSink implements EventSink {
     public static final String ERROR_WRONG_TYPE
             = "Cannot cast a component to an EventRegistration instance, as it is of the wrong type: ";
 
+    private Log log = LogFactory.getLog(getClass());
 
     /**
      * Simple constructor
@@ -125,7 +126,8 @@ public class TestEventSink implements EventSink {
     public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException {
         if (!(application instanceof EventRegistration)) {
             throw new SmartFrogRuntimeException(ERROR_WRONG_TYPE
-                                                + application.getClass(), application);
+                                                + application.getClass(),
+                                                application);
         }
         subscribe((EventRegistration) application);
     }
@@ -394,7 +396,9 @@ public class TestEventSink implements EventSink {
         } catch (RemoteException e) {
             throw new TestFailureException(ERROR_PREMATURE_TERMINATION,
                                            new TerminatedEvent(app,
-                                                               TerminationRecord.abnormal("termination during startup", appNameRef, e)));
+                                                               TerminationRecord.abnormal("termination during startup",
+                                                               appNameRef,
+                                                               e)));
         }
         TimeoutTracker timedout = new TimeoutTracker(timeout);
         LifecycleEvent event;
@@ -426,16 +430,19 @@ public class TestEventSink implements EventSink {
         if (getApplication().sfIsTerminated()) {
             //we are (somehow) already terminated, so report this as a problem
             LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
-                                                           TerminationRecord.abnormal("Test component has already terminated", getApplication().sfCompleteName()));
+                    TerminationRecord.abnormal("Test component has already terminated",
+                            getApplication().sfCompleteName()));
             return termEvent;
         }
         try {
             StartedEvent started = startApplication(startupTimeout);
+            if (log.isDebugEnabled()) log.debug("Started child application: " + started);
         } catch (SmartFrogLifecycleException e) {
             //this is caused by a failure to start the application, which invariably triggers
             //termination of one kind or another
             LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
-                                                           TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
+                    TerminationRecord.abnormal("Test component terminated during startup",
+                            getApplication().sfCompleteName()));
             return termEvent;
         } catch (TestFailureException tfe) {
             //startup failed and was intercepted during startup
@@ -443,13 +450,16 @@ public class TestEventSink implements EventSink {
         }
         LifecycleEvent event;
         TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
+        if (log.isDebugEnabled()) log.debug("Blocking for events from " + getApplication() + " for " + executeTimeout + " milliseconds");
         do {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
+                log.debug("Test run timed out");
                 throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
             }
+            if (log.isDebugEnabled()) log.debug("Event received " + event);
         } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
-                 && !timedout.isTimedOut());
+                && !timedout.isTimedOut());
         return event;
     }
 

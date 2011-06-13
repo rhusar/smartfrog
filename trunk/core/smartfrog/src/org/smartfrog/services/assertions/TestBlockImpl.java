@@ -127,6 +127,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         super.sfDeploy();
         description = sfResolve(ATTR_DESCRIPTION, description, false);
         checkActionDefined();
+        sfLog().debug("Deployed test component " + sfCompleteNameSafe() + " running tests " + description);
         sendEvent(new DeployedEvent(this));
     }
 
@@ -210,6 +211,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     private synchronized void end(TerminationRecord record)
             throws SmartFrogRuntimeException, RemoteException {
         if (finished) {
+            sfLog().debug("Ignoring re-entrant attempt to end the test run with the record " + record);
             //non-reentrant
             return;
         }

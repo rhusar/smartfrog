@@ -234,6 +234,7 @@ public class TestCompoundImpl extends ConditionCompound
         //deploy the action under a terminator, then the assertions, finally teardown afterwards.
         final boolean isNormalTerminationExpected = TerminationRecord.NORMAL.equals(exitType);
         try {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Deploying \"action\" child");
             actionPrim = sfDeployComponentDescription(ACTION_RUNNING,
                                                       this,
                                                       (ComponentDescription) action.copy(),
@@ -251,11 +252,13 @@ public class TestCompoundImpl extends ConditionCompound
             //nothing went wrong on startup
             assert actionPrim != null : "actionPrim is null, yet we did not catch an exception";
             //a null exception meant the action was deployed successfully
+            if (sfLog().isDebugEnabled()) sfLog().debug("Starting action component "+ actionPrim);
 
             //if we get here. then it is time to actually start the action.
             try {
                 actionPrim.sfStart();
             } catch (Throwable e) {
+                sfLog().debug("Exception during startup of the action", e);
                 thrown = e;
             }
         }
@@ -265,7 +268,7 @@ public class TestCompoundImpl extends ConditionCompound
             //get the message and check it against expections
             String message = thrown.getMessage();
             if (message == null) {
-                message = "";
+                message = thrown.toString();
             }
 
             //did we expect this component to terminate normally?
@@ -286,7 +289,7 @@ public class TestCompoundImpl extends ConditionCompound
             String exceptionCheck = checkExceptionsWereExpected(thrown);
             boolean wrongExitText = !message.contains(exitText);
             if (wrongExitText || exceptionCheck != null) {
-
+                if (sfLog().isDebugEnabled()) sfLog().debug("Action is deployed, starting ");
                 String recordText = "";
                 if (exceptionCheck != null) {
                     recordText = UNEXPECTED_STARTUP_EXCEPTION + exceptionCheck + '\n';
@@ -305,6 +308,8 @@ public class TestCompoundImpl extends ConditionCompound
                                                  + (exceptionCheck != null ? exceptionCheck : ""),
                                                  thrown);
             } else {
+                if (sfLog().isDebugEnabled()) sfLog().debug("Exception received -amd it was expected: " + thrown,
+                        thrown);
                 //valid exit. Save the results
                 TerminationRecord record;
                 record = TerminationRecord.normal(EXIT_EXPECTED_STARTUP_EXCEPTION,
@@ -315,11 +320,14 @@ public class TestCompoundImpl extends ConditionCompound
             }
 
         } else {
+
             //the action is deployed
             //start the terminator
             actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
                                                      FORCED_TERMINATION + " after " + undeployAfter + " milliseconds",
                                                      !expectTerminate);
+            if (sfLog().isDebugEnabled()) sfLog().debug("Action is deployed, starting terminator" + actionTerminator.toString());
+
             actionTerminator.start();
 
             //now deploy the tests.
@@ -340,6 +348,7 @@ public class TestCompoundImpl extends ConditionCompound
     private void noteStartupFailure(String text, Throwable thrown) throws SmartFrogRuntimeException, RemoteException {
         TerminationRecord record;
         record = TerminationRecord.abnormal(text, getName(), thrown);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Startup failure: " + record);
         noteEndOfTestRun(record, false);
     }
 
@@ -394,7 +403,9 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws RemoteException              RMI problems
      */
     private synchronized void startTests() throws RemoteException, SmartFrogException {
-        if (tests != null && testsPrim == null) {
+        if (tests != null && testsPrim != null) {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Starting the tests");
+
             testsPrim = sfCreateNewChild(TESTS_RUNNING,
                                          this,
                                          (ComponentDescription) tests.copy(),
@@ -407,7 +418,15 @@ public class TestCompoundImpl extends ConditionCompound
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
                                                     FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
                                                     false);
+            if (sfLog().isDebugEnabled()) sfLog().debug("Tests deployed, starting "+testsTerminator);
             testsTerminator.start();
+        } else {
+            if( tests ==null && sfLog().isDebugEnabled()) {
+                sfLog().debug("No tests child to start");
+            }
+            if (testsPrim != null && sfLog().isDebugEnabled()) {
+                sfLog().debug("Skipping re-entrant test run");
+            }
         }
     }
 
@@ -522,6 +541,9 @@ public class TestCompoundImpl extends ConditionCompound
         DelayedTerminator actionTerminatorChild;
         Prim testsChild;
 
+        if (sfLog().isDebugEnabled()) sfLog().debug("Handling termination of child "
+             +terminatingChild + " -- " + childStatus);
+
         synchronized (this) {
             actionChild = actionPrim;
             actionTerminatorChild = actionTerminator;
@@ -529,6 +551,7 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         if (actionChild == terminatingChild) {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Action child is terminating");
             actionTerminationRecord = childStatus;
             //child termination
             if (actionTerminatorChild != null
@@ -538,6 +561,7 @@ public class TestCompoundImpl extends ConditionCompound
                 sfLog().info("Forced shutdown of action component (expected)");
                 testSucceeded = true;
             } else {
+                if (sfLog().isDebugEnabled()) sfLog().debug("Action termination is not forced");
                 //not a forced shutdown, so why did it die?
                 boolean expected;
                 String exitTextMessage = null;
@@ -545,7 +569,7 @@ public class TestCompoundImpl extends ConditionCompound
                     //act on whether or not a fault was expected.
                     if (childStatus.errorType.equals(exitType)) {
                         //we have a match
-                        sfLog().debug("Exit type is as expected");
+                        sfLog().debug("Exit type is as expected : " +exitType);
                         expected = true;
                         if (exitText != null && exitText.length() > 0) {
                             String childDescription = childStatus.description;
@@ -561,7 +585,13 @@ public class TestCompoundImpl extends ConditionCompound
                                                   + '\"';
                                 sfLog().info(exitTextMessage);
                                 expected = false;
+                            } else {
+                                if (sfLog().isDebugEnabled()) sfLog().debug("Action exit text contains the required text "
+                                    +"\"" + exitText + "\"");
                             }
+                        } else {
+                            //exit text is not set, all is well
+                            if (sfLog().isDebugEnabled()) sfLog().debug("No exit text expected, so skipping that check");
                         }
                     } else {
                         //wrong exit type
@@ -571,7 +601,7 @@ public class TestCompoundImpl extends ConditionCompound
                     //also check the error text, regardless of the previous checks
                     String exceptionCheck = checkExceptionsWereExpected(childStatus);
                     if (exceptionCheck != null) {
-                        sfLog().debug(exceptionCheck);
+                        sfLog().debug(exceptionCheck, childStatus.getCause());
                         expected = false;
                     }
 
@@ -627,7 +657,7 @@ public class TestCompoundImpl extends ConditionCompound
                         exitRecord = TerminationRecord.abnormal(
                                 (childStatus.description != null
                                         ? childStatus.description
-                                        : "Action terminated normally which was not expected: " + childStatus)
+                                        : ("Action terminated normally which was not expected: " + childStatus))
                                 + UNEXPECTED_TERMINATION,
                                 childStatus.id,
                                 childStatus.getCause());
@@ -684,9 +714,9 @@ public class TestCompoundImpl extends ConditionCompound
         try {
             endTestRun(getStatus());
         } catch (SmartFrogRuntimeException e) {
-            sfLog().ignore(e);
+            sfLog().debug("when ending the test run" + e, e);
         } catch (RemoteException e) {
-            sfLog().ignore(e);
+            sfLog().debug("when ending the test run" + e, e);
         }
 
         //if the error record is non null, terminate ourselves with the new record
@@ -743,10 +773,10 @@ public class TestCompoundImpl extends ConditionCompound
                     SmartFrogExtractedException sfe = (SmartFrogExtractedException) thrown;
                     canonicalName = sfe.getExceptionCanonicalName();
                 }
-                if (classname.length() > 0 && !canonicalName.contains(classname)) {
+                if (!classname.isEmpty() && !canonicalName.contains(classname)) {
                     return "Did not find classname '" + classname + "' in " + canonicalName + ' ' + thrown.getMessage();
                 }
-                if (text.length() > 0 && !thrown.getMessage().contains(text)) {
+                if (!text.isEmpty() && !thrown.getMessage().contains(text)) {
                     return "Did not find text '" + text + "' in " + canonicalName + ' ' + thrown.getMessage();
                 }
                 //copy the next exception
@@ -870,10 +900,13 @@ public class TestCompoundImpl extends ConditionCompound
     protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
         //work out the forced timeout info from the terminators
         //its only a forced timeout if the action was expected to terminate itself anyway
-        boolean actionForcedTimeout = expectTerminate && actionTerminator != null && actionTerminator
-                .isForcedShutdown();
+        boolean actionForcedTimeout = expectTerminate &&
+                actionTerminator != null && actionTerminator.isForcedShutdown();
         //any timeout of the tests is an error
         boolean testForcedTimeout = testsTerminator != null && testsTerminator.isForcedShutdown();
+        if (sfLog().isDebugEnabled()) sfLog().debug("Ending test run. "
+                + "ActionForcedTimeout = " + actionForcedTimeout
+                + " testsForcedTimeout =" + testForcedTimeout);
         //a forced timeout of action or tests => forced timeout of components
         forcedTimeout = actionForcedTimeout || testForcedTimeout;
         //send out a completion event
@@ -894,7 +927,7 @@ public class TestCompoundImpl extends ConditionCompound
             boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
         boolean success = record.isNormal();
-        sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
         sfReplaceAttribute(ATTR_STATUS, record);
         sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));

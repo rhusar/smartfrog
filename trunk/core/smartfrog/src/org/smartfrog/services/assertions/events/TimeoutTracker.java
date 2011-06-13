@@ -46,4 +46,9 @@ public final class TimeoutTracker {
     public boolean isTimedOut() {
         return delay >= 0 && System.currentTimeMillis() > endtime;
     }
+
+    @Override
+    public String toString() {
+        return "Timeout Tracker waiting for " +delay + " milliseconds";
+    }
 }

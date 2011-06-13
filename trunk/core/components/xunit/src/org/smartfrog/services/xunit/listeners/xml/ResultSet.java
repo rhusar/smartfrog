@@ -42,7 +42,9 @@ public final class ResultSet implements Serializable {
     public ResultSet(
             TestSuite suite,
             String hostname,
-            String processname, String suitename, File filename) {
+            String processname,
+            String suitename,
+            File filename) {
         this.suite = suite;
         this.hostname = hostname;
         this.processname = processname;

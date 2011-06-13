@@ -21,13 +21,14 @@
 
 package org.smartfrog.services.junit.test.system;
 
-import junit.framework.AssertionFailedError;
+import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
 import org.smartfrog.services.xunit.serial.Statistics;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -70,27 +71,18 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
     }
 
     /**
-     * Spin till a component is finished
+     * Spin till a component is finished. This is unreliable and prone to timeouts -avoid.
      *
-     * @param runner
-     * @param timeoutSeconds
+     * @param runner test runner
+     * @param timeoutSeconds timeout in seconds
      * @return whether it finished or false for timeout
      * @throws InterruptedException if interrupted
      * @throws RemoteException on network problems
      */
-    protected boolean spinTillFinished(TestRunner runner,
-                                       int timeoutSeconds) throws InterruptedException,
-            RemoteException {
-        try {
-            do {
-                Thread.sleep(1000);
-                timeoutSeconds--;
-            } while (!runner.isFinished() && timeoutSeconds >= 0);
-            return runner.isFinished();
-        } catch (NoSuchObjectException e) {
-            //if the object is here it has terminated.
-            return true;
-        }
+    protected boolean spinTillFinished(TestBlock runner,
+                                       int timeoutSeconds) throws Throwable {
+        spinUntilFinished(runner, timeoutSeconds* 1000);
+        return true;
     }
 
     protected int getTimeout() {
@@ -148,11 +140,10 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
                         TestRunner.ATTR_LISTENER,
                         listener,
                         true);
-        boolean finished = spinTillFinished(runner, seconds);
+        spinTillFinished(runner, seconds);
         ping("test runner", runner);
         ping("BufferingListener", listener);
 
-        assertTrue("Test run timed out", finished);
         if (run >= 0) {
             assertTrue("expected tests to run", listener.getStartCount() == 1);
             assertTrue("session started",
@@ -177,7 +168,10 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
         } catch (NoSuchObjectException e) {
             //if we get here then the test runner finished, but it isn't hanging around. This usually indicates some kind of
             //deployment failure
-            throw new SmartFrogLivenessException("The "+ component +" is no longer live", e);
+            SmartFrogLivenessException exception = new SmartFrogLivenessException(
+                    "The " + component + " is no longer live", e);
+            logThrowable(e.getMessage(), e);
+            throw exception;
         }
     }
 }

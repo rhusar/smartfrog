@@ -22,6 +22,8 @@ package org.smartfrog.services.xunit.serial;
 import org.smartfrog.services.xunit.base.TestResultAttributes;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
@@ -41,13 +43,20 @@ public final class Statistics implements Serializable, Cloneable {
     private int testsStarted = 0;
     private int testsRun = 0;
     private int loggedMessages = 0;
-
+    private transient LogSF log = LogFactory.getLog(Statistics.class);
 
     /**
      * Hash table by outcome
      */
     private HashMap<String, Integer> outcomes = new HashMap<String, Integer>();
 
+
+    public Statistics() {
+    }
+
+    public Statistics(LogSF log) {
+        this.log =log;
+    }
 
     /**
      * reset everything to zero
@@ -66,6 +75,11 @@ public final class Statistics implements Serializable, Cloneable {
      */
     public synchronized void updateResultAttributes(Prim node, boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
+        if (log.isDebugEnabled()) {
+            log.debug("Pushing out "
+                    + (finished ? "final" : "intermediate")
+                    + " results to " + node);
+        }
         node.sfReplaceAttribute(TestResultAttributes.ATTR_ERRORS, new Integer(errors));
         node.sfReplaceAttribute(TestResultAttributes.ATTR_FAILURES, new Integer(failures));
         node.sfReplaceAttribute(TestResultAttributes.ATTR_TESTS, new Integer(testsRun));
@@ -113,8 +127,11 @@ public final class Statistics implements Serializable, Cloneable {
         addTestsStarted(that.getTestsStarted());
         addLoggedMessages(that.getLoggedMessages());
         //add all the outcomes
-        for (String outcome : that.outcomes.keySet()) {
+        for (String outcome : that.getOutcomes().keySet()) {
             increment(outcome, that.getOutcome(outcome));
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Updated " + toString());
         }
     }
 
@@ -127,8 +144,11 @@ public final class Statistics implements Serializable, Cloneable {
      */
     public void retrieveAndAdd(Prim node) throws SmartFrogResolutionException,
             RemoteException {
-        Statistics that = new Statistics();
+        Statistics that = new Statistics(log);
         that.retrieveResultAttributes(node);
+        if(log.isDebugEnabled()) {
+            log.debug("Retrieved from "+ node.sfCompleteName() +" "+ that);
+        }
         add(that);
     }
 
@@ -163,6 +183,10 @@ public final class Statistics implements Serializable, Cloneable {
             value = current.intValue();
         }
         return value;
+    }
+
+    private HashMap<String, Integer> getOutcomes() {
+        return outcomes;
     }
 
     public int getErrors() {
@@ -269,11 +293,13 @@ public final class Statistics implements Serializable, Cloneable {
      */
     @Override
     public String toString() {
-        String s = "Statistics: testsRun=" + testsRun
+        String s = "Statistics:"
+                + " testsStarted=" + testsStarted
+                + " testsRun=" + testsRun
                 + " errors=" + errors
                 + " failures=" + failures
                 + " loggedMessages=" + loggedMessages
-                + " testsStarted=" + testsStarted;
+                ;
         return s;
     }
 

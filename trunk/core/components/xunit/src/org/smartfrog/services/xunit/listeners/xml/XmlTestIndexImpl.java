@@ -44,7 +44,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     protected String outputDir;
     protected List<ResultSet> results = new ArrayList<ResultSet>();
     protected boolean dirty = true;
-    private Statistics total = new Statistics();
+    private Statistics total = new Statistics(sfLog());
 
 
     public XmlTestIndexImpl() throws RemoteException {
@@ -143,7 +143,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
      */
     public boolean updateResults() throws SmartFrogResolutionException,
             RemoteException {
-        total = new Statistics();
+        total = new Statistics(sfLog());
         boolean changed = false;
         for (Object result : results) {
             ResultSet resultSet = (ResultSet) result;

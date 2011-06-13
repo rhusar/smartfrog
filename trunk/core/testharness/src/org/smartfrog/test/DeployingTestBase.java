@@ -113,7 +113,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
 
     /**
      * Delay until a test has finished, sleeping (and yielding the CPU) until that point is reached. There is no
-     * timeout.
+     * timeout. This must not be used if the remote component plans to terminate itself, as it will be undeployed
+     * before the caller has a chance to see the results.
      *
      * @param testBlock component to spin on
      * @param timeout   how long to wait (in millis)
@@ -296,7 +297,9 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      *                   timeout waiting for results A {@link junit.framework.AssertionFailedError} is raised if the
      *                   tests were not successful
      */
-    protected TestCompletedEvent completeTestDeployment(String packageName, String filename, int startupTimeout,
+    protected TestCompletedEvent completeTestDeployment(String packageName,
+                                                        String filename,
+                                                        int startupTimeout,
                                                         int executeTimeout)
             throws Throwable {
         LifecycleEvent event = runTestDeployment(packageName, filename,

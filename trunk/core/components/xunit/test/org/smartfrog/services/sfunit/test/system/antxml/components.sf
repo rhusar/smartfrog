@@ -21,11 +21,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/sfunit/test/system/components.sf"
 
 
-test.data.dir (PROPERTY test.data.dir ++ "/sfdata");
-
-test.reports.dir (PROPERTY test.data.dir ++ "/reports");
-
-
 antxml extends AntXmlTestListener {
   outputDirectory test.data.dir; 
 }
@@ -46,10 +41,6 @@ antreport extends AntWorkflowRun {
 
 }
 
-AssertFileExists extends FileMustExist {
-    sfShouldTerminate true;
-}
-
 
 testRunnerAntXml extends TestRunner {
   description "push out as Ant XML";
@@ -59,13 +50,7 @@ testRunnerAntXml extends TestRunner {
   listener extends antxml {
   }
 
-  tests1 extends SFUnitTestSuite {
-    name "tests1";
-    description "run some basic tests";
-    sfShouldTerminate true;
-    
-    simpleTest extends SimpleTestCompound;
-    failingTest extends FailingTestCompound;
+  tests1 extends simpleSfUnitTestSuite {
 
   }
 }
