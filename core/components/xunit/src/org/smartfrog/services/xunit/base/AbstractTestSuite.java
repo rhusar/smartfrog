@@ -41,13 +41,14 @@ import java.rmi.RemoteException;
 public abstract class AbstractTestSuite extends ConditionCompound implements TestSuite {
 
 
-    private static ThreadLocal<RunnerConfiguration> configurationContext;
+    private static ThreadLocal<RunnerConfiguration> configurationContext = null;
 
     private static ThreadLocal<Prim> testSuiteContext;
     /**
      * Statistics about this test
      */
-    private Statistics stats = new Statistics();
+    private Statistics statistics = new Statistics(sfLog());
+
     /**
      * our hostname
      */
@@ -128,6 +129,9 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      */
     @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
+        if(sfLog().isDebugEnabled()) {
+            sfLog().debug("Terminating " + sfCompleteNameSafe() + " -- final statistics " + getStatistics());
+        }
         //reset the state in this thread
         getConfigurationContext().set(null);
         resetTestSuiteContext();
@@ -237,12 +241,12 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
         return getConfiguration().getListenerFactory();
     }
 
-    protected Statistics getStats() {
-        return stats;
+    protected Statistics getStatistics() {
+        return statistics;
     }
 
-    protected void setStats(Statistics stats) {
-        this.stats = stats;
+    protected void setStatistics(Statistics stats) {
+        this.statistics = stats;
     }
 
     protected String getHostname() {
@@ -285,7 +289,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      */
     protected void updateResultAttributes(boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
-        getStats().updateResultAttributes(this, finished);
+        getStatistics().updateResultAttributes(this, finished);
     }
 
     /**

@@ -212,6 +212,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
                     ERROR_NOT_CONFIGURED);
         }
         if (maybeSkipTestSuite()) {
+            sfLog().debug("Skipping test suite");
             skipped = true;
             return true;
         }
@@ -227,10 +228,10 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             }
         }
         testThread = new SFUnitChildTester(testSuites);
-        testThread.start();
-        testThread.waitForNotification(testTimeout);
-
-        return successful;
+        sfLog().debug("starting test thread");
+        testThread.startAndWaitForNotification(testTimeout);
+        sfLog().debug("test thread has finished");
+        return getStatistics().isSuccessful();
     }
 
 
@@ -293,10 +294,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         TerminationRecord status;
         SFUnitChildTester testThread;
 
-        private TestSuiteRun() {
-        }
-
-        public TestSuiteRun(TestBlock testBlock) {
+        private TestSuiteRun(TestBlock testBlock) {
             target = testBlock;
         }
     }
@@ -332,11 +330,16 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         public void execute() throws Throwable {
             for (TestSuiteRun testRun : testRuns) {
                 if (isTerminationRequested()) {
+                    sfLog().debug("Interrupted: terminating "+ this);
                     break;
                 }
                 currentTest = testRun;
                 testOneChild(currentTest);
+                //now update our statistics
+                updateResultAttributes(false);
             }
+            updateResultAttributes(true);
+            if (sfLog().isDebugEnabled()) sfLog().debug("Finished test thread " + getStatistics());
         }
 
         /**
@@ -379,9 +382,11 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             boolean isFailed = false;
             ComponentHelper ch = new ComponentHelper(testPrim);
             String testName = ch.completeNameSafe().toString();
+            getStatistics().addTestsStarted(1);
             sfLog().info("Starting " + testName);
             try {
                 LifecycleEvent event = testRun.events.runTestsToCompletion(startupTimeout, testTimeout);
+                sfLog().debug("Received event " + event);
                 if (event instanceof TestCompletedEvent) {
                     TestCompletedEvent test = (TestCompletedEvent) event;
                     success = test.isSucceeded();
@@ -408,12 +413,18 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
                 ch.targetForTermination();
             }
 
+            getStatistics().addTestsRun(1);
+            if (isFailed) {
+                getStatistics().addFailures(1);
+            }
+            //if we failed, we didn't succeed. Just to make sure :)
+            success &= !isFailed;
+
+            //update the global state
             succeeded &= success;
             failed |= isFailed;
-            //if we failed, we didn't succeed. Just to make sure :)
-            succeeded &= !isFailed;
             skipped |= isSkipped;
-            return succeeded;
+            return success;
         }
     }
 }

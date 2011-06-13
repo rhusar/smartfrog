@@ -71,6 +71,7 @@ public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, Lif
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        if (sfLog().isDebugEnabled()) sfLog().debug("Deploying action child");
         //now start the child
         ComponentDescription cd = null;
         cd = sfResolve(ATTR_ACTION, cd, true);
@@ -87,22 +88,28 @@ public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, Lif
         pingIfRequested(child, ATTR_PING_BEFORE_DEPLOY);
         if (!terminateBeforeDeploy) {
             //deploy the child
+            if (sfLog().isDebugEnabled()) sfLog().debug("Deploying action child");
             child.sfDeploy();
             //second ping
             pingIfRequested(child, ATTR_PING_BEFORE_START);
 
             if (!terminateBeforeStart) {
                 //start the child unless we want to terminate first
+                if (sfLog().isDebugEnabled()) sfLog().debug("Action is deployed, starting it");
                 child.sfStart();
             }
             //and shut ourselves down afterwards
+        } else {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Child is to be terminated before deployment");
         }
+        if (sfLog().isDebugEnabled()) sfLog().debug("Terminating the child");
         childHelper.targetForTermination();
     }
 
     private void pingIfRequested(Prim child, String pingAttr) throws SmartFrogResolutionException,
             RemoteException, SmartFrogLivenessException {
         if (sfResolve(pingAttr, true, true)) {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Pinging child");
             child.sfPing(this);
         }
     }

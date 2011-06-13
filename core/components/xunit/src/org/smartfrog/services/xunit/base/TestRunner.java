@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.xunit.base;
 
+import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Liveness;
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestRunner extends Remote, TestResultAttributes, Liveness {
+public interface TestRunner extends Remote, TestResultAttributes, Liveness, TestBlock {
 
     /**
      * should deploy fail if there is an error?

@@ -87,7 +87,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
     /**
      * store summary stats here, rather than duplicate code
      */
-    private Statistics stats = new Statistics();
+    private Statistics stats;
 
     /**
      * This is built up as we go along
@@ -115,6 +115,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
         this.suitename = suitename;
         this.startTime = startTime;
         log = LogFactory.getLog(getClass());
+        stats = new Statistics(log);
     }
 
 

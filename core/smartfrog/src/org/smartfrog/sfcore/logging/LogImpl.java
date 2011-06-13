@@ -153,7 +153,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         try {
             if (localLog != null) {
                 method.invoke(localLog, args);
-            }
+
+           }
         } catch (Throwable thr) {
             if (thr instanceof InvocationTargetException) {
                 //get a sub throwable here
@@ -292,7 +293,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 if ((localLog.isWarnEnabled())) {
                     localLog.warn(msg, ex);
                 }
-            } catch (java.lang.NullPointerException nex) {
+            } catch (NullPointerException nex) {
                 msg =
                         "Error during emergency initialization of localLog using default LogToFile for LogImpl. No logger available.";
                 System.err.println("[FATAL] " + msg + ", Reason: " + nex.toString());

@@ -164,7 +164,7 @@ public class DelayedTerminator implements Runnable {
         //now do a shutdown, outside the sychronized area. This means we have updated our expectations before
         //we actually force the termination
         if (target == null) {
-            log.debug("Target no longer exists for " + description);
+            log.debug(description + " -- shutting down without terminating its target");
         } else {
             try {
                 if (target.sfIsStarted()) {
@@ -204,5 +204,10 @@ public class DelayedTerminator implements Runnable {
 
     public void setForcedShutdown(boolean forcedShutdown) {
         this.forcedShutdown = forcedShutdown;
+    }
+
+    @Override
+    public String toString() {
+        return "Delayed Terminator " + description;
     }
 }

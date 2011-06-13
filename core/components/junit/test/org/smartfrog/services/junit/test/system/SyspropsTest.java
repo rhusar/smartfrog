@@ -34,6 +34,12 @@ public class SyspropsTest extends TestRunnerTestBase {
     }
 
     public void testSyspropsWorking() throws Throwable {
+
+        runTestsToCompletion("/files", "junit-sysprops");
+
+    }
+
+    public void OldtestSyspropsWorking() throws Throwable {
         String url;
         url = "/files/junit-sysprops.sf";
 

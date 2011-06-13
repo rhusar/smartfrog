@@ -26,7 +26,7 @@ import java.util.Vector;
 import java.rmi.RemoteException;
 
 /**
- * Helper to manage event registration/deregestration
+ * Helper to manage event registration/deregistration
  */
 public class EventRegistrar implements EventRegistration,
         EventBus {

@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
 
@@ -113,6 +114,10 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         readConfiguration();
     }
 
+    @Override
+    public void sfTerminateWith(final TerminationRecord status) {
+        super.sfTerminateWith(status);
+    }
 
     /**
      * read in our configuration
@@ -290,7 +295,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
                     failed = true;
                 }
                 updateResultAttributes(false);
-                failed |= !getStats().isSuccessful();
+                failed |= !getStatistics().isSuccessful();
                 if (failed && !getConfiguration().getKeepGoing()) {
                     return false;
                 }
@@ -460,7 +465,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      */
     @Override
     public void addError(Test test, Throwable throwable) {
-        getStats().incErrors();
+        getStatistics().incErrors();
         TestInfo info = onEnd(test, throwable);
         info.setOutcome(TestInfo.OUTCOME_ERROR);
         try {
@@ -489,7 +494,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      */
     @Override
     public void addFailure(Test test, AssertionFailedError error) {
-        getStats().incFailures();
+        getStatistics().incFailures();
         TestInfo info = onEnd(test, error);
         info.setOutcome(TestInfo.OUTCOME_FAILURE);
         try {
@@ -508,7 +513,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      */
     @Override
     public void endTest(Test test) {
-        getStats().incTestsRun();
+        getStatistics().incTestsRun();
         TestInfo info = onEnd(test, null);
         info.setOutcome(TestInfo.OUTCOME_SUCCESS);
         try {
@@ -566,7 +571,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         if (!startedTests.containsKey(testname)) {
             long start = System.currentTimeMillis();
             startedTests.put(testname, start);
-            getStats().incTestsStarted();
+            getStatistics().incTestsStarted();
             return start;
         } else {
             return lookupStartTime(testname);

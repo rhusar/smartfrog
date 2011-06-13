@@ -317,9 +317,9 @@ public class SmartFrogThread extends Thread implements Executable {
      *
      * @param timeout timeout in milliseconds
      *
-     * @return true if we are now finished
+     * @return true if the thread finished, rather than timed out
      *
-     * @throws InterruptedException if the execution was interrupted
+     * @throws InterruptedException if the wait was interrupted
      */
     public boolean waitForNotification(long timeout)
             throws InterruptedException {
@@ -329,6 +329,19 @@ public class SmartFrogThread extends Thread implements Executable {
             }
         }
         return finished;
+    }
+
+    /**
+     * Start the thread and wait for notification within a single 
+     * @param timeout
+     * @return true if the thread finished, rather than timed out
+     * @throws InterruptedException  if the wait was interrupted
+     */
+    public boolean startAndWaitForNotification(long timeout) throws InterruptedException {
+        synchronized (notifyObject) {
+            this.start();
+            return waitForNotification(timeout);
+        }
     }
 
     /**

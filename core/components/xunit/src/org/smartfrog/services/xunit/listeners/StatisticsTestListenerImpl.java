@@ -60,7 +60,7 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
     /**
      * The statistics
      */
-    private Statistics stats = new Statistics();
+    private Statistics stats = new Statistics(sfLog());
 
 
     /**

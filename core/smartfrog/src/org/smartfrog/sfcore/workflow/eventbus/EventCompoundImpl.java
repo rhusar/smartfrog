@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -172,6 +173,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event the event to send
      */
     public synchronized void sendEvent(Object event) {
+        if (sfLog().isDebugEnabled()) sfLog().debug("Sending event " + event);
         registrar.sendEvent(event);
     }
 
