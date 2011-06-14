@@ -63,8 +63,7 @@ singleSucceedingTestSuite extends SFUnitTestSuite {
   name "singleSucceedingTestSuite";
   description "run a simple test compound that is expected to succeed";
 
-  simpleTestCompound extends SimpleTestCompound;
-
+  simpleTestCompound extends TerminatingTestBlock;
 }
 
 simpleSfUnitTestSuite extends SFUnitTestSuite {

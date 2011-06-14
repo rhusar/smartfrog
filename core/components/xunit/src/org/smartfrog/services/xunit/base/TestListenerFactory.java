@@ -40,7 +40,7 @@ public interface TestListenerFactory extends Liveness {
     final String ATTR_NAME = "name";
 
     /**
-     * Start listening to a test suite
+     * Start listening to a test suite. The caller is expected to export this.
      *
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.

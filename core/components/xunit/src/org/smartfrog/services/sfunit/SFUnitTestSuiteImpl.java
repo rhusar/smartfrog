@@ -38,7 +38,6 @@ import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /** created 08-Jan-2007 14:57:40 */
@@ -150,9 +149,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
 
         //deploy all children. but do not (yet) start them
         Context children = getActions();
-        Iterator<Object> iterator = (Iterator<Object>) children.sfAttributes();
-        while (iterator.hasNext()) {
-            Object key = iterator.next();
+        for (Object key : actionAttributes()) {
             ComponentDescription act = (ComponentDescription) children.get(key);
             sfDeployComponentDescription(key, this, act, null);
             if (sfLog().isDebugEnabled()) sfLog().debug("Creating " + key);
@@ -252,10 +249,9 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @return true whenever a child component is not started
      */
     @Override
-    protected boolean onChildTerminated(TerminationRecord record, Prim comp) {
+    protected boolean onChildTerminated(TerminationRecord record, Prim comp) throws SmartFrogRuntimeException, RemoteException {
         if (comp instanceof TestBlock) {
             //its a test block. so let the test block handling handle it
-
             //we just remove it from liveness
             removeChildQuietly(comp);
             //and notify the caller we want to keep going
@@ -263,7 +259,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         } else {
             //something else terminated
             //whatever it was, it signals the end of this run
-            removeChildQuietly(comp);
+            sfRemoveChild(comp);
             return false;
             //return true;
         }
@@ -339,6 +335,13 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
                 updateResultAttributes(false);
             }
             updateResultAttributes(true);
+            //now push out the completion event
+            //send out a completion event
+            boolean forcedTimeout = false;
+/*            //send out a completion event
+            send(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
+            sendEvent(new TestCompletedEvent(this, succeeded, forcedTimeout, false, record, description));
+            endTestRun()*/
             if (sfLog().isDebugEnabled()) sfLog().debug("Finished test thread " + getStatistics());
         }
 

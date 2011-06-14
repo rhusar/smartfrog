@@ -78,7 +78,10 @@ BufferingListener extends TestListener {
     name "BufferingListener";
 }
 
-
+LogListener extends TestListener {
+  sfClass "org.smartfrog.services.xunit.listeners.LogListenerImpl";
+  name "LogListener";
+}
 
 
 /**

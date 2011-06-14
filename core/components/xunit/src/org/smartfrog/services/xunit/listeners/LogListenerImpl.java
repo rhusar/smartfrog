@@ -20,6 +20,7 @@
 package org.smartfrog.services.xunit.listeners;
 
 import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.TestInfo;
@@ -28,48 +29,21 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.io.PrintStream;
 import java.rmi.RemoteException;
 
 /**
- * The basic listener for trouble; the console listener. created 14-May-2004
- * 15:42:31
+ * Routes log messages to the sfLog of the log listener instance, converting received stack traces into logged stacks
  */
 
-public class ConsoleListenerImpl extends PrimImpl
-        implements ConsoleListenerFactory {
-
-    /**
-     * cache the prinstream so that when system.out is used to capture output we
-     * still go to the original console (i.e. no recursion)
-     */
-
-    private PrintStream outputstream = System.out;
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+public class LogListenerImpl extends PrimImpl
+        implements TestListenerFactory {
 
     /**
      * create an instance of the console listener
      * @throws RemoteException network problems
      */
-    public ConsoleListenerImpl() throws RemoteException {
-    }
-
-
-    /**
-     * set a new output stream
-     *
-     * @param out the output stream
-     */
-    public void setOutputStream(PrintStream out) {
-        outputstream = out;
-    }
-
-    /**
-     * get the current output stream
-     *
-     * @return the output stream
-     */
-    public PrintStream getOutputstream() {
-        return outputstream;
+    public LogListenerImpl() throws RemoteException {
     }
 
     /**
@@ -80,7 +54,6 @@ public class ConsoleListenerImpl extends PrimImpl
      */
     @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        outputstream.flush();
         super.sfTerminateWith(status);
     }
 
@@ -89,15 +62,8 @@ public class ConsoleListenerImpl extends PrimImpl
      * Print a line
      * @param line line to print
      */
-    public void println(String line) {
-        outputstream.println(line);
-    }
-
-    /**
-     * flush the stream
-     */
-    public void flush() {
-        outputstream.flush();
+    public void log(String line) {
+        sfLog().info(line);
     }
 
     /**
@@ -106,39 +72,50 @@ public class ConsoleListenerImpl extends PrimImpl
      * @param test test info
      */
     private void logTrouble(String message, TestInfo test) {
-        StringBuffer buffer = new StringBuffer(128);
+        StringBuilder buffer = new StringBuilder(128);
         buffer.append(message);
         buffer.append(test.getName());
         buffer.append(" on ");
         buffer.append(test.getHostname());
         buffer.append('\n');
         buffer.append(test.getText());
-        println(buffer.toString());
-        flush();
-        logTrace(test.getFault());
+        log(buffer.toString());
+        log(test.getFault());
     }
 
     /**
      * Log an exception, recursively
      * @param fault fault to log
      */
-    private void logTrace(ThrowableTraceInfo fault) {
+    private void log(ThrowableTraceInfo fault) {
         if (fault == null) {
             return;
         }
-        println(fault.getClassname());
-        println(fault.getMessage());
-        StackTraceElement[] stack = fault.getStack();
-        for (StackTraceElement aStack : stack) {
-            println(aStack.toString());
-        }
-        flush();
-        //recurse
-        ThrowableTraceInfo cause = fault.getCause();
-        if (cause != null && cause != fault) {
-            logTrace(cause);
-        }
+        sfLog().info(fault.toString(), fault.extractToException());
     }
+
+    /**
+     * Log an exception, recursively
+     * @param fault fault to log
+     */
+    private void error(ThrowableTraceInfo fault) {
+        if (fault == null) {
+            return;
+        }
+        sfLog().error(fault.toString(), fault.extractToException());
+    }
+
+    /**
+     * Log an exception, recursively
+     * @param fault fault to log
+     */
+    private void warn(ThrowableTraceInfo fault) {
+        if (fault == null) {
+            return;
+        }
+        sfLog().warn(fault.toString(), fault.extractToException());
+    }
+
 
     /**
      * Start listening to a test suite
@@ -158,22 +135,22 @@ public class ConsoleListenerImpl extends PrimImpl
                                String processname, String suitename,
                                long timestamp) throws RemoteException,
             SmartFrogException {
-        ConsoleTestListener consoleTestListener = new ConsoleTestListener(hostname, processname, suitename, timestamp);
-        consoleTestListener.println("Created " + consoleTestListener);
-        return consoleTestListener;
+        LogTestListener listener = new LogTestListener(hostname, processname, suitename, timestamp);
+        listener.info("Created " + listener);
+        return listener;
     }
 
     /**
      * this class exists to forward tests to the console
      */
-    protected class ConsoleTestListener implements TestListener {
+    protected class LogTestListener implements TestListener {
 
         String hostname;
         String processname;
         String suitename;
         long timestamp;
 
-        private ConsoleTestListener(final String hostname,
+        private LogTestListener(final String hostname,
                                     final String processname,
                                     final String suitename,
                                     final long timestamp) {
@@ -185,7 +162,7 @@ public class ConsoleListenerImpl extends PrimImpl
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder("ConsoleTestListener: ");
+            StringBuilder builder = new StringBuilder("LogTestListener: ");
             builder.append("hostname=").append(hostname).append("; ");
             builder.append("processname=").append(processname).append("; ");
             builder.append("suitename=").append(suitename).append("; ");
@@ -200,7 +177,7 @@ public class ConsoleListenerImpl extends PrimImpl
          */
         @Override
         public void endSuite() throws RemoteException, SmartFrogException {
-            println("Ending test suite");
+            info("Ending test suite");
         }
 
         @Override
@@ -215,7 +192,7 @@ public class ConsoleListenerImpl extends PrimImpl
 
         @Override
         public void endTest(TestInfo test) throws RemoteException {
-            println("   ending " +
+            info("   ending " +
                     test.getName() +
                     " on " +
                     test.getHostname());
@@ -224,7 +201,7 @@ public class ConsoleListenerImpl extends PrimImpl
 
         @Override
         public void startTest(TestInfo test) throws RemoteException {
-            println("Starting " +
+            info("Starting " +
                     test.getName() +
                     " on " +
                     test.getHostname());
@@ -232,15 +209,15 @@ public class ConsoleListenerImpl extends PrimImpl
 
         @Override
         public void log(LogEntry event) throws RemoteException {
-            println(event.toString());
+            info(event.toString());
         }
 
         /**
          * Print a line
          * @param line line to print
          */
-        public void println(String line) {
-            ConsoleListenerImpl.this.println(line);
+        public void info(String line) {
+            LogListenerImpl.this.log(line);
         }
     }
 }

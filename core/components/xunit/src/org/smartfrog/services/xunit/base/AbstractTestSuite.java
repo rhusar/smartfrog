@@ -25,6 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 
@@ -268,8 +270,9 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return a new listener
      * @throws SmartFrogException if needed
      * @throws RemoteException    on network trouble
+     * @throws SFGeneralSecurityException if the listener cannot be exported
      */
-    protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException {
+    protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException, SFGeneralSecurityException {
         TestListenerFactory listenerFactory = getTestListenerFactory();
 
         TestListener newlistener = listenerFactory.listen(this,
@@ -277,6 +280,8 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
                 sfDeployedProcessName(),
                 suiteName,
                 System.currentTimeMillis());
+        //now export the listener
+        newlistener = (TestListener) SecureRemoteObject.exportObject(newlistener, 0);
         return newlistener;
     }
 
