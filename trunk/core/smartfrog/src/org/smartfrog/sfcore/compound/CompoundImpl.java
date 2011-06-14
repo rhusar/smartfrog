@@ -119,6 +119,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @throws SmartFrogDeploymentException failed to deploy compiled component
      */
+    @Override
     public Prim sfDeployComponentDescription(Object name, Prim parent, ComponentDescription cmp, Context parms)
             throws SmartFrogDeploymentException {
         // check for attribute already named like given name
@@ -225,6 +226,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws SmartFrogRuntimeException when name or value are null
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized Object sfAddAttribute(Object name, Object value) throws SmartFrogRuntimeException, RemoteException {
         if ((value instanceof Prim) && sfContext.contains(value) && (this.sfContainsChild((Prim) value))) {
             String message = MessageUtil
@@ -255,6 +257,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * injection failed
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public synchronized Object sfReplaceAttribute(Object name, Object value) throws SmartFrogRuntimeException, RemoteException {
         if ((value instanceof Prim) && sfContext.contains(value) && (this.sfContainsChild((Prim) value))) {
             Object nameInContext = sfContext.sfAttributeKeyFor(value);
@@ -288,10 +291,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return deployed component if successful
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled
+     * @throws SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/network error
+     * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
             throws RemoteException, SmartFrogDeploymentException {
         return sfCreateNewChild(name, this, cmp, parms);
@@ -309,10 +313,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return deployed component if successful
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled
+     * @throws SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/network error
+     * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
             throws RemoteException, SmartFrogDeploymentException {
         return sfCreateNewChild(name, null, cmp, parms);
@@ -334,10 +339,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return deployed component if successful
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled
+     * @throws SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/network error
+     * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public Prim sfCreateNewChild(Object name, Prim parent,
                                  ComponentDescription cmp, Context parms) throws
             RemoteException, SmartFrogDeploymentException {
@@ -439,6 +445,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     //public synchronized void sfAddChild(Liveness target) {
     // if synchronized -> locks processCompound when it registers back!
+    @Override
     public void sfAddChild(Liveness target) throws RemoteException {
         sfChildren.addElement((Prim) target);
         ((Prim) target).sfParentageChanged();
@@ -472,6 +479,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return true if child in compound, false otherwise
      */
+    @Override
     public boolean sfContainsChild(Liveness child) {
         return sfChildren.contains(child);
     }
@@ -482,6 +490,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @return enumeration over children
      */
     @SuppressWarnings("unchecked")
+    @Override
     public Enumeration<Liveness> sfChildren() {
         return new SerializableEnumeration<Liveness>((List) sfChildren);
     }
@@ -523,6 +532,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return Reference to removed object
      */
+    @Override
     public synchronized Object sfRemoveAttribute(Object key)
             throws SmartFrogRuntimeException, RemoteException {
 
@@ -545,9 +555,10 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param parent parent component
      * @param cxt context for compound
      *
-     * @exception SmartFrogDeploymentException failed to deploy sub-components
+     * @throws SmartFrogDeploymentException failed to deploy sub-components
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized void sfDeployWith(Prim parent, Context cxt) throws
             SmartFrogDeploymentException, RemoteException {
 
@@ -587,6 +598,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *            sub-component
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
             //set our order. We do this before calling our super, in case we have to handle an exception at this point.
@@ -636,6 +648,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
             super.sfStart();
@@ -699,6 +712,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         //Re-check of sfSynchTerminate to get runtime changes.
         try {
@@ -765,6 +779,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status termination status of sender
      * @param comp sender of termination
      */
+    @Override
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         // Compound dies if sub-components die
         if (sfContainsChild(comp)) {
@@ -777,6 +792,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @param target target to dump to
      */
+    @Override
     public void sfDumpState(Dump target) {
         super.sfDumpState(target);
         // call sfDumpState in every child.
@@ -810,8 +826,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @param source source of ping
      *
-     * @exception SmartFrogLivenessException liveness failed
+     * @throws SmartFrogLivenessException liveness failed
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         // check the timing of the parent pings
         super.sfPing(source);
@@ -887,6 +904,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Parentage changed in component hierarchy. A notification is sent to all
      * children.
      */
+    @Override
     public void sfParentageChanged() throws RemoteException {
         for (Prim p : sfChildList()) {
             p.sfParentageChanged();
@@ -940,6 +958,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         /**
          * Run part, just do the call, ignoring exceptions
          */
+        @Override
         public void run() {
             String name = "unnamed";
             try {
@@ -958,6 +977,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws RemoteException
      * @throws SmartFrogException - not OK to update
      */
+    @Override
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
         super.sfPrepareUpdate();
         // iterate over all children, preparing them for update.
@@ -978,6 +998,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws RemoteException  In case of Remote/network error
      * @throws SmartFrogException - failure, not OK to update
      */
+    @Override
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
         // validate the description, return false if it requires termination, exception to fail
         // cache context
@@ -1038,6 +1059,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws RemoteException  In case of Remote/network error
      * @throws SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
+    @Override
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
         if (sfIsTerminated) {
@@ -1081,6 +1103,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws SmartFrogException other problems
      */
 
+    @Override
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
         super.sfUpdateDeploy();
 
@@ -1102,6 +1125,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws RemoteException  In case of Remote/network error
      * @throws SmartFrogException other problems
      */
+    @Override
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
         super.sfUpdateStart();
 
@@ -1121,6 +1145,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Can occur after prepare and check, but not afterwards to roll back from actual update process.
      * @throws RemoteException  In case of Remote/network error
      */
+    @Override
     public synchronized void sfAbandonUpdate() throws RemoteException {
         // notify all children of the abandon, ignoring all errors?
         // only occurs after failure of prepare or updatewith, future failure considered fatal
@@ -1139,6 +1164,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws RemoteException  In case of Remote/network error
      * @throws SmartFrogException other problems
      */
+    @Override
     public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogException {
         boolean ready;
 

@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -39,6 +38,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
@@ -173,7 +173,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event the event to send
      */
     public synchronized void sendEvent(Object event) {
-        if (sfLog().isDebugEnabled()) sfLog().debug("Sending event " + event);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Sending event from " + sfCompleteNameSafe() + " -- " + event);
         registrar.sendEvent(event);
     }
 
@@ -304,7 +304,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * </p>
      * @param status exit record of the component
      * @param comp child component that is terminating
-     * @return true if the termination event is to be forwarded up the chain.
+     * @return true iff the termination event is to be forwarded up the chain.
      * @throws SmartFrogRuntimeException for runtime exceptions
      * @throws RemoteException for network problems
      */
@@ -460,4 +460,25 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         }
         return child;
     }
+
+
+    /**
+     * Get the actions list as a
+     * @return an iterator over the actions
+     */
+    protected Iterable<Object> actionAttributes() {
+        return new ActionAttributesIterable();
+    }
+
+    private class ActionAttributesIterable implements Iterable<Object> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Iterator<Object> iterator() {
+            return (Iterator<Object>) getActions().sfAttributes();
+        }
+
+    }
+
+
 }

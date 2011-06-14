@@ -165,7 +165,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      *
      * @return class for target
      *
-     * @exception Exception failed to load class
+     * @throws Exception failed to load class
      */
     protected Class getPrimClass() throws Exception {
         String targetCodeBase=null;
@@ -242,7 +242,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      *
      * @return Prim
      *
-     * @exception SmartFrogDeploymentException failed to deploy description
+     * @throws SmartFrogDeploymentException failed to deploy description
      */
     public Prim deploy(Reference name, Prim parent, Context params)
         throws SmartFrogDeploymentException {
