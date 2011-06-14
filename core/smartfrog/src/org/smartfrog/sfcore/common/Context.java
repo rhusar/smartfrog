@@ -294,12 +294,14 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     
     /**
      * Returns the key at index idx in context
+     * @param idx the index to retrieve
      * @return key for given index, or null if index not valid
      */
     public Object getKey(int idx);
 
     /**
      * Returns the value at index idx in context
+     * @param idx the index to retrieve
      * @return value for given key index, or null if index not valid
      */
     public Object getVal(int idx);

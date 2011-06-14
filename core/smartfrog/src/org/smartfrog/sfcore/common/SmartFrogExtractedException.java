@@ -102,7 +102,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      * @param sfObject component that encountered exception
      */
     public SmartFrogExtractedException(String message, Prim sfObject) {
-        super(message,sfObject);
+        super(message, sfObject);
     }
 
     /**
@@ -158,7 +158,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
     public String shortClassName() {
         Object o = get(EXCEPTION_CLASSNAME);
         if (o != null) {
-            String name=(String) o;
+            String name = (String) o;
             return name.substring(
                     name.lastIndexOf('.') + 1);
         } else {
@@ -173,10 +173,10 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      */
     public String getExceptionClassname() {
         Object classname = get(EXCEPTION_CLASSNAME);
-        if(classname!=null) {
+        if (classname != null) {
             return classname.toString();
         } else {
-            return  getClass().getName();
+            return getClass().getName();
         }
     }
 
@@ -262,7 +262,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
     private static SmartFrogExtractedException createFromThrowable(Throwable thrown, Throwable cause) {
         SmartFrogExtractedException fault = new SmartFrogExtractedException(thrown.getMessage());
         fault.fillInFromThrowable(thrown);
-        if(cause!=null) {
+        if (cause != null) {
             fault.initCause(cause);
         }
         return fault;
