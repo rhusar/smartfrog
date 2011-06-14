@@ -86,7 +86,7 @@ public class SFDeployer implements MessageKeys {
                 Object tmp = component.sfResolve(name);
 
                 if (!(tmp instanceof ComponentDescription)) {
-                    SmartFrogResolutionException.notComponent(name, component.sfCompleteName());
+                    throw SmartFrogResolutionException.notComponent(name, component.sfCompleteName());
                 }
 
                 return deploy((ComponentDescription) tmp, null, parent, params);
