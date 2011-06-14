@@ -28,7 +28,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This is the public testrunner interface created 15-Apr-2004 11:51:44
+ * This is the public testrunner interface.
  */
 
 

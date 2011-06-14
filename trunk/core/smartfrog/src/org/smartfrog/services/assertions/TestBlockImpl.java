@@ -208,7 +208,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @throws SmartFrogRuntimeException smartfrog problems
      * @throws RemoteException           RMI problems
      */
-    private synchronized void end(TerminationRecord record)
+    protected synchronized void end(TerminationRecord record)
             throws SmartFrogRuntimeException, RemoteException {
         if (finished) {
             sfLog().debug("Ignoring re-entrant attempt to end the test run with the record " + record);
@@ -278,7 +278,9 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
         boolean success = record.isNormal();
-        sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug("setTestBlockAttributes of completed test with status " + record + " timeout=" + timeout);
+        }
         sfReplaceAttribute(ATTR_STATUS, record);
         sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));

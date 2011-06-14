@@ -305,12 +305,13 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         LifecycleEvent event = runTestDeployment(packageName, filename,
                 startupTimeout,
                 executeTimeout);
+        String eventHistory = getEventSink().dumpHistory();
         conditionalFail(event instanceof TestInterruptedEvent,
-                "Test run interrupted without completing the tests", event);
+                "Test run interrupted without completing the tests\n" + eventHistory, event);
         conditionalFail(event instanceof TerminatedEvent,
-                "Test run terminated without completing the tests", event);
+                "Test run terminated without completing the tests\n" + eventHistory, event);
         conditionalFail(!(event instanceof TestCompletedEvent),
-                "Test run terminated with an unexpected event", event);
+                "Test run terminated with an unexpected event\n" + eventHistory, event);
         //if not a terminated event, its test results
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(results.isForcedTimeout(),
@@ -364,9 +365,11 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      */
     private void conditionalFail(boolean test, String message, LifecycleEvent event) {
         if (test) {
-            AssertionFailedError afe=new AssertionFailedError(message + '\n' + event);
+            AssertionFailedError afe = new AssertionFailedError(message
+                    + "\nUnexpected Event is"
+                    + event);
             TerminationRecord tr = event.getStatus();
-            if(tr != null ) {
+            if (tr != null) {
                 afe.initCause(tr.getCause());
             }
             throw afe;

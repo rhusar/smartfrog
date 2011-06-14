@@ -927,7 +927,9 @@ public class TestCompoundImpl extends ConditionCompound
             boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
         boolean success = record.isNormal();
-        if (sfLog().isDebugEnabled()) sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug("setTestBlockAttributes of completed test with status " + record + " timeout=" + timeout);
+        }
         sfReplaceAttribute(ATTR_STATUS, record);
         sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         sfReplaceAttribute(ATTR_SUCCEEDED, Boolean.valueOf(success));

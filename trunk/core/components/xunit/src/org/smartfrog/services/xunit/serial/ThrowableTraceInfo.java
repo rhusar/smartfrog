@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.xunit.serial;
 
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
+
 import java.io.Serializable;
 
 /**
@@ -261,5 +263,24 @@ public final class ThrowableTraceInfo implements Serializable, Cloneable {
             builder.append('\n');
         }
         return builder.toString();
+    }
+
+    /**
+     * convert this to a (serializable) extracted exception.
+     * @return a new exception tree
+     */
+    public SmartFrogExtractedException extractToException() {
+        SmartFrogExtractedException sfe = new SmartFrogExtractedException(getMessage());
+        sfe.add(SmartFrogExtractedException.EXCEPTION_CLASSNAME, getClassname());
+        sfe.add(SmartFrogExtractedException.EXCEPTION_CLASSNAME, getClassname());
+        sfe.add(SmartFrogExtractedException.EXCEPTION_CANONICALNAME, getClassname());
+        sfe.add(SmartFrogExtractedException.EXCEPTION_MESSAGE, getMessage());
+        sfe.add(SmartFrogExtractedException.EXCEPTION_LOCALIZED_MESSAGE, getLocalizedMessage());
+        sfe.add(SmartFrogExtractedException.EXCEPTION_STACK, getStack());
+        sfe.setStackTrace(getStack());
+        if (cause != null) {
+            sfe.initCause(cause.extractToException());
+        }
+        return sfe;
     }
 }

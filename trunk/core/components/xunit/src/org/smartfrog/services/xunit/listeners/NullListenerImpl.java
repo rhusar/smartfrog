@@ -48,7 +48,7 @@ public class NullListenerImpl extends AbstractListenerImpl implements TestListen
      * @param processname name of the process
      * @param suitename   name of test suite
      * @param timestamp   start timestamp (UTC)
-     * @return a listener to talk to
+     * @return this object, always
      * @throws RemoteException    network problems
      * @throws SmartFrogException code problems
      */

@@ -343,6 +343,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
         WorkflowThread.requestThreadTerminationWithInterrupt(getWorker());
         if (listenerPrim != null) {
             //do anything with the listener?
+
         }
     }
 
@@ -504,11 +505,11 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
      */
     private void noteEndOfTestRun(TerminationRecord record, boolean success, boolean testSkipped)
             throws SmartFrogRuntimeException, RemoteException {
+        String message = "End of test run:" + record.toString();
         if (!success) {
-            sfLog().warn(record.toString());
-            if (record.getCause() != null) {
-                sfLog().warn(record.getCause());
-            }
+            sfLog().warn(message);
+        } else {
+            sfLog().debug(message);
         }
 /*        setStatus(record);
         actionTerminationRecord = record;
@@ -572,7 +573,8 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
 
     /**
      * run all the tests; this is the routine run in the worker thread. Break out (between suites) if we are
-     * interrupted. Sets the {@link TestResultAttributes#ATTR_FINISHED} attribute to true on completion.
+     * interrupted. Sets the {@link TestResultAttributes#ATTR_FINISHED} attribute to true on completion, then issue
+     * the test completion event.
      *
      * @return true if the tests worked
      * @throws SmartFrogException   for problems
@@ -580,18 +582,20 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
      * @throws InterruptedException if the tests get blocked
      */
     public boolean executeTests() throws SmartFrogException, RemoteException, InterruptedException {
-        boolean succeeded;
+        boolean succeeded = false;
         try {
             if (singleTest == null || singleTest.length() == 0) {
                 succeeded = executeBatchTests();
             } else {
                 succeeded = executeSingleTest();
             }
-            return succeeded;
         } finally {
             //this is here as it can throw an exception
             sfReplaceAttribute(TestBlock.ATTR_FINISHED, Boolean.TRUE);
+            noteEndOfTestRun(createTerminationRecord(), succeeded, false);
         }
+        return succeeded;
+
     }
 
 

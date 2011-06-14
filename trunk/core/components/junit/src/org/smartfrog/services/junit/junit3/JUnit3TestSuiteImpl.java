@@ -30,12 +30,14 @@ import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.utils.Utils;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -255,7 +257,11 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         checkConfigured();
         //bind to our listener
         TestListenerLog testLog = null;
-        listener = listen(suitename);
+        try {
+            listener = listen(suitename);
+        } catch (SFGeneralSecurityException e) {
+            throw SmartFrogDeploymentException.forward(e);
+        }
         try {
             if (maybeSkipTestSuite()) {
                 //exit early

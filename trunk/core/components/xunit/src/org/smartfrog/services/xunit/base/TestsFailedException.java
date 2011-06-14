@@ -23,7 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * Created 13-May-2009 17:51:19
+ * An exception that declares that the tests have failed.
  */
 
 public class TestsFailedException extends SmartFrogException {

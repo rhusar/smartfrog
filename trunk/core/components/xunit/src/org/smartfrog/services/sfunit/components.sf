@@ -36,4 +36,15 @@ For more information: www.smartfrog.org
     parallel false;
   }
 
+  /**
+  This is a test block that does not deploy the action, instead it terminates straight after startup
+  */
+  TerminatingTestBlock extends TestBlock {
+    sfClass "org.smartfrog.services.sfunit.TerminatingTestBlock";
+    succeed true;
+  }
+
+  FailingTerminatingTestBlock extends TerminatingTestBlock {
+    succeed false;
+  }
 

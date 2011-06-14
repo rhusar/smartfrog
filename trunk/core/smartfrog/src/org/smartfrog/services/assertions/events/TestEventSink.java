@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.SFLogRegistration;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -282,6 +281,9 @@ public class TestEventSink implements EventSink {
                 return null;
             }
         }
+        if(log.isDebugEnabled()) {
+            log.debug("TestEventSink has received event:"+ event);
+        }
         return event;
     }
 
@@ -379,6 +381,7 @@ public class TestEventSink implements EventSink {
         try {
             invokeStart();
         } catch (SmartFrogLifecycleException e) {
+            log.warn("On startup: "+ e, e);
             Object termRec;
             TerminationRecord status = null;
             try {
@@ -425,6 +428,7 @@ public class TestEventSink implements EventSink {
      * @throws RemoteException      for network problems
      * @throws InterruptedException if the thread waiting was interrupted
      */
+    @SuppressWarnings({"BreakStatement"})
     public LifecycleEvent runTestsToCompletion(long startupTimeout, long executeTimeout)
             throws SmartFrogException, InterruptedException, RemoteException {
         if (getApplication().sfIsTerminated()) {
@@ -445,21 +449,35 @@ public class TestEventSink implements EventSink {
                             getApplication().sfCompleteName()));
             return termEvent;
         } catch (TestFailureException tfe) {
+            log.warn("Test Failure Exception " + tfe, tfe);
             //startup failed and was intercepted during startup
             return tfe.getEvent();
         }
-        LifecycleEvent event;
+        LifecycleEvent event = null;
         TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
-        if (log.isDebugEnabled()) log.debug("Blocking for events from " + getApplication() + " for " + executeTimeout + " milliseconds");
-        do {
+        if (log.isDebugEnabled()) {
+            log.debug("Blocking for events from " + getApplication()
+                    + " for " + executeTimeout + " milliseconds");
+        }
+        while(!timedout.isTimedOut()) {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
-                log.debug("Test run timed out");
+                log.info("Test run timed out");
                 throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
             }
-            if (log.isDebugEnabled()) log.debug("Event received " + event);
-        } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
-                && !timedout.isTimedOut());
+            if (event instanceof TestCompletedEvent) {
+                log.info("TestCompletedEvent received, test run completing");
+                break;
+            }
+            if (event instanceof TerminatedEvent) {
+                log.info("TerminatedEvent received, test run bailing out");
+                break;
+            }
+        }
+        if (event == null) {
+            log.debug("Test run timed out");
+            throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
+        }
         return event;
     }
 
@@ -471,7 +489,9 @@ public class TestEventSink implements EventSink {
      */
     public String dumpHistory() {
         StringBuilder buffer = new StringBuilder("Event history has " + history.size() + " events\n");
+        int counter = 0;
         for (LifecycleEvent event : history) {
+            buffer.append('[').append(++counter).append("] ");
             buffer.append(event.toString());
             buffer.append('\n');
         }
