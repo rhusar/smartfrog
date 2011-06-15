@@ -26,13 +26,18 @@ import org.smartfrog.services.xunit.listeners.ConsoleListenerFactory;
 
 public class DeployedConsoleListenerTest extends TestRunnerTestBase {
 
+    public static final String PACKAGE = "/files/";
+    public static final String FILENAME = "console-all";
+    public static final String FILES_CONSOLE_ALL = PACKAGE
+            + FILENAME;
+
     public DeployedConsoleListenerTest(String name) {
         super(name);
     }
 
     public void testSuccess() throws Throwable {
         String url;
-        url = "/files/console-all.sf";
+        url = FILES_CONSOLE_ALL + ".sf";
 
         int seconds = getTimeout();
         application = deployExpectingSuccess(url, "ConsoleTest");
@@ -48,5 +53,9 @@ public class DeployedConsoleListenerTest extends TestRunnerTestBase {
         boolean finished = spinTillFinished(runner, seconds);
         assertTrue("Test run timed out", finished);
 
+    }
+
+    public void testConsoleListener() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, FILENAME);
     }
 }
