@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hadoop-install" default="default">
+
+    <description>
+        This build file exists to build and test the SmartFrog installer
+
+        It generates
+        * installer-${installer.version}.jar, containing the binaries of installer and the default
+        * SF description files.
+
+        These artifacts can be published locally, or written to the
+        ${antbuild.dir}/repository/internal repository, where
+        ${antbuild.dir} defaults to ../antbuild
+    </description>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="false"/>
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"/>
+  <property name="org.apache.commons.logging.diagnostics.dest" value="STDERR"/>
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+
+
+    <!-- override the compile target to use groovyc instead of javac -->
+  <target name="compile" depends="common.compile, groovy-tasks">
+    <echo>compiling groovy source</echo>
+    <sf-groovyc classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"/>
+  </target>
+
+
+  <target name="compile-tests" depends="common.compile-tests, groovy-tasks">
+    <sf-groovyc
+      srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      classpathref="tests.compile.classpath"
+      />
+  </target>
+
+
+</project>
