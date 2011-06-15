@@ -138,7 +138,7 @@ abstract class ISfRunnerExt
                 cmds = new String[]{"cmd.exe", "/C"};
             }
         } else {
-            cmds = new String[]{"bash.exe"};
+            cmds = new String[]{"bash"};
         }
 
         return cmds;
