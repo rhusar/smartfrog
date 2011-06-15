@@ -15,6 +15,7 @@ import org.smartfrog.services.groovy.install.Component
 class GroovyTask extends PrimImpl implements ITask {
 
     private static final String simplename = getClass().getSimpleName()
+
     private Vector previousTasks
 
     private List<ITask> observers = new ArrayList<ITask>()
@@ -25,29 +26,18 @@ class GroovyTask extends PrimImpl implements ITask {
         super()
     }
 
-    @Override
-    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
-        super.sfDeploy()
-        sfLog().debug("Deployed " + simplename)
-    }
-
-    @Override
-    public synchronized void sfStart() throws RemoteException, SmartFrogException {
-        super.sfStart()
-        sfLog().debug("Starting " + simplename)
-    }
 
     @Override
     public void run() throws RemoteException, SmartFrogException {
-        if (!sfResolve("finished", false, false)) {
-            def file = sfResolve("file", "", false)
+        if (!sfResolve(ATTR_FINISHED, false, false)) {
+            def file = sfResolve(ATTR_FILE, "", false)
             if (!file) return // no task file specified
-            def directory = sfParent().sfResolve("directory")
-            previousTasks = sfResolve("preconditions", new Vector(), false)
+            def directory = sfParent().sfResolve(ATTR_DIRECTORY)
+            previousTasks = sfResolve(ATTR_PRECONDITIONS, new Vector(), false)
             register()
             waitForPreconditions()
             execute(directory, file)
-            sfReplaceAttribute("finished", true)
+            sfReplaceAttribute(ATTR_FINISHED, true)
             notifyObservers()
         }
     }
@@ -68,7 +58,7 @@ class GroovyTask extends PrimImpl implements ITask {
         while (true) {
             wait = false
             previousTasks.each { task ->
-                if (!task.sfResolve("finished", false, false)) {
+                if (!task.sfResolve(ATTR_FINISHED, false, false)) {
                     wait = true
                 }
             }
