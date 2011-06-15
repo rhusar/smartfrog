@@ -12,15 +12,16 @@ import org.smartfrog.sfcore.prim.Prim
  */
 public interface ITask extends Prim, Remote {
 
-    public void run() throws RemoteException, SmartFrogException
+    void run() throws RemoteException, SmartFrogException
 
-    ;
 
-    public void addObserver(ITask observer) throws RemoteException, SmartFrogException
+    void addObserver(ITask observer) throws RemoteException, SmartFrogException
 
-    ;
 
-    public void update() throws RemoteException, SmartFrogException
+    void update() throws RemoteException, SmartFrogException
 
-    ;
+    String ATTR_FINISHED = "finished"
+    String ATTR_FILE = "file"
+    String ATTR_DIRECTORY = "directory"
+    String ATTR_PRECONDITIONS = "preconditions"
 }

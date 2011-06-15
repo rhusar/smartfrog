@@ -8,6 +8,16 @@ Architecture extends Parallel {
                     // we could also define a default repository here
 }
 
+// at the moment only Groovy tasks are supported
+Task extends Prim {
+    sfClass "org.smartfrog.services.groovy.install.task.GroovyTask";
+}
+
+// copy a file or directory
+Source extends Prim {
+    sfClass "org.smartfrog.services.groovy.install.download.Source";
+}
+
 Component extends Compound {
     sfClass "org.smartfrog.services.groovy.install.Component";
 
@@ -27,12 +37,3 @@ Component extends Compound {
     }
 }
 
-// at the moment only Groovy tasks are supported
-Task extends Prim {
-    sfClass "org.smartfrog.services.groovy.install.task.GroovyTask";
-}
-
-// copy a file or directory
-Source extends Prim {
-    sfClass "org.smartfrog.services.groovy.install.download.Source";
-}

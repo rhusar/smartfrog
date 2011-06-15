@@ -9,6 +9,10 @@ import org.smartfrog.sfcore.compound.Compound
 public interface IComponent extends Compound, Remote {
 
     // Defaults for installation
-    static final String TEMP_DIR = "/service"
-
+    String TEMP_DIR = "/service"
+    String ATTR_STATE = "state"
+    String ATTR_INSTALL = "install"
+    String ATTR_PRE_CONFIGURE = "preConfigure"
+    String ATTR_START = "start"
+    String ATTR_POST_CONFIGURE = "postConfigure"
 }

@@ -8,14 +8,13 @@ import org.apache.commons.vfs2.FileSystemOptions
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
-import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder
-import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException
+import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder
+import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder
 
 /**
  * Provides access to worker functions which may be used in Source components and in task files.
@@ -32,7 +31,7 @@ class GroovyComponentHelper {
     private Component component
 
     public GroovyComponentHelper(Component comp) {
-
+        def rootDir
         if (comp) {
             component = comp
             try {
@@ -41,20 +40,33 @@ class GroovyComponentHelper {
                 sfLog.error(e.toString(),e)
                 throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
             }
+            rootDir = component.sfResolve("directory")
+        } else {
+            //no component, set the root dir to the current dir
+            rootDir = System.getProperty("java.io.tmpdir")
         }
+        manager = VFS.getManager()
+        root = manager.resolveFile(rootDir.toString())
 
         options = new FileSystemOptions();
-        // TODO define proxy in config file
-        /*        HttpFileSystemConfigBuilder.getInstance().setProxyHost(options, "sup-prj-372301.sup.hpl.hp.com")
-       HttpFileSystemConfigBuilder.getInstance().setProxyPort(options, 3128)
+        propagateProxySettings();
 
-       SftpFileSystemConfigBuilder.getInstance().setProxyHost(options, "sup-prj-372301.sup.hpl.hp.com")
-       SftpFileSystemConfigBuilder.getInstance().setProxyPort(options, 3128)
-       SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(options, false)
-       SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(options, "no")*/
+    }
 
-        manager = VFS.getManager()
-        root = manager.resolveFile(component.sfResolve("directory").toString())
+
+    public void propagateProxySettings() {
+        String proxyHost = System.getProperty("http.proxyHost")
+        String proxyPort = System.getProperty("http.proxyPort")
+        if (proxyHost) {
+            int port = Integer.parseInt(proxyPort);
+            HttpFileSystemConfigBuilder.getInstance().setProxyHost(options, proxyHost)
+            HttpFileSystemConfigBuilder.getInstance().setProxyPort(options, port)
+
+            SftpFileSystemConfigBuilder.getInstance().setProxyHost(options, proxyHost)
+            SftpFileSystemConfigBuilder.getInstance().setProxyPort(options, port)
+            SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(options, false)
+            SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(options, "no")
+        }
     }
 
     public Process command(String c) {
@@ -78,8 +90,12 @@ class GroovyComponentHelper {
         }
     }
 
+    /**
+     * Install an RPM
+     * @param file RPM file to install
+     * @return the RPM process
+     */
     public Process rpm(String file) {
-        // TODO users should not need to specify version
         return command("rpm -i $file")
     }
 
@@ -91,8 +107,9 @@ class GroovyComponentHelper {
      *
      * http://apache-commons.680414.n4.nabble.com/commons-vfs-copy-progress-aborting-copy-operation-td740573.html
      *
-     * @param file
-     * @return
+     * @param file file to unpack
+     * @param directory the dest fir
+     * @return the unpack process
      */
     public Process unpack(String file, String directory) {
         sfLog.debug("Unpacking $file")
@@ -107,10 +124,20 @@ class GroovyComponentHelper {
         }
     }
 
+    /**
+     * Unpack a file into the root dir
+     * @param file file to unpack
+     * @return the unpack process
+     */
     public Process unpack(String file) {
         return unpack(file, root.getName().getPath())
     }
 
+    /**
+     * Resolve a file
+     * @param location url or path
+     * @return the resolved location, which is root-relative on a simple path
+     */
     private FileObject resolve(location) {
         sfLog.debug("Resolving URL: $location")
         if (location.contains("http://") || location.contains("sftp://")) {
@@ -122,15 +149,28 @@ class GroovyComponentHelper {
         }
     }
 
+    /**
+     * Resolve then create a directory
+     * @param directory the directory to create (root-relative)
+     * @return true iff the directory was created. False means it already exists
+     */
     public boolean mkdir(directory) {
         sfLog.debug("Creating $directory")
         FileObject dir = resolve(directory)
-        if (dir.exists()) sfLog.error("A file or directory with same name already exists.")
+        if (dir.exists()) {
+            sfLog.error("A file or directory with same name already exists.")
+            return false;
+        }
         dir.createFolder()
         dir.close()
         return true
     }
 
+    /**
+     * Resolve then delete a file or directory
+     * @param directory the target path (root-relative)
+     * @return true iff the path was deleted
+     */
     public boolean delete(fileOrDirectory) {
         sfLog.debug("Deleting $fileOrDirectory")
         FileObject src = resolve(fileOrDirectory)
@@ -140,6 +180,11 @@ class GroovyComponentHelper {
         return delete != 0
     }
 
+    /**
+     * Copy from the source to the destination, both are resolved first
+     * @param source source URL or path
+     * @param destination dest URL or path
+     */
     public void copy(String source, String destination) {
         sfLog.debug("Copying $source to $destination")
         FileObject src = resolve(source);
@@ -181,6 +226,20 @@ class GroovyComponentHelper {
         dest.close()
     }
 
+    /**
+     * Copy from the source to the destination, both are resolved first
+     * @param source source URL or path
+     * @param destination dest URL or path
+     */
+    public void copyDir(String source, String destination) {
+        
+    }
+
+    /**
+     * Move from the source to the destination, both are resolved first
+     * @param source source URL or path
+     * @param destination dest URL or path
+     */
     public void move(String source, String destination) {
         sfLog.debug("Moving $source to $destination")
         FileObject src = resolve(source);

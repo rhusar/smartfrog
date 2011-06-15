@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="grinstaller" default="default">
+<project name="grinstall" default="default">
 
     <description>
         This build file exists to build and test the SmartFrog installer
@@ -17,7 +17,7 @@
   <property file="build.properties"/>
   <property name="root.dir" location="../../"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="system.tests" value="false"/>
+  <property name="system.tests" value="true"/>
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
@@ -29,25 +29,26 @@
   <echo message="= ${ant.project.name}"/>
 
 
-   <target name="pre-compile" depends="common.pre-compile, ivy-classpaths">
-     <taskdef name="groovyc"
-         classname="org.codehaus.groovy.ant.Groovyc"
-         classpathref="compile.classpath"/>
-
-       <!-- define a new groovyc task with new default options -->
-      <presetdef name="sf-groovyc">
-        <groovyc fork="true"
-          memoryMaximumSize="${javac.max.memory}">
-        </groovyc>
-      </presetdef>
+   <target name="pre-compile" depends="common.pre-compile, ivy-classpaths, groovy-tasks">
     </target>
 
-    <!-- override the compile target to use groovyc instead of javac -->
+    <!-- extend the compile target to use groovyc -->
     <target name="compile" depends="common.compile">
       <echo>compiling groovy source</echo>
-      <sf-groovyc classpathref="compile.classpath"
-          srcdir="${src.dir}"
-          destdir="${build.classes.dir}"/>
+      <sf-groovyc
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"/>
+    </target>
+
+  <!-- extend the test compile target to use groovyc -->
+  <target name="compile-tests" depends="common.compile-tests, groovy-tasks">
+      <echo>compiling groovy tests</echo>
+      <sf-groovyc
+        srcdir="${test.src.dir}"
+        destdir="${test.classes.dir}"
+        classpathref="tests.compile.classpath"
+        />
     </target>
 
 </project>
