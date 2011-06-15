@@ -1324,16 +1324,30 @@ smartfrog.tasks.classpath=
       depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
   </target>
 
+  <target name="groovy-tasks" depends="declare-classpaths">
+     <taskdef name="groovyc"
+       classname="org.codehaus.groovy.ant.Groovyc"
+       classpathref="compile.classpath"/>
+
+    <!-- define a new groovyc task with new default options -->
+    <presetdef name="sf-groovyc">
+        <groovyc fork="true"
+          memoryMaximumSize="${javac.max.memory}">
+        </groovyc>
+      </presetdef>
+  </target>
+
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile" depends="pre-compile">
-	    <!-- to get the classpath in a printable form -->
-	  <pathconvert pathsep="${line.separator}|   |-- "  
-	               property="echo.compile.classpath" 
-	               refid="compile.classpath">
-	  </pathconvert>
+      <!-- to get the classpath in a printable form -->
+    <pathconvert pathsep="${line.separator}|   |-- "
+                 property="echo.compile.classpath"
+                 refid="compile.classpath">
+    </pathconvert>
     <echo message=" --------------------------------------------------------"/>
     <echo message=" Project: ${ant.project.name}"/>
     <echo message=" Ant file: ${ant.file}"/>
@@ -1442,11 +1456,11 @@ smartfrog.tasks.classpath=
   <target name="rmi-tests" depends="ready-to-rmi-tests"
       description="create the RMI classes"
       if="test.dir.found">
-	    <!-- to get the classpath in a printable form -->
-	  <pathconvert pathsep="${line.separator}|   |-- "  
-	               property="echo.test.compile.classpath" 
-	               refid="tests.compile.classpath">
-	  </pathconvert>
+      <!-- to get the classpath in a printable form -->
+    <pathconvert pathsep="${line.separator}|   |-- "
+                 property="echo.test.compile.classpath"
+                 refid="tests.compile.classpath">
+    </pathconvert>
     <echo> ---------------------------------------
      RMIC TESTS for project: ${ant.project.name}"
       base="${test.classes.dir}"
