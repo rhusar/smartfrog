@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.security;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
@@ -99,7 +100,7 @@ public class SecureRemoteObject {
                 csf = sfSecEnv.getEmptyRMIClientSocketFactory();
             }
         } catch (Exception e) {
-            throw new SFGeneralSecurityException(e.getMessage());
+            throw new SFGeneralSecurityException(e.getMessage(), e);
         } finally {
             // Don't try again.
             setAlreadyInit(true);
@@ -164,11 +165,11 @@ public class SecureRemoteObject {
      *
      * @return true if operation is successful, false otherwise
      *
-     * @throws java.rmi.NoSuchObjectException if the remote object is not
+     * @throws NoSuchObjectException if the remote object is not
      *            currently exported
      */
     public static boolean unexportObject(Remote obj, boolean force)
-        throws java.rmi.NoSuchObjectException {
+        throws NoSuchObjectException {
         return UnicastRemoteObject.unexportObject(obj, force);
     }
 }
