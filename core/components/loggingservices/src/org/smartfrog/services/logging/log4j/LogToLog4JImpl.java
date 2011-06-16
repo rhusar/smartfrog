@@ -106,6 +106,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * @param initialLogLevel level to log at
      * @throws Exception if it cannot be created
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public LogToLog4JImpl(String name, Integer initialLogLevel) throws Exception {
         this(name, null, initialLogLevel, System.out);
     }
@@ -119,10 +120,10 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * @param initialLogLevel               level to log at
      * @throws Exception if it cannot be created
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public LogToLog4JImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel)
             throws Exception {
         this(name, componentComponentDescription, initialLogLevel, System.out);
-
     }
 
 
@@ -136,6 +137,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * @param componentComponentDescription component description to use
      * @throws Exception if something went wrong
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     public LogToLog4JImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel,
                           PrintStream out) throws Exception {
         try {
@@ -157,7 +159,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
             }
 
             //Check Class and read configuration...including system.properties
-            String traceMessage="";
+            String traceMessage = "";
             try {
                 classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true, null);
                 final String classname = getClass().toString();
@@ -356,6 +358,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      *
      * @param currentLogLevel new logging level
      */
+    @Override
     public void setLevel(int currentLogLevel) {
         //Only do the change when it is different
         if (ignoreSetLogLevel) return;
@@ -368,6 +371,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * Get the logging level.
      */
+    @Override
     public int getLevel() {
         Level levelLog4J = logger.getEffectiveLevel();
         if (levelLog4J == null) {
@@ -399,6 +403,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      *
      * @param logLevel is this level enabled?
      */
+    @Override
     public boolean isLevelEnabled(int logLevel) {
 // log level are numerically ordered so can use simple numeric
 // comparison
@@ -412,6 +417,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log a message with debug log level.</p>
      */
+    @Override
     public final void debug(Object message) {
         log(Level.DEBUG, message, null);
     }
@@ -419,6 +425,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log an error with debug log level.</p>
      */
+    @Override
     public final void debug(Object message, Throwable t) {
         log(Level.DEBUG, message, t);
     }
@@ -426,6 +433,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log a message with trace log level.</p>
      */
+    @Override
     public final void trace(Object message) {
         log(Level.TRACE, message, null);
     }
@@ -433,6 +441,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log an error with trace log level.</p>
      */
+    @Override
     public final void trace(Object message, Throwable t) {
         log(Level.TRACE, message, t);
     }
@@ -440,6 +449,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log a message with info log level.</p>
      */
+    @Override
     public final void info(Object message) {
         log(Level.INFO, message, null);
     }
@@ -447,6 +457,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log an error with info log level.</p>
      */
+    @Override
     public final void info(Object message, Throwable t) {
         log(Level.INFO, message, t);
     }
@@ -454,6 +465,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log a message with warn log level.</p>
      */
+    @Override
     public final void warn(Object message) {
         log(Level.WARN, message, null);
     }
@@ -461,6 +473,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log an error with warn log level.</p>
      */
+    @Override
     public final void warn(Object message, Throwable t) {
         log(Level.WARN, message, t);
     }
@@ -468,6 +481,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log a message with error log level.</p>
      */
+    @Override
     public final void error(Object message) {
         log(Level.ERROR, message, null);
     }
@@ -475,6 +489,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log an error with error log level.</p>
      */
+    @Override
     public final void error(Object message, Throwable t) {
         log(Level.ERROR, message, t);
     }
@@ -482,6 +497,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log a message with fatal log level.</p>
      */
+    @Override
     public final void fatal(Object message) {
         log(Level.FATAL, message, null);
     }
@@ -489,6 +505,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * <p> Log an error with fatal log level.</p>
      */
+    @Override
     public final void fatal(Object message, Throwable t) {
         log(Level.FATAL, message, t);
     }
@@ -500,6 +517,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
+    @Override
     public final boolean isDebugEnabled() {
         return logger.isDebugEnabled();
     }
@@ -511,8 +529,8 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
+    @Override
     public final boolean isErrorEnabled() {
-
         return logger.isEnabledFor(Level.ERROR);
     }
 
@@ -523,8 +541,8 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
+    @Override
     public final boolean isFatalEnabled() {
-
         return logger.isEnabledFor(Level.FATAL);
     }
 
@@ -535,6 +553,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
+    @Override
     public final boolean isInfoEnabled() {
         return logger.isInfoEnabled();
     }
@@ -546,6 +565,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
+    @Override
     public final boolean isTraceEnabled() {
         return logger.isTraceEnabled();
     }
@@ -557,6 +577,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
+    @Override
     public final boolean isWarnEnabled() {
         return logger.isEnabledFor(Level.WARN);
     }
@@ -569,6 +590,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      *
      * @param message log this message
      */
+    @Override
     public void out(Object message) {
         outstream.println(message.toString());
         this.info(message);
@@ -580,6 +602,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      *
      * @param message log this message
      */
+    @Override
     public void err(Object message) {
         err(message, null);
     }
@@ -591,9 +614,10 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void err(Object message, Throwable t) {
         outstream.println(message.toString());
-        this.error(message, t);
+        error(message, t);
         if (t != null) {
             t.printStackTrace(outstream);
         }
@@ -605,6 +629,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      *
      * @param message log this message
      */
+    @Override
     public void err(Object message, SmartFrogException t, TerminationRecord tr) {
         err(message, LogUtils.extractCause(t, tr));
         outstream.println(LogUtils.stringify(tr));
@@ -617,8 +642,9 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
      * @param message log this message
      * @param t log this cause
      */
+    @Override
     public void err(Object message, SmartFrogException t) {
-        err(message, (Throwable)t);
-  }
+        err(message, (Throwable) t);
+    }
 
 }

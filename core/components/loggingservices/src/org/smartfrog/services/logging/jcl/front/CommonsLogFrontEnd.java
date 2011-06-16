@@ -25,13 +25,12 @@ import org.apache.commons.logging.Log;
  * This is a bridge between commons logging and smartfrog logging. Every commons-log operation
  * is relayed to the smartfrog back end.
  *
- * created 09-May-2006 17:24:27
  */
 
 public class CommonsLogFrontEnd implements Log {
 
     /**
-     * The prim to which we are bound
+     * The Log to which we are bound
      */
     private final org.smartfrog.sfcore.logging.Log backEnd;
 
@@ -58,6 +57,7 @@ public class CommonsLogFrontEnd implements Log {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than debug. </p>
      */
+    @Override
     public boolean isDebugEnabled() {
         return backEnd.isDebugEnabled();
     }
@@ -69,6 +69,7 @@ public class CommonsLogFrontEnd implements Log {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than error. </p>
      */
+    @Override
     public boolean isErrorEnabled() {
         return backEnd.isErrorEnabled();
     }
@@ -80,6 +81,7 @@ public class CommonsLogFrontEnd implements Log {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than fatal. </p>
      */
+    @Override
     public boolean isFatalEnabled() {
         return backEnd.isFatalEnabled();
     }
@@ -91,6 +93,7 @@ public class CommonsLogFrontEnd implements Log {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than info. </p>
      */
+    @Override
     public boolean isInfoEnabled() {
         return backEnd.isInfoEnabled();
     }
@@ -102,6 +105,7 @@ public class CommonsLogFrontEnd implements Log {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than trace. </p>
      */
+    @Override
     public boolean isTraceEnabled() {
         return backEnd.isTraceEnabled();
     }
@@ -113,6 +117,7 @@ public class CommonsLogFrontEnd implements Log {
      * (for example, <code>String</code> concatenation)
      * when the log level is more than warn. </p>
      */
+    @Override
     public boolean isWarnEnabled() {
         return backEnd.isWarnEnabled();
     }
@@ -122,6 +127,7 @@ public class CommonsLogFrontEnd implements Log {
      *
      * @param message log this message
      */
+    @Override
     public void trace(Object message) {
         backEnd.trace(message);
     }
@@ -132,6 +138,7 @@ public class CommonsLogFrontEnd implements Log {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void trace(Object message, Throwable t) {
         backEnd.trace(message, t);
     }
@@ -141,6 +148,7 @@ public class CommonsLogFrontEnd implements Log {
      *
      * @param message log this message
      */
+    @Override
     public void debug(Object message) {
         backEnd.debug(message);
     }
@@ -151,6 +159,7 @@ public class CommonsLogFrontEnd implements Log {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void debug(Object message, Throwable t) {
         backEnd.debug(message, t);
     }
@@ -160,6 +169,7 @@ public class CommonsLogFrontEnd implements Log {
      *
      * @param message log this message
      */
+    @Override
     public void info(Object message) {
         backEnd.info(message);
     }
@@ -170,6 +180,7 @@ public class CommonsLogFrontEnd implements Log {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void info(Object message, Throwable t) {
         backEnd.info(message, t);
     }
@@ -179,6 +190,7 @@ public class CommonsLogFrontEnd implements Log {
      *
      * @param message log this message
      */
+    @Override
     public void warn(Object message) {
         backEnd.warn(message);
     }
@@ -189,6 +201,7 @@ public class CommonsLogFrontEnd implements Log {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void warn(Object message, Throwable t) {
         backEnd.warn(message, t);
     }
@@ -198,6 +211,7 @@ public class CommonsLogFrontEnd implements Log {
      *
      * @param message log this message
      */
+    @Override
     public void error(Object message) {
         backEnd.error(message);
     }
@@ -208,6 +222,7 @@ public class CommonsLogFrontEnd implements Log {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void error(Object message, Throwable t) {
         backEnd.error(message, t);
     }
@@ -217,6 +232,7 @@ public class CommonsLogFrontEnd implements Log {
      *
      * @param message log this message
      */
+    @Override
     public void fatal(Object message) {
         backEnd.fatal(message);
     }
@@ -227,6 +243,7 @@ public class CommonsLogFrontEnd implements Log {
      * @param message log this message
      * @param t       log this cause
      */
+    @Override
     public void fatal(Object message, Throwable t) {
         backEnd.fatal(message, t);
     }
