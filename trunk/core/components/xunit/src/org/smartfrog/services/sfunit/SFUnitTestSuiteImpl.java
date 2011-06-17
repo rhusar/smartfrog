@@ -50,6 +50,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     private volatile boolean succeeded = false;
     private volatile boolean forcedTimeout = false;
     private volatile boolean skipped = false;
+    private volatile boolean testsRun = false;
     private volatile TerminationRecord status;
     private RunnerConfiguration configuration;
     private ComponentHelper helper;
@@ -158,7 +159,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         //now start anything that is not a test
         for (Prim elem : sfChildList()) {
             if (!(elem instanceof TestBlock)) {
-                log("Starting " + elem.sfCompleteName().toString());
+                log("Starting non-TestBlock child " + elem.sfCompleteName().toString());
                 elem.sfStart();
             }
         }
@@ -166,6 +167,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         startupTimeout = sfResolve(ATTR_STARTUP_TIMEOUT, 0L, true);
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
         //so here everything is started; the tests are ready to run, which is not done ourselves
+        if (sfLog().isDebugEnabled()) sfLog().debug("SFUnitTest suite is started and ready to run when invoked");
     }
 
     /**
@@ -176,7 +178,19 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     @Override
     public synchronized void sfTerminateWith(TerminationRecord terminationRecord) {
         super.sfTerminateWith(terminationRecord);
+        if (sfLog().isDebugEnabled()) sfLog().debug("Requesting termination of test thread");
         SmartFrogThread.requestThreadTermination(testThread);
+    }
+
+    @Override
+    public boolean runTests() throws RemoteException, SmartFrogException {
+        if (sfLog().isDebugEnabled()) sfLog().debug("SFUnitTest TestBlock.runTests starting");
+        try {
+            return runTestSuite(true);
+        } catch (InterruptedException e) {
+            sfLog().info(e , e);
+            return false;
+        }
     }
 
     /**
@@ -194,7 +208,19 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @throws InterruptedException if the test run is interrupted
      */
     @Override
-    public boolean runTests() throws RemoteException, SmartFrogException, InterruptedException {
+    public boolean runTestSuite() throws RemoteException, SmartFrogException, InterruptedException {
+        if (sfLog().isDebugEnabled()) sfLog().debug("SFUnitTest xunit.TestSuite.runTestSuite starting");
+        return runTestSuite(false);
+    }
+
+    private boolean runTestSuite(final boolean asyncRun) throws RemoteException, SmartFrogException, InterruptedException {
+        //stop a re-entrant operation
+        synchronized (this) {
+            if (testsRun) {
+                return false;
+            }
+            testsRun = true;
+        }
         InetAddress host = sfDeployedHost();
         String hostname = host.getHostName();
         //use our short name
@@ -221,14 +247,22 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         for (Prim child : children) {
             if (child instanceof TestBlock) {
                 TestBlock testBlock = (TestBlock) child;
+                if(sfLog().isDebugEnabled()) sfLog().debug("Adding child test "+ testBlock);
                 testSuites.add(new TestSuiteRun(testBlock));
             }
         }
         testThread = new SFUnitChildTester(testSuites);
-        sfLog().debug("starting test thread");
-        testThread.startAndWaitForNotification(testTimeout);
-        sfLog().debug("test thread has finished");
-        return getStatistics().isSuccessful();
+
+        if (asyncRun) {
+            sfLog().debug("starting async test thread");
+            testThread.start();
+            return true;
+        } else {
+            sfLog().debug("starting blocking test thread");
+            testThread.startAndWaitForNotification(testTimeout);
+            sfLog().debug("test thread has finished");
+            return getStatistics().isSuccessful();
+        }
     }
 
 
@@ -251,17 +285,26 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     @Override
     protected boolean onChildTerminated(TerminationRecord record, Prim comp) throws SmartFrogRuntimeException, RemoteException {
         if (comp instanceof TestBlock) {
+            if(sfLog().isDebugEnabled()) {
+                sfLog().debug("child TestBlock "+ comp.sfCompleteName() + " terminated with TR = " + record);
+            }
             //its a test block. so let the test block handling handle it
             //we just remove it from liveness
             removeChildQuietly(comp);
             //and notify the caller we want to keep going
+
+            //but , what if it's the last child
+
             return false;
         } else {
             //something else terminated
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("child component " + comp.sfCompleteName() + " terminated -ending test run; TR = " + record);
+            }
             //whatever it was, it signals the end of this run
             sfRemoveChild(comp);
-            return false;
-            //return true;
+            //return false;
+            return true;
         }
 
     }
@@ -312,6 +355,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         private SFUnitChildTester(List<TestSuiteRun> testRuns) {
             super(new Object());
             this.testRuns = testRuns;
+            setName("SFUnitChildTester");
         }
 
         /**
@@ -376,7 +420,10 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             Prim testPrim;
             synchronized (this) {
                 TestBlock testBlock = testRun.target;
-                testRun.events = new TestEventSink(testBlock);
+                TestEventSink sink = new TestEventSink(testBlock);
+                sink.setName(sfCompleteNameSafe().toString());
+                testRun.events = sink;
+
                 currentTest = testRun;
                 testPrim = (Prim) testBlock;
             }

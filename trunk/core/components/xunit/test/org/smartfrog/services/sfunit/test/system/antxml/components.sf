@@ -44,13 +44,12 @@ antreport extends AntWorkflowRun {
 
 testRunnerAntXml extends TestRunner {
   description "push out as Ant XML";
-
   sfShouldTerminate true;
 
   listener extends antxml {
   }
 
-  tests1 extends simpleSfUnitTestSuite {
+  tests1 extends singleSucceedingTestSuite {
 
   }
 }
@@ -61,6 +60,7 @@ testSFUnitAntXml extends testRunnerAntXml {
 testSFUnitAntXmlNested extends ExpectTerminate {
   action extends testRunnerAntXml {
     sfShouldTerminate true;
+    runTests true;
   }
 }
 

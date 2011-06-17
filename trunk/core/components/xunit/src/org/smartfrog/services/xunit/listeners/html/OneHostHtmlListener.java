@@ -35,6 +35,10 @@ import java.util.Date;
 
 public class OneHostHtmlListener extends OneHostXMLListener {
 
+    public static final String XHTML_DTD = "<!DOCTYPE\n"
+            + " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n"
+            + " \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">";
+    public static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
     private String cssURL;
 
     private String cssData;
@@ -70,13 +74,11 @@ public class OneHostHtmlListener extends OneHostXMLListener {
     protected synchronized void writeDocumentHeader() throws IOException {
         writeln(XML_DECLARATION);
         //a strict HTML 1.1 document
-        writeln("<!DOCTYPE\n"
-                + " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n"
-                + " \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+        //writeln(XHTML_DTD);
         //preamble if supplied
         writeln(preamble);
         //write the root tag
-        writeln("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
+        writeln("<html xmlns=\"" + XHTML_NAMESPACE + "\" xml:lang=\"en\" lang=\"en\">");
         String fullTitle = getTitle()
                 + " suite " + suitename
                 + " on " + hostname

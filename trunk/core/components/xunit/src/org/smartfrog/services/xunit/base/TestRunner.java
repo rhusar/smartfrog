@@ -21,8 +21,8 @@ package org.smartfrog.services.xunit.base;
 
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.xunit.serial.Statistics;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.RemoteToString;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -32,7 +32,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestRunner extends Remote, TestResultAttributes, Liveness, TestBlock {
+public interface TestRunner extends Remote, TestResultAttributes, Liveness, TestBlock, RemoteToString {
 
     /**
      * should deploy fail if there is an error?
@@ -54,13 +54,6 @@ public interface TestRunner extends Remote, TestResultAttributes, Liveness, Test
      * {@value}
      */
     String ATTR_LISTENER = "listener";
-
-    /**
-     * boolean: run tests on startup.
-     * <p/>
-     * {@value}
-     */
-    String ATTR_RUN_TESTS_ON_STARTUP = "runTests";
 
     /**
      * Name of a single test to run.
@@ -107,15 +100,6 @@ public interface TestRunner extends Remote, TestResultAttributes, Liveness, Test
      * @throws RemoteException if it could not be set
      */
     void setListenerFactory(TestListenerFactory listener) throws RemoteException;
-
-    /**
-     * run the test
-     *
-     * @return true if the tests were started
-     * @throws RemoteException network problems
-     * @throws SmartFrogException other problems
-     */
-    boolean startTests() throws RemoteException, SmartFrogException;
 
     /**
      * Get test execution statistics
