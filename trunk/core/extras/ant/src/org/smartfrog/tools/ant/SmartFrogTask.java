@@ -25,18 +25,19 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Assertions;
 import org.apache.tools.ant.types.Commandline;
-import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail; it may be
+ * Class to let ant task derivatives run smartfrog.
+ *
+ * <p/>
+ * How it invokes smartfrog is an implementation detail; it may be
  * calling the Java task, it may be calling smartfrog direct. What is not a detail is that the combined classpath of
  * ant+ any classpath parameters must include all the relevant smartfrog JAR files. <p/> Smartfrog can be configured via
  * system properties, an ini file, or the explicit properties of this task. All the attributes of this task that
@@ -633,12 +634,12 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         }
 
         //last minute logging
-        if (isDebug()) {
-            log("Command: " + getCommandLine());
-        }
+        log("Command: " + getCommandLine(), Project.MSG_VERBOSE);
+
 
         //run it
         int err = smartfrog.executeJava();
+        log("Response code: "+ err, Project.MSG_VERBOSE);
         if (isSpawn()) {
             //when spawning output gets lost, so we print something here
             log(MESSAGE_SPAWNED_DAEMON);
@@ -674,14 +675,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @return a command line or null for old Ant versions
      */
     protected String getCommandLine() {
-        try {
-            Method method = Java.class.getMethod("getCommandLine", new Class[0]);
-            CommandlineJava commandLine = (CommandlineJava)
-                    method.invoke(smartfrog);
-            return commandLine.describeJavaCommand();
-        } catch (Exception ignore) {
-            return null;
-        }
+        return smartfrog.getCommandLine().describeCommand();
     }
 
     /**
