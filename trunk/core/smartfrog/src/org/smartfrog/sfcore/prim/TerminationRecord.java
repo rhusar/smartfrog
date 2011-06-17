@@ -1,31 +1,31 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.prim;
 
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
+import org.smartfrog.sfcore.reference.Reference;
+
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.io.PrintWriter;
-
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogExtractedException;
 
 
 /**
@@ -35,13 +35,13 @@ import org.smartfrog.sfcore.common.SmartFrogExtractedException;
  *
  */
 public final class TerminationRecord implements Serializable {
-    /** String name for errortype normal. */
+    /** String name for errortype normal: {@value} */
     public final static String NORMAL = "normal";
 
-    /** String name for errortype abnormal. */
+    /** String name for errortype abnormal: {@value} */
     public final static String ABNORMAL = "abnormal";
 
-    /** String name for errortype externalReferenceDead. */
+    /** String name for errortype externalReferenceDead : {@value}. */
     public final static String EXTERNAL_REFERENCE_DEAD = "externalReferenceDead";
 
     /** Errortype. */
@@ -54,7 +54,7 @@ public final class TerminationRecord implements Serializable {
     public Reference id;
 
     /**
-     *  exception causing a failure.
+     * Exception causing a failure.
      * Please do not set this directly; it is only left accessible for compatibility reasons 
      */
     public Throwable cause;
@@ -104,7 +104,7 @@ public final class TerminationRecord implements Serializable {
     /**
      * When the cause is set, it is automatically converted to an portable form.
      * @param cause the underlying exception
-      @see SmartFrogExtractedException
+     @see SmartFrogExtractedException
      */
     public void setCause(Throwable cause) {
         this.cause = SmartFrogExtractedException.convert(cause);
@@ -143,7 +143,7 @@ public final class TerminationRecord implements Serializable {
      * @return a SFTerminationRecord
      */
     public static TerminationRecord normal(String description, Reference id, Throwable cause) {
-        return new TerminationRecord(NORMAL, description, id,cause);
+        return new TerminationRecord(NORMAL, description, id, cause);
     }
 
     /**
@@ -180,7 +180,7 @@ public final class TerminationRecord implements Serializable {
      */
     public static TerminationRecord externalReferenceDead(Reference id) {
         return new TerminationRecord(EXTERNAL_REFERENCE_DEAD,
-            "External reference lost", id);
+                "External reference lost", id);
     }
 
     /**
@@ -189,35 +189,22 @@ public final class TerminationRecord implements Serializable {
      * @return string representation of termination record
      */
     public String toString() {
-        StringBuilder builder=new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         builder.append("Termination Record: ");
-        if(id != null && id.size() > 0) {
+        if (id != null && id.size() > 0) {
             builder.append(id.toString());
         }
-        if(errorType!=null) {
+        if (errorType != null) {
             builder.append(",  type: ").append(errorType);
         }
-        if(description!=null) {
+        if (description != null) {
             builder.append(",  description: ").append(description);
         }
+        //recursively attach exceptions
         if (cause != null) {
             builder.append(buildStackTrace());
         }
-        //recursively attach exceptions
-/*
-        Throwable thrown = cause;
-        Throwable parent = null;
-        while (thrown != null && thrown != parent) {
-            builder.append(",  ");
-            if(parent!=null) {
-                builder.append(" nested ");
-            }
-            builder.append("cause: ");
-            builder.append(thrown.toString());
-            parent = thrown;
-            thrown = thrown.getCause();
-        }
-*/
+
         return builder.toString();
     }
 

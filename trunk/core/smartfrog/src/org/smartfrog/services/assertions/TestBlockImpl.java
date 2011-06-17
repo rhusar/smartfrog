@@ -50,6 +50,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
     private volatile boolean forcedTimeout = false;
+    private volatile boolean testsRun = false;
     private volatile TerminationRecord status;
     private DelayedTerminator actionTerminator;
     private volatile Prim actionPrim;
@@ -136,16 +137,40 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * Starts the compound. This sends a synchronous sfStart to all managed components in the compound context. Any
      * failure will cause the compound to terminate
      *
-     * A TestStartedEvent will always be sent.
+     * A StartedEvent will always be sent.
      *
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException    In case of Remote/nework error
      */
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        sendEvent(new StartedEvent(this));
+        boolean shouldRunTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, false, false);
+        if(shouldRunTests) {
+            sfLog().debug("Starting test run in sfStart");
+            runTests();
+        } else {
+            sfLog().debug("Deferring test run until explicitly invoked");
+        }
+    }
+
+
+    @Override
+    public boolean runTests() throws RemoteException, SmartFrogException {
+
+        //stop a re-entrant operation
+        synchronized (this) {
+            if (testsRun) {
+                return false;
+            }
+            testsRun = true;
+        }
+
+        //now start the child action
         try {
-            super.sfStart();
             startChildAction();
+            return true;
         } finally {
             sendEvent(new TestStartedEvent(this));
         }
@@ -153,7 +178,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
 
     /**
      * Called in sfStart to start the child action. Can be overridden to disable that action, in which case some derived
-     * form of the logic must be repeated to start the action and (always) send a TestStartedEvent.
+     * form of the logic must be repeated to start the action and (always) send a StartedEvent.
      *
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException    In case of Remote/nework error
@@ -161,7 +186,6 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     protected void startChildAction() throws RemoteException, SmartFrogException {
         long timeout = sfResolve(ATTR_TIMEOUT, 0L, true);
         boolean expectTimeout = sfResolve(ATTR_EXPECTTIMEOUT, false, true);
-        sendEvent(new StartedEvent(this));
         try {
             actionPrim = sfCreateNewChild(ACTION, action, null);
             if (timeout > 0) {

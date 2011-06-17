@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.assertions.events;
 
+import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.TestFailureException;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -27,8 +28,12 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.RemoteToString;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SecureRemoteObject;
+import org.smartfrog.sfcore.security.SmartFrogSecurityException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 import org.smartfrog.sfcore.workflow.eventbus.EventSink;
@@ -58,7 +63,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * deadlock, especially during teardown operations.
  */
 
-public class TestEventSink implements EventSink {
+public final class TestEventSink implements EventSink, RemoteToString {
 
 
     /**
@@ -80,6 +85,12 @@ public class TestEventSink implements EventSink {
      * This is a remote stub to ourselves, which is set after exporting the instance using RMI
      */
     private volatile RemoteStub remoteStub;
+
+
+    /**
+     * Name used for diagnostics in the {@link #sfRemoteToString()} operation
+     */
+    private volatile String name = "TestEventSink";
 
     /**
      * error message : {@value}
@@ -109,8 +120,9 @@ public class TestEventSink implements EventSink {
      *
      * @param source source of events
      * @throws RemoteException for network problems
+     * @throws SmartFrogSecurityException security problems
      */
-    public TestEventSink(EventRegistration source) throws RemoteException {
+    public TestEventSink(EventRegistration source) throws RemoteException, SmartFrogSecurityException {
         subscribe(source);
     }
 
@@ -120,15 +132,38 @@ public class TestEventSink implements EventSink {
      *
      * @param application the application (which must implement{@link EventRegistration})
      * @throws RemoteException if something goes wrong with the subscription
-     * @throws SmartFrogRuntimeException if the class is the wrong time
+     * @throws SmartFrogRuntimeException if the class is the wrong type
+     * @throws SmartFrogSecurityException security problems
      */
-    public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException {
+    public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException, SmartFrogSecurityException {
         if (!(application instanceof EventRegistration)) {
             throw new SmartFrogRuntimeException(ERROR_WRONG_TYPE
                                                 + application.getClass(),
                                                 application);
         }
         subscribe((EventRegistration) application);
+    }
+
+    /**
+     * Set the name (for remote diagnostics)
+     * @param name new name
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    /**
+     * Return the current name attribute
+     * @return the name
+     */
+    @Override
+    public String sfRemoteToString() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     /**
@@ -174,21 +209,26 @@ public class TestEventSink implements EventSink {
             return null;
         }
         SmartFrogThread thread = new SmartFrogThread(new AsyncUnsubscribe(this));
+        thread.setName(name + "unsubscriber");
         thread.start();
         return thread;
     }
 
     /**
-     * Subscribe to an event source
+     * Export self and subscribe to an event source.
      *
      * @param target what to subscribe to
      * @throws RemoteException for network problems
      */
-    private synchronized void subscribe(EventRegistration target) throws RemoteException {
+    private synchronized void subscribe(EventRegistration target) throws RemoteException, SmartFrogSecurityException {
         if (source != null) {
             throw new IllegalStateException("Cannot subscribe more than once");
         }
-        remoteStub = UnicastRemoteObject.exportObject(this);
+        try {
+            remoteStub = (RemoteStub) SecureRemoteObject.exportObject(this, 0);
+        } catch (SFGeneralSecurityException e) {
+            throw new SmartFrogSecurityException(e);
+        }
         setSource(target);
         if (target != null) {
             target.register(this);
@@ -282,7 +322,7 @@ public class TestEventSink implements EventSink {
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug("TestEventSink has received event:"+ event);
+            log.debug(toString() + " received event: "+ event);
         }
         return event;
     }
@@ -395,11 +435,12 @@ public class TestEventSink implements EventSink {
                 status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
             }
             TerminatedEvent te = new TerminatedEvent(app, status);
-            throw new TestFailureException(ERROR_PREMATURE_TERMINATION, te);
+            throw new TestFailureException(ERROR_PREMATURE_TERMINATION + " seen by " + this, te);
         } catch (RemoteException e) {
-            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,
+            String message = ERROR_PREMATURE_TERMINATION + " seen by " + this;
+            throw new TestFailureException(message,
                                            new TerminatedEvent(app,
-                                                               TerminationRecord.abnormal("termination during startup",
+                                                               TerminationRecord.abnormal(message,
                                                                appNameRef,
                                                                e)));
         }
@@ -408,10 +449,12 @@ public class TestEventSink implements EventSink {
         do {
             event = waitForEvent(LifecycleEvent.class, timeout);
             if (event == null) {
-                throw new TestTimeoutException(ERROR_STARTUP_TIMEOUT, timeout);
+                String message = ERROR_STARTUP_TIMEOUT + " as seen by " + this
+                        +" \nHistory: \n" + dumpHistory();
+                throw new TestTimeoutException(message, timeout);
             }
             if (event instanceof TerminatedEvent) {
-                throw new TestFailureException(ERROR_PREMATURE_TERMINATION, event);
+                throw new TestFailureException(ERROR_PREMATURE_TERMINATION + " seen by " + this, event);
             }
         } while (!(event instanceof StartedEvent) && !timedout.isTimedOut());
         return (StartedEvent) event;
@@ -431,51 +474,69 @@ public class TestEventSink implements EventSink {
     @SuppressWarnings({"BreakStatement"})
     public LifecycleEvent runTestsToCompletion(long startupTimeout, long executeTimeout)
             throws SmartFrogException, InterruptedException, RemoteException {
-        if (getApplication().sfIsTerminated()) {
+        Prim application = getApplication();
+        boolean logDebugEnabled = log.isDebugEnabled();
+        Reference completeName = application.sfCompleteName();
+        if (application.sfIsTerminated()) {
             //we are (somehow) already terminated, so report this as a problem
-            LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
-                    TerminationRecord.abnormal("Test component has already terminated",
-                            getApplication().sfCompleteName()));
+            LifecycleEvent termEvent = new TerminatedEvent(application,
+                    TerminationRecord.abnormal(this + ": test component has already terminated ",
+                            completeName));
             return termEvent;
         }
         try {
+            if (logDebugEnabled) log.debug("Starting target application " + completeName);
             StartedEvent started = startApplication(startupTimeout);
-            if (log.isDebugEnabled()) log.debug("Started child application: " + started);
+            if (logDebugEnabled) log.debug("Started target application: " + started);
         } catch (SmartFrogLifecycleException e) {
             //this is caused by a failure to start the application, which invariably triggers
             //termination of one kind or another
-            LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
-                    TerminationRecord.abnormal("Test component terminated during startup",
-                            getApplication().sfCompleteName()));
+            LifecycleEvent termEvent = new TerminatedEvent(application,
+                    TerminationRecord.abnormal(this + ": target application terminated during startup",
+                            completeName));
             return termEvent;
         } catch (TestFailureException tfe) {
             log.warn("Test Failure Exception " + tfe, tfe);
             //startup failed and was intercepted during startup
             return tfe.getEvent();
         }
+        //now deploy the tests if the component is a specific TestBlock
+        if (application instanceof TestBlock) {
+            if (logDebugEnabled) log.debug("Application is a TestBlock; running its tests");
+            TestBlock testBlock = (TestBlock) application;
+            testBlock.runTests();
+        }
+
+
         LifecycleEvent event = null;
         TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
-        if (log.isDebugEnabled()) {
-            log.debug("Blocking for events from " + getApplication()
+        if (logDebugEnabled) {
+            log.debug("Blocking for events from " + completeName
                     + " for " + executeTimeout + " milliseconds");
         }
         while(!timedout.isTimedOut()) {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
-                log.info("Test run timed out");
-                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
+                log.info("Test run timed out after " + executeTimeout + " milliseconds");
+                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT
+                        + '\n' + dumpHistory(),
+                        executeTimeout);
             }
             if (event instanceof TestCompletedEvent) {
-                log.info("TestCompletedEvent received, test run completing");
+                log.info(this + ": TestCompletedEvent received, test run completing");
                 break;
             }
             if (event instanceof TerminatedEvent) {
-                log.info("TerminatedEvent received, test run bailing out");
+                log.info(this + ": TerminatedEvent received, test run bailing out");
+                break;
+            }
+            if (event instanceof TestInterruptedEvent) {
+                log.info(this + ": Test interrupted: "+ event);
                 break;
             }
         }
         if (event == null) {
-            log.debug("Test run timed out");
+            if (logDebugEnabled) log.debug(this + ": Test run timed out");
             throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
         }
         return event;
@@ -488,7 +549,7 @@ public class TestEventSink implements EventSink {
      * @return the history of recevied events.
      */
     public String dumpHistory() {
-        StringBuilder buffer = new StringBuilder("Event history has " + history.size() + " events\n");
+        StringBuilder buffer = new StringBuilder(this + ": Event history has " + history.size() + " events\n");
         int counter = 0;
         for (LifecycleEvent event : history) {
             buffer.append('[').append(++counter).append("] ");
