@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.security.SmartFrogSecurityException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
@@ -54,6 +55,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     }
 
 
+    @Override
     protected void tearDown() throws Exception {
         if (!stopListening()) {
             getLog().warn("Failed to unsubscribe event sink");
@@ -83,13 +85,20 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param prim the event source
      * @throws RemoteException           for network problems
      * @throws SmartFrogRuntimeException for subscription problems
+     * @throws SmartFrogSecurityException security problems
      */
-    private synchronized void startListening(Prim prim) throws RemoteException, SmartFrogRuntimeException {
+    private synchronized void startListening(Prim prim)
+            throws RemoteException, SmartFrogRuntimeException, SmartFrogSecurityException {
         stopListening();
-
-        eventSink = new TestEventSink(prim);
+        try {
+            eventSink = new TestEventSink(prim);
+            eventSink.setName(getClass() + "." + getName());
+        } catch (NoSuchObjectException e) {
+            //some kind of remoting problem may happen during termination.
+            logThrowable("Remote application has been deleted before its lifecycle events could be subscribed to", e);
+            throw e;
+        }
     }
-
 
     public TestEventSink getEventSink() {
         return eventSink;
@@ -169,13 +178,13 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                         ConfigurationDescriptor.Action.LOAD,
                         hostname,
                         null);
-        ApplicationLoaderThread loader=new ApplicationLoaderThread(configurationDescriptor, true);
+        ApplicationLoaderThread loader = new ApplicationLoaderThread(configurationDescriptor, true);
         loader.start();
-        if(!loader.waitForNotification(startupTimeout)) {
+        if (!loader.waitForNotification(startupTimeout)) {
             loader.interrupt();
             loader.stop();
             throw new SmartFrogRuntimeException("Time out loading the configuration descriptor after " + startupTimeout
-                    + " mS: "+ testURL);
+                    + " mS: " + testURL);
         }
         Object loaded = loader.getLoaded();
 
@@ -204,6 +213,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
             super(new Object());
             this.configuration = configuration;
             this.throwException = throwException;
+            setName("loader thread for " + configuration);
             setDaemon(true);
         }
 
@@ -212,8 +222,9 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
-            loaded=SFSystem.runConfigurationDescriptor(configuration, throwException);
+            loaded = SFSystem.runConfigurationDescriptor(configuration, throwException);
         }
 
         public Object getLoaded() {
@@ -249,8 +260,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param executeTimeout limit in millis to execute
      * @return the lifecycle at the end of the run. This is either a {@link org.smartfrog.services.assertions.events.TestCompletedEvent}
      *         or a {@link org.smartfrog.sfcore.workflow.events.TerminatedEvent}
-     * @throws Throwable on failure. A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates
-     *                   timeout.
+     * @throws Throwable any  failure.
+     * @throws org.smartfrog.services.assertions.TestTimeoutException on a timeout.
      */
     protected LifecycleEvent runTestDeployment(String packageName, String filename, int startupTimeout,
                                                int executeTimeout) throws Throwable {
@@ -307,11 +318,11 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                 executeTimeout);
         String eventHistory = getEventSink().dumpHistory();
         conditionalFail(event instanceof TestInterruptedEvent,
-                "Test run interrupted without completing the tests\n" + eventHistory, event);
+                "Test run interrupted without completing the tests", eventHistory, event);
         conditionalFail(event instanceof TerminatedEvent,
-                "Test run terminated without completing the tests\n" + eventHistory, event);
+                "Test run TerminatedEvent received before the TestCompletedEvent", eventHistory, event);
         conditionalFail(!(event instanceof TestCompletedEvent),
-                "Test run terminated with an unexpected event\n" + eventHistory, event);
+                "Test run terminated with an unexpected event", eventHistory, event);
         //if not a terminated event, its test results
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(results.isForcedTimeout(),
@@ -364,10 +375,26 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @throws AssertionFailedError if the condition is true
      */
     private void conditionalFail(boolean test, String message, LifecycleEvent event) {
+        conditionalFail(test, message, null, event);
+    }
+
+    /**
+     * Fail if a condition is not met; the message raised includes the message and the string value of the event.
+     *
+     * @param test    condition to evaluate
+     * @param message message to print
+     * @param event   related event
+     * @throws AssertionFailedError if the condition is true
+     */
+    private void conditionalFail(boolean test, String message, String eventHistory, LifecycleEvent event) {
         if (test) {
             AssertionFailedError afe = new AssertionFailedError(message
-                    + "\nUnexpected Event is"
-                    + event);
+                    + "\nEvent is "
+                    + event
+                    + (eventHistory != null ?
+                        ("\nHistory:\n" + eventHistory)
+                        : "")
+                    );
             TerminationRecord tr = event.getStatus();
             if (tr != null) {
                 afe.initCause(tr.getCause());
