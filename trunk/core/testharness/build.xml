@@ -28,8 +28,8 @@
     It depends on smartfrog being built in the directory tree
     ../smartfrog (override smartfrog.home to change),
     and with ../smartfrog/dist/lib/smartfrog.jar existing.
-    It also needs junit-3.8.2 or later in ANT_HOME/lib,
-    and a recent copy of Xalan to turn the XML Reports into HTML.
+    It also needs junit on the classpath
+    and a recent copy of Xalan in ANT_HOME/lib to turn the XML Reports into HTML.
     These reports are all placed in build/test/reports, incidentally.
 
     To run just one test, run the test target with the testcase property set to
@@ -70,9 +70,9 @@
   <property file="build.properties"/>
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
-  <!-- this component keeps its test files in a different place from the
-       rest, for historical reasons (i.e. it is nothing but test) -->
-  <property name="test.src.dir" location="testcases"/>
+<!-- set this to to turn on emma coverate instrumentation and testing
+  <property name="emma.enabled" value="true"/>
+-->
 
   <property name="root.dir" location=".."/>
 
@@ -107,17 +107,63 @@ values as a cue -->
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- this is the gump entry point; it does packaging but not the tests -->
-  <!-- ========================================================== -->
-  <target name="gump"
-      depends="dist,published"
-      description="target for gump builds"
-      />
-
   <!-- replace the normal test with a simple noop, because we will
       not have the test harness around in the early stages of the build -->
   <target name="assert-smartfrog-testharness"/>
+
+
+  <!-- set up the tests.run.classpath to use the emma artifacts -->
+  <target name="emma.tests.run.classpath" depends="ivy.tests.compile.classpath, bind-to-smartfrog"
+    if="emma.enabled">
+    <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers" />
+    <path id="testharness.daemon.classpath">
+      <!--test running classpath-->
+      <path refid="testhelpers.classpath"/>
+      <!--everything in the smartfrog dir-->
+      <fileset refid="smartfrog.lib.fileset"/>
+      <!--the test classes-->
+      <fileset file="${test.jar}"/>
+      <!--the target classes-->
+      <fileset file="${target.jar}"/>
+    </path>
+
+    <path id="smartfrog.lib.fileset.classpath">
+      <!--everything in the smartfrog dir-->
+      <fileset refid="smartfrog.lib.fileset"/>
+    </path>
+
+    <!-- Emma paths -->
+
+    <ivy:addpath topath="testharness.daemon.classpath" first="true">
+      <pathelement location="${root.dir}/smartfrog/dist/lib.intr/classes"/>
+    </ivy:addpath>
+
+    <ivy:addpath topath="tests.run.classpath" first="true">
+      <pathelement location="${root.dir}/smartfrog/dist/lib.intr/classes"/>
+      <path refid="testhelpers.classpath"/>
+    </ivy:addpath>
+
+    <path id="tests.run.classpath">
+      <path refid="testharness.daemon.classpath"/>
+    </path>
+  </target>
+
+
+  <!-- this is just the common ivy.tests.run.classpath target set up to only run if emma is disabled-->
+   <target name="noemma.tests.run.classpath" depends="ivy.tests.compile.classpath" unless="emma.enabled">
+    <path id="tests.run.classpath">
+      <pathelement location="${test.jar}"/>
+      <path refid="tests.compile.classpath"/>
+    </path>
+  </target>
+
+  <!--
+  The ivy test run setup target now run
+  -->
+  <target name="ivy.tests.run.classpath"
+    depends="ivy.tests.compile.classpath,emma.tests.run.classpath,noemma.tests.run.classpath" >
+    <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
+  </target>
 
   <target name="package-tests" depends="rmi-tests,common.package-tests"
       description="create the JAR file for the tests"/>
@@ -150,7 +196,6 @@ values as a cue -->
       dirsplitter="."
       startentry='"'
       endentry='",&#10;'
-
       endFile='""&#10;'>
       <fileset dir="${test.classes.dir}" includes="**/*Test.class" />
     </sf-listresources>
@@ -231,27 +276,6 @@ ${test.listing}
         unless="run.failing.tests"/>
     </patternset>
 
-    <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
-        xmlns:ivy="antlib:org.apache.ivy.ant"/>
-    <path id="testharness.daemon.classpath">
-      <!--test running classpath-->
-      <path refid="testhelpers.classpath"/>
-      <!--everything in the smartfrog dir-->
-      <fileset refid="smartfrog.lib.fileset"/>
-      <!--the test classes-->
-      <fileset file="${test.jar}"/>
-      <!--the target classes-->
-      <fileset file="${target.jar}"/>
-    </path>
-    <echo level="verbose">
-      testharness.daemon.classpath=${toString:testharness.daemon.classpath}
-    </echo>
-
-    <path id="smartfrog.lib.fileset.classpath">      
-      <!--everything in the smartfrog dir-->
-      <fileset refid="smartfrog.lib.fileset"/>      
-    </path>
-
     <!--set up some other properties-->
     <property name="test.localHost" value="localhost"/>
     <!--override this to set the property that is used for test process hosts-->
@@ -259,19 +283,6 @@ ${test.listing}
     <property name="test.remoteHost" value="localhost"/>
     <property name="test.smartfrog.dist.dir" location="${smartfrog.dist.dir}"/>
 
-    <!-- Emma paths -->
-
-    <ivy:addpath topath="testharness.daemon.classpath" first="true">
-      <pathelement location="${root.dir}/smartfrog/dist/lib.intr/classes"/>
-    </ivy:addpath>
-
-
-    <ivy:addpath topath="tests.run.classpath" first="true">
-      <pathelement location="${root.dir}/smartfrog/dist/lib.intr/classes"/>
-      <path refid="testhelpers.classpath"/>
-    </ivy:addpath>
-
-    <!-- Emma end paths -->
   </target>
 
 
@@ -279,12 +290,12 @@ ${test.listing}
 
   <!--test all the parsing-->
   <target name="parse-tests" depends="init-tests" unless="testcase">
-     <pathconvert pathsep="${line.separator}|   |-- "  
+    <pathconvert pathsep="${line.separator}|   |-- "
                  property="echo.tests.run.classpath"
                  refid="tests.run.classpath">
     </pathconvert>
-      <echo message=" --------------------------------------------------------"/>
-      <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>	
+    <echo message=" --------------------------------------------------------"/>
+    <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>
     <echo message=" --------------------------------------------------------"/>
     <sf-parse parserTargetsFile="parsertargets.txt" verbose="true"
         classpathref="tests.run.classpath"/>
@@ -295,12 +306,12 @@ ${test.listing}
   <!-- ========================================================== -->
   <target name="unit-tests" depends="parse-tests,init-tests" unless="testcase"
       description="run unit tests">
-     <pathconvert pathsep="${line.separator}|   |-- "  
+    <pathconvert pathsep="${line.separator}|   |-- "
                  property="echo.tests.run.classpath"
                  refid="tests.run.classpath">
     </pathconvert>
-      <echo message=" --------------------------------------------------------"/>
-      <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>	
+    <echo message=" --------------------------------------------------------"/>
+    <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>
     <echo message=" --------------------------------------------------------"/>
     <sf-junit
         errorProperty="test.failed"
@@ -331,15 +342,16 @@ ${test.listing}
   <!-- refactoring of test run process-->
   <target name="init-system-test-run" depends="init-tests,probe-for-components,declare-system-test-tasks">
     <pathconvert pathsep="${line.separator}|   |-- "  
-                 property="echo.testharness.daemon.classpath"
-                 refid="testharness.daemon.classpath">
+                 property="echo.testharness.run.classpath"
+                 refid="tests.run.classpath">
     </pathconvert>
     <echo message=" --------------------------------------------------------"/>
-    <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>	
+    <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.run.classpath}"/>
     <echo message=" --------------------------------------------------------"/>
 
-    <presetdef name="junit-system-test-run">
 
+    <!-- extend the junit test run with some emma properties and turn off any tests that fail-->
+    <presetdef name="junit-system-test-run">
       <sf-junit
           errorProperty="system.test.failed"
           failureProperty="system.test.failed"
@@ -347,18 +359,13 @@ ${test.listing}
         <sysproperty key="emma.coverage.out.file" file="${coverage.dir}/coverage.emma"/>
         <sysproperty key="emma.coverage.out.merge" value="true"/>
         <sysproperty key="emma.verbosity.level" value="verbose"/>
-<!--
         <syspropertyset>
           <propertyref prefix="emma."/>
         </syspropertyset>
--->
         <syspropertyset>
           <propertyref prefix="runtime"/>
         </syspropertyset>
-        <syspropertyset>
-          <propertyref prefix="test."/>
-        </syspropertyset>
-        <classpath refid="testharness.daemon.classpath"/>
+        <classpath refid="tests.run.classpath"/>
         <!-- #Test case isolation technique -->
 <!--        <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>-->
         <batchtest todir="${test.data.dir}" if="testcase">
@@ -375,7 +382,6 @@ ${test.listing}
 
             <exclude name="${componenttests}utils/**/*Test.class"
                 unless="installer.present"/>
-
           </fileset>
         </batchtest>
       </sf-junit>
@@ -396,16 +402,14 @@ ${test.listing}
     <available file="${smartfrog.iniFile}" property="inifile.found"/>
     <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail>
     <pathconvert pathsep="${line.separator}|   |-- "
-        property="echo.testharness.daemon.classpath"
-        refid="testharness.daemon.classpath">
+        property="echo.testharness.run.classpath"
+        refid="tests.run.classpath">
     </pathconvert>
     <echo message=" --------------------------------------------------------"/>
-    <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>
+    <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.run.classpath}"/>
     <echo message=" --------------------------------------------------------"/>
     <presetdef name="start-logging-daemon">
-      <sf-startdaemon-debug failonerror="false"
-          spawn="false"
-          classpathref="testharness.daemon.classpath">
+      <sf-startdaemon-debug >
         <sysproperty key="emma.coverage.out.file" file="${coverage.dir}/coverage.emma"/>
         <sysproperty key="emma.coverage.out.merge" value="true"/>
         <sysproperty key="emma.verbosity.level" value="verbose"/>
@@ -415,7 +419,6 @@ ${test.listing}
             file="${smartfrog.iniFile}"/>
         <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
             file="${config.dir}/default.sf"/>
-
       </sf-startdaemon-debug>
 
     </presetdef>
@@ -428,44 +431,34 @@ ${test.listing}
   <!-- ========================================================== -->
 
   <target name="probe-for-components" depends="init-tests,package-tests">
-
-
     <macrodef name="probe4">
       <attribute name="resource"/>
       <attribute name="property"/>
       <sequential>
         <available
             property="@{property}" resource="@{resource}"
-            classpathref="testharness.daemon.classpath"
+            classpathref="tests.run.classpath"
             ignoresystemclasses="true"/>
         <echo level="verbose" message="@{resource} availability is ${@{property}}"/>
       </sequential>
     </macrodef>
-
     <probe4 resource="org/smartfrog/services/installer/sfInstaller.sf"
         property="installer.present"/>
   </target>
 
   <!-- =================================================================== -->
   <!-- system tests -->
-  <!-- we don't force a failure in this target if the tests failed, because-->
-  <!-- there is existing code to run reports and halt-->
   <!-- =================================================================== -->
   <target name="system-tests" depends="ready-to-test,init-daemon-with-logging,
     init-system-test-run"
       description="run system tests"
       if="system.tests.enabled">
     <sf-system-test>
-      <application>
-        <start-logging-daemon/>
-      </application>
       <test>
         <junit-system-test-run/>
         <sf-system-test-validate/>
       </test>
     </sf-system-test>
-
-
   </target>
 
   <!-- =================================================================== -->
@@ -502,7 +495,7 @@ ${test.listing}
       <classpath refid="emma.classpath"/>
       <classpath refid="emma.ant.classpath"/>
     </taskdef>
-    <property name="emma.enabled" value="true"/>
+
     <mkdir dir="${coverage.dir}"/>
     <path id="core.classes.path">
       <pathelement location="${root.dir}/smartfrog/dist/lib"/>

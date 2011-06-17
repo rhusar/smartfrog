@@ -54,8 +54,11 @@ CheckPassword extends PasswordChecker {
 }
 
 testDeploy extends ExpectDeploy {
+  commonTimeout 10000;
+  
   action extends Secrets {
   }
+
   tests extends Sequence {
   
   }

@@ -327,10 +327,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(results.isForcedTimeout(),
                 "Forced timeout", event);
-        if (results.isFailed() && !results.isSkipped()) {
-            String message = "Test failed: " + '\n' + results.toString();
+/*        if (results.isFailed() && !results.isSkipped()) {
+            String message = "Test is marked as failed: " + '\n' + results;
             throw new TerminationRecordException(message, results.getStatus());
-        }
+        }*/
         return results;
     }
 
@@ -458,6 +458,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     protected TestCompletedEvent expectSuccessfulTestRun(String packageName, String filename) throws Throwable {
         TestCompletedEvent results = runTestsToCompletion(packageName, filename);
         conditionalFail(results.isFailed(), "Test failed", results);
+        if (results.isFailed() || results.isSkipped()) {
+            String message = "Test failed or was skipped: " + '\n' + results;
+            throw new TerminationRecordException(message, results.getStatus());
+        }
         return results;
     }
 
