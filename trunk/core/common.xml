@@ -394,6 +394,20 @@ java.class.path=
     <!--the default JVM arguments force IPv4 only-->
     <property name="daemon.jvmargs"  value="-Djava.net.preferIPv4Stack=true"/>
     <property name="junit.jvmargs" value="-Djava.net.preferIPv4Stack=true"/>
+
+
+    <propertyset id="daemon-properties">
+      <propertyref prefix="test."/>
+      <propertyref prefix="run."/>
+      <!-- Log settings for various tools-->
+      <propertyref prefix="org.mortbay.log."/>
+      <propertyref prefix="log4j."/>
+      <propertyref prefix="org.apache.commons.logging."/>
+      <!-- smartfrog properties -->
+      <propertyref prefix="org.smartfrog."/>
+      <!-- RMI options-->
+      <propertyref prefix="java.rmi."/>
+    </propertyset>
     
     <!--preset to copy with ant property expansion (and always overwrite)-->
     <presetdef name="expandingcopy">
@@ -425,7 +439,7 @@ java.class.path=
             includeAntRuntime="${javac.include.ant}"
             memoryMaximumSize="${javac.max.memory}"
             includes="**/*.java"
-            >	   
+            >
        </javac>
     </presetdef>
 
@@ -505,17 +519,11 @@ java.class.path=
 
         <!--copy all proxy settings from the running JVM-->
         <syspropertyset refid="proxy.settings"/>
-
+        <syspropertyset refid="daemon-properties"/>
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
         <formatter type="${junit.printformatter}" usefile="false"/>
-        <!--all properties for logging -->
-        <syspropertyset>
-          <propertyref prefix="org.apache.commons.logging"/>
-          <propertyref prefix="log4j.properties"/>
-          <propertyref prefix="org.smartfrog"/>
-        </syspropertyset>
       </junit>
     </presetdef>
 
@@ -531,9 +539,9 @@ java.class.path=
     value for more or less time, timeoutproperty to the name of a property
     to set on failure -->
     <presetdef name="sf-waitfordaemon">
-        <waitfor maxwait="10" maxwaitunit="second">
-            <socket server="localhost" port="${smartfrog.daemon.port}"/>
-        </waitfor>
+      <waitfor maxwait="10" maxwaitunit="second">
+        <socket server="localhost" port="${smartfrog.daemon.port}"/>
+      </waitfor>
     </presetdef>
 
     <!-- reporting wrapper -->
@@ -1014,25 +1022,19 @@ smartfrog.tasks.classpath=
   <!-- declare presets and macrodefs to enhance the tasks better
     for our needs -->
   <!-- ========================================================== -->
-  <target name="declare-extended-smartfrog-tasks"
-      depends="init,use-smartfrog-tasks,declare-classpaths">
 
-    <propertyset id="daemon-properties">
-      <propertyref prefix="test."/>
-      <propertyref prefix="run."/>
-      <!-- Log settings for various tools-->
-      <propertyref prefix="org.mortbay.log."/>
-      <propertyref prefix="log4j."/>
-      <propertyref prefix="org.apache.commons.logging."/>
-      <!-- smartfrog properties -->
-      <propertyref prefix="org.smartfrog"/>
-      <!-- RMI options-->
-      <propertyref prefix="java.rmi."/>
-    </propertyset>
+  <target name="declare-testrun-propertysets">
+
+  </target>
+
+  <target name="declare-extended-smartfrog-tasks"
+      depends="init,use-smartfrog-tasks,declare-classpaths,declare-testrun-propertysets">
+
 
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="tests.run.classpath"
-        logStackTraces="true" spawn="true"
+        logStackTraces="true"
+        spawn="true"
         securityManager="${security.manager}"
         dir="${build.test.dir}"
         timeout="0"
@@ -1116,9 +1118,9 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
 
   <target name="use-smartfrog-testharness" depends="init-common" >
-        <!-- information about the test harness -->
-      <!-- needs to be in sync w/ testharness/build.xml -->
-      <!-- TODO :use maven lib to sync -->
+    <!-- information about the test harness -->
+    <!-- needs to be in sync w/ testharness/build.xml -->
+    <!-- TODO :use maven lib to sync -->
     <property name="testharness.dir"
       location="${core.dir}/testharness" />
     <property name="testharness.jar.name"
@@ -1754,11 +1756,10 @@ smartfrog.tasks.classpath=
             <socket server="localhost" port="${smartfrog.daemon.port}" />
           </condition>
           <sf-conditional unless="daemon.already.live">
-          <sf-startdaemon-debug failonerror="false"
-              spawn="false"
-              classpathref="tests.run.classpath">
-
-          </sf-startdaemon-debug>
+            <sf-startdaemon-debug failonerror="false"
+                spawn="false"
+                classpathref="tests.run.classpath">
+            </sf-startdaemon-debug>
           </sf-conditional>
         </application>
         <probe>
