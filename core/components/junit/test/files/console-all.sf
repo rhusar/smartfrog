@@ -19,19 +19,6 @@ For more information: www.smartfrog.org
 */
 
 #include "/files/components.sf"
-sfCodeBase PROPERTY org.smartfrog.codebase;
-    /**
-     * run all tests in the suite.
-     * output to an XML listener
-     */
-
-sfConfig extends TestAll {
-
-    //buffer the results
-
-    listener extends ConsoleListener {
-
-    }
 
 
-}
+sfConfig extends ConsoleTestAll;

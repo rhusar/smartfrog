@@ -30,6 +30,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/junit/all.sf"
 
 sfConfig extends TestRunner {
+    runTests true;
 
     listener extends HtmlTestListener {
         outputDirectory ".";

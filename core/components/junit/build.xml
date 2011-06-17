@@ -36,6 +36,7 @@
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
 
+
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
@@ -51,6 +52,8 @@
   <target name="system-tests" if="system.tests.enabled"
       depends="ready-to-test"
       description="run the system tests">
+    <property name="test.data.xml.dir" location="${test.data.dir}/xml" />
+    <property name="test.data.html.dir" location="${test.data.dir}/html"/>
     <sf-system-test>
       <test>
         <sf-system-test-junit>

@@ -19,43 +19,16 @@
  */
 package org.smartfrog.services.junit.test.system;
 
-import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.listeners.ConsoleListenerFactory;
-
 /** created Nov 22, 2004 4:45:26 PM */
 
 public class DeployedConsoleListenerTest extends TestRunnerTestBase {
 
-    public static final String PACKAGE = "/files/";
-    public static final String FILENAME = "console-all";
-    public static final String FILES_CONSOLE_ALL = PACKAGE
-            + FILENAME;
 
     public DeployedConsoleListenerTest(String name) {
         super(name);
     }
 
-    public void testSuccess() throws Throwable {
-        String url;
-        url = FILES_CONSOLE_ALL + ".sf";
-
-        int seconds = getTimeout();
-        application = deployExpectingSuccess(url, "ConsoleTest");
-        TestRunner runner = (TestRunner) application;
-        assertTrue(runner != null);
-        ConsoleListenerFactory listener = null;
-        listener =
-                (ConsoleListenerFactory) application.sfResolve(
-                        TestRunner.ATTR_LISTENER,
-                        listener,
-                        true);
-        assertNotNull(listener);
-        boolean finished = spinTillFinished(runner, seconds);
-        assertTrue("Test run timed out", finished);
-
-    }
-
     public void testConsoleListener() throws Throwable {
-        expectSuccessfulTestRun(PACKAGE, FILENAME);
+        runTestsToCompletion(BASE, "console-all");
     }
 }

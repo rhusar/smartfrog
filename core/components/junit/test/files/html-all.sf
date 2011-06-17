@@ -20,12 +20,5 @@ For more information: www.smartfrog.org
 
 #include "/files/components.sf"
 
-sfCodeBase PROPERTY org.smartfrog.codebase;
 
-sfConfig extends TestAll {
-
-    listener extends HtmlListener {
-        outputDirectory LAZY PROPERTY java.io.tmpdir;
-    }
-
-}
+sfConfig extends HtmlTestAll;

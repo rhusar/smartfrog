@@ -22,13 +22,12 @@
 package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
 import org.smartfrog.services.xunit.serial.Statistics;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -47,7 +46,7 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
     public static final String TIMEOUT_PROPERTY = "timeout";
     public static final int TIMEOUT_DEFAULT = 10;
-    private static final String BASE = "/files/";
+    protected static final String BASE = "/files/";
 
     public TestRunnerTestBase(String name) {
         super(name);
@@ -64,11 +63,14 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
      * If the application is null: a JUnit exception is trown
      * @return the application as a test runner.
      */
-    TestRunner getApplicationAsTestRunner() {
+    protected TestRunner getApplicationAsTestRunner() {
         TestRunner runner = (TestRunner) application;
-        assertNotNull(runner);
+        assertNotNull("Null application", runner);
         return runner;
     }
+
+
+
 
     /**
      * Spin till a component is finished. This is unreliable and prone to timeouts -avoid.
@@ -99,7 +101,7 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
         DocumentBuilder builder;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //        factory.setNamespaceAware(true);
-//        factory.setValidating(true);
+        factory.setValidating(false);
         builder = factory.newDocumentBuilder();
         Document document = builder.parse(file);
         return document;
@@ -130,19 +132,14 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
      * @throws Throwable on any failure
      */
     protected void executeBufferedTestRun(String name, int run, int errors, int failures) throws Throwable {
-        application = deployExpectingSuccess(BASE + name + ".sf", name);
-        int seconds = getTimeout();
-        TestRunner runner = (TestRunner) application;
-        assertTrue(runner != null);
+        runTestsToCompletion(BASE, name);
+        TestRunner runner = getApplicationAsTestRunner();
         BufferingListener listener = null;
         listener =
                 (BufferingListener) application.sfResolve(
                         TestRunner.ATTR_LISTENER,
                         listener,
                         true);
-        spinTillFinished(runner, seconds);
-        ping("test runner", runner);
-        ping("BufferingListener", listener);
 
         if (run >= 0) {
             assertTrue("expected tests to run", listener.getStartCount() == 1);
@@ -173,5 +170,9 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
             logThrowable(e.getMessage(), e);
             throw exception;
         }
+    }
+
+    protected TestCompletedEvent executeTestFile(final String filename) throws Throwable {
+        return runTestsToCompletion(BASE, filename);
     }
 }

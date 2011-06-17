@@ -20,6 +20,7 @@
 
 package org.smartfrog.services.junit.test.system;
 
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
 import org.smartfrog.services.xunit.serial.Statistics;
@@ -33,34 +34,22 @@ public class SyspropsTest extends TestRunnerTestBase {
         super(name);
     }
 
-    public void testSyspropsWorking() throws Throwable {
+    public void testSysprops() throws Throwable {
 
-        runTestsToCompletion("/files", "junit-sysprops");
-
-    }
-
-    public void OldtestSyspropsWorking() throws Throwable {
-        String url;
-        url = "/files/junit-sysprops.sf";
-
-        int seconds = getTimeout();
-        application = deployExpectingSuccess(url, "localhostTest");
+        TestCompletedEvent event = runTestsToCompletion("/files", "junit-sysprops");
         TestRunner runner = getApplicationAsTestRunner();
         BufferingListener listener = null;
         listener =
                 (BufferingListener) application.sfResolve(TestRunner.ATTR_LISTENER,
                         listener,
                         true);
-        boolean finished = spinTillFinished(runner, seconds);
-        ping("test runner", runner);
-        assertTrue("Test run timed out after " + seconds + " seconds", finished);
         assertEquals("session started", 1,
                 listener.getSessionStartCount());
         assertEquals("session ended", 1,
                 listener.getSessionEndCount());
         Statistics statistics = runner.getStatistics();
         getLog().info(statistics.toString());
-        assertTrue("testsWereSuccessful() is false", listener.testsWereSuccessful());
+        assertTrue("testsWereSuccessful() is false: " + event, listener.testsWereSuccessful());
         assertEquals("statistics.errors!=0 -is " + statistics.getErrors(), 0, statistics.getErrors());
         assertEquals("statistics.failures!=0",
                 0,
