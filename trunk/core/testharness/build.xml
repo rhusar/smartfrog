@@ -246,12 +246,11 @@ ${test.listing}
     <echo level="verbose">
       testharness.daemon.classpath=${toString:testharness.daemon.classpath}
     </echo>
-    
+
     <path id="smartfrog.lib.fileset.classpath">      
       <!--everything in the smartfrog dir-->
       <fileset refid="smartfrog.lib.fileset"/>      
-    </path>	
-	  
+    </path>
 
     <!--set up some other properties-->
     <property name="test.localHost" value="localhost"/>
@@ -273,7 +272,6 @@ ${test.listing}
     </ivy:addpath>
 
     <!-- Emma end paths -->
-		
   </target>
 
 
@@ -282,12 +280,12 @@ ${test.listing}
   <!--test all the parsing-->
   <target name="parse-tests" depends="init-tests" unless="testcase">
      <pathconvert pathsep="${line.separator}|   |-- "  
-	               property="echo.tests.run.classpath" 
-	               refid="tests.run.classpath">
-	  </pathconvert>
+                 property="echo.tests.run.classpath"
+                 refid="tests.run.classpath">
+    </pathconvert>
       <echo message=" --------------------------------------------------------"/>
       <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>	
-	  <echo message=" --------------------------------------------------------"/>      
+    <echo message=" --------------------------------------------------------"/>
     <sf-parse parserTargetsFile="parsertargets.txt" verbose="true"
         classpathref="tests.run.classpath"/>
   </target>
@@ -298,12 +296,12 @@ ${test.listing}
   <target name="unit-tests" depends="parse-tests,init-tests" unless="testcase"
       description="run unit tests">
      <pathconvert pathsep="${line.separator}|   |-- "  
-	               property="echo.tests.run.classpath" 
-	               refid="tests.run.classpath">
-	  </pathconvert>
+                 property="echo.tests.run.classpath"
+                 refid="tests.run.classpath">
+    </pathconvert>
       <echo message=" --------------------------------------------------------"/>
       <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>	
-	  <echo message=" --------------------------------------------------------"/>  
+    <echo message=" --------------------------------------------------------"/>
     <sf-junit
         errorProperty="test.failed"
         failureProperty="test.failed"
@@ -318,11 +316,9 @@ ${test.listing}
       <syspropertyset>
         <propertyref prefix="smartfrog"/>
       </syspropertyset>
-	  
       <classpath>
         <path refid="tests.run.classpath"/>
       </classpath>
-	  
       <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
@@ -335,15 +331,15 @@ ${test.listing}
   <!-- refactoring of test run process-->
   <target name="init-system-test-run" depends="init-tests,probe-for-components,declare-system-test-tasks">
     <pathconvert pathsep="${line.separator}|   |-- "  
-	               property="echo.testharness.daemon.classpath" 
-	               refid="testharness.daemon.classpath">
+                 property="echo.testharness.daemon.classpath"
+                 refid="testharness.daemon.classpath">
     </pathconvert>
     <echo message=" --------------------------------------------------------"/>
     <echo message=" Class Path= ${line.separator}|   |-- ${echo.testharness.daemon.classpath}"/>	
-	  <echo message=" --------------------------------------------------------"/>
-	  
+    <echo message=" --------------------------------------------------------"/>
+
     <presetdef name="junit-system-test-run">
-	  
+
       <sf-junit
           errorProperty="system.test.failed"
           failureProperty="system.test.failed"
@@ -471,33 +467,33 @@ ${test.listing}
 
 
   </target>
-  
+
   <!-- =================================================================== -->
   <!-- Coverage report --> <!-- Emma  -->
-  
+
   <!-- we don't force a failure in this target if the tests failed, because-->
   <!-- there is existing code to run reports and halt-->
-  
+
   <!-- Some references in init.tests -->
-  
+
   <!-- =================================================================== -->  
-  
+
   <property name="coverage.dir" location="${root.dir}/build/coverage.emma"/>
   <property name="coverage.report.dir" location="${coverage.dir}/report"/>
-  
-  <target name="coverage-report"  unless="skip.test"
-			description="run tests with instrumentation and generate coverage report">
-		<mkdir dir="${coverage.report.dir}" />
-		<emma verbosity="verbose">
-			<report sourcepath="${src.dir}">
-				<fileset dir="${coverage.dir}">
-					<include name="*.emma" />
-				</fileset>
 
-				<txt outfile="${coverage.report.dir}/coverage.txt" />
-				<html outfile="${coverage.report.dir}/coverage.html" />
-			 </report>
-		 </emma>
+  <target name="coverage-report"  unless="skip.test"
+      description="run tests with instrumentation and generate coverage report">
+    <mkdir dir="${coverage.report.dir}" />
+    <emma verbosity="verbose">
+      <report sourcepath="${src.dir}">
+        <fileset dir="${coverage.dir}">
+          <include name="*.emma" />
+        </fileset>
+
+        <txt outfile="${coverage.report.dir}/coverage.txt" />
+        <html outfile="${coverage.report.dir}/coverage.html" />
+       </report>
+     </emma>
   </target>
 
   <target name="emma" depends="compile-tests, init-tests" unless="skip.test">
