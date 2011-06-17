@@ -19,14 +19,6 @@ public class PasswordsTest extends DeployingTestBase {
      * test case
      * @throws Throwable on failure
      */
-    public void testDeploy() throws Throwable {
-        runTestsToCompletion(FILES,"testDeploy");
-    }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testInline() throws Throwable {
         expectSuccessfulTestRun(FILES, "testInline");
     }

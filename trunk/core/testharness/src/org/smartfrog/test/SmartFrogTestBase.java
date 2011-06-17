@@ -19,7 +19,10 @@
  */
 package org.smartfrog.test;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.SFSystem;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.services.filesystem.FileSystem;
@@ -39,15 +42,13 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -68,7 +69,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     protected Map<String, Object> testContext = new HashMap<String, Object>();
     protected boolean contextSet;
     protected Properties properties = new Properties();
-    
+
     private static final Log log = LogFactory.getLog(SmartFrogTestBase.class);
 
     /**
@@ -104,7 +105,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     /**
      * Text to look for in classname when seeking a assertion resolution exception. Value: {@value}
      */
-    public static final String EXCEPTION_ASSERTIONRESOLUTION = "org.smartfrog.sfcore.common.SmartFrogAssertionResolutionException";
+    public static final String EXCEPTION_ASSERTIONRESOLUTION
+            = "org.smartfrog.sfcore.common.SmartFrogAssertionResolutionException";
 
 
     /**
@@ -176,6 +178,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     /**
      * Sets up the fixture,by extracting the hostname and classes dir
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -191,6 +194,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      *
      * @throws Exception
      */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         terminateApplication(application);
@@ -215,7 +219,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
         this.testContext = testContext;
         contextSet = testContext != null;
         //set the properties, with a bit of contingency planning
-        if(contextSet) {
+        if (contextSet) {
             properties = (Properties) getContextEntry(TestContextInjector.ATTR_PROPERTIES);
         }
         if (properties == null) {
@@ -255,6 +259,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     public void setProperty(String key, String value) {
         properties.setProperty(key, value);
     }
+
     /**
      * Get the log of this test class
      *
@@ -603,7 +608,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      * @throws SFGeneralSecurityException security trouble
      * @throws UnknownHostException hostname is wrong
      */
-    public void terminateSmartFrog() throws SmartFrogException, RemoteException, SFGeneralSecurityException, UnknownHostException {
+    public void terminateSmartFrog()
+            throws SmartFrogException, RemoteException, SFGeneralSecurityException, UnknownHostException {
         SFSystem.runConfigurationDescriptor(new ConfigurationDescriptor(":TERMINATE:::localhost:"));
     }
 
@@ -617,6 +623,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      *
      * @throws RemoteException in the event of remote trouble.
      */
+    @SuppressWarnings({"ProhibitedExceptionThrown"})
     protected Prim deployExpectingSuccess(String testURL, String appName)
             throws Throwable {
 
@@ -627,14 +634,14 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
                 return ((Prim) deployedApp);
             } else {
                 lookForThrowableInDeployment(deployedApp);
+                throw new AssertionFailedError("Deployed something of type "
+                        + deployedApp.getClass()
+                        + ": "+ deployedApp);
             }
         } catch (Throwable throwable) {
             logThrowable("thrown during deployment", throwable);
             throw throwable;
         }
-        fail("something odd came back");
-        //fail throws a fault; this is here to keep the compiler happy.
-        return null;
     }
 
     /**
@@ -645,13 +652,20 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      *
      * @throws Throwable any exception raised during deployment
      */
+    @SuppressWarnings({"ProhibitedExceptionThrown"})
     protected void lookForThrowableInDeployment(Object deployedApp) throws Throwable {
         if (deployedApp instanceof ConfigurationDescriptor) {
             ConfigurationDescriptor cd = (ConfigurationDescriptor) deployedApp;
-            log.error("* ERROR IN: Test success in description: \n      "
-                    + cd.toString("\n        "));
-            if (cd.getResultException() != null) {
-                throw cd.getResultException();
+            Throwable resultException = cd.getResultException();
+            if (resultException != null) {
+                log.warn("During deployment: " + resultException, resultException);
+                throw resultException;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Test success in description: \n      "
+                            + cd.toString("\n        "));
+                }
+
             }
         }
     }
@@ -679,7 +693,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
                         ConfigurationDescriptor.Action.DEPLOY,
                         hostname,
                         null);
-        log.info("* Testing for successful deployment of: \n    "
+        log.info("Testing for successful deployment of: \n    "
                 + cfgDesc.toString("\n    ")
         );
 
@@ -795,40 +809,36 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
                 createDeploymentConfigurationDescriptor(appname, filename);
         Object deployedApp = null;
         Throwable resultException = null;
-        try {
-            //Deploy and don't throw exception. Exception will be contained
-            // in a ConfigurationDescriptor.
-            deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc, false);
-            ConfigurationDescriptor deployedCD;
-            if ((deployedApp instanceof ConfigurationDescriptor) &&
-                    ((deployedCD = (ConfigurationDescriptor) deployedApp).getResultException() != null)) {
-                searchForExpectedExceptions(deployedCD, cfgDesc, EXCEPTION_LIFECYCLE,
-                        null, EXCEPTION_SMARTFROG_ASSERTION, null);
-                resultException = ((ConfigurationDescriptor) deployedApp).getResultException();
-                return resultException;
-            } else {
-                //here we deploy the application
-                Prim prim = (Prim) deployedApp;
-                try {
-                    prim.sfPing(null);
-                    prim.sfPing(null);
-                    prim.sfPing(null);
-                    prim.sfPing(null);
-                    prim.sfPing(null);
-                } catch (SmartFrogLivenessException liveness) {
-                    assertFaultCauseAndTextContains(liveness, EXCEPTION_LIFECYCLE,
-                            null, "expected lifecycle failure");
-                    assertFaultCauseAndTextContains(liveness.getCause(),
-                            EXCEPTION_SMARTFROG_ASSERTION, null,
-                            "expected nested assertion failure");
-                } finally {
-                    terminateApplication(prim);
-                }
+        //Deploy and don't throw exception. Exception will be contained
+        // in a ConfigurationDescriptor.
+        deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc, false);
+        ConfigurationDescriptor deployedCD;
+        if ((deployedApp instanceof ConfigurationDescriptor) &&
+                ((deployedCD = (ConfigurationDescriptor) deployedApp).getResultException() != null)) {
+            searchForExpectedExceptions(deployedCD, cfgDesc, EXCEPTION_LIFECYCLE,
+                    null, EXCEPTION_SMARTFROG_ASSERTION, null);
+            resultException = ((ConfigurationDescriptor) deployedApp).getResultException();
+            return resultException;
+        } else {
+            //here we deploy the application
+            Prim prim = (Prim) deployedApp;
+            try {
+                prim.sfPing(null);
+                prim.sfPing(null);
+                prim.sfPing(null);
+                prim.sfPing(null);
+                prim.sfPing(null);
+            } catch (SmartFrogLivenessException liveness) {
+                assertFaultCauseAndTextContains(liveness, EXCEPTION_LIFECYCLE,
+                        null, "expected lifecycle failure");
+                assertFaultCauseAndTextContains(liveness.getCause(),
+                        EXCEPTION_SMARTFROG_ASSERTION, null,
+                        "expected nested assertion failure");
+            } finally {
+                terminateApplication(prim);
             }
-
-        } catch (Exception fault) {
-            fail(fault.toString());
         }
+
         return null;
     }
 

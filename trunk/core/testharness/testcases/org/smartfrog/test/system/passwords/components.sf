@@ -113,14 +113,14 @@ testPropertyPasswordUnset extends ExpectDeployFailure {
     }
 
 
-   check extends CheckPassword {
-    passwordProvider LAZY action:provider;
-   }
+    check extends CheckPassword {
+      passwordProvider LAZY action:provider;
+    }
 
   }
 
-  exceptions [ [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,""],
-               [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,PropertyPassword:ERROR_UNDEFINED_PROPERTY]];
+  exceptions [ [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE, ""],
+               [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT, PropertyPassword:ERROR_UNDEFINED_PROPERTY]];
 }
 
 
