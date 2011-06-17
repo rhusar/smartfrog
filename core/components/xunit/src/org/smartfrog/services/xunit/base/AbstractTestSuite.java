@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SecureRemoteObject;
+import org.smartfrog.sfcore.security.SmartFrogSecurityException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 
@@ -40,6 +41,7 @@ import java.rmi.RemoteException;
  * Because it extends ConditionCompound, it has the event workflow lifecycle created 10-Oct-2006 11:39:29
  */
 
+@SuppressWarnings({"AbstractClassExtendsConcreteClass"})
 public abstract class AbstractTestSuite extends ConditionCompound implements TestSuite {
 
 
@@ -270,9 +272,8 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return a new listener
      * @throws SmartFrogException if needed
      * @throws RemoteException    on network trouble
-     * @throws SFGeneralSecurityException if the listener cannot be exported
      */
-    protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException, SFGeneralSecurityException {
+    protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException {
         TestListenerFactory listenerFactory = getTestListenerFactory();
 
         TestListener newlistener = listenerFactory.listen(this,
@@ -281,8 +282,24 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
                 suiteName,
                 System.currentTimeMillis());
         //now export the listener
-        newlistener = (TestListener) SecureRemoteObject.exportObject(newlistener, 0);
+        newlistener = exportTestListener(newlistener);
         return newlistener;
+    }
+
+    /**
+     * Export a test listener
+     * @param listener
+     * @return a remoted listener
+     * @throws RemoteException RMI problems
+     * @throws SmartFrogSecurityException if there were any security problems
+     */
+    public static TestListener exportTestListener(TestListener listener)
+            throws RemoteException, SmartFrogSecurityException {
+        try {
+            return (TestListener) SecureRemoteObject.exportObject(listener, 0);
+        } catch (SFGeneralSecurityException e) {
+            throw new SmartFrogSecurityException(e);
+        }
     }
 
     /**

@@ -62,7 +62,7 @@ TestRunner extends Compound {
     listener extends ConsoleListener ;
     failOnError true;
     keepGoing true;
-    runTests true;
+    runTests false;
     timeout 0;
 }
 

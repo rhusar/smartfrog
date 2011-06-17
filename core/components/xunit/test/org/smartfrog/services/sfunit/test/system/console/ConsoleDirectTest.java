@@ -26,16 +26,16 @@ import org.smartfrog.test.DeployingTestBase;
  *
  * @author slo
  */
-public class ConsoleTest extends DeployingTestBase {
+public class ConsoleDirectTest extends DeployingTestBase {
 
     private static final String PACKAGE="/org/smartfrog/services/sfunit/test/system/console/";
 
-    public ConsoleTest(String name) {
+    public ConsoleDirectTest(String name) {
         super(name);
     }
 
-    public void testSFUnitConsole() throws Throwable {
-        expectSuccessfulTestRun(PACKAGE, "testSFUnitConsole");
+    public void testConsoleDirect() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testConsoleDirect");
     }
 
 }

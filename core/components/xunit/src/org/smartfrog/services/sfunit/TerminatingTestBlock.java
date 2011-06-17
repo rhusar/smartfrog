@@ -4,8 +4,6 @@ import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.TestBlockImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;

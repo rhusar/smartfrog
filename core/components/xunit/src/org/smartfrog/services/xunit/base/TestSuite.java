@@ -20,6 +20,7 @@
 package org.smartfrog.services.xunit.base;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.RemoteToString;
 import org.smartfrog.sfcore.workflow.conditional.Conditional;
 
 import java.rmi.RemoteException;
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestSuite extends TestResultAttributes, Conditional {
+public interface TestSuite extends TestResultAttributes, Conditional, RemoteToString {
 
 
     /**
@@ -100,6 +101,6 @@ public interface TestSuite extends TestResultAttributes, Conditional {
      * @throws SmartFrogException   for other problems
      * @throws InterruptedException if the thread got interrupted while the tests were running
      */
-    boolean runTests() throws RemoteException, SmartFrogException, InterruptedException;
+    boolean runTestSuite() throws RemoteException, SmartFrogException, InterruptedException;
 
 }

@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.xunit.listeners;
 
+import org.smartfrog.services.xunit.base.AbstractTestSuite;
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
@@ -75,6 +76,8 @@ public class ChainListener implements TestListener, Iterable<TestListener> {
         //run through the factories
         for (TestListenerFactory factory : factories) {
             TestListener listener = factory.listen(suite, hostname, processname, suitename, timestamp);
+            //now export the listener
+            listener = AbstractTestSuite.exportTestListener(listener);
             addListener(listener);
         }
     }

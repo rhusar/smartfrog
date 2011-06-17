@@ -84,7 +84,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
 
     /**
      * thread-safe accessor to the suite-file mapping
-     * @param hostname host name to look up
+     * @param hostname host name to look up, "" for localhost
      * @param suitename suite to lookup
      * @return absolute path of the output file, or null for no mapping.
      */

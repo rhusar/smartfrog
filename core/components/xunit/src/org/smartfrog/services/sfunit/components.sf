@@ -34,6 +34,8 @@ For more information: www.smartfrog.org
     testTimeout 1000;
     startupTimeout 1000;
     parallel false;
+      //run tests on startup
+    runTests false;
   }
 
   /**
