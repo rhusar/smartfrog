@@ -23,41 +23,6 @@ For more information: www.smartfrog.org
 sfCodeBase PROPERTY org.smartfrog.codebase;
 
 
-Chain extends Compound {
 
-   outputDirectory extends TempDir {
-      dir LAZY PROPERTY java.io.tmpdir;
-      prefix "junit-reports";
-   }
-
-    console extends ConsoleListener {
-    }
-
-    statistics extends StatisticsTestListener {
-    }
-
-    buffer extends BufferingListener {
-    }
-
-    xml extends XmlListener {
-        outputDirectory LAZY PARENT:outputDirectory;
-    }
-
-    html extends HtmlListener {
-        outputDirectory LAZY PARENT:outputDirectory;
-    }
-
-    tests extends TestAll {
-
-      listener extends ChainListener {
-        listeners [ LAZY console,
-          LAZY statistics,
-          LAZY buffer,
-          LAZY xml,
-          LAZY html];
-      }
-   }
-}
-
-sfConfig extends Chain {
+sfConfig extends ChainAll {
 }

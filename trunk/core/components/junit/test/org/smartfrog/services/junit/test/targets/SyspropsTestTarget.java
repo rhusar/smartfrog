@@ -42,7 +42,8 @@ public class SyspropsTestTarget extends TestCase {
     }
 
     public void testThree() throws Exception {
-        assertPropertySet("three", "3");
+        String prop = System.getProperty("three");
+        assertNull("set property " + "three: " + prop, prop);
     }
 
 }

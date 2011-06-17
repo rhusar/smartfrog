@@ -20,6 +20,7 @@
 
 package org.smartfrog.services.junit.test.system;
 
+import org.smartfrog.services.xunit.base.AbstractTestSuite;
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
@@ -56,7 +57,7 @@ public class LoggingChainListenerTest extends TestRunnerTestBase {
                 "example",
                 0);
         log.clearListeners();
-        log.addLogListener(testListener);
+        log.addLogListener(AbstractTestSuite.exportTestListener(testListener));
         log.info("fact");
     }
 

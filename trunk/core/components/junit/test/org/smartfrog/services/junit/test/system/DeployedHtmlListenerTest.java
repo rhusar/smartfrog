@@ -21,8 +21,6 @@ package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.html.HtmlTestListenerFactory;
-import org.smartfrog.services.xunit.listeners.xml.FileListener;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 
@@ -37,13 +35,9 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
     }
 
     public void testAll() throws Throwable {
-        String url;
-        url = "/files/html-all.sf";
+        executeTestFile("html-all");
+        TestRunner runner = getApplicationAsTestRunner();
 
-        int seconds = getTimeout();
-        application = deployExpectingSuccess(url, "HtmlTest");
-        TestRunner runner = (TestRunner) application;
-        assertTrue(runner != null);
         HtmlTestListenerFactory listenerFactory = null;
         listenerFactory =
                 (HtmlTestListenerFactory) application.sfResolve(
@@ -51,30 +45,10 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
                         listenerFactory,
                         true);
         assertNotNull(listenerFactory);
-        boolean finished = spinTillFinished(runner, seconds);
-        assertTrue("Test run timed out", finished);
-/*
-
-            String path = listenerFactory.lookupFilename(DeployedHtmlListenerTest.SUITENAME);
-            assertNotNull("path of test suite " + DeployedHtmlListenerTest.SUITENAME, path);
-
-            assertTrue("File does not exist " + path, new File(path).exists());
-
-*/
-        //now fetch from the tests
-        ping("test runner", runner);
-        ping("test application", application);
-        Prim tests;
-        tests =
-                application.sfResolve(DeployedHtmlListenerTest.TEST_SUITE_COMPONENT_NAME,
-                        (Prim) null,
-                        true);
-        String output = tests.sfResolve(FileListener.ATTR_FILE,
-                "",
-                true);
-        File xmlfile = new File(output);
-        assertTrue("File " + output + " not found", xmlfile.exists());
-
+        String outputFilename = listenerFactory.lookupFilename("localhost", TEST_SUITE_COMPONENT_NAME);
+        File xmlfile = new File(outputFilename);
+        assertTrue("File " + outputFilename + " not found", xmlfile.exists());
+        getLog().info("Output file: " + xmlfile);
         //validate the file
         validateXmlLog(xmlfile);
     }

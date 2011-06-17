@@ -28,7 +28,7 @@ public class SuccessTest extends TestRunnerTestBase {
 
 
     public void testSuccess() throws Throwable {
-        executeBufferedTestRun("success", 1, 0, 0);
+        expectSuccessfulTestRun(BASE, "success");
     }
 
 }

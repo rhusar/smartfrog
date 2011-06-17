@@ -27,12 +27,4 @@ sfCodeBase PROPERTY org.smartfrog.codebase;
      * when the tests dont provide enough information
      */
 
-sfConfig extends TestAll {
-
-    //buffer the results
-
-    listener extends XmlListener {
-        outputDirectory LAZY PROPERTY java.io.tmpdir;
-    }
-
-}
+sfConfig extends XmlTestAll;

@@ -30,14 +30,12 @@ import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.log.TestListenerLog;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.utils.Utils;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -167,7 +165,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         //then look for an override, which is mandatory if we do not know who
         //we are right now.
         suitename = sfResolve(ATTR_NAME, suitename, suitename == null);
-        log("Running JUnit3 test suite " + suitename + " on host " + getHostname());
+        log("Deployed JUnit3 test suite " + suitename + " on host " + getHostname());
     }
 
 
@@ -250,18 +248,14 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @throws SmartFrogException for any other problem
      */
     @Override
-    public boolean runTests() throws RemoteException, SmartFrogException {
+    public boolean runTestSuite() throws RemoteException, SmartFrogException {
 
 
         log("Running junit3 test suite " + suitename);
         checkConfigured();
         //bind to our listener
         TestListenerLog testLog = null;
-        try {
-            listener = listen(suitename);
-        } catch (SFGeneralSecurityException e) {
-            throw SmartFrogDeploymentException.forward(e);
-        }
+        listener = listen(suitename);
         try {
             if (maybeSkipTestSuite()) {
                 //exit early
