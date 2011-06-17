@@ -1,25 +1,26 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
@@ -89,7 +90,7 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      * @param sfObject The Component that has encountered the exception
      */
     public SmartFrogLifecycleException(String message, Throwable cause,
-            Prim sfObject) {
+                                       Prim sfObject) {
         super(message, cause, sfObject);
     }
 
@@ -103,11 +104,11 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
     static public SmartFrogLifecycleException sfDeploy(String message, Throwable cause,
-            Prim sfObject) {
-       try {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfDeploy] "+message, cause, sfObject);
+                                                       Prim sfObject) {
+        try {
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("[sfDeploy] " + message, cause, sfObject);
         } catch (Throwable thr) {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfDeploy] "+message, cause);
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("[sfDeploy] " + message, cause);
         }
     }
 
@@ -121,11 +122,11 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
     static public SmartFrogLifecycleException sfStart(String message, Throwable cause,
-            Prim sfObject) {
+                                                      Prim sfObject) {
         try {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfStart] "+message, cause, sfObject);
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("[sfStart] " + message, cause, sfObject);
         } catch (Throwable thr) {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfStart] "+message, cause);
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("[sfStart] " + message, cause);
         }
     }
 
@@ -139,13 +140,13 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      *
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
-    static public SmartFrogLifecycleException sfTerminate (String message, Throwable cause,
-            Prim sfObject) {
+    static public SmartFrogLifecycleException sfTerminate(String message, Throwable cause,
+                                                          Prim sfObject) {
         try {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfTerminate] "+message, cause,
-                        sfObject);
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("[sfTerminate] " + message, cause,
+                    sfObject);
         } catch (Throwable thr) {
-           return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward( "[sfTerminate] " + message, cause);
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("[sfTerminate] " + message, cause);
         }
 
     }
@@ -159,10 +160,10 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      *
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
-    static public SmartFrogLifecycleException sfTerminateWith (String message, Throwable cause,
-            Prim sfObject) {
-        return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward( "sfTerminateWith: " + message, cause,
-            sfObject);
+    static public SmartFrogLifecycleException sfTerminateWith(String message, Throwable cause,
+                                                              Prim sfObject) {
+        return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward("sfTerminateWith: " + message, cause,
+                sfObject);
     }
 
     /**
@@ -172,11 +173,11 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      *
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
-    public static SmartFrogException forward (Throwable thr){
+    public static SmartFrogException forward(Throwable thr) {
         if (thr instanceof SmartFrogLifecycleException) {
-            return (SmartFrogLifecycleException)thr;
+            return (SmartFrogLifecycleException) thr;
         } else {
-            return new SmartFrogLifecycleException (thr);
+            return new SmartFrogLifecycleException(thr);
         }
     }
 
@@ -189,12 +190,12 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogException
      */
-    public static SmartFrogException forward (String message, Throwable thr){
+    public static SmartFrogException forward(String message, Throwable thr) {
         if (thr instanceof SmartFrogLifecycleException) {
-            if (message!=null){
-                ((SmartFrogLifecycleException)thr).add("msg: ",message);
+            if (message != null) {
+                ((SmartFrogLifecycleException) thr).add("msg: ", message);
             }
-            return (SmartFrogLifecycleException)thr;
+            return (SmartFrogLifecycleException) thr;
         } else {
             return new SmartFrogLifecycleException(message, thr);
         }
@@ -209,32 +210,32 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      *
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
-    public static SmartFrogException forward (String message, Throwable thr, Prim sfObject){
+    public static SmartFrogException forward(String message, Throwable thr, Prim sfObject) {
         try {
             if (thr instanceof SmartFrogLifecycleException) {
                 // add message to data
-                if (sfObject!=null) {
+                if (sfObject != null) {
                     try {
-                        ((SmartFrogException)thr).init(sfObject);
-                        if ((message!=null)&&(message.length() != 0)) {
+                        ((SmartFrogException) thr).init(sfObject);
+                        if ((message != null) && (message.length() != 0)) {
                             String name = null;
                             try {
-                                name = "msg:"+ sfObject.sfCompleteName().toString();
-                            } catch (Exception ex) {
+                                name = "msg:" + sfObject.sfCompleteName().toString();
+                            } catch (Exception ignored) {
                             }
-                            ((SmartFrogLifecycleException)thr).add(name, message);
+                            ((SmartFrogLifecycleException) thr).add(name, message);
                         }
                     } catch (Throwable ex2) {
                     }
                 }
-                return (SmartFrogLifecycleException)thr;
+                return (SmartFrogLifecycleException) thr;
             } else {
                 return new SmartFrogLifecycleException(message, thr, sfObject);
             }
         } catch (Throwable ex1) {
-            ex1.printStackTrace();
+            LogFactory.getLog(SmartFrogLifecycleException.class).warn(ex1, ex1);
         }
 
-        return  (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
+        return forward(thr);
     }
 }
