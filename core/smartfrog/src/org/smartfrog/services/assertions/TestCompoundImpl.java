@@ -77,6 +77,7 @@ public class TestCompoundImpl extends ConditionCompound
     private volatile boolean succeeded = false;
     private volatile boolean forcedTimeout = false;
     private volatile boolean skipped = false;
+    private volatile boolean testsRun = false;
     private volatile TerminationRecord status;
     private volatile TerminationRecord actionTerminationRecord;
     private volatile TerminationRecord testsTerminationRecord;
@@ -122,6 +123,7 @@ public class TestCompoundImpl extends ConditionCompound
     private static final String ABNORMAL_TEST_TERMINATION = "Test component terminated abnormally";
     private static final String UNEXPECTED_CHILD_TERMINATION =
             "A child that was neither an action nor a test terminated";
+    private String self;
 
     /**
      * Constructor
@@ -142,6 +144,7 @@ public class TestCompoundImpl extends ConditionCompound
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
+        self = sfCompleteNameSafe().toString();
         //look for the action
         checkActionDefined();
         waitForCD = sfResolve(ATTR_WAITFOR, waitForCD, false);
@@ -193,7 +196,6 @@ public class TestCompoundImpl extends ConditionCompound
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
 
-        Throwable thrown = null;
 
         //the superclass does not deploy the condition.
         super.sfStart();
@@ -219,11 +221,12 @@ public class TestCompoundImpl extends ConditionCompound
         if (getCondition() != null && !evaluate()) {
             sendEvent(new TestStartedEvent(this));
             skipped = true;
+            //stop the tests running again
+            testsRun = true;
             updateFlags(false);
             String message = "Skipping test run " + getName();
             sfLog().info(message);
-            //send a test started event
-            //followed by a the closing results
+            //send a test terminated event
             endTestRun(TerminationRecord.normal(message, getName()));
             //initiate cleanup
             finish();
@@ -231,34 +234,62 @@ public class TestCompoundImpl extends ConditionCompound
             return;
         }
 
+        boolean shouldRunTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, false, false);
+        if (shouldRunTests) {
+            sfLog().debug(self +" starting test run in sfStart");
+            runTests();
+        } else {
+            sfLog().debug(self + " Deferring test run until explicitly invoked");
+        }
+    }
+
+    @Override
+    public boolean runTests() throws RemoteException, SmartFrogException {
+        //stop a re-entrant operation
+        boolean isDebug = sfLog().isDebugEnabled();
+        if (isDebug) sfLog().debug(self + " starting TestCompound test run");
+        synchronized (this) {
+            if (testsRun) {
+                if (isDebug) sfLog().debug(self + " skipping re-entrant test run");
+                return false;
+            }
+            testsRun = true;
+        }
+
+        Throwable thrown = null;
+
         //deploy the action under a terminator, then the assertions, finally teardown afterwards.
         final boolean isNormalTerminationExpected = TerminationRecord.NORMAL.equals(exitType);
+        if (isDebug) sfLog().debug(self + " expecting normal termination");
         try {
-            if (sfLog().isDebugEnabled()) sfLog().debug("Deploying \"action\" child");
+            if (isDebug) sfLog().debug(self + " deploying \"action\" child");
             actionPrim = sfDeployComponentDescription(ACTION_RUNNING,
-                                                      this,
-                                                      (ComponentDescription) action.copy(),
-                                                      new ContextImpl());
+                    this,
+                    (ComponentDescription) action.copy(),
+                    new ContextImpl());
             // it is now a child, so need to guard against double calling of lifecycle...
+            if (isDebug) sfLog().debug(self + " deploying \"action\": " + actionPrim);
             actionPrim.sfDeploy();
         } catch (Throwable e) {
+            sfLog().debug(self + " : exception during deployment of \"action\": " + e, e);
             thrown = e;
-            sfLog().debug("Exception during deployment of the action", e);
         }
         //even if the action fails, the test started event is sent
         sendEvent(new TestStartedEvent(this));
 
         if (thrown == null) {
-            //nothing went wrong on startup
-            assert actionPrim != null : "actionPrim is null, yet we did not catch an exception";
             //a null exception meant the action was deployed successfully
-            if (sfLog().isDebugEnabled()) sfLog().debug("Starting action component "+ actionPrim);
+
+            //sanity check
+            assert actionPrim != null : "actionPrim is null, yet we did not catch an exception";
+
+            if (isDebug) sfLog().debug(self + " Starting \"action\" component " + actionPrim);
 
             //if we get here. then it is time to actually start the action.
             try {
                 actionPrim.sfStart();
             } catch (Throwable e) {
-                sfLog().debug("Exception during startup of the action", e);
+                if (isDebug) sfLog().debug(self + " Exception during startup of \"action\": " + e, e);
                 thrown = e;
             }
         }
@@ -274,13 +305,13 @@ public class TestCompoundImpl extends ConditionCompound
             //did we expect this component to terminate normally?
             if (isNormalTerminationExpected) {
                 //if so, it didn't happen. log and rethrow the exception
-                sfLog().info("Exception raised during startup, which was not expected");
+                sfLog().info("Exception raised during \"action\" startup, which was not expected: " + message, thrown);
                 noteStartupFailure(UNEXPECTED_STARTUP_EXCEPTION, thrown);
                 //then throw an exception
                 throw SmartFrogException.forward(UNEXPECTED_STARTUP_EXCEPTION
-                                                 + EXPECTED_SUCCESSFUL_DEPLOYMENT
-                                                 + message + "'\n",
-                                                 thrown);
+                        + EXPECTED_SUCCESSFUL_DEPLOYMENT
+                        + message + "'\n",
+                        thrown);
             }
 
             //here, an exception was expected. But was the failure we encountered the one expected?
@@ -289,31 +320,32 @@ public class TestCompoundImpl extends ConditionCompound
             String exceptionCheck = checkExceptionsWereExpected(thrown);
             boolean wrongExitText = !message.contains(exitText);
             if (wrongExitText || exceptionCheck != null) {
-                if (sfLog().isDebugEnabled()) sfLog().debug("Action is deployed, starting ");
+                if (isDebug) sfLog().debug(
+                        self + " No startup exception from deploying \"action\" expected, or the exit test is wrong");
                 String recordText = "";
                 if (exceptionCheck != null) {
                     recordText = UNEXPECTED_STARTUP_EXCEPTION + exceptionCheck + '\n';
                 }
                 if (wrongExitText) {
                     recordText += EXPECTED_EXIT_TEXT + exitText + '\n'
-                                  + "But got: " + message + '\n';
+                            + "But got: " + message + '\n';
                 } else {
                     recordText += "Exit message: \"" + message + "\"\n";
                 }
                 noteStartupFailure(recordText, thrown);
                 //then throw an exception
                 throw SmartFrogException.forward(UNEXPECTED_STARTUP_EXCEPTION
-                                                 + "expected: '" + exitText + "'\n"
-                                                 + "found   : '" + message + "'\n"
-                                                 + (exceptionCheck != null ? exceptionCheck : ""),
-                                                 thrown);
-            } else {
-                if (sfLog().isDebugEnabled()) sfLog().debug("Exception received -amd it was expected: " + thrown,
+                        + "expected: '" + exitText + "'\n"
+                        + "found   : '" + message + "'\n"
+                        + (exceptionCheck != null ? exceptionCheck : ""),
                         thrown);
-                //valid exit. Save the results
+            } else {
+                if (isDebug) sfLog().debug(self + " exception received -and it was expected: " + thrown, thrown);
+                //valid exit.
+                // Propagate the results
                 TerminationRecord record;
                 record = TerminationRecord.normal(EXIT_EXPECTED_STARTUP_EXCEPTION,
-                                                  getName(), thrown);
+                        getName(), thrown);
                 noteEndOfTestRun(record, true);
                 //and optionally end the component
                 new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
@@ -324,16 +356,18 @@ public class TestCompoundImpl extends ConditionCompound
             //the action is deployed
             //start the terminator
             actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
-                                                     FORCED_TERMINATION + " after " + undeployAfter + " milliseconds",
-                                                     !expectTerminate);
-            if (sfLog().isDebugEnabled()) sfLog().debug("Action is deployed, starting terminator" + actionTerminator.toString());
+                    FORCED_TERMINATION + " after " + undeployAfter + " milliseconds",
+                    !expectTerminate);
+            if (isDebug) sfLog().debug(self + " \"action\" is deployed, starting: " + actionTerminator.toString());
 
             actionTerminator.start();
 
             //now deploy the tests.
+            if (isDebug) sfLog().debug(self + " Invoking startTests()");
             startTests();
         }
 
+        return true;
     }
 
     /**
@@ -348,7 +382,7 @@ public class TestCompoundImpl extends ConditionCompound
     private void noteStartupFailure(String text, Throwable thrown) throws SmartFrogRuntimeException, RemoteException {
         TerminationRecord record;
         record = TerminationRecord.abnormal(text, getName(), thrown);
-        if (sfLog().isDebugEnabled()) sfLog().debug("Startup failure: " + record);
+        if (sfLog().isDebugEnabled()) sfLog().debug(self + " startup failure: " + record);
         noteEndOfTestRun(record, false);
     }
 
@@ -387,10 +421,10 @@ public class TestCompoundImpl extends ConditionCompound
      */
     protected Prim deployComponentDescriptionThrowing(String childname, ComponentDescription desc)
             throws SmartFrogException, RemoteException {
-        Prim child = sfDeployComponentDescription(childname, 
-                                                  this,
-                                                  (ComponentDescription) desc.copy(), 
-                                                  new ContextImpl());
+        Prim child = sfDeployComponentDescription(childname,
+                this,
+                (ComponentDescription) desc.copy(),
+                new ContextImpl());
         // it is now a child, so need to guard against double calling of lifecycle...
         child.sfDeploy();
         return child;
@@ -403,30 +437,33 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws RemoteException              RMI problems
      */
     private synchronized void startTests() throws RemoteException, SmartFrogException {
-        if (tests != null && testsPrim != null) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("Starting the tests");
+        boolean isDebug = sfLog().isDebugEnabled();
+        if (testsPrim != null) {
+            sfLog().debug(self + " \"tests\" child is already deployed");
+            return;
+        }
+        if (tests != null) {
+            if (isDebug) sfLog().debug(self + " starting the \"tests\" child");
 
             testsPrim = sfCreateNewChild(TESTS_RUNNING,
-                                         this,
-                                         (ComponentDescription) tests.copy(),
-                                         null);
+                    this,
+                    (ComponentDescription) tests.copy(),
+                    null);
             // it is now a child, so need to guard against double calling of lifecycle...
             testsPrim.sfDeploy();
 
 
             //the test terminator reports a termination as a failure
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
-                                                    FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
-                                                    false);
-            if (sfLog().isDebugEnabled()) sfLog().debug("Tests deployed, starting "+testsTerminator);
+                    FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
+                    false);
+            if (isDebug) sfLog().debug(self + " child \"tests\" deployed, starting " + testsTerminator);
             testsTerminator.start();
         } else {
-            if( tests ==null && sfLog().isDebugEnabled()) {
-                sfLog().debug("No tests child to start");
-            }
-            if (testsPrim != null && sfLog().isDebugEnabled()) {
-                sfLog().debug("Skipping re-entrant test run");
-            }
+            //no test child started, explain why 
+            sfLog().info(self + " no \"tests\" child to start");
+
+            //what happens now? Well, the action had better finish on its own, otherwise timeouts will kick in.
         }
     }
 
@@ -541,8 +578,11 @@ public class TestCompoundImpl extends ConditionCompound
         DelayedTerminator actionTerminatorChild;
         Prim testsChild;
 
-        if (sfLog().isDebugEnabled()) sfLog().debug("Handling termination of child "
-             +terminatingChild + " -- " + childStatus);
+        boolean isDebug = sfLog().isDebugEnabled();
+        if (isDebug) {
+            sfLog().debug("Handling termination of child "
+                    + terminatingChild + " -- " + childStatus);
+        }
 
         synchronized (this) {
             actionChild = actionPrim;
@@ -551,17 +591,17 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         if (actionChild == terminatingChild) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("Action child is terminating");
+            if (isDebug) sfLog().debug(self + " child \"action\" is terminating");
             actionTerminationRecord = childStatus;
             //child termination
             if (actionTerminatorChild != null
-                && actionTerminatorChild.isForcedShutdown()
-                && !expectTerminate) {
+                    && actionTerminatorChild.isForcedShutdown()
+                    && !expectTerminate) {
                 //this is a forced shutdown, all is well
-                sfLog().info("Forced shutdown of action component (expected)");
+                sfLog().info("Forced shutdown of \"action\" component (expected)");
                 testSucceeded = true;
             } else {
-                if (sfLog().isDebugEnabled()) sfLog().debug("Action termination is not forced");
+                if (isDebug) sfLog().debug(self + " \"action\" termination is not forced");
                 //not a forced shutdown, so why did it die?
                 boolean expected;
                 String exitTextMessage = null;
@@ -569,7 +609,7 @@ public class TestCompoundImpl extends ConditionCompound
                     //act on whether or not a fault was expected.
                     if (childStatus.errorType.equals(exitType)) {
                         //we have a match
-                        sfLog().debug("Exit type is as expected : " +exitType);
+                        sfLog().debug(self + " \"action\" exit type is as expected : " + exitType);
                         expected = true;
                         if (exitText != null && exitText.length() > 0) {
                             String childDescription = childStatus.description;
@@ -579,19 +619,21 @@ public class TestCompoundImpl extends ConditionCompound
 
                             if (!childDescription.contains(exitText)) {
                                 exitTextMessage = TERMINATION_MESSAGE_MISMATCH + " -expected \""
-                                                  + exitText
-                                                  + "\" but got \""
-                                                  + childDescription
-                                                  + '\"';
+                                        + exitText
+                                        + "\" but got \""
+                                        + childDescription
+                                        + '\"';
                                 sfLog().info(exitTextMessage);
                                 expected = false;
                             } else {
-                                if (sfLog().isDebugEnabled()) sfLog().debug("Action exit text contains the required text "
-                                    +"\"" + exitText + "\"");
+                                if (isDebug) {
+                                    sfLog().debug(self + " \"action\" exit text contains the required text "
+                                            + "\"" + exitText + "\"");
+                                }
                             }
                         } else {
                             //exit text is not set, all is well
-                            if (sfLog().isDebugEnabled()) sfLog().debug("No exit text expected, so skipping that check");
+                            if (isDebug) sfLog().debug(self + " No exit text expected, so skipping that check");
                         }
                     } else {
                         //wrong exit type
@@ -610,7 +652,7 @@ public class TestCompoundImpl extends ConditionCompound
                         //the action prim terminated in a way that was not expected
                         //
                         String errorText = TEST_FAILED_WRONG_STATUS + exitType +
-                                           '\n';
+                                '\n';
 
                         if (exitText.length() > 0) {
                             errorText += "and exit text '" + exitText + "'\n";
@@ -624,8 +666,8 @@ public class TestCompoundImpl extends ConditionCompound
                             errorText += exitTextMessage;
                         }
                         exitRecord = TerminationRecord.abnormal(errorText,
-                                                                childStatus.id,
-                                                                childStatus.getCause());
+                                childStatus.id,
+                                childStatus.getCause());
                         sfLog().error(errorText);
                         sfLog().error(exitRecord);
                     } else {
@@ -643,22 +685,22 @@ public class TestCompoundImpl extends ConditionCompound
                             //error is good,
                             //The decision to terminate is based on the shouldTerminate flag
                             sfLog().debug(propagateTermination ?
-                                                  "Terminating normally"
-                                                  : "Not terminating as sfShouldTerminate is false");
+                                    "Terminating normally"
+                                    : "Not terminating as sfShouldTerminate is false");
                         }
 
                     }
                 } else {
                     //child terminated and it was not expected. This is an error.
-                    sfLog().error("Unexpected termination of action");
+                    sfLog().error("Unexpected termination of \"action\"");
                     testSucceeded = false;
                     if (childStatus.isNormal()) {
                         //flip this to abnormal
                         exitRecord = TerminationRecord.abnormal(
                                 (childStatus.description != null
                                         ? childStatus.description
-                                        : ("Action terminated normally which was not expected: " + childStatus))
-                                + UNEXPECTED_TERMINATION,
+                                        : ("\"action\" terminated normally which was not expected: " + childStatus))
+                                        + UNEXPECTED_TERMINATION,
                                 childStatus.id,
                                 childStatus.getCause());
                     } else {
@@ -670,7 +712,7 @@ public class TestCompoundImpl extends ConditionCompound
             }
         } else {
             if (terminatingChild == testsChild) {
-                sfLog().debug("Tests have terminated");
+                sfLog().debug(self + " \"tests\" component has terminated");
                 //tests are terminating.
                 testsTerminationRecord = childStatus;
                 //it is an error if these terminated abnormally, for any reason at all.
@@ -682,21 +724,21 @@ public class TestCompoundImpl extends ConditionCompound
                     appendToDescription(exitRecord, ABNORMAL_TEST_TERMINATION);
                     testSucceeded = false;
                 } else {
-                    sfLog().debug("Tests termination was successful");
+                    sfLog().debug(self + " \"tests\" termination was successful");
                     //normal termination is good
                     testSucceeded = true;
                 }
             } else {
                 //something odd just terminated, like the condition.
                 //whatever, it is the end of the test run.
-                sfLog().warn(UNEXPECTED_CHILD_TERMINATION);
                 exitRecord = childStatus;
                 appendToDescription(exitRecord, UNEXPECTED_CHILD_TERMINATION
-                                                + " ("
-                                                + " testPrim = " + testsChild
-                                                + " actionPrim=" + actionChild
-                                                + " terminatingChild=" + terminatingChild
-                                                + ")");
+                        + " ("
+                        + " testPrim = " + testsChild
+                        + " actionPrim=" + actionChild
+                        + " terminatingChild=" + terminatingChild
+                        + ")");
+                sfLog().warn(UNEXPECTED_CHILD_TERMINATION + ": " + exitRecord);
                 testSucceeded = false;
             }
         }
@@ -714,14 +756,14 @@ public class TestCompoundImpl extends ConditionCompound
         try {
             endTestRun(getStatus());
         } catch (SmartFrogRuntimeException e) {
-            sfLog().debug("when ending the test run" + e, e);
+            sfLog().debug(self + " when ending the test run" + e, e);
         } catch (RemoteException e) {
-            sfLog().debug("when ending the test run" + e, e);
+            sfLog().debug(self + " when ending the test run" + e, e);
         }
 
         //if the error record is non null, terminate ourselves with the new record
         if (exitRecord != null) {
-
+            if(isDebug) sfLog().debug(self + " terminating with Termination Record " + exitRecord);
             sfTerminate(exitRecord);
             //don't forward, as we are terminating with an error
             propagateTermination = false;
@@ -748,41 +790,62 @@ public class TestCompoundImpl extends ConditionCompound
      * @return any error string, or null for no errors
      */
     protected String checkExceptionsWereExpected(Throwable exception) {
+        boolean isDebug = sfLog().isDebugEnabled();
         Throwable thrown = exception;
         int expectedExceptionCount = exceptions == null ? 0 : exceptions.size();
         if (thrown == null) {
             if (expectedExceptionCount == 0) {
+                sfLog().debug(self + " No exceptions expected; no exceptions raised");
                 return null;
             } else {
+                sfLog().debug(self + " No exceptions raised -but expected "+ expectedExceptionCount);
                 return ERROR_NO_EXCEPTIONS_FOUND + expectedExceptionCount;
             }
         } else {
             if (expectedExceptionCount == 0) {
                 //we have an exception, but the list of exceptions is null
+                sfLog().debug(self + " No exception types or strings provided; assuming a match");
                 return null;
             }
             //now run through the exception list
             for (Vector<String> tuple : exceptions) {
-                if (thrown == null) {
-                    return ERROR_LESS_EXCEPTIONS_THAN_EXPECTED;
-                }
                 String classname = tuple.get(0);
                 String text = tuple.get(1);
+                if (thrown == null) {
+                    String expectedFault = " at (" + classname + " \"" + text + "\")";
+                    if(isDebug) {
+                        sfLog().debug(self + " Ran out of exceptions "
+                                + expectedFault, thrown);
+                    }
+                    return ERROR_LESS_EXCEPTIONS_THAN_EXPECTED + expectedFault;
+                }
+
                 String canonicalName = thrown.getClass().getCanonicalName();
                 if (thrown instanceof SmartFrogExtractedException) {
                     SmartFrogExtractedException sfe = (SmartFrogExtractedException) thrown;
                     canonicalName = sfe.getExceptionCanonicalName();
                 }
-                if (!classname.isEmpty() && !canonicalName.contains(classname)) {
-                    return "Did not find classname '" + classname + "' in " + canonicalName + ' ' + thrown.getMessage();
+                String thrownMessage = thrown.getMessage();
+                if(isDebug) {
+                    sfLog().debug(self + " Next expected exception is (" + canonicalName + " \"" + thrownMessage + "\")");
                 }
-                if (!text.isEmpty() && !thrown.getMessage().contains(text)) {
-                    return "Did not find text '" + text + "' in " + canonicalName + ' ' + thrown.getMessage();
+                if (!classname.isEmpty() && !canonicalName.contains(classname)) {
+                    return "Did not find classname '" + classname + "' in " + canonicalName + ' ' + thrownMessage;
+                }
+                if (!text.isEmpty() && !thrownMessage.contains(text)) {
+                    return "Did not find text '" + text + "' in " + canonicalName + ' ' + thrownMessage;
                 }
                 //copy the next exception
                 thrown = thrown.getCause();
             }
             //here we have gone through the list. It's OK to have more exceptions than expected
+            if (isDebug) {
+                if(thrown!=null) {
+                    sfLog().debug(self + " End of expected exception list: all have matched: remaining exception is "+ thrown, thrown);
+                } else {
+                    sfLog().debug(self + " End of expected exception list: all have matched; no leftovers");
+                }
+            }
             return null;
         }
     }
@@ -897,16 +960,18 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws SmartFrogRuntimeException SmartFrog errors
      * @throws RemoteException           network errors
      */
-    protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
+    protected synchronized void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
         //work out the forced timeout info from the terminators
         //its only a forced timeout if the action was expected to terminate itself anyway
         boolean actionForcedTimeout = expectTerminate &&
                 actionTerminator != null && actionTerminator.isForcedShutdown();
         //any timeout of the tests is an error
         boolean testForcedTimeout = testsTerminator != null && testsTerminator.isForcedShutdown();
-        if (sfLog().isDebugEnabled()) sfLog().debug("Ending test run. "
-                + "ActionForcedTimeout = " + actionForcedTimeout
-                + " testsForcedTimeout =" + testForcedTimeout);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug(self + " Ending test run. "
+                    + "ActionForcedTimeout = " + actionForcedTimeout
+                    + " testsForcedTimeout =" + testForcedTimeout);
+        }
         //a forced timeout of action or tests => forced timeout of components
         forcedTimeout = actionForcedTimeout || testForcedTimeout;
         //send out a completion event
@@ -922,13 +987,13 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws SmartFrogRuntimeException SmartFrog errors
      * @throws RemoteException           network errors
      */
-    public void setTestBlockAttributes(
+    private void setTestBlockAttributes(
             TerminationRecord record,
             boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
         boolean success = record.isNormal();
         if (sfLog().isDebugEnabled()) {
-            sfLog().debug("setTestBlockAttributes of completed test with status " + record + " timeout=" + timeout);
+            sfLog().debug(self + " setTestBlockAttributes of completed test with status " + record + " timeout=" + timeout);
         }
         sfReplaceAttribute(ATTR_STATUS, record);
         sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);

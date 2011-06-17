@@ -122,16 +122,21 @@ TestCompound extends ActionCompound {
   sfShouldTerminate true;
   description "";
 
+  //run tests on startup or when invoked?
+  runTests false;
+
   action extends Compound;
 
-  //default to one minute
-  undeployAfter 60000;
+  //default timeout
+  commonTimeout 15000;
+
+  undeployAfter commonTimeout;
   //default test delay
-  testTimeout 60000;
+  testTimeout commonTimeout;
   //default to one minute
-  startupTimeout 60000;
+  startupTimeout commonTimeout;
   //default to one minute
-  teardownTimeout 60000;
+  teardownTimeout commonTimeout;
 
   //dont expect termination
   expectTerminate false;

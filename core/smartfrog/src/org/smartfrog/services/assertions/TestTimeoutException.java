@@ -32,7 +32,7 @@ public class TestTimeoutException extends SmartFrogException {
     }
 
     public TestTimeoutException(String message, long timeout) {
-        super(message + "\n - time limit: " + timeout);
+        super("After " + timeout +" mS: "+ message);
         this.timeout = timeout;
     }
 }

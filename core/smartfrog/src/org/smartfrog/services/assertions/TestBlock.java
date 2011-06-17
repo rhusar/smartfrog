@@ -84,6 +84,13 @@ public interface TestBlock extends EventRegistration {
     String ACTION = "_action";
 
     /**
+     * boolean: run tests on startup.
+     * <p/>
+     * {@value}
+     */
+    String ATTR_RUN_TESTS_ON_STARTUP = "runTests";
+
+    /**
      * Return true iff the component is finished.
      * Spin on this, with a (delay) between calls
      *
@@ -133,4 +140,13 @@ public interface TestBlock extends EventRegistration {
      * @throws SmartFrogException on other problems
      */
     boolean isSkipped() throws RemoteException, SmartFrogException;
+
+    /**
+     * run the tests
+     *
+     * @return true if the tests were started
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
+     */
+    boolean runTests() throws RemoteException, SmartFrogException;
 }

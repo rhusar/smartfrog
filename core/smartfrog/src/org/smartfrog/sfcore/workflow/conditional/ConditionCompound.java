@@ -49,6 +49,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      *
      * @return false
      */
+    @Override
     protected boolean isOldNotationSupported() {
         return false;
     }
@@ -59,6 +60,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         deployConditionAtStartup();
@@ -116,6 +118,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @Override
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         if (condition == null) {
             return onEvaluateNoCondition();
