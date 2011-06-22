@@ -35,6 +35,7 @@ public class ActionLoad extends ActionDeploy {
      * @param configuration the configuration which is being deployed
      * @return false.
      */
+    @Override
     protected boolean getStartFlag(ConfigurationDescriptor configuration) {
         return false;
     }

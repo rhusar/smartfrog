@@ -37,47 +37,51 @@ import java.rmi.RemoteException;
 
 public abstract class ConfigurationAction {
 
-       /**
-         * Select target process compound using host and subprocess names
-         *
-         * @param host host name. If null, assumes localhost.
-         * @param subProcess subProcess name (optional; can be null)
-         * @return ProcessCompound the target process compound
-         * @throws SmartFrogException In case of SmartFrog system error
-         * @throws RemoteException In case of network/rmi error
-         */
-        public static ProcessCompound selectTargetProcess(String host, String subProcess) throws SmartFrogException, RemoteException {
-            return SFProcess.sfSelectTargetProcess(host,subProcess);
-        }
+    /**
+     * Select target process compound using host and subprocess names
+     *
+     * @param host host name. If null, assumes localhost.
+     * @param subProcess subProcess name (optional; can be null)
+     * @return ProcessCompound the target process compound
+     * @throws SmartFrogException In case of SmartFrog system error
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static ProcessCompound selectTargetProcess(String host, String subProcess)
+            throws SmartFrogException, RemoteException {
+        return SFProcess.sfSelectTargetProcess(host, subProcess);
+    }
 
-        /**
-         * Select target process compound using list of hosts and subprocess names returning the first successfull one
-         *
-         * @param hosts list of host names. If null, assumes localhost.
-         * @param subProcess subProcess name (optional; can be null)
-         * @return ProcessCompound the target process compound
-         * @throws SmartFrogException In case of SmartFrog system error
-         * @throws RemoteException In case of network/rmi error
-         */
-        public static ProcessCompound selectTargetProcess(String[] hosts, String subProcess) throws SmartFrogException, RemoteException {
-            ProcessCompound pc = null;
-            Throwable thr = null;
-            for (String host : hosts) {
-              try {
-                pc = SFProcess.sfSelectTargetProcess(host,subProcess);
+    /**
+     * Select target process compound using list of hosts and subprocess names returning the first successfull one
+     *
+     * @param hosts list of host names. If null, assumes localhost.
+     * @param subProcess subProcess name (optional; can be null)
+     * @return ProcessCompound the target process compound
+     * @throws SmartFrogException In case of SmartFrog system error
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static ProcessCompound selectTargetProcess(String[] hosts, String subProcess)
+            throws SmartFrogException, RemoteException {
+        ProcessCompound pc = null;
+        Throwable thr = null;
+        for (String host : hosts) {
+            try {
+                pc = SFProcess.sfSelectTargetProcess(host, subProcess);
                 return pc;
-              } catch (Throwable ex) {
+            } catch (Throwable ex) {
                 //keep trying
                 thr = ex;
-                if (SFSystem.sfLog().isDebugEnabled()) { SFSystem.sfLog().debug("Failed to locate target host: "+ host, ex); }
-              }
+                if (SFSystem.sfLog().isDebugEnabled()) {
+                    SFSystem.sfLog().debug("Failed to locate target host: " + host, ex);
+                }
             }
-            if ((thr!=null)) {   //Throw the last exception
-                throw SmartFrogException.forward(thr);
-            }
-            //return last PC
-            return pc;
         }
+        if ((thr != null)) {   //Throw the last exception
+            throw SmartFrogException.forward(thr);
+        }
+        //return last PC
+        return pc;
+    }
 
     /**
      * check that a connection to a remote target works by doing a low cost operation against it
@@ -90,13 +94,13 @@ public abstract class ConfigurationAction {
     protected static void checkConnectionWorks(final Compound target, final Context context,
                                                final String action) throws SmartFrogDeploymentException {
         try {
-            ((RemoteToString)target).sfRemoteToString();
+            ((RemoteToString) target).sfRemoteToString();
         } catch (RemoteException e) {
             throw new SmartFrogDeploymentException(
                     "Failed to " + action
-                    + "\n Unable to communicate with the remote process even though "
-                    + "an RMI stub was obtained."
-                    + " Firewalls or network configurations are the usual cause here.",
+                            + "\n Unable to communicate with the remote process even though "
+                            + "an RMI stub was obtained."
+                            + " Firewalls or network configurations are the usual cause here.",
                     e,
                     target,
                     context);
@@ -131,12 +135,12 @@ public abstract class ConfigurationAction {
     public Object execute(ConfigurationDescriptor configuration) throws SmartFrogException, RemoteException {
         ProcessCompound targetProcess;
         Object result = null;
-        if (configuration.getHosts()==null) {
+        if (configuration.getHosts() == null) {
             targetProcess = bindTargetProcess(configuration.getHost(), configuration.getSubProcess());
-            return execute(targetProcess,configuration);
-        } else if (configuration.getHosts().length<=1) {
+            return execute(targetProcess, configuration);
+        } else if (configuration.getHosts().length <= 1) {
             targetProcess = bindTargetProcess(configuration.getHost(), configuration.getSubProcess());
-            return execute(targetProcess,configuration);
+            return execute(targetProcess, configuration);
         } else {
             //Select the first available from the list where action is executed successfully
             String[] hosts = configuration.getHosts();
@@ -149,7 +153,9 @@ public abstract class ConfigurationAction {
                 } catch (Throwable ex) {
                     //keep trying
                     thr = ex;
-                    String resultMessage = "Fail to execute " + configuration.getActionType() + "on target host: " + host + " , cause: " + ex.getCause();
+                    String resultMessage =
+                            "Fail to execute " + configuration.getActionType() + "on target host: " + host +
+                                    " , cause: " + ex.getCause();
                     if (SFSystem.sfLog().isDebugEnabled()) {
                         SFSystem.sfLog().debug(resultMessage, ex);
                     }
@@ -166,7 +172,7 @@ public abstract class ConfigurationAction {
 
                 }
             }
-            if ((thr!=null)) {   //Throw the last exception
+            if ((thr != null)) {   //Throw the last exception
                 throw SmartFrogException.forward(thr);
             }
             //return last PC
@@ -209,9 +215,10 @@ public abstract class ConfigurationAction {
      *
      */
     protected static boolean HandleTerminationException(RemoteException ex,
-                                            boolean rootProcess) throws RemoteException {
-        if (!rootProcess)
+                                                        boolean rootProcess) throws RemoteException {
+        if (!rootProcess) {
             throw ex;
+        }
         //TODO: Check exception handling
         if ((ex.getCause() instanceof SocketException) ||
                 (ex.getCause() instanceof EOFException)) {
@@ -224,7 +231,7 @@ public abstract class ConfigurationAction {
         } else {
             //Logger.log(ex);
             if (SFSystem.sfLog().isTraceEnabled()) {
-              SFSystem.sfLog().trace(ex);
+                SFSystem.sfLog().trace(ex);
             }
         }
         return false;

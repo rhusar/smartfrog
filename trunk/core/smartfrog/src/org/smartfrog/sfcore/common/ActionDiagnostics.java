@@ -34,15 +34,15 @@ public class ActionDiagnostics extends ConfigurationAction {
 
 
     /**
-      * Gets and prints a diagnostics report from the target component
-      *
-      * @param prim component to get report from.
-      * @return Diagnostics report to deployed component
-      *
-      * @exception SmartFrogException failure in some part of the process
-      * @throws RemoteException In case of network/rmi error
-      */
-     public static ComponentDescription Diagnostics(Prim prim) throws SmartFrogException, RemoteException {
+     * Gets and prints a diagnostics report from the target component
+     *
+     * @param prim component to get report from.
+     * @return Diagnostics report to deployed component
+     *
+     * @exception SmartFrogException failure in some part of the process
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static ComponentDescription Diagnostics(Prim prim) throws SmartFrogException, RemoteException {
 
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
@@ -52,9 +52,11 @@ public class ActionDiagnostics extends ConfigurationAction {
             throw SmartFrogException.forward(ex);
         }
         ComponentDescription cd = null;
-        if (prim !=null) cd = prim.sfDiagnosticsReport();
+        if (prim != null) {
+            cd = prim.sfDiagnosticsReport();
+        }
         return cd;
-     }
+    }
 
     /**
      * Deploy Action.
@@ -65,40 +67,42 @@ public class ActionDiagnostics extends ConfigurationAction {
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
-       throws SmartFrogException, RemoteException {
-       Prim prim = null;
-       String name = null;
-       Reference ref = null;
-       ComponentDescription report = null;
-       try {
-           name = configuration.getName();
-           //Placement
-           if (name!=null) {
-               try {
-                   ref = Reference.fromString(name);
-               } catch (SmartFrogResolutionException ex) {
-                   throw new SmartFrogResolutionException(null,
-                       targetP.sfCompleteName(),
-                       MessageUtil.formatMessage(MessageKeys.MSG_ILLEGAL_REFERENCE)
-                       +" when parsing '"+name+"'");
-               }
-               prim = (Prim)targetP.sfResolve(ref);
-               report  = Diagnostics(prim);
-           } else {
-               throw new SmartFrogException("No valid target name provided for diagnostics");
-           }
-       } catch (SmartFrogException sex){;
-            configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
+            throws SmartFrogException, RemoteException {
+        Prim prim = null;
+        String name = null;
+        Reference ref = null;
+        ComponentDescription report = null;
+        try {
+            name = configuration.getName();
+            //Placement
+            if (name != null) {
+                try {
+                    ref = Reference.fromString(name);
+                } catch (SmartFrogResolutionException ex) {
+                    throw new SmartFrogResolutionException(null,
+                            targetP.sfCompleteName(),
+                            MessageUtil.formatMessage(MessageKeys.MSG_ILLEGAL_REFERENCE)
+                                    + " when parsing '" + name + "'");
+                }
+                prim = (Prim) targetP.sfResolve(ref);
+                report = Diagnostics(prim);
+            } else {
+                throw new SmartFrogException("No valid target name provided for diagnostics");
+            }
+        } catch (SmartFrogException sex) {
+            ;
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
             throw sex;
-        } catch (RemoteException rex){
-            configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
+        } catch (RemoteException rex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, rex);
             throw rex;
-       }
-        if (report!=null) {
-            configuration.setContextAttribute("diagnosticsReport",report);
-        } else{
-            configuration.setContextAttribute("diagnosticsReport"," - Report empty -");
+        }
+        if (report != null) {
+            configuration.setContextAttribute("diagnosticsReport", report);
+        } else {
+            configuration.setContextAttribute("diagnosticsReport", " - Report empty -");
         }
         configuration.setSuccessfulResult();
         return report;

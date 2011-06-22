@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
 /**
  * Terminate a component
  */
-public class ActionTerminate extends ConfigurationAction{
+public class ActionTerminate extends ConfigurationAction {
 
 
     /**
@@ -43,7 +43,7 @@ public class ActionTerminate extends ConfigurationAction{
      * @throws RemoteException In case of network/rmi error
      */
     public static Prim sfTerminate(String name, ProcessCompound targetP) throws
-        SmartFrogException, RemoteException {
+            SmartFrogException, RemoteException {
 
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
@@ -56,18 +56,21 @@ public class ActionTerminate extends ConfigurationAction{
         Prim targetC;
 
         try {
-            if (name==null) {
+            if (name == null) {
                 targetC = targetP;
             } else {
-                targetC = (Prim)targetP.sfResolveWithParser(name);
+                targetC = (Prim) targetP.sfResolveWithParser(name);
             }
             boolean isRootProcess = false;
             if (targetC instanceof ProcessCompound) {
-                isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
+                isRootProcess = ((ProcessCompound) targetC).sfIsRoot();
+            }
+            if (targetC == null) {
+                throw new SmartFrogDeploymentException("Unable to get a reference to the target component");
             }
             try {
                 targetC.sfTerminate(TerminationRecord.normal("External Management Action",
-                    targetP.sfCompleteName()));
+                        targetP.sfCompleteName()));
             } catch (RemoteException ex) {
                 HandleTerminationException(ex, isRootProcess);
             }
@@ -79,18 +82,22 @@ public class ActionTerminate extends ConfigurationAction{
 
 
     /**
-      * Terminate action
+     * Terminate action
      * @param targetP   target where to execute the configuration command
      * @param configuration   configuration command to be executed
      * @return Object Reference to parsed component
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
-    public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration) throws SmartFrogException, RemoteException {
-        Prim targetC=null;
+    @Override
+    public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
+            throws SmartFrogException, RemoteException {
+        Prim targetC = null;
         try {
-            if (targetP==null)
-            targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            if (targetP == null) {
+                targetP = SFProcess
+                        .sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            }
             targetC = sfTerminate(configuration.getName(), targetP);
         } catch (SmartFrogException sex) {
             configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
@@ -102,7 +109,6 @@ public class ActionTerminate extends ConfigurationAction{
         configuration.setSuccessfulResult();
         return targetC;
     }
-
 
 
 }

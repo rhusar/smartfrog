@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 
 package org.smartfrog.sfcore.common;
@@ -64,7 +64,7 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final int TERMINATE = 1;
         public static final String ACT_UNDEFINED = "UNDEFINED";
         public static final int UNDEFINED = 2;
-        public static final String ACT_DETACH= "DETACH";
+        public static final String ACT_DETACH = "DETACH";
         public static final int DETACH = 3;
         public static final String ACT_DETaTERM = "DETaTERM";
         public static final int DETaTERM = 4;
@@ -83,26 +83,26 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final String ACT_LIST = "LIST";
         public static final int LIST = 11;
 
-        public static String[] type= {
-                      ACT_DEPLOY,
-                      ACT_TERMINATE,
-                      ACT_UNDEFINED,
-                      ACT_DETACH,
-                      ACT_DETaTERM,
-                      ACT_PING,
-                      ACT_PARSE,
-                      ACT_DIAGNOSTICS,
-                      ACT_UPDATE,
-                      ACT_LOAD,
-                      ACT_DUMP,
-                      ACT_LIST
+        public static final String[] type = {
+                ACT_DEPLOY,
+                ACT_TERMINATE,
+                ACT_UNDEFINED,
+                ACT_DETACH,
+                ACT_DETaTERM,
+                ACT_PING,
+                ACT_PARSE,
+                ACT_DIAGNOSTICS,
+                ACT_UPDATE,
+                ACT_LOAD,
+                ACT_DUMP,
+                ACT_LIST
         };
     }
 
 
     private String originalSFACT = null;
 
-    private String lineSeparator="\n    ";
+    private String lineSeparator = "\n    ";
     /**
      Action type; one of the Action enumerations. Initially set to
      #Action.UNDEFINED
@@ -136,9 +136,7 @@ public class ConfigurationDescriptor implements MessageKeys {
     /**
      *  SmartFrog context than can be used by ACTIONS
      */
-    private Context context=null;
-
-
+    private Context context = null;
 
 
     /**
@@ -148,75 +146,73 @@ public class ConfigurationDescriptor implements MessageKeys {
         private Result() {
         }
 
-        public static final int SUCCESSFUL=0;
-        public static final int FAILED=1;
-        public static final int UNDEFINED=2;
-        public static final int UNKNOWN=3;
-        public static String[] type= {"SUCCESSFUL",
-                               "FAILED",
-                               "UNDEFINED",
-                               "UNKNOWN"};
-     }
+        public static final int SUCCESSFUL = 0;
+        public static final int FAILED = 1;
+        public static final int UNDEFINED = 2;
+        public static final int UNKNOWN = 3;
+        public static final String[] type = {"SUCCESSFUL",
+                "FAILED",
+                "UNDEFINED",
+                "UNKNOWN"};
+    }
 
     /**
      * Indicates if "execute" wass call. You need to use resetWasExecuted().
      */
     private boolean wasExecuted = false;
 
-     /**
-      * Result type for action
-      */
-     private int resultType = Result.UNDEFINED;
+    /**
+     * Result type for action
+     */
+    private int resultType = Result.UNDEFINED;
 
     /**
-      * Result Object return by EXEC action
-      */
-     private Object resultObject = null;
+     * Result Object return by EXEC action
+     */
+    private Object resultObject = null;
 
-     /**
-      *  A result can be terminated if during a set of deployments one of them
-      * fails, this is related to -t (terminate) option and it can only be applied
-      * to DEPLOY actions.
-      */
-     public boolean isResultTerminated = false;
+    /**
+     *  A result can be terminated if during a set of deployments one of them
+     * fails, this is related to -t (terminate) option and it can only be applied
+     * to DEPLOY actions.
+     */
+    public boolean isResultTerminated = false;
 
     /**
      * Indicates if the termination of a result object was succesful.
-    */
-     public boolean isResultTerminatedSuccessfully=true;
+     */
+    public boolean isResultTerminatedSuccessfully = true;
 
-     /** possible result termination error message */
-     private String resultTerminationMessage=null;
+    /** possible result termination error message */
+    private String resultTerminationMessage = null;
 
-     /**
-      * Result message for action
-      */
-     private String resultMessage = null;
+    /**
+     * Result message for action
+     */
+    private String resultMessage = null;
 
 
     /**
-      * Result exception for action
-      */
-     private Throwable resultException = null;
+     * Result exception for action
+     */
+    private Throwable resultException = null;
 
 
+    /**
+     * Extra parameters for action
+     */
+    private Hashtable options = new Hashtable();
 
-
-     /**
-      * Extra parameters for action
-      */
-     private Hashtable options = new Hashtable();
-
-     /**
-      *   Special Options for SF1 Language
-      */
-     public static class SF1Options {
-         static final String SFCONFIGREF = "sfConfigRef";
-     }
+    /**
+     *   Special Options for SF1 Language
+     */
+    public static class SF1Options {
+        static final String SFCONFIGREF = "sfConfigRef";
+    }
 
     /**
      * To String -delegates to {@link #toString(String)}
-     * @return  String
+     * @return String
      */
     public String toString() {
         return toString(", ");
@@ -227,29 +223,32 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param separatorString the separator to be used
      * @return String
      */
-    public String toString(String separatorString){
+    public String toString(String separatorString) {
         StringBuffer str = new StringBuffer();
-        if (getName()!=null) {
-            str.append(" name:"); str.append(getName());
+        if (getName() != null) {
+            str.append(" name:");
+            str.append(getName());
         }
         str.append(separatorString);
-        str.append(" type:"); str.append(Action.type[actionType]);
+        str.append(" type:");
+        str.append(Action.type[actionType]);
 
-        if (getUrl()!=null) {
+        if (getUrl() != null) {
             str.append(separatorString);
-            str.append(" url:"); str.append(getUrl());
+            str.append(" url:");
+            str.append(getUrl());
         }
-        if (getDeployReference()!=null && getDeployReference().size()>0) {
+        if (getDeployReference() != null && getDeployReference().size() > 0) {
             str.append(separatorString);
             str.append(" depRef:");
             str.append(getDeployReference().toString());
         }
-        if (getHostsString()!=null) {
+        if (getHostsString() != null) {
             str.append(separatorString);
             str.append(" host:");
             str.append(getHostsString());
         }
-        if (getSubProcess()!=null) {
+        if (getSubProcess() != null) {
             str.append(separatorString);
             str.append(" subProc:");
             str.append(getSubProcess());
@@ -259,18 +258,18 @@ public class ConfigurationDescriptor implements MessageKeys {
         str.append(" resultType:");
         str.append(Result.type[resultType]);
 
-        if (resultMessage!=null) {
+        if (resultMessage != null) {
             str.append(separatorString);
             str.append(" resultMessage:");
             str.append(resultMessage);
+        }
+        if (resultException != null) {
+            str.append(separatorString);
+            str.append(" resultExceptionMessage:");
+            str.append(resultException.getMessage());
+            if (Logger.logStackTrace) {
+                str.append(parseExceptionStackTrace(resultException, separatorString));
             }
-        if (resultException!=null) {
-          str.append(separatorString);
-          str.append(" resultExceptionMessage:");
-          str.append(resultException.getMessage());
-          if (Logger.logStackTrace) {
-             str.append(parseExceptionStackTrace(resultException,separatorString));
-          }
         }
         return str.toString();
     }
@@ -279,147 +278,144 @@ public class ConfigurationDescriptor implements MessageKeys {
      *  Gets status message using ', ' as separator
      * @return status message
      */
-    public String statusString (){
-       String s= ", ";
-       return statusString(s);
+    public String statusString() {
+        String s = ", ";
+        return statusString(s);
     }
+
     /**
      * Gets status message
      * @param separatorString  the separator to be used
      * @return String status message
      */
-    public String statusString(String separatorString){
-          StringBuffer message = new StringBuffer();
-          StringBuffer messageError=null;
-          String result = "";
-          if ((resultObject!=null)&&(resultObject instanceof Prim)){
+    public String statusString(String separatorString) {
+        StringBuffer message = new StringBuffer();
+        StringBuffer messageError = null;
+        String result = "";
+        if ((resultObject != null) && (resultObject instanceof Prim)) {
             try {
-              message.append("'");
-              message.append(getResultObjectName());
-              message.append("'");
-            } catch(Exception ex){
-               try {
-                 if (getName()!=null) {
-                     //This will happen when a component is terminated.
-                     message.append(getName());
-                     message.append("'");
-                 }
-               } catch (Exception ex1){
-                   message.append(SmartFrogCoreKeys.SF_ROOT_PROCESS);
-                   message.append("'");
-               }
-            }
-          } else if (getName()!=null) {
-              message.append("'");
-              message.append(getName());
-              message.append("'");
-          }
-
-          if ((getUrl() != null) && !isEmpty(getUrl())) {
-              message.append(separatorString);
-              message.append(" [");
-              message.append(getUrl());
-              message.append("]");
-          }
-          if (getDeployReference()!=null) {
-              message.append(separatorString);
-              message.append(" deployReference: ");
-              message.append(getDeployReference().toString());
-          }
-          if (getHostsString()!=null) {
-              message.append(separatorString);
-              message.append(" host:");
-              message.append(getHostsString());
-          }
-          if (getSubProcess()!=null) {
-              message.append(separatorString);
-              message.append(" subProcess:");
-              message.append(getSubProcess());
-          }
-
-          if (Logger.logStackTrace) {
-            if ( (resultObject != null) && (resultObject instanceof Prim)) {
-              try {
-                Object time = ( (Prim)resultObject).sfResolveHere(SF_PARSE_TIME);
-                message.append(separatorString);
-                message.append(" parse time: ");
-                message.append(time);
-              }
-              catch (Exception ex1) {
-                //Logger.logQuietly(ex1);
-                if (SFSystem.sfLog().isIgnoreEnabled()){
-                  SFSystem.sfLog().ignore(ex1);
-               }
-              }
-            }
-
-            if ( (resultObject != null) && (resultObject instanceof Prim)) {
-              try {
-                Object time = ( (Prim)resultObject).sfResolveHere(SF_DEPLOY_TIME);
-                message.append(separatorString);
-                message.append(" deploy time: ");
-                message.append(time);
-              }
-              catch (Exception ex1) {
-                //Logger.logQuietly(ex1);
-                if (SFSystem.sfLog().isIgnoreEnabled()){SFSystem.sfLog().ignore(ex1);}
-              }
-            }
-          }
-
-          if (resultType==Result.SUCCESSFUL){
-              switch (getActionType()) {
-                case (ConfigurationDescriptor.Action.DEPLOY):
-                    {
-                    result= MessageUtil.formatMessage(MSG_DEPLOY_SUCCESS, message.toString());
+                message.append("'");
+                message.append(getResultObjectName());
+                message.append("'");
+            } catch (Exception ex) {
+                try {
+                    if (getName() != null) {
+                        //This will happen when a component is terminated.
+                        message.append(getName());
+                        message.append("'");
                     }
-                    break;
-                case ConfigurationDescriptor.Action.DETACH:
-                    {
-                    result= MessageUtil.formatMessage(MSG_DETACH_SUCCESS, message.toString());
-                    }
-                    break;
+                } catch (Exception ex1) {
+                    message.append(SmartFrogCoreKeys.SF_ROOT_PROCESS);
+                    message.append("'");
+                }
+            }
+        } else if (getName() != null) {
+            message.append("'");
+            message.append(getName());
+            message.append("'");
+        }
 
-                case ConfigurationDescriptor.Action.DETaTERM:
-                    {
-                    result= MessageUtil.formatMessage(MSG_DETACH_TERMINATE_SUCCESS, message.toString());
+        if ((getUrl() != null) && !isEmpty(getUrl())) {
+            message.append(separatorString);
+            message.append(" [");
+            message.append(getUrl());
+            message.append("]");
+        }
+        if (getDeployReference() != null) {
+            message.append(separatorString);
+            message.append(" deployReference: ");
+            message.append(getDeployReference().toString());
+        }
+        if (getHostsString() != null) {
+            message.append(separatorString);
+            message.append(" host:");
+            message.append(getHostsString());
+        }
+        if (getSubProcess() != null) {
+            message.append(separatorString);
+            message.append(" subProcess:");
+            message.append(getSubProcess());
+        }
+
+        if (Logger.logStackTrace) {
+            if ((resultObject != null) && (resultObject instanceof Prim)) {
+                try {
+                    Object time = ((Prim) resultObject).sfResolveHere(SF_PARSE_TIME);
+                    message.append(separatorString);
+                    message.append(" parse time: ");
+                    message.append(time);
+                } catch (Exception ex1) {
+                    //Logger.logQuietly(ex1);
+                    if (SFSystem.sfLog().isIgnoreEnabled()) {
+                        SFSystem.sfLog().ignore(ex1);
                     }
-                    break;
-                case ConfigurationDescriptor.Action.TERMINATE:
-                   {
-                   result= MessageUtil.formatMessage(MSG_TERMINATE_SUCCESS, message.toString());
-                   }
-                    break;
+                }
+            }
+
+            if ((resultObject != null) && (resultObject instanceof Prim)) {
+                try {
+                    Object time = ((Prim) resultObject).sfResolveHere(SF_DEPLOY_TIME);
+                    message.append(separatorString);
+                    message.append(" deploy time: ");
+                    message.append(time);
+                } catch (Exception ex1) {
+                    //Logger.logQuietly(ex1);
+                    if (SFSystem.sfLog().isIgnoreEnabled()) {
+                        SFSystem.sfLog().ignore(ex1);
+                    }
+                }
+            }
+        }
+
+        if (resultType == Result.SUCCESSFUL) {
+            switch (getActionType()) {
+                case (ConfigurationDescriptor.Action.DEPLOY): {
+                    result = MessageUtil.formatMessage(MSG_DEPLOY_SUCCESS, message.toString());
+                }
+                break;
+                case ConfigurationDescriptor.Action.DETACH: {
+                    result = MessageUtil.formatMessage(MSG_DETACH_SUCCESS, message.toString());
+                }
+                break;
+
+                case ConfigurationDescriptor.Action.DETaTERM: {
+                    result = MessageUtil.formatMessage(MSG_DETACH_TERMINATE_SUCCESS, message.toString());
+                }
+                break;
+                case ConfigurationDescriptor.Action.TERMINATE: {
+                    result = MessageUtil.formatMessage(MSG_TERMINATE_SUCCESS, message.toString());
+                }
+                break;
                 case ConfigurationDescriptor.Action.PING: {
                     result = MessageUtil.formatMessage(MSG_PING_SUCCESS,
-                                                       name,
-                                                       getHostsString(),
-                                                       getResultMessage());
-                    }
-                    break;
+                            name,
+                            getHostsString(),
+                            getResultMessage());
+                }
+                break;
                 case ConfigurationDescriptor.Action.DUMP: {
                     result = MessageUtil.formatMessage(MSG_DUMP_SUCCESS,
-                                                       name,
-                                                       getHostsString(),
-                                                       getResultMessage());
-                    }
-                    break;
-                 case ConfigurationDescriptor.Action.PARSE: {
-                      result = "Parsed :"+getUrl() + lineSeparator
-                              + getContextAttribute(ATTR_PARSE_REPORT).toString();
-                      }
-                     break;
+                            name,
+                            getHostsString(),
+                            getResultMessage());
+                }
+                break;
+                case ConfigurationDescriptor.Action.PARSE: {
+                    result = "Parsed :" + getUrl() + lineSeparator
+                            + getContextAttribute(ATTR_PARSE_REPORT).toString();
+                }
+                break;
 
-                 case ConfigurationDescriptor.Action.DIAGNOSTICS: {
-                    result = "Diagnostics report for "+getName()+ lineSeparator
+                case ConfigurationDescriptor.Action.DIAGNOSTICS: {
+                    result = "Diagnostics report for " + getName() + lineSeparator
                             + getContextAttribute(ATTR_DIAGNOSTICS_REPORT).toString();
-                    }
-                     break;
+                }
+                break;
 
-                  case ConfigurationDescriptor.Action.UPDATE: {
-                      result= MessageUtil.formatMessage(MSG_UPDATE_SUCCESS, message.toString());
-                     }
-                      break;
+                case ConfigurationDescriptor.Action.UPDATE: {
+                    result = MessageUtil.formatMessage(MSG_UPDATE_SUCCESS, message.toString());
+                }
+                break;
 
 
                 default:
@@ -430,65 +426,71 @@ public class ConfigurationDescriptor implements MessageKeys {
                     messageError.append(Action.type[actionType]);
                     messageError.append(" of ");
                     messageError.append(message);
-                    result= messageError.toString();
+                    result = messageError.toString();
                     break;
             }
-          } else {
-              messageError = new StringBuffer();
-              messageError.append(Result.type[resultType]);
-              messageError.append(" when trying ");
-              messageError.append(Action.type[actionType]);
-              messageError.append(" of ");
-              messageError.append(message);
-              result= messageError.toString();
-          }
-          if ((Logger.logStackTrace)||
-              (((resultMessage != null) || (resultException != null)) && ((resultType != Result.SUCCESSFUL)|| isResultTerminated))) {
-                  messageError = new StringBuffer();
-                  messageError.append(lineSeparator);
-                  messageError.append("Result:");
-                  lineSeparator=lineSeparator+"  ";
-                  if (resultMessage!=null && !isEmpty(resultMessage)) {
-                     messageError.append(lineSeparator);
-                     messageError.append("* Message: '");
-                     messageError.append(resultMessage.replaceAll("\n",lineSeparator+"    "));
-                     messageError.append("'");
-                  }
-                  if (resultException!=null) {
-                      messageError.append(lineSeparator);
-                      messageError.append("* Exception: '");
-                      messageError.append(parseException(resultException, lineSeparator + "  "));
-                      messageError.append("'");
-                      if (Logger.logStackTrace) {
-                         messageError.append(lineSeparator);
-                         messageError.append("* StackTrace: '");
-                         messageError.append(parseExceptionStackTrace(resultException, lineSeparator + "    "));
-                         messageError.append("'");
-                       }
-                  }
-                  if (isResultTerminated) {
-                     messageError.append(lineSeparator);
-                     messageError.append("* Result termination  ");
-                     if (isResultTerminatedSuccessfully) messageError.append(" succeeded");
-                     else messageError.append(" failed");
-                     if (resultTerminationMessage!=null) messageError.append("; Message: "+resultTerminationMessage);  
-                  }
-                  if (originalSFACT!=null && Logger.logStackTrace) {
-                      messageError.append(lineSeparator);
-                      messageError.append("* Command line SFACT: '");
-                      messageError.append(originalSFACT);
-                      messageError.append("'");
-                  }
-                  if (originalSFACT!=null && Logger.logStackTrace) {
-                      messageError.append(lineSeparator);
-                      messageError.append("* To String: '");
-                      messageError.append(toString(separatorString));
-                      messageError.append("'");
-                  }
-                  result = result + messageError.toString();
-           }
+        } else {
+            messageError = new StringBuffer();
+            messageError.append(Result.type[resultType]);
+            messageError.append(" when trying ");
+            messageError.append(Action.type[actionType]);
+            messageError.append(" of ");
+            messageError.append(message);
+            result = messageError.toString();
+        }
+        if ((Logger.logStackTrace) ||
+                (((resultMessage != null) || (resultException != null)) &&
+                        ((resultType != Result.SUCCESSFUL) || isResultTerminated))) {
+            messageError = new StringBuffer();
+            messageError.append(lineSeparator);
+            messageError.append("Result:");
+            lineSeparator = lineSeparator + "  ";
+            if (resultMessage != null && !isEmpty(resultMessage)) {
+                messageError.append(lineSeparator);
+                messageError.append("* Message: '");
+                messageError.append(resultMessage.replaceAll("\n", lineSeparator + "    "));
+                messageError.append("'");
+            }
+            if (resultException != null) {
+                messageError.append(lineSeparator);
+                messageError.append("* Exception: '");
+                messageError.append(parseException(resultException, lineSeparator + "  "));
+                messageError.append("'");
+                if (Logger.logStackTrace) {
+                    messageError.append(lineSeparator);
+                    messageError.append("* StackTrace: '");
+                    messageError.append(parseExceptionStackTrace(resultException, lineSeparator + "    "));
+                    messageError.append("'");
+                }
+            }
+            if (isResultTerminated) {
+                messageError.append(lineSeparator);
+                messageError.append("* Result termination  ");
+                if (isResultTerminatedSuccessfully) {
+                    messageError.append(" succeeded");
+                } else {
+                    messageError.append(" failed");
+                }
+                if (resultTerminationMessage != null) {
+                    messageError.append("; Message: " + resultTerminationMessage);
+                }
+            }
+            if (originalSFACT != null && Logger.logStackTrace) {
+                messageError.append(lineSeparator);
+                messageError.append("* Command line SFACT: '");
+                messageError.append(originalSFACT);
+                messageError.append("'");
+            }
+            if (originalSFACT != null && Logger.logStackTrace) {
+                messageError.append(lineSeparator);
+                messageError.append("* To String: '");
+                messageError.append(toString(separatorString));
+                messageError.append("'");
+            }
+            result = result + messageError.toString();
+        }
 
-          return result;
+        return result;
     }
 
     /**
@@ -497,19 +499,19 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param separatorString the line separator to be used in the message
      * @return String Exception message
      */
-    private String parseException (Throwable thr, String separatorString){
+    private String parseException(Throwable thr, String separatorString) {
         StringBuffer messageError = new StringBuffer();
-        if (thr instanceof SmartFrogException){
+        if (thr instanceof SmartFrogException) {
             //messageError.append(((SmartFrogException)thr).toString("\n   "));
-        } else if (thr instanceof UnknownHostException){
-          //Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
-          messageError.append( MessageUtil.formatMessage(MSG_UNKNOWN_HOST, getHostsString()));
-        } else if (thr instanceof ConnectException){
-          //Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
-          messageError.append(MessageUtil.formatMessage(MSG_CONNECT_ERR, getHostsString()));
+        } else if (thr instanceof UnknownHostException) {
+            //Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
+            messageError.append(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, getHostsString()));
+        } else if (thr instanceof ConnectException) {
+            //Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
+            messageError.append(MessageUtil.formatMessage(MSG_CONNECT_ERR, getHostsString()));
         } else if (thr instanceof RemoteException) {
             //Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,opts.host), rmiEx);
-            messageError.append(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,getHostsString()));
+            messageError.append(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR, getHostsString()));
         } else if (thr instanceof Exception) {
             //Logger.log(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             messageError.append(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION)
@@ -518,14 +520,14 @@ public class ConfigurationDescriptor implements MessageKeys {
 
         if (thr instanceof SmartFrogException) {
             //messageError.append(lineSeparator);
-            messageError.append(((SmartFrogException)thr).toString("\n"));
+            messageError.append(((SmartFrogException) thr).toString("\n"));
         } else {
-            if ( thr !=null) {
+            if (thr != null) {
                 //messageError.append(lineSeparator);
                 messageError.append(thr.toString());
             }
         }
-        return messageError.toString().replaceAll("\n",separatorString);
+        return messageError.toString().replaceAll("\n", separatorString);
     }
 
     /**
@@ -541,8 +543,8 @@ public class ConfigurationDescriptor implements MessageKeys {
         }
 
         final StringWriter sw = new StringWriter(1024);
-        PrintWriter out=null;
-        LineNumberReader in=null;
+        PrintWriter out = null;
+        LineNumberReader in = null;
         StringBuffer messageError = new StringBuffer(lineSeparator);
         try {
             out = new PrintWriter(sw, false);
@@ -556,11 +558,15 @@ public class ConfigurationDescriptor implements MessageKeys {
             }
         } catch (IOException ex) {
             // this should REALLY never happen
-            throw new RuntimeException(ex.toString(),ex);
+            throw new RuntimeException(ex.toString(), ex);
         } finally {
-            if (in != null)
-                try {in.close();} catch (IOException ignored) {}
-            if (out!= null) {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignored) {
+                }
+            }
+            if (out != null) {
                 out.close();
             }
         }
@@ -581,6 +587,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * Internal buffer to parse urls.
      */
     private String tempURL = null;
+
     /**
      * Creates a Configuration Descriptor using a deployment URL
      * @param deploymentURL Format: 'name:ACTION:url:sfConfig:HOST:PROCESS'
@@ -615,12 +622,14 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @see Action
      * @throws SmartFrogInitException  failure in some part of the process
      */
-    public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
+    public ConfigurationDescriptor(String deploymentURL) throws SmartFrogInitException {
         try {
             originalSFACT = deploymentURL;
-            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT: ["+originalSFACT+"]"); }
+            if (SFSystem.sfLog().isDebugEnabled()) {
+                SFSystem.sfLog().debug("Parsing SFACT: [" + originalSFACT + "]");
+            }
 
-            if (deploymentURL==null) {
+            if (deploymentURL == null) {
                 throw new SmartFrogInitException("Deployment URL: null");
             }
 
@@ -635,14 +644,17 @@ public class ConfigurationDescriptor implements MessageKeys {
             try {
                 setSubProcess(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
-                throw new SmartFrogInitException( "Error parsing SUBPROCESS_NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException(
+                        "Error parsing SUBPROCESS_NAME in: " + deploymentURL + "(" + ex.getMessage() + ")",
+                        ex);
             }
 
             //GET HOST_NAME (5th Element)
             try {
                 setHost(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing HOST in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException(
+                        "Error parsing HOST in: " + deploymentURL + "(" + ex.getMessage() + ")", ex);
             }
 
             //GET DEPLOY_REFERENCE (4th Element)
@@ -651,22 +663,27 @@ public class ConfigurationDescriptor implements MessageKeys {
             try {
                 setDeployReference(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL +"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException(
+                        "Error parsing DEPLOY_REFERENCE in: " + deploymentURL + "(" + ex.getMessage() + ")",
+                        ex);
             }
 
             //GET URL (3rd Element)
-             //(Everything that is left at the end)
-             try {
-                 setUrl(getAndCutLastFieldTempURL(separator));
-             } catch (Exception ex) {
-                 throw new SmartFrogInitException( "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+            //(Everything that is left at the end)
+            try {
+                setUrl(getAndCutLastFieldTempURL(separator));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException(
+                        "Error parsing DEPLOY_REFERENCE in: " + deploymentURL + "(" + ex.getMessage() + ")",
+                        ex);
             }
 
             //GET ACTION(2nd Element)
             try {
                 setActionType(getAndCutLastFieldTempURL(separator));
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing ACTION_TYPE in: "+ deploymentURL +"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException(
+                        "Error parsing ACTION_TYPE in: " + deploymentURL + "(" + ex.getMessage() + ")", ex);
             }
 
             // GET NAME (1st Element)
@@ -678,30 +695,34 @@ public class ConfigurationDescriptor implements MessageKeys {
             // display:TER:::localhost:subprocess;
             // :TER:::localhost:subprocess; ->Unnamed component
             try {
-                String field ="";
-                if (tempURL.trim().endsWith("\"")||tempURL.trim().endsWith("'")) {
-                   field = tempURL.substring(1,tempURL.length()-1);
-                   // shell like input will take away the " but if using -f
-                   // then the " will be there
-                   if (field.trim().endsWith("\"")||field.trim().endsWith("'")) {
-                      field = field.substring(1,field.length()-1);
-                   }
+                String field = "";
+                if (tempURL.trim().endsWith("\"") || tempURL.trim().endsWith("'")) {
+                    field = tempURL.substring(1, tempURL.length() - 1);
+                    // shell like input will take away the " but if using -f
+                    // then the " will be there
+                    if (field.trim().endsWith("\"") || field.trim().endsWith("'")) {
+                        field = field.substring(1, field.length() - 1);
+                    }
 
                 } else {
                     field = tempURL;
                 }
-                if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
+                if (SFSystem.sfLog().isTraceEnabled()) {
+                    SFSystem.sfLog().trace("  Extracted [" + field + "] from [" + tempURL + "]");
+                }
                 setName(field);
             } catch (Exception ex) {
                 SFSystem.sfLog().error(ex, ex);
-                throw new SmartFrogInitException("Error parsing NAME in: " + deploymentURL 
+                throw new SmartFrogInitException("Error parsing NAME in: " + deploymentURL
                         + "(" + ex.toString() + ")",
                         ex);
             }
-            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this+"]");}
-        } catch (Throwable thr){
-           resultException = thr;
-           throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
+            if (SFSystem.sfLog().isDebugEnabled()) {
+                SFSystem.sfLog().debug("Parsing SFACT results: [" + this + "]");
+            }
+        } catch (Throwable thr) {
+            resultException = thr;
+            throw (SmartFrogInitException) SmartFrogInitException.forward(thr);
         }
     }
 
@@ -755,9 +776,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      * See also {@link Action}
      * @throws SmartFrogInitException  failure in some part of the process
      */
-    public ConfigurationDescriptor (ComponentDescription cd) throws SmartFrogInitException {
-        if (cd==null) {
-                throw new SmartFrogInitException("Deployment URL: null");
+    public ConfigurationDescriptor(ComponentDescription cd) throws SmartFrogInitException {
+        if (cd == null) {
+            throw new SmartFrogInitException("Deployment URL: null");
         }
         try {
 
@@ -765,46 +786,54 @@ public class ConfigurationDescriptor implements MessageKeys {
                 setName(cd.sfResolve(ATR_NAME, "", false));
             } catch (Exception ex) {
                 SFSystem.sfLog().error(ex, ex);
-                throw new SmartFrogInitException("Error parsing NAME in: "+ cd +"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException("Error parsing NAME in: " + cd + "(" + ex.getMessage() + ")",
+                        ex);
             }
 
             try {
                 setActionType(cd.sfResolve(ATR_ACTION, "", true));
             } catch (Exception ex) {
                 SFSystem.sfLog().error(ex, ex);
-                throw new SmartFrogInitException("Error parsing ACTION_TYPE in: "+ cd +"("+ex.getMessage()+")", ex);
-            }                       
+                throw new SmartFrogInitException(
+                        "Error parsing ACTION_TYPE in: " + cd + "(" + ex.getMessage() + ")", ex);
+            }
 
             try {
                 setUrl(cd.sfResolve(ATR_DESC_URL, "", false));
             } catch (Exception ex) {
-                 SFSystem.sfLog().error(ex, ex);
-                 throw new SmartFrogInitException( "Error parsing DESCRIPION_URL in: "+ cd +"("+ex.getMessage()+")", ex);
+                SFSystem.sfLog().error(ex, ex);
+                throw new SmartFrogInitException(
+                        "Error parsing DESCRIPION_URL in: " + cd + "(" + ex.getMessage() + ")", ex);
             }
 
             try {
                 setDeployReference(cd.sfResolve(ATR_TARGET, "", false));
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing TARGET_REFERENCE in: "+ cd +"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException(
+                        "Error parsing TARGET_REFERENCE in: " + cd + "(" + ex.getMessage() + ")", ex);
             }
 
             try {
-                setHost (cd.sfResolve(ATR_HOST, "", false));
+                setHost(cd.sfResolve(ATR_HOST, "", false));
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing HOST in: "+ cd +"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException("Error parsing HOST in: " + cd + "(" + ex.getMessage() + ")",
+                        ex);
             }
 
             try {
-                setSubProcess (cd.sfResolve(ATR_PROCESS, "", false));
+                setSubProcess(cd.sfResolve(ATR_PROCESS, "", false));
             } catch (Exception ex) {
-                throw new SmartFrogInitException( "Error parsing PROCESS_NAME in: "+ cd +"("+ex.getMessage()+")", ex);
+                throw new SmartFrogInitException(
+                        "Error parsing PROCESS_NAME in: " + cd + "(" + ex.getMessage() + ")", ex);
             }
 
-            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("ConfigurationDescriptor created: ["+this+"], from "+cd);}
+            if (SFSystem.sfLog().isDebugEnabled()) {
+                SFSystem.sfLog().debug("ConfigurationDescriptor created: [" + this + "], from " + cd);
+            }
 
-        } catch (Throwable thr){
-           resultException = thr;
-           throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
+        } catch (Throwable thr) {
+            resultException = thr;
+            throw (SmartFrogInitException) SmartFrogInitException.forward(thr);
         }
     }
 
@@ -815,39 +844,48 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return String last field from TempURL marked by token
      * @throws Exception  failure in some part of the process
      */
-    private String getAndCutLastFieldTempURL( String token) throws Exception{
+    private String getAndCutLastFieldTempURL(String token) throws Exception {
         String field = null;
-        if (tempURL.trim().endsWith("\"")||tempURL.trim().endsWith("'")) {
-            String tag ="\"";
-            if (tempURL.trim().endsWith("'")) tag="'";
-            String newURL = tempURL.substring(0, tempURL.length()-1).trim();
+        if (tempURL.trim().endsWith("\"") || tempURL.trim().endsWith("'")) {
+            String tag = "\"";
+            if (tempURL.trim().endsWith("'")) {
+                tag = "'";
+            }
+            String newURL = tempURL.substring(0, tempURL.length() - 1).trim();
             int indexFirstQuote = newURL.lastIndexOf(tag);
-            field = tempURL.substring(indexFirstQuote+1,tempURL.length()-1).trim();
+            field = tempURL.substring(indexFirstQuote + 1, tempURL.length() - 1).trim();
             // shell like input will take away the " but if using -f
             // then the " will be there
-            if (field.trim().endsWith("\"")||field.trim().endsWith("'")) {
-               field = field.substring(1,field.length()-1).trim();
+            if (field.trim().endsWith("\"") || field.trim().endsWith("'")) {
+                field = field.substring(1, field.length() - 1).trim();
             }
 
-            if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
-            if (indexFirstQuote==-1) {
+            if (SFSystem.sfLog().isTraceEnabled()) {
+                SFSystem.sfLog().trace("  Extracted [" + field + "] from [" + tempURL + "]");
+            }
+            if (indexFirstQuote == -1) {
                 indexFirstQuote = 1;
             }
-            tempURL=tempURL.substring(0,indexFirstQuote-1).trim();
+            tempURL = tempURL.substring(0, indexFirstQuote - 1).trim();
         } else {
-            field = tempURL.substring(tempURL.lastIndexOf(token)+1, tempURL.length()).trim();
-            if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
+            field = tempURL.substring(tempURL.lastIndexOf(token) + 1, tempURL.length()).trim();
+            if (SFSystem.sfLog().isTraceEnabled()) {
+                SFSystem.sfLog().trace("  Extracted [" + field + "] from [" + tempURL + "]");
+            }
             tempURL = (tempURL.substring(0, tempURL.lastIndexOf(token)).trim());
         }
         return field;
     }
+
     /**
      *
      * @param name application/component name
      * @param url resource to use during action. Usually a sf description
      */
-    public ConfigurationDescriptor (String name, String url){
-        if (url == null) return;
+    public ConfigurationDescriptor(String name, String url) {
+        if (url == null) {
+            return;
+        }
         setUrl(url);
         setName(name);
     }
@@ -861,8 +899,8 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param subProcess subProcess were to apply action. Can be null.
      * @throws SmartFrogInitException
      */
-    public ConfigurationDescriptor (String name, String url,int actionType,String host, String subProcess)
-            throws SmartFrogInitException{
+    public ConfigurationDescriptor(String name, String url, int actionType, String host, String subProcess)
+            throws SmartFrogInitException {
         setActionType(actionType);
         setUrl(url);
         setName(name);
@@ -887,8 +925,8 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @throws SmartFrogInitException when a parameter is wrongly defined
      * @throws SmartFrogResolutionException if something cannot be resolved
      */
-    public ConfigurationDescriptor (String name, String url,int actionType,
-                                    String deployReference ,String host, String subProcess)
+    public ConfigurationDescriptor(String name, String url, int actionType,
+                                   String deployReference, String host, String subProcess)
             throws SmartFrogInitException, SmartFrogResolutionException {
 
         setActionType(actionType);
@@ -907,7 +945,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return true if there is nothing but white space in the string
      */
     private static boolean isEmpty(String string) {
-        return string.trim().length()==0;
+        return string.trim().length() == 0;
     }
 
     /**
@@ -915,10 +953,10 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return Reference deployReference
      * @see Reference
      */
-    public Reference getDeployReference(){
+    public Reference getDeployReference() {
         String key = SF1Options.SFCONFIGREF;
-        if (getOptions().containsKey(key)){
-            return ((Reference)getOptions().get(key));
+        if (getOptions().containsKey(key)) {
+            return ((Reference) getOptions().get(key));
         }
         return null;
     }
@@ -930,20 +968,20 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param reference
      * @throws SmartFrogResolutionException failure in resolving
      */
-    public void setDeployReference(String reference) throws SmartFrogResolutionException{
+    public void setDeployReference(String reference) throws SmartFrogResolutionException {
 
-        if (isEmpty(reference)){
+        if (isEmpty(reference)) {
             return;
         }
         getOptions().put(SF1Options.SFCONFIGREF,
-                                  Reference.fromString(reference));
+                Reference.fromString(reference));
     }
 
     /**
      * Gets action type
      * @return int action type
      */
-    public int getActionType(){
+    public int getActionType() {
         return actionType;
     }
 
@@ -955,11 +993,11 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param thr result exception if it existed
      */
     public void setResult(int type, String message, Throwable thr) {
-        if ((type<0)||(type>Result.type.length)) {
+        if ((type < 0) || (type > Result.type.length)) {
             try {
                 throw new SmartFrogInitException("Result type unknown");
             } catch (Exception ex) {
-              SFSystem.sfLog().trace(ex);
+                SFSystem.sfLog().trace(ex);
             }
         } else {
             resultType = type;
@@ -975,8 +1013,8 @@ public class ConfigurationDescriptor implements MessageKeys {
     /**
      * Sets result as SUCCESSFULL
      */
-    public void setSuccessfulResult(){
-      resultType=Result.SUCCESSFUL;
+    public void setSuccessfulResult() {
+        resultType = Result.SUCCESSFUL;
     }
 
     /**
@@ -988,9 +1026,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      */
     public void setActionType(int type) throws SmartFrogInitException {
         actionType = type;
-        switch(actionType) {
+        switch (actionType) {
             case Action.DEPLOY:
-                action=new ActionDeploy();
+                action = new ActionDeploy();
                 break;
             case Action.DETACH:
                 action = new ActionDetach();
@@ -1062,9 +1100,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      *
      */
     public String getResultMessage() {
-        if (resultMessage !=null) {
+        if (resultMessage != null) {
             return resultMessage;
-        } else if (resultException !=null) {
+        } else if (resultException != null) {
             return resultException.getMessage();
         }
         return "no message";
@@ -1105,27 +1143,28 @@ public class ConfigurationDescriptor implements MessageKeys {
         wasExecuted = false;
     }
 
-    public boolean wasExecuted (){
+    public boolean wasExecuted() {
         return wasExecuted;
     }
 
     /** Terminates result object ONLY a result exists and it was deployed by this configuration descriptor using
      * a DEPLOY action. The success of the termination intent will be stored in {@link #isResultTerminatedSuccessfully}
-     * @return  true if it tried to terminate result, false it it did not try
+     * @return true if it tried to terminate result, false it it did not try
      */
-    public boolean terminateDeployedResult (){
-       if ((resultObject!=null)&& (resultObject instanceof Prim) &&
-               (getActionType() == Action.DEPLOY) && !isResultTerminated){
+    public boolean terminateDeployedResult() {
+        if ((resultObject != null) && (resultObject instanceof Prim) &&
+                (getActionType() == Action.DEPLOY) && !isResultTerminated) {
             try {
-             this.isResultTerminated=true;
-             ((Prim)resultObject).sfTerminate(TerminationRecord.normal("Multiple deployment failed", null));
+                this.isResultTerminated = true;
+                ((Prim) resultObject)
+                        .sfTerminate(TerminationRecord.normal("Multiple deployment failed", null));
             } catch (RemoteException ex) {
-              this.resultTerminationMessage = ex.toString();
+                this.resultTerminationMessage = ex.toString();
             }
             return true;
-       }
+        }
 
-       return false;
+        return false;
     }
 
     /**
@@ -1211,7 +1250,7 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * host for action. May be null
-     * @return  String hostname
+     * @return String hostname
      */
     public String[] getHosts() {
         return hostsList;
@@ -1219,7 +1258,7 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * host (first on the list) for action. May be null
-     * @return  String hostname
+     * @return String hostname
      */
     public String getHost() {
         if ((hostsList == null) || (hostsList.length == 0)) {
@@ -1230,7 +1269,7 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * host/s string representation. May be null when no hosts in list
-     * @return  String hostname/s
+     * @return String hostname/s
      */
     public String getHostsString() {
         if (hostsList == null) {
@@ -1251,7 +1290,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @throws SmartFrogInitException if the string could not be parsed
      */
     public void setHost(String hostsString) throws SmartFrogInitException {
-        if (hostsString==null || isEmpty(hostsString)) return;
+        if (hostsString == null || isEmpty(hostsString)) {
+            return;
+        }
         this.hostsList = getHostList(hostsString);
     }
 
@@ -1260,7 +1301,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param hosts hostname
      */
     public void setHosts(String[] hosts) {
-        if (hosts == null || hosts.length == 0) return;
+        if (hosts == null || hosts.length == 0) {
+            return;
+        }
         this.hostsList = hosts;
     }
 
@@ -1271,11 +1314,12 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return an array containing one or more hosts
      * @throws SmartFrogInitException if the string could not be parsed
      */
-    public String[] getHostList (String hostUrlString) throws SmartFrogInitException {
+    public String[] getHostList(String hostUrlString) throws SmartFrogInitException {
         String[] hostList = null;
         if (hostUrlString.startsWith("[")) {
             if (!hostUrlString.endsWith("]")) {
-                throw new SmartFrogInitException("Error parsing HOST_URLString in: " + hostUrlString + ", missing ']'");
+                throw new SmartFrogInitException(
+                        "Error parsing HOST_URLString in: " + hostUrlString + ", missing ']'");
             }
             String newURLList = hostUrlString.substring(1, hostUrlString.length() - 1).trim();
             hostList = newURLList.split(",");
@@ -1311,7 +1355,7 @@ public class ConfigurationDescriptor implements MessageKeys {
     /**
      * get option hashtable. This is not a copy; it is a direct
      * accessor to the table.
-     * @return  Hashtable option hashtable
+     * @return Hashtable option hashtable
      */
     public Hashtable getOptions() {
         return options;
@@ -1331,7 +1375,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param value value
      */
     public void setOption(Object name, Object value) {
-       options.put(name, value);
+        options.put(name, value);
     }
 
     /**
@@ -1339,24 +1383,24 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @param option Option name
      * @return Object value
      */
-    public Object getOption(Object option){
-       return options.get(option);
+    public Object getOption(Object option) {
+        return options.get(option);
     }
 
     /**
      * Get Context
      * @return Context
      */
-    public Context getContext (){
-       return context;
+    public Context getContext() {
+        return context;
     }
 
     /**
      * Set Context
      * @param context Context
      */
-    public void setContext(Context context){
-       this.context=context;
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     /**
@@ -1369,7 +1413,7 @@ public class ConfigurationDescriptor implements MessageKeys {
         if (context == null) {
             context = new ContextImpl();
         }
-        context.put(name,value);
+        context.put(name, value);
         return context;
     }
 
