@@ -547,6 +547,8 @@ For more information: www.smartfrog.org
           <!-- remove the hadoop stuff while things change-->
           <exclude name="hadoop/build.xml"/>
 
+          <!-- remove the hadoop stuff while things change-->
+          <exclude name="testng/build.xml"/>
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
