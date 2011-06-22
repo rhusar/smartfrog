@@ -47,19 +47,19 @@ For more information: www.smartfrog.org
   <target name="init">
     <property file="build.properties" />
     <property environment="env" />
-	  <property name="core.dir" location="."/>
+    <property name="core.dir" location="."/>
     <property name="root.dir" location="."/>
     <tstamp>
       <format property="build.timestamp" pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ" />
     </tstamp>
 
-	
-  	<!-- where the ivy/maven artifacts are stored -->
-    
+  
+    <!-- where the ivy/maven artifacts are stored -->
+        
     <property name="artifactsCache.dir" location="${user.home}"/>
-	
+  
     <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
-	
+  
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
     <property name="toplevel.dir" location=".." />
@@ -84,7 +84,7 @@ For more information: www.smartfrog.org
     <echo message="  ${Name.Company}"/>
     <echo message="   Java: ${java.version} ${java.vendor} "/>
     <echo message="         ${java.home} "/>
-  	<echo message="         ${java.vm.name} "/>
+    <echo message="         ${java.vm.name} "/>
     <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message="   Build dir: ${basedir}"/>
     <echo message="   Core dir: ${core.dir}"/>
@@ -122,22 +122,22 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
   </target>
-  
+    
 
 
-  
+    
   <!-- =================================================================== -->
   <!-- build a distribution of smartfrog.jar, sfExamples.jar               -->
   <!-- =================================================================== -->
   <target name="main-dist" depends="ivy-init" description="build a distribution">
     <ivy-delegate target="published-distribution" />
   </target>
-  
+    
   <!-- tracking down quirks in subant -->
    <target name="diag2" depends="init" >
     <forward2 dir="${components.project}" target="diag2"  /> 
   </target>
-  
+    
   <!-- =================================================================== -->
   <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
@@ -165,7 +165,7 @@ For more information: www.smartfrog.org
 
 
   <!-- =================================================================== -->
-  <!-- components distribution                                            -->
+  <!-- components distribution                                             -->
   <!-- =================================================================== -->
 
   <target name="components" depends="ivy-init"
@@ -181,7 +181,7 @@ For more information: www.smartfrog.org
     description="install components distribution(s)">
     <ivy-delegate target="installed" />
   </target>
-  
+    
 
   <!-- =================================================================== -->
   <!-- main distribution                                                    -->
@@ -234,8 +234,8 @@ For more information: www.smartfrog.org
       </options>
     </forward2>
   </target>
-  
-  
+    
+    
   <!-- =================================================================== -->
   <!-- test all                                                            -->
   <!-- =================================================================== -->
@@ -311,7 +311,7 @@ For more information: www.smartfrog.org
   <target name="cc-dist"
       depends="clean,ivy-list-order,dist"
       description="CI clean distribution build"/>
-  
+    
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- this is not cutting a release as "release" is not in the list-->
@@ -320,7 +320,7 @@ For more information: www.smartfrog.org
       depends="cc-dist,cc-test"
       description="CI full build, with NO checkout"/>
 
-  
+    
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build                                     -->
   <!-- was cc-init,release,cc-incremental,cc-test-->
@@ -335,7 +335,7 @@ For more information: www.smartfrog.org
     <target name="cc"
         depends="cc-core,mavenReportNoSVNUpdate"
         description="cruise control full build, with NO checkout"/>
-		
+
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build without Checkout                    -->
   <!-- =================================================================== -->
@@ -523,7 +523,7 @@ For more information: www.smartfrog.org
           <exclude name="bulkiotests/build.xml" unless="bulkiotests.enabled"/>
           <exclude name="hadoop-cluster/build.xml"/>
         </fileset>
-        
+                
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
           <exclude name="deployapi/build.xml" unless="deployapi.enabled"/>
