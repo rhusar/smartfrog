@@ -54,7 +54,7 @@
    <dependency org="org.smartfrog" name="sf-www" rev="latest.integration" changing="true"
      conf="runtime->default"/>
    <dependency org="commons-vfs" name="commons-vfs" rev="svn1069844" force="true"
-     conf="runtime->default">
+     conf="runtime->master">
     <exclude org="httpclient"/>
     <exclude org="commons-codec"/>
   </dependency>

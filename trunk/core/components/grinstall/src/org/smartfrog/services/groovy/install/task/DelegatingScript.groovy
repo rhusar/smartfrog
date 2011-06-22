@@ -27,7 +27,8 @@ public abstract class DelegatingScript extends Script {
         if (comp) {
             component = comp
             try {
-                sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "DelegatingScript", true))
+                sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, 
+                            "DelegatingScript", true))
             } catch (Exception e) {
                 sfLog.error(e.message)
                 throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))

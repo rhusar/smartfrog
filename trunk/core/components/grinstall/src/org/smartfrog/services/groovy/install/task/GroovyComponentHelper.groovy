@@ -71,7 +71,7 @@ class GroovyComponentHelper {
 
     public Process command(String c) {
         // all commands are executed in root directory by default
-        return command(c, root.getName().getPath())
+        return command(c, root.name.path)
     }
 
     public Process command(String c, String directory) {
