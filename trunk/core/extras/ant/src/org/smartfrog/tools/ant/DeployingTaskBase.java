@@ -288,14 +288,11 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             text = owner.getProject().replaceProperties(unexpandedText);
             //create a temp file
             File tempfile = FileUtils.getFileUtils().createTempFile("deploy",
-                    ".sf", null);
+                    ".sf", null, !owner.isDebug(), true);
             //mark for cleanup later
             if (owner.isDebug()) {
                 owner.log("Application temporary files is " + tempfile);
                 owner.log("This is not deleted in debug mode");
-            } else {
-                //no debugging, kill the file after we exit ant.
-                tempfile.deleteOnExit();
             }
             owner.log("Saving to temporary file " + tempfile, Project.MSG_VERBOSE);
             owner.log(text, Project.MSG_VERBOSE);
