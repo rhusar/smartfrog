@@ -17,13 +17,13 @@ class Source extends PrimImpl implements ISource {
     @Override
     public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
         super.sfDeploy()
-        sfLog().debug("Deployed " + this.getClass().getSimpleName())
+        sfLog().debug("Deployed " + this.class.simpleName)
     }
 
     @Override
     public synchronized void sfStart() throws RemoteException, SmartFrogException {
         super.sfStart()
-        sfLog().debug("Starting " + this.getClass().getSimpleName())
+        sfLog().debug("Starting " + this.class.simpleName)
         helper = new GroovyComponentHelper((Component)sfParent())
     }
 
