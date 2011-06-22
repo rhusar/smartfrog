@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2011 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,12 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-
-server extends Compound {
-  port 8080;
+/**
+ * Echos the message to the log at info level, then terminates if sfShouldTerminate is set
+ */
+Echo extends WorkflowPrim {
+  sfClass "org.smartfrog.services.utils.echo.EchoImpl";
+  sfShouldTerminate true;
+  message "echo";
 }
-
-sfConfig extends server{
-}
-
