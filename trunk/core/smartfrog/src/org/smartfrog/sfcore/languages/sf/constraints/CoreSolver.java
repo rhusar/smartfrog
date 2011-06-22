@@ -222,7 +222,7 @@ public class CoreSolver {
     public SFComponentDescription getOriginalDescription() {
         return orig;
     }
-    
+        
     public void fail() throws Exception {}
 
     /**
@@ -283,10 +283,10 @@ public class CoreSolver {
     }
 
     public void addUndoFVAutoVarEffect(FreeVar fv, Vector<Reference> autoEffects){}
-    
+        
     public void addUndoFVAutoVarEffect(FreeVar fv){}
-    
-    
+        
+        
     /**
      * On backtracking, we have backtracked to the returned context
      *
@@ -323,9 +323,9 @@ public class CoreSolver {
     }
 
     public void doConstraintsWork(Object key) throws SmartFrogResolutionException {}
-       
+              
     public void addAutoVar(Object key, FreeVar var) throws SmartFrogResolutionException {}
-    
+        
     /**
      * Tidy absolute root component descriptions after constraint solving.
      *
@@ -338,7 +338,7 @@ public class CoreSolver {
             return;
         }
         //if (!Proposition.getResult()) throw new SmartFrogResolutionException("Unsatisified propositions in description");
-        
+                
         try {
             //Do a visit to every cd removing constraint annotations...
             getOriginalDescription().visit(new CDVisitor() {
@@ -399,11 +399,11 @@ public class CoreSolver {
             stopSolving();
         }
     }
-    
+        
     public class CoreSolverFatalError extends Error{
-    	public CoreSolverFatalError(Throwable t){
-    		super(t.toString());
-    	}
+        public CoreSolverFatalError(Throwable t){
+            super(t.toString());
+        }
     }
 
 }
