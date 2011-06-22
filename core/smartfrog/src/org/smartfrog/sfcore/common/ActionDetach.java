@@ -29,36 +29,35 @@ import java.rmi.RemoteException;
 /**
  * Detach a component
  */
-public class ActionDetach extends ConfigurationAction{
+public class ActionDetach extends ConfigurationAction {
 
     /**
-      * Detaches appName from component target
-      *
-      * @param name name of the application
-      * @param targetP the target process compound to request deployment
-      * @return Prim Reference to detached component
-      * @throws SmartFrogException failure in some part of the process
-      * @throws RemoteException In case of network/rmi error
-      */
-     public static Prim Detach(String name, ProcessCompound targetP)  throws SmartFrogException,
+     * Detaches appName from component target
+     *
+     * @param name name of the application
+     * @param targetP the target process compound to request deployment
+     * @return Prim Reference to detached component
+     * @throws SmartFrogException failure in some part of the process
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static Prim Detach(String name, ProcessCompound targetP) throws SmartFrogException,
             RemoteException {
-            //First thing first: system gets initialized
-            //Protect system if people use this as entry point
-            try {
-                SFSystem.initSystem();
-            } catch (Exception ex) {
-                throw SmartFrogException.forward(ex);
-            }
+        //First thing first: system gets initialized
+        //Protect system if people use this as entry point
+        try {
+            SFSystem.initSystem();
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
 
-            try {
-                Prim targetC = (Prim)targetP.sfResolveWithParser(name);
-                targetC.sfDetach();
-                return targetC;
-            } catch (Throwable thr) {
-                throw SmartFrogException.forward(thr);
-            }
-     }
-
+        try {
+            Prim targetC = (Prim) targetP.sfResolveWithParser(name);
+            targetC.sfDetach();
+            return targetC;
+        } catch (Throwable thr) {
+            throw SmartFrogException.forward(thr);
+        }
+    }
 
 
     /**
@@ -71,23 +70,26 @@ public class ActionDetach extends ConfigurationAction{
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration) throws SmartFrogException,
             RemoteException {
-            Prim result=null;
-            try {
-                if (targetP==null)
-                    targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),configuration.getSubProcess());
-                    result = Detach(configuration.getName(), targetP);
-            } catch (SmartFrogException sex){
-                 configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
-                 throw sex;
-             } catch (RemoteException rex){
-                 configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
-                 throw rex;
+        Prim result = null;
+        try {
+            if (targetP == null) {
+                targetP = SFProcess
+                        .sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
             }
-            configuration.setSuccessfulResult();
-            return result;
+            result = Detach(configuration.getName(), targetP);
+        } catch (SmartFrogException sex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
+            throw sex;
+        } catch (RemoteException rex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, rex);
+            throw rex;
+        }
+        configuration.setSuccessfulResult();
+        return result;
 
     }
 }

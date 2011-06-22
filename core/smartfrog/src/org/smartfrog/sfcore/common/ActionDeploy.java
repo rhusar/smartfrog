@@ -218,7 +218,7 @@ public class ActionDeploy extends ConfigurationAction {
      */
     private static void addTime(Prim comp, String name, long time) {
         if (time >= 0) {
-            addAttributeQuietly(comp, name, new Long(time));
+            addAttributeQuietly(comp, name, time);
         }
     }
 
@@ -248,6 +248,7 @@ public class ActionDeploy extends ConfigurationAction {
      * @throws RemoteException    In case of network/rmi error
      *
      */
+    @Override
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
        Prim parent = null;

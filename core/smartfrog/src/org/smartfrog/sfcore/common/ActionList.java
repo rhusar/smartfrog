@@ -43,10 +43,11 @@ public class ActionList extends ConfigurationAction implements Serializable {
      *
      * @param targetP       target where to execute the configuration command
      * @param configuration configuration command to be executed
-     * @return Object Reference to parsed component
+     * @return the execution time as a long
      * @throws SmartFrogException failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration)
             throws SmartFrogException,
@@ -62,7 +63,7 @@ public class ActionList extends ConfigurationAction implements Serializable {
                     .setResult(ConfigurationDescriptor.Result.SUCCESSFUL,
                             LIST_MESSAGE + (time / 1000.0) + " seconds",
                             null);
-            return new Long(time);
+            return time;
         } catch (SmartFrogException sex) {
             configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
             throw sex;

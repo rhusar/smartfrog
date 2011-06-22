@@ -75,13 +75,12 @@ public class ActionUpdate extends ConfigurationAction {
         ComponentDescription cd;
         try {
             cd = ComponentDescriptionImpl.sfComponentDescription(url, language, null, deployReference);
+        } catch (SmartFrogUpdateException sfex) {
+            throw sfex;
         } catch (SmartFrogException sfex) {
-            if (sfex instanceof SmartFrogUpdateException)
-                throw sfex;
-            else
-                throw new SmartFrogUpdateException(
-                        "update description " + url,
-                        sfex);
+            throw new SmartFrogUpdateException(
+                    "update description " + url,
+                    sfex);
         }
 
         component.sfUpdateComponent(cd);
@@ -99,6 +98,7 @@ public class ActionUpdate extends ConfigurationAction {
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException for execution problems
      */
+    @Override
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
             throws SmartFrogException, RemoteException {
         Update component = null;

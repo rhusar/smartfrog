@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
 /**
  * Detach and Terminate a component
  */
-public class ActionDetachAndTerminate extends ConfigurationAction{
+public class ActionDetachAndTerminate extends ConfigurationAction {
 
     /**
      * Error text when there is no application to terminate.
@@ -49,7 +49,7 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
      * @throws RemoteException In case of network/rmi error
      */
     public static Prim DetachAndTerminate(String name, ProcessCompound targetP) throws
-        SmartFrogException, RemoteException {
+            SmartFrogException, RemoteException {
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
@@ -58,18 +58,18 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
             throw SmartFrogException.forward(ex);
         }
 
-        if (name==null) {
+        if (name == null) {
             throw new SmartFrogException(ERROR_NO_APP_NAME);
         }
-        Prim targetC = (Prim)targetP.sfResolveWithParser(name);
+        Prim targetC = (Prim) targetP.sfResolveWithParser(name);
         boolean isRootProcess = false;
         try {
             if (targetC instanceof ProcessCompound) {
-                isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
+                isRootProcess = ((ProcessCompound) targetC).sfIsRoot();
             }
             try {
                 targetC.sfDetachAndTerminate(TerminationRecord.normal("External Management Action",
-                    targetP.sfCompleteName()));
+                        targetP.sfCompleteName()));
             } catch (RemoteException ex) {
                 HandleTerminationException(ex, isRootProcess);
             }
@@ -89,25 +89,27 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
-     public Object execute(ProcessCompound targetP,
-                           ConfigurationDescriptor configuration) throws SmartFrogException,
-             RemoteException {
-         Prim targetC=null;
-         try {
-             if (targetP==null)
-                 targetP =
-                     SFProcess.sfSelectTargetProcess(configuration.getHost(),
-                     configuration.getSubProcess());
-             targetC = DetachAndTerminate(configuration.getName(), targetP);
-         } catch (SmartFrogException sex){
-              configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
-              throw sex;
-          } catch (RemoteException rex){
-              configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
-              throw rex;
-         }
-         configuration.setSuccessfulResult();
-         return targetC;
-     }
+    @Override
+    public Object execute(ProcessCompound targetP,
+                          ConfigurationDescriptor configuration) throws SmartFrogException,
+            RemoteException {
+        Prim targetC = null;
+        try {
+            if (targetP == null) {
+                targetP =
+                        SFProcess.sfSelectTargetProcess(configuration.getHost(),
+                                configuration.getSubProcess());
+            }
+            targetC = DetachAndTerminate(configuration.getName(), targetP);
+        } catch (SmartFrogException sex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
+            throw sex;
+        } catch (RemoteException rex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, rex);
+            throw rex;
+        }
+        configuration.setSuccessfulResult();
+        return targetC;
+    }
 
 }
