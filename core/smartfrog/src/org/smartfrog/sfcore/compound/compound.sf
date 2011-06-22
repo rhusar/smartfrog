@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 // Defines compound as a primitive with specific class
 
 CompoundSchema extends PrimSchema {
-   sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
+  sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
 }
 
 //Compound with Schema
@@ -33,5 +33,5 @@ Compound extends Prim {
 }
 
 UpdatableCompound extends Compound {
-     sfUpdatable true;
+   sfUpdatable true;
 }
