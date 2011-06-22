@@ -55,8 +55,9 @@ public class ActionDeploy extends ConfigurationAction {
      * @throws RemoteException    In case of network/rmi error
      */
     public static Prim Deploy(String url, String appName, Prim parent, Compound target,
-                              Context c, Reference deployReference) throws SmartFrogException, RemoteException {
-        return Deploy(url,appName,parent,target,c,deployReference,true);
+                              Context c, Reference deployReference)
+            throws SmartFrogException, RemoteException {
+        return Deploy(url, appName, parent, target, c, deployReference, true);
     }
 
     /**
@@ -80,7 +81,8 @@ public class ActionDeploy extends ConfigurationAction {
      * @throws RemoteException In case of network/rmi error
      */
     protected static Prim Deploy(String url, String appName, Prim parent, Compound target,
-                              Context context, Reference deployReference, boolean start) throws SmartFrogException, RemoteException {
+                                 Context context, Reference deployReference, boolean start)
+            throws SmartFrogException, RemoteException {
 
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
@@ -158,13 +160,13 @@ public class ActionDeploy extends ConfigurationAction {
         } catch (SmartFrogException sfex) {
             throw new SmartFrogDeploymentException(
                     "deploying description '" + url + "' for '" + appName + "'"
-                    +" : " + sfex.toString(),
+                            + " : " + sfex.toString(),
                     sfex,
                     null,
                     context);
         }
         try {
-             comp = target.sfDeployComponentDescription(appName, parent, cd, context);
+            comp = target.sfDeployComponentDescription(appName, parent, cd, context);
             if (start) {
                 try {
                     comp.sfDeploy();
@@ -184,31 +186,30 @@ public class ActionDeploy extends ConfigurationAction {
                     throw SmartFrogLifecycleException.sfStart("", thr, null);
                 }
             }
-         } catch (Throwable e) {
-             //if the component is non null, get the name of the component
-             //and then terminate it abnormally
-             if (comp != null) {
-                 Reference compName = null;
-                 try {
-                     compName = comp.sfCompleteName();
-                 }
-                 catch (Exception ignored) {
-                 }
-                 try {
-                     comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: " + e, compName,e));
-                 } catch (Exception ignored) {
-                 }
-             }
-             throw (SmartFrogException.forward(e));
-       }
+        } catch (Throwable e) {
+            //if the component is non null, get the name of the component
+            //and then terminate it abnormally
+            if (comp != null) {
+                Reference compName = null;
+                try {
+                    compName = comp.sfCompleteName();
+                } catch (Exception ignored) {
+                }
+                try {
+                    comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: " + e, compName, e));
+                } catch (Exception ignored) {
+                }
+            }
+            throw (SmartFrogException.forward(e));
+        }
 
         //finally, attach times
         addAttributeQuietly(comp, SmartFrogCoreKeys.SF_TIME_STARTED_AT, new Date(beginTime).toString());
         addTime(comp, SmartFrogCoreKeys.SF_TIME_PARSE, parseTime - beginTime);
-        addTime(comp, SmartFrogCoreKeys.SF_TIME_DEPLOY, deployTime -parseTime);
+        addTime(comp, SmartFrogCoreKeys.SF_TIME_DEPLOY, deployTime - parseTime);
         addTime(comp, SmartFrogCoreKeys.SF_TIME_START, startTime - deployTime);
         return comp;
-     }
+    }
 
     /**
      * Add a time to the component; ignore any exceptions
@@ -250,45 +251,45 @@ public class ActionDeploy extends ConfigurationAction {
      */
     @Override
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
-       throws SmartFrogException, RemoteException {
-       Prim parent = null;
-       String name = null;
-       Reference ref = null;
-       Prim prim=null;
-       try {
-           name = configuration.getName();
-           //Placement
-           if (name!=null) {
-               try {
-                   ref = Reference.fromString(name);
-               } catch (SmartFrogResolutionException ex) {
-                   throw new SmartFrogResolutionException(null,
-                       targetP.sfCompleteName(),
-                       MessageUtil.formatMessage(MessageKeys.
-                                                 MSG_ILLEGAL_REFERENCE)
-                       +" when parsing '"+name+"'");
-               }
+            throws SmartFrogException, RemoteException {
+        Prim parent = null;
+        String name = null;
+        Reference ref = null;
+        Prim prim = null;
+        try {
+            name = configuration.getName();
+            //Placement
+            if (name != null) {
+                try {
+                    ref = Reference.fromString(name);
+                } catch (SmartFrogResolutionException ex) {
+                    throw new SmartFrogResolutionException(null,
+                            targetP.sfCompleteName(),
+                            MessageUtil.formatMessage(MessageKeys.
+                                    MSG_ILLEGAL_REFERENCE)
+                                    + " when parsing '" + name + "'");
+                }
 
-               if (ref.size()>1) {
-                   ReferencePart refPart = ref.lastElement();
-                   name = refPart.toString();
-                   name = name.substring(
-                       name.lastIndexOf(HereReferencePart.HERE+" ")+
-                       HereReferencePart.HERE.length()+1);
-                   ref.removeElement(refPart);
-                   parent = (Prim)targetP.sfResolve(ref);
-               }
-           }
+                if (ref.size() > 1) {
+                    ReferencePart refPart = ref.lastElement();
+                    name = refPart.toString();
+                    name = name.substring(
+                            name.lastIndexOf(HereReferencePart.HERE + " ") +
+                                    HereReferencePart.HERE.length() + 1);
+                    ref.removeElement(refPart);
+                    parent = (Prim) targetP.sfResolve(ref);
+                }
+            }
 
-           prim = doDeploy(configuration, name, parent, targetP);
+            prim = doDeploy(configuration, name, parent, targetP);
 
-       } catch (SmartFrogException sex){
-            configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
+        } catch (SmartFrogException sex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
             throw sex;
-        } catch (RemoteException rex){
-            configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
+        } catch (RemoteException rex) {
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, rex);
             throw rex;
-       }
+        }
         configuration.setSuccessfulResult();
         return prim;
     }
@@ -303,14 +304,17 @@ public class ActionDeploy extends ConfigurationAction {
      * @throws SmartFrogException for deployment problems
      * @throws RemoteException for network problems
      */
-    protected Prim doDeploy(ConfigurationDescriptor configuration, String name, Prim parent, ProcessCompound targetP) throws SmartFrogException, RemoteException {
+    protected Prim doDeploy(ConfigurationDescriptor configuration,
+                            String name,
+                            Prim parent,
+                            ProcessCompound targetP) throws SmartFrogException, RemoteException {
         Prim prim;
         prim = Deploy(configuration.getUrl(),
-                           name,
-                           parent,
-                           targetP,
-                           configuration.getContext(),
-                           configuration.getDeployReference(),
+                name,
+                parent,
+                targetP,
+                configuration.getContext(),
+                configuration.getDeployReference(),
                 getStartFlag(configuration));
         return prim;
     }
