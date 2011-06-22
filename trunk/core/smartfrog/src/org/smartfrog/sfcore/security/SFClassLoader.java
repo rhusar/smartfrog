@@ -218,6 +218,7 @@ public class SFClassLoader {
         }
 
         String fUrl = (new File(s)).getAbsolutePath();
+        fUrl = fUrl.replaceAll(" ", "%20");
         fUrl = "file:" + (fUrl.startsWith("/") ? fUrl : ("/" + fUrl));
 
         return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
