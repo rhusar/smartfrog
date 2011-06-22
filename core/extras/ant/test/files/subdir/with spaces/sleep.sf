@@ -19,15 +19,18 @@
  */
 
 #include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/components.sf"
+#include "/org/smartfrog/services/utils/echo/components.sf"
 
 /**
  * sfConfig is the special attribute that is deployed by SFSystem.
  * Here it is defined to implement the Counter component.
  */
-sfConfig extends Compound {
-         /**
-          * Mandatory attribute "limit" is defined.
-          */
-         limit 3;
-         sleep 0;
+sfConfig extends Delay {
+  action extends Sequence {
+    e extends Echo {
+      message "in echo";
+    }
+  }
+   time 15000;
 };

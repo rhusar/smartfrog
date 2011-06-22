@@ -19,6 +19,6 @@ For more information: www.smartfrog.org
 */
 
 
-sfConfig extends something_that_isntdefined{
+sfConfig extends something_that_isntdefined {
 }
 

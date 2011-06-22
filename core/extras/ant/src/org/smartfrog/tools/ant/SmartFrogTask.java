@@ -346,7 +346,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @param logStackTraces should stack traces be logged?
      */
     public void setLogStackTraces(boolean logStackTraces) {
-        this.logStackTraces = Boolean.valueOf(logStackTraces);
+        this.logStackTraces = logStackTraces;
     }
 
     /**
