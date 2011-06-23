@@ -55,7 +55,7 @@ public abstract class DelegatingScript extends Script {
             return super.invokeMethod(name, args);
 
         } catch (MissingMethodException e) {
-            sfLog.error("Method $name not found, trying super class: " +e, e)
+            sfLog.error("Method $name not found, trying super class: " + e, e)
             return super.invokeMethod(name, args);
         }
     }

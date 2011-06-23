@@ -1,20 +1,20 @@
 package org.smartfrog.services.groovy.install.task
 
 import groovy.text.GStringTemplateEngine
-import org.smartfrog.services.groovy.install.Component
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager
 import org.apache.commons.vfs2.FileSystemOptions
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
+import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder
+import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder
+import org.smartfrog.services.groovy.install.Component
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException
-import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder
-import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder
 
 /**
  * Provides access to worker functions which may be used in Source components and in task files.
@@ -37,7 +37,7 @@ class GroovyComponentHelper {
             try {
                 sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "Helper", true))
             } catch (Exception e) {
-                sfLog.error(e.toString(),e)
+                sfLog.error(e.toString(), e)
                 throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
             }
             rootDir = component.sfResolve("directory")
@@ -83,10 +83,11 @@ class GroovyComponentHelper {
                 return c.execute()
             }
         } catch (Exception e) {
-            sfLog.error(e.toString(), e)
+            sfLog.error("Executing ${c}: ${e}", e)
             // We have to catch exceptions and throw our own.
             // Otherwise we get an Unmarshallexception (Script1)
-            throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
+            throw new SmartFrogExtractedException("Executing ${c}: ${e}" ,
+                    SmartFrogExtractedException.convert(e))
         }
     }
 
@@ -138,7 +139,7 @@ class GroovyComponentHelper {
      * @param location url or path
      * @return the resolved location, which is root-relative on a simple path
      */
-    private FileObject resolve(location) {
+    private FileObject resolve(String location) {
         sfLog.debug("Resolving URL: $location")
         if (location.contains("http://") || location.contains("sftp://")) {
             assert !location.contains("***")
@@ -158,7 +159,7 @@ class GroovyComponentHelper {
         sfLog.debug("Creating $directory")
         FileObject dir = resolve(directory)
         if (dir.exists()) {
-            sfLog.error("A file or directory with same name already exists.")
+            sfLog.error("A file or directory with the name $directory already exists.")
             return false;
         }
         dir.createFolder()
@@ -174,7 +175,7 @@ class GroovyComponentHelper {
     public boolean delete(fileOrDirectory) {
         sfLog.debug("Deleting $fileOrDirectory")
         FileObject src = resolve(fileOrDirectory)
-        if (!src.exists()) sfLog.warn("Cannot delete. The file or directory does not exist.")
+        if (!src.exists()) sfLog.warn("Cannot delete $fileOrDirectory: it does not exist.")
         def delete = src.delete(Selectors.SELECT_ALL)
         src.close()
         return delete != 0
@@ -232,7 +233,7 @@ class GroovyComponentHelper {
      * @param destination dest URL or path
      */
     public void copyDir(String source, String destination) {
-        
+
     }
 
     /**
@@ -244,18 +245,18 @@ class GroovyComponentHelper {
         sfLog.debug("Moving $source to $destination")
         FileObject src = resolve(source);
         if (!src.exists()) {
-            sfLog.error("Source URL does not exist!")
+            sfLog.error("Source URL $src does not exist!")
             return
         }
         if (!src.isReadable()) {
-            sfLog.error("Source URL cannot be read!")
+            sfLog.error("Source URL $src cannot be read!")
             return
         }
         FileObject dest = resolve(destination);
         if (src.getType() == FileType.FILE) {
             if (dest.exists()) {
                 if (dest.getType() == FileType.FILE) {
-                    sfLog.warn("Destination file does already exist and will be overwritten!")
+                    sfLog.warn("Destination file $dest already exists and will be overwritten!")
                     src.moveTo(dest)
                 } else if (dest.getType() == FileType.FOLDER) {
                     sfLog.info("Moving file $source into directory $destination")
@@ -306,8 +307,9 @@ class GroovyComponentHelper {
             sfLog.debug("Evaluated template as: $replacedText")
             input.write(replacedText)
         } catch (e) {
-            sfLog.error(e.toString(), e)
-            throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
+            def text = "Failed to create template from $file: $e"
+            sfLog.error(text, e)
+            throw new SmartFrogExtractedException(text, SmartFrogExtractedException.convert(e))
         }
     }
 
@@ -318,7 +320,7 @@ class GroovyComponentHelper {
      */
     public void parse(file) {
         def binding = [
-                comp: component
+            comp: component
         ]
         parse(file, binding)
     }
