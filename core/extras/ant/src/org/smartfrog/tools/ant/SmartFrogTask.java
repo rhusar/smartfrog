@@ -28,6 +28,7 @@ import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -648,17 +649,21 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
             securityPolicy.cleanup();
         }
         //else, let's post-analyse the deployment
+        log("Exit code " + err, Project.MSG_VERBOSE );
         switch (err) {
-            case 0:
+            case ExitCodes.EXIT_CODE_SUCCESS:
                 //success
                 return true;
-            case 1:
-            case 69:
+            case ExitCodes.EXIT_ERROR_CODE_GENERAL:
+            case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
                 if (!failOnError) {
                     return false;
                 }
 
-                throw new BuildException(failureText);
+                throw new BuildException(failureText 
+                                         + " exit code " + err
+                                         + " " 
+                                         + getCommandLine());
             default:
                 //any other error code is an odd one
                 if (!failOnError) {

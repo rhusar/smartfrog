@@ -25,6 +25,7 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 import java.io.File;
 
@@ -135,11 +136,11 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
 
         //process the results
         switch (err) {
-            case 0:
+            case ExitCodes.EXIT_CODE_SUCCESS:
                 //success
                 break;
-            case 69:
-            case 1:
+            case ExitCodes.EXIT_ERROR_CODE_GENERAL:
+            case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
                 //parse fail
                 throw new BuildException(EXPAND_FAILURE);
             default:

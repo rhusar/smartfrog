@@ -21,6 +21,7 @@ package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.util.FileUtils;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 
@@ -119,7 +120,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         for (Application application : applications) {
             application.validate();
             addArg("-a");
-            String path = makePath(application);
+            String path = Os.isFamily("windows") 
+                            ? makePathWindows(application)
+                            : makePathUnix(application);
             String subprocess = getSubprocess();
 
             String deployAction = update ? ACTION_UPDATE: ACTION_DEPLOY;
@@ -129,26 +132,40 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                     + "" + ':'                 // sfConfig or empty
                     + getHost() + ':'          // host
                     + subprocess);             // subprocess
-
         }
     }
 
     /**
-     * Create a path from an application
+     * Create a path from an application. This was meant to 
+     * be cross-platform, but SFOS-1615 shows that it doesn't work
+     * reliably on Windows.
      *
      * @param application application
      * @return a path from its descriptor
      */
-    private String makePath(Application application) {
+    private String makePathSingleQuotes(Application application) {
         return "'\"" + application.getDescriptor() + "\"':";
     }
 
-//    private String makePath2(Application application) {
-//        return "\"" + application.getDescriptor() + "\":";
-//    }
-//    private String makePathWindows(Application application) {
-//        return "\\\"" + application.getDescriptor() + "\\\":";
-//    }
+    /**
+     * Create a path from an application for Unix-like platforms
+     *
+     * @param application application
+     * @return a path from its descriptor
+     */
+    private String makePathUnix(Application application) {
+        return "\"" + application.getDescriptor() + "\":";
+    }
+
+    /**
+     * Create a path from an application for Windows platforms
+     *
+     * @param application application
+     * @return a path from its descriptor
+     */
+    protected  String makePathWindows(Application application) {
+        return "\\\"" + application.getDescriptor() + "\\\":";
+    }
 
     /**
      * Get the subprocess we are deploying to. The default is {@link #DEFAULT_SUBPROCESS}, though subclasses may

@@ -14,6 +14,17 @@ ant -lib ../../dist/lib/*.jar -lib ../../../../smartfrog/dist/lib/smartfrog*.jar
   
   <property name="touchfile" location="touchfile.txt" />
   <delete file="${touchfile}" />
+  <presetdef name="assertFileCreated">
+    <fail>
+      <condition>
+        <not>
+          <available file="${touchfile}"/>
+        </not>
+      </condition>
+      Not found: "${touchfile}"
+    </fail>
+  </presetdef>
+
 
   <target name="testSleep">
     <sf-run logStackTraces="true" diagnostics="true">
@@ -25,16 +36,11 @@ ant -lib ../../dist/lib/*.jar -lib ../../../../smartfrog/dist/lib/smartfrog*.jar
 
   <target name="testTouch">
     <sf-run logStackTraces="true" diagnostics="true">
-      <application name="sleep"
+      <application name="touch"
           file="subdir/with spaces/touch.sf"
           />
     </sf-run>
-    <fail>
-      <condition>
-        <not><available file="${touchfile}"/> </not>
-      </condition>
-      Not found: "${touchfile}"
-    </fail>
+    <assertFileCreated />
   </target>
 
   <target name="testSleepTouch">
@@ -43,12 +49,17 @@ ant -lib ../../dist/lib/*.jar -lib ../../../../smartfrog/dist/lib/smartfrog*.jar
           file="subdir/with spaces/sleeptouch.sf"
           />
     </sf-run>
-    <fail>
-      <condition>
-        <not><available file="${touchfile}"/> </not>
-      </condition>
-      Not found: "${touchfile}"
-    </fail>
+    <assertFileCreated/>
   </target>
 
+
+  <target name="testTouchWithSpacesInInclude">
+    <sf-run logStackTraces="true" diagnostics="true">
+      <application name="touchincludes"
+        file="subdir/with spaces/touchincludes.sf"
+        />
+    </sf-run>
+    <assertFileCreated/>
+  </target>
+  
 </project>

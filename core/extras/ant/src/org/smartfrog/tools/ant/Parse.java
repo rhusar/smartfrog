@@ -27,6 +27,7 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.util.FileUtils;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -181,7 +182,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
         try {
 
             tempFile = FileUtils.getFileUtils().createTempFile("parse",
-                    ".txt", null);
+                    ".txt", null, true, true);
             int filesCount = buildParserTargetsFile(tempFile);
 
             if (parserTargetsFile != null) {
@@ -221,20 +222,23 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             //run it
             err = parser.executeJava();
         } finally {
-            if(tempFile!=null) {
+            if (tempFile != null) {
                 tempFile.delete();
             }
         }
 
         //process the results
         switch (err) {
-            case 0:
+            case ExitCodes.EXIT_CODE_SUCCESS:
                 //success
                 break;
-            case 69:
-            case 1:
+            case ExitCodes.EXIT_ERROR_CODE_GENERAL:
                 //parse fail
-                throw new BuildException("parse failure");
+                throw new BuildException("parse failure - exit code " + err);
+            case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
+                            //parse fail
+                throw new BuildException("parse failure bad arguments " 
+                                         + fullCommandLine);
             default:
                 //something else
                 throw new BuildException("Parse exited with error code " + err
