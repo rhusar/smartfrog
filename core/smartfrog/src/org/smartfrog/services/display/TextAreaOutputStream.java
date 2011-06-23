@@ -37,7 +37,7 @@ public class TextAreaOutputStream extends OutputStream {
     /**
      *  TextArea output destination
      */
-    private JTextArea jta;
+    private final JTextArea jta;
 
     /**
      *Constructs TextAreaOutputStream with jtext area.
@@ -45,9 +45,7 @@ public class TextAreaOutputStream extends OutputStream {
      *@param  jta  jtext area
      */
     public TextAreaOutputStream(Object jta) {
-        synchronized (jta) {
-            this.jta = (JTextArea) jta;
-        }
+        this.jta = (JTextArea) jta;
     }
 
     /**

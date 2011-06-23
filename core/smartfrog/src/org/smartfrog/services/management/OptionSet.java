@@ -117,7 +117,7 @@ public class OptionSet {
                             }
 
                             isRemoteSubprocess = true;
-                            port = new Integer(args[++i]).intValue();
+                            port = new Integer(args[++i]);
 
                             break;
 

@@ -94,7 +94,7 @@ public class HeadlessImpl extends PrimImpl implements Headless {
             throws SmartFrogRuntimeException, RemoteException {
         Object result = super.sfReplaceAttribute(name, value);
         if (ATTR_HEADLESS.equals(name)) {
-            setHeadless(((Boolean) value).booleanValue());
+            setHeadless(((Boolean) value));
         }
         return result;
     }

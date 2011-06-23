@@ -108,11 +108,11 @@ public class TableUtilities {
                column.setPreferredWidth(width);
                column.setWidth(width);
 
-               if (setMinimum == true) {
+               if (setMinimum) {
                   column.setMinWidth(width);
                }
 
-               if (setMaximum == true) {
+               if (setMaximum) {
                   column.setMaxWidth(width);
                }
             }
