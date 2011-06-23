@@ -17,18 +17,38 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.tools.ant.test.system;
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/sfcore/workflow/combinators/components.sf"
-#include "/org/smartfrog/services/utils/echo/components.sf"
-#include "/files/subdir/with spaces/touch.sf"
+import org.smartfrog.tools.ant.PropertyFile;
+import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
- * sfConfig is the special attribute that is deployed by SFSystem.
- * Here it is defined to implement the Counter component.
+ * @author steve loughran created 27-Feb-2004 16:37:55
  */
-sfConfig extends Delay {
-  action extends touch {
-  }
-  time 15000;
-};
+
+public class RunWithSpacesTest extends TaskTestBase {
+
+    public RunWithSpacesTest(String s) {
+        super(s);
+    }
+
+    /**
+     * implementation point: return the name of a test build file
+     *
+     * @return the path (from the test files base dir) to the build file
+     */
+    @Override
+    protected String getBuildFile() {
+        return "run2.xml";
+    }
+
+    public void testTouchWithSpacesInInclude() {
+        executeTarget("testTouchWithSpacesInInclude");
+    }
+
+    public void testTouch() {
+        executeTarget("testTouch");
+    }
+
+
+}

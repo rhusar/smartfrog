@@ -54,7 +54,7 @@ public final class ExitCodes {
      * value of the error code returned during a failed exit when a bad argument is used {@value}
      */
 
-    public static final int EXIT_ERROR_CODE_BAD_ARGS = 69;
+    public static final int EXIT_ERROR_CODE_BAD_ARGS = 2;
     /**
      * value of the error code returned during a failed exit when Control_ALT_Del is pressed {@value}
      */
