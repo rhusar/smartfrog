@@ -28,7 +28,7 @@ import java.util.Comparator;
  *@author     julgui
  *created    04 October 2001
  */
-class StringComparator  implements Comparator, Serializable {
+class StringComparator  implements Comparator<String>, Serializable {
 
    /**
     *  Description of the Method
@@ -38,16 +38,8 @@ class StringComparator  implements Comparator, Serializable {
     *@return     Description of the Returned Value
     */
    public int compare(
-         Object o1, Object o2) {
-      if (!(o1 instanceof String)) {
-         throw new ClassCastException();
-      }
-      if (!(o2 instanceof String)) {
-         throw new ClassCastException();
-      }
-
-      int result = ((String)o1).
-            compareTo(((String)o2));
+         String o1, String o2) {
+      int result = o1.compareTo(o2);
       return result * (-1);
    }
    //end compare()
