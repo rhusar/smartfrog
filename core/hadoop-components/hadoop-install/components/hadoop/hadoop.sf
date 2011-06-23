@@ -1,19 +1,18 @@
-#include "/org/smartfrog/services/groovy/install/base.sf" // part of installer.jar file
+#include "/org/smartfrog/services/groovy/install/base.sf" 
 
 
 HadoopComponent extends Component {
   hadoopVersion "0.20.203.0";
   directory "/service/hadoop";
-  iBrix false;
+  ibrix false;
   hadoopCompPath "/components/hadoop/";
   tarFile = (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
   resolvedTarFile = (ATTRIB repository ++ tarFile);
+  userName "unknown";
 }
 
 HadoopMaster extends HadoopComponent {
 
-
-    userName "unknown";
 
     -- extends Source {
         source (ATTRIB repository ++ hadoopCompPath ++ "master");
@@ -27,6 +26,9 @@ HadoopMaster extends HadoopComponent {
 HadoopWorker extends HadoopComponent {
 
     userVolumes [];
+    
+    // if a user volume is specified, the mount point must be provided
+    mountDrive "/dev/sdb";
 
     postConfigure extends Task;
 

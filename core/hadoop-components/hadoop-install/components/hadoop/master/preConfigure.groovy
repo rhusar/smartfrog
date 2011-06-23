@@ -4,7 +4,7 @@ sfLog().info("Preconfigure for Hadoop Master on $host")
 
 def baseDir = sfResolve("directory")
 
-if (sfResolve("iBrix")) {
+if (sfResolve("ibrix")) {
     // setup ibrix client
     command("cd $comp.fusionManager.ibrixDir; ./ibrixinit -tc -Ceth0 -i $comp.fusionManager.vm.ipAddress")
     // mount filesystem

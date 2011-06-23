@@ -10,10 +10,6 @@ bin=`cd "$bin"; pwd`
 # start mapred daemons
 # start jobtracker first to minimize connection errors at startup
 
-# start as a different user only for cloudera distribution
-
-# sudo -u sup "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR $1 tasktracker
-# sudo -u sup "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR $1 datanode
 
 "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR $1 tasktracker
 "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR $1 datanode

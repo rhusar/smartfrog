@@ -12,7 +12,7 @@
 
 <property>
   <name>fs.default.name</name>
-  <value><% if (comp.sfResolve("master:iBrix")) {
+  <value><% if (comp.sfResolve("master:ibrix")) {
                 out << "file:///"
             } else {
                 out << "hdfs://${comp.sfResolve("master:sfProcessHost")}:54310"
@@ -20,7 +20,7 @@
   %></value>
 </property>
 
-<% if (comp.sfResolve("master:iBrix")) { %>
+<% if (comp.sfResolve("master:ibrix")) { %>
 <property>
   <name>fs.ibrix.impl</name>
   <value>com.hp.hpl.filesystem.IBrixFileSystem</value>
