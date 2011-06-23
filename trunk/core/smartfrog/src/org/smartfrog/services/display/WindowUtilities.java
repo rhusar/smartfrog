@@ -40,6 +40,7 @@ import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.Hashtable;
+import java.util.Locale;
 
 /**
  * Window Utilities to handle some common window and frame representation problems
@@ -240,33 +241,33 @@ public class WindowUtilities {
         int west = 0;
 
         //C
-        positionDisplay = positionDisplay.toUpperCase();
+        positionDisplay = positionDisplay.toUpperCase(Locale.ENGLISH);
 
-        if (positionDisplay.equals("C") == true) {
+        if (positionDisplay.equals("C")) {
             north = 0;
             west = 0;
-        } else if (positionDisplay.equals("N") == true) {
+        } else if (positionDisplay.equals("N")) {
             north = 1;
             west = 0;
-        } else if (positionDisplay.equals("S") == true) {
+        } else if (positionDisplay.equals("S")) {
             north = -1;
             west = 0;
-        } else if (positionDisplay.equals("E") == true) {
+        } else if (positionDisplay.equals("E")) {
             north = 0;
             west = -1;
-        } else if (positionDisplay.equals("W") == true) {
+        } else if (positionDisplay.equals("W")) {
             north = 0;
             west = 1;
-        } else if (positionDisplay.equals("NE") == true) {
+        } else if (positionDisplay.equals("NE")) {
             north = 1;
             west = -1;
-        } else if (positionDisplay.equals("NW") == true) {
+        } else if (positionDisplay.equals("NW")) {
             north = 1;
             west = 1;
-        } else if (positionDisplay.equals("SE") == true) {
+        } else if (positionDisplay.equals("SE")) {
             north = -1;
             west = -1;
-        } else if (positionDisplay.equals("SW") == true) {
+        } else if (positionDisplay.equals("SW")) {
             north = -1;
             west = 1;
         }

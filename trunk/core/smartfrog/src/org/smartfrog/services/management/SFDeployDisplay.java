@@ -72,7 +72,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
      *@throws RemoteException  If network or RMI error
      */
     public SFDeployDisplay() throws RemoteException {
-        super();
     }
 
 
@@ -112,9 +111,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                 sflog.out("Failed to start console");
             }
         } catch (java.net.UnknownHostException uex) {
-            exitWith("Error: Unknown host.", ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWith("Error: Unknown host: " + hostname, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (java.rmi.ConnectException cex) {
-            exitWith("Error: " + cex.getMessage(), ExitCodes.EXIT_ERROR_CODE_GENERAL);
+            exitWith("Error: " + cex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (Exception e) {
             sfLogStatic().error("Error in SFDeployDisplay.main():" + e, e);
             exitWith("Error in SFDeployDisplay.main():" + e, ExitCodes.EXIT_ERROR_CODE_GENERAL);
@@ -242,7 +241,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             newDisplay.jMenuBarDisplay.add(jMenuMng);
             jCheckBoxMenuItemShowRootProcessPanel.setSelected(showRootProcess);
             jCheckBoxMenuItemShowRootProcessPanel.setText("Show rootProcess");
-            jCheckBoxMenuItemShowRootProcessPanel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(77, java.awt.event.KeyEvent.CTRL_MASK | java.awt.event.KeyEvent.ALT_MASK, false));
+            jCheckBoxMenuItemShowRootProcessPanel.setAccelerator(javax.swing.KeyStroke.getKeyStroke('M', 
+                    java.awt.event.KeyEvent.CTRL_MASK | java.awt.event.KeyEvent.ALT_MASK, false));
             jCheckBoxMenuItemShowRootProcessPanel.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     refreshButtonPanes.doClick();
@@ -280,7 +280,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             if (showScripting) {
                 addScriptingPanel(newDisplay.tabPane, null, null, hostname, port);
             }
-
 
             return newDisplay;
         }
@@ -411,16 +410,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
      *  Adds a feature to he ProcessesPanels attribute of the SFDeployDisplay
      *  class
      *
-     *@param  display              The feature to be added to the ProcessesPanels
-     *      attribute
-     *@param  addRootProcessPanel  The feature to be added to the ProcessesPanels
+     * @param  display  the Display to work with  attribute
+     * @param  addRootProcessPanel  The feature to be added to the ProcessesPanels
      *      attribute
      * @param  showCDasChild   boolean to enable display of CDs as children
-     *@param  hostname             The feature to be added to the ProcessesPanels
-     *      attribute
-     *@param  port                 The feature to be added to the ProcessesPanels
-     *      attribute
-     *@throws Exception        If any error
+     * @param  hostname  The feature to be added to the ProcessesPanels attribute
+     * @param  port   The feature to be added to the ProcessesPanels attribute
+     * @throws Exception        If any error
      */
     public static void addProcessesPanels(Display display, boolean addRootProcessPanel, boolean showCDasChild, String hostname, int port)
             throws Exception {
@@ -431,7 +427,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         JPanel deployLocalPPanel = null;
         if (addRootProcessPanel) {
             //Add rootProcessPanel
-            deployPanel = new DeployTreePanel(SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname), port), false, true, showCDasChild);
+            deployPanel = new DeployTreePanel(SFProcess.getRootLocator()
+                    .getRootProcessCompound(InetAddress.getByName(hostname), port), false, true, showCDasChild);
             deployPanel.setEnabled(true);
             display.tabPane.add(deployPanel, "rootProcess", indexPanel++);
             //Add Local Process Panel
@@ -761,17 +758,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
 
     /**
-     * Starts the display component.
-     *
-     *@throws SmartFrogException  If unable to start the component
-     *@throws RemoteException     If RMI or network error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-    }
-
-
-    /**
      * Terminates the SFDeployDisplay component
      *
      *@param  t  The reason why it was terminated
@@ -867,7 +853,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     /**
      * Interface Method.
      *
-     *@param  e  acrtion event
+     *@param  e  action event
      */
     private void refreshPanes(ActionEvent e) {
         this.refreshPanes();
@@ -876,7 +862,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     /**
      * Interface Method.
      *
-     *@param  e  acrtion event
+     *@param  e  action event
      */
     private void refreshNode(ActionEvent e) {
         this.refreshNode();

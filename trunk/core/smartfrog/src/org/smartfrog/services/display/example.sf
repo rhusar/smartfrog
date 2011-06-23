@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/display/components.sf"
 
 DefaultDisplay extends Display {
-        nameDisplay "Hello World! (Exit:ALT+F4)";
+  nameDisplay "Hello World! (Exit:ALT+F4)";
 }
 
 NewDisplay extends Display {
@@ -40,6 +40,6 @@ NewDisplay extends Display {
 
 
 sfConfig extends Compound {
-     display extends DefaultDisplay;
-     newDisplay extends NewDisplay;
+   display extends DefaultDisplay;
+   newDisplay extends NewDisplay;
 }

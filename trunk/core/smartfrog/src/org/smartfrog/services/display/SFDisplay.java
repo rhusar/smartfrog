@@ -175,7 +175,6 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
      *             If RMI or network error
      */
     public SFDisplay() throws RemoteException {
-        super();
     }
 
     /**

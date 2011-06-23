@@ -78,7 +78,6 @@ public class TextAreaLimiter implements DocumentListener, Runnable {
                 int end = jtArea.getLineEndOffset(excess);
                 jtArea.replaceRange(null, start, end);
             } catch (BadLocationException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
         }
