@@ -21,16 +21,6 @@ class Component extends CompoundImpl implements IComponent {
     }
 
     /**
-     * Deployment: deploy the superclass and do nothing else
-     * @throws RemoteException network problems
-     * @throws SmartFrogException startup problems
-     */
-    @Override
-    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
-        super.sfDeploy()
-    }
-
-    /**
      * Startup: start the superclass (which will deploy all children), then for every child that is a source,
      * get it to retrieve its artifacts.
      * Then, while not in the ready state, execute and then change state. This needs to be done in a thread
@@ -56,7 +46,7 @@ class Component extends CompoundImpl implements IComponent {
      * Initialise the component by entering the removed state
      */
     private void init() {
-        if (sfLog.isDebugEnabled()) sfLog().debug("Initialising ${sfCompleteName()}")
+        if (sfLog().isDebugEnabled()) sfLog().debug("Initialising ${sfCompleteName()}")
         state = ComponentState.REMOVED
         publishState()
     }
@@ -136,7 +126,7 @@ class Component extends CompoundImpl implements IComponent {
     @Override
     public Object sfResolve(String reference) throws SmartFrogResolutionException, RemoteException {
         if (reference.contains(":")) {
-            if (sfLog.isDebugEnabled()) sfLog().debug("Resolving reference $reference with parser")
+            if (sfLog().isDebugEnabled()) sfLog().debug("Resolving reference $reference with parser")
             def parts = reference.split(":")
             def root = sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)
             def ref = root.sfResolveWithParser("ATTRIB ${parts[0]}")
