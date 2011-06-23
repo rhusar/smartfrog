@@ -12,7 +12,7 @@
     and reduce task.
     </description>
   </property>
-<% if (comp.sfResolve("iBrix", false, false)) { %>
+<% if (comp.sfResolve("ibrix", false, false)) { %>
   <property>
     <name>mapred.system.dir</name>
     <value>${comp.location}/mapred/system</value>
