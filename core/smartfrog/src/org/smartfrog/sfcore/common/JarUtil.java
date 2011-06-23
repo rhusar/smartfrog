@@ -30,8 +30,6 @@ import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.io.Serializable;
 
 /**
  *  Title: SmartFrog CVS Description: Copyright:
@@ -42,10 +40,10 @@ public class JarUtil {
    /**
     *  Description of the Field
     */
-   String[] filters = {".sf",".sf2",".sfxml",".sfcd"};
-   Vector listJars = new Vector();
-   private Hashtable sfFiles = new Hashtable();
-   private Hashtable htSizes = new Hashtable();
+   private String[] filters = {".sf",".sf2",".sfxml",".sfcd"};
+   private Vector<String> listJars = new Vector<String>();
+   private Hashtable<String, String> sfFiles = new Hashtable<String, String>();
+   private Hashtable<String, Long> htSizes = new Hashtable<String, Long>();
 
 
    /**
@@ -61,7 +59,7 @@ public class JarUtil {
     */
    public static void main(String[] args) {
       JarUtil loadSFFiles = new JarUtil();
-      Vector list = loadSFFiles.init();
+      Vector<String> list = loadSFFiles.init();
 
       //loadSFFiles.getSFFiles(list);
       //System.out.println("Print: " + loadSFFiles.getFile("com/hp/SmartFrog/Prim/prim.sf"));
@@ -88,7 +86,7 @@ public class JarUtil {
     */
    public String getFile(String fileName) {
       try {
-         return ((String)sfFiles.get(fileName));
+         return sfFiles.get(fileName);
       } catch (Exception ex) {
          System.out.println("Error LoadSFFiles.getFile()" + ex.getMessage());
          return ("");
@@ -116,8 +114,8 @@ public class JarUtil {
     *
     *@return    Description of the Returned Value
     */
-   public Vector init() {
-      Vector listSF = new Vector();
+   public Vector<String> init() {
+      Vector<String> listSF = new Vector<String>();
       String classpath = System.getProperty("java.class.path");
       String pathSeparator = System.getProperty("path.separator");
       String fileSeparator = System.getProperty("file.separator");
@@ -132,16 +130,9 @@ public class JarUtil {
          jarFile = classpath.substring(index + 1);
          classpath = classpath.substring(0, index);
          listJars.add(jarFile);
-//         if (debugOn) {
-//            //System.out.println("jarFile: " + jarFile);
-//         }
          this.addJarFiles(jarFile, filters);
       }
-//      if (debugOn) {
-//         System.out.println("List: " + listJars.toString());
-//      }
       return getListSFSorted();
-      //return getListSF();
    }
 
 
@@ -181,12 +172,12 @@ public class JarUtil {
     *
     *@return    The listSF value
     */
-   Vector getListSF() {
-      Vector list = new Vector();
-      for (Enumeration e = this.sfFiles.keys(); e.hasMoreElements(); ) {
-         list.add(e.nextElement());
-      }
-      return list;
+   Vector<String> getListSF() {
+      Vector<String> list = new Vector<String>();
+       for (String key: sfFiles.keySet()) {
+           list.add(key);
+       }
+       return list;
    }
 
    /**
@@ -194,7 +185,7 @@ public class JarUtil {
     *
     *@return    The listSF value
     */
-   Vector getListSFSorted() {
+   Vector<String> getListSFSorted() {
       return (sort(this.getListSF()));
    }
 
@@ -203,22 +194,23 @@ public class JarUtil {
    /**
     *  Sort a Vector
     *
-    *@param  vect  Description of Parameter
+    *@param  source  Description of Parameter
     *@return       Description of the Returned Value
     */
-   public static Vector sort(Vector vect) {
-      Object[] array = vect.toArray();
+   public static Vector<String> sort(Vector<String> source) {
+       String[] array = new String[source.size()];
+       source.toArray(array);
 
       //System.out.println("Array:" + array.toString());
       Arrays.sort(array, new StringComparator());
       //System.out.println("ArraySorted:" + array.toString());
       //vect = new Vector(array);
-      vect = new Vector();
+      Vector<String> dest = new Vector<String>();
       //for (int i =0 ; i < array.length; i++) {
       for (int i = array.length-1 ; i >= 0; i--) {
-         vect.add(array[i]);
+         source.add(array[i]);
       }
-      return vect;
+      return source;
    }
 
    /**
@@ -231,14 +223,17 @@ public class JarUtil {
       try {
 
          // extracts just sizes only.
-         if (jarFileName==null||jarFileName.endsWith(System.getProperty("file.separator"))||jarFileName.endsWith(".")||jarFileName.equals("")||jarFileName.equals(" ")) {
+         if (jarFileName==null
+                 ||jarFileName.endsWith(System.getProperty("file.separator"))
+                 ||jarFileName.endsWith(".")
+                 ||jarFileName.equals("")||jarFileName.equals(" ")) {
             return;
          }
          ZipFile zf = new ZipFile(jarFileName);
          Enumeration e = zf.entries();
          while (e.hasMoreElements()) {
             ZipEntry ze = (ZipEntry)e.nextElement();
-            htSizes.put(ze.getName(), new Integer((int)ze.getSize()));
+            htSizes.put(ze.getName(), ze.getSize());
          }
          zf.close();
 
@@ -258,7 +253,7 @@ public class JarUtil {
                  int size = (int)ze.getSize();
                  // -1 means unknown size.
                  if (size == -1) {
-                    size = ((Integer)htSizes.get(ze.getName())).intValue();
+                    size = htSizes.get(ze.getName()).intValue();
                  }
                  byte[] b = new byte[size];
                  int rb = 0;
