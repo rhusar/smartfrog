@@ -26,11 +26,11 @@ import org.smartfrog.test.DeployingTestBase;
 /**
  *
  */
-public class GroovyTest extends DeployingTestBase {
+public class GroovyBSHIntegrationTest extends DeployingTestBase {
 
     public static final String PACKAGE = "/org/smartfrog/test/system/services/scripting/groovy/";
 
-    public GroovyTest(String name) {
+    public GroovyBSHIntegrationTest(String name) {
         super(name);
     }
 

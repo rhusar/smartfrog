@@ -21,6 +21,7 @@ package org.smartfrog.test;
 
 import junit.framework.AssertionFailedError;
 import org.smartfrog.SFSystem;
+import org.smartfrog.services.assertions.TerminationRecordException;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestEventSink;
@@ -63,6 +64,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         super.tearDown();
     }
 
+    public TestBlock getApplicationAsTestBlock() {
+        return (TestBlock)getApplication();
+    }
+    
     /**
      * Stop listening to events this call is synchronous, and idempotent.
      *
@@ -115,8 +120,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     protected TerminationRecord expectTermination(TestBlock testBlock, boolean normal) throws Throwable {
         TerminationRecord status = spinUntilFinished(testBlock);
         assertNotNull("Null termination record", status);
-        assertTrue("Expected " + (normal ? "normal" : "abnormal") + " termination, but got " + status,
-                normal == status.isNormal());
+        assertEquals("Expected " + (normal ? "normal" : "abnormal") + " termination, but got " + status,
+                normal, status.isNormal());
         return status;
     }
 
@@ -239,15 +244,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @return a concatenated package with .sf at the end
      */
     public String createUrlString(String packageName, String filename) {
-        StringBuilder buffer = new StringBuilder(packageName);
-        if (!packageName.endsWith("/")) {
-            buffer.append('/');
-        }
-        buffer.append(filename);
-        if (!filename.endsWith(".sf")) {
-            buffer.append(".sf");
-        }
-        return buffer.toString();
+        return SmartFrogTestManager.createUrlString(packageName, filename);
     }
 
     /**
@@ -266,8 +263,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     protected LifecycleEvent runTestDeployment(String packageName, String filename, int startupTimeout,
                                                int executeTimeout) throws Throwable {
         String urlstring = createUrlString(packageName, filename);
-        application = loadApplication(filename, urlstring, startupTimeout);
-        startListening(application);
+        setApplication(loadApplication(filename, urlstring, startupTimeout));
+        startListening(getApplication());
         LifecycleEvent event = getEventSink().runTestsToCompletion(startupTimeout, executeTimeout);
         return event;
     }

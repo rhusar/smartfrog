@@ -16,6 +16,7 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="root.dir" location="../../"/>
+  <property name="groovy.enabled" value="true"/>
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
 
@@ -27,28 +28,5 @@
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
-
-
-   <target name="pre-compile" depends="common.pre-compile, ivy-classpaths, groovy-tasks">
-    </target>
-
-    <!-- extend the compile target to use groovyc -->
-    <target name="compile" depends="common.compile">
-      <echo>compiling groovy source</echo>
-      <sf-groovyc
-        classpathref="compile.classpath"
-        srcdir="${src.dir}"
-        destdir="${build.classes.dir}"/>
-    </target>
-
-  <!-- extend the test compile target to use groovyc -->
-  <target name="compile-tests" depends="common.compile-tests, groovy-tasks">
-      <echo>compiling groovy tests</echo>
-      <sf-groovyc
-        srcdir="${test.src.dir}"
-        destdir="${test.classes.dir}"
-        classpathref="tests.compile.classpath"
-        />
-    </target>
 
 </project>

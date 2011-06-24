@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.SFSystem;
+import org.smartfrog.services.assertions.CommonExceptionNames;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.testcontext.TestContextInjector;
@@ -59,7 +60,8 @@ import java.util.Properties;
  * @author steve loughran created 17-Feb-2004 17:08:35
  */
 
-public abstract class SmartFrogTestBase extends TestCase implements TestContextInjector {
+public abstract class SmartFrogTestBase extends TestCase implements TestContextInjector,
+        CommonExceptionNames {
 
     /**
      * cached directory of classes
@@ -72,98 +74,12 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
 
     private static final Log log = LogFactory.getLog(SmartFrogTestBase.class);
 
-    /**
-     * Smartfrog assertion. Value: {@value}
-     */
-    private static final String EXCEPTION_SMARTFROG_ASSERTION = "org.smartfrog.services.assertions.SmartFrogAssertionException";
-
-    /**
-     * Text to look for in classname when seeking a resolution exception. Value: {@value}
-     */
-    public static final String EXCEPTION_RESOLUTION = "org.smartfrog.sfcore.common.SmartFrogResolutionException";
-
-    /**
-     * Text to look for in classname when seeking a type resolution exception. Value: {@value}
-     */
-    public static final String EXCEPTION_TYPERESOLUTION = "org.smartfrog.sfcore.common.SmartFrogTypeResolutionException";
-
-    /**
-     * Text to look for in classname when seeking a place resolution exception. Value: {@value}
-     */
-    public static final String EXCEPTION_PLACERESOLUTION = "org.smartfrog.sfcore.common.SmartFrogPlaceResolutionException";
-
-    /**
-     * Text to look for in classname when seeking a link resolution exception. Value: {@value}
-     */
-    public static final String EXCEPTION_LINKRESOLUTION = "org.smartfrog.sfcore.common.SmartFrogLinkResolutionException";
-
-    /**
-     * Text to look for in classname when seeking a function  resolution exception. Value: {@value}
-     */
-    public static final String EXCEPTION_FUNCTIONRESOLUTION = "org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException";
-
-    /**
-     * Text to look for in classname when seeking a assertion resolution exception. Value: {@value}
-     */
-    public static final String EXCEPTION_ASSERTIONRESOLUTION
-            = "org.smartfrog.sfcore.common.SmartFrogAssertionResolutionException";
-
-
-    /**
-     * Text to look for in classname when seeking a lifecycle exception. Value: {@value}
-     */
-    public static final String EXCEPTION_LIFECYCLE = "org.smartfrog.sfcore.common.SmartFrogLifecycleException";
-    /**
-     * Text to look for in classname when seeking a SmartFrogException. Value: {@value}
-     */
-    public static final String EXCEPTION_SMARTFROG = "org.smartfrog.sfcore.common.SmartFrogException";
-    /**
-     * Text to look for in classname when seeking a liveness exception. Value: {@value}
-     */
-
-    public static final String EXCEPTION_LIVENESS = "org.smartfrog.sfcore.common.SmartFrogLivenessException";
-
-    /**
-     * Text to look for in classname when seeking a SmartFrogDeploymentException. Value: {@value}
-     */
-
-    public static final String EXCEPTION_DEPLOYMENT = "org.smartfrog.sfcore.common.SmartFrogDeploymentException";
-
-    /**
-     * Text to look for in classname when seeking a ClassCastException. Value: {@value}
-     */
-    public static final String EXCEPTION_CLASSCAST = "java.lang.ClassCastException";
-
-    /**
-     * Text to look for in classname when seeking a ClassCastException. Value: {@value}
-     */
-    public static final String EXCEPTION_CLASSNOTFOUND = "java.lang.ClassNotFoundException";
-
-
-    /**
-     * Text to look for in classname when seeking a SmartFrogParseException. Value: {@value}
-     */
-    public static final String EXCEPTION_PARSE = "org.smartfrog.sfcore.common.SmartFrogParseException";
-
-    /**
-     * Text to look for in classname when seeking a SmartFrogCompileResolutionException. Value: {@value}
-     */
-    public static final String EXCEPTION_COMPILE_RESOLUTION = "SmartFrogCompileResolutionException";
-
-    /**
-     * Text to look for in classname when seeking a SmartFrogLazyResolutionException. Value: {@value}
-     */
-    public static final String EXCEPTION_SMARTFROG_LAZY_RESOLUTION_EXCEPTION =
-            "org.smartfrog.sfcore.common.SmartFrogLazyResolutionException";
+    private SmartFrogTestManager testManager;
 
     /**
      * This is an application that will be undeployed at teardown time
      */
     protected Prim application;
-    protected static final String ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION
-            = "Unresolved Reference during phase link resolution";
-    protected static final String ERROR_UNRESOLVED_REFERENCE_TYPE_RESOLUTION
-            = "Unresolved Reference during phase type resolution";
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM parameters
@@ -182,7 +98,10 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     protected void setUp() throws Exception {
         super.setUp();
 
+        testManager = new SmartFrogTestManager(log, getName());
         hostname = TestHelper.getTestProperty(TestHelper.HOSTNAME, "localhost");
+        testManager.setHostname(hostname);
+        testManager.setup();
         String classesdirname = TestHelper.getTestProperty(TestHelper.CLASSESDIR, null);
         if (classesdirname != null) {
             classesDir = new File(classesdirname);
@@ -197,7 +116,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        terminateApplication(application);
+        testManager.teardown();
+        terminateApplication();
     }
 
     /**
@@ -283,9 +203,11 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      * set the application
      *
      * @param application new application
+     * @return the application itself
      */
-    public void setApplication(Prim application) {
+    public Prim setApplication(Prim application) {
         this.application = application;
+        return application;
     }
 
     /**
@@ -358,8 +280,6 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
                                                  String containedExceptionName,
                                                  String containedExceptionText) throws SmartFrogException,
             RemoteException, UnknownHostException, SFGeneralSecurityException {
-
-        startSmartFrog();
         ConfigurationDescriptor cfgDesc =
                 createDeploymentConfigurationDescriptor(appName, testURL);
 
@@ -394,7 +314,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     }
 
     /**
-     * A deployment failed, and a CD containing exceptions was returned instead of an application. This method scans through looking for the expected exceptions
+     * A deployment failed, and a CD containing exceptions was returned instead of an application.
+     * This method scans through looking for the expected exceptions
      * and failing if the type or messages do not match
      *
      * @param deployedApp            what was deployed
@@ -408,72 +329,41 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
                                              String exceptionName, String searchString,
                                              String containedExceptionName,
                                              String containedExceptionText) {
-        //we got an exception. let's take a look.
-        Throwable returnedFault;
-        returnedFault = deployedApp.getResultException();
-        assertFaultCauseAndCDContains(returnedFault, exceptionName, searchString, cfgDesc);
-        //get any underlying cause
-        Throwable cause = returnedFault.getCause();
-        assertFaultCauseAndCDContains(cause, containedExceptionName, containedExceptionText, cfgDesc);
+        testManager.searchForExpectedExceptions(deployedApp, cfgDesc, exceptionName, searchString, containedExceptionName, containedExceptionText);
     }
 
     /**
      * assert that something we deployed contained the name and text we wanted.
      *
-     * @param cause     root cause. Can be null, if faultName and faultText are also null. It is an error if they are defined and the cause is null
+     * @param cause     root cause. Can be null, if faultName and faultText are also null. 
+     *  It is an error if they are defined and the cause is null
      * @param faultName substring that must be in the classname of the fault (can be null)
      * @param faultText substring that must be in the text of the fault (can be null)
      * @param cfgDesc   what we were deploying; the status string is extracted for reporting purposes
      */
     private void assertFaultCauseAndCDContains(Throwable cause, String faultName,
                                                String faultText, ConfigurationDescriptor cfgDesc) {
-        String details = cfgDesc.statusString();
-        assertFaultCauseAndTextContains(cause, faultName, faultText, details);
+        testManager.assertFaultCauseAndCDContains(cause, faultName, faultText, cfgDesc);
     }
 
     /**
      * /** assert that something we deployed contained the name and text we wanted.
      *
-     * @param cause     root cause. Can be null, if faultName and faultText are also null. It is an error if they are defined and the cause is null
+     * @param cause     root cause. Can be null, if faultName and faultText are also null.
+     *  It is an error if they are defined and the cause is null
      * @param faultName substring that must be in the classname of the fault (can be null)
      * @param faultText substring that must be in the text of the fault  (can be null)
      * @param details   status string for reporting purposes
      */
-    protected static void assertFaultCauseAndTextContains(Throwable cause, String faultName,
+    protected void assertFaultCauseAndTextContains(Throwable cause, String faultName,
                                                           String faultText, String details) {
-        //if we wanted the name of a fault
-        if (faultName != null) {
-            //then look for the name of contained exception and see it matches what was
-            // asked for
-            assertNotNull("expected throwable of type "
-                    + faultName,
-                    cause);
-            //verify the name
-            assertThrowableNamed(cause,
-                    faultName,
-                    details);
-        }
-        //look for the exception text
-        if (faultText != null) {
-            assertNotNull("expected throwable containing text "
-                    + faultText,
-                    cause);
-
-            assertContains(cause.toString(),
-                    faultText,
-                    details,
-                    extractDiagnosticsInfo(cause));
-        }
+        testManager.assertFaultCauseAndTextContains(cause, faultName, faultText, details);
     }
 
 
     private ConfigurationDescriptor createDeploymentConfigurationDescriptor(String appName, String testURL)
             throws SmartFrogInitException {
-        return new ConfigurationDescriptor(appName
-                , testURL,
-                ConfigurationDescriptor.Action.DEPLOY
-                , hostname
-                , null);
+        return testManager.createDeploymentConfigurationDescriptor(appName, testURL);
     }
 
     /**
@@ -481,11 +371,10 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      *
      * @param thrown     what was thrown
      * @param name       the name of the class
-     * @param cfgDescMsg description (can be null)
+     * @param message description (can be null)
      */
-    public static void assertThrowableNamed(Throwable thrown, String name, String cfgDescMsg) {
-        assertContains(thrown.getClass().getName(),
-                name, cfgDescMsg, thrown);
+    public void assertThrowableNamed(Throwable thrown, String name, String message) {
+        testManager.assertThrowableNamed(thrown, name, message);
     }
 
     /**
@@ -496,21 +385,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      * @return a string describing the throwable; includes a stack trace
      */
     private static String extractDiagnosticsInfo(Throwable thrown) {
-        StringBuffer buffer = new StringBuffer();
-        thrown.getStackTrace();
-        buffer.append("Message:  ");
-        buffer.append(thrown.getMessage());
-        buffer.append('\n');
-        buffer.append("Class:    ");
-        buffer.append(thrown.getClass().getName());
-        buffer.append('\n');
-        buffer.append("Stack:    ");
-        StackTraceElement[] stackTrace = thrown.getStackTrace();
-        for (StackTraceElement frame : stackTrace) {
-            buffer.append(frame.toString());
-            buffer.append('\n');
-        }
-        return buffer.toString();
+        return SmartFrogTestManager.extractDiagnosticsInfo(thrown);
     }
 
     /**
@@ -518,20 +393,11 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      *
      * @param source     source to scan
      * @param substring  string to look for
-     * @param cfgDescMsg configuration description
+     * @param resultMessage configuration description
      * @param extraText  any extra text, can be null
      */
-    public static void assertContains(String source, String substring, String cfgDescMsg, String extraText) {
-        assertNotNull("No string to look for [" + substring + "]", source);
-        assertNotNull("No substring ", substring);
-        final boolean contained = source.contains(substring);
-
-        if (!contained) {
-            String message = "- Did not find \n[" + substring + "]\nin \n[" + source + "]" +
-                    (cfgDescMsg != null ? ("\n, Result:\n" + cfgDescMsg) : "");
-            log.error(message + (extraText != null ? ('\n' + extraText) : ""));
-            fail(message);
-        }
+    public void assertContains(String source, String substring, String resultMessage, String extraText) {
+        testManager.assertContains(source, substring, resultMessage, extraText);
     }
 
     /**
@@ -539,24 +405,11 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      *
      * @param source     source to scan
      * @param substring  string to look for
-     * @param cfgDescMsg configuration description
+     * @param resultMessage configuration description
      * @param exception  any exception to look at can be null
      */
-    public static void assertContains(String source, String substring, String cfgDescMsg, Throwable exception) {
-        assertNotNull("No string to look for [" + substring + "]", source);
-        assertNotNull("No substring ", substring);
-        final boolean contained = source.contains(substring);
-
-        if (!contained) {
-            String message = "- Did not find \n[" + substring + "] \nin \n[" + source + ']' +
-                    (cfgDescMsg != null ? ("\n, Result:\n" + cfgDescMsg) : "");
-            if (exception != null) {
-                log.error(message, exception);
-            } else {
-                log.error(message);
-            }
-            fail(message);
-        }
+    public void assertContains(String source, String substring, String resultMessage, Throwable exception) {
+        testManager.assertContains(source, substring, resultMessage, exception);
     }
 
     /**
@@ -565,17 +418,8 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      * @param source    source to scan
      * @param substring string to look for
      */
-    public static void assertContains(String source, String substring) {
+    public void assertContains(String source, String substring) {
         assertContains(source, substring, "", (String) null);
-    }
-
-
-    public File getClassesDir() {
-        return classesDir;
-    }
-
-    public void setClassesDir(File classesDir) {
-        this.classesDir = classesDir;
     }
 
     public String getHostname() {
@@ -601,19 +445,6 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     }
 
     /**
-     * Shut down smartfrog on the local host
-     *
-     * @throws RemoteException in the event of remote trouble.
-     * @throws SmartFrogException The component did not deploy with some other exception
-     * @throws SFGeneralSecurityException security trouble
-     * @throws UnknownHostException hostname is wrong
-     */
-    public void terminateSmartFrog()
-            throws SmartFrogException, RemoteException, SFGeneralSecurityException, UnknownHostException {
-        SFSystem.runConfigurationDescriptor(new ConfigurationDescriptor(":TERMINATE:::localhost:"));
-    }
-
-    /**
      * Deploys an application and returns the reference to deployed application.
      *
      * @param testURL URL to test
@@ -626,22 +457,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
     @SuppressWarnings({"ProhibitedExceptionThrown"})
     protected Prim deployExpectingSuccess(String testURL, String appName)
             throws Throwable {
-
-        try {
-            Object deployedApp = deployApplication(appName, testURL);
-
-            if (deployedApp instanceof Prim) {
-                return ((Prim) deployedApp);
-            } else {
-                lookForThrowableInDeployment(deployedApp);
-                throw new AssertionFailedError("Deployed something of type "
-                        + deployedApp.getClass()
-                        + ": "+ deployedApp);
-            }
-        } catch (Throwable throwable) {
-            logThrowable("thrown during deployment", throwable);
-            throw throwable;
-        }
+        return testManager.deployExpectingSuccess(testURL, appName);
     }
 
     /**
@@ -654,20 +470,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      */
     @SuppressWarnings({"ProhibitedExceptionThrown"})
     protected void lookForThrowableInDeployment(Object deployedApp) throws Throwable {
-        if (deployedApp instanceof ConfigurationDescriptor) {
-            ConfigurationDescriptor cd = (ConfigurationDescriptor) deployedApp;
-            Throwable resultException = cd.getResultException();
-            if (resultException != null) {
-                log.warn("During deployment: " + resultException, resultException);
-                throw resultException;
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Test success in description: \n      "
-                            + cd.toString("\n        "));
-                }
-
-            }
-        }
+        testManager.lookForThrowableInDeployment(deployedApp);
     }
 
 
@@ -686,19 +489,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      */
     private Object deployApplication(String appName, String testURL) throws SmartFrogException, RemoteException,
             SFGeneralSecurityException, UnknownHostException {
-        startSmartFrog();
-        ConfigurationDescriptor cfgDesc =
-                new ConfigurationDescriptor(appName,
-                        testURL,
-                        ConfigurationDescriptor.Action.DEPLOY,
-                        hostname,
-                        null);
-        log.info("Testing for successful deployment of: \n    "
-                + cfgDesc.toString("\n    ")
-        );
-
-        Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc, true);
-        return deployedApp;
+        return testManager.deployApplication(appName, testURL);
     }
 
 
@@ -867,20 +658,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      * @throws RemoteException on network trouble other than an already terminated app
      */
     public void terminateApplication(Prim target) throws RemoteException {
-        if (target == null) {
-            return;
-        }
-        Reference name;
-        try {
-            name = target.sfCompleteName();
-        } catch (RemoteException ignore) {
-            name = null;
-        }
-        try {
-            target.sfDetachAndTerminate(TerminationRecord.normal(name));
-        } catch (NoSuchObjectException ignore) {
-            //app is already terminated, do not fail a test.
-        }
+        testManager.terminateApplication(target);
     }
 
     public synchronized void terminateApplication() throws RemoteException {
@@ -1124,23 +902,10 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      * @param throwableClass  fragment of the class name/package of the exception. (optional; can be null)
      * @param throwableText   text to look for in the fault text. (optional; can be null)
      */
-    public static void assertTerminationRecordContains(TerminationRecord record,
+    public void assertTerminationRecordContains(TerminationRecord record,
                                                        String descriptionText,
                                                        String throwableClass,
                                                        String throwableText) {
-        assertNotNull("Null termination record", record);
-        if (descriptionText != null) {
-            assertContains(record.description, descriptionText);
-        }
-        if (throwableClass != null || throwableText != null) {
-            if (record.getCause() != null) {
-                assertFaultCauseAndTextContains(record.getCause(),
-                        throwableClass, throwableText, null);
-            } else {
-                fail("Expected Termination record " + record + " to contain "
-                        + " a throwable " + (throwableClass != null ? throwableClass : "")
-                        + (throwableText != null ? (" with text" + throwableText) : ""));
-            }
-        }
+        testManager.assertTerminationRecordContains(record, descriptionText, throwableClass, throwableText);
     }
 }

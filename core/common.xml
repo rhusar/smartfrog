@@ -80,7 +80,7 @@
     <!--if unset, we work it out here too-->
     <property name="root.dir" location="${core.dir}"/>
     
-    <!-- This is to decide the directory structure for the components, and default is false -->
+    <!-- This is to decide the directory structure for the components-->
     <property name="is.component" value="true"  />
 
     <!-- the common.properties file lets you provide a single declaration of
@@ -1326,10 +1326,10 @@ smartfrog.tasks.classpath=
       depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
   </target>
 
-  <target name="groovy-tasks" depends="declare-classpaths">
+  <target name="groovy-tasks" depends="declare-classpaths" if="groovy.enabled">
      <taskdef name="groovyc"
        classname="org.codehaus.groovy.ant.Groovyc"
-       classpathref="compile.classpath"/>
+       classpathref="build.classpath"/>
 
     <!-- define a new groovyc task with new default options -->
     <presetdef name="sf-groovyc">
@@ -1371,7 +1371,18 @@ smartfrog.tasks.classpath=
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
-  <target name="ready-to-rmi" depends="compile" />
+
+  <!-- extend the compile target to use groovyc -->
+  <target name="compile-groovy-source" depends="common.compile, groovy-tasks" if="groovy.enabled">
+    <echo>compiling groovy source</echo>
+    <sf-groovyc
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"/>
+  </target>
+
+
+  <target name="ready-to-rmi" depends="compile, compile-groovy-source" />
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -1447,8 +1458,18 @@ smartfrog.tasks.classpath=
       <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
 
+  <!-- extend the test compile target to use groovyc -->
+  <target name="compile-groovy-tests" depends="compile-tests, groovy-tasks" if="groovy.enabled">
+    <echo>compiling groovy tests</echo>
+    <sf-groovyc
+        srcdir="${test.src.dir}"
+        destdir="${test.classes.dir}"
+        classpathref="tests.compile.classpath"
+        />
+  </target>
 
-  <target name="ready-to-rmi-tests"  depends="compile-tests"/>
+
+  <target name="ready-to-rmi-tests"  depends="compile-tests, compile-groovy-tests"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->

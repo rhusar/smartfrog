@@ -48,14 +48,16 @@
       conf="test->default"/>
 
    <dependency org="org.smartfrog" name="sf-groovy" rev="latest.integration" changing="true"
-     conf="runtime->default"/>
+     conf="build,runtime->default"/>
    <dependency org="org.smartfrog" name="sf-ssh" rev="latest.integration" changing="true"
      conf="runtime->default"/>
    <dependency org="org.smartfrog" name="sf-www" rev="latest.integration" changing="true"
      conf="runtime->default"/>
    <dependency org="commons-vfs" name="commons-vfs" rev="svn1069844" force="true"
-     conf="runtime->master">
+     conf="runtime->default">
+    <exclude org="jsch"/>
     <exclude org="httpclient"/>
+    <exclude org="antlr"/>
     <exclude org="commons-codec"/>
   </dependency>
 
