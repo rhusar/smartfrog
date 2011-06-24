@@ -55,8 +55,10 @@ Errors extends DATA {
    */
 
   testFailure extends TestBlock {
+  
     action extends ExpectDeployFailure {
       sfShouldTerminate false;
+      runTests true;
 
       action extends FailAbnormal {
         message "failure message";
@@ -73,6 +75,7 @@ Errors extends DATA {
 
   testFailureNested extends ExpectTerminate {
     action extends ExpectDeployFailure {
+      runTests true;
 
       action extends FailAbnormal {
         message "failure message";
@@ -97,6 +100,7 @@ Errors extends DATA {
         exit text from a failing deployment#;
 
       action extends testFailureWrongMessage {
+         runTests true;
       }
 
       exitText Errors:TERMINATION_MESSAGE_MISMATCH;
