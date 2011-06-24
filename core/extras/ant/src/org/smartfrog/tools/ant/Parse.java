@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,7 +64,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
     /**
      * log a stack trace
      */
-    private boolean logStackTrace = false;
+    private boolean logStackTraces = false;
 
     /**
      * an optional file of parser targets
@@ -90,7 +89,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
     /**
      * parser subprocess
      */
-    private Java parser;
+    private Java smartfrog;
     private static final String ERROR_TOO_MANY_FILES =
         "Cannot have a parserTargetsFile and a fileset of files to parse";
 
@@ -103,9 +102,9 @@ public class Parse extends TaskBase implements SysPropertyAdder {
     public void init() throws BuildException {
         super.init();
         String entryPoint = SmartFrogJVMProperties.PARSER_ENTRY_POINT;
-        parser = createJavaTask(entryPoint);
-        parser.setFailonerror(true);
-        parser.setFork(true);
+        smartfrog = createJavaTask(entryPoint);
+        smartfrog.setFailonerror(true);
+        smartfrog.setFork(true);
     }
 
     /**
@@ -202,25 +201,25 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             }
 
             //now let's configure the parser
-            setupClasspath(parser);
-            parser.setFork(true);
+            setupClasspath(smartfrog);
+            smartfrog.setFork(true);
             //and add various options to it
-            parser.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_R);
+            smartfrog.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_R);
             if (quiet) {
-                parser.createArg().setValue(
+                smartfrog.createArg().setValue(
                         SmartFrogJVMProperties.PARSER_OPTION_QUIET);
             }
             if (verbose) {
-                parser.createArg().setValue(
+                smartfrog.createArg().setValue(
                         SmartFrogJVMProperties.PARSER_OPTION_VERBOSE);
             }
-            parser.createArg().setValue(
+            smartfrog.createArg().setValue(
                     SmartFrogJVMProperties.PARSER_OPTION_FILENAME);
-            parser.createArg().setFile(targetFile);
-            fullCommandLine = parser.getCommandLine().toString();
+            smartfrog.createArg().setFile(targetFile);
+            fullCommandLine = smartfrog.getCommandLine().toString();
             log(fullCommandLine,Project.MSG_VERBOSE);
             //run it
-            err = parser.executeJava();
+            err = smartfrog.executeJava();
         } finally {
             if (tempFile != null) {
                 tempFile.delete();
@@ -286,7 +285,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      * @param sysproperty system property
      */
     public void addSysproperty(Environment.Variable sysproperty) {
-        parser.addSysproperty(sysproperty);
+        smartfrog.addSysproperty(sysproperty);
     }
 
     /**
@@ -295,7 +294,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      * @param propset set of properties to add
      */
     public void addSyspropertyset(PropertySet propset) {
-        parser.addSyspropertyset(propset);
+        smartfrog.addSyspropertyset(propset);
     }
 
     /**
@@ -305,6 +304,19 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      */
     public void addConfiguredPropertyFile(PropertyFile propFile) {
         propFile.addPropertiesToJvm(this);
+    }
+
+    /**
+     * set a sys property on the parser JVM
+     *
+     * @param name  property name
+     * @param value value
+     */
+    public void addJVMProperty(String name, String value) {
+        Environment.Variable property = new Environment.Variable();
+        property.setKey(name);
+        property.setValue(value);
+        addSysproperty(property);
     }
 
 }
