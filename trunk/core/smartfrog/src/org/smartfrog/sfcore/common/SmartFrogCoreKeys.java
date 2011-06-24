@@ -305,7 +305,7 @@ public interface SmartFrogCoreKeys {
     String SF_START_FAILURE = "sfStartFailure";
 
     /**
-     * Name to name a start phase failure.
+     * Name of the core clog
      *
      * Value {@value}
      */
