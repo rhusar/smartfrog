@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test;
+package org.smartfrog.services.assertions;
 
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -58,7 +58,7 @@ public class TerminationRecordException extends Exception {
      * @param record the termination record
      */
     public TerminationRecordException(String message, TerminationRecord record) {
-        super(message,record.getCause());
+        super(message, record.getCause());
         this.record = record;
     }
 
@@ -79,6 +79,6 @@ public class TerminationRecordException extends Exception {
      * @return a string representation of this throwable.
      */
     public String toString() {
-        return super.toString()+record.toString();
+        return super.toString() + record.toString();
     }
 }

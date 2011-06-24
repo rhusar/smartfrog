@@ -68,7 +68,7 @@ public class ScriptHelper {
         ScriptEngine engine = manager.getEngineByName(language);
         if (engine == null) {
             throw new SmartFrogLifecycleException(ERROR_NO_ENGINE
-                                                  + language);
+                                                  + "\"" + language  + "\"" );
         }
         return new LoadedEngine(language, engine);
     }

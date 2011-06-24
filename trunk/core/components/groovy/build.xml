@@ -27,17 +27,15 @@ For more information: www.smartfrog.org
 <description>
 Introduction
 ============
-Groovy support for SmartFrog; Java6+ only
+Groovy support for SmartFrog
 
 </description>
 
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
-
-
-  <property name="is.component" value="true"  />
   <property name="ivy.enabled" value="true"/>
+  <property name="groovy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
   
   <!-- Import common stuff -->

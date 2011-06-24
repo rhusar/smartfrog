@@ -339,7 +339,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             throws RemoteException, SmartFrogLogException {
         if (configurationClass instanceof String) {
             localLog = loadLogger(name, (ComponentDescription) loggersConfiguration.firstElement(),
-                    new Integer(currentLogLevel), (String) configurationClass, configurationCodeBase);
+                    currentLogLevel, (String) configurationClass, configurationCodeBase);
             if (localLog.isTraceEnabled()) {
                 localLog.trace("Logger registered: " + localLog.getClass().toString());
             }
