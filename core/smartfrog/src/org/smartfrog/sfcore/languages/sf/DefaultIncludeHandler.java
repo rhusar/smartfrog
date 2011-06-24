@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Vector;
 
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 
@@ -37,27 +39,39 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  * this to do more sophisticated include storage. The format of an
  * AttributeList as returned by DefaultParser is a vector of Object[] with
  * element 0 the name of the attribute and element 1 the value.
- *
+ * </p>
+ * To aid debugging of inclusion problems, if the system property defined in
+ * {@link #SYSPROP_LOG_INCLUDES} is set to "true", inclusions will be printed out to System.out
+ * It is logged at this level as inclusion needs to work for the SmartFrog logging framework, so
+ * that cannot be used.
  */
 public class DefaultIncludeHandler implements IncludeHandler {
 
-    String baseCodebase;
+    private String baseCodebase;
+
+    /**
+     * {@value}
+     */
+    private static final String SYSPROP_LOG_INCLUDES = "org.smartfrog.languages.sf.logincludes";
+    private boolean logIncludes;
+    
 
     /**
      * Constructor.
      */
     public DefaultIncludeHandler() {
-        baseCodebase = null;
+        this(null);
     }
 
     /**
      * Constructor.
      *
      * @param baseCodebase the codebase for this include handler to which will be appended the codebase passed in the
-     * parseIncldue method.
+     * parseInclude method.
      */
     public DefaultIncludeHandler(String baseCodebase) {
         this.baseCodebase = baseCodebase;
+        logIncludes = Boolean.getBoolean(SYSPROP_LOG_INCLUDES);
     }
 
     /**
@@ -73,7 +87,9 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * @exception Exception error while locating or parsing include
      */
     public Vector parseInclude(String include, String codebase) throws Exception {
-        return (new DefaultParser(openInclude(include, codebase), new DefaultIncludeHandler(actualCodebase(codebase)))).AttributeList();
+        if (logIncludes) System.out.println("Opening include file \"" + include + "\"");
+        return (new DefaultParser(openInclude(include, codebase),
+                new DefaultIncludeHandler(actualCodebase(codebase)))).AttributeList();
     }
 
     /**
@@ -109,9 +125,13 @@ public class DefaultIncludeHandler implements IncludeHandler {
      */
     protected String actualCodebase(String codebase) {
         String actualCodebase = null;
-        if ((baseCodebase != null) && (codebase != null)) actualCodebase = baseCodebase + " " + codebase;
-        else if (baseCodebase != null) actualCodebase = baseCodebase;
-        else if (codebase != null) actualCodebase = codebase;
+        if ((baseCodebase != null) && (codebase != null)) {
+            actualCodebase = baseCodebase + " " + codebase;
+        } else if (baseCodebase != null) {
+            actualCodebase = baseCodebase;
+        } else if (codebase != null) {
+            actualCodebase = codebase;
+        }
         return actualCodebase;
     }
 }
