@@ -40,7 +40,6 @@ public class FailingTestCompoundsTest extends DeployingTestBase {
 
     public void testFailureWrongMessageNested() throws Throwable {
         TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testFailureWrongMessageNested");
-        TerminationRecord status = event.getStatus();
     }
 
 

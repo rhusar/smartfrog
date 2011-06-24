@@ -69,14 +69,6 @@ public class TestCompoundsTest extends DeployingTestBase {
      * test case
      * @throws Throwable on failure
      */
-    public void testFailureWrongMessageNested() throws Throwable {
-        expectSuccessfulTestRun(TestCompoundsTest.FILES, "testFailureWrongMessageNested");
-    }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testSmartFrogException() throws Throwable {
         TerminationRecord record;
         record = deployToNormalTermination("testSmartFrogException");
