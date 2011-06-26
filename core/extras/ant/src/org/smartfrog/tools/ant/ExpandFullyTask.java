@@ -140,9 +140,11 @@ public class ExpandFullyTask extends TaskBase implements SysPropertyAdder {
                 //success
                 break;
             case ExitCodes.EXIT_ERROR_CODE_GENERAL:
-            case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
                 //parse fail
                 throw new BuildException(EXPAND_FAILURE);
+            case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
+                //bad arguments fail
+                throw new BuildException(EXPAND_FAILURE + "\n" + fullCommandLine);
             default:
                 //something else
                 throw new BuildException(FAILED_WITH_ERROR_CODE + err

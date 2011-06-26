@@ -24,7 +24,10 @@ For more information: www.smartfrog.org
   <description>
     Build file for Ant tasks for Smartfrog
 
-    To build and run the tests, you need ant-testutil.jar, which Ivy will retrieve
+    To build and run the tests, you need ant-testutil.jar, which Ivy will retrieve.
+    
+    This build file is slightly different for the others in that it must not declare the SF tasks
+    before compiling itself. Why not? Because they aren't there yet.
 
   </description>
 
@@ -36,14 +39,7 @@ For more information: www.smartfrog.org
   <import file="../../common.xml"/>
   <!--  <import file="${root.dir}/common.xml"/>-->
 
-  <!-- ========================================================== -->
-  <!-- this is the gump entry point; it does packaging and but no tests!-->
-  <!-- this keeps the gump compile target separate from the tests run-->
-  <!-- ========================================================== -->
-  <target name="gump"
-      depends="dist,published"
-      description="target for gump builds"
-      />
+
 
   <target name="zip" depends="prepare-for-dist"
       description="Create a zip file distribution">
@@ -121,6 +117,14 @@ no -components suffix-->
     </sf-javadoc>
   </target>
 
+  <!-- strip out the groovy task declaration, and hence the SF extended tasks-->
+  <target name="pre-compile"
+      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites,print-compile-classpath">
+  </target>
+  
+  <target name="ready-to-rmi"
+    depends="compile" />
+  
   <!-- ========================================================== -->
   <!-- Our override of this target declares that we want to use  -->
   <!-- whatever version of the tasks we just compiled, not any   -->

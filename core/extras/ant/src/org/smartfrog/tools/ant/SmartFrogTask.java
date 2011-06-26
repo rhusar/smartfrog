@@ -655,6 +655,12 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
                 //success
                 return true;
             case ExitCodes.EXIT_ERROR_CODE_GENERAL:
+                if (!failOnError) {
+                    return false;
+                }
+
+                throw new BuildException(failureText);
+                
             case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
                 if (!failOnError) {
                     return false;
