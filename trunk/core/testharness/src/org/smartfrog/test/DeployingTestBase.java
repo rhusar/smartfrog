@@ -51,6 +51,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      */
     private TestEventSink eventSink;
 
+
+    protected DeployingTestBase() {
+    }
+
     protected DeployingTestBase(String name) {
         super(name);
     }
