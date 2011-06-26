@@ -1,4 +1,4 @@
-package org.smartfrog.services.groovy.test.system
+package org.smartfrog.services.groovy.test.system.sources
 
 import org.smartfrog.services.groovy.install.task.GroovyComponentHelper
 

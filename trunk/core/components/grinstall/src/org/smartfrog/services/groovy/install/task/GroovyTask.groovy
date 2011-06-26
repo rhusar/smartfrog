@@ -102,7 +102,8 @@ class GroovyTask extends PrimImpl implements ITask {
         sfLog().debug("Executing file $file in directory $directory")
         def filename = new File("$directory/$file")
         def conf = new CompilerConfiguration()
-        conf.setScriptBaseClass(DelegatingScript.class.name)
+        String delegationScriptName = DelegatingScript.class.name
+        conf.setScriptBaseClass(delegationScriptName)
         Binding binding = new Binding()
         DelegatingScript script
         try {
@@ -114,7 +115,7 @@ class GroovyTask extends PrimImpl implements ITask {
                 def hierarchy = utils.extractClassHierarchy(parsedScript)
                 sfLog().warn(hierarchy)
                 throw new SmartFrogDeploymentException("Unable to convert the instance $parsedScript" +
-                    " into a Delegating Script; class hierarchy is :\n$hierarchy");
+                    " into a ${DelegatingScript.class} -- class hierarchy is :\n$hierarchy");
             }
             script = parsedScript
             script.setComponent((Component)sfParent())
