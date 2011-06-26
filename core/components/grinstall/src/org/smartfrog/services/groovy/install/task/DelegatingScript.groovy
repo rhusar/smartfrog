@@ -16,9 +16,9 @@ import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
 
-public abstract class DelegatingScript extends Script {
+public class DelegatingScript extends Script {
 
-    private LogSF sfLog = LogFactory.sfGetProcessLog()
+    private LogSF sfLog = LogFactory.getLog(this.class)
 
     private Component component
     private GroovyComponentHelper helper
@@ -27,10 +27,14 @@ public abstract class DelegatingScript extends Script {
         if (comp) {
             component = comp
             try {
-                sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, 
-                            "DelegatingScript", true))
+                String logName = component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME,
+                        "", false)
+                if(logName) {
+                    sfLog = LogFactory.getLog(logName)
+                }
             } catch (Exception e) {
-                sfLog.error(e.message)
+                //retrieval failed, so it retains the original
+                sfLog.error(e.toString())
                 throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
             }
         }
@@ -51,12 +55,20 @@ public abstract class DelegatingScript extends Script {
                 return InvokerHelper.invokeMethod(helper, name, args)
             }
             //if we get here, nothing was found
-            sfLog.error("Method $name not found, trying super class")
+            sfLog.warn("Method $name not found, trying super class")
             return super.invokeMethod(name, args);
 
         } catch (MissingMethodException e) {
-            sfLog.error("Method $name not found, trying super class: " + e, e)
+            sfLog.warn("Method $name not found, trying super class: " + e, e)
             return super.invokeMethod(name, args);
         }
     }
+
+    @Override
+    Object run() {
+        sfLog.info("In the script runner of $this")
+        return null
+    }
+
+
 }

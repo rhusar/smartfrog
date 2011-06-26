@@ -24,7 +24,7 @@
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"/>
-  <property name="org.apache.commons.logging.diagnostics.dest" value="STDERR"/>
+<!--  <property name="org.apache.commons.logging.diagnostics.dest" value="STDERR"/>-->
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>

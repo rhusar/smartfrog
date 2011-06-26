@@ -5,13 +5,16 @@
 package org.smartfrog.test.system.services.scripting.groovy;
 
 import junit.framework.TestCase;
+import org.smartfrog.test.SmartFrogTestBase;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-@SuppressWarnings({"UseOfSystemOutOrSystemErr"})
-public class GroovyScriptEngineTest extends TestCase {
+public class GroovyScriptEngineTest extends SmartFrogTestBase {
 
+    public GroovyScriptEngineTest(final String name) {
+        super(name);
+    }
 
     public void testScriptEngineLoadsGroovy() throws Throwable {
         ScriptEngineManager factory = new ScriptEngineManager();
@@ -19,7 +22,8 @@ public class GroovyScriptEngineTest extends TestCase {
         assertNotNull("No groovy found", engine);
         engine.put("key", "value");
         Object result = engine.eval("\"$key\"");
-        System.out.println(result);
-        assertEquals("value", result.toString());
+        String resultText = result.toString();
+        getLog().info(resultText);
+        assertEquals("value", resultText);
     }
 }
