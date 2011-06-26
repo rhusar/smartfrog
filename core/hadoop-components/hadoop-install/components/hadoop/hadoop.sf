@@ -6,37 +6,46 @@ HadoopComponent extends Component {
   directory "/service/hadoop";
   ibrix false;
   hadoopCompPath "/components/hadoop/";
-  tarFile = (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
-  resolvedTarFile = (ATTRIB repository ++ tarFile);
+  tarFile  (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
+  repository TBD;
+  resolvedTarFile  (ATTRIB repository ++ tarFile);
   userName "unknown";
+}
+
+HadoopTarSource extends Source {
+  source resolvedTarFile;
 }
 
 HadoopMaster extends HadoopComponent {
 
+  master extends Source {
+    source (ATTRIB repository ++ hadoopCompPath ++ "master");
+  }
 
-    -- extends Source {
-        source (ATTRIB repository ++ hadoopCompPath ++ "master");
-    }
+}
 
-    -- extends Source {
-        source resolvedTarFile;
-    }
+HadoopMasterTar extends HadoopMaster {
+
+
+  tarSource extends HadoopTarSource;
+
 }
 
 HadoopWorker extends HadoopComponent {
 
-    userVolumes [];
-    
-    // if a user volume is specified, the mount point must be provided
-    mountDrive "/dev/sdb";
+  userVolumes [];
+  
+  // if a user volume is specified, the mount point must be provided
+  mountDrive "/dev/sdb";
 
-    postConfigure extends Task;
+  postConfigure extends Task;
 
-    -- extends Source {
-        source (ATTRIB repository ++ hadoopCompPath ++ "worker");
-    }
+  worker extends Source {
+      source (ATTRIB repository ++ hadoopCompPath ++ "worker");
+  }
 
-    -- extends Source {
-        source resolvedTarFile;
-    }
+}
+
+HadoopWorkerTar extends HadoopWorker {
+  tarSource extends HadoopTarSource;
 }
