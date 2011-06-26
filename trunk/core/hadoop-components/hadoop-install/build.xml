@@ -17,35 +17,45 @@
   <property file="build.properties"/>
   <property name="root.dir" location="../../"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="system.tests" value="false"/>
+  <property name="groovy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"/>
-  <property name="org.apache.commons.logging.diagnostics.dest" value="STDERR"/>
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
 
-
-    <!-- override the compile target to use groovyc instead of javac -->
-  <target name="compile" depends="common.compile, groovy-tasks">
-    <echo>compiling groovy source</echo>
-    <sf-groovyc classpathref="compile.classpath"
-        srcdir="${src.dir}"
-        destdir="${build.classes.dir}"/>
+  <target name="ready-to-hadoop"
+      depends="declare-extended-smartfrog-tasks, init-deploy-properties">
+    <presetdef name="hdeploy" >
+      <sf-deploy classpathref="run.classpath"
+          logStackTraces="true"
+          host="${deploy.host}"
+          timeout="${deploy.timeout}"
+          >
+        <!--<codebase url="${codebase}"/>-->
+        <jvmarg line="${daemon.jvmargs}" />
+        <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <syspropertyset refid="daemon-properties"/>
+      </sf-deploy>
+    </presetdef>
+    <property name="repository.dir" location="." />
+    <property name="hadoop.sf" value="components/hadoop/hadoop.sf" />
   </target>
-
-
-  <target name="compile-tests" depends="common.compile-tests, groovy-tasks">
-    <sf-groovyc
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      classpathref="tests.compile.classpath"
-      />
+  
+  <target name="worker" depends="ready-to-hadoop">
+    <hdeploy>
+      <application name="worker" >
+        #include "${hadoop.sf}"
+        sfConfig extends HadoopWorker {
+          repository "${repository.dir}";
+        }
+      </application>
+    </hdeploy>  
   </target>
-
-
 </project>
