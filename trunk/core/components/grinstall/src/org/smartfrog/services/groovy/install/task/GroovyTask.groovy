@@ -6,6 +6,8 @@ import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.prim.PrimImpl
 import org.smartfrog.services.groovy.install.Component
+import org.smartfrog.services.groovy.install.utils.ComponentUtils
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 
 /**
  * User: koenigbe
@@ -14,7 +16,7 @@ import org.smartfrog.services.groovy.install.Component
  */
 class GroovyTask extends PrimImpl implements ITask {
 
-    private static final String simplename = getClass().getSimpleName()
+    private final String simplename = getClass().getSimpleName()
 
     private Vector previousTasks
 
@@ -26,12 +28,21 @@ class GroovyTask extends PrimImpl implements ITask {
         super()
     }
 
+    /**
+     * Implement {@link ITask#run() }
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
 
     @Override
     public void run() throws RemoteException, SmartFrogException {
         if (!sfResolve(ATTR_FINISHED, false, false)) {
             def file = sfResolve(ATTR_FILE, "", false)
-            if (!file) return // no task file specified
+            if (!file) {
+                // no task file specified
+                sfLog().debug("No file specified")
+                return
+            }
             def directory = sfParent().sfResolve(ATTR_DIRECTORY)
             previousTasks = sfResolve(ATTR_PRECONDITIONS, new Vector(), false)
             register()
@@ -78,6 +89,9 @@ class GroovyTask extends PrimImpl implements ITask {
         }
     }
 
+    /**
+     * Notify everything that is waiting on the lock that they arefree to continue
+     */
     private void unlock() {
         synchronized (lock) {
             lock.notifyAll();
@@ -86,18 +100,29 @@ class GroovyTask extends PrimImpl implements ITask {
 
     private void execute(directory, file) {
         sfLog().debug("Executing file $file in directory $directory")
-        def f = new File("$directory/$file")
+        def filename = new File("$directory/$file")
         def conf = new CompilerConfiguration()
-        conf.setScriptBaseClass("org.smartfrog.services.groovy.install.task.DelegatingScript")
-        DelegatingScript s
+        conf.setScriptBaseClass(DelegatingScript.class.name)
+        Binding binding = new Binding()
+        DelegatingScript script
         try {
-            s = new GroovyShell(conf).parse(f.getText())
+            GroovyShell shell = new GroovyShell(this.class.classLoader, binding, conf)
+            String text = filename.getText()
+            Script parsedScript = shell.parse(text)
+            ComponentUtils utils = new ComponentUtils()
+            if (!(parsedScript instanceof DelegatingScript)) {
+                def hierarchy = utils.extractClassHierarchy(parsedScript)
+                sfLog().warn(hierarchy)
+                throw new SmartFrogDeploymentException("Unable to convert the instance $parsedScript" +
+                    " into a Delegating Script; class hierarchy is :\n$hierarchy");
+            }
+            script = parsedScript
+            script.setComponent((Component)sfParent())
+            script.run()
         } catch (Exception e) {
-            sfLog().error(e.toString(), e)
+            sfLog().error("When trying to parse $filename: $e", e)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
-        s?.setComponent((Component)sfParent())
-        s?.run()
     }
 
     @Override
