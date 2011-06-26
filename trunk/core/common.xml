@@ -32,7 +32,7 @@
   a property ant.file.PROJECTNAME to that of the directory of the imported 
   project, where PROJECTNAME is not the filename, but the name of the project
   in the XML declaration.
-      
+            
 </description>
 
   <fail>
@@ -46,8 +46,8 @@
     Please upgrade to Ant1.7 or later and build this project again
   </fail>
 
-  
-  
+    
+    
   <!-- ========================================================== -->
   <!-- this is the simple definitions part of the common init -->
   <!-- IT must contain -->
@@ -69,7 +69,7 @@
   <target name="init-common-simpledefinitions" depends="init-java-versions">
      <!-- load in the local override -->
     <property file="build.properties"/>
-    
+        
     <!-- this is where we work out the base directory    -->
     <!-- only here when running this task raw, to test targets inside -->
     <property name="ant.file.common" location="${ant.file}" />
@@ -79,7 +79,7 @@
     <property name="core.dir" location="${antfile.dir}"/>
     <!--if unset, we work it out here too-->
     <property name="root.dir" location="${core.dir}"/>
-    
+        
     <!-- This is to decide the directory structure for the components-->
     <property name="is.component" value="true"  />
 
@@ -87,7 +87,7 @@
     overrides (like the compiler settings) that apply across
     all projects that use this common file-->
     <property file="${core.dir}/common.properties"/>
-    
+        
     <!-- this is an extra set of properties you can use outside SVN trees -->
     <property file="${user.home}/.ant/smartfrog.properties"/>
 
@@ -100,7 +100,7 @@
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
     <property name="smartfrog.components.dir" location="${core.dir}/components"/>
-    
+        
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
@@ -119,23 +119,23 @@
     <property name="rmic.forking.commandline.extras" value="" />
     <property name="rmic.forking.commandline" 
       value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
-    
+        
     <property name="extras.dir"
       location="${core.dir}/extras"/>
     <property name="maven.lib.dir"
       location="${core.dir}/lib"/>
 <!--     <property name="maven.url"
       value="http://ibiblio.org/maven2/"/> -->
-      
-      
+            
+            
       <!-- common directories are relative to the build file loaded-->
     <property name="src.dir" location="src"/>
     <property name="bin.dir" location="bin"/>
     <property name="doc.dir" location="doc"/>
     <property name="lib.dir" location="lib" />
     <property name="test.src.dir" location="test" />
-    
-    
+        
+        
     <!--generated stuff --> 
     <property name="build.dir" location="build"/>
     <property name="build.classes.dir" location="${build.dir}/classes"/>
@@ -180,7 +180,7 @@
     <condition property="unit.tests.enabled">
       <istrue value="${unit.tests}"/>
     </condition>
-    
+        
 
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
@@ -202,7 +202,7 @@
       smartfrog.version=${smartfrog.version}
       smartfrog.artifact.version=${smartfrog.artifact.version}
     </echo>
-    
+        
     <tstamp>
       <format property="year" pattern="yyyy"/>
       <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
@@ -238,7 +238,7 @@
         dest="${build.dir}/proxy-test.html" 
         verbose="true" /> 
   </target>
-  
+    
 
 <!--
   This is a bit of a legacy; in a pure ivy build we should not need it.
@@ -304,7 +304,7 @@ java.class.path=
     <property name="smartfrog.version" value="${sf.build.version}" />
   </target>
 
-  
+    
   <!-- diagnostics: print out the SF versions -->
   <target name="print-sf-version-settings" depends="init">
     <echo>
@@ -313,7 +313,7 @@ java.class.path=
       smartfrog.artifact.version=${smartfrog.artifact.version}
     </echo>
   </target>
-  
+    
   <target name="init-common" depends="bind-to-smartfrog">
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
@@ -408,7 +408,7 @@ java.class.path=
       <!-- RMI options-->
       <propertyref prefix="java.rmi."/>
     </propertyset>
-    
+        
     <!--preset to copy with ant property expansion (and always overwrite)-->
     <presetdef name="expandingcopy">
      <copy overwrite="true">
@@ -430,19 +430,20 @@ java.class.path=
 
     <!-- define a new javac task with new default options -->
     <presetdef name="sf-javac">
-       <javac debug="${javac.debug.mode}"
-            fork="true"
-            nowarn="true"
-            deprecation="${javac.deprecation.mode}"
-            source="${javac.java.version}"
-            target="${javac.java.version}"
-            includeAntRuntime="${javac.include.ant}"
-            memoryMaximumSize="${javac.max.memory}"
-            includes="**/*.java"
-            >
-       </javac>
+      <javac
+          fork="true"
+          includeAntRuntime="${javac.include.ant}"
+          memoryMaximumSize="${javac.max.memory}"
+          debug="${javac.debug.mode}"
+          nowarn="true"
+          deprecation="${javac.deprecation.mode}"
+          source="${javac.java.version}"
+          target="${javac.java.version}"
+          includes="**/*.java"
+          >
+      </javac>
     </presetdef>
-
+        
     <!-- an extension of the previous javac, this with ant classpath included -->
     <presetdef name="sf-javac-with-ant">
        <sf-javac
@@ -910,7 +911,7 @@ java.class.path=
     <ivy:cachepath pathid="redist.classpath" conf="redist"/>
     <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
   </target>
-  
+    
   <target name="ivy.runtime.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
     <ivy:cachepath pathid="runtime.classpath" conf="runtime"/>
     <echo level="verbose">runtime.classpath=${toString:runtime.classpath}</echo>
@@ -991,7 +992,7 @@ java.class.path=
       <typefound name="sf-startdaemon"/>
     </condition>
   </target>
-  
+    
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are found; fail if not -->
   <!-- ========================================================== -->
@@ -1110,7 +1111,7 @@ smartfrog.tasks.classpath=
         <syspropertyset refid="daemon-properties"/>
       </sf-expandfully>
     </presetdef>
-    
+        
   </target>
 
   <!-- ========================================================== -->
@@ -1216,7 +1217,7 @@ smartfrog.tasks.classpath=
     description="start a local daemon">
   </target>
 
-  
+    
   <!-- ========================================================== -->
   <!-- public startup operation; uses the name that netbeans expects -->
   <!-- ========================================================== -->
@@ -1225,7 +1226,7 @@ smartfrog.tasks.classpath=
     description="start a local daemon">
   </target>
 
-  
+    
   <!-- ========================================================== -->
   <!-- always shutdown a local daemon. keep going if one is not running -->
   <!-- ========================================================== -->
@@ -1323,32 +1324,14 @@ smartfrog.tasks.classpath=
   <!-- target to get its dependencies right -->
   <!-- ========================================================== -->
   <target name="pre-compile"
-      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
+      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites, groovy-tasks, print-compile-classpath">
   </target>
 
-  <target name="groovy-tasks" depends="declare-classpaths" if="groovy.enabled">
-     <taskdef name="groovyc"
-       classname="org.codehaus.groovy.ant.Groovyc"
-       classpathref="build.classpath"/>
-
-    <!-- define a new groovyc task with new default options -->
-    <presetdef name="sf-groovyc">
-        <groovyc fork="true"
-          memoryMaximumSize="${javac.max.memory}">
-        </groovyc>
-      </presetdef>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-  <target name="compile" depends="pre-compile">
-      <!-- to get the classpath in a printable form -->
+  <target name="print-compile-classpath">
+    <!-- to get the classpath in a printable form -->
     <pathconvert pathsep="${line.separator}|   |-- "
-                 property="echo.compile.classpath"
-                 refid="compile.classpath">
+        property="echo.compile.classpath"
+        refid="compile.classpath">
     </pathconvert>
     <echo message=" --------------------------------------------------------"/>
     <echo message=" Project: ${ant.project.name}"/>
@@ -1359,6 +1342,42 @@ smartfrog.tasks.classpath=
     <echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
     <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>
     <echo message=" --------------------------------------------------------"/>
+  </target>
+    
+    
+  <!--
+  Declare the groovy tasks if groovy is enabled
+  -->
+  <target name="groovy-tasks" depends="declare-extended-smartfrog-tasks" if="groovy.enabled">
+     <taskdef name="groovyc"
+       classname="org.codehaus.groovy.ant.Groovyc"
+       classpathref="build.classpath"/>
+
+    <!-- define a new groovyc task with new default options -->
+    <presetdef name="sf-groovyc">
+        <groovyc 
+          fork="true"
+          memoryMaximumSize="${javac.max.memory}">
+          <javac
+              debug="${javac.debug.mode}"
+              nowarn="true"
+              deprecation="${javac.deprecation.mode}"
+              source="${javac.java.version}"
+              target="${javac.java.version}"
+              >
+          </javac>
+        </groovyc>
+      </presetdef>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- If groovy.enabled is set, this target is omitted-->
+  <!-- ========================================================== -->
+  <target name="compile" depends="pre-compile" unless="groovy.enabled">
+
     <depend srcdir="${src.dir}"
         destdir="${build.classes.dir}"
         cache="${build.dir}/depends"
@@ -1372,13 +1391,18 @@ smartfrog.tasks.classpath=
   </target>
 
 
-  <!-- extend the compile target to use groovyc -->
-  <target name="compile-groovy-source" depends="common.compile, groovy-tasks" if="groovy.enabled">
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything -Groovy and Java, then , copy useful files over-->
+  <!-- Only executed if groovy.enabled is set-->
+  <!-- ========================================================== -->
+  <target name="compile-groovy-source" depends="compile, groovy-tasks" if="groovy.enabled">
     <echo>compiling groovy source</echo>
     <sf-groovyc
         classpathref="compile.classpath"
         srcdir="${src.dir}"
         destdir="${build.classes.dir}"/>
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
 
@@ -1389,18 +1413,18 @@ smartfrog.tasks.classpath=
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
   <!-- ========================================================== -->
-  
+    
     <!-- =================================================================== -->
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
   <!-- =================================================================== -->
-    
+        
   <target name="rmi" depends="ready-to-rmi" description="create the RMI classes">
       <!-- to get the classpath in a printable form -->
-	  <pathconvert pathsep="${line.separator}|   |-- "  
-	               property="echo.compile.classpath" 
-	               refid="compile.classpath">
-	  </pathconvert>
+    <pathconvert pathsep="${line.separator}|   |-- "  
+                 property="echo.compile.classpath" 
+                 refid="compile.classpath">
+    </pathconvert>
     <echo>---------------------------------------
      RMIC for project: ${ant.project.name}"
       base="${build.classes.dir}"
@@ -1444,7 +1468,8 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
   <target name="compile-tests"
       depends="ready-to-compile-tests"
-      if="test.dir.found">
+      if="test.dir.found"
+      unless="groovy.enabled">
       <depend
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
@@ -1458,7 +1483,10 @@ smartfrog.tasks.classpath=
       <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
 
-  <!-- extend the test compile target to use groovyc -->
+  <!-- extend the test compile target to use groovyc.
+    There is no check for having a test dir here. If you have groovy installed, 
+    you'd better have some unit tests. Remember that, and code your tests
+   -->
   <target name="compile-groovy-tests" depends="compile-tests, groovy-tasks" if="groovy.enabled">
     <echo>compiling groovy tests</echo>
     <sf-groovyc
@@ -1466,6 +1494,7 @@ smartfrog.tasks.classpath=
         destdir="${test.classes.dir}"
         classpathref="tests.compile.classpath"
         />
+    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
 
 
@@ -1579,7 +1608,7 @@ smartfrog.tasks.classpath=
 
 
   <target name="ready-to-package-tests" depends="rmi-tests" />
-  
+    
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the test jar ${test.jar}-->
@@ -1712,12 +1741,9 @@ smartfrog.tasks.classpath=
           >
         <codebase url="${codebase}"/>
         <jvmarg line="${daemon.jvmargs}" />
+        <propertyfile file="${runtime.properties}" optional="true"/>
         <syspropertyset refid="proxy.settings"/>
-        <!--copy all properties beginning with test. or run.-->
-        <syspropertyset>
-          <propertyref prefix="test."/>
-          <propertyref prefix="run."/>
-        </syspropertyset>
+        <syspropertyset refid="daemon-properties"/>
       </sf-deploy>
     </presetdef>
     <presetdef name="run" >
@@ -1900,7 +1926,7 @@ ${test.reports.dir}/index.html
       depends="test"
       description="compile and run all the tests"
       />
-  
+    
   <!-- ========================================================== -->
   <!-- public entry point does all tests and the reports -->
   <!-- ========================================================== -->
@@ -2073,7 +2099,7 @@ Exist.
     <!-- TODO -->
   </target>
 
-  
+    
   <target name="sign-target-jar"
     description="sign our target jar if security.sign.target.jar is true and security.sign.target.jar" 
       depends="package,init-security"
@@ -2253,7 +2279,7 @@ Exist.
 
     <property name="ivy.jar"
         location="${ivy.repository.dir}/org.apache.ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"/>
-        
+                
     <!-- look for the jar or the resource on the classpath -->
     <available property="ivy.jar.found" file="${ivy.jar}" />
     <available property="ivy.resource.found" resource="${ivy.resource}" />
@@ -2397,7 +2423,7 @@ Exist.
       description="clean the ivy cache completely">
     <ivy:cleancache />
   </target>
-  
+    
   <!--remove all project-seecific libraries from the cache-->
   <target name="ivy-purge-project" depends="ivy-properties"
       description="purge all smartfrog artifacts from the ~/.ivy2 directories">
@@ -2596,7 +2622,7 @@ ${ivy.reports.dir}
     <ivy:retrieve />
   </target>
   <!-- Ivy quick and dirty test End-->
-  
+    
 </project>
 
 
