@@ -81,6 +81,10 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      */
     protected Prim application;
 
+    
+    protected SmartFrogTestBase() {
+    }
+
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM parameters
      * -but do not complain if they are missing
