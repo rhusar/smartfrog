@@ -24,16 +24,16 @@ For more information: www.smartfrog.org
 sfConfig extends Compound {
     sfClass "org.smartfrog.test.system.prim.Dummy";
     bar1 extends Compound {
-            sfProcessComponentName "Bar1";
-            sfProcessHost remoteHost;
+      sfProcessComponentName "Bar1";
+      sfProcessHost remoteHost;
     }
     bar2 extends Compound {
-            sfProcessComponentName "Bar2";
-            sfProcessHost remoteHost;
+      sfProcessComponentName "Bar2";
+      sfProcessHost remoteHost;
     }
     foo extends Compound {
-        sfProcessHost localHost;
-        sfProcessComponentName "Foo";
+      sfProcessHost localHost;
+      sfProcessComponentName "Foo";
     }
 }
 
