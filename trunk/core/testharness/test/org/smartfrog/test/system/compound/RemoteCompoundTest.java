@@ -19,15 +19,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.test.system.compound;
 
-import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.RemoteToString;
+import org.smartfrog.test.DeployingTestBase;
 
-import java.util.Iterator;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
- * Created 19-Mar-2008 13:31:17
+ * Created 19-Mar-2008 13:31:17.
+ *
+ * These tests used to count attributes as well as children, but that proved too brittle. Only the number of child nodes are counted
  */
 
 public class RemoteCompoundTest extends DeployingTestBase {
@@ -53,26 +56,35 @@ public class RemoteCompoundTest extends DeployingTestBase {
 
 
     /**
-     * test case
+     * test case found
      *
      * @throws Throwable on failure
      */
     public void testAttributes() throws Throwable {
         Compound comp = deployCompound();
+        Thread.sleep(5000);
         Iterator<Object> iterator = comp.sfAttributes();
         int counter = 0;
         int childcount = 0;
+        StringBuilder attributes = new StringBuilder();
+        StringBuilder children = new StringBuilder();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             Object value = comp.sfResolveHere(key, true);
-            getLog().info(key.toString() + "=" + value);
+
+            String summary = key.toString() + "=" + value;
+            attributes.append(summary).append('\n');
             counter++;
             if (value instanceof Liveness) {
                 childcount++;
+                children.append(summary).append('\n');
             }
         }
-        assertEquals(ATTRCOUNT, counter);
-        assertEquals(CHILDCOUNT, childcount);
+        String failureText = "Expected " + ATTRCOUNT
+                + " attributes but found " + counter + "\n"
+                + " and " + CHILDCOUNT + " children but found " + childcount
+                + " \n" + attributes;
+        assertEquals(failureText, CHILDCOUNT, childcount);
     }
 
     /**
@@ -85,16 +97,21 @@ public class RemoteCompoundTest extends DeployingTestBase {
         Iterator<Object> iterator = comp.sfValues();
         int counter = 0;
         int childcount = 0;
+        StringBuilder attributes = new StringBuilder();
         while (iterator.hasNext()) {
             Object value = iterator.next();
-            getLog().info(value.toString());
+            String summary = value.toString();
+            attributes.append(summary).append('\n');
             counter++;
             if (value instanceof Liveness) {
                 childcount++;
             }
         }
-        assertEquals(ATTRCOUNT, counter);
-        assertEquals(CHILDCOUNT, childcount);
+        String failureText = "Expected " + ATTRCOUNT
+                + " attributes but found " + counter + "\n"
+                + " and " + CHILDCOUNT + " children but found " + childcount
+                + " \n" + attributes;
+        assertEquals(failureText, CHILDCOUNT, childcount);
     }
 
     /**
@@ -106,13 +123,16 @@ public class RemoteCompoundTest extends DeployingTestBase {
         Compound comp = deployCompound();
         Enumeration<Liveness> children = comp.sfChildren();
         int childcount = 0;
+        StringBuilder attributes = new StringBuilder();
         while (children.hasMoreElements()) {
             childcount++;
             Liveness child = children.nextElement();
             //pretend we are the parent
             child.sfPing(comp);
+            RemoteToString rts = (RemoteToString) child;
+            attributes.append(rts.sfRemoteToString()).append('\n');
         }
-        assertEquals(CHILDCOUNT, childcount);
+        assertEquals("Wrong child count:\n" + attributes, CHILDCOUNT, childcount);
     }
 
 }
