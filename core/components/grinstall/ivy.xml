@@ -57,6 +57,7 @@
      conf="runtime->default">
     <exclude org="jsch"/>
     <exclude org="httpclient"/>
+    <exclude org="org.apache.httpcomponent"/>
     <exclude org="antlr"/>
     <exclude org="commons-codec"/>
   </dependency>
