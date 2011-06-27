@@ -214,6 +214,7 @@ no -components suffix-->
         <fileset dir="${test.classes.dir}">
           <include name="**/unit/*Test.class"/>
           <include name="**/system/*Test.class" if="system.tests.enabled"/>
+          <exclude name="**/RunWithSlowJobsTest.class" unless="run.failing.tests"/>
         </fileset>
       </batchtest>
     </sf-junit>
