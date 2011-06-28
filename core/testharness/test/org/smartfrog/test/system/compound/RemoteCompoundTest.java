@@ -62,7 +62,6 @@ public class RemoteCompoundTest extends DeployingTestBase {
      */
     public void testAttributes() throws Throwable {
         Compound comp = deployCompound();
-        Thread.sleep(5000);
         Iterator<Object> iterator = comp.sfAttributes();
         int counter = 0;
         int childcount = 0;
