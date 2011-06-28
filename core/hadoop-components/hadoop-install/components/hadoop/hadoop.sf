@@ -3,7 +3,7 @@
 
 HadoopComponent extends Component {
   hadoopVersion "0.20.203.0";
-  directory "/service/hadoop";
+  scriptDir "/service/hadoop";
   ibrix false;
   hadoopCompPath "/components/hadoop/";
   tarFile  (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
@@ -41,7 +41,7 @@ HadoopWorker extends HadoopComponent {
   postConfigure extends Task;
 
   worker extends Source {
-      source (ATTRIB repository ++ hadoopCompPath ++ "worker");
+    source (ATTRIB repository ++ hadoopCompPath ++ "worker");
   }
 
 }

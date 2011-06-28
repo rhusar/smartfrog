@@ -10,6 +10,7 @@ import org.apache.commons.vfs2.VFS
 import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder
 import org.smartfrog.services.groovy.install.Component
+import org.smartfrog.services.groovy.install.IComponent
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
@@ -22,36 +23,67 @@ import org.smartfrog.sfcore.logging.LogSF
  */
 class GroovyComponentHelper {
 
+    public static final String DEFAULT_LOG_NAME = "GroovyComponentHelper"
     private LogSF sfLog = LogFactory.sfGetProcessLog()
 
     private FileSystemManager manager
     private FileSystemOptions options
-    private FileObject root
+    private FileObject destFileObject
+    private FileObject destFile
+    private IComponent component
 
-    private Component component
-
-    public GroovyComponentHelper(Component comp) {
+    public GroovyComponentHelper(IComponent comp) {
         def rootDir
-        if (comp) {
-            component = comp
-            try {
-                sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "Helper", true))
-            } catch (Exception e) {
-                sfLog.error(e.toString(), e)
-                throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
-            }
-            rootDir = component.sfResolve("directory")
-        } else {
-            //no component, set the root dir to the current dir
-            rootDir = System.getProperty("java.io.tmpdir")
+        component = comp
+        try {
+            sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, DEFAULT_LOG_NAME, true))
+        } catch (Exception e) {
+            sfLog.error(e.toString(), e)
+            throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
+        rootDir = resolvePath(Component.ATTR_DEST_DIR, true);
+
+        bind(rootDir);
+    }
+
+    /**
+     * for use in testing: create a component helper bound to a specific directory
+     * @param destDir the destination dir
+     */
+    public GroovyComponentHelper(String destDir) {
+        bind(destDir);
+    }
+
+    private def bind(String rootDir) {
         manager = VFS.getManager()
-        root = manager.resolveFile(rootDir.toString())
+        destFileObject = manager.resolveFile(rootDir.toString())
 
         options = new FileSystemOptions();
-        propagateProxySettings();
-
+        propagateProxySettings()
     }
+
+
+
+    public File resolveFile(String name, boolean mandatory) {
+        return org.smartfrog.services.filesystem.FileSystem.
+                lookupAbsoluteFile(component,
+                        name,
+                        null,
+                        null,
+                        mandatory,
+                        null);
+    }
+
+    public String resolvePath(String name, boolean mandatory) {
+        return org.smartfrog.services.filesystem.FileSystem.
+                lookupAbsolutePath(component,
+                        name,
+                        null,
+                        null,
+                        mandatory,
+                        null);
+    }
+
 
 
     public void propagateProxySettings() {
@@ -69,24 +101,24 @@ class GroovyComponentHelper {
         }
     }
 
-    public Process command(String c) {
+    public Process command(String command) {
         // all commands are executed in root directory by default
-        return command(c, root.name.path)
+        return this.command(command, destFileObject.name.path)
     }
 
-    public Process command(String c, String directory) {
-        sfLog.debug("Executing command $c in directory $directory")
+    public Process command(String command, String directory) {
+        if (sfLog.debugEnabled) sfLog.debug("Executing command $command in directory $directory")
         try {
             if (directory) {
-                return c.execute((String[]) null, new File(directory))
+                return command.execute((String[]) null, new File(directory))
             } else {
-                return c.execute()
+                return command.execute()
             }
         } catch (Exception e) {
-            sfLog.error("Executing ${c}: ${e}", e)
+            sfLog.error("Executing ${command}: ${e}", e)
             // We have to catch exceptions and throw our own.
             // Otherwise we get an Unmarshallexception (Script1)
-            throw new SmartFrogExtractedException("Executing ${c}: ${e}" ,
+            throw new SmartFrogExtractedException("Executing ${command}: ${e}",
                     SmartFrogExtractedException.convert(e))
         }
     }
@@ -131,7 +163,7 @@ class GroovyComponentHelper {
      * @return the unpack process
      */
     public Process unpack(String file) {
-        return unpack(file, root.getName().getPath())
+        return unpack(file, destFileObject.getName().getPath())
     }
 
     /**
@@ -146,7 +178,7 @@ class GroovyComponentHelper {
             return manager.resolveFile(location, options)
         } else {
             // resolve relative paths against root
-            return manager.resolveFile(root, location)
+            return manager.resolveFile(destFileObject, location)
         }
     }
 
@@ -159,7 +191,7 @@ class GroovyComponentHelper {
         sfLog.debug("Creating $directory")
         FileObject dir = resolve(directory)
         if (dir.exists()) {
-            sfLog.error("A file or directory with the name $directory already exists.")
+            sfLog.debug("A file or directory with the name $directory already exists.")
             return false;
         }
         dir.createFolder()
@@ -175,7 +207,7 @@ class GroovyComponentHelper {
     public boolean delete(fileOrDirectory) {
         sfLog.debug("Deleting $fileOrDirectory")
         FileObject src = resolve(fileOrDirectory)
-        if (!src.exists()) sfLog.warn("Cannot delete $fileOrDirectory: it does not exist.")
+        if (!src.exists()) sfLog.debug("Cannot delete $fileOrDirectory: it does not exist.")
         def delete = src.delete(Selectors.SELECT_ALL)
         src.close()
         return delete != 0
@@ -192,39 +224,44 @@ class GroovyComponentHelper {
         if (!src.exists()) {
             throw new SmartFrogDeploymentException("Source URL $source does not exist!")
         }
-        if (!src.isReadable()) {
+        if (!src.readable) {
             throw new SmartFrogDeploymentException("Source URL $source cannot be read")
         }
         FileObject dest = resolve(destination);
-        if (src.getType() == FileType.FILE) {
-            if (dest.exists()) {
-                if (dest.getType() == FileType.FILE) {
-                    sfLog.warn("Destination file does already exist and will be overwritten!")
-                    dest.copyFrom(src, Selectors.SELECT_SELF)
-                } else if (dest.getType() == FileType.FOLDER) {
-                    sfLog.info("Copying file $source into directory $destination")
-                    dest = resolve("$destination/${src.getName().getBaseName()}")
-                    dest.copyFrom(src, Selectors.SELECT_SELF)
-                }
-            } else {
-                sfLog.info("Copying file $source to $destination")
-                dest.copyFrom(src, Selectors.SELECT_SELF)
-            }
-        } else if (src.getType() == FileType.FOLDER) {
-            if (dest.exists()) {
-                if (dest.getType() == FileType.FILE) {
-                    throw new SmartFrogDeploymentException("Cannot copy directory $source into file $destination")
+        try {
+            FileType sourceType = src.type
+            if (sourceType == FileType.FILE) {
+                boolean destExists = dest.exists()
+                if (destExists) {
+                    if (dest.type == FileType.FILE) {
+                        if (sfLog.debugEnabled) sfLog.debug("Destination file $dest will be overwritten")
+                        dest.copyFrom(src, org.apache.commons.vfs2.Selectors.SELECT_SELF)
+                    } else if (dest.type == FileType.FOLDER) {
+                        if (sfLog.debugEnabled) sfLog.debug("Copying file $source into directory $destination")
+                        dest = resolve("$destination/${src.name.baseName}")
+                        dest.copyFrom(src, org.apache.commons.vfs2.Selectors.SELECT_SELF)
+                    }
                 } else {
-                    sfLog.info("Copying directory contents of $source into directory $destination")
-                    dest.copyFrom(src, Selectors.EXCLUDE_SELF)
+                    if (sfLog.debugEnabled) sfLog.debug("Copying file $source to $destination")
+                    dest.copyFrom(src, org.apache.commons.vfs2.Selectors.SELECT_SELF)
                 }
-            } else {
-                sfLog.info("Directory $destination does not exist and will be created")
-                dest.copyFrom(src, Selectors.EXCLUDE_SELF)
+            } else if (sourceType == FileType.FOLDER) {
+                if (dest.exists()) {
+                    if (dest.type == FileType.FILE) {
+                        throw new SmartFrogDeploymentException("Cannot copy directory $source into file $destination")
+                    } else {
+                        if (sfLog.debugEnabled) sfLog.debug("Copying directory contents of $source into directory $destination")
+                        dest.copyFrom(src, org.apache.commons.vfs2.Selectors.EXCLUDE_SELF)
+                    }
+                } else {
+                    if (sfLog.debugEnabled) sfLog.debug("Directory $destination does not exist and will be created")
+                    dest.copyFrom(src, org.apache.commons.vfs2.Selectors.EXCLUDE_SELF)
+                }
             }
+        } finally {
+            src.close()
+            dest.close()
         }
-        src.close()
-        dest.close()
     }
 
     /**
@@ -320,8 +357,25 @@ class GroovyComponentHelper {
      */
     public void parse(file) {
         def binding = [
-            comp: component
+                comp: component,
+                destDir: component.getDestDir()
         ]
         parse(file, binding)
     }
+
+    public boolean touch(String filename) {
+        File file = new File(filename)
+        return file.createNewFile();
+    }
+
+    public boolean touch(File dir, String filename) {
+        File file = new File(dir, filename)
+        return file.createNewFile();
+    }
+
+    public boolean touch(String dir, String filename) {
+        File file = new File(dir, filename)
+        return file.createNewFile();
+    }
+
 }

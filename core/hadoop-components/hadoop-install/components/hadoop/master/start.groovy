@@ -1,4 +1,4 @@
-def host = command("hostname").text
+def host = command("hostname -f").text
 
 sfLog().info("Start for Hadoop Master on $host")
 

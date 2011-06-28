@@ -15,15 +15,26 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
+import org.smartfrog.services.groovy.install.IComponent
 
 public class DelegatingScript extends Script {
 
-    private LogSF sfLog = LogFactory.getLog(this.class)
+    public static final String PARENT = "parent"
+    private LogSF sfLog = LogFactory.getLog(DelegatingScript.class)
 
-    private Component component
-    private GroovyComponentHelper helper
+    protected IComponent component
+    protected GroovyComponentHelper helper
 
-    public void setComponent(Component comp) {
+
+    public void initialise() {
+        setComponent((IComponent) binding.getVariable(PARENT))
+    }
+
+    public void log(String text) {
+        sfLog.info(text)
+    }
+
+    private void setComponent(IComponent comp) {
         if (comp) {
             component = comp
             try {
@@ -46,11 +57,11 @@ public class DelegatingScript extends Script {
     @Override
     public Object invokeMethod(String name, Object args) {
         try {
-            if (component.metaClass.methods*.name.contains(name)) {
+            if (component.getMetaClass().methods*.name.contains(name)) {
                 sfLog.debug("Delegating call to $name with $args to Component")
                 return InvokerHelper.invokeMethod(component, name, args)
             }
-            if (helper.metaClass.methods*.name.contains(name)) {
+            if (helper.getMetaClass().methods*.name.contains(name)) {
                 sfLog.debug("Delegating call to $name with $args to Helper")
                 return InvokerHelper.invokeMethod(helper, name, args)
             }

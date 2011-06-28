@@ -20,8 +20,10 @@ public interface ITask extends Prim, Remote {
 
     void update() throws RemoteException, SmartFrogException
 
+    /**
+     * An attribute that is set when a task is finished.
+     */
     String ATTR_FINISHED = "finished"
     String ATTR_FILE = "file"
-    String ATTR_DIRECTORY = "directory"
     String ATTR_PRECONDITIONS = "preconditions"
 }
