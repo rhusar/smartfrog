@@ -11,6 +11,9 @@ Architecture extends Parallel {
 // at the moment only Groovy tasks are supported
 Task extends Prim {
     sfClass "org.smartfrog.services.groovy.install.task.GroovyTask";
+
+    /* name of the file that contains a script */
+    file TBD;
 }
 
 // copy a file or directory
@@ -18,22 +21,46 @@ Source extends Prim {
     sfClass "org.smartfrog.services.groovy.install.download.Source";
 }
 
+/**
+ * A Groovy component takes a set of files that it moves through in sequence, all relative to the same script directory
+ */
 Component extends Compound {
     sfClass "org.smartfrog.services.groovy.install.Component";
 
-    directory "/service";
+    /*
+    Directory containing the scripts. If this is missing, the component will fail to deploy
+    */
+    scriptDir TBD;
+
+    /**
+     * the default destination for all the actions
+     */
+    destDir LAZY PROPERTY "java.io.tmpdir";
+
+    /**
+     * Flag to enable destdir creation. If not set and the destination directory does
+     * not exists, the component will fail
+     */
+    createDestDir true;
 
     install extends Task {
-        file "install.groovy";
+      description "Action to install a component"
+      file "install.groovy";
     }
+
     preConfigure extends Task {
-        file "preConfigure.groovy";
+      description "Actions to take before starting a component"
+      file "preConfigure.groovy";
     }
+
     start extends Task {
-        file "start.groovy";
+      description "How to start a component"
+      file "start.groovy";
     }
+
     postConfigure extends Task {
-        file "postConfigure.groovy";
+      description "Actions to take after starting a component"
+      file "postConfigure.groovy";
     }
 }
 

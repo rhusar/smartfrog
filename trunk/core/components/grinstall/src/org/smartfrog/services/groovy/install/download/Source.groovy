@@ -29,8 +29,8 @@ class Source extends PrimImpl implements ISource {
 
     @Override
     public boolean retrieve() {
-        def source = sfResolve("source").toString()
-        def destination = sfParent().sfResolve("directory").toString()
+        def source = sfResolve(ATTR_SOURCE).toString()
+        def destination = sfParent().sfResolve(ATTR_DEST_DIR).toString()
         sfLog().info("Copying $source to $destination")
         helper.copy(source, destination)
         return true;

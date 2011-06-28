@@ -7,13 +7,13 @@ public class ComponentUtils {
 
     public String extractClassHierarchy(instance) {
         StringBuilder builder = new StringBuilder()
-        builder << "Instance $instance : ${instance.class} \n"
+        builder << "Instance $instance : ${instance.class} ${instance.class.classLoader}\n"
         listParents(builder, instance.class)
         return builder.toString()
     }
 
     def listParents(StringBuilder builder, Class clazz) {
-        builder << clazz << "\n"
+        builder << clazz << " -- " << clazz.classLoader << "\n"
         def parent = clazz.getSuperclass()
         if (parent != null) {
             listParents(builder, parent)

@@ -2622,7 +2622,15 @@ ${ivy.reports.dir}
     <ivy:retrieve />
   </target>
   <!-- Ivy quick and dirty test End-->
-    
+
+
+  <!-- target to set up the commons-logging properties to route to smartfrog-->
+  <target name="commons-logging-via-sf">
+    <property
+      name="org.apache.commons.logging.Log"
+      value="org.smartfrog.services.logging.jcl.front.CommonsLogFrontEnd"
+      />
+  </target>
 </project>
 
 

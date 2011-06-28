@@ -7,6 +7,8 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys
 import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogResolutionException
 import org.smartfrog.sfcore.compound.CompoundImpl
+import org.smartfrog.services.groovy.install.task.GroovyComponentHelper
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 
 /**
  * Base class for all Components
@@ -14,10 +16,17 @@ import org.smartfrog.sfcore.compound.CompoundImpl
 class Component extends CompoundImpl implements IComponent {
 
 
+
     protected ComponentState state
+    public File destDir
+
 
     public Component() throws RemoteException {
-        super()
+    }
+
+    @Override
+    String getDestDir() {
+        return destDir.toString()
     }
 
     /**
@@ -30,7 +39,26 @@ class Component extends CompoundImpl implements IComponent {
     @Override
     public synchronized void sfStart() throws RemoteException, SmartFrogException {
         super.sfStart()
+        GroovyComponentHelper helper = new GroovyComponentHelper(this)
+
+        File scriptDir = helper.resolveFile(ATTR_SCRIPT_DIR, true)
+        if (!scriptDir.exists()) {
+            throw new SmartFrogDeploymentException("No $ATTR_SCRIPT_DIR found \"$scriptDir\"")
+        }
+        destDir = helper.resolveFile(Component.ATTR_DEST_DIR, true)
+        if (!destDir.exists()) {
+            boolean createDir = sfResolve(ATTR_CREATE_DEST_DIR, true, true)
+            if (createDir) {
+                destDir.mkdirs()
+            } else {
+                throw new SmartFrogDeploymentException("No $ATTR_DEST_DIR directory \"$destDir \"")
+            }
+        }
+
         init()
+
+
+        //retrieve all the source data
         sfChildren().each { child ->
             if (child instanceof ISource) {
                 child.retrieve()
@@ -138,4 +166,6 @@ class Component extends CompoundImpl implements IComponent {
             return super.sfResolve(reference)
         }
     }
+
+
 }

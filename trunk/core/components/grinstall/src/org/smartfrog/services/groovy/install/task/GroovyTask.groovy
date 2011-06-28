@@ -7,7 +7,9 @@ import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.prim.PrimImpl
 import org.smartfrog.services.groovy.install.Component
 import org.smartfrog.services.groovy.install.utils.ComponentUtils
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException
+import org.smartfrog.services.groovy.install.IComponent
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException
+import org.smartfrog.sfcore.prim.Prim
 
 /**
  * User: koenigbe
@@ -23,9 +25,10 @@ class GroovyTask extends PrimImpl implements ITask {
     private List<ITask> observers = new ArrayList<ITask>()
 
     private final Object lock = new Object()
+    def utils = new ComponentUtils()
+    Prim parent
 
     public GroovyTask() throws RemoteException {
-        super()
     }
 
     /**
@@ -36,18 +39,23 @@ class GroovyTask extends PrimImpl implements ITask {
 
     @Override
     public void run() throws RemoteException, SmartFrogException {
+        // ScriptHelper needs component to bind it within task scripts
+        parent = sfParent()
+        GroovyComponentHelper helper = new GroovyComponentHelper(parent)
+
         if (!sfResolve(ATTR_FINISHED, false, false)) {
             def file = sfResolve(ATTR_FILE, "", false)
-            if (!file) {
+            if (!file || file.isEmpty()) {
                 // no task file specified
                 sfLog().debug("No file specified")
                 return
             }
-            def directory = sfParent().sfResolve(ATTR_DIRECTORY)
+            String scriptDirName = helper.resolvePath(IComponent.ATTR_SCRIPT_DIR, true);
+            File scriptDir = new File(scriptDirName)
             previousTasks = sfResolve(ATTR_PRECONDITIONS, new Vector(), false)
             register()
             waitForPreconditions()
-            execute(directory, file)
+            execute(scriptDir, file)
             sfReplaceAttribute(ATTR_FINISHED, true)
             notifyObservers()
         }
@@ -69,9 +77,7 @@ class GroovyTask extends PrimImpl implements ITask {
         while (true) {
             wait = false
             previousTasks.each { task ->
-                if (!task.sfResolve(ATTR_FINISHED, false, false)) {
-                    wait = true
-                }
+                wait = !task.sfResolve(ATTR_FINISHED, false, false)
             }
             if (wait) lock()
             else return
@@ -98,30 +104,41 @@ class GroovyTask extends PrimImpl implements ITask {
         }
     }
 
-    private void execute(directory, file) {
-        sfLog().debug("Executing file $file in directory $directory")
-        def filename = new File("$directory/$file")
-        def conf = new CompilerConfiguration()
+    private boolean  execute(File scriptDir, String file) {
+        sfLog().info("Executing file $file in directory $scriptDir")
+        File scriptFile = new File(scriptDir, file)
+        if (!scriptFile.exists()) {
+            sfLog().info("No script file \"$scriptFile\"")
+            return false;
+        }
+        Component parentComponent = (Component) sfParent()
+        CompilerConfiguration conf = new CompilerConfiguration()
         String delegationScriptName = DelegatingScript.class.name
+        DelegatingScript ds = new DelegatingScript()
         conf.setScriptBaseClass(delegationScriptName)
         Binding binding = new Binding()
-        DelegatingScript script
+        binding.setVariable(DelegatingScript.PARENT, parentComponent);
         try {
-            GroovyShell shell = new GroovyShell(this.class.classLoader, binding, conf)
-            String text = filename.getText()
-            Script parsedScript = shell.parse(text)
-            ComponentUtils utils = new ComponentUtils()
-            if (!(parsedScript instanceof DelegatingScript)) {
-                def hierarchy = utils.extractClassHierarchy(parsedScript)
-                sfLog().warn(hierarchy)
-                throw new SmartFrogDeploymentException("Unable to convert the instance $parsedScript" +
-                    " into a ${DelegatingScript.class} -- class hierarchy is :\n$hierarchy");
+            ClassLoader loader = ds.getClass().getClassLoader()
+            GroovyShell shell = new GroovyShell(loader, binding, conf)
+            String text = scriptFile.getText()
+            Script script = shell.parse(text)
+            if (script == null) {
+                throw new SmartFrogLifecycleException("Null script from parsing $scriptFile")
             }
-            script = parsedScript
-            script.setComponent((Component)sfParent())
+            if (sfLog().debugEnabled && !(script instanceof DelegatingScript)) {
+                def hierarchy = utils.extractClassHierarchy(script)
+                String message = "Unable to convert the instance $script" +
+                        " into a ${DelegatingScript.class} -- class hierarchy is :\n$hierarchy"
+                sfLog().debug(message)
+            }
+/*            DelegatingScript dgs = (DelegatingScript) script;
+            dgs.setComponent(parentComponent)*/
+            script.initialise()
             script.run()
+            return true;
         } catch (Exception e) {
-            sfLog().error("When trying to parse $filename: $e", e)
+            sfLog().error("When trying to parse $scriptFile: $e", e)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
     }
@@ -132,7 +149,9 @@ class GroovyTask extends PrimImpl implements ITask {
     }
 
     private void notifyObservers() {
-        observers.each { it.update() }
+        observers.each { observer ->
+            observer.update()
+        }
     }
 
     @Override

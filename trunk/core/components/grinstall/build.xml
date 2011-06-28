@@ -29,4 +29,5 @@
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
+  <target name="ready-to-test" depends="common.ready-to-test, commons-logging-via-sf" />
 </project>

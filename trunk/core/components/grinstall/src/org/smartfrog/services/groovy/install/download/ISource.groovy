@@ -14,5 +14,8 @@ interface ISource extends Prim, Remote {
      * Copy all files from remoteURL into local temp directory
      * @return True if successful
      */
+    public String ATTR_DEST_DIR = "destDir"
+    public String ATTR_SOURCE = "source"
+
     public boolean retrieve() throws RemoteException, SmartFrogException;
 }
