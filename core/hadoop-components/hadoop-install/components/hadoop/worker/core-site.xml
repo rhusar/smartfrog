@@ -7,20 +7,20 @@
 
 <property>
   <name>hadoop.tmp.dir</name>
-  <value>/tmp/hadoop-${comp.sfResolve("master:userName")}</value>
+  <value>/tmp/hadoop-${comp.sfResolve("user")}</value>
 </property>
 
 <property>
   <name>fs.default.name</name>
-  <value><% if (comp.sfResolve("master:ibrix")) {
+  <value><% if (comp.sfResolve("ibrix")) {
                 out << "file:///"
             } else {
-                out << "hdfs://${comp.sfResolve("master:sfProcessHost")}:54310"
+                out << "hdfs://${comp.sfResolve("namenodeHost")}:54310"
             }
   %></value>
 </property>
 
-<% if (comp.sfResolve("master:ibrix")) { %>
+<% if (comp.sfResolve("ibrix")) { %>
 <property>
   <name>fs.ibrix.impl</name>
   <value>com.hp.hpl.filesystem.IBrixFileSystem</value>
@@ -33,7 +33,7 @@
 </property>
 <property>
   <name>fs.ibrix.gethostscript</name>
-  <value>${comp.sfResolve("directory")}/getsegmentsperhost.py</value>
+  <value>${destDir}/getsegmentsperhost.py</value>
   <description>IBrix FileSystem script which returns the segment host association</description>
 </property>
 <property>

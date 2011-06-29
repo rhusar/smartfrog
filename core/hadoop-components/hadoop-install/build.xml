@@ -45,6 +45,7 @@
       </sf-deploy>
     </presetdef>
     <property name="repository.dir" location="." />
+    <property name="components.dir" location="components"/>
     <property name="hadoop.sf" value="components/hadoop/hadoop.sf" />
   </target>
   
@@ -53,7 +54,8 @@
       <application name="worker" >
         #include "${hadoop.sf}"
         sfConfig extends HadoopWorker {
-          repository "${repository.dir}";
+          componentsDir "${components.dir}";
+          sfShouldTerminate true;
         }
       </application>
     </hdeploy>  

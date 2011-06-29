@@ -1,12 +1,11 @@
-// At this point, we should have all the files and directories we need
+sfLog().info("Installing  Hadoop Worker in $destDir")
 
-def host = command("hostname").text
+def hadoopVersion = sfResolve("hadoopVersion")
+def hadoopFile = "hadoop-${hadoopVersion}"
+def hadoopTar = "${hadoopFile}.tar.gz"
+sfLog().info("unpacking Hadoop ${hadoopTar} binaries to $destDir")
 
-def hadoopVersion = "0.20.203.0"
-def baseDir = sfResolve("directory")
-sfLog().info("Installing  Hadoop ${hadoopVersion} Worker on $host in $baseDir")
 
+unpack("$destDir/${hadoopFile}.tar.gz").waitFor()
 
-unpack("$baseDir/${hadoopVersion}.tar.gz")
-
-move("$baseDir/${hadoopVersion}", "$baseDir")
+move("$destDir/${hadoopFile}", "$destDir")

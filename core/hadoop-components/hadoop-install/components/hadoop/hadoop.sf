@@ -1,16 +1,35 @@
 #include "/org/smartfrog/services/groovy/install/base.sf" 
 
 
+// override this when not running tests
+hadoop.dir PROPERTY test.work.dir;
+
 HadoopComponent extends Component {
   hadoopVersion "0.20.203.0";
-  scriptDir "/service/hadoop";
+  module TBD
+  componentsDir TBD;
+  hadoopCompPath (componentsDir ++ "/hadoop/");
+  scriptDir (hadoopCompPath ++ module);
+  destDir hadoop.dir;
   ibrix false;
-  hadoopCompPath "/components/hadoop/";
-  tarFile  (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
-  repository TBD;
-  resolvedTarFile  (ATTRIB repository ++ tarFile);
-  userName "unknown";
+
+  namenodeHost "localhost";
+  jobtrackerHost namenodeHost;
+
+  user "slo";
+
+  tarFile ("hadoop-" ++ hadoopVersion ++ ".tar.gz")
+  resolvedTarFile  (hadoopCompPath ++ "artifacts/" ++ tarFile);
 }
+
+HadoopArtifacts extends HadoopComponent {
+
+  module "artifacts";
+  tarFile  (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
+
+}
+
+
 
 HadoopTarSource extends Source {
   source resolvedTarFile;
@@ -18,34 +37,26 @@ HadoopTarSource extends Source {
 
 HadoopMaster extends HadoopComponent {
 
-  master extends Source {
-    source (ATTRIB repository ++ hadoopCompPath ++ "master");
-  }
+  module "master";
 
 }
 
-HadoopMasterTar extends HadoopMaster {
-
-
-  tarSource extends HadoopTarSource;
-
-}
 
 HadoopWorker extends HadoopComponent {
+
+  module "worker";
 
   userVolumes [];
   
   // if a user volume is specified, the mount point must be provided
   mountDrive "/dev/sdb";
 
-  postConfigure extends Task;
-
-  worker extends Source {
-    source (ATTRIB repository ++ hadoopCompPath ++ "worker");
-  }
+  tarSource extends HadoopTarSource;
 
 }
+/*
 
 HadoopWorkerTar extends HadoopWorker {
   tarSource extends HadoopTarSource;
 }
+*/
