@@ -14,7 +14,7 @@ class VFSTest extends GroovyTestCase {
     protected void setUp() {
         super.setUp()
         String testDir = System.getProperty("test.work.dir")
-        helper = new GroovyComponentHelper(testDir)
+        helper = new GroovyComponentHelper(testDir, testDir)
     }
 
 

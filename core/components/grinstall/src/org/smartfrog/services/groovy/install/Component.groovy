@@ -2,13 +2,15 @@ package org.smartfrog.services.groovy.install
 
 import java.rmi.RemoteException
 import org.smartfrog.services.groovy.install.download.ISource
+import org.smartfrog.services.groovy.install.task.GroovyComponentHelper
 import org.smartfrog.services.groovy.install.task.ITask
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogResolutionException
 import org.smartfrog.sfcore.compound.CompoundImpl
-import org.smartfrog.services.groovy.install.task.GroovyComponentHelper
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException
+import org.smartfrog.sfcore.prim.Prim
+import org.smartfrog.sfcore.utils.WorkflowThread
 
 /**
  * Base class for all Components
@@ -16,9 +18,9 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 class Component extends CompoundImpl implements IComponent {
 
 
-
-    protected ComponentState state
+    private ComponentState componentState
     public File destDir
+    private Executor executor;
 
 
     public Component() throws RemoteException {
@@ -27,6 +29,14 @@ class Component extends CompoundImpl implements IComponent {
     @Override
     String getDestDir() {
         return destDir.toString()
+    }
+
+    public synchronized ComponentState getComponentState() {
+        return componentState
+    }
+
+    protected synchronized void setComponentState(ComponentState state) {
+        this.componentState = state
     }
 
     /**
@@ -41,33 +51,60 @@ class Component extends CompoundImpl implements IComponent {
         super.sfStart()
         GroovyComponentHelper helper = new GroovyComponentHelper(this)
 
+        // determine the script dir and bail out if it is missing
         File scriptDir = helper.resolveFile(ATTR_SCRIPT_DIR, true)
         if (!scriptDir.exists()) {
             throw new SmartFrogDeploymentException("No $ATTR_SCRIPT_DIR found \"$scriptDir\"")
         }
+        //now look for the directory
         destDir = helper.resolveFile(Component.ATTR_DEST_DIR, true)
         if (!destDir.exists()) {
+            //create it if missing and allowed
             boolean createDir = sfResolve(ATTR_CREATE_DEST_DIR, true, true)
             if (createDir) {
                 destDir.mkdirs()
             } else {
+                //it's missing and creation is not allowed
                 throw new SmartFrogDeploymentException("No $ATTR_DEST_DIR directory \"$destDir \"")
+            }
+        } else {
+            //check it's a directory
+            if (!destDir.isDirectory()) {
+                throw new SmartFrogDeploymentException("The $ATTR_DEST_DIR value \"$destDir \" is not a directory")
             }
         }
 
         init()
+        executor = new Executor(this)
+        executor.start()
+    }
 
 
-        //retrieve all the source data
-        sfChildren().each { child ->
-            if (child instanceof ISource) {
-                child.retrieve()
+    private class Executor extends WorkflowThread {
+
+        Executor(Prim prim) {
+            super(prim, true)
+        }
+
+        @Override
+        void execute() {
+            //retrieve all the source data
+            sfLog().info("Retrieving sources")
+            sfChildren().each { child ->
+                if (terminationRequested) return;
+
+                if (child instanceof ISource) {
+                    child.retrieve()
+                }
+            }
+            while (getComponentState() != ComponentState.READY) {
+                if (terminationRequested) return;
+                executeNextChild()
+                changeState()
             }
         }
-        while (state != ComponentState.READY) {
-            execute()
-            changeState()
-        }
+
+
     }
 
     /**
@@ -75,12 +112,12 @@ class Component extends CompoundImpl implements IComponent {
      */
     private void init() {
         if (sfLog().isDebugEnabled()) sfLog().debug("Initialising ${sfCompleteName()}")
-        state = ComponentState.REMOVED
-        publishState()
+        enterState(ComponentState.REMOVED)
     }
 
-    private void execute() {
-        switch (state) {
+    private void executeNextChild() {
+        ComponentState currentState = getComponentState();
+        switch (currentState) {
             case ComponentState.REMOVED:
                 run(ATTR_INSTALL)
                 break
@@ -116,7 +153,7 @@ class Component extends CompoundImpl implements IComponent {
      * Return the expected next state of the software component during deployment.
      */
     private ComponentState nextDeployState() {
-        switch (state) {
+        switch (componentState) {
             case ComponentState.REMOVED:
                 return ComponentState.INSTALLED
             case ComponentState.INSTALLED:
@@ -128,7 +165,7 @@ class Component extends CompoundImpl implements IComponent {
             case ComponentState.POSTCONFIGURED:
                 return ComponentState.READY
             default:
-                throw new IllegalStateException("No next state for current state $state defined!")
+                throw new IllegalStateException("No next state for current state $componentState defined!")
         }
     }
 
@@ -136,12 +173,13 @@ class Component extends CompoundImpl implements IComponent {
      * Change to the next state and update the state attribute
      */
     private void changeState() {
-        state = nextDeployState()
-        publishState()
+        enterState(nextDeployState())
     }
 
-    private def publishState() {
-        sfReplaceAttribute(ATTR_STATE, state)
+    private void enterState(ComponentState state) {
+        setComponentState(state)
+        if(sfLog().debugEnabled) sfLog().debug("new state: " + getComponentState())
+        sfReplaceAttribute(ATTR_STATE, getComponentState())
     }
 
     /**

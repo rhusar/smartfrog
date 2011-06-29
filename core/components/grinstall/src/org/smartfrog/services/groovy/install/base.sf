@@ -26,6 +26,7 @@ Source extends Prim {
  */
 Component extends Compound {
     sfClass "org.smartfrog.services.groovy.install.Component";
+    sfShouldTerminate false;
 
     /*
     Directory containing the scripts. If this is missing, the component will fail to deploy
@@ -42,6 +43,11 @@ Component extends Compound {
      * not exists, the component will fail
      */
     createDestDir true;
+
+    /**
+     * timeout for any executed commands that don't specify an explicit timeout
+     */
+    execTimeout 60000;
 
     install extends Task {
       description "Action to install a component"
