@@ -1,8 +1,7 @@
+package hadoop.master;
 def host = command("hostname -f").text
 
 sfLog().info("Preconfigure for Hadoop Master on $host")
-
-def baseDir = sfResolve("directory")
 
 if (sfResolve("ibrix")) {
     // setup ibrix client
@@ -12,26 +11,26 @@ if (sfResolve("ibrix")) {
 
     command("cd $comp.fusionManager.ibrixBinDir; ./ibrix_lwmount -f $comp.fusionManager.filesystem -m /$comp.fusionManager.filesystem")
 
-    copy("getsegmentsperhost.py", "$baseDir/getsegmentsperhost.py")
+    copy("getsegmentsperhost.py", "$destDir/getsegmentsperhost.py")
 
-    command("chmod +x $baseDir/getsegmentsperhost.py")
+    command("chmod +x $destDir/getsegmentsperhost.py")
 }
 
 def files = ["hadoop-env.sh", "core-site.xml", "mapred-site.xml", "hdfs-site.xml"]
 files.each {
-    copy("$it", "$baseDir/conf/$it")
+    copy("$it", "$destDir/conf/$it")
 }
 
 files = ["core-site.xml", "mapred-site.xml", "hdfs-site.xml"]
 files.each {
-    parse("$baseDir/conf/$it")
+    parse("$destDir/conf/$it")
 }
 
-copy("masterScript.sh", "$baseDir/bin/masterScript.sh")
-command("chmod +x $baseDir/bin/masterScript.sh")
+copy("masterScript.sh", "$destDir/bin/masterScript.sh")
+command("chmod +x $destDir/bin/masterScript.sh")
 
 // format namenode
-command("$baseDir/bin/hadoop namenode -format")
+command("$destDir/bin/hadoop namenode -format")
 
 // export hadoop home
-command("echo \"export HADOOP_HOME=$baseDir\" >> /root/.bashrc").waitFor()
+command("echo \"export HADOOP_HOME=$destDir\" >> /root/.bashrc").waitFor()

@@ -1,3 +1,4 @@
+package hadoop.master;
 def host = command("hostname -f").text
 
 sfLog().info("Postconfigure for Hadoop Master on $host")
@@ -6,7 +7,6 @@ sfLog().info("Postconfigure for Hadoop Master on $host")
 // jobtracker runs on port 50030
 // enable access to everyone
 
-def baseDir = sfResolve("directory")
 
-command("$baseDir/bin/hadoop fs -chmod 777 /user", "$baseDir").waitFor()
-command("$baseDir/bin/hadoop fs -chmod 777 /tmp/hadoop-${sfResolve("userName")}/mapred", "$baseDir").waitFor()
+command("$destDir/bin/hadoop fs -chmod 777 /user", $destDir).waitFor()
+command("$destDir/bin/hadoop fs -chmod 777 /tmp/hadoop-${sfResolve("user")}/mapred", $destDir).waitFor()

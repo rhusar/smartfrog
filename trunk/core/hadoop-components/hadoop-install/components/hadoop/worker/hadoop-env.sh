@@ -1,3 +1,4 @@
+#!/bin/bash
 # Set Hadoop-specific environment variables here.
 
 # The only required environment variable is JAVA_HOME.  All others are
@@ -6,7 +7,7 @@
 # remote nodes.
 
 # The java implementation to use.  Required.
-export JAVA_HOME=/opt/java
+export JAVA_HOME=/usr/java/jdk
 
 # Extra Java CLASSPATH elements.  Optional.
 # export HADOOP_CLASSPATH=

@@ -1,7 +1,12 @@
-def host = command("hostname").text
+package hadoop.worker;
 
-sfLog().info("Start for Hadoop Slave on $host")
+sfLog().info("Starting Hadoop Worker")
 
-def directory = sfResolve("directory")
-command("sh slaveScript.sh stop", "${directory}/bin").waitFor()
-command("sh slaveScript.sh start", "${directory}/bin").waitFor()
+def binDir = "${destDir}/bin"
+def cmd = "bash $binDir/worker.sh $binDir "
+exec("$cmd stop tasktracker", binDir)
+exec("$cmd $binDir stop datanode", binDir)
+
+failIf(exec("$cmd start datanode", binDir), "could not start namenode")
+failIf(exec("$cmd start tasktracker", binDir), "could not start tasktracker")
+sfLog().info("Started Hadoop Worker in ${binDir}")
