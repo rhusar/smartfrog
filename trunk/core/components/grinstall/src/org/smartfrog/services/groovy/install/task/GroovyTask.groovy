@@ -2,14 +2,14 @@ package org.smartfrog.services.groovy.install.task
 
 import java.rmi.RemoteException
 import org.codehaus.groovy.control.CompilerConfiguration
+import org.smartfrog.services.groovy.install.Component
+import org.smartfrog.services.groovy.install.IComponent
+import org.smartfrog.services.groovy.install.utils.ComponentUtils
 import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
-import org.smartfrog.sfcore.prim.PrimImpl
-import org.smartfrog.services.groovy.install.Component
-import org.smartfrog.services.groovy.install.utils.ComponentUtils
-import org.smartfrog.services.groovy.install.IComponent
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException
 import org.smartfrog.sfcore.prim.Prim
+import org.smartfrog.sfcore.prim.PrimImpl
 
 /**
  * User: koenigbe
@@ -32,11 +32,10 @@ class GroovyTask extends PrimImpl implements ITask {
     }
 
     /**
-     * Implement {@link ITask#run() }
+     * Implement {@link ITask#run()}
      * @throws RemoteException
      * @throws SmartFrogException
      */
-
     @Override
     public void run() throws RemoteException, SmartFrogException {
         // ScriptHelper needs component to bind it within task scripts
@@ -44,8 +43,8 @@ class GroovyTask extends PrimImpl implements ITask {
         GroovyComponentHelper helper = new GroovyComponentHelper(parent)
 
         if (!sfResolve(ATTR_FINISHED, false, false)) {
-            def file = sfResolve(ATTR_FILE, "", false)
-            if (!file || file.isEmpty()) {
+            String file = sfResolve(ATTR_FILE, "", false)
+            if (file.isEmpty()) {
                 // no task file specified
                 sfLog().debug("No file specified")
                 return
@@ -104,7 +103,13 @@ class GroovyTask extends PrimImpl implements ITask {
         }
     }
 
-    private boolean  execute(File scriptDir, String file) {
+    /**
+     * Execute a script
+     * @param scriptDir directory
+     * @param file file to look for
+     * @return true iff the script was run
+     */
+    private boolean execute(File scriptDir, String file) {
         sfLog().info("Executing file $file in directory $scriptDir")
         File scriptFile = new File(scriptDir, file)
         if (!scriptFile.exists()) {
@@ -113,16 +118,21 @@ class GroovyTask extends PrimImpl implements ITask {
         }
         Component parentComponent = (Component) sfParent()
         CompilerConfiguration conf = new CompilerConfiguration()
-        String delegationScriptName = DelegatingScript.class.name
-        DelegatingScript ds = new DelegatingScript()
-        conf.setScriptBaseClass(delegationScriptName)
+        //set the base class for the script. This will be loaded with a new classloader, so the
+        //resulting script cannot be cast back to an instance, or invoked with new types.
+        conf.setScriptBaseClass(DelegatingScript.class.name)
+
+        //instead params are passed down via the binding
         Binding binding = new Binding()
-        binding.setVariable(DelegatingScript.PARENT, parentComponent);
+        binding.setVariable(DelegatingScript.PARENT, parentComponent)
+        binding.setVariable(DelegatingScript.DESTDIR, new File(parentComponent.getDestDir()))
+        binding.setVariable(DelegatingScript.SCRIPTDIR, scriptDir)
+        Script script
         try {
-            ClassLoader loader = ds.getClass().getClassLoader()
+            ClassLoader loader = this.getClass().getClassLoader()
             GroovyShell shell = new GroovyShell(loader, binding, conf)
             String text = scriptFile.getText()
-            Script script = shell.parse(text)
+            script = shell.parse(text)
             if (script == null) {
                 throw new SmartFrogLifecycleException("Null script from parsing $scriptFile")
             }
@@ -132,15 +142,20 @@ class GroovyTask extends PrimImpl implements ITask {
                         " into a ${DelegatingScript.class} -- class hierarchy is :\n$hierarchy"
                 sfLog().debug(message)
             }
-/*            DelegatingScript dgs = (DelegatingScript) script;
-            dgs.setComponent(parentComponent)*/
+
+        } catch (Exception e) {
+            sfLog().error("When Parsing $scriptFile: $e", e)
+            throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
+        }
+        try {
             script.initialise()
             script.run()
             return true;
         } catch (Exception e) {
-            sfLog().error("When trying to parse $scriptFile: $e", e)
+            sfLog().error("When executing $scriptFile: $e", e)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
+
     }
 
     @Override

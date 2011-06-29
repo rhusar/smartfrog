@@ -6,10 +6,19 @@ test.classes.dir PROPERTY test.classes.dir;
 work.dir PROPERTY test.work.dir;
 examples.dir (test.classes.dir ++ "/examples");
 
-TouchFileComponent extends Component {
-  scriptDir (examples.dir ++ "/touchfile");
+
+
+ExampleComponent extends Component {
+  example TBD;
+  scriptDir (examples.dir ++ "/" ++ example);
   destDir work.dir;
 }
+
+TouchFileComponent extends ExampleComponent {
+  example "touchfile";
+}
+
+
 
 targetExists extends FileExistsWorkflow {
   name TBD;
@@ -17,11 +26,14 @@ targetExists extends FileExistsWorkflow {
   canBeDir false;
 }
 
-TestTouchFile extends ExpectDeploy {
+TestTouchFile extends ExpectTerminate {
 
-  action extends TouchFileComponent;
+  action extends Sequence {
 
-  tests extends Sequence {
+    touch extends TouchFileComponent {
+        sfShouldTerminate true;
+    }
+
     installExists extends targetExists {
       name "install.txt"
     }
@@ -38,6 +50,17 @@ TestTouchFile extends ExpectDeploy {
     postconfigureExists extends targetExists {
       name "postconfigure.txt"
     }
+  }
+}
+
+EchoComponent extends ExampleComponent {
+  example "echo";
+}
+
+TestEcho extends ExpectTerminate {
+
+  action extends EchoComponent {
+    sfShouldTerminate true;
   }
 
 }

@@ -16,6 +16,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
+import org.codehaus.groovy.runtime.ProcessGroovyMethods
 
 /**
  * Provides access to worker functions which may be used in Source components and in task files.
@@ -28,12 +29,13 @@ class GroovyComponentHelper {
 
     private FileSystemManager manager
     private FileSystemOptions options
-    private FileObject destFileObject
-    private FileObject destFile
+    private FileObject destDir
+    private File destFile
+    private FileObject scriptDir
     private IComponent component
+    int execTimeout = 60000
 
     public GroovyComponentHelper(IComponent comp) {
-        def rootDir
         component = comp
         try {
             sfLog = LogFactory.getLog(component.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, DEFAULT_LOG_NAME, true))
@@ -41,23 +43,26 @@ class GroovyComponentHelper {
             sfLog.error(e.toString(), e)
             throw new SmartFrogExtractedException(SmartFrogExtractedException.convert(e))
         }
-        rootDir = resolvePath(Component.ATTR_DEST_DIR, true);
+        String rootDir = resolvePath(Component.ATTR_DEST_DIR, true);
+        String scriptDir = resolvePath(Component.ATTR_SCRIPT_DIR, true);
+        execTimeout = component.sfResolve(Component.ATTR_EXEC_TIMEOUT, execTimeout, false)
 
-        bind(rootDir);
+        bind(scriptDir, rootDir);
     }
 
     /**
      * for use in testing: create a component helper bound to a specific directory
      * @param destDir the destination dir
      */
-    public GroovyComponentHelper(String destDir) {
-        bind(destDir);
+    public GroovyComponentHelper(String scriptDir, String destDir) {
+        bind(scriptDir, destDir);
     }
 
-    private def bind(String rootDir) {
+    private def bind(String scriptDir, String destDir) {
         manager = VFS.getManager()
-        destFileObject = manager.resolveFile(rootDir.toString())
-
+        this.destDir = manager.resolveFile(destDir)
+        destFile = new File(destDir)
+        this.scriptDir = manager.resolveFile(scriptDir)
         options = new FileSystemOptions();
         propagateProxySettings()
     }
@@ -103,24 +108,75 @@ class GroovyComponentHelper {
 
     public Process command(String command) {
         // all commands are executed in root directory by default
-        return this.command(command, destFileObject.name.path)
+        return this.command(command, destDir.name.path)
     }
 
-    public Process command(String command, String directory) {
-        if (sfLog.debugEnabled) sfLog.debug("Executing command $command in directory $directory")
+    public Process command(String cmd, String directory) {
+        if (sfLog.debugEnabled) sfLog.debug("Executing command $cmd in directory $directory")
+        File execDir = directory ? new File(directory) : null;
+        return command(cmd, execDir)
+    }
+
+    public Process command(String cmd, File directory) {
+        if (sfLog.debugEnabled) sfLog.debug("Executing command $cmd in directory $directory")
+        sfLog.info("$directory> $cmd")
         try {
-            if (directory) {
-                return command.execute((String[]) null, new File(directory))
-            } else {
-                return command.execute()
-            }
+            return cmd.execute((String[]) null, directory)
         } catch (Exception e) {
-            sfLog.error("Executing ${command}: ${e}", e)
+            //sfLog.error("Executing ${command}: ${e}", e)
+            // We have to catch exceptions and throw our own.
+            // Otherwise we get an Unmarshallexception (Script1)
+            throw new SmartFrogExtractedException("Executing ${cmd}: ${e}",
+                    SmartFrogExtractedException.convert(e))
+        }
+    }
+
+    /**
+     * A blocking exec
+     * @param cmd the command to execute
+     * @param directory directory -can be null
+     * @param timeout the timeout
+     * @return
+     */
+    public int exec(String cmd, File directory, long timeout) {
+/*
+        try {
+            def ps = cmd.execute((String[]) null, directory)
+            ps.waitForOrKill(timeout)
+            return ps.exitValue()
+        } catch (Exception e) {
+            //sfLog.error("Executing ${command}: ${e}", e)
             // We have to catch exceptions and throw our own.
             // Otherwise we get an Unmarshallexception (Script1)
             throw new SmartFrogExtractedException("Executing ${command}: ${e}",
                     SmartFrogExtractedException.convert(e))
         }
+*/
+        Process ps = command(cmd, directory)
+        ps.waitForOrKill(timeout)
+        return ps.exitValue()
+    }
+
+    /**
+     * A blocking exec
+     * @param cmd the command to execute
+     * @param directory directory -can be null
+     * @param timeout the timeout
+     * @return
+     */
+    public int exec(String cmd) {
+        return exec(cmd, destFile, execTimeout)
+    }
+
+    /**
+     * A blocking exec
+     * @param cmd the command to execute
+     * @param directory directory -can be null
+     * @param timeout the timeout
+     * @return
+     */
+    public int exec(String cmd, String dir) {
+        return exec(cmd, new File(dir), execTimeout)
     }
 
     /**
@@ -129,6 +185,8 @@ class GroovyComponentHelper {
      * @return the RPM process
      */
     public Process rpm(String file) {
+        FileObject src = resolve(file);
+        verifySourceIsValid("rpm", src)
         return command("rpm -i $file")
     }
 
@@ -140,20 +198,22 @@ class GroovyComponentHelper {
      *
      * http://apache-commons.680414.n4.nabble.com/commons-vfs-copy-progress-aborting-copy-operation-td740573.html
      *
-     * @param file file to unpack
-     * @param directory the dest fir
+     * @param source file to unpack
+     * @param targetDir the dest dir
      * @return the unpack process
      */
-    public Process unpack(String file, String directory) {
-        sfLog.debug("Unpacking $file")
-        if (file.endsWith("gz")) {
-            return command("tar zxf $file", directory)
+    public Process unpack(String source, String targetDir) {
+        sfLog.debug("Unpacking $source")
+        FileObject src = resolve(source);
+        verifySourceIsValid("unpack", src)
+        if (source.endsWith("gz")) {
+            return command("tar zxf $source", targetDir)
         }
-        else if (file.endsWith("bz2")) {
-            return command("tar jxf $file", directory)
+        else if (source.endsWith("bz2")) {
+            return command("tar jxf $source", targetDir)
         }
         else {
-            throw new SmartFrogDeploymentException("Unknown archive type: $file")
+            throw new SmartFrogDeploymentException("Unknown archive type: $source")
         }
     }
 
@@ -163,7 +223,7 @@ class GroovyComponentHelper {
      * @return the unpack process
      */
     public Process unpack(String file) {
-        return unpack(file, destFileObject.getName().getPath())
+        return unpack(file, destDir.getName().getPath())
     }
 
     /**
@@ -178,10 +238,25 @@ class GroovyComponentHelper {
             return manager.resolveFile(location, options)
         } else {
             // resolve relative paths against root
-            return manager.resolveFile(destFileObject, location)
+            return manager.resolveFile(destDir, location)
         }
     }
 
+    /**
+     * Resolve a file
+     * @param location url or path
+     * @return the resolved location, which is root-relative on a simple path
+     */
+    private FileObject resolveSrc(String location) {
+        sfLog.debug("Resolving URL: $location")
+        if (location.contains("http://") || location.contains("sftp://")) {
+            assert !location.contains("***")
+            return manager.resolveFile(location, options)
+        } else {
+            // resolve relative paths against root
+            return manager.resolveFile(scriptDir, location)
+        }
+    }
     /**
      * Resolve then create a directory
      * @param directory the directory to create (root-relative)
@@ -220,13 +295,8 @@ class GroovyComponentHelper {
      */
     public void copy(String source, String destination) {
         sfLog.debug("Copying $source to $destination")
-        FileObject src = resolve(source);
-        if (!src.exists()) {
-            throw new SmartFrogDeploymentException("Source URL $source does not exist!")
-        }
-        if (!src.readable) {
-            throw new SmartFrogDeploymentException("Source URL $source cannot be read")
-        }
+        FileObject src = resolveSrc(source);
+        verifySourceIsValid("copy", src)
         FileObject dest = resolve(destination);
         try {
             FileType sourceType = src.type
@@ -281,14 +351,7 @@ class GroovyComponentHelper {
     public void move(String source, String destination) {
         sfLog.debug("Moving $source to $destination")
         FileObject src = resolve(source);
-        if (!src.exists()) {
-            sfLog.error("Source URL $src does not exist!")
-            return
-        }
-        if (!src.isReadable()) {
-            sfLog.error("Source URL $src cannot be read!")
-            return
-        }
+        verifySourceIsValid("move", src)
         FileObject dest = resolve(destination);
         if (src.getType() == FileType.FILE) {
             if (dest.exists()) {
@@ -323,6 +386,15 @@ class GroovyComponentHelper {
         }
         src.close()
         dest.close()
+    }
+
+    protected def verifySourceIsValid(String operation, FileObject src) {
+        if (!src.exists()) {
+            throw new SmartFrogDeploymentException(operation + ": source \"$src\" - does not exist");
+        }
+        if (!src.isReadable()) {
+            throw new SmartFrogDeploymentException(operation + ": Source \"$src\" cannot be read")
+        }
     }
 
     /**
@@ -378,4 +450,12 @@ class GroovyComponentHelper {
         return file.createNewFile();
     }
 
+
+    public void fail(String text) {
+        throw new SmartFrogDeploymentException(text);
+    }
+
+    public void failIf(def value, String text) {
+        if (value) fail(text);
+    }
 }

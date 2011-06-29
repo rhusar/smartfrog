@@ -17,5 +17,7 @@ interface ISource extends Prim, Remote {
     public String ATTR_DEST_DIR = "destDir"
     public String ATTR_SOURCE = "source"
 
-    public boolean retrieve() throws RemoteException, SmartFrogException;
+    public boolean retrieve() throws RemoteException, SmartFrogException
+
+    ;
 }

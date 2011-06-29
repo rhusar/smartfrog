@@ -1,10 +1,10 @@
 package org.smartfrog.services.groovy.install.download
 
-import org.smartfrog.services.groovy.install.task.GroovyComponentHelper
 import java.rmi.RemoteException
+import org.smartfrog.services.groovy.install.Component
+import org.smartfrog.services.groovy.install.task.GroovyComponentHelper
 import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.prim.PrimImpl
-import org.smartfrog.services.groovy.install.Component
 
 class Source extends PrimImpl implements ISource {
 
@@ -24,7 +24,7 @@ class Source extends PrimImpl implements ISource {
     public synchronized void sfStart() throws RemoteException, SmartFrogException {
         super.sfStart()
         sfLog().debug("Starting " + this.class.simpleName)
-        helper = new GroovyComponentHelper((Component)sfParent())
+        helper = new GroovyComponentHelper((Component) sfParent())
     }
 
     @Override

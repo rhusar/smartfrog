@@ -1,8 +1,8 @@
 package org.smartfrog.services.groovy.install
 
 import java.rmi.Remote
-import org.smartfrog.sfcore.compound.Compound
 import java.rmi.RemoteException
+import org.smartfrog.sfcore.compound.Compound
 
 /**
  * Interface for all components
@@ -18,6 +18,9 @@ public interface IComponent extends Compound, Remote {
     String ATTR_POST_CONFIGURE = "postConfigure"
     String ATTR_START = "start"
     String ATTR_STATE = "state"
+    String ATTR_EXEC_TIMEOUT = "execTimeout";
 
-    String getDestDir() throws RemoteException;
+    String getDestDir() throws RemoteException
+
+    ;
 }
