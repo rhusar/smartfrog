@@ -58,7 +58,6 @@ public class WorkflowThread extends SmartFrogThread {
     }
 
 
-
     public Prim getOwner() {
         return owner;
     }
@@ -93,7 +92,7 @@ public class WorkflowThread extends SmartFrogThread {
      * @param workflowTermination is workflow termination expected
      */
     public WorkflowThread(Prim owner, boolean workflowTermination) {
-        this(owner,workflowTermination, new Object());
+        this(owner, workflowTermination, new Object());
     }
 
     /**
@@ -126,7 +125,7 @@ public class WorkflowThread extends SmartFrogThread {
      * the {@link #aboutToTerminate(TerminationRecord)} method is called, then
      * if either the termination was normal and this is a workflow thread,
      * or if the thread terminated abnormally, then the owner is terminated
-     * with a termination record created by {@link #createTerminationRecord()} 
+     * with a termination record created by {@link #createTerminationRecord()}
      */
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     protected void processRunResults() {
@@ -188,5 +187,5 @@ public class WorkflowThread extends SmartFrogThread {
     protected String getTerminationMessage() {
         return didThreadTerminateNormally() ? WORKER_THREAD_COMPLETED : WORKER_THREAD_FAILED;
     }
-    
+
 }
