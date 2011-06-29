@@ -154,7 +154,7 @@ public abstract class ConfigurationAction {
                     //keep trying
                     thr = ex;
                     String resultMessage =
-                            "Fail to execute " + configuration.getActionType() + "on target host: " + host +
+                            "Fail to execute " + configuration.getActionType() + " on target host: " + host +
                                     " , cause: " + ex.getCause();
                     if (SFSystem.sfLog().isDebugEnabled()) {
                         SFSystem.sfLog().debug(resultMessage, ex);
