@@ -161,8 +161,9 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
                 try {
                     deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc, true);
                 } catch (SmartFrogException e) {
-                    logThrowable("Failed to load \n" + details + "\n    " + fileURL, e);
-                    throw e;
+                    String message = "Failed to run "+ cfgDesc + " -- " + e +"\n" + details + "\n    " + fileURL;
+                    logThrowable(message, e);
+                    throw SmartFrogException.forward(message, e);
                 }
 //                if (deployedApp instanceof Prim) {
 //                    log.info("\n" + testDescription + "\n    " + cfgDesc.toString("\n    "+ ((Prim) deployedApp).sfCompleteName()));
