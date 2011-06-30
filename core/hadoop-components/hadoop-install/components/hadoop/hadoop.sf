@@ -1,8 +1,31 @@
 #include "/org/smartfrog/services/groovy/install/base.sf" 
 
 
-// override this when not running tests
-hadoop.dir PROPERTY test.work.dir;
+
+/**
+ * this directory defines Hadoop options independent of the actual deploying components
+ * keeping it separate adds some work, but should make it easier to override things later on
+ */
+HadoopOptions extends {
+
+  // override this when not running tests
+  hadoop.dir PROPERTY test.work.dir;
+
+  //get the Java home value from the OS
+  java.home "/usr/java/jdk";
+
+  namenodeHost "localhost";
+  //namenodeHost LAZY ATTRIB sfProcessHost;
+  namenodePort "54310";
+  jobtrackerHost namenodeHost;
+  jobtrackerPort "54311";
+  filesystem.uri ("hdfs://" ++ namenodeHost ++ ":" ++ namenodePort);
+  hadoop.heapsize 128;
+  dfs.replication 1;
+
+  //JVM options
+  hadoop.opts "-server -XX:+UseCompressedOops -Dcom.sun.management.jmxremote"
+}
 
 HadoopComponent extends Component {
   hadoopVersion "0.20.203.0";
@@ -10,14 +33,19 @@ HadoopComponent extends Component {
   componentsDir TBD;
   hadoopCompPath (componentsDir ++ "/hadoop/");
   scriptDir (hadoopCompPath ++ module);
-  destDir hadoop.dir;
+  destDir HadoopOptions:hadoop.dir;
   ibrix false;
 
-  namenodeHost "localhost";
-  namenodePort "54310";
-  filesystem.uri ("hdfs://" ++ namenodeHost ++ ":" ++ namenodePort);
-  jobtrackerHost namenodeHost;
-  jobtrackerPort "54311";
+  java.home HadoopOptions:java.home;
+  hadoop.heapsize HadoopOptions:hadoop.heapsize;
+  hadoop.opts HadoopOptions:hadoop.opts;
+  dfs.replication  HadoopOptions:dfs.replication;
+
+  namenodeHost HadoopOptions:namenodeHost;
+  namenodePort HadoopOptions:namenodePort;
+  filesystem.uri HadoopOptions:filesystem.uri;
+  jobtrackerHost HadoopOptions:jobtrackerHost;
+  jobtrackerPort HadoopOptions:jobtrackerPort;
 
   user "slo";
 
@@ -40,6 +68,7 @@ HadoopTarSource extends Source {
 
 HadoopMaster extends HadoopComponent {
 
+  tarSource extends HadoopTarSource;
   module "master";
 
 }

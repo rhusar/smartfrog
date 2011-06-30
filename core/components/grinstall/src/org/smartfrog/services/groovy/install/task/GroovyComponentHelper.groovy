@@ -16,7 +16,6 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException
 import org.smartfrog.sfcore.common.SmartFrogExtractedException
 import org.smartfrog.sfcore.logging.LogFactory
 import org.smartfrog.sfcore.logging.LogSF
-import org.codehaus.groovy.runtime.ProcessGroovyMethods
 
 /**
  * Provides access to worker functions which may be used in Source components and in task files.
@@ -61,7 +60,7 @@ class GroovyComponentHelper {
     private def bind(String scriptDir, String destDir) {
         manager = VFS.getManager()
         this.destDir = manager.resolveFile(destDir)
-        destFile = new File(destDir)
+        this.destFile = new File(destDir)
         this.scriptDir = manager.resolveFile(scriptDir)
         options = new FileSystemOptions();
         propagateProxySettings()
@@ -139,19 +138,6 @@ class GroovyComponentHelper {
      * @return
      */
     public int exec(String cmd, File directory, long timeout) {
-/*
-        try {
-            def ps = cmd.execute((String[]) null, directory)
-            ps.waitForOrKill(timeout)
-            return ps.exitValue()
-        } catch (Exception e) {
-            //sfLog.error("Executing ${command}: ${e}", e)
-            // We have to catch exceptions and throw our own.
-            // Otherwise we get an Unmarshallexception (Script1)
-            throw new SmartFrogExtractedException("Executing ${command}: ${e}",
-                    SmartFrogExtractedException.convert(e))
-        }
-*/
         Process ps = command(cmd, directory)
         ps.waitForOrKill(timeout)
         return ps.exitValue()
@@ -165,7 +151,7 @@ class GroovyComponentHelper {
      * @return
      */
     public int exec(String cmd) {
-        return exec(cmd, destFile, execTimeout)
+        return exec(cmd, this.destFile, execTimeout)
     }
 
     /**
@@ -293,7 +279,7 @@ class GroovyComponentHelper {
      * @param source source URL or path
      * @param destination dest URL or path
      */
-    public void copy(String source, String destination) {
+    public String copy(String source, String destination) {
         sfLog.debug("Copying $source to $destination")
         FileObject src = resolveSrc(source);
         verifySourceIsValid("copy", src)
@@ -402,9 +388,10 @@ class GroovyComponentHelper {
      * @param file - file
      * @param binding - variables refered to in the file
      */
-    public void parse(String file, binding) {
+    public void parse(String file, String destFile, Map binding) {
         def engine = new GStringTemplateEngine()
-        def input = new File(file);
+        def input = new File(file)
+        def output = new File(destFile)
         if (!input.exists()) {
             sfLog.error("File $file does not exist!")
             return
@@ -414,9 +401,9 @@ class GroovyComponentHelper {
             sfLog.debug("Created template")
             def replacedText = template.toString()
             sfLog.debug("Evaluated template as: $replacedText")
-            input.write(replacedText)
+            output.write(replacedText)
         } catch (e) {
-            def text = "Failed to create template from $file: $e"
+            def text = "Failed to create template from $file into $destFile: $e"
             sfLog.error(text, e)
             throw new SmartFrogExtractedException(text, SmartFrogExtractedException.convert(e))
         }
@@ -427,12 +414,29 @@ class GroovyComponentHelper {
      * Makes component available inside the file as "comp".
      * @see this.parse ( file , binding )
      */
-    public void parse(file) {
-        def binding = [
+    public void parse(String file) {
+        Map<String, Object> binding = createParseBinding()
+        parse(file, file, binding)
+    }
+
+    /**
+     * Copy a file with parsing to a destination directory
+     * @param source source file
+     * @param destFile destination file
+     */
+    public void copyAndParseTo(String source, String dest) {
+        FileObject src = resolveSrc(source);
+        File destFile = new File(dest)
+        parse(src.name.pathDecoded, destFile.getAbsolutePath(), createParseBinding())
+    }
+
+
+    protected Map<String, Object> createParseBinding() {
+        Map binding = [
                 comp: component,
                 destDir: component.getDestDir()
         ]
-        parse(file, binding)
+        return binding
     }
 
     public boolean touch(String filename) {
