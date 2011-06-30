@@ -14,7 +14,10 @@ HadoopComponent extends Component {
   ibrix false;
 
   namenodeHost "localhost";
+  namenodePort "54310";
+  filesystem.uri ("hdfs://" ++ namenodeHost ++ ":" ++ namenodePort);
   jobtrackerHost namenodeHost;
+  jobtrackerPort "54311";
 
   user "slo";
 

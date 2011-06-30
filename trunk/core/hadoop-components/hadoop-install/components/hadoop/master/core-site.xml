@@ -6,17 +6,12 @@
 <configuration>
 <property>
   <name>hadoop.tmp.dir</name>
-  <value>/tmp/hadoop-${comp.sfResolve("master:userName")}</value>
+  <value>/tmp/hadoop-${comp.sfResolve("user")}</value>
 </property>
 
 <property>
-    <name>fs.default.name</name>
-    <value><% if (comp.sfResolve("iBrix", false, false)) {
-                out << "ibrix:///"
-              } else {
-                out << "hdfs://${comp.sfResolve("sfProcessHost")}:54310"
-              }
-    %></value>
+  <name>fs.default.name</name>
+  <value>${comp.sfResolve("filesystem.uri")}</value>
 </property>
 
 <% if (comp.sfResolve("iBrix", false, false)) { %>

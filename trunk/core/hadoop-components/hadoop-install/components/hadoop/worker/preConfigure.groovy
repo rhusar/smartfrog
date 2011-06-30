@@ -1,13 +1,12 @@
 package hadoop.worker;
-def host = command("hostname").text
 
 
-sfLog().info("Preconfigure for Hadoop Worker on $host")
+log("Preconfigure for Hadoop Worker")
 // do we need to mount an extra filesystem
 def userVolumes = sfResolve("userVolumes", new Vector(), false)
 def mountDrive = sfResolve("mountDrive", "/dev/sdb", false);
 def user = sfResolve("user")
-sfLog().info("Basedir is $destDir, userVolumes = $userVolumes, mountDrive = $mountDrive user=$user")
+log("Basedir is $destDir, userVolumes = $userVolumes, mountDrive = $mountDrive user=$user")
 
 
 def files = ["hadoop-env.sh", "mapred-site.xml", "core-site.xml", "hdfs-site.xml"]

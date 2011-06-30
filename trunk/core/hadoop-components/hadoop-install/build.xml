@@ -44,6 +44,18 @@
         <syspropertyset refid="daemon-properties"/>
       </sf-deploy>
     </presetdef>
+
+    <presetdef name="hstop">
+      <sf-undeploy classpathref="run.classpath"
+        host="${deploy.host}"
+        >
+        <jvmarg line="${daemon.jvmargs}"/>
+        <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <syspropertyset refid="daemon-properties"/>
+      </sf-undeploy>
+    </presetdef>
+
     <property name="repository.dir" location="." />
     <property name="components.dir" location="components"/>
     <property name="hadoop.sf" value="components/hadoop/hadoop.sf" />
@@ -55,9 +67,28 @@
         #include "${hadoop.sf}"
         sfConfig extends HadoopWorker {
           componentsDir "${components.dir}";
-          sfShouldTerminate true;
         }
       </application>
     </hdeploy>  
   </target>
+
+  <target name="stop-worker" depends="ready-to-hadoop">
+    <hstop application="worker"/>
+  </target>
+
+  <target name="master" depends="ready-to-hadoop">
+    <hdeploy>
+      <application name="master">
+        #include "${hadoop.sf}"
+        sfConfig extends HadoopMaster {
+          componentsDir "${components.dir}";
+        }
+      </application>
+    </hdeploy>
+  </target>
+
+  <target name="stop-master" depends="ready-to-hadoop">
+    <hstop application="master"/>
+  </target>
+
 </project>
