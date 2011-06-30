@@ -19,11 +19,11 @@
   <property name="ivy.enabled" value="true"/>
   <property name="groovy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
+  <property name="is.component" value="true"/>
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
-  <property name="is.component" value="true"/>
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
@@ -80,6 +80,9 @@
     <hdeploy>
       <application name="master">
         #include "${hadoop.sf}"
+
+        HadoopOptions:namenodeHost "wildhaus";
+        
         sfConfig extends HadoopMaster {
           componentsDir "${components.dir}";
         }

@@ -17,14 +17,8 @@ if (sfResolve("ibrix")) {
 
 def files = ["hadoop-env.sh", "core-site.xml", "mapred-site.xml", "hdfs-site.xml"]
 files.each {
-    copy("$it", "$destDir/conf/$it")
+    copyAndParseTo("$it", "$destDir/conf/$it")
 }
-
-files = ["core-site.xml", "mapred-site.xml", "hdfs-site.xml"]
-files.each {
-    parse("$destDir/conf/$it")
-}
-
 
 copy("worker.sh", "$destDir/bin/worker.sh")
 exec("chmod +x $destDir/bin/worker.sh")
