@@ -260,11 +260,17 @@ Components for working with S3 files and EC2 instances.
 
 %package groovy
 Group:         ${rpm.framework}
-Summary:        Groovy Script Support
-Requires:       %{name} = %{version}-%{release}
+Summary:        Groovy Integration
+Requires:       %{name} = %{version}-%{release}, %{name}-networking
 
 %description groovy
 This includes Groovy and the components needed to embed Groovy scripts inside .sf files
+
+It also includes an (evolving) set of components, "grinstall", designed
+to delegate the installation actions to in-filesystem groovy scripts rather
+than Java code compiled and embedded inside Java files. A key feature
+of this design is its expansive-copying of text files, which can be used
+to dynamically create application-specific configuration files with ease.
 
 # -----------------------------------------------------------------------------
 
@@ -290,15 +296,15 @@ This includes Groovy and the components needed to embed Groovy scripts inside .s
 #application server, such as Jetty.
 
 # -----------------------------------------------------------------------------
-
-%package jersey
-Group:         ${rpm.framework}
-Summary:        Jersey JAX-WS-Support integration
-Requires:       %{name} = %{version}-%{release}, %{name}-www
-
-%description jersey
-This contains the artifacts needed to deploy the Jersey ${jersey.version} version of
-the JAX-WS-RS API.
+#
+#%package jersey
+#Group:         ${rpm.framework}
+#Summary:        Jersey JAX-WS-Support integration
+#Requires:       %{name} = %{version}-%{release}, %{name}-www
+#
+#%description jersey
+#This contains the artifacts needed to deploy the Jersey ${jersey.version} version of
+#the JAX-WS-RS API.
 
 # -----------------------------------------------------------------------------
 
@@ -863,6 +869,11 @@ fi
 %{linkdir}/groovy-all.jar
 %{libdir}/groovy-all-${groovy.version}.jar
 
+%{linkdir}/sf-grinstall.jar
+%{libdir}/sf-grinstall-${smartfrog.version}.jar
+%{linkdir}/commons-vfs.jar
+%{libdir}/commons-vfs-${commons-vfs.version}.jar
+
 # -----------------------------------------------------------------------------
 #%files hadoop
 #%{linkdir}/sf-hadoop.jar
@@ -895,24 +906,24 @@ fi
 #%{linkdir}/xmlenc.jar
 
 # -----------------------------------------------------------------------------
-%files jersey
-
-%{libdir}/sf-jersey-${smartfrog.version}.jar
-%{linkdir}/sf-jersey.jar
-%{libdir}/jersey-core-${jersey.version}.jar
-%{linkdir}/jersey-core.jar
-%{libdir}/jersey-server-${jersey.version}.jar
-%{linkdir}/jersey-server.jar
-%{libdir}/jersey-client-${jersey.version}.jar
-%{linkdir}/jersey-client.jar
-%{libdir}/jsr311-api-${jsr311-api.version}.jar
-%{linkdir}/jsr311-api.jar
-%{libdir}/asm-${asm.version}.jar
-%{linkdir}/asm.jar
-%{libdir}/grizzly-http-servlet-${grizzly.version}.jar
-%{linkdir}/grizzly-http-servlet.jar
-%{libdir}/grizzly-utils-${grizzly.version}.jar
-%{linkdir}/grizzly-utils.jar
+#%files jersey
+#
+#%{libdir}/sf-jersey-${smartfrog.version}.jar
+#%{linkdir}/sf-jersey.jar
+#%{libdir}/jersey-core-${jersey.version}.jar
+#%{linkdir}/jersey-core.jar
+#%{libdir}/jersey-server-${jersey.version}.jar
+#%{linkdir}/jersey-server.jar
+#%{libdir}/jersey-client-${jersey.version}.jar
+#%{linkdir}/jersey-client.jar
+#%{libdir}/jsr311-api-${jsr311-api.version}.jar
+#%{linkdir}/jsr311-api.jar
+#%{libdir}/asm-${asm.version}.jar
+#%{linkdir}/asm.jar
+#%{libdir}/grizzly-http-servlet-${grizzly.version}.jar
+#%{linkdir}/grizzly-http-servlet.jar
+#%{libdir}/grizzly-utils-${grizzly.version}.jar
+#%{linkdir}/grizzly-utils.jar
 
 # -----------------------------------------------------------------------------
 %files jetty

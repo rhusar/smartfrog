@@ -516,7 +516,9 @@
     <rpmpackage package="groovy"/>
     <ln artifact="sf-groovy" version="${smartfrog.version}"/>
     <ln artifact="groovy-all" version="${groovy.version}"/>
-    
+    <ln artifact="sf-grinstall" version="${smartfrog.version}"/>
+    <ln artifact="commons-vfs" version="${commons-vfs.version}"/>
+
     <!-- hadoop -->
 <!-- Commented out as part of SFOS-1562
     <rpmpackage package="hadoop"/>
