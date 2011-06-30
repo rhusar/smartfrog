@@ -90,6 +90,8 @@ public class DelegatingScript extends Script {
         }
     }
 
+
+
     @Override
     Object run() {
         sfLog.info("In the script runner of $this")

@@ -50,6 +50,10 @@ TestTouchFile extends ExpectTerminate {
     postconfigureExists extends targetExists {
       name "postconfigure.txt"
     }
+
+    terminateExists extends targetExists {
+      name "terminate.txt"
+    }
   }
 }
 

@@ -19,6 +19,7 @@ public interface IComponent extends Compound, Remote {
     String ATTR_START = "start"
     String ATTR_STATE = "state"
     String ATTR_EXEC_TIMEOUT = "execTimeout";
+    public String ATTR_TERMINATOR = "terminate"
 
     String getDestDir() throws RemoteException
 
