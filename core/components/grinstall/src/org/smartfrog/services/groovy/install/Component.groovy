@@ -10,6 +10,8 @@ import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogResolutionException
 import org.smartfrog.sfcore.compound.CompoundImpl
 import org.smartfrog.sfcore.prim.Prim
+import org.smartfrog.sfcore.prim.TerminationRecord
+import org.smartfrog.sfcore.utils.SmartFrogThread
 import org.smartfrog.sfcore.utils.WorkflowThread
 
 /**
@@ -21,6 +23,7 @@ class Component extends CompoundImpl implements IComponent {
     private ComponentState componentState
     public File destDir
     private Executor executor;
+    int terminationTimeout = 20000
 
 
     public Component() throws RemoteException {
@@ -104,7 +107,6 @@ class Component extends CompoundImpl implements IComponent {
             }
         }
 
-
     }
 
     /**
@@ -115,24 +117,26 @@ class Component extends CompoundImpl implements IComponent {
         enterState(ComponentState.REMOVED)
     }
 
-    private void executeNextChild() {
+    private boolean executeNextChild() {
         ComponentState currentState = getComponentState();
+        boolean result = false;
         switch (currentState) {
             case ComponentState.REMOVED:
-                run(ATTR_INSTALL)
+                result = run(ATTR_INSTALL)
                 break
             case ComponentState.INSTALLED:
-                run(ATTR_PRE_CONFIGURE)
+                result = run(ATTR_PRE_CONFIGURE)
                 break
             case ComponentState.PRECONFIGURED:
-                run(ATTR_START)
+                result = run(ATTR_START)
                 break
             case ComponentState.STARTED:
-                run(ATTR_POST_CONFIGURE)
+                result = run(ATTR_POST_CONFIGURE)
                 break
             default:
-                return
+                result = false
         }
+        return result;
     }
 
     /**
@@ -140,10 +144,10 @@ class Component extends CompoundImpl implements IComponent {
      * @param task
      * @throws SmartFrogResolutionException if the task is missing or of the wrong type
      */
-    private void run(String task) {
+    private boolean run(String task) {
         def taskObject = sfResolve(task)
         if (taskObject instanceof ITask) {
-            taskObject.run()
+            return taskObject.run()
         } else {
             throw new SmartFrogResolutionException("Value of attribute ${task} is not of class ITask")
         }
@@ -178,7 +182,7 @@ class Component extends CompoundImpl implements IComponent {
 
     private void enterState(ComponentState state) {
         setComponentState(state)
-        if(sfLog().debugEnabled) sfLog().debug("new state: " + getComponentState())
+        if (sfLog().debugEnabled) sfLog().debug("new state: " + getComponentState())
         sfReplaceAttribute(ATTR_STATE, getComponentState())
     }
 
@@ -202,6 +206,17 @@ class Component extends CompoundImpl implements IComponent {
             return ref
         } else {
             return super.sfResolve(reference)
+        }
+    }
+
+    @Override
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status)
+        SmartFrogThread.requestAndWaitForThreadTermination(executor, terminationTimeout)
+        //now try to execute the terminator. Note that it is pre-constructed, and just needs executing
+        ITask terminator = (ITask) sfResolve(ATTR_TERMINATOR, (Prim) null, false);
+        if (terminator != null) {
+            terminator.run();
         }
     }
 
