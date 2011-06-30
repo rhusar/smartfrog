@@ -1,7 +1,6 @@
 package hadoop.master;
-def host = command("hostname -f").text
 
-sfLog().info("Preconfigure for Hadoop Master on $host")
+log("Preconfigure for Hadoop Master")
 
 if (sfResolve("ibrix")) {
     // setup ibrix client
@@ -26,11 +25,12 @@ files.each {
     parse("$destDir/conf/$it")
 }
 
-copy("masterScript.sh", "$destDir/bin/masterScript.sh")
-command("chmod +x $destDir/bin/masterScript.sh")
+
+copy("worker.sh", "$destDir/bin/worker.sh")
+exec("chmod +x $destDir/bin/worker.sh")
 
 // format namenode
-command("$destDir/bin/hadoop namenode -format")
+exec("$destDir/bin/hadoop namenode -format")
 
 // export hadoop home
-command("echo \"export HADOOP_HOME=$destDir\" >> /root/.bashrc").waitFor()
+//command("echo \"export HADOOP_HOME=$destDir\" >> /root/.bashrc").waitFor()

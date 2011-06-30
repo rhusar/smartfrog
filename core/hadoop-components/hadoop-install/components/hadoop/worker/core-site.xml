@@ -12,12 +12,7 @@
 
 <property>
   <name>fs.default.name</name>
-  <value><% if (comp.sfResolve("ibrix")) {
-                out << "file:///"
-            } else {
-                out << "hdfs://${comp.sfResolve("namenodeHost")}:54310"
-            }
-  %></value>
+  <value>${comp.sfResolve("filesystem.uri")}</value>
 </property>
 
 <% if (comp.sfResolve("ibrix")) { %>

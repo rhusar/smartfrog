@@ -1,2 +1,2 @@
 package hadoop.master;
-sfLog().info("Installing  Hadoop Master in $destDir")
+log("Installing  Hadoop Master in $destDir")
