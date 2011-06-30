@@ -204,6 +204,14 @@
         rev="${ivy.smartfrog.version}"
         conf="package-groovy->master,redist,documentation"/>
 
+    <!--groovy -->
+    <dependency org="org.smartfrog"
+      name="sf-grinstall"
+      changing="true"
+      rev="${ivy.smartfrog.version}"
+      conf="package-groovy->master,redist,documentation"/>
+
+
     <!--hadoop-->
 <!--
     <dependency org="org.smartfrog"

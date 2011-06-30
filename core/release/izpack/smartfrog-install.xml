@@ -514,6 +514,12 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-groovy/groovy-all-${groovy.version}.jar"
         targetdir="$INSTALL_PATH/lib"
         />
+      <file src="ivy/lib/package-groovy/sf-grinstall-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-groovy/commons-vfs-${commons-vfs.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
     </pack>
 
 <!-- SFOS-1562
