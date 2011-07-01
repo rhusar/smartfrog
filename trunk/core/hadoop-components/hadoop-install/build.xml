@@ -59,6 +59,10 @@
     <property name="repository.dir" location="." />
     <property name="components.dir" location="components"/>
     <property name="hadoop.sf" value="components/hadoop/hadoop.sf" />
+    
+    <property name="hadoop.namenodeHost" value="localhost"/>
+    <property name="hadoop.java.home" value="${java.home}"/>
+    
   </target>
   
   <target name="worker" depends="ready-to-hadoop">
@@ -81,7 +85,8 @@
       <application name="master">
         #include "${hadoop.sf}"
 
-        HadoopOptions:namenodeHost "wildhaus";
+        //HadoopOptions:namenodeHost "localhost";
+        HadoopOptions:java.home PROPERTY java.home;
         
         sfConfig extends HadoopMaster {
           componentsDir "${components.dir}";

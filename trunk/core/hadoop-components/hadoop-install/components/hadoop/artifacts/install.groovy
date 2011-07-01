@@ -6,5 +6,4 @@ sfLog().info("Installing  Hadoop ${hadoopVersion} binaries to $destDir")
 
 
 unpack("$destDir/${hadoopVersion}.tar.gz")
-
 move("$destDir/${hadoopVersion}", "$destDir")
