@@ -188,15 +188,15 @@ class GroovyComponentHelper {
      * @param targetDir the dest dir
      * @return the unpack process
      */
-    public Process unpack(String source, String targetDir) {
+    public int unpack(String source, String targetDir) {
         sfLog.debug("Unpacking $source")
         FileObject src = resolve(source);
         verifySourceIsValid("unpack", src)
         if (source.endsWith("gz")) {
-            return command("tar zxf $source", targetDir)
+            return exec("tar x -f $source", targetDir)
         }
         else if (source.endsWith("bz2")) {
-            return command("tar jxf $source", targetDir)
+            return exec("tar x -f $source", targetDir)
         }
         else {
             throw new SmartFrogDeploymentException("Unknown archive type: $source")
@@ -208,7 +208,7 @@ class GroovyComponentHelper {
      * @param file file to unpack
      * @return the unpack process
      */
-    public Process unpack(String file) {
+    public int unpack(String file) {
         return unpack(file, destDir.getName().getPath())
     }
 
@@ -427,6 +427,9 @@ class GroovyComponentHelper {
     public void copyAndParseTo(String source, String dest) {
         FileObject src = resolveSrc(source);
         File destFile = new File(dest)
+        if (!destFile.parentFile.exists()) {
+            destFile.parentFile.mkdirs()
+        }
         parse(src.name.pathDecoded, destFile.getAbsolutePath(), createParseBinding())
     }
 
