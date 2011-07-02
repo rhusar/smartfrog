@@ -538,6 +538,7 @@
 -->
 
     <!-- jersey -->
+<!--
     <rpmpackage package="jersey"/>
     <ln artifact="sf-jersey" version="${smartfrog.version}"/>
     <ln artifact="jersey-core" version="${jersey.version}"/>
@@ -547,7 +548,7 @@
     <ln artifact="jsr311-api" version="${jsr311-api.version}"/>
     <ln artifact="grizzly-utils" version="${grizzly.version}"/>
     <ln artifact="grizzly-http-servlet" version="${grizzly.version}"/>
-    
+-->    
     <!-- jmx -->
     <rpmpackage package="jmx"/>
     <ln artifact="sf-jmx" version="${smartfrog.version}"/>
