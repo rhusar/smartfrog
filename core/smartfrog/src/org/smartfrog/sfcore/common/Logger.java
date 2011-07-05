@@ -25,6 +25,8 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -229,6 +231,26 @@ public class Logger implements MessageKeys {
         } else {
             return null;
         }
+    }
+
+    /**
+     *
+     *  Method to search for repeted number of words in a String
+     *
+     * @param word Word to match
+     *  @param content array of strings to search
+     * @return resultMessage  list of lines where the word was found  or NULL 1 or less found.
+     */
+    public List<String> checkRepeatedFiles(String word, String[] content) {
+
+        List<String> results = new ArrayList<String>();
+
+        for (String entry : content) {
+            if (entry.contains(word)) {
+                results.add(entry);
+            }
+        }
+        return results;
     }
 
 }
