@@ -25,5 +25,5 @@ Logger extends {
   // testNetwork true;
   // testURI [|"http://www.smartfrog.org"|];
   // testSFDaemonNetworkPort false;
-  testJarRepeat  [|"smartfrog-","sfServices","sfExamples","sf-anubis"|]
+  testJarRepeat  [|"smartfrog-","sfServices","sfExamples"|]
 }
