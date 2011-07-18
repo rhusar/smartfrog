@@ -247,6 +247,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @SuppressWarnings({"NestedTryStatement"})
     @Override
     public boolean runTestSuite() throws RemoteException, SmartFrogException {
 
@@ -397,6 +398,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @return the test
      * @throws SmartFrogInitException if the test suite setup failed
      */
+    @SuppressWarnings({"ThrowInsideCatchBlockWhichIgnoresCaughtException"})
     private Test extractTest(Class clazz) throws SmartFrogInitException {
         //todo: verify that the class implements test or testsuite
         try {
@@ -438,6 +440,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @param test    test to run
      * @param context to inject if the test is injectable
      */
+    @SuppressWarnings("unchecked")
     private void injectTestContext(Test test, HashMap<String, Object> context) {
         if (test instanceof TestContextInjector) {
             TestContextInjector tci = (TestContextInjector) test;
