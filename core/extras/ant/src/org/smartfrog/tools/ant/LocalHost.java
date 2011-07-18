@@ -68,7 +68,7 @@ public class LocalHost extends Task {
 
 
     /**
-     * Description of the Field
+     * Do you want the address?
      */
     private boolean address = false;
 
