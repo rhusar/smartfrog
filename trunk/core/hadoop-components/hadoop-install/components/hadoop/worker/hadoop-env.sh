@@ -35,7 +35,7 @@ export HADOOP_OPTS=${comp.sfResolve("hadoop.opts")}
 # Where log files are stored.  \$HADOOP_HOME/logs by default.
 # export HADOOP_LOG_DIR=\${HADOOP_HOME}/logs
 
-# File naming remote slave hosts.  $HADOOP_HOME/conf/slaves by default.
+# File naming remote slave hosts.  \$HADOOP_HOME/conf/slaves by default.
 # export HADOOP_SLAVES=\${HADOOP_HOME}/conf/slaves
 
 # host:path where hadoop code should be rsync'd from.  Unset by default.
@@ -49,7 +49,7 @@ export HADOOP_OPTS=${comp.sfResolve("hadoop.opts")}
 # The directory where pid files are stored. /tmp by default.
 # export HADOOP_PID_DIR=/var/hadoop/pids
 
-# A string representing this instance of hadoop. $USER by default.
+# A string representing this instance of hadoop. \$USER by default.
 # export HADOOP_IDENT_STRING=\$USER
 
 # The scheduling priority for daemon processes.  See 'man nice'.
