@@ -87,7 +87,7 @@
     <loadclass class="org.apache.hadoop.hdfs.server.namenode.JspHelper" />
   </target>
 
-  <!--create the JAR manifest-->
+  <!--create the JAR manifest with a specific entry point that is a "pre-main class" that holds extra powers-->
   <target name="manifest" depends="pre-compile">
     <property name="manifest.mf" location="${build.dir}/MANIFEST.MF" />
     <manifest file="${manifest.mf}">

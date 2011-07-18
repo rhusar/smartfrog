@@ -44,12 +44,14 @@ public class ExtDfsUtils {
      * @throws IOException for formatting problems
      */
     public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
-        Collection<URI> editDirs = new ArrayList<URI>(0);
+/*  0.21+ only
+        Collection<URI> editDirsURI = new ArrayList<URI>(0);
         ArrayList<URI> dirs = new ArrayList<URI>(dirsToFormat.size());
         for (File file : dirsToFormat) {
             dirs.add(file.toURI());
-        }
-        FSNamesystem nsys = new FSNamesystem(new FSImage(dirs, editDirs), conf);
+        }*/
+        Collection<File> editDirs = new ArrayList<File>(0);
+        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat, editDirs), conf);
         nsys.dir.fsImage.format();
     }
 }

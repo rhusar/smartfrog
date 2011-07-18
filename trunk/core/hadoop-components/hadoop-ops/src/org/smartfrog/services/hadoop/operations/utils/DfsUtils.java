@@ -148,9 +148,7 @@ public class DfsUtils {
             throw hadoopException;
         }
         try {
-            FileSystem dfs = FileSystem.newInstance(uri, conf);
-            dfs.initialize(uri, conf);
-            return dfs;
+            return createInstance(uri, conf);
         } catch (IOException e) {
             SFHadoopException hadoopException = SFHadoopException
                     .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM + filesystemURL, e);
@@ -158,6 +156,21 @@ public class DfsUtils {
             throw hadoopException;
         }
     }
+
+
+    public static FileSystem createInstance(URI uri, Configuration conf) throws IOException {
+        FileSystem dfs = FileSystem.get(uri, conf);
+        return dfs;
+    }
+
+/*
+    0.21+ only
+
+    public static FileSystem createInstance(URI uri, Configuration conf) throws IOException {
+        FileSystem dfs = FileSystem.newInstance(uri, conf);
+        dfs.initialize(uri, conf);
+        return dfs;
+    }*/
 
     /**
      * Delete a DFS directory. Cleans up afterwards

@@ -33,7 +33,7 @@
   <property name="ivy.enabled" value="true"/>
   <!-- override point -->
 
-  <property file="../../extras/citerank/build.properties"/>
+  <property file="build.properties"/>
   <!-- tests are on-->
   <property name="system.tests" value="true"/>
 

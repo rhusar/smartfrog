@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
@@ -100,7 +99,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogResolutionException for resolution problems
      */
     public ManagedConfiguration(boolean loadDefaults, Prim source) throws SmartFrogException,
-                                                                          RemoteException {
+            RemoteException {
         super(loadDefaults);
         bind(source);
     }
@@ -113,7 +112,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogResolutionException for resolution problems
      */
     public ManagedConfiguration(Prim source) throws SmartFrogException,
-                                                    RemoteException {
+            RemoteException {
         this(false, source);
     }
 
@@ -211,10 +210,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public String sfResolve(String name, String defaultValue)
             throws SmartFrogResolutionException, RemoteException {
-        Object result = null;
+        Object result;
         try {
             result = source.sfResolve(name, true);
-        } catch (SmartFrogResolutionException e) {
+        } catch (SmartFrogResolutionException ignored) {
             return defaultValue;
         }
         if (result == null || result instanceof SFNull) {
@@ -336,8 +335,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             Object key = keys.next();
             Object value = component.sfResolve(new Reference(key));
             if (!(value instanceof Remote)
-                && !(value instanceof ComponentDescription)
-                && !(value instanceof SFNull)) {
+                    && !(value instanceof ComponentDescription)
+                    && !(value instanceof SFNull)) {
                 set(key.toString(), value.toString());
             }
             //files get special treatment
@@ -466,19 +465,31 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         return builder.toString();
     }
 
+
+    /**
+     * Build a clone containing all string values of the properties. It's weak in that it drops other data, but well, who cares.
+     * @return
+     */
+    Properties cloneProps() {
+        Properties props = new Properties();
+        for (Map.Entry<String, String> entry : this) {
+            props.put(entry.getKey(), entry.getValue());
+        }
+        return props;
+    }
+
     /**
      * Dump our state to a string; triggers a full resolution.
      *
      * @return a complete dump of name "value"; pairs, in order
      */
+    @SuppressWarnings("unchecked")
     public String dump() {
         StringBuilder builder = new StringBuilder();
-        Properties p = getProps();
-        TreeSet<String> ts = (TreeSet<String>) new TreeSet(p.keySet());
-        for (String key : ts) {
-            builder.append(key);
+        for (Map.Entry<String, String> entry : this) {
+            builder.append(entry.getKey());
             builder.append(" \"");
-            builder.append(p.get(key));
+            builder.append(entry.getValue());
             builder.append("\";\n");
         }
         return builder.toString();
@@ -594,9 +605,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public void validate(List<String> requiredAttributes) throws SmartFrogResolutionException, RemoteException {
         List<String> missing = new ArrayList<String>();
-        Properties current = getProps();
         for (String attr : requiredAttributes) {
-            if (!current.containsKey(attr)) {
+            if (get(attr) == null) {
                 missing.add(attr);
             }
         }
