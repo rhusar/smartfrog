@@ -98,7 +98,9 @@
     <dependency org="commons-el"
         name="commons-el"
         rev="${commons-el.version}"
-        conf="jsp->master"/>
+        conf="jsp->master" >
+        <exclude org="commons-logging"/>
+    </dependency>
     <!--this is the compiler stage-->
     <dependency org="org.smartfrog"
         name="sf-ant"
