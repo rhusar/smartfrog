@@ -21,6 +21,7 @@ public class WriteClusterConfigImpl extends HadoopComponentImpl implements Clust
     public WriteClusterConfigImpl() throws RemoteException {
     }
 
+    @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
