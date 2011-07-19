@@ -32,6 +32,9 @@ For more information: www.smartfrog.org
  
 SystemPropertiesSchema extends Schema {
 
+    /**
+     a [[name,value]] list.
+     */
     properties extends Vector;
     
     setOnStartup extends Boolean{
