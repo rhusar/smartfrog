@@ -1,0 +1,18 @@
+
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+
+ClusterBound extends Prim {
+
+  //the cluster reference is optional
+  //cluster TBD;
+  clusterRequired false;
+
+}
+
+ClusterRequired extends ClusterBound {
+  clusterRequired true;
+  //a LAZY reference to a managed cluster
+  cluster TBD;
+}
