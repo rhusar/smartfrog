@@ -51,7 +51,7 @@
       name="sf-grinstall"
       changing="true"
       rev="latest.integration"
-      conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+      conf="daemon,compile,build->default;runtime->runtime;redist->redist"/>
 
     <!--
 <dependency org="org.smartfrog"
