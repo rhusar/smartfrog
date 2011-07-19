@@ -1,0 +1,112 @@
+
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
+#include "/org/smartfrog/services/hadoop/operations/conf/components.sf"
+#include "/org/smartfrog/services/hadoop/operations/dfs/hdfs_startup_options.sf"
+#include "/org/smartfrog/services/hadoop/operations/conf/clusterbound.sf"
+
+
+
+/*
+ These components bring up the mini single-VM clusters from the Hadoop test JARs, that are useful for testing, as they can
+ simulate small clusters.
+
+ -obviously, they are not for production use
+ -always deploy them into their own process (via sfProcessName attribute because they have a tendency to leak threads
+ -they tend to create subdirectories relative to the directory in which SF started running, this is a feature of the code that
+ assumes there is a build/test directory
+ */
+
+
+
+/**
+ * Component which sets up the data directory
+ */
+SetDataDir extends SystemProperties {
+  dataDir TBD;
+/**
+ * The system property to define the test data directory. The data goes in under dfs/
+ */
+  TEST_DATA_DIR "test.build.data";
+
+  properties [TEST_DATA_DIR, dataDir];
+}
+
+/**
+ * A compound that can create the data directory tree
+ */
+CreateAndSetDataDir extends Compound {
+  filename TBD;
+  createDir extends Mkdir {
+    dir PARENT:filename;
+  }
+  setDirProperty extends SetDataDir {
+    dataDir PARENT:filename;
+  }
+}
+
+
+MiniCluster extends ClusterBound {
+}
+
+
+
+
+MiniDFSCluster extends MiniCluster {
+  sfClass "org.smartfrog.services.hadoop.instances.MiniDfsClusterImpl";
+
+  /*
+  * @param nameNodePort suggestion for which rpc port to use.  caller should
+  *          use getNameNodePort() to get the actual port used.
+  */
+
+  namenodePort 0;
+
+  /*
+  * @param conf the base configuration to use in starting the servers.  This
+  *          will be modified as necessary.
+  */
+  /*
+  * @param numDataNodes Number of DataNodes to start; may be zero
+  */
+
+  dataNodeCount 3;
+
+  /*
+  * @param format if true, format the NameNode and DataNodes before starting up
+  */
+
+  format true;
+
+  /*
+  * @param manageNameDfsDirs if true, the data directories for servers will be
+  *          created and dfs.name.dir and dfs.data.dir will be set in the conf
+  */
+  manageNameDfsDirs true;
+  /*
+  * @param manageDataDfsDirs if true, the data directories for datanodes will
+  *          be created and dfs.data.dir set to same in the conf
+  */
+  manageDataDfsDirs true;
+  /*
+  * @param operation the operation with which to start the servers.  If null
+  *          or StartupOption.FORMAT, then StartupOption.REGULAR will be used.
+  */
+  startupOption HdfsStartupOption:FORMAT;
+  /*
+  * @param racks array of strings indicating the rack that each DataNode is on
+  */
+  /*
+  * @param hosts array of strings indicating the hostnames of each DataNode
+  */
+  /*
+  * @param simulatedCapacities array of capacities of the simulated data nodes
+  */
+}
+
+/**
+ * The smallest DFS cluster you can bring up
+ */
+MicroDFSCluster extends MiniDFSCluster {
+  dataNodeCount 1;
+}

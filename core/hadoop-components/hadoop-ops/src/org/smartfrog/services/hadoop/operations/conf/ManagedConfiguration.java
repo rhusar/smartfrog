@@ -55,6 +55,7 @@ import java.util.TreeMap;
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
  * the default values. This makes the reload process more complex, as it re-evaluates it from a component
  */
+@SuppressWarnings({"deprecation"})
 public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes, Cloneable {
 

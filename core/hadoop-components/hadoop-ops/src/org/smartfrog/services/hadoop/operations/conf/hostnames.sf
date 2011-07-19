@@ -36,12 +36,12 @@ HadoopPortConfiguration extends {
   DFS_DATANODE_HTTP_DEFAULT_PORT "50075";
   DFS_DATANODE_HTTPS_PORT "50475";
   
-   /**
-     The address and the base port where the dfs namenode web ui will listen on.
-     If the port is 0 then the server will start on a free port.
-   */
-   DFS_HTTP_DEFAULT_PORT "50070";
-   DFS_HTTPS_DEFAULT_PORT "50470";
+  /**
+   The address and the base port where the dfs namenode web ui will listen on.
+   If the port is 0 then the server will start on a free port.
+  */
+  DFS_HTTP_DEFAULT_PORT "50070";
+  DFS_HTTPS_DEFAULT_PORT "50470";
   /**
    The datanode ipc server address and port.
    If the port is 0 then the server will start on a free port.
