@@ -45,7 +45,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
     private String finalValue;
 
     /**
-     * Constructor for the SFServiceResourceManagerImpl object.
+     * Constructor
      *
      * @throws RemoteException In case of Remote/nework error
      */
@@ -53,7 +53,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
     }
 
     /**
-     * sfDeployWith.
+     * set system property very early on sfDeployWith.
      *
      * @throws SmartFrogDeploymentException In case of error while deployment
      * @throws RemoteException In case of Remote/nework error
@@ -69,7 +69,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
                 value = cxt.sfResolveAttribute(ATTR_VALUE);
             } catch (SmartFrogException e) {
                 if (log.isErrorEnabled()) {
-                    log.error("Failed to read mandatory attribute: " + e.toString(), e);
+                    log.error("Failed to read mandatory attribute: " + e, e);
                 }
                 throw e;
             }
@@ -77,7 +77,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
                 replace = ((Boolean) cxt.sfResolveAttribute(ATTR_REPLACE)).booleanValue();
             } catch (SmartFrogContextException e) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Failed to read optional attribute: " + e.toString());
+                    log.debug("Failed to read optional attribute: " + e, e);
                 }
             }
 
