@@ -112,6 +112,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @param dirs       list of directories
      * @param createDirs create the directories?
      * @return the directories all converted to a list split by commas
+     * @throws FileNotFoundException if none of the directories can be created
      */
     public static String createDirectoryList(Vector<String> dirs, boolean createDirs)
             throws FileNotFoundException {
@@ -150,6 +151,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @return the directories
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
+     * @throws FileNotFoundException if none of the directories can be created
      */
     public static Vector<String> createDirectoryListAttribute(Prim prim, Reference sourceRef,
                                                               String replaceAttribute)
@@ -169,6 +171,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @return the directories
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
+     * @throws FileNotFoundException if none of the directories can be created
      */
     protected Vector<String> createDirectoryListAttribute(Reference sourceRef,
                                                           String replaceAttribute)

@@ -82,7 +82,9 @@ class Component extends CompoundImpl implements IComponent {
         executor.start()
     }
 
-
+    /**
+     * This thread runs through all the children and pushes them into their next state
+     */
     private class Executor extends WorkflowThread {
 
         Executor(Prim prim) {
@@ -94,7 +96,9 @@ class Component extends CompoundImpl implements IComponent {
             //retrieve all the source data
             sfLog().info("Retrieving sources")
             sfChildren().each { child ->
-                if (terminationRequested) return;
+                if (terminationRequested) {
+                    return
+                };
 
                 if (child instanceof ISource) {
                     child.retrieve()
