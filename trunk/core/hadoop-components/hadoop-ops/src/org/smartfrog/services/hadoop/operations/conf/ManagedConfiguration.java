@@ -60,6 +60,13 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes, Cloneable {
 
     private Prim source;
+    
+    /*
+     * Force load the extra configurations
+     */
+    static {
+        ConfigurationLoader.loadExtendedConfigurations();
+    }
 
     /**
      * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
@@ -329,7 +336,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogResolutionException for resolution problems
      */
     private void copyComponentState(Prim component,
-                                    List<String> requiredKeys) throws RemoteException, SmartFrogResolutionException {
+                                    List<String> requiredKeys)
+            throws RemoteException, SmartFrogResolutionException {
 
         Iterator<Object> keys = component.sfAttributes();
         while (keys.hasNext()) {
@@ -523,7 +531,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogRuntimeException failure to read or write an attribute
      * @throws RemoteException           network problems
      */
-    public void copyProperties(Prim target, Configuration conf) throws SmartFrogRuntimeException, RemoteException {
+    public void copyProperties(Prim target, Configuration conf)
+            throws SmartFrogRuntimeException, RemoteException {
         //sanity check
         assert conf != this;
 
@@ -604,7 +613,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogResolutionException for any failure to resolve all the attributes
      * @throws RemoteException              network problems. These are always passed up
      */
-    public void validate(List<String> requiredAttributes) throws SmartFrogResolutionException, RemoteException {
+    public void validate(List<String> requiredAttributes)
+            throws SmartFrogResolutionException, RemoteException {
         List<String> missing = new ArrayList<String>();
         for (String attr : requiredAttributes) {
             if (get(attr) == null) {
@@ -633,8 +643,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public void validateListedAttributes(Prim src, Reference attributeRef)
             throws SmartFrogResolutionException, RemoteException {
-        List<String> required = ListUtils.resolveStringList(src, attributeRef, true);
-        validate(required);
+        List<String> required = ListUtils.resolveStringList(src, attributeRef, false);
+        if (required != null) {
+            validate(required);
+        }
     }
 
     /**
@@ -651,7 +663,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public static ManagedConfiguration createConfiguration(Prim source,
                                                            boolean useClusterReference,
-                                                           boolean clusterRequired, boolean loadDefaults)
+                                                           boolean clusterRequired,
+                                                           boolean loadDefaults)
             throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = new ManagedConfiguration(loadDefaults, source);
         if (useClusterReference) {

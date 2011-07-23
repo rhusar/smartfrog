@@ -19,25 +19,16 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.operations.conf;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.operations.core.ClusterBound;
 import org.smartfrog.services.hadoop.operations.exceptions.SFHadoopRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * This component can read in from the resources [] and files [] conf files to read in. All resources are read before
- * all files. Created 14-Jan-2009 13:43:46 The values are read in during sfDeploy() time unless readEarly is false; this
+ * all files. The values are read in during sfDeploy() time unless readEarly is false; this
  * ensures the values are there for other components
  */
 
@@ -45,8 +36,6 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
 
     private ManagedConfiguration managedConf;
     private boolean readEarly;
-    private static final Reference refRequired = new Reference(ATTR_REQUIRED);
-    public static final String ERROR_NO_CLUSTER_AND_XML = "Cannot extend an existing cluster and import XML resources or files";
 
     public HadoopConfigurationImpl() throws RemoteException {
     }
@@ -61,7 +50,8 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
         super.sfDeploy();
         readEarly = sfResolve(ATTR_READ_EARLY, true, true);
         if (readEarly) {
-            loadConfiguration();
+            sfLog().debug("Reading configuration in sfDeploy()");
+            setManagedConf(ConfigurationLoader.loadConfiguration(this));
         }
     }
 
@@ -76,63 +66,18 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         if (!readEarly) {
-            loadConfiguration();
+            sfLog().debug("Reading configuration in sfStart()");
+            setManagedConf(ConfigurationLoader.loadConfiguration(this));
         }
     }
 
-    private void loadConfiguration() throws RemoteException, SmartFrogException {
-        boolean loadDefaults = sfResolve(ATTR_LOAD_DEFAULTS, true, true);
-        List<String> resources = ListUtils.resolveStringList(this, new Reference(ATTR_RESOURCES), true);
-        Vector<String> files = FileSystem.resolveFileList(this, new Reference(ATTR_FILES), null, true, null);
-
-        Prim cluster = sfResolve(ATTR_CLUSTER, (Prim) null, false);
-        if (cluster != null) {
-            //inheriting a cluster
-            if (!resources.isEmpty() || !files.isEmpty()) {
-                throw new SmartFrogResolutionException(ERROR_NO_CLUSTER_AND_XML);
-            }
-            managedConf = ManagedConfiguration.createConfiguration(this, true, false, loadDefaults);
-            managedConf.copyPropertiesToPrim(this);
-
-        } else {
-            //no cluster reference, so create an empty unmanaged configuration and build it up
-            //then copy its (name,value) pairs into a new ManagedConfiguration that is
-            //bound to us
-            Configuration baseConf = new Configuration(loadDefaults);
-
-            //run through all the resources
-            for (String resource : resources) {
-                loadXmlResource(baseConf, resource);
-            }
-
-            //run through the filenames
-            for (String filename : files) {
-                loadXmlFile(baseConf, filename);
-            }
-
-            //this now creates a baseConf which is full of all our values.
-            //the next step is to override with any in-scope attributes.
-
-            managedConf = new ManagedConfiguration(this);
-            managedConf.copyProperties(this, baseConf);
-        }
-
-        //dump it to the log at debug level or if the dump attribute is true, in which
-        //case it comes out at INFO level
-        boolean toDump = sfResolve(ATTR_DUMP, true, true);
-        boolean debugEnabled = sfLog().isDebugEnabled();
-        if (toDump || debugEnabled) {
-            String dump = managedConf.dump();
-            if (toDump) {
-                sfLog().info(dump);
-            }
-            if (debugEnabled) {
-                sfLog().debug(dump);
-            }
-        }
-        managedConf.validateListedAttributes(this, refRequired);
+    public ManagedConfiguration getManagedConf() {
+        return managedConf;
     }
 
+    public void setManagedConf(final ManagedConfiguration managedConf) {
+        this.managedConf = managedConf;
+    }
 
     /**
      * Clone our configuration
@@ -149,33 +94,4 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
     }
 
 
-    /**
-     * Load an XML resource in
-     *
-     * @param baseConf base configuration
-     * @param resource resource name
-     * @throws SmartFrogException on any resource load failure
-     * @throws RemoteException network problems
-     */
-    private void loadXmlResource(Configuration baseConf, String resource) throws SmartFrogException, RemoteException {
-        if (sfLog().isDebugEnabled()) {
-            sfLog().debug("Adding resource " + resource);
-        }
-        baseConf.addResource(resource);
-    }
-
-    /**
-     * Load an XML file
-     * @param baseConf base configuration
-     * @param file file to load
-     * @throws SmartFrogException on any resource load failure
-     * @throws RemoteException network problems
-     */
-    private void loadXmlFile(Configuration baseConf, String file) throws SmartFrogException, RemoteException {
-        if (sfLog().isDebugEnabled()) {
-            sfLog().debug("Adding file" + file);
-        }
-        Path path = new Path(file);
-        baseConf.addResource(path);
-    }
 }

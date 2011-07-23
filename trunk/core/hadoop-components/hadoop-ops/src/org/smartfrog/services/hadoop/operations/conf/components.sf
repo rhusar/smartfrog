@@ -58,6 +58,19 @@ DefaultHadoopConfiguration extends EmptyHadoopConfiguration {
 HadoopConfigurationWithHostnameSetup extends DefaultHadoopConfiguration, HadoopHostnameConfiguration {
 
 }
+
+/**
+ A component to add another default configuration to the list of default configurations.
+ Doing so will trigger a refresh of all existing configuration instances
+ */
+AddDefaultConfiguration extends WorkflowPrim {
+  sfClass "org.smartfrog.services.hadoop.operations.conf.AddDefaultConfiguration";
+  //the name of a resource on the classpath to add. 
+  //if the resource is not present, it will not be loaded, but no error will be raised
+  resource TBD;
+}
+
+
 /**
  * A component to verify that expected components match what is expected
  */

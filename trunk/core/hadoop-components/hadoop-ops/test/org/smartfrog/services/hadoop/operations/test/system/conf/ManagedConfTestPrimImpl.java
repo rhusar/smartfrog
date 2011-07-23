@@ -19,11 +19,16 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.operations.test.system.conf;
 
+import org.apache.hadoop.fs.FileSystem;
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.operations.core.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.operations.utils.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 /**
@@ -53,8 +58,8 @@ public class ManagedConfTestPrimImpl extends HadoopComponentImpl {
         ManagedConfiguration conf = createConfiguration();
         String dump = conf.dump();
         sfLog().info(dump);
-        assertTrue("conf is empty ", conf.size()>0);
-        assertTrue("no sfClass in\n"+ dump, conf.get("sfClass", null) != null);
+        assertTrue("conf is empty ", conf.size() > 0);
+        assertTrue("no sfClass in\n" + dump, conf.get("sfClass", null) != null);
         assertTrue(P1 + "is set in\n" + dump, conf.get(P1, null) == null);
         conf.set(P1, V1);
         dump = conf.dump();
@@ -64,7 +69,7 @@ public class ManagedConfTestPrimImpl extends HadoopComponentImpl {
         conf.set(P2, V2);
         dump = conf.dump();
         String value2 = conf.get(P2, null);
-        assertTrue(P2 + " is null in\n"+dump, value2 != null);
+        assertTrue(P2 + " is null in\n" + dump, value2 != null);
         assertTrue(P2 + " = " + value2 + " in\n" + dump, V2.equals(value2));
 
         //trigger a reload, and see that things are still set
@@ -73,7 +78,29 @@ public class ManagedConfTestPrimImpl extends HadoopComponentImpl {
         value2 = conf.get(P2, null);
         assertTrue(P2 + " is null in\n" + dump, value2 != null);
         assertTrue(P2 + " = " + value2 + " in\n" + dump, V2.equals(value2));
+
+        //now see that we can find some filesystems
+        assertFileSystemExists(conf, "hdfs://localhost:50070");
+        assertFileSystemExists(conf, "ftp://localhost:50070");
         new ComponentHelper(this).targetForTermination();
+    }
+
+    private void assertFileSystemExists(final ManagedConfiguration conf, final String url)
+            throws SmartFrogException {
+        try {
+            URI uri = new URI(url);
+            String fskey = "fs." + uri.getScheme() + ".impl";
+            String classname = conf.get(fskey, null);
+            assertTrue("No entry in the configuration for " + fskey + " in " + conf.dump(),
+                    classname != null);
+            Class<?> clazz = conf.getClass(fskey, null);
+            assertTrue("Unable to load class " + classname, clazz != null);
+            FileSystem fileSystem = DfsUtils.loadFS(conf, uri);
+        } catch (URISyntaxException e) {
+            throw SmartFrogException.forward("loading " + url + ": " + e, e);
+        } catch (IOException e) {
+            throw SmartFrogException.forward("loading " + url + ": " + e, e);
+        }
     }
 
     /**

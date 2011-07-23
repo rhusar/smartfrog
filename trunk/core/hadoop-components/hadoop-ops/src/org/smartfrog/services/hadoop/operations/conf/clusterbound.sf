@@ -1,7 +1,5 @@
 
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/components.sf"
 
 ClusterBound extends Prim {
 
