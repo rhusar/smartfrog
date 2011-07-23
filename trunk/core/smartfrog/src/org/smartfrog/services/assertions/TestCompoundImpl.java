@@ -115,7 +115,7 @@ public class TestCompoundImpl extends ConditionCompound
      */
     public static final String ERROR_LESS_EXCEPTIONS_THAN_EXPECTED = "Less exceptions than expected";
     public static final String EXPECTED_EXIT_TEXT = "Expected exit text: ";
-    public static final String EXPECTED_SUCCESSFUL_DEPLOYMENT = "expected successful deployment, but got: ";
+    public static final String EXPECTED_SUCCESSFUL_DEPLOYMENT = "Expected successful deployment, but got: ";
     public static final String UNEXPECTED_TERMINATION = " (this termination was not expected)";
     public static final String TERMINATION_MESSAGE_MISMATCH = "Termination message mismatch";
     public static final String FAILED_TO_START_CONDITION = "Failed to start condition";
@@ -306,10 +306,9 @@ public class TestCompoundImpl extends ConditionCompound
             if (isNormalTerminationExpected) {
                 //if so, it didn't happen. log and rethrow the exception
                 sfLog().info("Exception raised during \"action\" startup, which was not expected: " + message, thrown);
-                noteStartupFailure(UNEXPECTED_STARTUP_EXCEPTION, thrown);
+                noteStartupFailure(EXPECTED_SUCCESSFUL_DEPLOYMENT, thrown);
                 //then throw an exception
-                throw SmartFrogException.forward(UNEXPECTED_STARTUP_EXCEPTION
-                        + EXPECTED_SUCCESSFUL_DEPLOYMENT
+                throw SmartFrogException.forward(EXPECTED_SUCCESSFUL_DEPLOYMENT
                         + message + "'\n",
                         thrown);
             }
