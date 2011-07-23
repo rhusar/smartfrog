@@ -230,7 +230,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         Object e1 = sfResolve(Assert.ATTR_EQUALS_STRING1, (Object) null, false);
         equals1 = e1 == null ? null : e1.toString();
         Object e2 = sfResolve(Assert.ATTR_EQUALS_STRING2, (Object) null, false);
-        equals2 = e2 == null ? null : e2.toString();;
+        equals2 = e2 == null ? null : e2.toString();
         if (equals1 != null) {
             if (equals2 == null) {
                 return "Undefined attribute: " + ATTR_EQUALS_STRING2;
@@ -285,16 +285,21 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
                 equals2 + " equals " + equals1);
     }
 
+    /**
+     * Test for two strings being equal
+     * @param equals1             string 1
+     * @param equals2             string 2
+     * @param equalityIgnoresCase flag to ignore case while comparing
+     * @return true iff the two strings are equal
+     */
     private boolean equal(String equals1,
                           String equals2,
                           boolean equalityIgnoresCase) {
-        boolean fact;
         if (equalityIgnoresCase) {
-            fact = equals1.equals(equals2);
-        } else {
-            fact = equals1.toLowerCase(Locale.ENGLISH).equals(equals2);
+            equals1 = equals1.toLowerCase(Locale.ENGLISH);
+            equals2 = equals2 != null ? equals2.toLowerCase(Locale.ENGLISH) : null;
         }
-        return fact;
+        return equals1.equals(equals2);
     }
 
 
