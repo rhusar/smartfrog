@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.operations.core;
 
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.operations.conf.ConfigurationLoader;
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -77,20 +78,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @throws RemoteException              network problems
      */
     protected ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
-        return createConfiguration(this);
-    }
-
-    /**
-     * Create a managed configuration against a different component
-     *
-     * @param target target component
-     * @return the target configuration
-     * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException              network problems
-     */
-    private ManagedConfiguration createConfiguration(Prim target) throws SmartFrogException, RemoteException {
-        boolean clusterRequired = sfResolve(ATTR_CLUSTER_REQUIRED, false, false);
-        return ManagedConfiguration.createConfiguration(target, true, clusterRequired, false);
+        return ConfigurationLoader.loadConfiguration(this);
     }
 
 

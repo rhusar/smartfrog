@@ -188,3 +188,38 @@ testConfCheckerOverride extends testDefaultConf {
 
   }
 }
+
+testDefaultConfiguration extends testDefaultConf {
+  action extends DefaultHadoopConfiguration {
+  }
+  
+  tests extends Sequence {
+    
+    test.hdfs.uri extends AssertWorkflow {
+      equalityIgnoresCase false;
+      equalsString1 "org.apache.hadoop.hdfs.DistributedFileSystem";
+      equalsString2 LAZY action:fs.hdfs.impl;
+    }
+  }
+}
+
+
+testAddDefaultConfiguration extends testDefaultConf {
+  action extends Compound {
+    newDefault extends AddDefaultConfiguration {
+      resource "/org/smartfrog/services/hadoop/operations/test/system/conf/test-default-configuration.xml";
+    }
+    config extends DefaultHadoopConfiguration {
+    
+    }
+  }
+  
+  tests extends Sequence {
+    
+    test.value.one extends AssertWorkflow {
+      equalityIgnoresCase true;
+      equalsString1 "1";
+      equalsString2 LAZY action:config:test.value.one;
+    }
+  }
+}

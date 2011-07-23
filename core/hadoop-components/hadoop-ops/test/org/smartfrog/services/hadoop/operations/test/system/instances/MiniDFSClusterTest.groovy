@@ -1,7 +1,7 @@
 package org.smartfrog.services.hadoop.operations.test.system.instances
 
 
-class TestMiniDFSCluster extends InstanceTestBase {
+class MiniDFSClusterTest extends InstanceTestBase {
 
 
     public void testMicroDfsCluster() throws Throwable {

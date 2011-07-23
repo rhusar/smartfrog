@@ -212,6 +212,18 @@
     </dependency>
 -->
 
+
+    <dependency org="commons-configuration"
+        name="commons-configuration"
+        rev="${commons-configuration.version}"
+        conf="redist->default">
+      <exclude org="commons-beanutils"/>
+      <exclude org="commons-collections"/>
+      <exclude org="commons-digester"/>
+      <exclude org="commons-lang"/>
+      <exclude org="commons-logging"/>
+    </dependency>
+    
     <!-- client CLI. May also be used on the server to pass stuff to forked processes-->
     <dependency org="commons-cli"
       name="commons-cli"

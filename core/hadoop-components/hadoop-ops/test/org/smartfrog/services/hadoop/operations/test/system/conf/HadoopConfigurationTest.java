@@ -39,9 +39,11 @@ public class HadoopConfigurationTest extends DeployingTestBase {
     public void testOverride() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testOverride");
     }
+    
     public void testEmptyConf() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testEmptyConf");
     }
+    
     public void testFloatingPointValue() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testFloatingPointValue");
     }
@@ -57,7 +59,17 @@ public class HadoopConfigurationTest extends DeployingTestBase {
     public void testManagedConfTest() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testManagedConfTest");
     }
+    
     public void testConfCheckerOverride() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testConfCheckerOverride");
     }
+    
+    public void testAddDefaultConfiguration() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testAddDefaultConfiguration");
+    }
+    
+    public void testDefaultConfiguration() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testDefaultConfiguration");
+    }   
+    
 }

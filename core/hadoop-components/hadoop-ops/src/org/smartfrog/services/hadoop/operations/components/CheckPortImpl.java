@@ -119,7 +119,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         if (addressInline.length() > 0) {
             addr = NetUtils.createSocketAddr(addressInline);
         } else {
-            ManagedConfiguration configuration = createClusterAttrConfiguration();
+            ManagedConfiguration configuration = createConfiguration();
             addr = resolveAddressIndirectly(configuration, ATTR_ADDRESS_ATTRIBUTE);
         }
         return addr;

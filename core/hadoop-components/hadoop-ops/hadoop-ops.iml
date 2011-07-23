@@ -10,14 +10,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="csvfiles" />
     <orderEntry type="module" module-name="ssh" exported="" />
     <orderEntry type="module" module-name="jetty" exported="" />
-    <orderEntry type="module" module-name="SmartFrog" exported="" />
     <orderEntry type="module" module-name="testharness" scope="TEST" />
     <orderEntry type="library" exported="" name="hadoop-0.20.203" level="application" />
     <orderEntry type="module" module-name="grinstall" exported="" />
-    <orderEntry type="module" module-name="hadoop-install" exported="" />
+    <orderEntry type="library" exported="" name="jackson-1.8.2" level="application" />
+    <orderEntry type="library" exported="" name="hadoop-0.20.203" level="application" />
     <orderEntry type="library" exported="" name="jackson-1.8.2" level="application" />
   </component>
 </module>

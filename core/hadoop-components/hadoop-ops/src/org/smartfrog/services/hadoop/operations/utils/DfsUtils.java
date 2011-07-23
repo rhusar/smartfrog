@@ -25,6 +25,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.util.ReflectionUtils;
 import org.smartfrog.services.hadoop.operations.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.operations.exceptions.SFHadoopException;
@@ -420,4 +421,35 @@ public class DfsUtils {
     }
 
 
+    /**
+     * This loads but does not initialise a filesystem.
+     * @param conf
+     * @param uri
+     * @return
+     * @throws IOException
+     */
+    public static FileSystem loadFS(final Configuration conf, final URI uri) throws IOException {
+        String scheme = uri.getScheme();
+        String authority = uri.getAuthority();
+
+        if (scheme == null) {                       // no scheme: use default FS
+          return FileSystem.get(conf);
+        }
+
+        if (authority == null) {                       // no authority
+          URI defaultUri = FileSystem.getDefaultUri(conf);
+          if (scheme.equals(defaultUri.getScheme())    // if scheme matches default
+              && defaultUri.getAuthority() != null) {  // & default has authority
+            return loadFS(conf, defaultUri);              // return default
+          }
+        }
+
+        Class<?> clazz = conf.getClass("fs." + uri.getScheme() + ".impl", null);
+        FileSystem.LOG.debug("Creating filesystem for " + uri);
+        if (clazz == null) {
+          throw new IOException("No FileSystem for scheme: " + uri.getScheme());
+        }
+        FileSystem fs = (FileSystem) ReflectionUtils.newInstance(clazz, conf);
+        return fs;
+    }
 }

@@ -8,5 +8,7 @@ testMicroDfsCluster extends ExpectDeploy {
   action extends MicroDFSCluster {
 
   }
-  
+    tests extends Sequence {
+    }
+  }
 }
