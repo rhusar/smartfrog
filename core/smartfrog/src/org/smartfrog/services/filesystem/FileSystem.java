@@ -347,7 +347,7 @@ public final class FileSystem {
      * @param platform  a platform to use for converting filetypes. Set to null
      *                  to use the default helper for this platform.
      *
-     * @return the absolute path
+     * @return a vector of paths or, if the reference is not found, a list of size 0
      *
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException In case of network/rmi error
