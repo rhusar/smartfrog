@@ -38,6 +38,9 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.Executable;
+import org.smartfrog.sfcore.utils.WorkerThreadPrimImpl;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -49,7 +52,7 @@ import java.util.Vector;
  * @author Ritu Sabharwal
  */
 
-public class JettyImpl extends PrimImpl implements JettyIntf {
+public class JettyImpl extends WorkerThreadPrimImpl implements JettyIntf {
 
     /**
      * A jetty helper
@@ -162,14 +165,26 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        serverBridge.start();
+        setWorker(new WorkflowThread(this, new StartServerBridge(), false));
 /*
+        serverBridge.start();
         try {
             serverBridge.getLifecycle().join();
         } catch (InterruptedException e) {
             throw SmartFrogException.forward("Failed to start "+serverBridge,e);
         }
 */
+    }
+
+    /**
+     * A class that starts the server bridge asynchronously.
+     */
+    public class StartServerBridge implements Executable {
+        @Override
+        public void execute() throws Throwable {
+            serverBridge.start();
+            serverBridge.getLifecycle().join();
+        }
     }
 
 

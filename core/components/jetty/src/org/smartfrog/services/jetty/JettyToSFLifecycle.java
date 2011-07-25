@@ -27,13 +27,15 @@ import org.smartfrog.sfcore.prim.Liveness;
 import java.rmi.RemoteException;
 
 /**
- * Something to bridge ping and stop operations to jetty Created 27-Sep-2007 16:25:34
+ * Something to bridge ping, start and stop operations to jetty.
  */
 
 public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
 
     private String name;
     private T lifecycle;
+    private volatile boolean started = false;
+
     /**
      * Error string raised in liveness checks. {@value}
      */
@@ -66,6 +68,13 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
     public synchronized void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         if (lifecycle == null) {
             throw new SmartFrogLivenessException(name + LIVENESS_ERROR_NOT_STARTED);
+        }
+
+        if (!started) {
+            //the startup hasn't finished yet, so don't react to any pings at all. Yes, this doesn't catch very-slow
+            //startups, but it avoids startup race conditions, and we assume that a failing startup will
+            //get caught and trigger failures
+            return;
         }
         if (lifecycle.isFailed()) {
             throw new SmartFrogLivenessException(name + LIVENESS_ERROR_FAILED);
@@ -110,6 +119,7 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
             if (lifecycle != null) {
                 lifecycle.start();
             }
+            started = true;
         } catch (Exception e) {
             throw SmartFrogException.forward(e);
         }
