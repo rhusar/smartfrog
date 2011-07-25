@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 
 
@@ -217,14 +218,21 @@ public class TerminatorThread extends SmartFrogThread {
     }
 
     /**
-     * Handle a network exception by logging it and adding that it is (possibly) harmless
+     * Handle a network exception by logging it and adding that it is (possibly) harmless.
+     * <p></p>
+     * {@link NoSuchObjectException} instances are handled at the ignore level, as they are a sign of something
+     * already being terminated
      * @param operation what was happening
      * @param thr what was caught
      */
     private void logThrownException(String operation, RemoteException thr) {
-        if (sfLog().isErrorEnabled()) {
-            sfLog().error("TerminatorThread."+ operation +" failed [" + record.toString() + "]", thr);
-            sfLog().error(NOTE_POSSIBLY_HARMLESS);
+        if (thr instanceof NoSuchObjectException) {
+            if (sfLog().isIgnoreEnabled())  {
+                sfLog().ignore("TerminatorThread." + operation + " failed [" + record.toString() + "]", thr);
+            }
+        } else if (sfLog().isInfoEnabled()) {
+            sfLog().info("TerminatorThread."+ operation +" failed [" + record.toString() + "]", thr);
+            sfLog().info(NOTE_POSSIBLY_HARMLESS);
         }
         setThrown(thr);
     }
