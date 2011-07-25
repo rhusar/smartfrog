@@ -84,6 +84,8 @@ import java.util.Vector;
 public class PrimImpl extends RemoteReferenceResolverHelperImpl
         implements Prim, MessageKeys, RemoteToString {
 
+    public static final int SF_LIVENESS_FACTOR = 2;
+    public static final int SF_LIVENESS_DELAY = 0;
     /**
      * Component Log. This log is used to from any component. Initialized to log
      * into the core log: SF_CORE_LOG It can be replaced using sfSetLog()
@@ -169,13 +171,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * liveness delay to wait till a liveness failure of the parent is declared,
      * Defaults to 2.
      */
-    protected int sfLivenessFactor = 2;
+    protected int sfLivenessFactor = SF_LIVENESS_FACTOR;
 
     /**
      * How often to send liveness in seconds. Defaults to 0 (off, ie. no
      * liveness).
      */
-    protected long sfLivenessDelay = 0;
+    protected long sfLivenessDelay = SF_LIVENESS_DELAY;
 
     /**
      * Reference to export form of self if sfExport is true.
