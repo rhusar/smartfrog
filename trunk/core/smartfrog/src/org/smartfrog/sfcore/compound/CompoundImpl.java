@@ -66,13 +66,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Initial capacity for child vector. Looks up Compound.childCap (offset by
      * SmartFrogCoreProperty.propBaseCompound). Defaults to 5 if not there
      */
-    public static int childCap = Integer.getInteger(SmartFrogCoreProperty.compoundChildCap, 5).intValue();
+    public static final int childCap = Integer.getInteger(SmartFrogCoreProperty.compoundChildCap, 5).intValue();
 
     /**
      * Capacity increment for child vector. Looks up Compound.childInc (offset
      * by SmartFrogCoreProperty.propBaseCompound). Defaults to 2 if not there
      */
-    public static int childInc = Integer.getInteger(SmartFrogCoreProperty.compoundChildInc, 2).intValue();
+    public static final int childInc = Integer.getInteger(SmartFrogCoreProperty.compoundChildInc, 2).intValue();
 
     /** Maintains children on which life of compound depends (and vice versa). */
     protected Vector<Prim> sfChildren = new Vector<Prim>(childCap, childInc);
