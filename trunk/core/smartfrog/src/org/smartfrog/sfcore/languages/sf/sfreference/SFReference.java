@@ -10,13 +10,14 @@ import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 /**
- * Representation of reference for hte SF language
+ * Representation of reference for the SF language
  */
 public class SFReference extends Reference implements ReferencePhases {
-	/**Force Eagerness*/
-	public static boolean resolutionForceEager=false;
-	
-	public Reference sfAsReference() throws SmartFrogCompilationException {
+    /**Force Eagerness*/
+    public static boolean resolutionForceEager = false;
+
+    @Override
+    public Reference sfAsReference() throws SmartFrogCompilationException {
         Reference r = new Reference();
         r.addElements(this);
         r.setEager(getEager());
@@ -38,6 +39,7 @@ public class SFReference extends Reference implements ReferencePhases {
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException reference failed to resolve
      */
+    @Override
     public Object resolve(ReferenceResolver rr, int index)
         throws SmartFrogResolutionException {
         if (index == 0 && !getEager() && !resolutionForceEager) throw new SmartFrogLazyResolutionException("lazy reference resolved");
@@ -56,6 +58,7 @@ public class SFReference extends Reference implements ReferencePhases {
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if reference failed to resolve
      */
+    @Override
     public Object resolve(RemoteReferenceResolver rr, int index)
         throws SmartFrogResolutionException {
         if (index == 0 && !getEager()) throw new SmartFrogLazyResolutionException("lazy reference resolved");
