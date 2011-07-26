@@ -13,7 +13,7 @@ class AddDefaultConfiguration extends HadoopComponentImpl {
     synchronized void sfStart() {
         super.sfStart()
         String resourceName = sfResolve("resource","", true)
-        ManagedConfiguration.addDefaultResource(resourceName)
+        ManagedConfiguration.addNewDefaultResource(resourceName)
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, sfCompleteName(), null)
     }
 

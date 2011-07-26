@@ -1,14 +1,12 @@
 
-#include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/hadoop/instances/components.sf"
+#include "/org/smartfrog/services/hadoop/components.sf"
 
 
 testMicroDfsCluster extends ExpectDeploy {
   action extends MicroDFSCluster {
 
   }
-    tests extends Sequence {
-    }
+  tests extends Sequence {
   }
 }

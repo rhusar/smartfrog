@@ -60,7 +60,7 @@
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
-  <target name="ready-to-test" depends="common.ready-to-test">
+  <target name="ready-to-test" depends="common.ready-to-test, commons-logging-via-sf">
     <echo level="verbose">
       system.tests=${system.tests}
       system.tests.enabled=${system.tests.enabled}

@@ -1,9 +1,7 @@
 
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
-#include "/org/smartfrog/services/hadoop/operations/conf/components.sf"
-#include "/org/smartfrog/services/hadoop/operations/dfs/hdfs_startup_options.sf"
-#include "/org/smartfrog/services/hadoop/operations/conf/clusterbound.sf"
+
 
 
 
@@ -94,19 +92,39 @@ MiniDFSCluster extends MiniCluster {
   */
   startupOption HdfsStartupOption:FORMAT;
   /*
-  * @param racks array of strings indicating the rack that each DataNode is on
+  * @param racks array of strings indicating the rack that each DataNode is on.
+  * If an empty list, it is unused.
   */
+  racks [];
   /*
   * @param hosts array of strings indicating the hostnames of each DataNode
+  * If an empty list, it is unused.
   */
+  hosts [];
+
   /*
   * @param simulatedCapacities array of capacities of the simulated data nodes
+  * If an empty list, it is unused.
   */
+
+
+  simulatedCapacities [];
 }
 
 /**
  * The smallest DFS cluster you can bring up
  */
 MicroDFSCluster extends MiniDFSCluster {
+  dataNodeCount 1;
+}
+
+/**
+ A mini MR Cluster has all the attributes of a MiniDFS cluster, and adds a JobTracker and set of Task Trackers on top
+ */
+MiniMRCluster extends MiniDFSCluster {
+  dataNodeCount 1;
+}
+
+MiniMRCluster extends MiniDFSCluster {
   dataNodeCount 1;
 }
