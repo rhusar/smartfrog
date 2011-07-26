@@ -21,6 +21,8 @@
 
 package org.smartfrog.services.hadoop.operations.conf;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.net.NetUtils;
@@ -42,6 +44,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -59,6 +62,7 @@ import java.util.TreeMap;
 public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes, Cloneable {
 
+    private static final Log Log = LogFactory.getLog(ManagedConfiguration.class);
     private Prim source;
     
     /*
@@ -537,7 +541,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         assert conf != this;
 
         //sort the keys
-        TreeMap<String, String> sortedKeys = new TreeMap<String, String>();
+        Map<String, String> sortedKeys = new TreeMap<String, String>();
         for (Map.Entry<String, String> entry : conf) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -680,4 +684,18 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
 
     }
 
+    @Override
+    public void reloadConfiguration() {
+        Log.info("Reloading configuration");
+        super.reloadConfiguration();
+    }
+
+    public static void addNewDefaultResource(String resourceName) throws SmartFrogException {
+        URL url = ManagedConfiguration.class.getClassLoader().getResource(resourceName);
+        if (url == null) {
+            throw new SmartFrogException("No resource \"" + resourceName + "\" found in the Configuration classpath");
+        }
+        Log.info("Adding a new default resource \"" + resourceName + "\" from " + url);
+        addDefaultResource(resourceName);
+    }
 }

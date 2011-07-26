@@ -207,16 +207,36 @@ testDefaultConfiguration extends testDefaultConf {
 testAddDefaultConfiguration extends testDefaultConf {
   action extends Compound {
     newDefault extends AddDefaultConfiguration {
-      resource "/org/smartfrog/services/hadoop/operations/test/system/conf/test-default-configuration.xml";
+      resource "org/smartfrog/services/hadoop/operations/test/system/conf/test-default-configuration.xml";
+      sfShouldTerminate false;
     }
-    config extends DefaultHadoopConfiguration {
-    
+
+    // to handle race conditions between the add default working and the tests
+    sleep extends Delay {
+      time 1000;
+      action extends DefaultHadoopConfiguration {
+
+        }
     }
+
+
+    config  LAZY sleep:action;
   }
   
   tests extends Sequence {
-    
-    test.value.one extends AssertWorkflow {
+
+    test.hdfs.uri extends AssertWorkflow {
+      equalityIgnoresCase false;
+      equalsString1 "org.apache.hadoop.hdfs.DistributedFileSystem";
+      equalsString2 LAZY action:config:fs.hdfs.impl;
+    }
+
+    // to handle race conditions between the add default working and the tests
+    sleep extends Delay {
+      time 1000;
+    }
+
+    test.value.one.set extends AssertWorkflow {
       equalityIgnoresCase true;
       equalsString1 "1";
       equalsString2 LAZY action:config:test.value.one;

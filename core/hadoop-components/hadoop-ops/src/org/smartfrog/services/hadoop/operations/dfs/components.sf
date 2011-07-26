@@ -18,6 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/services/hadoop/operations/conf/clusterbound.sf"
+#include "/org/smartfrog/services/hadoop/operations/dfs/hdfs_startup_options.sf"
 
 /**
   This package contains components that work with the filesystem
@@ -95,6 +97,13 @@ For more information: www.smartfrog.org
     permissionPattern permission_a+rwx;
   }
 
+
+  /**
+  Give the unix name
+  */
+  DfsMkdir extends DfsCreateDir {
+  }
+
   /**
    Delete a directory
    */
@@ -102,6 +111,12 @@ For more information: www.smartfrog.org
     sfClass "org.smartfrog.services.hadoop.operations.dfs.DfsDeleteDirImpl";
     //should deletion be recursive?
     recursive true;
+  }
+
+  /**
+  Give the unix name
+  */
+  DfsRmdir extends DfsDeleteDir {
   }
 
   /**
@@ -114,7 +129,13 @@ For more information: www.smartfrog.org
     minTotalFileSize 0;
     maxTotalFileSize -1;
   }
- 
+
+   /**
+    Give the unix name
+    */
+  DfsLs extends DfsListDir {
+  }
+
 
 /**
  * A component to check the status of a directory
@@ -214,18 +235,11 @@ For more information: www.smartfrog.org
     sfClass "org.smartfrog.services.hadoop.operations.dfs.DfsCopyFileInImpl";
   }
 
-  DfsCopyFileInWorkflow extends DfsCopyFileIn {
-    sfShouldTerminate true;
-  }
-
   /**
    * copy an HDFS file into a local file
    */
   DfsCopyFileOut extends DfsCopyOperation {
     sfClass "org.smartfrog.services.hadoop.operations.dfs.DfsCopyFileOutImpl";
-  }
-  DfsCopyFileOutWorkflow extends DfsCopyFileOut {
-    sfShouldTerminate true;
   }
 
 
@@ -239,8 +253,11 @@ For more information: www.smartfrog.org
     blocksize (64*1024);
   }
 
-  DfsCopyFileWorkflow extends DfsCopyFiles {
-      sfShouldTerminate true;
+  /**
+   Give the unix name
+   */
+  DfsCp extends DfsCopyFile {
+
   }
 
   /**
@@ -266,9 +283,6 @@ For more information: www.smartfrog.org
     maxFileCount -1;
   }
 
-  DfsCopyFilesWorkflow extends DfsCopyFiles {
-      sfShouldTerminate true;
-  }
 
   /**
    * move a file in the filesystem
@@ -277,8 +291,12 @@ For more information: www.smartfrog.org
     sfClass "org.smartfrog.services.hadoop.operations.dfs.DfsMoveFileImpl";
   }
 
-  DfsMoveFileWorkflow extends DfsMoveFile {
-    sfShouldTerminate true;
+
+  /**
+   Give the unix name
+   */
+  DfsMv extends DfsMoveFile {
+
   }
 
   /**
@@ -303,25 +321,12 @@ For more information: www.smartfrog.org
     overwrite true;
   }
 
-
-
-  DfsCreateFileWorkflow extends DfsCreateFile {
-    sfShouldTerminate true;
-  }
-
   /**
   * Touch a file to zero bytes. Anything there is deleted
   */
-  DfsTouchFile extends DfsCreateFile {
+  DfsTouch extends DfsCreateFile {
   }
   
- /**
-  * Touch a file to zero bytes. Anything there is deleted
-  */
-  DfsTouchFileWorkflow extends DfsCreateFileWorkflow {
-  }
-
-
   /**
   * Check the filesystem
   */

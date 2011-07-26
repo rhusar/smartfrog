@@ -1,0 +1,3 @@
+#include "/org/smartfrog/services/hadoop/operations/conf/components.sf"
+#include "/org/smartfrog/services/hadoop/operations/dfs/components.sf"
+#include "/org/smartfrog/services/hadoop/instances/components.sf"

@@ -54,6 +54,7 @@ public class DfsClusterBoundImpl extends WorkerThreadPrimImpl {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         if (isClusterRequired()) {
@@ -76,8 +77,8 @@ public class DfsClusterBoundImpl extends WorkerThreadPrimImpl {
             return new Path(pathName);
         } catch (IllegalArgumentException e) {
             throw new SmartFrogLifecycleException("Failed to create the path defined by attribute " + attribute
-                                                  + " with value " + pathName
-                                                  + " : " + e,
+                                                  + " with value \"" + pathName
+                                                  + "\" : " + e,
                                                   e,
                                                   this);
         }

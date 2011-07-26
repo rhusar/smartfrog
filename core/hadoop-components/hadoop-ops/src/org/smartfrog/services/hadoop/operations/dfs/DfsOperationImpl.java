@@ -30,9 +30,24 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 import java.rmi.RemoteException;
 
 /**
- * Base class for DFS operations does nothing useful at all other than resolve the cluster settings and fail if they are
- * absent. It also has support for a worker thread (which get terminated during shutdown, if set)
+ * The Base class for DFS operations.
+ *
+ * <p/>
+ *
+ * It can contain a worker thread which then invokes {@link #performDfsOperation()} to create a filesystem and invoke
+ * {@link #performDfsOperation(FileSystem, ManagedConfiguration)}, which subclasses can use to perform component-specific
+ * operations.
+ *
+ * <p/>
+ *
+ * Subclasses should also consider overriding {@link #sfStart()} to read in extra values.
+ *
+ * <p/>
+ *
+ * Thread termination is automatic with the terminate operation of the WorkerThreadPrimImpl class that is the parent of
+ * this class.
  */
+@SuppressWarnings({"AbstractClassExtendsConcreteClass"})
 public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
     protected boolean closeFilesystem;
 
@@ -53,6 +68,7 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
         closeFilesystem = sfResolve(ATTR_CLOSE_FILESYSTEM, true, true);
     }
 
+
     /**
      * For subclassing: this routine will be called by the default worker thread, if that thread gets started
      *
@@ -66,24 +82,33 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
     }
 
     /**
-     * do the work
+     * Creating the filesystem, running the {@link #performDfsOperation(FileSystem, ManagedConfiguration)}
+     * operation and then optionally closing the filesystem afterwards.
      *
      * @throws Exception on any failure
      */
     protected void performDfsOperation() throws Exception {
         ManagedConfiguration conf = createConfiguration();
+        if (closeFilesystem) {
+            conf.setBoolean("fs.hdfs.impl.disable.cache", true);
+        }
         FileSystem fileSystem = DfsUtils.createFileSystem(conf);
-
+        boolean finished = false;
         try {
             performDfsOperation(fileSystem, conf);
-        } catch (Exception e) {
+            finished = true;
+        } finally {
             if (closeFilesystem) {
-                DfsUtils.closeQuietly(fileSystem);
+                //close the filesystem.
+                if (finished) {
+                    //end of a successful operation; throw up any problems
+                    DfsUtils.closeDfs(fileSystem);
+                } else {
+                    //if this happened during an exception, it is closed quietly,
+                    //so as to not lose the original problem
+                    DfsUtils.closeQuietly(fileSystem);
+                }
             }
-            throw e;
-        }
-        if (closeFilesystem) {
-            DfsUtils.closeDfs(fileSystem);
         }
     }
 

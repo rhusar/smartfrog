@@ -1,0 +1,6 @@
+
+#include "/org/smartfrog/services/hadoop/operations/test/system/operations/dfs/components.sf"
+
+sfConfig extends testDirectoryCreateAndDelete {
+
+}
