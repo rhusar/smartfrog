@@ -44,7 +44,22 @@ CreateAndSetDataDir extends Compound {
 }
 
 
+/**
+ * a DFS cluster
+ */
 MiniCluster extends ClusterBound {
+  nodeCount 0;
+  /*
+  * @param racks array of strings indicating the rack that each node is on.
+  * If an empty list, it is unused.
+  */
+  racks [];
+  /*
+  * @param hosts array of strings indicating the hostnames of each node
+  * If an empty list, it is unused.
+  */
+  hosts [];
+
 }
 
 
@@ -60,15 +75,6 @@ MiniDFSCluster extends MiniCluster {
 
   namenodePort 0;
 
-  /*
-  * @param conf the base configuration to use in starting the servers.  This
-  *          will be modified as necessary.
-  */
-  /*
-  * @param numDataNodes Number of DataNodes to start; may be zero
-  */
-
-  dataNodeCount 3;
 
   /*
   * @param format if true, format the NameNode and DataNodes before starting up
@@ -91,22 +97,11 @@ MiniDFSCluster extends MiniCluster {
   *          or StartupOption.FORMAT, then StartupOption.REGULAR will be used.
   */
   startupOption HdfsStartupOption:FORMAT;
-  /*
-  * @param racks array of strings indicating the rack that each DataNode is on.
-  * If an empty list, it is unused.
-  */
-  racks [];
-  /*
-  * @param hosts array of strings indicating the hostnames of each DataNode
-  * If an empty list, it is unused.
-  */
-  hosts [];
 
   /*
   * @param simulatedCapacities array of capacities of the simulated data nodes
   * If an empty list, it is unused.
   */
-
 
   simulatedCapacities [];
 }
@@ -115,16 +110,21 @@ MiniDFSCluster extends MiniCluster {
  * The smallest DFS cluster you can bring up
  */
 MicroDFSCluster extends MiniDFSCluster {
-  dataNodeCount 1;
+  nodeCount 1;
 }
 
 /**
  A mini MR Cluster has all the attributes of a MiniDFS cluster, and adds a JobTracker and set of Task Trackers on top
  */
 MiniMRCluster extends MiniDFSCluster {
-  dataNodeCount 1;
+  nodeCount 1;
 }
 
-MiniMRCluster extends MiniDFSCluster {
-  dataNodeCount 1;
+MiniMRCluster extends MiniCluster {
+  sfClass "org.smartfrog.services.hadoop.instances.MiniMrClusterImpl";
+  fs.default.name TBD
+  jobTrackerPort 0;
+  taskTrackerPort 0;
+  directoryCount 1;
+  numTrackerToExclude 0;
 }

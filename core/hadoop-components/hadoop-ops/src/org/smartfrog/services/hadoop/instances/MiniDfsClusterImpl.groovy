@@ -1,15 +1,16 @@
 package org.smartfrog.services.hadoop.instances
 
 import java.rmi.RemoteException
-import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hdfs.MiniDFSCluster
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
 import org.smartfrog.services.hadoop.operations.dfs.HdfsStartupOptionFactory
 import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogResolutionException
 import org.smartfrog.sfcore.prim.TerminationRecord
-import org.smartfrog.sfcore.utils.ListUtils
+
 import org.smartfrog.services.scripting.groovy.GRef
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration
 
 /**
  * This is a groovy class that can bring up a MiniDFS cluster
@@ -17,22 +18,20 @@ import org.smartfrog.services.scripting.groovy.GRef
 class MiniDfsClusterImpl extends MiniClusterImpl {
 
     public static final String ATTR_NAMENODE_PORT = "namenodePort"
-    public static final String ATTR_DATA_NODE_COUNT = "dataNodeCount"
     public static final String ATTR_FORMAT = "format"
     public static final String ATTR_MANAGE_NAME_DFS_DIRS = "manageNameDfsDirs"
     public static final String ATTR_MANAGE_DATA_DFS_DIRS = "manageDataDfsDirs"
     public static final String ATTR_STARTUP_OPTION = "startupOption"
-    public static final String ATTR_HOSTS = "hosts"
-    public static final String ATTR_RACKS = "racks"
     public static final String ATTR_SIMULATED_CAPACITIES = "simulatedCapacities"
-    MiniDFSCluster cluster;
+    MiniDFSCluster cluster
+    String filesystemPath
+
 
     @Override
     synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart()
         int nameNodePort = sfResolve(ATTR_NAMENODE_PORT, 0, true)
-        Configuration conf = createConfiguration()
-        int numDataNodes = sfResolve(ATTR_DATA_NODE_COUNT, 0, true)
+        int numDataNodes = sfResolve(ATTR_NODE_COUNT, 0, true)
         boolean format = sfResolve(ATTR_FORMAT, true, true)
         boolean manageNameDfsDirs = sfResolve(ATTR_MANAGE_NAME_DFS_DIRS, true, true)
         boolean manageDataDfsDirs = sfResolve(ATTR_MANAGE_DATA_DFS_DIRS, true, true)
@@ -47,26 +46,10 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
                         "Unsupported operation \"${startupOption}\"")
             }
         }
-        String[] racks = null
-        List<String> list = ListUtils.resolveStringList(this, new GRef(ATTR_RACKS), true);
-        if (!list.empty) {
-            racks = list.stringify();
-        }
-        String[] hosts = null
-        list = ListUtils.resolveStringList(this, new GRef(ATTR_HOSTS), true);
-        if (!list.empty) {
-            hosts = list.stringify();
-        }
-        long[] simulatedCapacities = null
-        Vector<?> vector = null;
-        vector = sfResolve(new GRef(ATTR_SIMULATED_CAPACITIES), new Vector<Long>(), true);
-        if (!vector.empty) {
-            simulatedCapacities = new long[vector.size()];
-            int counter = 0;
-            vector.each { elt ->
-                simulatedCapacities[counter++] = (Long)elt;
-            }
-        }
+        ManagedConfiguration conf = createAndCacheConfig()
+        String[] racks = resolveListToArray(ATTR_RACKS)
+        String[] hosts = resolveListToArray(ATTR_HOSTS)
+        long[] simulatedCapacities = resolveLongVector(ATTR_SIMULATED_CAPACITIES);
 
         cluster = new MiniDFSCluster(
                 nameNodePort,
@@ -79,6 +62,12 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
                 racks,
                 hosts,
                 simulatedCapacities)
+
+        filesystemPath = "hdfs://127.0.0.1:/${cluster.getNameNodePort()}"
+        sfLog().info("MiniDFSCluster is up at $filesystemPath")
+//        sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemPath);
+        sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, filesystemPath);
+
     }
 
 
@@ -90,5 +79,8 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
         cluster = null
     }
 
+    public URI getFilesystemURI() {
+        return org.apache.hadoop.fs.FileSystem.getDefaultUri(getClusterConfig())
+    }
 
 }

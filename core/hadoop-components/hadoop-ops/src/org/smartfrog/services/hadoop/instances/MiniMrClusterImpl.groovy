@@ -2,51 +2,52 @@ package org.smartfrog.services.hadoop.instances
 
 import java.rmi.RemoteException
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.hdfs.MiniDFSCluster
-import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
-import org.smartfrog.services.hadoop.operations.dfs.HdfsStartupOptionFactory
+
 import org.smartfrog.sfcore.common.SmartFrogException
-import org.smartfrog.sfcore.common.SmartFrogResolutionException
+
 import org.smartfrog.sfcore.prim.TerminationRecord
-import org.smartfrog.services.scripting.groovy.GRef
+
+import org.apache.hadoop.mapred.MiniMRCluster
 
 /**
- * This is a groovy class that can bring up a MiniDFS cluster
+ * This is a groovy class that can bring up a MiniDFS cluster.
+ *
+ * MiniMR will go away in Hadoop 0.23.
  */
 class MiniMrClusterImpl extends MiniClusterImpl {
 
 
-    MiniDFSCluster cluster;
+    public static final String ATTR_JOB_TRACKER_PORT = "jobTrackerPort"
+    public static final String ATTR_TASK_TRACKER_PORT = "taskTrackerPort"
+    public static final String ATTR_DIRECTORY_COUNT = "directoryCount"
+
+    public static final String ATTR_NUM_TRACKER_TO_EXCLUDE = "numTrackerToExclude"
+    MiniMRCluster cluster;
 
     @Override
     synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart()
 
-  /*      String startupOption = sfResolve(startupRef, "", true)
-        StartupOption operation = null
-        if (startupOption) {
-            operation = HdfsStartupOptionFactory.createStartupOption(startupOption)
-            if (operation == null) {
-                throw SmartFrogResolutionException.generic(startupRef,
-                        this.sfCompleteNameSafe(),
-                        "Unsupported operation \"${startupOption}\"")
-            }
-        }
-        String[] racks = null
-        String[] hosts = null
-        long[] simulatedCapacities = null
+        int jobTrackerPort = sfResolve(ATTR_JOB_TRACKER_PORT, 0, true);
+        int taskTrackerPort = sfResolve(ATTR_TASK_TRACKER_PORT, 0, true);
+        int nodeCount = sfResolve(ATTR_NODE_COUNT, 0, true);
+        int numDir = sfResolve(ATTR_DIRECTORY_COUNT, 0, true);
+        int numTrackerToExclude = sfResolve(ATTR_NUM_TRACKER_TO_EXCLUDE, 0, true);
+        String fsuri = sfResolve(ATTR_FILESYSTEM_URI, "", true);
+        String[] racks = resolveListToArray(ATTR_RACKS)
+        String[] hosts = resolveListToArray(ATTR_HOSTS)
+        Configuration conf = createAndCacheConfig()
 
-        cluster = new MiniDFSCluster(
-                nameNodePort,
-                conf,
-                numDataNodes,
-                format,
-                manageNameDfsDirs,
-                manageDataDfsDirs,
-                operation,
-                racks,
-                hosts,
-                simulatedCapacities)*/
+        cluster = new MiniMRCluster(jobTrackerPort,
+                                    taskTrackerPort,
+                                    nodeCount,
+                                    fsuri,
+                                    numDir,
+                                    racks,
+                                    hosts,
+                                    null,
+                                    conf,
+                                    numTrackerToExclude)
     }
 
     @Override
