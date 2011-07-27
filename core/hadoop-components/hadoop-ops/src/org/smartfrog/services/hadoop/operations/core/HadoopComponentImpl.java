@@ -91,7 +91,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      */
     protected ManagedConfiguration createClusterAttrConfiguration()
             throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, true, false);
+        return ManagedConfiguration.createConfiguration(this, true, true, false, false);
     }
 
     /**

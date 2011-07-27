@@ -65,7 +65,7 @@ public class ManagedConfTestPrimImpl extends HadoopComponentImpl {
         dump = conf.dump();
         String value1 = conf.get(P1, null);
         assertTrue(P1 + "==" + value1 + " in\n" + dump, value1 != null);
-        assertTrue(P1 + "!=" + V1 + "is is " + value1 + " in\n" + dump, V1.equals(value1));
+        assertTrue(P1 + "!=" + V1 + " -it is " + value1 + " in\n" + dump, V1.equals(value1));
         conf.set(P2, V2);
         dump = conf.dump();
         String value2 = conf.get(P2, null);

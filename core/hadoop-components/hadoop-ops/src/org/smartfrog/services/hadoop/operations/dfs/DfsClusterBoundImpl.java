@@ -92,7 +92,7 @@ public class DfsClusterBoundImpl extends WorkerThreadPrimImpl {
      * @throws RemoteException    network problems
      */
     public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, isClusterRequired(), false);
+        return ManagedConfiguration.createConfiguration(this, true, isClusterRequired(), false, false);
     }
 
     /**

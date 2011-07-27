@@ -212,17 +212,11 @@ testAddDefaultConfiguration extends testDefaultConf {
     }
 
     // to handle race conditions between the add default working and the tests
-    sleep extends Delay {
-      time 1000;
-      action extends DefaultHadoopConfiguration {
-
-        }
+    config extends DefaultHadoopConfiguration {
+        conf.propagate.reloads true;
+      }
     }
 
-
-    config  LAZY sleep:action;
-  }
-  
   tests extends Sequence {
 
     test.hdfs.uri extends AssertWorkflow {
@@ -237,9 +231,9 @@ testAddDefaultConfiguration extends testDefaultConf {
     }
 
     test.value.one.set extends AssertWorkflow {
-      equalityIgnoresCase true;
-      equalsString1 "1";
-      equalsString2 LAZY action:config:test.value.one;
+      reference LAZY action:config;
+      attribute "test.value.one";
+      attributeEquals "1";
     }
   }
 }

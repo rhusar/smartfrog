@@ -59,6 +59,7 @@ public final class ConfigurationLoader {
         if (debug) {
             source.sfLog().debug("Load default resources=" + loadDefaults);
         }
+        boolean propagateReloads = source.sfResolve(HadoopConfiguration.ATTR_PROPAGATE_RELOADS, false, false);
         List<String> resources = ListUtils
                 .resolveStringList(source, new Reference(HadoopConfiguration.ATTR_RESOURCES), false);
         if (resources == null) {
@@ -78,7 +79,7 @@ public final class ConfigurationLoader {
             if (!resources.isEmpty() || !files.isEmpty()) {
                 throw new SmartFrogResolutionException(ERROR_NO_CLUSTER_AND_XML);
             }
-            conf = ManagedConfiguration.createConfiguration(source, true, false, loadDefaults);
+            conf = ManagedConfiguration.createConfiguration(source, true, false, loadDefaults, propagateReloads);
             conf.copyPropertiesToPrim(source);
 
         } else {
