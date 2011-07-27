@@ -62,16 +62,17 @@ import java.util.TreeMap;
 public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes, Cloneable {
 
-    private static final Log Log = LogFactory.getLog(ManagedConfiguration.class);
+    private static final Log LOG = LogFactory.getLog(ManagedConfiguration.class);
     private Prim source;
-    
+    private String description;
+    boolean propagateReloads;
+
     /*
      * Force load the extra configurations
      */
     static {
         ConfigurationLoader.loadExtendedConfigurations();
     }
-
     /**
      * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
      * discovered.
@@ -82,7 +83,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             MAPRED_LOCAL_DIR
     };*/
     public static final String MISSING_ATTRIBUTE = "Missing attribute";
-    private String description;
     private static final Reference REF_CLUSTER = new Reference(ClusterBound.ATTR_CLUSTER);
 
     /**
@@ -101,6 +101,25 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         }
     }*/
 
+
+
+    /**
+     * A new map/reduce configuration where the behavior of reading from the default resources can be turned off. <p/>
+     * If the parameter {@code loadDefaults} is false, the new instance will not load resources from the default files.
+     *
+     * @param loadDefaults specifies whether to load from the default files
+     * @param source       source of config information
+     * @param propagateReloads should reloads be passed up
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException for resolution problems
+     */
+    public ManagedConfiguration(boolean loadDefaults, Prim source, boolean propagateReloads) throws SmartFrogException,
+            RemoteException {
+        super(loadDefaults);
+        this.propagateReloads = propagateReloads;
+        bind(source);
+    }
+
     /**
      * A new map/reduce configuration where the behavior of reading from the default resources can be turned off. <p/>
      * If the parameter {@code loadDefaults} is false, the new instance will not load resources from the default files.
@@ -111,10 +130,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogResolutionException for resolution problems
      */
     public ManagedConfiguration(boolean loadDefaults, Prim source) throws SmartFrogException,
-            RemoteException {
-        super(loadDefaults);
-        bind(source);
+                                                                          RemoteException {
+        this(loadDefaults, source, false);
     }
+
 
     /**
      * A new configuration. Default values are picked up
@@ -656,11 +675,13 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * This creates a configuration from a source prim
      *
+     *
      * @param source                   source prim
      * @param useClusterReference if set, resolve {@link ClusterBound#ATTR_CLUSTER} from the source and use that
      *                                 first.
      * @param clusterRequired          if set, the cluster attribute must resolve.
      * @param loadDefaults             flag to say "load the default values"
+     * @param propagateReloads  flag to say "propagate any reloads back to the owner"
      * @return the new element
      * @throws SmartFrogException for any failure to resolve all the attributes
      * @throws RemoteException              network problems. These are always passed up
@@ -668,7 +689,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     public static ManagedConfiguration createConfiguration(Prim source,
                                                            boolean useClusterReference,
                                                            boolean clusterRequired,
-                                                           boolean loadDefaults)
+                                                           boolean loadDefaults, final boolean propagateReloads)
             throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = new ManagedConfiguration(loadDefaults, source);
         if (useClusterReference) {
@@ -684,10 +705,20 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
 
     }
 
+    /**
+     * push out changes
+     */
     @Override
     public void reloadConfiguration() {
-        Log.info("Reloading configuration");
+        LOG.info("Reloading configuration under " + description);
         super.reloadConfiguration();
+        if (propagateReloads) try {
+            copyComponentState(source, null);
+        } catch (RemoteException e) {
+            LOG.warn("When propagating configuration " + e, e);
+        } catch (SmartFrogResolutionException e) {
+            LOG.warn("When propagating configuration " + e, e);
+        }
     }
 
     public static void addNewDefaultResource(String resourceName) throws SmartFrogException {
@@ -695,7 +726,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         if (url == null) {
             throw new SmartFrogException("No resource \"" + resourceName + "\" found in the Configuration classpath");
         }
-        Log.info("Adding a new default resource \"" + resourceName + "\" from " + url);
+        LOG.info("Adding a new default resource \"" + resourceName + "\" from " + url);
         addDefaultResource(resourceName);
     }
 }
