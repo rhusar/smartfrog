@@ -42,7 +42,7 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
             operation = HdfsStartupOptionFactory.createStartupOption(startupOption)
             if (operation == null) {
                 throw SmartFrogResolutionException.generic(startupRef,
-                        this.sfCompleteNameSafe(),
+                        sfCompleteNameSafe(),
                         "Unsupported operation \"${startupOption}\"")
             }
         }
@@ -65,7 +65,7 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
 
         filesystemPath = "hdfs://127.0.0.1:/${cluster.getNameNodePort()}"
         sfLog().info("MiniDFSCluster is up at $filesystemPath")
-//        sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemPath);
+        sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemPath);
         sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, filesystemPath);
 
     }

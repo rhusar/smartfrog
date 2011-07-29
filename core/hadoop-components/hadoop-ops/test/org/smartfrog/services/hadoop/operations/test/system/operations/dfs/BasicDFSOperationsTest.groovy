@@ -7,7 +7,7 @@ class BasicDFSOperationsTest extends DFSTestBase {
         expectSuccessfulTestRun(PACKAGE, "testDirectoryCreateAndDelete")
     }
 
-    public void NotestDfsLive() {
+    public void testDfsLive() {
         expectSuccessfulTestRun(PACKAGE, "testDfsLive")
     }
 
