@@ -122,9 +122,48 @@ MiniMRCluster extends MiniDFSCluster {
 
 MiniMRCluster extends MiniCluster {
   sfClass "org.smartfrog.services.hadoop.instances.MiniMrClusterImpl";
-  fs.default.name TBD
+  filesystemURI TBD
   jobTrackerPort 0;
   taskTrackerPort 0;
   directoryCount 1;
   numTrackerToExclude 0;
+}
+
+
+/**
+ Settings for test runs
+ */
+HadoopTestBinding {
+
+  namenodePort 50031;
+  jobTrackerPort 50032;
+  
+
+  dfsURI "hdfs://localhost:" ++ namenodePort;
+  jtURI "http://localhost:" ++ jobTrackerPort;
+
+}
+
+
+/**
+ * A combined test cluster
+ */
+MiniHadoopCluster extends Compound {
+
+  nodeCount 3;
+
+  namenodePort HadoopTestBinding:namenodePort;
+  jobTrackerPort HadoopTestBinding:jobTrackerPort;
+  filesystemURI "hdfs://localhost:" ++ namenodePort;
+
+  dfsCluster extends MiniDFSCluster {
+    namenodePort PARENT:namenodePort;
+    nodeCount PARENT:nodeCount;
+  }
+
+  mrCluster extends MiniMRCluster {
+    nodeCount PARENT:ATTRIB nodeCount;
+    filesystemURI PARENT filesystemURI;
+  }
+
 }

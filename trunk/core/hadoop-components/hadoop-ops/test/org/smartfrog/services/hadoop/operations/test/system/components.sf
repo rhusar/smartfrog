@@ -1,26 +1,8 @@
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/hadoop/components.sf"
 
-MiniHadoopCluster extends Compound {
 
-  nodeCount 1;
 
-  dfsCluster extends MiniDFSCluster {
-    nodeCount PARENT:nodeCount;
-  }
-
-  slowStart extends Delay {
-    time 1000;
-    action extends MiniMRCluster {
-      nodeCount PARENT:ATTRIB nodeCount;
-      fs.default.name LAZY dfsCluster:fs.default.name;
-    }
-  }
-
-  mrCluster LAZY slowStart:action;
-
-}
-
-sfConfig extends Compound {
+sfConfig extends MiniHadoopCluster {
 
 }

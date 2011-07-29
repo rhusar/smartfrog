@@ -52,6 +52,11 @@
       changing="true"
       rev="latest.integration"
       conf="daemon,compile,build->default;runtime->runtime;redist->redist"/>
+    <dependency org="org.smartfrog"
+      name="sf-hadoop-ops"
+      changing="true"
+      rev="latest.integration"
+      conf="daemon,compile,build->default;runtime->runtime;redist->redist"/>
 
     <!--
 <dependency org="org.smartfrog"

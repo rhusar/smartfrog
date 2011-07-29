@@ -15,16 +15,11 @@ class MiniClusterImpl extends HadoopComponentImpl {
     public static final String ATTR_NODE_COUNT = "nodeCount"
     public static final String ATTR_HOSTS = "hosts"
     public static final String ATTR_RACKS = "racks"
-    public static final String ATTR_FILESYSTEM_URI = FileSystem.FS_DEFAULT_NAME_KEY;
+    public static final String ATTR_FILESYSTEM_URI = "filesystemURI";
 
     ManagedConfiguration clusterConfig
 
     MiniClusterImpl() {
-    }
-
-    @Override
-    synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart()
     }
 
     protected ManagedConfiguration createAndCacheConfig() {

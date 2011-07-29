@@ -42,7 +42,8 @@
   <property name="junit.timeout" value="12000000"/>
   <!--time for a single test to execute-->
   <property name="test.timeout.execute"  value="120000"/>
-  
+
+  <property name="test.application" value="org/smartfrog/services/hadoop/operations/test/system/components.sf"/>
 
   <!-- override point -->
   <property file="build.properties"/>

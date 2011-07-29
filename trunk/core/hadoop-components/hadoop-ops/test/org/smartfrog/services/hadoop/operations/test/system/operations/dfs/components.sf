@@ -8,6 +8,7 @@
 ExpectSuccessfulOperations extends ExpectDeploy {
   action extends MicroDFSCluster {
 
+
   }
   tests extends Sequence {
   }
@@ -15,6 +16,7 @@ ExpectSuccessfulOperations extends ExpectDeploy {
 
 
 testDfsLive extends ExpectSuccessfulOperations {
+  sfProcessName "PS-testDfsLive";
 
   tests extends Sequence {
     cluster LAZY action;
@@ -29,6 +31,8 @@ testDfsLive extends ExpectSuccessfulOperations {
 }
 
 testDirectoryCreateAndDelete extends ExpectSuccessfulOperations {
+
+  sfProcessName "PS-testDirectoryCreateAndDelete";
 
   tests extends Sequence {
     cluster LAZY action;
