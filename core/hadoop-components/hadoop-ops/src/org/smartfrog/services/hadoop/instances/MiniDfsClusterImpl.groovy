@@ -70,8 +70,6 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
 
     }
 
-
-
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status)
