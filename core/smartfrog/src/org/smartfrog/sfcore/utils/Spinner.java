@@ -32,7 +32,7 @@ import java.io.InterruptedIOException;
  */
 
 public class Spinner {
-    private final String operation;
+    private volatile String operation;
     private final long waitInterval;
     private final long endtime;
     private Throwable lastThrown;
@@ -93,6 +93,14 @@ public class Spinner {
      */
     public String getOperation() {
         return operation;
+    }
+
+    /**
+     * Set the operation field, which is used in the exception messages
+     * @param operation the text to use in timeout and interrupt exceptions
+     */
+    public void setOperation(final String operation) {
+        this.operation = operation;
     }
 
     /**
