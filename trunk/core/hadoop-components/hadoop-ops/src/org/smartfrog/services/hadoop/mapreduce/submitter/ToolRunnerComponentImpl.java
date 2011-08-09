@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.services.hadoop.operations.components.submitter;
+package org.smartfrog.services.hadoop.mapreduce.submitter;
 
 import org.apache.hadoop.util.Tool;
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
@@ -66,7 +66,8 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
         ComponentHelper ch = new ComponentHelper(this);
 
         Vector<String> vector = ListUtils.resolveStringList(this,
-                                                            new Reference(ATTR_ARGUMENTS), true);
+                                                            new Reference(ATTR_ARGUMENTS),
+                                                            true);
         arguments = new String[vector.size()];
         vector.copyInto(arguments);
         argumentsAsString = ListUtils.stringify(vector, "(", ", ", ")");

@@ -1,26 +1,16 @@
 
 
-#include "/org/smartfrog/services/hadoop/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/hadoop/operations/test/system/components.sf"
 
 
 
-ExpectSuccessfulOperations extends ExpectDeploy {
-  action extends MicroDFSCluster {
-
-
-  }
-  tests extends Sequence {
-  }
-}
 
 
 testDfsLive extends ExpectSuccessfulOperations {
   sfProcessName "PS-testDfsLive";
 
   tests extends Sequence {
-    cluster LAZY action;
-
+    cluster LAZY dfsCluster;
 
     dfsLive extends DfsPathExists {
       cluster PARENT:cluster;
@@ -35,7 +25,7 @@ testDirectoryCreateAndDelete extends ExpectSuccessfulOperations {
   sfProcessName "PS-testDirectoryCreateAndDelete";
 
   tests extends Sequence {
-    cluster LAZY action;
+    cluster LAZY dfsCluster;
 
     dfsDirPath "testDirectoryCreateAndDelete";
 

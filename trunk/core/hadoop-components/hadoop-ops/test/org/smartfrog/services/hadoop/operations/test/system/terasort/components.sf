@@ -1,0 +1,37 @@
+#include "/org/smartfrog/services/hadoop/operations/test/system/components.sf"
+
+TeraGenPath "/tmp/examples/teradata/" ;
+
+TeraGenRows 1000L;
+
+testTerasort extends ExpectSuccessfulOperations {
+
+  tests extends Sequence {
+
+    generatedPath (fsURI ++ TeraGenPath ++ "generated");
+    outputPath (fsURI ++ TeraGenPath ++ "output");
+
+    deleteGenerated extends DfsDeleteDir {
+      cluster dfsCluster; 
+      path generatedPath;
+    }
+    
+    deleteOutput extends DfsDeleteDir {
+      cluster dfsCluster;
+      path outputPath;
+    }
+    
+    generate extends TeraGen {
+        //number of rows
+        rows TeraGenRows;
+        //outputPath
+        destPath generatedPath;
+    }
+    
+    sort extends TeraSort {
+      sourcePath generatedPath;
+      destPath outputPath;
+    }
+    
+  }
+}

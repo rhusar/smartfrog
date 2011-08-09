@@ -18,40 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-
-/**
- * This schema declares the job tracker as optional. In reality it is normally looked for
- * but by leaving it off, we can deploy many components by having a parent provide the reference
- */
-
-JobTrackingSchema extends Schema {
-  //mapred.job.tracker Optional;
-}
-
-JobTrackingComponent extends Prim {
-
-  /**
-   All of these have a job tracker component
-   */
-
-   schema JobTrackingSchema ;
-
-}
-
-
-JobTrackingWorkflowComponent extends WorkflowPrim {
-  schema JobTrackingSchema;
-}
-
-
-
-Job extends JobConfiguration {
-  sfClass "org.smartfrog.services.hadoop.operations.components.submitter.JobImpl";
-  //do we need a filename attribute?
-  fileRequired true;
-
-}
-
-JobWithoutJARFile extends Job {
-  fileRequired false;
-}
+#include "/org/smartfrog/services/hadoop/mapreduce/submitter/job.sf"
+//submits jobs
+#include "/org/smartfrog/services/hadoop/mapreduce/submitter/submitter.sf"
+//load and runs tool classes in the current JVM (set up the classpath first)
+#include "/org/smartfrog/services/hadoop/mapreduce/submitter/toolrunner.sf"

@@ -133,14 +133,15 @@ MiniMRCluster extends MiniCluster {
 /**
  Settings for test runs
  */
-HadoopTestBinding {
+HadoopTestBinding extends DATA {
 
   namenodePort 50031;
   jobTrackerPort 50032;
   
+  hostname "localhost";
 
-  dfsURI "hdfs://localhost:" ++ namenodePort;
-  jtURI "http://localhost:" ++ jobTrackerPort;
+  dfsURI ( "hdfs://" ++ hostname  ++ ":" ++ namenodePort );
+  jtURI  ( "http://" ++ hostname  ++ ":" ++ jobTrackerPort );
 
 }
 
@@ -154,7 +155,7 @@ MiniHadoopCluster extends Compound {
 
   namenodePort HadoopTestBinding:namenodePort;
   jobTrackerPort HadoopTestBinding:jobTrackerPort;
-  filesystemURI "hdfs://localhost:" ++ namenodePort;
+  filesystemURI ("hdfs://localhost:" ++ namenodePort);
 
   dfsCluster extends MiniDFSCluster {
     namenodePort PARENT:namenodePort;
@@ -163,7 +164,12 @@ MiniHadoopCluster extends Compound {
 
   mrCluster extends MiniMRCluster {
     nodeCount PARENT:ATTRIB nodeCount;
-    filesystemURI PARENT filesystemURI;
+    filesystemURI PARENT:ATTRIB filesystemURI;
+    hadoop.job.history.location "file:///tmp/jt";
   }
 
+}
+
+MicroHadoopCluster extends MiniHadoopCluster {
+  nodeCount 1;
 }

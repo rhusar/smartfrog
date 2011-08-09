@@ -17,8 +17,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.mapreduce.submitter;
 
-//submits jobs
-#include "/org/smartfrog/services/hadoop/operations/components/submitter/submitter.sf"
-//load and runs tool classes in the current JVM (set up the classpath first)
-#include "/org/smartfrog/services/hadoop/operations/components/submitter/toolrunner.sf"
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.hadoop.operations.conf.HadoopConfiguration;
+
+
+/**
+ * Attributs of a job
+ */
+
+
+public interface Job extends HadoopConfiguration, FileUsingComponent {
+
+    /**
+     *  Is the file required
+     */
+    String ATTR_FILE_REQUIRED = "fileRequired";
+    String ATTR_INPUT_DIR = "input.dir";
+    String ATTR_OUTPUT_DIR = "output.dir";
+    String ATTR_WORKING_DIR = "working.dir";
+    String ATTR_LOCAL_DIR = "local.dir";
+}

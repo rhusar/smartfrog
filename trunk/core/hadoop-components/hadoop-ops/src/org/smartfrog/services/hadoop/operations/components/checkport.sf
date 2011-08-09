@@ -41,7 +41,7 @@ CheckPort extends WorkflowPrim {
    */
   address "";
   //localhost definition
-  LOCALHOST "127.0.0.1";
+  LOCALHOST "localhost";
 
   /** lazy reference to a cluster configuration */
   //cluster TBD;

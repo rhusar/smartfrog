@@ -8,6 +8,9 @@ import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.prim.TerminationRecord
 
 import org.apache.hadoop.mapred.MiniMRCluster
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException
+import org.smartfrog.sfcore.common.SmartFrogResolutionException
+import org.smartfrog.services.scripting.groovy.GRef
 
 /**
  * This is a groovy class that can bring up a MiniDFS cluster.
@@ -22,6 +25,7 @@ class MiniMrClusterImpl extends MiniClusterImpl {
     public static final String ATTR_DIRECTORY_COUNT = "directoryCount"
 
     public static final String ATTR_NUM_TRACKER_TO_EXCLUDE = "numTrackerToExclude"
+    public static final String LOG_DIR = "hadoop.log.dir"
     MiniMRCluster cluster;
 
     @Override
@@ -34,9 +38,25 @@ class MiniMrClusterImpl extends MiniClusterImpl {
         int numDir = sfResolve(ATTR_DIRECTORY_COUNT, 0, true);
         int numTrackerToExclude = sfResolve(ATTR_NUM_TRACKER_TO_EXCLUDE, 0, true);
         String fsuri = sfResolve(ATTR_FILESYSTEM_URI, "", true);
+        if (!fsuri) {
+            throw new SmartFrogResolutionException(sfCompleteNameSafe(),
+                                                   new GRef(ATTR_FILESYSTEM_URI),
+                                                   "Empty attribute " + ATTR_FILESYSTEM_URI);
+        }
         String[] racks = resolveListToArray(ATTR_RACKS)
         String[] hosts = resolveListToArray(ATTR_HOSTS)
         Configuration conf = createAndCacheConfig()
+
+        String logDir = System.getProperty(LOG_DIR);
+        if(!logDir) {
+            System.setProperty(LOG_DIR, System.getProperty("java.io.tmpdir"));
+        }
+/*
+        String jobLogDir = conf.get("hadoop.job.history.location",
+                                    "file:///" + new File(
+                                            logDir)?.getAbsolutePath()
+                                            + File.separator + "history");
+*/
 
         cluster = new MiniMRCluster(jobTrackerPort,
                                     taskTrackerPort,
