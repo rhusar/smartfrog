@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.operations.components.submitter;
+package org.smartfrog.services.hadoop.mapreduce.submitter;
 
 import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;

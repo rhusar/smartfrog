@@ -1,15 +1,10 @@
 package org.smartfrog.services.hadoop.operations.test.system.operations.dfs
 
 
-class BasicDFSOperationsTest extends DFSTestBase {
+class DfsDirectoryTest extends DFSTestBase {
 
     public void testDirectoryCreateAndDelete() {
         expectSuccessfulTestRun(PACKAGE, "testDirectoryCreateAndDelete")
     }
-
-    public void testDfsLive() {
-        expectSuccessfulTestRun(PACKAGE, "testDfsLive")
-    }
-
 
 }

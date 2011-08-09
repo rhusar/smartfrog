@@ -75,7 +75,7 @@ HadoopHostnameConfiguration extends HadoopPortConfiguration {
 /**
    * hostnames
    */
-  LOCALHOST "127.0.0.1";
+  LOCALHOST "localhost";
   ALL_ZEROS "0.0.0.0";
   ANY_HOST ALL_ZEROS;
   DEFAULT_HOSTNAME ALL_ZEROS;

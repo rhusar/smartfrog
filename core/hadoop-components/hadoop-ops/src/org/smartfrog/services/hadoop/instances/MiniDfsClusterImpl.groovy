@@ -63,7 +63,7 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
                 hosts,
                 simulatedCapacities)
 
-        filesystemPath = "hdfs://127.0.0.1:/${cluster.getNameNodePort()}"
+        filesystemPath = "hdfs://localhost:${cluster.getNameNodePort()}/"
         sfLog().info("MiniDFSCluster is up at $filesystemPath")
         sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemPath);
         sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, filesystemPath);

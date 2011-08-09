@@ -158,6 +158,27 @@
       <exclude org="org.slf4j"/>
     </dependency>
 
+    <dependency org="org.apache.hadoop"
+      name="hadoop-examples"
+      rev="${hadoop.version}"
+      changing="true"
+      conf="hadoop-core->default">
+
+      <exclude org="org.apache.hadoop" module="hadoop-core"/>
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="commons-httpclient"/>
+      <exclude org="commons-digester"/>
+      <exclude org="commons-el"/>
+      <exclude org="hsqldb"/>
+      <exclude org="net.java.dev.jets3t"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.apache.ftpserver"/>
+      <exclude org="org.apache.mina"/>
+      <exclude org="org.mortbay.jetty"/>
+      <exclude org="org.slf4j"/>
+    </dependency>
+
+
     <!-- for 0.21 the JARs are separate-->
     <!--
     <dependency org="org.apache.hadoop"

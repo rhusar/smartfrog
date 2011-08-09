@@ -150,9 +150,10 @@ public class DfsUtils {
         }
         try {
             return createInstance(uri, conf);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             SFHadoopException hadoopException = SFHadoopException
-                    .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM + filesystemURL, e);
+                    .forward(ERROR_FAILED_TO_INITIALISE_FILESYSTEM + '"' + filesystemURL + '"', 
+                             e);
             hadoopException.addConfiguration(conf);
             throw hadoopException;
         }
