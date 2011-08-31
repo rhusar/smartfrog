@@ -46,8 +46,8 @@ public class XomUtils {
      * @throws IOException in very unlikely circumstaances
      */
     public static byte[] xomToBuffer(Document document) throws IOException {
-        ByteArrayOutputStream out=new ByteArrayOutputStream();
-        Serializer serializer=new Serializer(out);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Serializer serializer = new Serializer(out);
         serializer.write(document);
         serializer.flush();
         out.close();
@@ -75,7 +75,7 @@ public class XomUtils {
      * @return a base 64 encoded file
      */
     public static String base64Encode(byte[] payload) {
-        sun.misc.BASE64Encoder encoder=new BASE64Encoder();
+        sun.misc.BASE64Encoder encoder = new BASE64Encoder();
         String encoded = encoder.encode(payload);
         return encoded;
     }
@@ -87,7 +87,7 @@ public class XomUtils {
      * @throws IOException if serialization went horribly wrong
      */
     public static String base64Encode(Document document) throws IOException {
-        byte[] buffer=xomToBuffer(document);
+        byte[] buffer = xomToBuffer(document);
         return base64Encode(buffer);
     }
 
@@ -98,7 +98,7 @@ public class XomUtils {
      * @throws IOException if something went wrong decoding the string
      */
     public static byte[] base64Decode(String encoded) throws IOException {
-        sun.misc.BASE64Decoder decoder=new BASE64Decoder();
+        sun.misc.BASE64Decoder decoder = new BASE64Decoder();
         return decoder.decodeBuffer(encoded);
     }
 

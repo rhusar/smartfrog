@@ -47,6 +47,7 @@ public class XmlCommentImpl extends SimpleXmlNode implements XmlComment {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_COMMENT, "", true);
         try {

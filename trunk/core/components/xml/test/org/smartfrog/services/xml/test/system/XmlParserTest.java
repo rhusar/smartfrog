@@ -20,6 +20,8 @@
 package org.smartfrog.services.xml.test.system;
 
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
@@ -28,8 +30,6 @@ import org.xml.sax.XMLReader;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Test some aspects of XMLL created 27-Jan-2005 14:05:29
@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class XmlParserTest extends TestCase {
 
-    private static final Log logger= LogFactory.getLog(XmlParserTest.class);
+    private static final Log logger = LogFactory.getLog(XmlParserTest.class);
 
     public XmlParserTest(String s) {
         super(s);

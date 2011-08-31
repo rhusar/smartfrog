@@ -20,6 +20,7 @@
 package org.smartfrog.services.xml.impl;
 
 import nu.xom.Document;
+import nu.xom.Element;
 import org.smartfrog.services.xml.impl.codecs.XmlTextCodec;
 import org.smartfrog.services.xml.interfaces.XmlWireCodec;
 
@@ -28,7 +29,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import nu.xom.Element;
 
 /**
  * switchable codec
@@ -36,7 +36,7 @@ import nu.xom.Element;
 
 public class SerializedXomDocument implements Serializable {
 
-    XmlWireCodec codec=new XmlTextCodec();
+    transient XmlWireCodec codec = new XmlTextCodec();
 
     public SerializedXomDocument() {
     }
@@ -63,7 +63,7 @@ public class SerializedXomDocument implements Serializable {
      */
     private void writeObject(ObjectOutputStream out) throws
             IOException {
-        codec.writeObject(document,out);
+        codec.writeObject(document, out);
     }
 
     /**
@@ -82,9 +82,9 @@ public class SerializedXomDocument implements Serializable {
      * Reading an empty object
      * @throws ObjectStreamException if there is trouble on the wire
      */
-    private void readObjectNoData() 
-     throws ObjectStreamException {
-        document=new Document(new Element("root"));
+    private void readObjectNoData()
+            throws ObjectStreamException {
+        document = new Document(new Element("root"));
     }
 
     /**

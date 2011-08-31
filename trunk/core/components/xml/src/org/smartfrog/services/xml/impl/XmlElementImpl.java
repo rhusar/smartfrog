@@ -28,7 +28,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 /**
  * Probably the most complex of all the nodes, the element implementation
@@ -49,6 +48,7 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
         String namespace = sfResolve(ATTR_NAMESPACE, (String) null, false);
@@ -75,8 +75,9 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     protected void addChildren() throws SmartFrogException, RemoteException {
-        for (Prim elem:sfChildList()) {
+        for (Prim elem : sfChildList()) {
             if (elem instanceof LocalNode) {
                 LocalNode node = (LocalNode) elem;
                 appendChild(node);

@@ -75,7 +75,7 @@ public interface XmlDocument extends XmlNode, FileUsingComponent {
      * @param encoding encoding type
      * @throws IOException for IO or network problems
      */
-    void save(String filename, String encoding) throws IOException ;
+    void save(String filename, String encoding) throws IOException;
 
     /**
      * save a document to a file, utf-8 encoded

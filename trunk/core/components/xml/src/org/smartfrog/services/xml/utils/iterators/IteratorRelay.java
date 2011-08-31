@@ -27,7 +27,7 @@ import java.util.Iterator;
  * created 17-May-2005 14:46:09
  */
 
-public class IteratorRelay<T> implements Iterable<T>{
+public class IteratorRelay<T> implements Iterable<T> {
 
     private Iterator<T> iterator;
 

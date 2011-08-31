@@ -32,13 +32,14 @@ public class DocLoadTest extends XmlTestBase {
     }
 
     public void testStub() throws Exception {
-        
+
     }
+
     public void NotestDocLoad() throws Throwable {
         deployApplication2(FILE_BASE + "docLoad.sf", "DocLoad");
         XmlNode node = resolveXmlNode();
         assertNotNull(node);
-        
+
     }
 
 

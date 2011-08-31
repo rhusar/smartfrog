@@ -33,7 +33,6 @@ import java.io.ObjectOutputStream;
 public interface XmlWireCodec {
 
 
-
     /**
      * Read a document from the input stream
      * @param in input stream
@@ -50,6 +49,6 @@ public interface XmlWireCodec {
      * @param out output stream
      * @throws IOException
      */
-    void writeObject(Document document,ObjectOutputStream out) throws
+    void writeObject(Document document, ObjectOutputStream out) throws
             IOException;
 }

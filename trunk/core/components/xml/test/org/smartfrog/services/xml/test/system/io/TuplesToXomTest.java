@@ -29,7 +29,7 @@ import org.smartfrog.test.DeployingTestBase;
 
 public class TuplesToXomTest extends DeployingTestBase {
 
-    public static final String PACKAGE="/org/smartfrog/services/xml/test/system/io/";
+    public static final String PACKAGE = "/org/smartfrog/services/xml/test/system/io/";
 
     public TuplesToXomTest(String name) {
         super(name);
@@ -39,6 +39,7 @@ public class TuplesToXomTest extends DeployingTestBase {
         expectSuccessfulTestRun(PACKAGE, "testCSVtoXom");
 
     }
+
     public void testNamespaceXom() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testNamespaceXom");
     }
@@ -46,7 +47,6 @@ public class TuplesToXomTest extends DeployingTestBase {
     public void testTrimmedXom() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testTrimmedXom");
     }
-
 
 
 }

@@ -47,6 +47,7 @@ public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_TEXT, "", true);
         try {

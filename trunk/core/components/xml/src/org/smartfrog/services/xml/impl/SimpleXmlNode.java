@@ -29,7 +29,7 @@
  ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
  */
- package org.smartfrog.services.xml.impl;
+package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
 import org.smartfrog.services.xml.interfaces.LocalNode;
@@ -63,6 +63,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *
      * @param node the node
      */
+    @Override
     public void setNode(Node node) {
         helper.setNode(node);
     }
@@ -72,6 +73,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *
      * @param xml the content as xml
      */
+    @Override
     public void setXml(String xml) {
         helper.setXml(xml);
     }
@@ -82,6 +84,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *
      * @return the node or null
      */
+    @Override
     public Node getNode() {
         return helper.getNode();
     }
@@ -91,6 +94,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *
      * @return the XML; may be null
      */
+    @Override
     public String getXml() {
         return helper.getXml();
     }
@@ -105,6 +109,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public String toXML() throws RemoteException, SmartFrogException {
         return helper.toXML();
     }
@@ -117,6 +122,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *                            XMLExceptions
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public void validate() throws SmartFrogException,
             RemoteException {
         helper.validate();
@@ -129,6 +135,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -141,6 +148,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      * @param o other instance to compare against
      * @return true if there is a match
      */
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -163,6 +171,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 29 * result + (helper != null ? helper.hashCode() : 0);

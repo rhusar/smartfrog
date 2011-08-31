@@ -45,7 +45,9 @@ public class XmlProcessingInstructionImpl extends SimpleXmlNode
      * @return a Node of type {@link ProcessingInstruction}
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException For smartfrog problems, and for caught
-     *                            XMLExceptions     */
+     *                            XMLExceptions
+     **/
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         String target = sfResolve(ATTR_TARGET, "", true);
         String data = sfResolve(ATTR_DATA, "", true);

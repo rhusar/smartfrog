@@ -1,5 +1,5 @@
 <!DOCTYPE meals>
-<meals >
+<meals>
   <meal name="soup" served="warm">
     Tomato soup
   </meal>

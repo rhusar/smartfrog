@@ -30,10 +30,10 @@ import java.util.NoSuchElementException;
  */
 
 public class ElementsIterator implements Iterator<Element>,
-        Iterable<Element>{
+        Iterable<Element> {
 
     private Elements owner;
-    private int index=0;
+    private int index = 0;
 
     public ElementsIterator(Elements owner) {
         this.owner = owner;
@@ -47,7 +47,7 @@ public class ElementsIterator implements Iterator<Element>,
      * @return <tt>true</tt> if the iterator has more elements.
      */
     public boolean hasNext() {
-        return index<owner.size();
+        return index < owner.size();
     }
 
     /**
@@ -60,7 +60,7 @@ public class ElementsIterator implements Iterator<Element>,
      *          iteration has no more elements.
      */
     public Element next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw new NoSuchElementException();
         }
         return owner.get(index++);
