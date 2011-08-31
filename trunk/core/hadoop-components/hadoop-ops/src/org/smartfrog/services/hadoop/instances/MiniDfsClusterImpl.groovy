@@ -36,11 +36,11 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
         boolean manageNameDfsDirs = sfResolve(ATTR_MANAGE_NAME_DFS_DIRS, true, true)
         boolean manageDataDfsDirs = sfResolve(ATTR_MANAGE_DATA_DFS_DIRS, true, true)
         GRef startupRef = new GRef(ATTR_STARTUP_OPTION)
-        String startupOption = sfResolve(startupRef, "", true)
         StartupOption operation = null
+        String startupOption = sfResolve(startupRef, "", true)
         if (startupOption) {
             operation = HdfsStartupOptionFactory.createStartupOption(startupOption)
-            if (operation == null) {
+            if (!operation) {
                 throw SmartFrogResolutionException.generic(startupRef,
                         sfCompleteNameSafe(),
                         "Unsupported operation \"${startupOption}\"")
