@@ -161,6 +161,11 @@ public class DfsUtils {
 
 
     public static FileSystem createInstance(URI uri, Configuration conf) throws IOException {
+        String scheme = uri.getScheme();
+        if (scheme == null) {
+            scheme = FileSystem.getDefaultUri(conf).getScheme();
+        }
+        conf.setBoolean("fs." + scheme + ".impl.disable.cache", true);
         FileSystem dfs = FileSystem.get(uri, conf);
         return dfs;
     }

@@ -38,7 +38,7 @@ class MiniClusterImpl extends HadoopComponentImpl {
      */
     protected long[] longify(Vector<?> vector) {
         long[] longArray = null
-        if (!vector.empty) {
+        if (vector) {
             longArray = new long[vector.size()];
             int counter = 0;
             vector.each { elt ->
@@ -55,13 +55,14 @@ class MiniClusterImpl extends HadoopComponentImpl {
         return longs
     }
 
+    /**
+     * Resolve an attribute and convert to a string array, or null if the list is empty
+     * @param attr the attribute
+     * @return the attributes as an array or null if the list was []
+     */
     protected String[] resolveListToArray(String attr) {
-        String[] array = null
         List<String> list = ListUtils.resolveStringList(this, new GRef(attr), true);
-        if (!list.empty) {
-            array = list.stringify();
-        }
-        return array
+        return list? list.stringify() : null;
     }
 
 
