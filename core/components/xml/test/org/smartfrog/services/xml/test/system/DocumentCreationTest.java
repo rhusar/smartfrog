@@ -41,16 +41,16 @@ public class DocumentCreationTest extends XmlTestBase {
      * @throws Throwable
      */
     public void testDocumentLoad() throws Throwable {
-        XmlNode node=deployXmlNode(FILE_BASE+"testDocument.sf","testDocument");
-        File tempfile=null;
+        XmlNode node = deployXmlNode(FILE_BASE + "testDocument.sf", "testDocument");
+        File tempfile = null;
         try {
-            XmlDocument doc=(XmlDocument) node;
-            String xml=doc.toXML();
-            tempfile = File.createTempFile("doc",".xml");
+            XmlDocument doc = (XmlDocument) node;
+            String xml = doc.toXML();
+            tempfile = File.createTempFile("doc", ".xml");
             doc.save(tempfile.getAbsolutePath());
-            Document xdom=loadXMLFile(tempfile, false);
+            Document xdom = loadXMLFile(tempfile, false);
         } finally {
-            if(tempfile!=null) {
+            if (tempfile != null) {
                 tempfile.delete();
             }
         }
@@ -61,7 +61,7 @@ public class DocumentCreationTest extends XmlTestBase {
                 "textNode");
         XmlTextNode element = (XmlTextNode) node;
         String xml = element.toXML();
-        assertContains(xml,"nested text element");
+        assertContains(xml, "nested text element");
     }
 
 

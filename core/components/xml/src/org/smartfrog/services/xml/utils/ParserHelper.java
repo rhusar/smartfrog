@@ -57,10 +57,10 @@ public final class ParserHelper implements XmlConstants {
      * @throws SAXException for parser errors
      */
     public static XMLReader createXmlParser(boolean validate,
-            boolean disableDoctypes,
-            boolean secureLoading)
+                                            boolean disableDoctypes,
+                                            boolean secureLoading)
             throws SAXException {
-        
+
         XMLReader xerces = createBaseXercesInstance();
         setFeatures(xerces, secureLoading, validate, disableDoctypes);
         return xerces;
@@ -74,13 +74,13 @@ public final class ParserHelper implements XmlConstants {
      * @param disableDoctypes whether doc types are allowed
      */
     public static void setFeatures(XMLReader parser,
-                                    boolean secureLoading,
-                                    boolean validate,
-                                    boolean disableDoctypes) {
+                                   boolean secureLoading,
+                                   boolean validate,
+                                   boolean disableDoctypes) {
 /*        setFeature(xerces,
                 FEATURE_SECURE_PROCESSING,
                 secureLoading);*/
-        if(validate) {
+        if (validate) {
             enableXmlSchema(parser);
         }
         setFeature(parser,
@@ -140,7 +140,7 @@ public final class ParserHelper implements XmlConstants {
      * @param flag   flag to set/reset
      */
     public static void setFeature(XMLReader parser, String name,
-            boolean flag) {
+                                  boolean flag) {
         try {
             parser.setFeature(name, flag);
         } catch (SAXNotRecognizedException e) {

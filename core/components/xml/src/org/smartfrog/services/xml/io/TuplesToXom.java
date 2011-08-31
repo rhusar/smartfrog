@@ -26,9 +26,9 @@ import org.smartfrog.services.filesystem.TupleDataSource;
 import org.smartfrog.services.filesystem.TupleReaderThread;
 import org.smartfrog.services.xml.impl.SerializedXomDocument;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -63,6 +63,7 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         bindWithDir(true, null);
@@ -123,8 +124,8 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
                     element.appendChild(fieldElement);
                 }
                 getRootNode().appendChild(element);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                sfLog().debug(e);
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+                sfLog().debug(ignored, ignored);
                 throw new SmartFrogException("Line " + getCurrentLine() + " is wider than the"
                         + ATTR_FIELD_NAMES + " list",
                         TuplesToXom.this);

@@ -21,8 +21,6 @@ package org.smartfrog.services.xml.utils;
 
 import nu.xom.Document;
 import nu.xom.converters.DOMConverter;
-import org.smartfrog.services.xml.utils.ParserHelper;
-import org.smartfrog.services.xml.utils.XmlConstants;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
@@ -39,8 +37,8 @@ public class XomToDom3 {
 
 
     private static void configureDomRegistry() {
-        String current=System.getProperty(DOMImplementationRegistry.PROPERTY);
-        if(current==null) {
+        String current = System.getProperty(DOMImplementationRegistry.PROPERTY);
+        if (current == null) {
             System.setProperty(DOMImplementationRegistry.PROPERTY,
                     XmlConstants.DOM3_PARSER_LIST);
         }
@@ -60,13 +58,13 @@ public class XomToDom3 {
             // get a DOM implementation the Level 3 XML module
             DOMImplementation domImpl =
                     registry.getDOMImplementation(DOM3);
-            if(domImpl==null) {
+            if (domImpl == null) {
                 //fallback
-                domImpl= ParserHelper.loadDomImplementation();
+                domImpl = ParserHelper.loadDomImplementation();
             }
-            if(domImpl==null) {
+            if (domImpl == null) {
                 //crisis
-                throw new RuntimeException("Failed to create a parser with the attributes:"+DOM3);
+                throw new RuntimeException("Failed to create a parser with the attributes:" + DOM3);
             }
             return domImpl;
         } catch (RuntimeException e) {
@@ -83,9 +81,9 @@ public class XomToDom3 {
      * @throws RuntimeException for dom instantiation problems
      */
     public static org.w3c.dom.Document fromXom(Document xom) {
-        DOMImplementation domImpl=getDom3Implementation();
-        assert domImpl!=null;
-        return DOMConverter.convert(xom,domImpl);
+        DOMImplementation domImpl = getDom3Implementation();
+        assert domImpl != null;
+        return DOMConverter.convert(xom, domImpl);
     }
 
 }

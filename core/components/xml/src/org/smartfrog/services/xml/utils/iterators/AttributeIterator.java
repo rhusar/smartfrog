@@ -33,7 +33,7 @@ public class AttributeIterator implements Iterator<Attribute>,
         Iterable<Attribute> {
 
     private Element element;
-    private int index=0;
+    private int index = 0;
     private Attribute currentAttribute;
 
     public AttributeIterator(Element element) {
@@ -41,7 +41,7 @@ public class AttributeIterator implements Iterator<Attribute>,
     }
 
     public boolean hasNext() {
-        return index<element.getAttributeCount();
+        return index < element.getAttributeCount();
     }
 
     public Attribute next() {
@@ -69,7 +69,7 @@ public class AttributeIterator implements Iterator<Attribute>,
      * @throws NoSuchElementException if there isnt one
      */
     public void remove() {
-        Attribute attr=getCurrent();
+        Attribute attr = getCurrent();
         element.removeAttribute(attr);
     }
 

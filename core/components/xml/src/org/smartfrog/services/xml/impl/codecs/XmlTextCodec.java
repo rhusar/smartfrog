@@ -53,7 +53,7 @@ public class XmlTextCodec implements XmlWireCodec {
         byte[] data = new byte[in.readInt()];
         in.readFully(data, 0, data.length);
         Document document;
-        Builder builder=new Builder();
+        Builder builder = new Builder();
         try {
             document = builder.build(in);
         } catch (ParsingException e) {
@@ -79,7 +79,7 @@ public class XmlTextCodec implements XmlWireCodec {
     public void writeObject(Document document, ObjectOutputStream out)
             throws IOException {
         out.defaultWriteObject();
-        Serializer serializer = new Serializer(out,ENCODING);
+        Serializer serializer = new Serializer(out, ENCODING);
         serializer.write(document);
         serializer.flush();
     }

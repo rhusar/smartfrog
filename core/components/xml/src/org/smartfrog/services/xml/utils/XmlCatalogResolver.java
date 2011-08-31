@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.xml.utils;
 
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.smartfrog.sfcore.utils.ResourceLoader;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -45,7 +45,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
     /**
      * map table
      */
-    protected HashMap<String,String> mappings;
+    protected HashMap<String, String> mappings;
 
     public XmlCatalogResolver(ResourceLoader loader) {
         setLoader(loader);
@@ -57,7 +57,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
     }
 
     protected void setLoader(ResourceLoader loader) {
-        assert loader != null:"null ResourceLoader";
+        assert loader != null : "null ResourceLoader";
         this.loader = loader;
     }
 

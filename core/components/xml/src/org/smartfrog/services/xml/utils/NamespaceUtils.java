@@ -41,8 +41,8 @@ public final class NamespaceUtils {
      * @return a QName that matches the source QualifiedName.
      */
     public static QName makeQName(String namespace,
-            String local,
-            String prefix) {
+                                  String local,
+                                  String prefix) {
         QName dest;
         if (prefix != null) {
             dest = new QName(namespace,
@@ -91,6 +91,6 @@ public final class NamespaceUtils {
      * @return java 5 qualified name
      */
     public static QName makeQName(Element element) {
-        return new QName(element.getNamespaceURI(),element.getLocalName());
+        return new QName(element.getNamespaceURI(), element.getLocalName());
     }
 }

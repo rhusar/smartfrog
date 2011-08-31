@@ -19,19 +19,19 @@
  */
 package org.smartfrog.services.xml.io;
 
-import nu.xom.Serializer;
 import nu.xom.Document;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import nu.xom.Serializer;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 
 /**
@@ -56,6 +56,7 @@ public class AbstractXomFileWriter extends FileUsingComponentImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         bindWithDir(true, null);
@@ -103,6 +104,7 @@ public class AbstractXomFileWriter extends FileUsingComponentImpl
      * @param document Xom tree to write
      * @throws SmartFrogRuntimeException any failure to open or write to the file
      */
+    @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
     protected void writeDocumentToFile(File destFile, Document document)
             throws SmartFrogRuntimeException {
         OutputStream out;
@@ -122,7 +124,7 @@ public class AbstractXomFileWriter extends FileUsingComponentImpl
             serializer.flush();
         } catch (IOException e) {
             throw new SmartFrogRuntimeException("Exception when writing to "
-                    + destFile + " : " + e.getMessage(),
+                    + destFile + " : " + e,
                     e,
                     this);
         } finally {

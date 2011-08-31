@@ -47,6 +47,7 @@ public class XmlDocTypeImpl extends SimpleXmlNode implements XmlDocType {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions 
      */
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         String publicID = sfResolve(ATTR_PUBLICID, (String) null, false);
         String systemID = sfResolve(ATTR_SYSTEMID, (String) null, false);

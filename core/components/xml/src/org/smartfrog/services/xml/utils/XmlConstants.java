@@ -39,7 +39,8 @@ public interface XmlConstants {
 
     static final String FEATURE_XERCES_XSD = "http://apache.org/xml/features/validation/schema";
 
-    static final String FEATURE_XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
+    static final String FEATURE_XERCES_XSD_FULLCHECKING
+            = "http://apache.org/xml/features/validation/schema-full-checking";
     static final String FEATURE_XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
     static final String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
     static final String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
@@ -64,11 +65,10 @@ public interface XmlConstants {
             "http://www.w3.org/2001/XMLSchema";
 
 
-
     public static final String DOM_PARSER_XERCES =
             "org.apache.xerces.dom.DOMImplementationSourceImpl";
     public static final String DOM_PARSER_JAVA15 =
             "com.sun.org.apache.xerces.internal.dom.DOMImplementationSourceImpl";
 
-    public static final String DOM3_PARSER_LIST=DOM_PARSER_XERCES+ ' ' +DOM_PARSER_JAVA15;
+    public static final String DOM3_PARSER_LIST = DOM_PARSER_XERCES + ' ' + DOM_PARSER_JAVA15;
 }

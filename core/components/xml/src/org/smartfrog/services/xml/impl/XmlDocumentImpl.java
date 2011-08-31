@@ -69,6 +69,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         Prim root = resolveRoot();
         XmlElementImpl element;
@@ -110,16 +111,17 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public String toXML() throws RemoteException, SmartFrogException {
         //special handling of the situation where there is no root.
         // We have to be loading a document from a file in this situation
         Prim root = sfResolve(ATTR_ROOT, (Prim) null, false);
-        if(root!=null) {
+        if (root != null) {
             return super.toXML();
         }
-        if(getSourcefile()==null) {
-            throw new SmartFrogException("The XML document has no "+ATTR_ROOT
-                    +" attribute and no "+ATTR_SOURCEFILE+" attribute, so cannot be constructed");
+        if (getSourcefile() == null) {
+            throw new SmartFrogException("The XML document has no " + ATTR_ROOT
+                    + " attribute and no " + ATTR_SOURCEFILE + " attribute, so cannot be constructed");
         }
         //this is only transient until we build it
         return "";
@@ -142,6 +144,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     protected void addChildren() throws SmartFrogException, RemoteException {
 
         //load the file.
@@ -166,6 +169,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -201,7 +205,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         if (sourceFilename != null) {
             File source = new File(sourceFilename);
             FileUsingComponentImpl.bind(this, source);
-            throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE+": binding to source files",
+            throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE + ": binding to source files",
                     this);
         }
     }
@@ -233,7 +237,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         File file = new File(filename);
         FileOutputStream fileout;
         fileout = new FileOutputStream(file);
-        OutputStream out=null;
+        OutputStream out = null;
         try {
             out = new BufferedOutputStream(fileout);
             Serializer serializer = new Serializer(out, encoding);
@@ -250,6 +254,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @param filename file to save to
      * @throws IOException if saving fails
      */
+    @Override
     public void save(String filename) throws IOException {
         save(filename, UTF8);
     }
@@ -260,6 +265,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @return the serialized document
      * @throws RemoteException
      */
+    @Override
     public SerializedXomDocument getXomDocument() throws RemoteException {
         return new SerializedXomDocument(getDocument());
     }
@@ -271,6 +277,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @param document the serialized document
      * @throws RemoteException
      */
+    @Override
     public void setXomDocument(SerializedXomDocument document)
             throws RemoteException {
         helper.setNode(document.getDocument());
@@ -284,7 +291,8 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @param encoding encoding
      * @throws IOException if saving fails
      */
-    public void save(String filename, String encoding) throws 
+    @Override
+    public void save(String filename, String encoding) throws
             IOException {
         saveToFile(filename, encoding);
     }

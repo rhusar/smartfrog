@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.xml.impl;
 
-import nu.xom.Node;
-import nu.xom.ParentNode;
 import nu.xom.Attribute;
 import nu.xom.Element;
+import nu.xom.Node;
+import nu.xom.ParentNode;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -52,6 +52,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      *
      * @param node
      */
+    @Override
     public void setNode(Node node) {
         helper.setNode(node);
     }
@@ -61,6 +62,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      *
      * @param xml
      */
+    @Override
     public void setXml(String xml) {
         helper.setXml(xml);
     }
@@ -70,6 +72,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      *
      * @return the node
      */
+    @Override
     public Node getNode() {
         return helper.getNode();
     }
@@ -89,11 +92,13 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
     public Element getParentElement() {
         return (Element) helper.getNode();
     }
+
     /**
      * get the last XML evaluated
      *
      * @return the XML; may be null
      */
+    @Override
     public String getXml() {
         return helper.getXml();
     }
@@ -108,6 +113,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      * @throws SmartFrogException for smartfrog problems, and for caught
      *                            XMLExceptions
      */
+    @Override
     public String toXML() throws RemoteException, SmartFrogException {
         return helper.toXML();
     }
@@ -131,6 +137,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -162,8 +169,8 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      */
     public void appendChild(LocalNode node) {
         Node xomNode = node.getNode();
-        if(xomNode instanceof Attribute) {
-            Attribute attribute=(Attribute) xomNode;
+        if (xomNode instanceof Attribute) {
+            Attribute attribute = (Attribute) xomNode;
             getParentElement().addAttribute(attribute);
         } else {
             getParentNode().appendChild(xomNode);

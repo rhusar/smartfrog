@@ -50,6 +50,7 @@ public class XmlAttributeImpl extends SimpleXmlNode
      * @return a new node of type {@link Attribute}
      * @throws nu.xom.XMLException if needed
      */
+    @Override
     public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
         String namespace = sfResolve(ATTR_NAMESPACE, (String) null, false);
