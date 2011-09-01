@@ -40,7 +40,7 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
      * Error string raised in liveness checks. {@value}
      */
     public static final String LIVENESS_ERROR_NOT_STARTED = " is not active";
-    public static final String LIVENESS_ERROR_NOT_RUNNING = "is not running";
+    public static final String LIVENESS_ERROR_NOT_RUNNING = " is not running";
     public static final String LIVENESS_ERROR_FAILED = " has failed";
 
     public JettyToSFLifecycle(String name, T lifecycle) {
