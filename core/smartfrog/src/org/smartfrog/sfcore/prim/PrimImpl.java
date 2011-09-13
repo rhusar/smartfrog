@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.AssertReference;
 import org.smartfrog.sfcore.reference.HereReferencePart;
@@ -661,8 +662,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             Reference r;
             Object key;
             if (sfParent == null) {
-                r = SFProcess.getProcessCompound().sfCompleteName();
-                key = SFProcess.getProcessCompound().sfAttributeKeyFor(this);
+                ProcessCompound processCompound = SFProcess.getProcessCompound();
+                if (processCompound == null) {
+                    throw new RemoteException("This component does not have a root process");
+                }
+                r = processCompound.sfCompleteName();
+                key = processCompound.sfAttributeKeyFor(this);
             } else {
                 r = sfParent.sfCompleteName();
                 key = sfParent.sfAttributeKeyFor(this);
