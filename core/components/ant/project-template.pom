@@ -32,12 +32,6 @@
     <!--optional dependencies-->
     <dependency>
       <groupId>org.apache.ant</groupId>
-      <artifactId>ant-nodeps</artifactId>
-      <version>${apache.ant.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ant</groupId>
       <artifactId>ant-antlr</artifactId>
       <version>${apache.ant.version}</version>
       <optional>true</optional>
