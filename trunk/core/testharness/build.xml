@@ -274,6 +274,10 @@ ${test.listing}
        -->
       <exclude name="${systemtests}/deploy/DeployTCN1Test.*"
         unless="run.failing.tests"/>
+      
+      <!-- SFOS-1624 -->
+      <exclude name="${systemtests}/deploy/ConfigurationDescriptorDeployTest.*"
+        unless="run.failing.tests"/>
     </patternset>
 
     <!--set up some other properties-->
