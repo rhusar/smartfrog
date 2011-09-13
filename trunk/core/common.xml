@@ -359,27 +359,6 @@ java.class.path=
     <property name="smartfrog.tasks.jar"
       location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
 
-
-      <!-- location of junit jar; override it if it is somewhere else-->
-    <condition property="junit.jar" value="${ant.home}/lib/junit.jar">
-      <available file="${ant.home}/lib/junit.jar" />
-    </condition>
-
-    <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.1.jar">
-      <available file="${ant.home}/lib/junit-3.8.1.jar" />
-    </condition>
-
-    <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.2.jar">
-      <available file="${ant.home}/lib/junit-3.8.2.jar"/>
-    </condition>
-
-    <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
-      <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
-    </condition>
-    <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.2.jar">
-      <available file="${user.home}/.ant/lib/junit-3.8.2.jar"/>
-    </condition>
-
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
 
@@ -767,14 +746,8 @@ java.class.path=
 
   <!--  assert that junit exists and fail if it is not there-->
   <target name="assert-junit" depends="init" >
-    <fail unless="junit.found">
-      <condition>
-        <not>
-          <available file="${junit.jar}"/>
-        </not>
-      </condition>
-     Not found: ${junit.jar}
-    </fail>
+    <echo level="debug">ignoring the check for junit</echo>
+    <!--this is now a no-op-->
   </target>
 
   <!-- ========================================================== -->
@@ -824,7 +797,6 @@ java.class.path=
       depends="declare-exec.classpath,use-smartfrog-testharness" unless="ivy.enabled">
     <path id="tests.compile.classpath">
       <path refid="exec.classpath"/>
-      <pathelement location="${junit.jar}"/>
       <pathelement location="${testharness.jar}"/>
     </path>
     <echo level="verbose">tests.compile.classpath=${toString:tests.compile.classpath}</echo>
@@ -2000,7 +1972,7 @@ ${test.reports.dir}/index.html
       build file ${ant.project.name}
       base dir ${basedir}
       core dir ${core.dir}
-      junit.jar ${junit.jar}
+<!--      junit.jar ${junit.jar}-->
       verified.ok=${verified.ok}
 
     </echo>
