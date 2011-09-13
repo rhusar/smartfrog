@@ -44,10 +44,6 @@
     <artifact name="sf-ant-documentation" conf="documentation" ext="zip"/>    
   </publications>
   <dependencies>
-    <dependency org="org.apache.ant"
-        name="ant-nodeps"
-        rev="${apache.ant.version}"
-        conf="ant-optional->master"/>
     <dependency org="org.smartfrog"
         name="smartfrog"
         changing="true"
@@ -69,7 +65,8 @@
     <dependency org="org.apache.ant"
         name="ant-launcher"
         rev="${apache.ant.version}"
-        conf="redist->master"/>    
+        conf="redist->master"/>
+
    <!-- here are the optionals -->
    <dependency org="org.apache.ant"
         name="ant-antlr"
