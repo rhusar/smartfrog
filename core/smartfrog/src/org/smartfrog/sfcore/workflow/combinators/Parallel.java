@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.workflow.combinators;
 
@@ -57,7 +57,7 @@ import java.util.Vector;
 public class Parallel extends EventCompoundImpl implements Compound {
 
     public static final String ATTR_ASYNCH_CREATE_CHILD = "asynchCreateChild";
-    private static final Reference asynchCreateChildRef = new Reference (ATTR_ASYNCH_CREATE_CHILD);
+    private static final Reference asynchCreateChildRef = new Reference(ATTR_ASYNCH_CREATE_CHILD);
     /** {@value} */
     public static final String ATTR_TERMINATE_IF_EMPTY = "terminateOnEmptyDeploy";
     /** {@value} */
@@ -65,9 +65,9 @@ public class Parallel extends EventCompoundImpl implements Compound {
     /** {@value} */
     public static final String ATTR_TERMINATE_IF_CHILD_DEPLOYS_ABNORMAL = "terminateOnAbnormalChildDeploy";
     private static final Reference terminateIfEmptyRef = new Reference(ATTR_TERMINATE_IF_EMPTY);
-    private boolean asynchCreateChild=false;
-    private boolean terminateIfEmpty=false;
-    private boolean terminateOnAbnormalChildTermination=true;
+    private boolean asynchCreateChild = false;
+    private boolean terminateIfEmpty = false;
+    private boolean terminateOnAbnormalChildTermination = true;
     private boolean terminateOnAbnormalChildDeploy = true;
     private Vector<ParallelWorker> asynchChildren;
     private Vector<Object> results;
@@ -75,20 +75,22 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * A counter to catch (and ignore) terminations during
      * asynchronous startups, except for the last one.
      */
-    private volatile int pendingDeployments=0;
+    private volatile int pendingDeployments = 0;
 
     /**
      * Termination message.
      * {@value}
      */
-    public static final String TERMINATION_ABNORMAL_CHILD = "Terminating normally even though a child terminated abnormally";
+    public static final String TERMINATION_ABNORMAL_CHILD
+            = "Terminating normally even though a child terminated abnormally";
     /**
      * Termination message.
      * {@value}
      */
     public static final String TERMINATION_ERROR_REMOVING_THE_CHILD = "Error removing the child";
     public static final String WORKER_FAILED = "Worker failed";
-    public static final String TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS = "Failure while starting sub-components ";
+    public static final String TERMINATE_FAILURE_WHILE_STARTING_SUB_COMPONENTS
+            = "Failure while starting sub-components ";
     public static final String TERMINATE_FAILED_TO_START_SUB_COMPONENTS = "Failed to start sub-components ";
     public static final String TERMINATE_PARALLEL_COMPONENT_IS_EMPTY = "Parallel component is empty";
 
@@ -113,7 +115,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * @return true iff there was a pending deployment when the test was made
      */
     private boolean hasPendingDeployments() {
-        return getPendingDeployments()>0;
+        return getPendingDeployments() > 0;
     }
 
     /**
@@ -143,14 +145,15 @@ public class Parallel extends EventCompoundImpl implements Compound {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         asynchChildren = new Vector<ParallelWorker>(0);
-        asynchCreateChild = sfResolve(asynchCreateChildRef,asynchCreateChild,false);
+        asynchCreateChild = sfResolve(asynchCreateChildRef, asynchCreateChild, false);
         terminateIfEmpty = sfResolve(terminateIfEmptyRef, terminateIfEmpty, false);
         terminateOnAbnormalChildTermination = sfResolve(ATTR_TERMINATE_IF_CHILD_TERMINATES_ABNORMAL,
                 terminateOnAbnormalChildTermination, true);
         terminateOnAbnormalChildDeploy = sfResolve(ATTR_TERMINATE_IF_CHILD_DEPLOYS_ABNORMAL,
                 terminateOnAbnormalChildDeploy, true);
-        if(!terminateOnAbnormalChildDeploy && !asynchCreateChild) {
-            sfLog().warn("The attribute "+ATTR_TERMINATE_IF_CHILD_DEPLOYS_ABNORMAL+" is only valid with "+ATTR_ASYNCH_CREATE_CHILD);
+        if (!terminateOnAbnormalChildDeploy && !asynchCreateChild) {
+            sfLog().warn("The attribute " + ATTR_TERMINATE_IF_CHILD_DEPLOYS_ABNORMAL + " is only valid with "
+                    + ATTR_ASYNCH_CREATE_CHILD);
         }
     }
 
@@ -224,7 +227,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * @throws SmartFrogException SmartFrog problems
      */
     protected void asynchCreateChildren() throws RemoteException, SmartFrogException {
-        int size=actions.size();
+        int size = actions.size();
         asynchChildren = new Vector<ParallelWorker>(size);
         results = new Vector<Object>(size);
         actionKeys = actions.keys();
@@ -254,7 +257,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * act on the value of {@link #terminateOnAbnormalChildTermination}
      *
      * There's a lot of complex logic in here, as it has to deal with both sync and async deployments,
-     * 
+     *
      * @param record exit record of the component
      * @param child   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
@@ -319,7 +322,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
         // unregister from all remote registrations
         if (asynchChildren != null) {
-            for(ParallelWorker worker:asynchChildren) {
+            for (ParallelWorker worker : asynchChildren) {
                 try {
                     worker.cancel(sfSyncTerminate, true);
                 } catch (Exception ignored) {
@@ -350,7 +353,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
     protected synchronized void workerFinished(ParallelWorker worker) {
         //and remove from our child list
         asynchChildren.removeElement(worker);
-        if(sfLog().isDebugEnabled()) {
+        if (sfLog().isDebugEnabled()) {
             sfLog().debug("Worker finished " + worker);
         }
         if (!isWorkflowTerminating()) {
@@ -372,13 +375,13 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 // This may be called more than once, but appears to be harmless in this case.
 
                 maybeTerminate(terminationRecord, terminateOnAbnormalChildDeploy);
-                if(!terminateOnAbnormalChildDeploy) {
+                if (!terminateOnAbnormalChildDeploy) {
                     //at this point we had an error, but we are not finishing. This may leave us with
                     //no children, which is itself a cause for termination. What we cannot do is rely on
                     //!sfChildren().hasMoreElements(); as a valid test, as there may be active threads
                     //that have not got there yet.
                     //we have to look at both
-                    if(!hasActiveChildren()) {
+                    if (!hasActiveChildren()) {
                         //ok, ready to go
                         new ComponentHelper(this).targetForWorkflowTermination(
                                 TerminationRecord.normal(getName()));
@@ -398,7 +401,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     private synchronized boolean hasActiveChildren() {
         //If hasPendingDeployments() is appended here, then we check for startup problems;
-        return sfChildList().size()>0 || !asynchChildren.isEmpty() || hasPendingDeployments();
+        return sfChildList().size() > 0 || !asynchChildren.isEmpty() || hasPendingDeployments();
 
     }
 
@@ -422,7 +425,8 @@ public class Parallel extends EventCompoundImpl implements Compound {
          * @param parms    Context
          * @throws SmartFrogException if callable is null
          */
-        private ParallelWorker(Parallel owner, Object name, ComponentDescription cmp, Context parms) throws SmartFrogException {
+        private ParallelWorker(Parallel owner, Object name, ComponentDescription cmp, Context parms)
+                throws SmartFrogException {
             super(name, owner, cmp, parms, owner);
             this.owner = owner;
         }
