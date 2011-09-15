@@ -22,10 +22,10 @@ testTerasort extends ExpectSuccessfulOperations {
     }
     
     generate extends TeraGen {
-        //number of rows
-        rows TeraGenRows;
-        //outputPath
-        destPath generatedPath;
+      //number of rows
+      rows TeraGenRows;
+      //outputPath
+      destPath generatedPath;
     }
     
     sort extends TeraSort {

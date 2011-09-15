@@ -106,7 +106,8 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
     @Override
     protected void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        WorkflowThread.requestAndWaitForThreadTerminationWithInterrupt(worker, WORKER_TERMINATION_TIMEOUT);
+        WorkflowThread.requestAndWaitForThreadTerminationWithInterrupt(worker,
+                WORKER_TERMINATION_TIMEOUT);
     }
 
     /**

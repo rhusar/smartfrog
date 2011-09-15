@@ -45,6 +45,7 @@ public abstract class JobRunningTool extends ConfiguredTool implements RunJob {
         return rj;
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public int run(String[] args) throws Exception {
         runJob(args);
