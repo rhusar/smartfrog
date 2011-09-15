@@ -55,6 +55,7 @@ public class TeraGenJob extends JobRunningTool {
         job.setLong("terasort.num-rows", numRows);
     }
 
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public RunningJob runJob(String[] args) throws Exception {
         JobConf job = (JobConf) getConf();
