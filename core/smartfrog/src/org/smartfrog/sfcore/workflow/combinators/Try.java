@@ -1,34 +1,33 @@
 /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.workflow.combinators;
-
-import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+
+import java.rmi.RemoteException;
 
 
 /**
@@ -112,8 +111,8 @@ public class Try extends EventCompoundImpl implements Compound {
         //get and reset the primary flag in a thread safe manner.
 
         boolean isAction;
-        synchronized(this) {
-            isAction = actionPrim==comp;
+        synchronized (this) {
+            isAction = actionPrim == comp;
         }
         if (isAction) {
             try {
@@ -121,11 +120,14 @@ public class Try extends EventCompoundImpl implements Compound {
                 if (sfLog().isDebugEnabled()) {
                     sfLog().debug("Try carrying out next Action for status '" + status.errorType + "'");
                 }
-                ComponentDescription nextAction = (ComponentDescription) sfResolve(status.errorType);
-                if (sfLog().isDebugEnabled()) {
-                    sfLog().debug("Try carrying out \n" + nextAction + " for status " + status.errorType);
+                ComponentDescription nextAction = sfResolve(status.errorType,
+                        (ComponentDescription)null, false);
+                if (nextAction != null) {
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug("Try carrying out \n" + nextAction + " for status " + status.errorType);
+                    }
+                    sfCreateNewChild(name + "_" + status.errorType + "TryActionRunning", nextAction, null);
                 }
-                sfCreateNewChild(name + "_" + status.errorType + "TryActionRunning", nextAction, null);
                 return false;
 
             } catch (Exception e) {
