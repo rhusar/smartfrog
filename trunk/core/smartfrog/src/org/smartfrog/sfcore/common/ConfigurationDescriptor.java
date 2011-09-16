@@ -82,6 +82,8 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final int DUMP = 10;
         public static final String ACT_LIST = "LIST";
         public static final int LIST = 11;
+        public static final String ACT_DEPLOY_WAIT = "DEPLOYWAIT";
+        public static final int DEPLOYWAIT = 12;
 
         public static final String[] type = {
                 ACT_DEPLOY,
@@ -95,7 +97,8 @@ public class ConfigurationDescriptor implements MessageKeys {
                 ACT_UPDATE,
                 ACT_LOAD,
                 ACT_DUMP,
-                ACT_LIST
+                ACT_LIST,
+                ACT_DEPLOY_WAIT
         };
     }
 
@@ -417,6 +420,10 @@ public class ConfigurationDescriptor implements MessageKeys {
                 }
                 break;
 
+                case (ConfigurationDescriptor.Action.DEPLOYWAIT): {
+                    result = MessageUtil.formatMessage(MSG_DEPLOY_SUCCESS, message.toString());
+                }
+                break;
 
                 default:
                     // Unknown action.
@@ -596,7 +603,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *            ex. foo
      *            ex. "HOST localhost:foo"
      *            ex. 'HOST localhost:foo'
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD, DUMP
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD, DUMP, DEPLOYWAIT
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. "c:\sf\foo.sf"
@@ -1030,6 +1037,9 @@ public class ConfigurationDescriptor implements MessageKeys {
             case Action.DEPLOY:
                 action = new ActionDeploy();
                 break;
+            case Action.DEPLOYWAIT:
+                action = new ActionDeployWait();
+                break;
             case Action.DETACH:
                 action = new ActionDetach();
                 break;
@@ -1060,6 +1070,7 @@ public class ConfigurationDescriptor implements MessageKeys {
             case Action.LIST:
                 action = new ActionList();
                 break;
+
             default:
                 throw new SmartFrogInitException("Action type unknown");
         }
