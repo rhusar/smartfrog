@@ -39,12 +39,12 @@ else
 fi
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE org.smartfrog.SFSystem -a :DEPLOYWAIT:\"$1\"::: $OPTION
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOYWAIT:\"$1\"::: $OPTION
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a :DEPLOYWAIT:\"$1\"::: $OPTION
 else 
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a :DEPLOYWAIT:\"$1\"::: $OPTION
 fi
 
