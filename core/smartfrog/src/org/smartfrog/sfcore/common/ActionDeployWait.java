@@ -59,6 +59,7 @@ public class ActionDeployWait extends ActionDeploy {
      * Checks sfIsTerminated every second.
      * @param p the component
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
     private void waitForTermination(Prim p) throws Exception {
        while(true) {
            if (p.sfIsTerminated()) {
