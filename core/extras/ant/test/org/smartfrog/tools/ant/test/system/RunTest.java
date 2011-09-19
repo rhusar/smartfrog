@@ -85,7 +85,7 @@ public class RunTest extends TaskTestBase {
     }
 
     public void testInline() {
-        assertDeployFailsWithUnresolvedReference("testInline");
+        expectDeployed("testInline", "app");
     }
 
     public void testResource() {

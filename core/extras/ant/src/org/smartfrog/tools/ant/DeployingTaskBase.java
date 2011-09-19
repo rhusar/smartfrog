@@ -56,6 +56,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     public static final String ERROR_NO_APPLICATIONS_DECLARED = "No applications declared";
     public static final String ACTION_DEPLOY = ConfigurationDescriptor.Action.ACT_DEPLOY;
     public static final String ACTION_UPDATE = ConfigurationDescriptor.Action.ACT_UPDATE;
+    public static final String ACTION_DEPLOY_WAIT = ConfigurationDescriptor.Action.ACT_DEPLOY_WAIT;
     public static final String DEFAULT_SUBPROCESS = "";
 
     /**
@@ -100,39 +101,34 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * deploy the applications listed by creating a -a app descriptor list on the command line
+     * @param deployAction a string listing the action to perform
+     * @return the l
      */
 
-    /**
-     * deploy the applications listed by creating a -a app descriptor list on the command line.
-     * The DEPLOY action is used
-     */
-    public void deployApplications() {
-        deployApplications(false);
-    }
-
-    /**
-     * Deploy or update applications
-     * @param update flag to say update rather than deploy
-     */
-    public void deployApplications(boolean update) {
+    protected String deployApplications(final String deployAction) {
         verifyHostDefined();
         setupCodebase();
+        StringBuilder applicationPaths = new StringBuilder(applications.size() * 100);
+        int index = 0;
         for (Application application : applications) {
             application.validate();
             addArg("-a");
-            String path = Os.isFamily("windows") 
+            String path = Os.isFamily("windows")
                             ? makePathWindows(application)
                             : makePathUnix(application);
             String subprocess = getSubprocess();
 
-            String deployAction = update ? ACTION_UPDATE: ACTION_DEPLOY;
-            addArg(application.getName() + ':' //NAME
-                    + deployAction + ':'      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
-                    + path                     //URL
-                    + "" + ':'                 // sfConfig or empty
-                    + getHost() + ':'          // host
-                    + subprocess);             // subprocess
+
+            String deploymentString = application.getName() + ':' //NAME
+                           + deployAction + ':'      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+                           + path                     //URL
+                           + "" + ':'                 // sfConfig or empty
+                           + getHost() + ':'          // host
+                           + subprocess;
+            applicationPaths.append(deploymentString).append(' ');
+            addArg(deploymentString);             // subprocess
         }
+        return applicationPaths.toString();
     }
 
     /**

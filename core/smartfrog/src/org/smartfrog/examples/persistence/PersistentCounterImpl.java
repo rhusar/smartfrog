@@ -1,43 +1,39 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.examples.persistence;
 
-import java.rmi.RemoteException;
-
-import java.io.File;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import org.smartfrog.examples.counter.Counter;
+import org.smartfrog.examples.counter.CounterImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
-
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import org.smartfrog.examples.counter.Counter;
-import org.smartfrog.examples.counter.CounterImpl;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.rmi.RemoteException;
 
 /**
  *  Basic example component.
@@ -76,37 +72,40 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
      *  initial deployment and starting the heartbeat monitoring of this
      *  component.
      *
-     * @exception  SmartFrogException In case of error in deploying
-     * @exception  RemoteException In case of network/rmi error
+     * @exception SmartFrogException In case of error in deploying
+     * @exception RemoteException In case of network/rmi error
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
-	super.sfDeploy();
+        super.sfDeploy();
 
         // construct filename for state checkpoint
-	// if not restarting
+        // if not restarting
         //   checkpoint intial state
         // if restarting
         //   read state and if fail leave as is...
 
-	try {
+        try {
             // windows does not like ":" in the file name
-	    String name = sfCompleteNameSafe().toString().replaceAll(":", "#");
+            String name = sfCompleteNameSafe().toString().replaceAll(":", "#");
 
-	    checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
-	    checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
+            checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
+            checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
 
-	    checkpointFile = new File(checkpointDir, checkpointFileRoot + "_" + name + ".chkpt" );
+            checkpointFile = new File(checkpointDir, checkpointFileRoot + "_" + name + ".chkpt");
 
-	    if (checkpointFile.canRead()) {
-		ObjectInputStream reader = new ObjectInputStream(new FileInputStream(checkpointFile));
-		counter = reader.readInt();
-		reader.close();
-	    }
+            if (checkpointFile.canRead()) {
+                ObjectInputStream reader = new ObjectInputStream(new FileInputStream(checkpointFile));
+                try {
+                    counter = reader.readInt();
+                } finally {
+                    reader.close();
+                }
+            }
 
-	    checkpointState();
-	} catch (Exception e) {
-	    SmartFrogException.forward("Error reading checkpointed state", e);
-	}
+            checkpointState();
+        } catch (Exception e) {
+            throw SmartFrogException.forward("Error reading checkpointed state", e);
+        }
     }
 
 
@@ -123,7 +122,7 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
             action.interrupt();
         }
 
-	    if (checkpointFile != null) checkpointFile.delete();
+        if (checkpointFile != null) checkpointFile.delete();
         super.sfTerminateWith(t);
     }
 
@@ -133,9 +132,12 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
      * @throws IOException error in IO
      */
     protected synchronized void checkpointState() throws FileNotFoundException, IOException {
-	    ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(checkpointFile));
+        ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(checkpointFile));
+        try {
             writer.writeInt(counter);
-	    writer.close();
+        } finally {
+            writer.close();
+        }
     }
 
     /**
@@ -145,20 +147,22 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
         try {
             while (limit >= counter++) {
                 String messageSt = ("COUNTER: " + message + " " + counter);
-                sfLog().out(messageSt);
-		try {
-		    checkpointState();
-		} catch (Exception e) {
-		    String messageE = ("COUNTER: " + message + " error in checkpointing state: " + e);
-		    sfLog().out(messageE);
-		}
+                sfLog().info(messageSt);
+                try {
+                    checkpointState();
+                } catch (Exception e) {
+                    String messageE = ("COUNTER: " + message + " error in checkpointing state: " + e);
+                    sfLog().warn(messageE);
+                }
 
-                if(sleeptime>0) {
+                if (sleeptime > 0) {
                     Thread.sleep(sleeptime);
                 }
             }
 
-            if (terminate) sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
+            if (terminate) {
+                sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
+            }
 
             //end while
         } catch (InterruptedException ie) {

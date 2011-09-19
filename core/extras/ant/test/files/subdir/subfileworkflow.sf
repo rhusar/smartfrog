@@ -18,12 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/components.sf"
 
-server extends {
-  port 8080;
-}
-
-sfConfig extends server{
+sfConfig extends Sequence {
 }
 

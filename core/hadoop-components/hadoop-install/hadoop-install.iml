@@ -14,6 +14,7 @@
     <orderEntry type="library" exported="" name="Groovy" level="application" />
     <orderEntry type="module" module-name="grinstall" exported="" />
     <orderEntry type="module" module-name="testharness" />
+    <orderEntry type="module" module-name="hadoop-ops" exported="" />
   </component>
 </module>
 

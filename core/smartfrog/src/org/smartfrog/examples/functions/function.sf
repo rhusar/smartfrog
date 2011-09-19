@@ -87,7 +87,7 @@ outerVector extends vector{
    -- extends innerVector;
 }
 
-sfConfig extends Counter {
+CounterExample extends Counter {
    /**
     * The optional attribute "message" of Counter component obtains the value 
     * of the evaluated function "concat".
@@ -122,3 +122,5 @@ sfConfig extends Counter {
    }
    limit 5;
 }
+
+sfConfig extends CounterExample;
