@@ -58,9 +58,9 @@ public class RunApplicationTask extends DeployingTaskBase {
         setStandardSmartfrogProperties();
         enableFailOnError();
         checkApplicationsDeclared();
-        deployApplications();
+        String paths = deployApplications(ACTION_DEPLOY_WAIT);
         addExitFlag();
-        execSmartFrog(ERROR_COULD_NOT_RUN);
+        execSmartFrog(ERROR_COULD_NOT_RUN + " " + paths);
     }
 
 

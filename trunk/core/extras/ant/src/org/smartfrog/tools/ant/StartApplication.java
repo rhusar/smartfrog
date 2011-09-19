@@ -81,9 +81,10 @@ public class StartApplication extends DeployingTaskBase {
         setStandardSmartfrogProperties();
         enableFailOnError();
         checkApplicationsDeclared();
-        deployApplications(update);
+        String action = update ? ACTION_UPDATE : ACTION_DEPLOY;
+        String paths = deployApplications(action);
         addExitFlag();
-        execSmartFrog(ERROR_COULD_NOT_DEPLOY);
+        execSmartFrog(ERROR_COULD_NOT_DEPLOY + " " + paths);
     }
 
 

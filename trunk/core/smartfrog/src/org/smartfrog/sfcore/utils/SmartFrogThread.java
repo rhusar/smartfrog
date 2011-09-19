@@ -29,16 +29,25 @@ import java.rmi.RemoteException;
  * contains extra methods for behaviour we want across all our threads.
  * <p/>
  * <p/>
- * <ol> <li>A notification is raised after the work is done, on whichever object
+ * <ol>
+ *
+ *     <li>A notification is raised after the work is done, on whichever object
  * is the <code>notifyObject</code>. By default, this is the thread itself,
- * though other values may be provided in a constructor. </li> </li>Any
+ * though other values may be provided in a constructor. </li>
+ *
+ * </li>Any
  * throwable thrown in the {@link #execute()} method is caught and can be
- * retrieved with the {@link #getThrown()} method. </li> </ol> To use these
+ * retrieved with the {@link #getThrown()} method. </li>
+ *
+ * </ol>
+ *
+ * To use these
  * features, do not overrride the {@link #run()} method. Override  {@link
  * #execute()} or pass in a Runnable to the constructor. provided as a
  * notifyObject created 13-Feb-2007 10:39:41
  */
 
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class SmartFrogThread extends Thread implements Executable {
 
 

@@ -103,10 +103,8 @@ public class StartDaemon extends DeployingTaskBase {
            
         }
         addIniFile();
-        deployApplications();
-
-
-        execSmartFrog(ERROR_FAILED_TO_START_DAEMON);
+        String paths = deployApplications(ACTION_UPDATE);
+        execSmartFrog(ERROR_FAILED_TO_START_DAEMON + " " + paths);
     }
 
 

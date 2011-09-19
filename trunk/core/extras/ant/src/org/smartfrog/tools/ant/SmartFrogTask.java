@@ -635,7 +635,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         }
 
         //last minute logging
-        log("Command: " + getCommandLine(), Project.MSG_VERBOSE);
+        final String commandLine = getCommandLine();
+        log("Command: " + commandLine, Project.MSG_VERBOSE);
 
 
         //run it
@@ -659,7 +660,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
                     return false;
                 }
 
-                throw new BuildException(failureText);
+                throw new BuildException(failureText + " when running " + commandLine);
                 
             case ExitCodes.EXIT_ERROR_CODE_BAD_ARGS:
                 if (!failOnError) {
@@ -669,13 +670,13 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
                 throw new BuildException(failureText 
                                          + " exit code " + err
                                          + " " 
-                                         + getCommandLine());
+                                         + commandLine);
             default:
                 //any other error code is an odd one
                 if (!failOnError) {
                     return false;
                 }
-                throw new BuildException(errorText + " - error code " + err);
+                throw new BuildException(errorText + " - error code " + err + " when running " + commandLine);
         }
 
     }

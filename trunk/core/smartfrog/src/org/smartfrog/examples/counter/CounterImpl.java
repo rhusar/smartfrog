@@ -1,34 +1,36 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.examples.counter;
 
-import java.rmi.RemoteException;
-
 import org.smartfrog.sfcore.common.SmartFrogException;
-
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+
+import java.rmi.RemoteException;
 
 
 /**
@@ -54,9 +56,9 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     /** Counter component data - limit. */
     protected int limit = 2;
     /** Thread object */
-    protected Thread action = null;
+    protected SmartFrogThread action = null;
     /** sleep time */
-    protected int sleeptime=1000;
+    protected int sleeptime = 1000;
 
     protected LogSF logCore = null;
     protected LogSF logApp = null;
@@ -84,7 +86,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     /**
      *  Constructor for the Counter object.
      *
-     *@exception  RemoteException In case of network/rmi error
+     *@exception RemoteException In case of network/rmi error
      */
     public CounterImpl() throws RemoteException {
     }
@@ -99,27 +101,24 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      *  initial deployment and starting the heartbeat monitoring of this
      *  component.
      *
-     * @exception  SmartFrogException In case of error in deploying
-     * @exception  RemoteException In case of network/rmi error
+     * @exception SmartFrogException In case of error in deploying
+     * @exception RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
-    RemoteException {
-            super.sfDeploy();
-            /**
-             *  Returns the complete name for Counter component from the root
-             *  of application.If an exception is thrown it returns null
-             *  This name is used for printing debug messages in utility methods
-             */
-            myName = this.sfCompleteNameSafe().toString();
-            readSFAttributes();
-            if (pause) {
-                if (sfLog().isInfoEnabled()) sfLog().info("sleeping sfDeploy");
-                try {
-                    this.wait(limit*sleeptime);
-                } catch (InterruptedException ex) {
-                }
-                if (sfLog().isInfoEnabled()) sfLog().info("end-sleeping sfDeploy");
-            }
+                                               RemoteException {
+        super.sfDeploy();
+        /**
+         *  Returns the complete name for Counter component from the root
+         *  of application.If an exception is thrown it returns null
+         *  This name is used for printing debug messages in utility methods
+         */
+        myName = sfCompleteNameSafe().toString();
+        readSFAttributes();
+        if (pause) {
+            if (sfLog().isInfoEnabled()) sfLog().info("sleeping sfDeploy");
+            waitSpecifiedTime();
+            if (sfLog().isInfoEnabled()) sfLog().info("end-sleeping sfDeploy");
+        }
     }
 
     /**
@@ -128,25 +127,29 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      *  component specific code (starting counter thread) to maintain correct
      *  behaviour of starting the active threads for components.
      *
-     * @exception  SmartFrogException In case of error while starting
-     * @exception  RemoteException In case of network/rmi error
+     * @exception SmartFrogException In case of error while starting
+     * @exception RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
-    RemoteException {
+                                              RemoteException {
         super.sfStart();
         if (sfLog().isInfoEnabled()) sfLog().info("Starting with msg-" + message);
 
         if (pause) {
             if (sfLog().isInfoEnabled()) sfLog().info("sleeping sfStart");
-            try {
-                this.wait(limit*sleeptime);
-            } catch (InterruptedException ex) {
-            }
+            waitSpecifiedTime();
             if (sfLog().isInfoEnabled()) sfLog().info("end-sleeping sfStart");
         }
-        action = new Thread(this);
+        action = new SmartFrogThread(this);
         action.setName("Counter");
         action.start();
+    }
+
+    private void waitSpecifiedTime() {
+        try {
+            wait(limit * sleeptime);
+        } catch (InterruptedException ex) {
+        }
     }
 
     /**
@@ -157,7 +160,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      * @param  t TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
-        if (sfLog().isInfoEnabled()) sfLog().info(" Terminating for reason: " + t.toString());
+        if (sfLog().isDebugEnabled()) sfLog().debug(" Terminating for reason: " + t);
 
         if (action != null) {
             action.interrupt();
@@ -173,8 +176,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     /**
      *  Reads optional and mandatory attributes.
      *
-     * @exception  SmartFrogException error while reading attributes
-     * @exception  RemoteException In case of network/rmi error
+     * @exception SmartFrogException error while reading attributes
+     * @exception RemoteException In case of network/rmi error
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
         //
@@ -192,60 +195,66 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             limit = sfResolve(ATR_LIMIT, limit, true);
             //True to Get exception thown!
         } catch (SmartFrogResolutionException e) {
-          if (sfLog().isErrorEnabled())
-            sfLog().error("Failed to read mandatory attribute: "+
-                    limit +"Error:"+ e.toString());
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Failed to read mandatory attribute: " +
+                              limit + "Error:" + e.toString());
+            }
             throw e;
         }
         //Optional attributes.
-            /*
-             * Resolves the optional attribute "debug" from sf description
-             * The resolution method takes the following parameters:
-             * String name "attrDEBUG" of the attribute,
-             * default value "debug" of the attribute,and
-             * a boolean "false" indicating that it is a optional attribute
-             * If the optional attribute is not present in the description, it
-             * returns the default value
-             */
+        /*
+        * Resolves the optional attribute "debug" from sf description
+        * The resolution method takes the following parameters:
+        * String name "attrDEBUG" of the attribute,
+        * default value "debug" of the attribute,and
+        * a boolean "false" indicating that it is a optional attribute
+        * If the optional attribute is not present in the description, it
+        * returns the default value
+        */
         debug = sfResolve(ATR_DEBUG, debug, false);
 
         pause = sfResolve(ATR_PAUSE, pause, false);
-            /*
-             * Resolves the optional attribute "counter" from sf description
-             * The resolution method takes the following parameters:
-             * String name "attrDEBUG" of the attribute,
-             * default value "debug" of the attribute,
-             * min value "null" of the attribute,
-             * max value of the attribute,and
-             * a boolean "false" indicating that it is a optional attribute
-             * If the optional attribute is not present in the description, it
-             * returns the default value
-             * If the resolved value < min value, it triggers
-             * SmartFrogResolutionException
-             * If the resolved value > max value, it triggers
-             * SmartFrogResolutionException
-             */
+        /*
+        * Resolves the optional attribute "counter" from sf description
+        * The resolution method takes the following parameters:
+        * String name "attrDEBUG" of the attribute,
+        * default value "debug" of the attribute,
+        * min value "null" of the attribute,
+        * max value of the attribute,and
+        * a boolean "false" indicating that it is a optional attribute
+        * If the optional attribute is not present in the description, it
+        * returns the default value
+        * If the resolved value < min value, it triggers
+        * SmartFrogResolutionException
+        * If the resolved value > max value, it triggers
+        * SmartFrogResolutionException
+        */
         counter = sfResolve(ATR_COUNTER, counter, null, new Integer(limit),
-            false);
-            /*
-             * Resolves the optional attribute "message" from sf description
-             * The resolution method takes the following parameters:
-             * String name "attrMESSAGE" of the attribute,
-             * default value "message" of the attribute,and
-             * a boolean "false" indicating that it is a optional attribute
-             * If the optional attribute is not present in the description, it
-             * returns the default value
-             */
+                            false);
+        /*
+        * Resolves the optional attribute "message" from sf description
+        * The resolution method takes the following parameters:
+        * String name "attrMESSAGE" of the attribute,
+        * default value "message" of the attribute,and
+        * a boolean "false" indicating that it is a optional attribute
+        * If the optional attribute is not present in the description, it
+        * returns the default value
+        */
         message = sfResolve(ATR_MESSAGE, message, false);
 
-        terminate = sfResolve (ATR_TERMINATE, terminate, false);
-          /*
-          sleep time, >=0;.
-          */
-        sleeptime = sfResolve(ATR_SLEEP,sleeptime,false);
-        if(sleeptime<0) {
+        /**
+         * Read the deprecated flag
+         */
+        terminate = sfResolve(ATR_TERMINATE, terminate, false);
+        //override with the ShouldTerminate flag
+        terminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, terminate, false);
+        /*
+        sleep time, >=0;.
+        */
+        sleeptime = sfResolve(ATR_SLEEP, sleeptime, false);
+        if (sleeptime < 0) {
             throw new SmartFrogResolutionException("Attribute "
-                    +ATR_SLEEP+" cannot be less than zero");
+                                                   + ATR_SLEEP + " cannot be less than zero");
         }
 
     }
@@ -262,18 +271,18 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                 String messageSt = ("COUNTER: " + message + " " + counter);
                 sfLog().out(messageSt);
 
-                if(sleeptime>0) {
+                if (sleeptime > 0) {
                     Thread.sleep(sleeptime);
-
                 }
                 counter++;
             }
             if (terminate) {
-                new org.smartfrog.sfcore.common.TerminatorThread(this, TerminationRecord.normal(this.sfCompleteNameSafe())).start();
+                new TerminatorThread(this, TerminationRecord.normal(sfCompleteNameSafe()))
+                        .start();
             }
             //end while
         } catch (InterruptedException ie) {
-            if (sfLog().isErrorEnabled()) sfLog().error("",ie);
+            if (sfLog().isErrorEnabled()) sfLog().error("", ie);
         }
 
     }

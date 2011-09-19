@@ -17,8 +17,13 @@
       xmlns:sf="http://smartfrog.org/"
       />
 
+  <!-- the counter example -->
   <property name="resource.sf"
-      value="/org/smartfrog/examples/functions/function.sf"/>
+  value="/org/smartfrog/examples/functions/function.sf"/>
+
+  <!-- the workflow version of the counter example -->
+  <property name="workflowresource.sf"
+    value="/org/smartfrog/examples/functions/functionworkflow.sf"/>
 
   <property name="terminator.sf"
       value="/org/smartfrog/examples/workflow/terminateDaemonExample.sf"/>

@@ -5,13 +5,16 @@
  Tests for the run. 
  
  command line invocation
- ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f  run.xml testNoParams
+ ant -lib ..\..\build\dist\lib\sf-tasks-3.18.011.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f  run.xml testNoParams
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f run.xml testNoParams
+ant -lib ../../build/dist/lib/sf-tasks-3.18.011.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f run.xml testNoParams
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f run.xml testResource
+ant -lib ../../build/dist/lib/sf-tasks-3.18.011.jar -lib ../../../../smartfrog/dist/lib/smartfrog-3.18.011.jar -lib ../../../../smartfrog/dist/lib/sfExamples-3.18.011.jar -f run.xml testResource
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfServices.jar -f run.xml testMissingOptionalPropertyFile
+ ant -lib dist/lib/sf-tasks-3.18.011.jar -lib  ../../smartfrog/dist/lib/smartfrog-3.18.011.jar -lib ../../smartfrog/dist/lib/sfServices-3.18.011.jar -lib ../../smartfrog/dist/lib/sfExamples-3.18.011.jar -f test/files/run.xml testResource
+
+
+ant -lib ../../build/dist/lib/smartfrog-tasks-3.18.011.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfServices.jar -f run.xml testMissingOptionalPropertyFile
 </description>
 
     <import file="test-common.xml" />
@@ -32,7 +35,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
 
     <target name="testAnonApplication">
       <sf-run >
-        <application descriptor="${resource.sf}" />
+        <application descriptor="${workflowresource.sf}" />
       </sf-run>
     </target>    
 
@@ -57,7 +60,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     
     <target name="testResource">
       <sf-run >
-        <application name="app" descriptor="${resource.sf}"/>
+        <application name="app" descriptor="${workflowresource.sf}"/>
       </sf-run>
     </target> 
 
@@ -69,20 +72,20 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     
     <target name="testRunFile">
       <sf-run >
-        <application name="app" file="valid.sf"/>
+        <application name="app" file="validworkflow.sf"/>
       </sf-run>
     </target>
     
     
     <target name="testSubdir">
       <sf-run >
-        <application name="app" file="subdir/subfile.sf"/>
+        <application name="app" file="subdir/subfileworkflow.sf"/>
       </sf-run>
     </target>
     
     <target name="testAssertions">
       <sf-run >
-        <application name="app" descriptor="${resource.sf}"/>
+        <application name="app" descriptor="${workflowresource.sf}"/>
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
@@ -90,17 +93,17 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     </target> 
     
     <target name="testInline">
-    <property name="port" value="8080"/>
+      <property name="port" value="8080"/>
       <sf-run >
         <application name="app">
 #include "org/smartfrog/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
 
-Server extends Prim {
-	port ${port};
-}
 
-sfConfig extends Server{
-}        
+sfConfig extends AssertWorkflow {
+        equalsString1 "8080";
+        equalsString2 ${port};
+  }
         </application>
       </sf-run>
     </target>
@@ -114,7 +117,7 @@ sfConfig extends Server{
   <target name="testMissingNonOptionalPropertyFile">
     <sf-run timeout="${timeout}">
       <propertyFile file="missing" optional="false"/>
-      <application name="app" file="valid.sf"/>
+      <application name="app" file="validworkflow.sf"/>
     </sf-run>
   </target>
 
@@ -124,7 +127,7 @@ sfConfig extends Server{
       <application name="testMissingOptionalPropertyFile">
 #include "/org/smartfrog/services/assertions/components.sf"
 
-sfConfig extends Assert {
+sfConfig extends AssertWorkflow {
         equalsString1 "test";
         equalsString2 "test";
 }
@@ -142,7 +145,7 @@ sfConfig extends Assert {
       <application name="EqualsTest">
 #include "/org/smartfrog/services/assertions/components.sf"
 
-sfConfig extends Assert {
+sfConfig extends AssertWorkflow {
         equalsString1 "test";
         equalsString2 PROPERTY test.text;
 }

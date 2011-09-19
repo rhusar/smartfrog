@@ -209,7 +209,9 @@ no -components suffix-->
           refid="tests.run.classpath"/>
       <sysproperty key="test.files.dir"
           value="${test.src.dir}/files"/>
-      <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
+      <batchtest todir="${test.data.dir}" if="testcase">
+        <fileset dir="${test.classes.dir}" includes="**/${testcase}.class"/>
+      </batchtest>
       <batchtest todir="${test.data.dir}" unless="testcase">
         <fileset dir="${test.classes.dir}">
           <include name="**/unit/*Test.class"/>

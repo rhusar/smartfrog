@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/predicates.sf"
 
-Counter extends Prim {
+Counter extends WorkflowPrim {
 
     counterSchema extends Schema {
         counter extends OptionalInteger;
@@ -45,6 +45,11 @@ Counter extends Prim {
 
         /** pause flag -> pause "limit" secs during sfDeploy and sfStart.*/
         pause extends OptionalBoolean;
+
+        /** should the component terminate afterwards
+         This is deprecated; the sfShouldTerminate attribute should be used instead
+        */
+        terminate extends OptionalBoolean;
 
     }
 
@@ -76,3 +81,6 @@ Counter extends Prim {
    //pause false;
 }
 
+CounterWorkflow extends Counter {
+  sfShouldTerminate true;
+}
