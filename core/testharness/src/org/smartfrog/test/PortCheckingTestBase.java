@@ -19,13 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.test;
 
-import org.smartfrog.sfcore.utils.TimeoutInterval;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created 13-Feb-2009 14:20:42
