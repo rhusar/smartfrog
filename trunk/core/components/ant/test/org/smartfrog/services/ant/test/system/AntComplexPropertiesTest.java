@@ -46,7 +46,7 @@ public class AntComplexPropertiesTest
     }
 
 
-    @Description("Test properties can be set/got")
+    @Description("JVM properties can be set/got")
     @SkippedTest("fails to resolve")
     public void testPropertiesAdvanced() throws Throwable {
         application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf",
