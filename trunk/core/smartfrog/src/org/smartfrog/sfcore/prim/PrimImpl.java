@@ -130,32 +130,32 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Flag indicating that this component has been terminated.
      */
-    protected volatile boolean sfIsTerminated = false;
+    protected volatile boolean sfIsTerminated;
 
     /**
      * Flag indicating that this component termination is initiated.
      */
-    protected volatile boolean sfIsTerminating = false;
+    protected volatile boolean sfIsTerminating;
 
     /**
      * Flag indicating that this component has been deployed.
      */
-    protected volatile boolean sfIsDeployed = false;
+    protected volatile boolean sfIsDeployed;
 
     /**
      * Flag indicating that this component has been started.
      */
-    protected volatile boolean sfIsStarted = false;
+    protected volatile boolean sfIsStarted;
 
     /**
      * Parent.
      */
-    protected Prim sfParent = null;
+    protected volatile Prim sfParent;
 
     /**
      * Attribute context.
      */
-    protected Context sfContext = null;
+    protected Context sfContext;
 
     /**
      * Timer for initiating heartbeats.
@@ -183,12 +183,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Reference to export form of self if sfExport is true.
      */
-    protected Object sfExportRef = null;
+    protected Object sfExportRef;
 
     /**
      * Reference that caches cannonical name.
      */
-    protected Reference sfCompleteName = null;
+    protected Reference sfCompleteName;
 
 
     /**
@@ -214,6 +214,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws SmartFrogResolutionException failed to find attribute
      */
+    @SuppressWarnings({"CallToPrintStackTrace"})
+    @Override
     public Object sfResolveHere(Object name)
             throws SmartFrogResolutionException {
         Object result = null;
@@ -252,6 +254,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws SmartFrogResolutionException failed to find attribute
      */
+    @Override
     public Object sfResolveHere(Object name, boolean mandatory)
             throws SmartFrogResolutionException {
         //the check for mandatory is done outside of the call, for
@@ -282,6 +285,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws SmartFrogResolutionException failed to find attribute
      */
+    @Override
     public Object sfResolveHereNonlocal(Object name, boolean mandatory)
             throws SmartFrogResolutionException {
         try {
@@ -315,6 +319,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return parent for this component or null if none
      */
+    @Override
     public Object sfResolveParent() {
         return sfParent;
     }
@@ -331,6 +336,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogResolutionException occurred while resolving
      * @throws RemoteException In case of network/rmi error
      */
+    @SuppressWarnings({"CallToPrintStackTrace"})
+    @Override
     public Object sfResolve(Reference r)
             throws SmartFrogResolutionException, RemoteException {
         Reference rn = r;
@@ -377,6 +384,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogResolutionException error occurred while resolving
      * @throws RemoteException In case of network/rmi error
      */
+    @SuppressWarnings({"ErrorNotRethrown"})
+    @Override
     public Object sfResolve(Reference r, int index)
             throws SmartFrogResolutionException, RemoteException {
         Object obj = null;
@@ -417,6 +426,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public InetAddress sfDeployedHost() throws RemoteException {
         try {
             return SFProcess.sfDeployedHost();
@@ -440,6 +450,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public String sfDeployedProcessName() throws RemoteException {
         String value = System.getProperty(
                 "org.smartfrog.sfcore.processcompound.sfProcessName");
@@ -464,6 +475,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException when name or value are null
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized Object sfAddAttribute(Object name, Object value)
             throws SmartFrogRuntimeException, RemoteException {
         Object valueParent = null;
@@ -496,6 +508,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException when name is null
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public synchronized Object sfRemoveAttribute(Object name)
             throws SmartFrogRuntimeException, RemoteException {
         try {
@@ -528,6 +541,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * injection failed
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public synchronized Object sfReplaceAttribute(Object name, Object value)
             throws SmartFrogRuntimeException, RemoteException {
 
@@ -568,6 +582,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      */
 
     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
+    @Override
     public Object sfAttributeKeyFor(Object value) {
         if (value instanceof Remote) {
             //When using stubs we need to compare equality
@@ -607,6 +622,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/nework error
      */
+    @Override
     public boolean sfContainsAttribute(Object attribute)
             throws RemoteException {
         return sfContext.sfContainsAttribute(attribute);
@@ -621,6 +637,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public Iterator<Object> sfAttributes() throws RemoteException {
         return new SerializableIterator<Object>(sfContext.sfAttributes());
     }
@@ -634,6 +651,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public Iterator<Object> sfValues() throws RemoteException {
         return new SerializableIterator<Object>(sfContext.sfValues());
     }
@@ -644,6 +662,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return component context
      */
+    @Override
     public Context sfContext() {
         return sfContext;
     }
@@ -657,6 +676,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public Reference sfCompleteName() throws RemoteException {
         if (sfCompleteName == null) {
             Reference r;
@@ -698,6 +718,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @return reference of attribute names to this component or an empty
      *         reference
      */
+    @Override
     public Reference sfCompleteNameSafe() {
         return ComponentHelper.completeNameSafe(this);
     }
@@ -710,6 +731,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public Prim sfParent() throws RemoteException {
         return sfParent;
     }
@@ -726,6 +748,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * the component
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public void sfDeployWith(Prim parent, Context cxt) throws
             SmartFrogDeploymentException, RemoteException {
 
@@ -1026,6 +1049,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         sfSetLog(sfGetApplicationLog());
@@ -1143,6 +1167,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
 
@@ -1161,6 +1186,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @param target dump interface to dump to
      */
+    @Override
     public void sfDumpState(Dump target) {
         try {
             if (sfLog().isDebugEnabled()) { sfLog().debug("Dumping state to: " + target); };
@@ -1181,6 +1207,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @param status termination status record
      */
+    @Override
     public void sfTerminate(TerminationRecord status) {
         terminateNotifying(status, sfParent);
     }
@@ -1297,6 +1324,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException detachment failed
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfDetach()
             throws SmartFrogException, RemoteException {
         if (sfParent == null) {
@@ -1329,6 +1357,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfDetachAndTerminate(TerminationRecord status) {
         try {
             if (sfParent != null) {
@@ -1360,6 +1389,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @param status termination status
      */
+    @Override
     public void sfTerminateQuietlyWith(TerminationRecord status) {
         terminateNotifying(status, null);
     }
@@ -1368,6 +1398,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * Validate all ASSERTs in the context of the Prim, returning true if OK,
      * false if not.
      */
+    @Override
     public synchronized boolean sfValid() throws RemoteException {
         for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
             Object k = e.nextElement();
@@ -1410,6 +1441,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws RemoteException for consistency with the {@link Liveness}
      * interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
             String sourceName = source.toString();
@@ -1528,6 +1560,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return true if equal, false if not
      */
+    @Override
     public boolean equals(Object o) {
         if (sfExportRef == null) {
             return super.equals(o);
@@ -1542,6 +1575,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return hashcode for this object or its remote reference
      */
+    @Override
     public int hashCode() {
         if (sfExportRef == null) {
             return super.hashCode();
@@ -1556,6 +1590,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return string form for this component
      */
+    @Override
     public String toString() {
         if (sfExportRef == null) {
             return super.toString();
@@ -1706,6 +1741,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
+    @Override
     public void sfParentageChanged() throws RemoteException {
         sfCompleteName = null;
     }
@@ -1715,6 +1751,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return boolean
      */
+    @Override
     public boolean sfIsTerminated() {
         return sfIsTerminated;
     }
@@ -1724,6 +1761,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return boolean
      */
+    @Override
     public boolean sfIsTerminating() {
         return sfIsTerminating;
     }
@@ -1733,6 +1771,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return boolean
      */
+    @Override
     public boolean sfIsDeployed() {
         return sfIsDeployed;
     }
@@ -1742,6 +1781,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return boolean
      */
+    @Override
     public boolean sfIsStarted() {
         return sfIsStarted;
     }
@@ -1751,6 +1791,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @return Component description
      */
+    @Override
     public ComponentDescription sfDiagnosticsReport() {
         ComponentDescription cd = null;
         try {
@@ -1782,6 +1823,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws RemoteException network problems
      * @throws SmartFrogException  not OK to update
      */
+    @Override
     public synchronized void sfPrepareUpdate()
             throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
@@ -1812,6 +1854,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws RemoteException network problems
      * @throws SmartFrogException Failure not OK to update
      */
+    @Override
     public synchronized boolean sfUpdateWith(Context newCxt)
             throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
@@ -1873,6 +1916,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException Failure to update - to be
      * treated like a normal lifecycle error, by default with termination
      */
+    @Override
     public synchronized void sfUpdate()
             throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
@@ -1899,6 +1943,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException Failure to update
      */
 
+    @Override
     public synchronized void sfUpdateDeploy()
             throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
@@ -1920,6 +1965,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws RemoteException network problems
      * @throws SmartFrogException Failure to update
      */
+    @Override
     public synchronized void sfUpdateStart()
             throws RemoteException, SmartFrogException {
         Reference componentId = sfCompleteName();
@@ -1940,6 +1986,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException network problems
      */
+    @Override
     public synchronized void sfAbandonUpdate() throws RemoteException {
         // notify all children of the abandon, ignoring all errors?
         // only occurs after failure of prepare or updatewith, future failure considered fatal
@@ -1959,6 +2006,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException Failure to update
 
      */
+    @Override
     public void sfUpdateComponent(ComponentDescription desc)
             throws RemoteException, SmartFrogException {
         boolean ready;
@@ -2062,6 +2110,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws SmartFrogRuntimeException the attribute does not exist;
      */
+    @Override
     public void sfSetTags(Object name, Set tags)
             throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfSetTags(name, tags);
@@ -2078,6 +2127,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public Set sfGetTags(Object name)
             throws RemoteException, SmartFrogRuntimeException {
         return sfContext.sfGetTags(name);
@@ -2092,6 +2142,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfAddTag(Object name, String tag)
             throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfAddTag(name, tag);
@@ -2106,6 +2157,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfRemoveTag(Object name, String tag)
             throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfRemoveTag(name, tag);
@@ -2120,6 +2172,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfAddTags(Object name, Set tags)
             throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfAddTags(name, tags);
@@ -2134,6 +2187,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfRemoveTags(Object name, Set tags)
             throws RemoteException, SmartFrogRuntimeException {
         sfContext.sfRemoveTags(name, tags);
@@ -2180,6 +2234,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfSetTags(Set tags)
             throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
@@ -2202,6 +2257,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public Set sfGetTags() throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
         if (sfParent != null) {
@@ -2230,6 +2286,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfAddTag(String tag)
             throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
@@ -2251,6 +2308,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfRemoveTag(String tag)
             throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
@@ -2272,6 +2330,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfAddTags(Set tags)
             throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
@@ -2293,6 +2352,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public void sfRemoveTags(Set tags)
             throws RemoteException, SmartFrogRuntimeException {
         Object key = null;
@@ -2317,6 +2377,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogRuntimeException the attribute does not exist;
      * @throws RemoteException network problems
      */
+    @Override
     public boolean sfContainsTag(String tag)
             throws RemoteException, SmartFrogRuntimeException {
         Object key = null;

@@ -306,7 +306,6 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             //return false;
             return true;
         }
-
     }
 
     /**

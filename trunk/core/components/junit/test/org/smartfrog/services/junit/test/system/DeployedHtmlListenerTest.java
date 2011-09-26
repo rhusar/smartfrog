@@ -36,21 +36,7 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
 
     public void testAll() throws Throwable {
         executeTestFile("html-all");
-        TestRunner runner = getApplicationAsTestRunner();
-
-        HtmlTestListenerFactory listenerFactory = null;
-        listenerFactory =
-                (HtmlTestListenerFactory) application.sfResolve(
-                        TestRunner.ATTR_LISTENER,
-                        listenerFactory,
-                        true);
-        assertNotNull(listenerFactory);
-        String outputFilename = listenerFactory.lookupFilename("localhost", TEST_SUITE_COMPONENT_NAME);
-        File xmlfile = new File(outputFilename);
-        assertTrue("File " + outputFilename + " not found", xmlfile.exists());
-        getLog().info("Output file: " + xmlfile);
-        //validate the file
-        validateXmlLog(xmlfile);
+        resolveAndValidateXMLListenerFile(TEST_SUITE_COMPONENT_NAME);
     }
 
 }

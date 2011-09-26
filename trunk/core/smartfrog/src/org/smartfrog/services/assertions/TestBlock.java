@@ -142,7 +142,8 @@ public interface TestBlock extends EventRegistration {
     boolean isSkipped() throws RemoteException, SmartFrogException;
 
     /**
-     * run the tests
+     * Start to run the tests. There is no expectation that the tests are finished
+     * by the time this request returns.
      *
      * @return true if the tests were started
      * @throws RemoteException network problems

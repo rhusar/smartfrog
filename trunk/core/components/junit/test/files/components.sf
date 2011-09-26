@@ -37,11 +37,23 @@ TestBase extends JUnit3TestSuite {
  * The tests are set up to not run until told to
  */
 LocalJUnitTestRunner extends TestRunner {
-  sfShouldTerminate false;
-  runTests false;
-  keepGoing true;
-  failOnError false;
+    sfShouldTerminate false;
+    runTests false;
+    keepGoing true;
+    failOnError false;
 }
+
+/**
+ * This is the all test suite, used in -all targets.
+ */
+
+TestAll extends LocalJUnitTestRunner {
+
+    tests extends MostTests {
+        name "tests";
+    }
+}
+
 
     /**
      * run all tests in the suite.
@@ -95,16 +107,6 @@ HtmlTestAll extends TestAll {
 
 HtmlListener extends HtmlTestListener {
 //    cssURL "file:///home/slo/Projects/SmartFrog/Forge/core/components/junit/src/org/smartfrog/services/junit/listeners/report.css";
-}
-/**
- * This is the all test suite, used in -all targets.
- */
-
-TestAll extends LocalJUnitTestRunner {
-
-    tests extends MostTests {
-        name "tests";
-    }
 }
 
 /**

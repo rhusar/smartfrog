@@ -233,6 +233,11 @@ public class BufferingListenerImpl extends AbstractListenerImpl
         return new BufferingTestListener();
     }
 
+    @Override
+    public String sfRemoteToString() throws RemoteException {
+        return super.sfRemoteToString() + " BufferingTestListener";
+    }
+
     /**
      * this is a non-static nested class that provides the test listener for
      * this component;

@@ -286,7 +286,7 @@ public class ComponentHelper {
         boolean shouldDetach = resolveQuietly(
                 ShouldDetachOrTerminate.ATTR_SHOULD_DETACH,
                 false);
-        targetForTermination(record,false,shouldDetach,shouldTerminateQuietly);
+        targetForTermination(record, false, shouldDetach, shouldTerminateQuietly);
     }
 
     /**
