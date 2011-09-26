@@ -56,8 +56,8 @@ public class AntComplexPropertiesTest
         antprim = application;
         Ant ant = (Ant) antprim;
         Prim runtime = antprim.sfResolve(Ant.ATTR_RUNTIME, (Prim) null, true);
-        String message = runtime.sfResolveHere("sfhome").toString();
-        assertTrue("missing text from " + message, message.contains("SFHOME is"));
+        String message = runtime.sfResolveHere("java.version").toString();
+        assertTrue("missing text from " + message, message.contains("1."));
         message = runtime.sfResolveHere("pathtext").toString();
         assertTrue("missing text from " + message, message.contains("path="));
         assertFalse("unexpanded text in " + message, message.contains("${path}"));
