@@ -54,11 +54,11 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     private static final Reference sendRef = new Reference(ATTR_SEND_TO);
     private EventRegistrar registrar = new EventRegistrar(this);
 
-    protected ComponentDescription action = null;
-    protected Context actions = null;
-    protected Enumeration actionKeys = null;
+    protected ComponentDescription action;
+    protected Context actions;
+    protected Enumeration actionKeys;
 
-    protected Reference name = null;
+    protected Reference name;
     private boolean oldNotation = true;
     private static final Reference actionsRef = new Reference(ATTR_ACTIONS);
     private static final Reference actionRef = new Reference(ATTR_ACTION);
@@ -234,7 +234,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     @Override
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         boolean terminate;
+        String sText = status.toString();
         if (isWorkflowTerminating()) {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Workflow-driven termination " + sText);
             try {
                 //let subclasses decide what to do here
                 terminate = onWorkflowTerminating(status, comp);
@@ -247,12 +249,16 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             //check to see what the subclass wants
             try {
                 if (sfContainsChild(comp)) {
+                    if (sfLog().isDebugEnabled()) sfLog().debug("Child " + comp + " termination" + sText);
                     terminate = onChildTerminated(status, comp);
+                    if (sfLog().isDebugEnabled()) sfLog().debug("Child termination is being forwarded");
                 } else {
+                    if (sfLog().isDebugEnabled()) sfLog().debug("Non child " + comp + " termination" + sText);
                     terminate = onNonChildTerminated(status, comp);
+                    if (sfLog().isDebugEnabled()) sfLog().debug("Non child termination is being forwarded");
                 }
             } catch (Exception e) {
-                sfLog().error("Exception ", e);
+                sfLog().error("Exception " + e, e);
                 terminate = true;
             }
         }
@@ -270,6 +276,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param status the termination record
      */
     protected void scheduleTermination(TerminationRecord status) {
+        if (sfLog().isDebugEnabled()) {sfLog().debug("Targeting self for termination" + status.toString());}
         sfTerminate(status);
     }
 

@@ -100,6 +100,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @return name of output file, or null for no match
      * @throws RemoteException network problems
      */
+    @Override
     public String lookupFilename(String hostname,
                                  String suitename) throws RemoteException {
         return getMapping(hostname, suitename);
@@ -130,6 +131,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    network problems
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -143,6 +145,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    network problems
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -287,6 +290,5 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
                                                                 File destFile,
                                                                 String processname,
                                                                 String suitename,
-                                                                Date start) throws
-            IOException;
+                                                                Date start) throws IOException;
 }

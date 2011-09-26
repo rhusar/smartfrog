@@ -25,9 +25,11 @@ import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.BufferingListener;
+import org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.RemoteToString;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.w3c.dom.Document;
@@ -47,6 +49,7 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
     public static final String TIMEOUT_PROPERTY = "timeout";
     public static final int TIMEOUT_DEFAULT = 10;
     protected static final String BASE = "/files/";
+    public static final int DELAY = 1000;
 
     public TestRunnerTestBase(String name) {
         super(name);
@@ -60,7 +63,8 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
 
     /**
      * Get the application as a test runner. 
-     * If the application is null: a JUnit exception is trown
+     * If the application is null: a JUnit exception is thrown.
+     * There is no guarantee how long this reference will remain valid, if a test run is in progress (or has recently finished).
      * @return the application as a test runner.
      */
     protected TestRunner getApplicationAsTestRunner() {
@@ -83,7 +87,7 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
      */
     protected boolean spinTillFinished(TestBlock runner,
                                        int timeoutSeconds) throws Throwable {
-        spinUntilFinished(runner, timeoutSeconds* 1000);
+        spinUntilFinished(runner, timeoutSeconds * 1000);
         return true;
     }
 
@@ -174,5 +178,29 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
 
     protected TestCompletedEvent executeTestFile(final String filename) throws Throwable {
         return runTestsToCompletion(BASE, filename);
+    }
+
+    protected void resolveAndValidateXMLListenerFile(final String suitename) throws Exception {
+        TestRunner runner = getApplicationAsTestRunner();
+        XmlListenerFactory listenerFactory = null;
+        Thread.sleep(DELAY);
+        listenerFactory =
+                (XmlListenerFactory) application.sfResolve(
+                        TestRunner.ATTR_LISTENER,
+                        listenerFactory,
+                        true);
+        getLog().info("Listener Proxy is " + listenerFactory);
+        getLog().info("Listener remote info is " + listenerFactory.sfRemoteToString());
+        Thread.sleep(DELAY);
+        String path = listenerFactory.lookupFilename("localhost", suitename);
+        assertNotNull("path of test suite " + suitename, path);
+
+        File xmlfile = new File(path);
+        assertTrue("File does not exist " + path, xmlfile.exists());
+
+        getLog().info("XML output file: " + xmlfile);
+
+        //validate the file
+        validateXmlLog(xmlfile);
     }
 }

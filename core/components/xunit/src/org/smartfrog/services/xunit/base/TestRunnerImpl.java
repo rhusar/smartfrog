@@ -39,6 +39,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.Executable;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.workflow.events.DeployedEvent;
@@ -90,7 +91,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
      * if terminating, should we detach? Should we terminate after running our tests? {@link
      * ShouldDetachOrTerminate#ATTR_SHOULD_DETACH}
      */
-    private boolean shouldDetach = false;
+    private boolean shouldDetach;
 
     /**
      *  Description attitude
@@ -100,13 +101,13 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
     /**
      * String to set to the name of a single test component to run
      */
-    private String singleTest = null;
+    private String singleTest;
 
     /**
      * thread to run the tests
      */
 
-    private TestRunnerThread worker = null;
+    private TestRunnerThread worker;
 
     /**
      * keeper of statistics
@@ -136,6 +137,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
     private boolean skipped = false;
     private boolean failed;
     private boolean succeeded;
+    protected TestListenerFactory listenerFactory;
 
     /**
      * constructor
@@ -246,12 +248,13 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
         listenerPrim = sfResolve(ATTR_LISTENER,
                 (Prim) null,
                 true);
-        if (!(listenerPrim instanceof TestListenerFactory)) {
+        if (listenerPrim == null || !(listenerPrim instanceof TestListenerFactory)) {
             throw new SmartFrogException("The attribute " +
                     ATTR_LISTENER
                     + " must refer to an implementation of TestListenerFactory");
         }
-        TestListenerFactory listenerFactory = (TestListenerFactory) listenerPrim;
+
+        listenerFactory = (TestListenerFactory) listenerPrim;
         String listenerName = ((Prim) listenerFactory).sfResolve(
                 TestListenerFactory.ATTR_NAME,
                 "",
@@ -326,11 +329,13 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
         //check the substuff
         super.sfPing(source);
         //then look to see if we had a failure with our tests
+/*
         synchronized (this) {
             if (failOnError && isFinished() && getCachedException() != null) {
                 SmartFrogLivenessException.forward(getCachedException());
             }
         }
+*/
     }
 
 
@@ -342,11 +347,53 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
     @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         sendEvent(new TerminatedEvent(this, status));
-        super.sfTerminateWith(status);
         WorkflowThread.requestThreadTerminationWithInterrupt(getWorker());
-        if (listenerPrim != null) {
-            //do anything with the listener?
+        super.sfTerminateWith(status);
+    }
 
+    @Override
+    protected boolean onChildTerminated(final TerminationRecord record, final Prim comp)
+            throws SmartFrogRuntimeException, RemoteException {
+        //a child has terminated.
+        //Two actions: report it upstream or continue.
+        //Plan: trigger a component helper to do this, and return false. Why this? so that the
+        //various termination option flags can be used
+
+        if (comp instanceof TestBlock) {
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("child TestBlock " + comp.sfCompleteName() + " terminated with TR = " + record);
+            }
+            //its a test block. so let the test block handling handle it
+            //we just remove it from liveness
+            removeChildQuietly(comp);
+            //and notify the caller we want to keep going
+
+            return false;
+        } else {
+            //something else terminated
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("child component " + comp.sfCompleteName() + " terminated -ending test run; TR = " + record);
+            }
+            //whatever it was, it signals the end of this run
+            sfRemoveChild(comp);
+            //return false;
+            return true;
+        }
+
+    }
+
+
+    /**
+     * Remove a child quietly; ignore problems
+     * @param comp component to remove
+     */
+    private void removeChildQuietly(Prim comp) {
+        try {
+            sfRemoveChild(comp);
+        } catch (SmartFrogRuntimeException e) {
+            sfLog().error(e, e);
+        } catch (RemoteException e) {
+            sfLog().error(e, e);
         }
     }
 
@@ -403,13 +450,15 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
         String outcome = testFailed ? "with errors " : "successfully";
         log.info("Completed tests " + outcome);
 
-        //at this point the thread is finished. It notifies its parent.
 
         if (shouldTerminate) {
-            log.debug("Test runner will now terminate " + outcome);
+            log.debug("Test runner will now terminate; outcome =" + outcome);
         } else {
-            log.debug("Test runner is not terminating " + outcome);
+            log.debug("Test runner is not terminating; outcome = " + outcome);
         }
+        //at this point the thread is finished. It notifies its parent implicitly; the error is stroed in the caught field,
+        //while the wait/join logic will catch termination signals.
+
     }
 
 
@@ -456,15 +505,6 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
      */
     private TestCompletedEvent createTestCompletedEvent(TerminationRecord record) {
         return new TestCompletedEvent(this, record.isNormal(), false, false, record, description);
-    }
-
-    /**
-     * send out a skipping event
-     */
-    private void sendTestSkippedEvent() {
-        TerminationRecord record;
-        record = TerminationRecord.normal(description, self);
-        send(new TestCompletedEvent(this, false, false, true, record, description));
     }
 
     /**
@@ -553,7 +593,7 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
             boolean timeout)
             throws SmartFrogRuntimeException, RemoteException {
         boolean success = record.isNormal();
-        sfLog().debug("Terminated Test with status " + record + " timeout=" + timeout);
+        sfLog().debug("Finished Test with status " + record + " timeout=" + timeout);
         sfReplaceAttribute(ATTR_STATUS, record);
         sfReplaceAttribute(ATTR_SUCCEEDED, success);
         sfReplaceAttribute(ATTR_FAILED, !success);
@@ -571,19 +611,19 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
      * @throws InterruptedException if the tests get blocked
      */
     public boolean executeTestSuite() throws SmartFrogException, RemoteException, InterruptedException {
-        boolean succeeded = false;
+        boolean testsSucceeded = false;
         try {
             if (singleTest == null || singleTest.length() == 0) {
-                succeeded = executeBatchTests();
+                testsSucceeded = executeBatchTests();
             } else {
-                succeeded = executeSingleTest();
+                testsSucceeded = executeSingleTest();
             }
         } finally {
             //this is here as it can throw an exception
             sfReplaceAttribute(TestBlock.ATTR_FINISHED, Boolean.TRUE);
-            noteEndOfTestRun(createTerminationRecord(), succeeded, false);
+            noteEndOfTestRun(createTerminationRecord(), testsSucceeded, false);
         }
-        return succeeded;
+        return testsSucceeded;
 
     }
 
@@ -818,22 +858,28 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
     /**
      * Thread that runs the tests and whose notify object can be waited for
      */
-    private class TestRunnerThread extends WorkflowThread {
+    private class TestRunnerThread extends SmartFrogThread {
 
         private TestRunnerThread() {
-            //super(new Object());
-            super(TestRunnerImpl.this, true, new Object());
+            super(new Object());
+/*
+            super(TestRunnerImpl.this, false, new Object());
+*/
+
         }
 
         /**
          * The termination record is created slightly differently
          * @return
          */
+/*
         @Override
         protected TerminationRecord createTerminationRecord() {
             return TestRunnerImpl.this.createTerminationRecord();
         }
+*/
 
+        @SuppressWarnings({"ProhibitedExceptionDeclared"})
         @Override
         public void execute() throws Throwable {
             TestRunnerImpl.this.execute();

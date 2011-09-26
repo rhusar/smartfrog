@@ -19,17 +19,11 @@
  */
 package org.smartfrog.services.junit.test.system;
 
-import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory;
-
-import java.io.File;
-
 /** created Nov 22, 2004 4:31:45 PM */
 
 public class DeployedXMLListenerTest extends TestRunnerTestBase {
     public static final String TEST_SUITE_COMPONENT_NAME = "tests";
     public static final String SUITENAME = "tests";
-    public static final int DELAY = 0;
 
     public DeployedXMLListenerTest(String name) {
         super(name);
@@ -37,25 +31,7 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
 
     public void testAll() throws Throwable {
         executeTestFile("xml-all");
-        TestRunner runner = getApplicationAsTestRunner();
-        XmlListenerFactory listenerFactory = null;
-        Thread.sleep(DELAY);
-        listenerFactory =
-                (XmlListenerFactory) application.sfResolve(
-                        TestRunner.ATTR_LISTENER,
-                        listenerFactory,
-                        true);
-        Thread.sleep(DELAY);
-        String path = listenerFactory.lookupFilename("localhost", SUITENAME);
-        assertNotNull("path of test suite " + SUITENAME, path);
-
-        File xmlfile = new File(path);
-        assertTrue("File does not exist " + path, xmlfile.exists());
-
-        getLog().info("XML output file: " + xmlfile);
-
-        //validate the file
-        validateXmlLog(xmlfile);
+        resolveAndValidateXMLListenerFile(SUITENAME);
 
     }
 

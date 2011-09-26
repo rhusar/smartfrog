@@ -55,6 +55,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
      * @throws SmartFrogException
      * @throws RemoteException
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -69,6 +70,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -93,6 +95,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
      * @throws RemoteException In case of network/rmi error
      */
 
+    @Override
     public void testSuiteStarted(TestSuite suite,
                                  String hostname,
                                  String processname,

@@ -21,6 +21,7 @@ package org.smartfrog.services.xunit.base;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.RemoteToString;
 
 import java.rmi.RemoteException;
 
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  * listening.
  */
 
-public interface TestListenerFactory extends Liveness {
+public interface TestListenerFactory extends Liveness, RemoteToString {
 
     /**
      * Listener name: {@value}

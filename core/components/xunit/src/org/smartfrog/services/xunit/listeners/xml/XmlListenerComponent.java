@@ -31,9 +31,9 @@ public class XmlListenerComponent
     @Override
     public FileListener createNewSingleHostListener(String hostname,
                                                     File destFile,
-                                                    String processname, String suitename,
-                                                    Date start) throws
-            IOException {
+                                                    String processname,
+                                                    String suitename,
+                                                    Date start) throws IOException {
         return new OneHostXMLListener(hostname,
                 processname,
                 suitename,
