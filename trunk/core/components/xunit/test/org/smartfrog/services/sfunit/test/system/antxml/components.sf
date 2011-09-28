@@ -27,20 +27,20 @@ antxml extends AntXmlTestListener {
 
 
 antreport extends AntWorkflowRun {
+  sfShouldTerminate true;
+  
   md extends mkdir {
     dir test.reports.dir;
   }
 
   reports extends junitreport {
-      todir test.reports.dir;
-      myFileSet extends fileset {
-        dir PROPERTY test.data.dir;
-        includes "*.xml";
-      }
+    todir test.reports.dir;
+    myFileSet extends fileset {
+      dir PROPERTY test.data.dir;
+      includes "*.xml";
+    }
   }
-
 }
-
 
 testRunnerAntXml extends TestRunner {
   description "push out as Ant XML";
@@ -50,7 +50,7 @@ testRunnerAntXml extends TestRunner {
   }
 
   tests1 extends singleSucceedingTestSuite {
-
+    runTests true;
   }
 }
 
@@ -58,6 +58,8 @@ testSFUnitAntXml extends testRunnerAntXml {
 }
 
 testSFUnitAntXmlNested extends ExpectTerminate {
+ /** disabled see SFOS-1655 */
+  condition extends False;
   action extends testRunnerAntXml {
     sfShouldTerminate true;
     runTests true;
