@@ -514,7 +514,7 @@ public final class TestEventSink implements EventSink, RemoteToString {
             log.debug("Blocking for events from " + completeName
                     + " for " + executeTimeout + " milliseconds");
         }
-        while(!timedout.isTimedOut()) {
+        while (!timedout.isTimedOut()) {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
                 log.info("Test run timed out after " + executeTimeout + " milliseconds");
