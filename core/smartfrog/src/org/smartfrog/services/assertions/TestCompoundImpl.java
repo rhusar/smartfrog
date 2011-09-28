@@ -215,25 +215,6 @@ public class TestCompoundImpl extends ConditionCompound
             throw e;
         }
 
-        //evaluate the condition.
-        //then decide whether to run or not.
-
-        if (getCondition() != null && !evaluate()) {
-            sendEvent(new TestStartedEvent(this));
-            skipped = true;
-            //stop the tests running again
-            testsRun = true;
-            updateFlags(false);
-            String message = "Skipping test run " + getName();
-            sfLog().info(message);
-            //send a test terminated event
-            endTestRun(TerminationRecord.normal(message, getName()));
-            //initiate cleanup
-            finish();
-            //end: do not deploy anything else
-            return;
-        }
-
         boolean shouldRunTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, false, false);
         if (shouldRunTests) {
             sfLog().debug(self +" starting test run in sfStart");
@@ -254,6 +235,23 @@ public class TestCompoundImpl extends ConditionCompound
                 return false;
             }
             testsRun = true;
+        }
+
+        //evaluate the condition.
+        //then decide whether to run or not.
+
+        if (getCondition() != null && !evaluate()) {
+            sendEvent(new TestStartedEvent(this));
+            skipped = true;
+            //stop the tests running again
+            testsRun = true;
+            updateFlags(false);
+            String message = "Skipping test run " + getName();
+            sfLog().debug(message);
+            //send a test terminated event
+            endTestRun(TerminationRecord.normal(message, getName()));
+            //end: do not deploy anything else
+            return false;
         }
 
         Throwable thrown = null;
