@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.restlet.test.system.testwar;
 
+import org.smartfrog.test.PortChecker;
 import org.smartfrog.test.PortCheckingTestBase;
 
 /**
@@ -44,8 +45,9 @@ public class TestwarTest extends PortCheckingTestBase {
     }
 
     public void testErrorPage() throws Throwable {
-        PortPair reslet = createPortPair("Restlet server", 5050);
-        reslet.assertClosed();
+        PortChecker.PortPair restlet = createPortPair("Restlet server", 5050);
+        assertFalse("Port open : "+ restlet, restlet.isOpen(500));
+
         addRestletPortCheck();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testErrorPage");
     }
