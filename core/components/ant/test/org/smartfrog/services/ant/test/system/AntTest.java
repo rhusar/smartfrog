@@ -52,8 +52,8 @@ public class AntTest
 
     @Description("Test properties can be set/got")
     public void testAntRuntimeRemote() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testPropertiesAdvanced.sf",
-                                             "testPropertiesAdvanced");
+        application = deployExpectingSuccess(FILES + "testAntRuntimeRemote.sf",
+                                             "testAntRuntimeRemote");
         Prim antprim;
         antprim = application;
         Ant ant = (Ant) antprim;
