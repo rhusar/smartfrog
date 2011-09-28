@@ -88,6 +88,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      * @throws RemoteException
      * @throws SmartFrogException
      */
+    @SuppressWarnings({"ThrowInsideCatchBlockWhichIgnoresCaughtException"})
     private void executeNestedAntTasks() throws RemoteException, SmartFrogException {
         Object attribute = null;
         Object value = null;
@@ -144,7 +145,10 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
             //copy them to any property target specified
             if (propertyTarget != null) {
                 AntRuntimeImpl.propagateAntProperties(propertyTarget, results);
+                propertyTarget.sfReplaceAttribute(ATTR_COMPLETED, true);
             }
+            //now declare finishedness
+            sfReplaceAttribute(ATTR_COMPLETED, true);
         }
 
     }

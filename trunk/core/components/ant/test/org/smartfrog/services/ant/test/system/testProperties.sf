@@ -27,8 +27,9 @@ sfConfig extends ExpectBuildSuccess {
   }
 
   tests extends Sequence {
-    antRun extends TestPropertiesWorkflow {
+    antRun extends TestPropertiesSequence {
       propertyTarget LAZY action;
+      sfShouldTerminate true;
     }
 
     sfHome extends AssertPropertySet {
@@ -48,7 +49,7 @@ sfConfig extends ExpectBuildSuccess {
     test.property extends AssertPropertyEquals {
       propertyTarget LAZY action;
       name "test.value";
-      value TestPropertiesWorkflow:testProperty:value;
+      value TestPropertiesSequence:testProperty:value;
     }
 
 
