@@ -43,7 +43,7 @@ public class SmartFrogException extends Exception implements Serializable {
     public static final String DATA = "data";
 
     /** Context associated with the exception. */
-    protected Context cxt = null;
+    protected Context cxt;
 
 
     /** Attribute name for primContect in exceptioncontext. */
@@ -257,8 +257,11 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return boolean true if the attribute was added.
      */
     public boolean add (Object key, Object value){
-        if (cxt == null) cxt = new ContextImpl();
-        else if (cxt.containsKey(key)) return false;
+        if (cxt == null) {
+            cxt = new ContextImpl();
+        } else if (cxt.containsKey(key)) {
+            return false;
+        }
         put(key,value);
         return true;
     }
@@ -292,12 +295,12 @@ public class SmartFrogException extends Exception implements Serializable {
 
         try {
             add(PRIM_CONTEXT, serializableContext(sfObject.sfContext()));
-        } catch (Throwable  rex){
+        } catch (Throwable ignored){
             //Ignore.
         }
         try {
             add(PRIM_COMPLETE_NAME, sfObject.sfCompleteName().toString());
-        } catch (Throwable  thr){
+        } catch (Throwable ignored){
             //Ignore.
         }
     }

@@ -99,10 +99,6 @@ import org.smartfrog.sfcore.reference.Reference;
     public String toString(String nm){
         StringBuilder strb = new StringBuilder();
         strb.append(super.toString(nm));
-//        strb.append ((((this.containsKey(SOURCE)
-//                               && (this.get(SOURCE)!=null)
-//                               &&(((Reference)this.get(SOURCE)).size()!=0)))
-//                        ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
         strb.append (" during phase ");
         strb.append (RESOLUTION_PHASE);
         return strb.toString();

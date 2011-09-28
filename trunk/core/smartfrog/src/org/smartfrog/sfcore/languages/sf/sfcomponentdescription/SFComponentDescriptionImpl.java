@@ -434,6 +434,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @throws  SmartFrogResolutionException failed to type resolve
     */
+   @SuppressWarnings({"InstanceofCatchParameter"})
    public void doTypeResolve(ResolutionState resState) throws SmartFrogResolutionException {
 /*
       System.out.println("-----------------------");

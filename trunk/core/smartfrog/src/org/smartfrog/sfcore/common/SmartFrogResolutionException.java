@@ -302,11 +302,13 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @return a resolution exception
      */
     public static SmartFrogResolutionException illegalClassType(Reference ref,
-                                                                Reference source, Object resolvedValue,
-                                                                String referenceValueType, String defaultValueType) {
+                                                                Reference source,
+                                                                Object resolvedValue,
+                                                                String referenceValueType,
+                                                                String defaultValueType) {
         SmartFrogResolutionException srex = new SmartFrogResolutionException(ref, source,
                 MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE_EXPECTING_GOT, defaultValueType, resolvedValue,
-                        referenceValueType));
+                                          referenceValueType));
         srex.put(REFERENCE_OBJECT_RESOLVED, resolvedValue.toString());
         srex.put(REFERENCE_OBJECT_CLASS_TYPE, referenceValueType);
         srex.put(DEFAULT_OBJECT_CLASS_TYPE, defaultValueType);
@@ -323,12 +325,12 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogResolutionException
      */
-    public static SmartFrogException forward (String message, Throwable thr){
+    public static SmartFrogException forward(String message, Throwable thr) {
         if (thr instanceof SmartFrogResolutionException) {
-            if (message!=null){
-                ((SmartFrogResolutionException)thr).add("msg: ",message);
+            if (message != null) {
+                ((SmartFrogResolutionException) thr).add("msg: ", message);
             }
-            return (SmartFrogResolutionException)thr;
+            return (SmartFrogResolutionException) thr;
         } else {
             return new SmartFrogResolutionException(message, thr);
         }

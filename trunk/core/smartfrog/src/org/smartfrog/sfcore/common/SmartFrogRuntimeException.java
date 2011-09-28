@@ -104,8 +104,6 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
         init(sfObject);
     }
 
-    private void init(){
-    }
     /**
      * Initializes the exception context with the SmartFrog component.
      *
@@ -115,12 +113,12 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
         if (sfObject == null) return;
         try {
             super.init(sfObject);
-        } catch (Throwable rex){
+        } catch (Throwable ignored){
             //ignore
         }
         try {
            add(REFERENCE,sfObject.sfCompleteName().copy());
-        } catch (Throwable rex){
+        } catch (Throwable ignored){
             //ignore
         }
     }
@@ -152,10 +150,10 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
      */
     public static SmartFrogException forward (String message, Throwable thr){
         if (thr instanceof SmartFrogRuntimeException) {
-            if (message!=null){
-                ((SmartFrogRuntimeException)thr).add("msg: ",message);
+            if (message != null) {
+                ((SmartFrogRuntimeException) thr).add("msg: ", message);
             }
-            return (SmartFrogRuntimeException)thr;
+            return (SmartFrogRuntimeException) thr;
         } else {
             return new SmartFrogRuntimeException(message, thr);
         }
@@ -172,12 +170,12 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
     public String toString(String nm) {
         StringBuilder strb = new StringBuilder();
         strb.append(super.toString(nm));
-        strb.append ((((this.containsKey(REFERENCE))) ? (nm+REFERENCE+  ": "
-                                                    + get(REFERENCE)) : "" ));
-        strb.append ((((this.containsKey(SOURCE))) ? (nm+SOURCE+  ": "
-                                                    + get(SOURCE)) : "" ));
-        strb.append ((((this.containsKey(PRIM_CONTEXT))) ? (nm+PRIM_CONTEXT
-                                            +  ": " + "included") : "" ));
+        strb.append((((containsKey(REFERENCE))) ? (nm + REFERENCE + ": "
+                                                   + get(REFERENCE)) : ""));
+        strb.append((((containsKey(SOURCE))) ? (nm + SOURCE + ": "
+                                                + get(SOURCE)) : ""));
+        strb.append((((containsKey(PRIM_CONTEXT))) ? (nm + PRIM_CONTEXT
+                                                      + ": " + "included") : ""));
         return strb.toString();
     }
 }
