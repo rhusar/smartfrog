@@ -28,7 +28,7 @@ public class ConditionalTest extends TestRunnerTestBase {
         super(name);
     }
 
-    public void testConditionalTrue() throws Throwable {
+    public void NotestConditionalTrue() throws Throwable {
         executeBufferedTestRun("junit-conditional-true", 1, 0, 0);
     }
 
