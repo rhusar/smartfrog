@@ -42,9 +42,9 @@ hostname "127.0.0.1";
 
 test.tempdir LAZY PROPERTY java.io.tmpdir;
 
-test.timeout OPTIONAL(15000) IPROPERTY test.timeout.execute;
+test.timeout OPTIONAL(30000) IPROPERTY test.timeout.execute;
 
-test.waitForTimeout 5000;
+test.waitForTimeout 15000;
 
 waitForTimeout test.waitForTimeout;
 //interval in ms between checks
