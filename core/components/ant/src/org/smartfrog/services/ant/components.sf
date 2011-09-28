@@ -31,7 +31,8 @@ AntWorkflowComponent extends WorkflowPrim {
     //list of [name,value] pairs defining ant properties
     properties extends Vector;
 
-    //this is the name of a target to set the properties on
+    //this is a reference to a target component to set the properties on
+    //these are set after the run completes.
     propertyTarget extends OptionalCD;
     //log level, one of "debug", "info", "error", "warn"
     logLevel extends String;
@@ -70,6 +71,8 @@ Ant extends AntWorkflowComponent {
         runtime extends OptionalCD;
 
         asynch extends Boolean;
+
+        completed extends Boolean;
     }
 
    /**
@@ -81,6 +84,7 @@ Ant extends AntWorkflowComponent {
    typesResource "/org/apache/tools/ant/types/defaults.properties";
    asynch false;
    properties [];
+   completed false;
 }
 
 /**
@@ -94,7 +98,7 @@ AntWorkflowRun extends Ant {
 /**
  * This component runs Ant on the build files in the target directories.
  * This build does not run ant.bat, ant.sh or ant.pl; it runs Ant in the nominated
- * SmartFrog process. To avoid memory leaks from Ant tasks (e.g. Javac,Ivy), run
+ * SmartFrog process. To avoid memory leaks from Ant tasks (e.g. Javac, Ivy), run
  * the build in a new process.
  * 1. Every build is sequential.
  * 2. a failure halts the run with the BuildException mapped to a SmartFrogException.

@@ -42,6 +42,8 @@ public interface Ant extends AntWorkflowComponent {
      * */
     String ATTR_ASYNCH = "asynch";
 
+    String ATTR_PROPERTY_TARGET = "propertyTarget";
+
     /**
      * {@value}
      */
@@ -64,5 +66,9 @@ public interface Ant extends AntWorkflowComponent {
      */
     String ATTR_RUNTIME = "runtime";
 
+    /**
+     * Completed flag is set when completion has occurred
+     */
+    String ATTR_COMPLETED = "completed";
 
 }
