@@ -1,0 +1,139 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/dns/dnsData.sf"
+
+
+DNSZone extends Prim {
+
+    sfClass "org.smartfrog.services.dns.DNSModifierImpl";
+
+    /* A reference to a (remote) DNS manager. */
+    manager LAZY HOST localhost:dnsManager; // LAZY Link
+
+    // An absolute name that identifies this view.
+    zoneName TBD; // String
+    
+    // The name of the view that contains this zone.
+    viewName "default";
+
+    /* Set these zone as default. */
+    setAsDefaultZone  false;
+
+   /* The host name that will appear in the NS records as 
+       master of the zones --OPTIONAL--. */
+    // data:nameServerHostName "localhost";
+
+    data extends LAZY DNSZoneData {
+        // picks zoneName and viewName from PARENT:ATTRIB
+           setAsDefaultZone PARENT:ATTRIB setAsDefaultZone;
+    }
+
+}
+
+DNSZoneForward extends DNSZone {
+    /* An addres to forward this query.*/
+    forwardAddress TBD; // String, i.e., "127.0.0.1"
+    data extends LAZY DNSZoneData {
+        // picks zoneName and viewName from PARENT:ATTRIB
+
+        isForwarding  true;
+        allowUpdate false;
+        forwarders [ATTRIB forwardAddress]; 
+        setAsDefaultZone PARENT:ATTRIB setAsDefaultZone;
+
+    }
+}
+
+DNSZonePair extends DNSZone {
+
+    /* A string that identifies the view used for this zone pair, or "default"
+       if we use the manager's default view. */
+    viewName "default";
+
+    /* A string that identifies the zone used for this binding. */
+    zoneName TBD ; // String
+
+    /* A string that identifies the reverse zone used for this binding. */
+    reverseZoneName TBD; // String
+
+    /* Set these zone as default. */
+    setAsDefaultZone  false;
+     
+    data extends LAZY DNSCollectionData {
+
+        zone extends DNSZoneData {
+         // picks viewName from PARENT:ATTRIB
+           zoneName PARENT:ATTRIB zoneName;
+           isReverse false;
+           setAsDefaultZone PARENT:ATTRIB setAsDefaultZone;
+        }
+
+        reverseZone extends DNSZoneData {
+        // picks viewName from PARENT:ATTRIB
+            zoneName PARENT:ATTRIB reverseZoneName;
+            isReverse true;
+            setAsDefaultZone PARENT:ATTRIB setAsDefaultZone;
+        }
+    }
+
+}
+
+DNSZoneForwardPair extends DNSZone {
+
+    /* A string that identifies the view used for this zone pair, or "default"
+       if we use the manager's default view. */
+    viewName "default";
+
+    /* A string that identifies the zone used for this binding. */
+    zoneName TBD ; // String
+
+    /* A string that identifies the reverse zone used for this binding. */
+    reverseZoneName TBD; // String
+
+    /* Set these zone as default. */
+    setAsDefaultZone  false;
+
+    /* An addres to forward this query.*/
+    forwardAddress TBD; // String, i.e., "127.0.0.1"
+     
+    data extends LAZY DNSCollectionData {
+
+        zone extends DNSZoneData {
+         // picks viewName from PARENT:ATTRIB
+            isForwarding  true;
+            allowUpdate false;
+            forwarders [ATTRIB forwardAddress]; 
+            zoneName PARENT:ATTRIB zoneName;
+            isReverse false;
+            setAsDefaultZone PARENT:ATTRIB setAsDefaultZone;
+        }
+
+        reverseZone extends DNSZoneData {
+        // picks viewName from PARENT:ATTRIB
+            isForwarding  true;
+            allowUpdate false;
+            forwarders [ATTRIB forwardAddress]; 
+            zoneName PARENT:ATTRIB reverseZoneName;
+            isReverse true;
+            setAsDefaultZone PARENT:ATTRIB setAsDefaultZone;
+        }
+    }
+}

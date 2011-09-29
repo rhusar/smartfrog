@@ -1,0 +1,11 @@
+<!DOCTYPE faults [
+<!ELEMENT code (#PCDATA)>
+<!ELEMENT faultset (fault)*>
+<!ATTLIST faultset
+    namespace CDATA #REQUIRED>
+<!ELEMENT errormessage (#PCDATA)>
+<!ELEMENT fault (code|wiremessage|errormessage|documentation)*>
+<!ELEMENT wiremessage (#PCDATA)>
+<!ELEMENT documentation (#PCDATA)>
+<!ELEMENT faults (faultset)*>
+]>

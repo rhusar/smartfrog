@@ -1,0 +1,6 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+sfConfig extends RComponent {
+       sfClass "org.smartfrog.services.persistence.test.testcases.SimpleRComponent";
+}

@@ -1,0 +1,117 @@
+/** (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "/org/smartfrog/services/cloudfarmer/test/components.sf"
+#include "/org/smartfrog/services/cloudfarmer/client/web/deploy/components.sf"
+
+JettyAndMock extends Compound {
+    cluster extends MockCluster;
+
+    jetty extends StrutsOnJetty {
+    
+    }
+  }
+
+
+ExpectJettyServerDeployed extends ExpectDeploy {
+  description "A test with jetty and the mock cluster farmer";
+
+  action extends JettyAndMock;
+  farmer LAZY action:cluster;
+
+}
+
+
+/**
+ * Wait for a local page
+ */
+WaitForJettyPage extends WaitForPage {
+  fetchErrorText true;
+  port StrutsOnJetty:port;
+  timeout 5000;
+}
+
+
+WaitForIndex extends WaitForJettyPage {
+  page "/index.html";
+}
+
+
+WaitForJSP extends WaitForJettyPage {
+  page "/index.jsp";
+}
+
+WaitForJSPError extends WaitForJettyPage {
+  page "/happy/error.jsp";
+}
+
+
+WaitForJSPErrorCode extends WaitForJSPError {
+  errorCode HttpCodes:OK;
+  queries [
+      ["status",errorCode]
+      ];
+  minimumResponseCode errorCode;
+  maximumResponseCode errorCode;
+  }
+
+WaitForWorkflowList extends WaitForJettyPage {
+  page WorkflowActions:workflowList;
+}
+
+WaitForClusterList extends WaitForJettyPage {
+  page ClusterActions:list;
+}
+WaitForStrutsHappy extends WaitForJettyPage {
+  page WorkflowActions:strutsHappy;
+}
+
+WaitForTilesHappy extends WaitForJettyPage {
+  page WorkflowActions:tilesHappy;
+}
+
+WaitForHadoopConf extends  WaitForJettyPage {
+  page HadoopConfServletData:page;
+  errorCode HttpCodes:OK;
+  minimumResponseCode errorCode;
+  maximumResponseCode errorCode;
+}
+
+/**
+ This variant looks for a 404 page, which is what you expect 
+ when the master is missing. We also look in the text
+ */
+WaitForHadoopConfErrorNoMaster extends  WaitForHadoopConf {
+  errorCode HttpCodes:NOT_FOUND;
+  responseRegexp (".*" ++ HadoopConfServletData: ERROR_NO_HADOOP_MASTER ++ ".*");
+}
+
+
+
+
+testForPage extends ExpectJettyServerDeployed {
+  page TBD;
+
+  tests extends Sequence {
+    wait extends WaitForJSP {
+       page PARENT:PARENT:page;
+    }
+  }
+}

@@ -1,0 +1,97 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ * Anything common to all the farmer implementations goes here
+ */
+ 
+ 
+AbstractClusterFarmer extends Compound {
+
+  //limit on the size of this cluster
+  clusterLimit 1000;
+ 
+ 
+  
+  //compound of roles
+  roles extends Compound {
+  
+  }
+ 
+  /**
+   * the node deployment server
+   */
+  deploymentFactory TBD;
+    
+  /**
+   * constant to ignore all cluster limits
+   */
+  NO_LIMIT -1;
+} 
+ 
+  
+ /**
+ * A cluster role defines a role for a cluster.
+ * This is a template which may be used by specific farmers, in which case they may extend it with their own
+ * implementation classes, with extra validation
+ *
+ * The min/max values are used during allocation to ensure that the role numbers are not exceeded.
+ * The recommended values are just hints for GUIs and other tools
+ */
+ 
+ AbstractClusterRole extends {
+  NO_LIMIT -1;
+  //descriptive text for clients
+  description "";
+  //more detailed text
+  longDescription description;
+  
+  //minimum number of this role to create
+  min 0;
+  //max number
+  max NO_LIMIT;
+  
+  //the number you should create
+  recommendedMin 0 ;
+  //the maximum number
+  recommendedMax NO_LIMIT;
+
+  /**
+   * This is where a list of options get added; clients can see all these values and act on them
+   */
+  options extends DATA {
+
+  }
+
+  /**
+   * A list of name [protocol, port#, path] strings
+   * such as "HDFS" ["http", 8081, "/"];
+   * which can be used to build links
+   */
+  links extends DATA {
+  
+  }
+}
+
+
+ClusterRole extends AbstractClusterRole, Prim  {
+  sfClass "org.smartfrog.services.cloudfarmer.server.common.ClusterRoleImpl";
+  
+}

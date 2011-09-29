@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>${comp.sfResolve("jobtrackerHost")}:${comp.sfResolve("jobtrackerPort")}</value>
+    <description>The host and port that the MapReduce job tracker runs
+    at.  If "local", then jobs are run in-process as a single map
+    and reduce task.
+    </description>
+  </property>
+<% if (comp.sfResolve("ibrix", false, false)) { %>
+  <property>
+    <name>mapred.system.dir</name>
+    <value>${comp.location}/mapred/system</value>
+    <description>The shared directory where MapReduce stores control files.</description>
+  </property>
+  <property>
+    <name>mapred.temp.dir</name>
+    <value>${comp.location}/mapred/temp</value>
+    <description>A shared directory for temporary files.</description>
+  </property>
+<% }%>
+</configuration>

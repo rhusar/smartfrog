@@ -1,0 +1,10 @@
+
+  // Startup options
+HdfsStartupOption extends DATA {
+  FORMAT   "-format";
+  REGULAR  "-regular";
+  UPGRADE  "-upgrade";
+  ROLLBACK "-rollback";
+  FINALIZE "-finalize";
+  IMPORT   "-importCheckpoint";
+  }

@@ -1,0 +1,12 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+
+    myComp extends RebindingRComponent {
+       sfClass "org.smartfrog.services.persistence.test.testcases.HelloSFAlternateRebindImpl";
+       sfProcessComponentName "hello";
+       lastClient "none";
+       sfRebindTimeout 200;
+       sfFailFastTimeout 100;
+    }
+    sfConfig extends  myComp

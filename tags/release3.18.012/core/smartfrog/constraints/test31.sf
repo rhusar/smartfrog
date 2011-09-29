@@ -1,0 +1,14 @@
+#include "/org/smartfrog/functions.sf"
+
+foo1 extends {
+  bar 1;
+  bar2 2;
+}
+
+foo2 extends {
+  bar3 3;
+  bar4 4;
+}
+
+sfConfig extends foo2, foo1;
+

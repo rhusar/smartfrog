@@ -1,0 +1,13 @@
+HostType extends DATA { //Constraint {
+   //host_type
+   host_types ["foo1", "foo2"];
+   memory VAR memory_types 16;
+   //cpu VAR processor_speeds 3;
+   
+   memory_types [2, 4, 8, 16];
+   cpu [1.5, 2, 3];
+
+   //quantity 
+
+   //[sfConstraint] -- "(host_type==foo1 -> memory=8)";
+}

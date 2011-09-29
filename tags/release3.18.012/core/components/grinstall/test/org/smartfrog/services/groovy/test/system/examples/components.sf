@@ -1,0 +1,70 @@
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/groovy/install/base.sf"
+
+test.classes.dir PROPERTY test.classes.dir;
+work.dir PROPERTY test.work.dir;
+examples.dir (test.classes.dir ++ "/examples");
+
+
+
+ExampleComponent extends Component {
+  example TBD;
+  scriptDir (examples.dir ++ "/" ++ example);
+  destDir work.dir;
+}
+
+TouchFileComponent extends ExampleComponent {
+  example "touchfile";
+}
+
+
+
+targetExists extends FileExistsWorkflow {
+  name TBD;
+  filename (work.dir ++ "/" ++ name);
+  canBeDir false;
+}
+
+TestTouchFile extends ExpectTerminate {
+
+  action extends Sequence {
+
+    touch extends TouchFileComponent {
+        sfShouldTerminate true;
+    }
+
+    installExists extends targetExists {
+      name "install.txt"
+    }
+
+
+    preconfigExists extends targetExists {
+      name "preconfigure.txt"
+    }
+
+    installExists extends targetExists {
+      name "start.txt"
+    }
+    
+    postconfigureExists extends targetExists {
+      name "postconfigure.txt"
+    }
+
+    terminateExists extends targetExists {
+      name "terminate.txt"
+    }
+  }
+}
+
+EchoComponent extends ExampleComponent {
+  example "echo";
+}
+
+TestEcho extends ExpectTerminate {
+
+  action extends EchoComponent {
+    sfShouldTerminate true;
+  }
+
+}

@@ -1,0 +1,99 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/examples/arithnet/netComponents.sf"
+
+
+/**
+ * example 3 defines a 4-host system, with hosts A,B,C,D each having some
+ * components
+ * A and B have components that generate values and add a constant
+ * C has a component that multiplies the result of these two, replicates the
+ * result and prints
+ * D has a print component
+ *
+ * To run the example, set values for the hostAhost, hostBhost, hostChost,
+ * hostDhost attributes in sfConfig
+ */
+
+Example3 extends Compound {
+        hostA extends Compound {
+                sfProcessHost ATTRIB hostAhost;
+                gen extends Generator {
+                        seed 12331;
+                        min 100;
+                        max 199;
+                outputs:value:to LAZY ATTRIB plus:inputs:lhs;
+                }
+                six extends Constant {
+                        constant 6;
+                        outputs:value:to LAZY ATTRIB plus:inputs:rhs;
+                }
+                plus extends Plus {
+                        outputs:value:to LAZY ATTRIB hostC:times:inputs:lhs;
+                }
+        }
+      hostB extends Compound {
+                sfProcessHost ATTRIB hostBhost;
+                gen extends Generator {
+                        seed 6576;
+                        interval 1;
+                        min -25;
+                        max 25;
+                        outputs:value:to LAZY ATTRIB plus:inputs:rhs;
+                }
+                five extends Constant {
+                        constant 5;
+                        outputs:value:to LAZY ATTRIB plus:inputs:lhs;
+                }
+                plus extends Plus {
+                 outputs:value:to LAZY ATTRIB hostC:times:inputs:rhs;
+                }
+        }
+        hostC extends Compound {
+                sfProcessHost ATTRIB hostChost;
+                times extends Times{
+                        outputs:value:to LAZY ATTRIB dup:inputs:value;
+                }
+                dup extends Dup{
+                        outputs:copy1:to  LAZY ATTRIB print:inputs:printVal;
+                        outputs:copy2:to  LAZY ATTRIB hostD:print:inputs:printVal;
+                }
+                print extends Printer;
+        }
+        hostD extends Compound {
+                sfProcessHost ATTRIB hostDhost;
+                print extends Printer;
+        }
+}
+
+
+sfConfig extends Compound {
+      hostAhost "localhost";
+      hostBhost "localhost";
+      hostChost "localhost";
+      hostDhost "localhost";
+
+      sfProcessComponentName "default";
+
+      example extends Example3;
+}
+

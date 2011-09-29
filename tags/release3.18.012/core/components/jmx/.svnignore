@@ -1,0 +1,6 @@
+*.iml
+*.ipr
+build
+dist
+build.properties
+version.properties

@@ -1,0 +1,177 @@
+//phaseList [|"type", "place", "function", "sfConfig", "link", "modelcheck"|];
+
+SimpleStateComponent extends StateComponent {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.SimpleStateComponent";   
+   up false;
+   tstart extends Transition {
+      guard (!LAZY up);
+      effects extends PolicyEffects {
+	    key "up";
+	    update true;
+      }
+   }
+   tstop extends Transition {
+      guard (LAZY up);
+      effects extends PolicyEffects {
+	     key "up";
+	     update false;
+      }
+   }
+}
+
+DesiredObservedStateComponent extends StateComponent {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.SimpleStateComponent";   
+   dup false;
+   oup false;
+
+   tstart extends Transition {
+      guard ((!LAZY oup) && (LAZY dup));
+      effects extends PolicyEffects {
+	     key "oup"; 
+	     update true;
+      }
+   }
+   tstop extends Transition {
+      guard ((LAZY oup) && (!LAZY dup));
+      effects extends PolicyEffects {
+	    key "oup";
+	    update false;
+      }
+   }
+}
+
+PerformAction extends StateComponent {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
+   done false;
+   tToDone extends Transition {
+          guard ( !LAZY done );
+          effects extends PolicyEffects {
+		     key "done";
+		     update true;
+	      }
+   }
+}
+
+Dependency extends Prim {
+     sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
+     sfUpdatable true;
+     by TBD;
+     sfIsDependency;
+     relevant true;
+     enabled false;
+}
+
+StateComponent extends Prim {
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.NilStateComponent";
+     //sfUpdatable true;
+     sfUniqueComponentID;
+	 [sfFinal] asAndConnector false;
+
+	 threadpool LAZY PARENT:ATTRIB threadpool;
+	 sfOrchEventLog LAZY PARENT:ATTRIB sfOrchEventLog;
+	 sfInformMetaData extends DATA { show false; }
+	 //sfIgnoreMyMetaData false;
+	 sfQueryMetaData true;
+}
+
+OrchEventLog extends Prim {
+    sfClass "org.smartfrog.sfcore.prim.PrimImpl";
+    count 0;
+}
+
+ThreadedCompositeBase extends {
+     threadpool extends SimpleThreadPool;
+     sfIsThreadedComposite;
+     sfNotificationDelay 1000;
+}
+
+ThreadedComposite extends Composite, ThreadedCompositeBase;
+ThreadedCompositeWithSync extends CompositeWithSync, ThreadedCompositeBase;
+
+Composite extends Compound {
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
+     sfUpdatable true;
+     sfSyncTerminate true;
+     sfQueryMetaData true;
+
+     /*inputConnectors extends Compound {
+        sfUpdatable true;
+     }
+     outputConnectors extends Compound {
+        sfUpdatable true;     
+     }*/
+}
+
+CompositeWithSync extends Composite {
+   sfClass "org.smartfrog.services.dependencies.statemodel.state.SynchedComposite";
+   run false;
+   running false;
+} 
+
+NWayComposite extends Composite {
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.NWayComposite";
+     sfUpdatable false;
+
+     template TBD;
+     instances TBD; // either a number or a component description containing named component descriptions of paramter data
+}
+
+
+Model extends CompositeWithSync, ThreadedCompositeBase {
+     //phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
+     running true;  //note this has changed in meaning from legacy versions
+     sfIsOrchModel;
+}
+
+CompositeTerminator extends StateComponent {
+    sfClass "org.smartfrog.services.dependencies.statemodel.termination.CompositeTermination";
+    toTerminate LAZY PARENT;
+    detachFirst true;
+    terminateCond TBD;
+    -- extends Transition {
+       guard terminateCond;
+       effects extends {}
+    }
+    sfUniqueComponentID false;  //not a component for model checking purposes
+}
+
+Connector extends Prim {
+  sfUpdatable true;
+  not false;
+  exists false;
+}
+
+AndConnector extends Connector {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnector";
+}
+
+OrConnector extends Connector {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnector";
+}
+
+XorConnector extends Connector {
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.XorConnector";
+}
+
+Transition extends {
+    sfIsStateComponentTransition;
+    guard true;
+    requiresThread true;
+}
+
+VerificationRecord extends {
+    sfIsVerificationRecord;
+    proposition TBD;
+    ltl false;
+}
+
+OrchStateMapping extends DATA {
+   path TBD;
+   attr TBD;
+   replaceAttr;
+   echo;
+   echoAttr "change";
+   retry true;
+   scope;
+}
+

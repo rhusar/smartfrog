@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!--
+    ~ Generously contributed by Brett Porter of maven, brett.porter@gmail.com.
+    ~ Needlessly broken by Steve Loughran
+    ~ This POM and its metadata is released under the Apache 2.0 license.
+    ~ To upload a version of TestNG,
+    ~ Open a JIRA upload request as was done here: http://jira.codehaus.org/browse/MAVENUPLOAD-1010
+    -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <name>TestNG</name>
+    <version>5.6</version>
+    <description>TestNG is a unit testing framework.</description>
+    <url>http://testng.org/</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:svn:a${scm.url}</connection>
+        <url>http://testng.googlecode.com/svn/trunk</url>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>

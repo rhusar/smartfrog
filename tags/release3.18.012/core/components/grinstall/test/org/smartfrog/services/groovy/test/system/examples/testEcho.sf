@@ -1,0 +1,6 @@
+
+#include "/org/smartfrog/services/groovy/test/system/examples/components.sf"
+
+sfConfig extends TestEcho {
+
+}
