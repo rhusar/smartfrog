@@ -22,7 +22,7 @@ class VFSTest extends GroovyTestCase {
 
     
     void testCopyFileFromHTTP() {
-        helper.copy("http://people.apache.org/~rgoers/commons-vfs/apidocs/index.html",
+        helper.copy("http://people.apache.org/~stevel/html/index.html",
                 clean(testdir + "CopyFileFromHTTP/labs.html"))
     }
 
