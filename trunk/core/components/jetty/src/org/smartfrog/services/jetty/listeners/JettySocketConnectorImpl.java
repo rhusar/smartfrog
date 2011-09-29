@@ -24,14 +24,14 @@ import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.thread.QueuedThreadPool;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.RemoteException;
-import java.net.ServerSocket;
-import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.rmi.RemoteException;
 
 /**
  * Socketlistner class for SocketListener for Jetty http server.
@@ -103,14 +103,14 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
      */
     @Override
     protected void onConnectorStarted(Connector startedConnector) throws SmartFrogException, RemoteException {
-        boolean allowIPv4= sfResolve(ATTR_ALLOW_IPV4, true, true);
+        boolean allowIPv4 = sfResolve(ATTR_ALLOW_IPV4, true, true);
         boolean allowIPv6 = sfResolve(ATTR_ALLOW_IPV6, true, true);
         ServerSocket sock = getServerSocket();
-        if (sock==null) {
+        if (sock == null) {
             return;
         }
         InetAddress address = sock.getInetAddress();
-        if((address instanceof Inet4Address) && !allowIPv4) {
+        if ((address instanceof Inet4Address) && !allowIPv4) {
             throw new SmartFrogDeploymentException(ERROR_WRONG_FAMILY + address);
         }
         if ((address instanceof Inet6Address) && !allowIPv6) {
