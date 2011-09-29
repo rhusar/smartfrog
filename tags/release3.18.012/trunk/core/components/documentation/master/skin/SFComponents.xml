@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document>
+  <header> 
+    <title>Smartfrog Components</title> 
+    <notice>Select a Smartfrog Component from the list</notice>
+    <abstract>Here are the Smartfrog Components included in this distribution</abstract>
+  </header> 
+  
+  <body> 
+	  <section>
+	<title>SmartFrog Components</title>
+	<p><a href="anubis/AnubisUserGuide.pdf">Anubis Components</a></p>
+	<p><a href="ant/ant_readme.html">Ant Components</a></p>
+  <p><a href="database/database_readme.html">Database Components </a></p>
+  <p><a href="emailer/emailer_readme.html">Email Components </a></p>
+  <p><a href="jetty/jetty_readme.html">Jetty Components </a></p>
+  <p><a href="jmx/jmx_readme.html">JMX Components </a></p>
+  <p><a href="net/net_readme.html">Network Components </a></p>
+  <p><a href="scripting/scripting_readme.html">Scripting Components </a></p>
+	<p><a href="slp/slp_readme.html">SLP Components</a></p>
+	<p><a href="ssh/ssh_readme.html"> SSH Components</a></p>
+  <p><a href="sfinstaller/sfinstaller_readme.html">SmartFrog Installer Components </a></p>
+	<p><a href="loggingservices/loggingservices_readme.html">SmartFrog Logging Services </a></p>
+  <p><a href="xml/xml_readme.html">XML Components</a></p>
+  <p><a href="www/www_readme.html">WWW Components</a></p>
+  </section>
+  </body> 
+</document>
+

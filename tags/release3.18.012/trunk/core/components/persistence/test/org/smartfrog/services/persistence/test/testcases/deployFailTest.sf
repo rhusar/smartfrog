@@ -1,0 +1,10 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+
+
+
+sfConfig extends RComponent {
+   sfStorageData:sfUniqueComponentName "myUniqueName";
+  
+}

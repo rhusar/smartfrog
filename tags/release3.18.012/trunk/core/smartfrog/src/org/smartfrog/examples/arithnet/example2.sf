@@ -1,0 +1,59 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/examples/arithnet/netComponents.sf"
+
+/**
+ * example 2 is basically same as example 1 in principle, but the generated
+ * number is duplicated and sent to two printers, one on the local host and
+ * one on a remote host.
+ * The context containing this must have the attribute printerHostname defined
+ */
+
+Example2 extends Compound {
+     //printerHostname "localhost";
+     generator extends Generator {
+         outputs:value:to LAZY ATTRIB dup:inputs:value;
+         interval 1; // speed it up a bit
+         max 10;
+         min 1;
+     }
+     dup extends Dup {
+         outputs:copy1:to LAZY ATTRIB printerLocal:inputs:printVal;
+         outputs:copy2:to LAZY ATTRIB printerRemote:inputs:printVal;
+     }
+     printerLocal extends Printer;
+     printerRemote extends Printer {
+         sfProcessHost ATTRIB printerHostname;
+     }
+}
+
+
+sfConfig extends Compound {
+     /**
+      * The name or IP address of the remote printer host
+      */
+      printerHostname "localhost";
+
+      sfProcessComponentName "default";
+
+      example extends Example2;
+}

@@ -1,0 +1,22 @@
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/hadoop/components.sf"
+#include "/org/smartfrog/services/hadoop/mapreduce/terasort/components.sf"
+
+
+ExpectSuccessfulOperations extends ExpectDeploy {
+
+  dfsCluster LAZY action:dfsCluster;
+  mrCluster LAZY action:mrCluster;
+  fsURI LAZY dfsCluster:filesystemURI;
+  
+  action extends MicroHadoopCluster {
+
+
+  }
+  tests extends Sequence {
+  }
+}
+
+sfConfig extends MicroHadoopCluster {
+
+}

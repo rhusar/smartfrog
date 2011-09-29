@@ -1,0 +1,388 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "/org/smartfrog/services/www/webapplication.sf"
+//logging
+#include "/org/smartfrog/services/jetty/log/components.sf"
+
+/**
+ * this defines the core of jetty
+ */
+
+
+/*
+ * The jetty components consist of
+ * Listeners for incoming requests
+*/
+
+
+CoreJettySchema extends Schema {
+    host extends String;
+
+    enableLogging extends Boolean;
+    //log pattern
+    logPattern extends String;
+    
+    //the log dir must be an absolute path
+    logDir extends Optional;
+    //a vector of paths, which are strings in the app server.
+    //such as ["/jetty/images/*","/demo/images/*", "*.css"];
+    //needed if enableLogging=true
+    logIgnorePaths extends OptionalVector;
+    //timezone for logging events in
+    logTimezone  extends OptionalString;
+
+    /**
+     * should log data be appended?
+     */
+
+    logAppend extends OptionalBoolean;
+
+    /**
+     * days to keep for log data.
+     */
+
+    logKeepDays extends OptionalInteger;
+
+    /**
+     * is the log extended?
+     */
+
+    logExtended  extends OptionalBoolean;
+
+    maxIdleTime extends Integer;
+    maxThreads extends Integer;
+    minThreads extends Integer;
+    sendDateHeader extends Boolean;
+    sendServerVersion extends Boolean;
+    stopAtShutdown extends Boolean;
+}
+
+/**
+ * These are the thread pooling options shared by the Core Jetty Sever, and by connectors -anything 
+ * that needs to create a jetty thread pool
+ */
+
+ThreadPoolOptions extends  {
+    //name of the pool
+    name "pooledthread";
+    //if >0, sets the absolute number of threads
+    threads 0;
+    
+    
+    //otherwise, dynamic thread pools are used
+    //minimum number to keep around
+    minThreads 4;
+    //maximum number
+    maxThreads 200;
+    //how many to have free/unused to trigger pool resize
+    spawnOrShrinkAt 0;
+    
+    priority THREAD_NORMAL_PRIORITY;
+    THREAD_MIN_PRIORITY  1;
+    THREAD_NORMAL_PRIORITY 5;
+    THREAD_MAX_PRIORITY 10;
+}
+
+
+/**
+ * this is jetty with no running listeners or contexts.
+ * It is implemented as a compound; you can add anything underneath it and they
+ * will be deployed.
+ */
+CoreJettyServer extends ApplicationServer , ThreadPoolOptions{
+   sfClass "org.smartfrog.services.jetty.JettyImpl";
+   coreJettySchema extends CoreJettySchema;
+   
+   LOCALHOST "localhost";
+   ANY_HOST "*";
+   host LOCALHOST;
+
+   //deployment information
+   supportsEAR false;
+   supportsWAR true;
+   supportsServletContext true;
+
+
+   //logging is optional. Once turned on, the other log details become mandatory
+   enableLogging false;
+   logAppend true;
+   logDir "log";
+   logExtended true;
+   logKeepDays 7;
+   logIgnorePaths [];
+   logTimezone "GMT";
+   logPattern "yyyy_mm_dd.request.log";
+
+   //thread pool policy.
+   name "JettyServer";
+   minThreads 4;
+   maxThreads 32;
+   maxIdleTime 10000;
+
+   //should the date header be sent in a response?
+   sendDateHeader true;
+   //should the server version be sent in a response?
+   sendServerVersion true;
+
+   //set this to add a flag to shut the server down cleanly
+   //during app termination. Not normally needed, as SmartFrog
+   //has its own shutdown, and hard crashes don't call any hooks
+   stopAtShutdown false;
+
+}
+
+
+
+/**
+ * jetty handlers handle requests within a servlet.
+ * as such, a context attribute is mandatory
+ */
+JettyHandler extends ServletContextComponent {
+}
+
+
+/**
+ * listeners listen on ports
+ */
+
+AbstractConnector extends ApplicationServerContext {
+    connectorSchema extends Schema {
+      port extends Integer;
+      host extends OptionalString;
+      name extends OptionalString;
+      maxIdleTime extends Integer;
+    }
+
+    maxIdleTime CoreJettyServer:maxIdleTime;
+    port 8080;
+    host CoreJettyServer:host;
+}
+
+AbstractThreadPooledConnector extends AbstractConnector, ThreadPoolOptions {
+
+    //number of threads to accept requests
+    acceptors 4;
+    
+}
+
+/**
+ * a connector that opens a socket and listens to it. Each open socket consumes one thread.
+ */
+
+JettySocketConnector extends AbstractThreadPooledConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
+    name "JettySocketThread";
+    //are IPv4 addresses allowed?
+    allowIPv4 true;
+    //are IPv6 addresses allowed?
+    allowIPv6 true;
+}
+
+
+/**
+ * here for backwards compatibility; connects up the port and host to the old definitions
+ */
+JettyListener extends JettySocketConnector {
+  serverHost TBD;
+  listenerPort JettySocketConnector:port;
+  port listenerPort;
+  host serverHost;
+}
+
+ /**
+  * SSL Support. A password provider is used for password support
+  */
+JettySSLSocketConnector extends JettySocketConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.SSLJettySocketConnectorImpl";
+    port 443;
+    name "JettySSLSocketThread";
+    jettySSLSocketConnectorSchema extends Schema {
+       //path/reference to a keystore
+      keystore extends FilenameType;
+      keystoreType extends String;
+       //the password provider
+      passwordProvider extends Compulsory;
+      protocol extends String;
+    }
+    keystoreType "JKS";
+    protocol "TLS";
+}
+
+
+
+/**
+ * This connector uses Java's NIO APIs to handle incoming requests more efficently
+ */
+
+JettySelectChannelConnector extends AbstractThreadPooledConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.SelectChannelConnectorImpl";
+    name "JettySelectChannelThread";
+
+    /**
+     If True (the default), the connector can use NIO direct buffers.
+     Some JVMs have memory management issues (bugs) with direct buffers.
+     */
+    useDirectBuffers true;
+    /**
+     * socket linger time, -1 for disable
+     */
+    socketLingerTime -1;
+    headerBufferSize   (4  * 1024);
+    //request and response buffers are only used if the request or response is bigger than the header buffer
+    requestBufferSize  (8  * 1024);
+    responseBufferSize (24 * 1024);
+
+}
+
+/**
+ * this is a compound defining the server at server, default port bindings, but nothing 
+ * actually listening for connections
+ */
+JettyHttpServerCompound extends Compound {
+
+  port AbstractConnector:port;
+  host AbstractConnector:host;
+
+  server extends CoreJettyServer {
+    host PARENT:host;
+  }
+
+}
+
+/**
+ * Listen for connections using sockets
+ */
+
+JettySocketHttpServerCompound extends JettyHttpServerCompound {
+
+  connector extends JettySocketConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+  }
+
+}
+
+/**
+ * Listen for connections using HTTPS sockets
+ */
+JettySocketHttpsServerCompound extends JettyHttpServerCompound {
+
+  port JettySSLSocketConnector:port;
+  
+  connector extends JettySSLSocketConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+  }
+  
+}
+
+/**
+ * Listen for connections Select operations and NIO channels
+ */
+JettySelectChannelHttpServerCompound extends JettyHttpServerCompound {
+
+  connector extends JettySelectChannelConnector {
+    server LAZY PARENT:server;
+    port PARENT:port;
+    host PARENT:host;
+  }  
+}
+
+CoreJettyHttpServer JettySocketHttpServerCompound;
+ 
+
+
+/**
+ * this name gest stamped on in jetty-complete
+ */
+JettyHttpServer extends CoreJettyHttpServer;
+
+
+/* ------------------------------------------------------------ */
+// From the javadocs
+/** The default servlet.
+ * This servlet, normally mapped to /, provides the handling for static
+ * content, OPTION and TRACE methods for the context.
+ * The following initParameters are supported, these can be set either
+ * on the servlet itself or as ServletContext initParameters with a prefix
+ * of org.mortbay.jetty.servlet.Default. :
+ * <PRE>
+ *   acceptRanges     If true, range requests and responses are
+ *                    supported
+ *
+ *   dirAllowed       If true, directory listings are returned if no
+ *                    welcome file is found. Else 403 Forbidden.
+ *
+ *   redirectWelcome  If true, welcome files are redirected rather than
+ *                    forwarded to.
+ *
+ *   gzip             If set to true, then static content will be served as
+ *                    gzip content encoded if a matching resource is
+ *                    found ending with ".gz"
+ *
+ *  resourceBase      Set to replace the context resource base
+ *
+ *  relativeResourceBase
+ *                    Set with a pathname relative to the base of the
+ *                    servlet context root. Useful for only serving static content out
+ *                    of only specific subdirectories.
+ *
+ *  aliases           If True, aliases of resources are allowed (eg. symbolic
+ *                    links and caps variations). May bypass security constraints.
+ *
+ *  maxCacheSize      The maximum total size of the cache or 0 for no cache.
+ *  maxCachedFileSize The maximum size of a file to cache
+ *  maxCachedFiles    The maximum number of files to cache
+ *  cacheType         Set to "bio", "nio" or "both" to determine the type resource cache.
+ *                    A bio cached buffer may be used by nio but is not as efficient as an
+ *                    nio buffer.  An nio cached buffer may not be used by bio.
+ *
+ *  useFileMappedBuffer
+ *                    If set to true, it will use mapped file buffer to serve static content
+ *                    when using NIO connector. Setting this value to false means that
+ *                    a direct buffer will be used instead of a mapped file buffer.
+ *                    By default, this is set to true.
+ *
+ *  cacheControl      If set, all static content will have this value set as the cache-control
+ *                    header.
+ *
+ *
+ * </PRE>
+
+ */
+DefaultContentServlet extends Servlet {
+
+
+  name "DefaultServlet";
+  className "org.mortbay.jetty.servlet.DefaultServlet";
+  pathSpec "*.html";
+  mappings ["*.txt","*.xhtml","*.css","*.jpg","*.png","*.ico"];
+
+  initOptions extends DATA {
+    //directory operation
+    dirAllowed false;
+    aliases false;
+    redirectWelcome false;
+  }
+
+}

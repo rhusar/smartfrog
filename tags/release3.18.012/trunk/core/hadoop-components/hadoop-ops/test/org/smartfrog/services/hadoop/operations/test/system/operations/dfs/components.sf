@@ -1,0 +1,54 @@
+
+
+#include "/org/smartfrog/services/hadoop/operations/test/system/components.sf"
+
+
+
+
+
+testDfsLive extends ExpectSuccessfulOperations {
+  sfProcessName "PS-testDfsLive";
+
+  tests extends Sequence {
+    cluster LAZY dfsCluster;
+
+    dfsLive extends DfsPathExists {
+      cluster PARENT:cluster;
+      path "/"
+    }
+
+  }
+}
+
+testDirectoryCreateAndDelete extends ExpectSuccessfulOperations {
+
+  sfProcessName "PS-testDirectoryCreateAndDelete";
+
+  tests extends Sequence {
+    cluster LAZY dfsCluster;
+
+    dfsDirPath "testDirectoryCreateAndDelete";
+
+    dfsLive extends DfsPathExists {
+      cluster PARENT:cluster;
+      path "/"
+    }
+
+
+    mkdir extends DfsMkdir {
+      cluster PARENT:cluster;
+      path PARENT:dfsDirPath;
+    }
+
+    dirCreated extends DfsPathExists {
+      cluster PARENT:cluster;
+      path PARENT:dfsDirPath;
+    }
+
+    rmdir extends DfsRmdir {
+       cluster PARENT:cluster;
+       path PARENT:dfsDirPath;
+     }
+
+  }
+}

@@ -1,0 +1,106 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/hadoop/conf/hostnames.sf"
+
+HadoopServlets extends DATA {
+  METRICS_SERVLET "/metrics?format=json";
+  STACKS_SERVLET "/stacks";
+  CONF_SERVLET "/conf";
+  CONF_SERVLET_JSON (CONF_SERVLET ++ "?format=json");
+}
+
+/**
+ * Build up the datanode links
+ */
+HDFSDataNodeLinks extends HadoopServlets {
+  hdfsPort HadoopPortConfiguration:DFS_DATANODE_HTTP_DEFAULT_PORT;
+  "Hadoop DFS"            ["http", hdfsPort, "/"];
+  "Hadoop DFS metrics"    ["http", hdfsPort, METRICS_SERVLET];
+  "Hadoop DFS stacks"     ["http", hdfsPort, STACKS_SERVLET];
+  "Hadoop DFS conf"       ["http", hdfsPort, CONF_SERVLET];
+  "Hadoop DFS conf JSON"  ["http", hdfsPort, CONF_SERVLET_JSON];
+}
+
+
+/**
+ * Build up the datanode links
+ */
+DataNodeLinks extends HDFSDataNodeLinks {
+  
+  ttPort HadoopPortConfiguration:MAPRED_TASK_TRACKER_HTTP_DEFAULT_PORT;
+  "TaskTracker"           ["http", ttPort, "/"];
+  "TaskTracker metrics"   ["http", ttPort, METRICS_SERVLET];
+  "TaskTracker stacks"    ["http", ttPort, STACKS_SERVLET];
+  "TaskTracker conf"      ["http", ttPort, CONF_SERVLET];
+  "TaskTracker conf JSON" ["http", ttPort, CONF_SERVLET_JSON];
+}
+
+/**
+ * The namenode links
+ * This list does not assume that there is a local Datanode or Task Tracker; if that is the case
+ * The links list needs to merge in both templates
+ */
+NameNodeLinks extends HadoopServlets {
+  //nnPort 50072;
+  nnPort HadoopPortConfiguration:DFS_HTTP_DEFAULT_PORT;
+  "NameNode"            ["http", nnPort, "/"];
+  "NameNode metrics"    ["http", nnPort, METRICS_SERVLET];
+  "NameNode stacks"     ["http", nnPort, STACKS_SERVLET];
+  "NameNode configuration"       ["http", nnPort, CONF_SERVLET];
+  "NameNode conf JSON"  ["http", nnPort, CONF_SERVLET_JSON];
+ 
+  jtPort HadoopPortConfiguration:MAPRED_JOB_TRACKER_HTTP_DEFAULT_PORT;
+  "Job Tracker"           ["http", jtPort, "/"];
+  "Job Tracker metrics"   ["http", jtPort, METRICS_SERVLET];
+  "Job Tracker stacks"    ["http", jtPort, STACKS_SERVLET];
+  "Job Tracker conf"      ["http", jtPort, CONF_SERVLET];
+  "Job Tracker conf JSON" ["http", jtPort, CONF_SERVLET_JSON];
+  
+}
+
+/**
+ * Here are the template Hadoop Roles
+ */
+HadoopRoles extends Compound {
+
+  /**
+   * The master runs a NN and JobTracker as well as a single datanode.
+   */
+  master extends ClusterRole {
+    description "Hadoop NameNode and JobTracker";
+    min 1;
+    max 1;
+    links extends NameNodeLinks, DataNodeLinks {
+    }
+  }
+  
+  /**
+   * The worker
+   */
+  worker extends ClusterRole {
+    description "Hadoop Worker node with a DataNode and TaskTracker";
+    min 0;
+    recommendedMin 3;
+    links extends DataNodeLinks {
+    }
+  }
+}
+

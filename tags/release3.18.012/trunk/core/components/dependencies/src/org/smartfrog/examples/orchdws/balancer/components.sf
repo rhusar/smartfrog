@@ -1,0 +1,44 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/dependencies/statemodel/components.sf"
+
+Balancer extends StateComponent {
+      sfClass "org.smartfrog.examples.orchdws.balancer.BalancerImpl";
+      
+      port 80;              // Port that balancer listens on for client connections
+      hostsPort 80;             // Port used to connect to remote hosts in balance hosts list
+      
+      polling 5;
+      max   1500;
+      min   0;   
+}
+
+ConnectionMeter extends Meter {
+        dataSource       LAZY loadbal;
+        pollingPeriod    loadbal:polling; 
+        maxY             300;
+        minY             0;
+        gridStepY        10;
+        positionDisplay  "NE";
+        dataDisplayed    "connections";
+        frameTitle       "load balancer";
+}
