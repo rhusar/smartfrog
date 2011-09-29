@@ -1,0 +1,171 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> Command Button </title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<script language="JavaScript" type="text/javascript" src="js/buttonManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+
+
+
+</head>
+
+<body style="margin:20px;">
+
+<h3>Command Button</h3>
+
+
+<h4>Primary Buttons</h4>
+
+
+<h5>Using Button tag</h5>
+<div class="buttonSet">
+	<div class="bWrapperUp"><div><div><button disabled class="hpButton">Disabled</button></div></div></div>
+	<div class="bWrapperUp"><div><div><button class="hpButton" id="confButton">Configure</button></div></div></div>
+	<div class="bWrapperUp"><div><div><button class="hpButton">Cancel</button></div></div></div>
+	<div class="bWrapperUp bEmphasized"><div><div><button class="hpButton" id="runButton">Run Now</button></div></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<a href="javascript:ourButtonManager.disableButtonById('confButton');">Disable the Configure Button</a><br>
+<a href="javascript:ourButtonManager.enableButtonById('confButton');">Enable the Configure Button</a><br>
+
+<a href="javascript:ourButtonManager.disableButtonById('runButton');">Disable the Run Button</a><br>
+<a href="javascript:ourButtonManager.enableButtonById('runButton');">Enable the Run Button</a><br>
+
+<br>
+<br>
+<h5>Using Input tag, type="button"</h5>
+
+<div class="buttonSet">
+	<div class="bWrapperUp"><div><div><input type="button" disabled class="hpButton" value="Disabled"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="button" class="hpButton" value="Configure"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="button" class="hpButton" value="Cancel"></div></div></div>
+	<div class="bWrapperUp bEmphasized"><div><div><input type="button" class="hpButton" value="Run Now"></div></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<br>
+<br>
+<h5>Using Input tag, type="submit"</h5>
+<div class="buttonSet">
+	<div class="bWrapperUp"><div><div><input type="submit" disabled class="hpButton" value="Disabled"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="submit" class="hpButton" value="Configure"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="submit" class="hpButton" value="Cancel"></div></div></div>
+	<div class="bWrapperUp bEmphasized"><div><div><input type="submit" class="hpButton" value="Run Now"></div></div></div>
+</div>
+<div class="clearFloats"></div>
+
+
+
+
+<br>
+<br>
+<h4>Secondary Buttons</h4>
+
+<h5>Using Button tag</h5>
+<div class="buttonSet">
+	<div class="bWrapperUp"><div><div><button disabled class="hpButtonSmall">Disabled</button></div></div></div>
+	<div class="bWrapperUp"><div><div><button class="hpButtonSmall">Save</button></div></div></div>
+	<div class="bWrapperUp"><div><div><button class="hpButtonSmall">Exit</button></div></div></div>
+</div>
+<div class="clearFloats"></div>
+
+
+
+<br>
+<br>
+<h5>Using Input tag, type="button"</h5>
+<div class="buttonSet">
+	<div class="bWrapperUp"><div><div><input type="button" disabled class="hpButtonSmall" value="Disabled"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall" value="Save"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall" value="Exit"></div></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<br>
+<br>
+<h5>Using Input tag, type="submit"</h5>
+<div class="buttonSet">
+	<div class="bWrapperUp"><div><div><input type="submit" disabled class="hpButtonSmall" value="Disabled"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="submit" class="hpButtonSmall" value="Save"></div></div></div>
+	<div class="bWrapperUp"><div><div><input type="submit" class="hpButtonSmall" value="Exit"></div></div></div>
+</div>
+<div class="clearFloats"></div>
+
+
+<br>
+<br>
+
+<h4>Tertiary Buttons</h4>
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall helpButton" value="?"></div></div>
+</div>
+<div class="clearFloats"></div>
+<br>
+<br>
+
+<h4>Image Buttons</h4>
+<div class="buttonSet buttonsAreLeftAligned">
+	<div class="bWrapperUp"><div><div><button class="hpButtonSmall shrinkWrapButton" value="Play"><img src="images/placeholder_button_img_rewind.gif" width="14" height="11" border="0" alt="Rewind"></button></div></div></div>
+	<div class="bWrapperUp"><div><div><button class="hpButtonSmall shrinkWrapButton" value="Play"><img src="images/placeholder_button_img_play.gif" width="7" height="11" border="0" alt=""></button></div></div></div>
+	<div class="bWrapperUp"><div><div><button class="hpButtonSmall shrinkWrapButton" value="Play"><img src="images/placeholder_button_img_ff.gif" width="14" height="11" border="0" alt="Fast Forward"></button></div></div></div>
+</div>
+<div class="clearFloats"></div>
+<br>
+<br>
+
+
+
+
+<h5>HTML/CSS</h5>
+<ul>
+	<li>HTML for a Command Button consists at a basic level of an input or button element, and a set of divs wrapping it. 
+	<li>The element is either a button or input element (inputs being of either type="text" or type="submit"), and the element's class is one of "hpButton","hpButtonSmall" or "hpButtonVerySmall". 
+	<li>As for the 3 divs, the outermost of these is of class "bWrapper", and the two inner divs are classless. 
+	<li>These three nested divs are necessary to create the 3 pixels of slanted border treatment that is visible on the right and bottom edges. Refer to the CSS itself for further information. 
+	<li>For the Image Buttons, only the button tag can be used, with class "hpButtonSmall", and an additional classname, "shrinkWrapButton".  This class forces a width of 22px, and allows an 11px high image to be contained within.
+</ul>
+<h5>Javascript</h5>
+<ul>
+	<li>ButtonManager.js contains a number of methods to both initialize buttons when the page is loaded and to manage their state changes at runtime.
+	<li>Most notably, a large init function whose execution is managed by the reconcileEventHandlers function within global.js, attaches all of the various event handlers required to power the component. 
+	<li>State changes at runtime are visually effected primarily by changes to the className property of the outermost wrapper div. 
+	<li>Developers can refer to comments within the ButtonManager code itself for further comments. 
+	<li>Although the onclick event handler is available to perform all the usual functions that buttons need to perform, note that the onmousedown, onmouseup, onmouseover and onmouseout event handlers are off limits to applications.  As currently implemented these event handlers must be reserved for use by the internal functionality of the button itself.
+	<li>In rare cases where buttons must be arranged in a vertical row, you must wrap the block of buttons in a div of class "verticalButtonSet". This will slightly modify the float and margin properties to revert the buttons to normal block element behaviour 
+</ul>
+
+
+
+<br><br><br>
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+
+</body>
+</html>

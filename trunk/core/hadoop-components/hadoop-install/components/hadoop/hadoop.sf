@@ -1,0 +1,96 @@
+#include "/org/smartfrog/services/groovy/install/base.sf" 
+
+
+
+/**
+ * this directory defines Hadoop options independent of the actual deploying components
+ * keeping it separate adds some work, but should make it easier to override things later on
+ */
+HadoopOptions extends {
+
+  // override this when not running tests
+  hadoop.dir PROPERTY test.work.dir;
+
+  //get the Java home value from the OS
+  java.home "/usr/java/jdk";
+
+  namenodeHost "localhost";
+  //namenodeHost LAZY ATTRIB sfProcessHost;
+  namenodePort "54310";
+  jobtrackerHost namenodeHost;
+  jobtrackerPort "54311";
+  filesystem.uri ("hdfs://" ++ namenodeHost ++ ":" ++ namenodePort);
+  hadoop.heapsize 128;
+  dfs.replication 1;
+
+  //JVM options
+  hadoop.opts "-server -XX:+UseCompressedOops -Dcom.sun.management.jmxremote"
+}
+
+HadoopComponent extends Component {
+  hadoopVersion "0.20.203.0";
+  module TBD
+  componentsDir TBD;
+  hadoopCompPath (componentsDir ++ "/hadoop/");
+  scriptDir (hadoopCompPath ++ module);
+  destDir HadoopOptions:hadoop.dir;
+  ibrix false;
+
+  java.home HadoopOptions:java.home;
+  hadoop.heapsize HadoopOptions:hadoop.heapsize;
+  hadoop.opts HadoopOptions:hadoop.opts;
+  dfs.replication  HadoopOptions:dfs.replication;
+
+  namenodeHost HadoopOptions:namenodeHost;
+  namenodePort HadoopOptions:namenodePort;
+  filesystem.uri HadoopOptions:filesystem.uri;
+  jobtrackerHost HadoopOptions:jobtrackerHost;
+  jobtrackerPort HadoopOptions:jobtrackerPort;
+
+  user "slo";
+
+  tarFile ("hadoop-" ++ hadoopVersion ++ ".tar.gz")
+  resolvedTarFile  (hadoopCompPath ++ "artifacts/" ++ tarFile);
+  //flag to turn tar expanding on or off
+  expandTar true;
+}
+
+HadoopArtifacts extends HadoopComponent {
+
+  module "artifacts";
+  tarFile  (hadoopCompPath ++ "artifacts/hadoop-" ++ hadoopVersion ++ ".tar.gz");
+
+}
+
+
+
+HadoopTarSource extends Source {
+  source resolvedTarFile;
+}
+
+HadoopMaster extends HadoopComponent {
+
+  tarSource extends HadoopTarSource;
+  module "master";
+
+}
+
+
+HadoopWorker extends HadoopComponent {
+
+  module "worker";
+
+  userVolumes [];
+  
+  // if a user volume is specified, the mount point must be provided
+  mountDrive "/dev/sdb";
+
+  tarSource extends HadoopTarSource;
+
+}
+/*
+
+HadoopWorkerTar extends HadoopWorker {
+  tarSource extends HadoopTarSource;
+}
+*/

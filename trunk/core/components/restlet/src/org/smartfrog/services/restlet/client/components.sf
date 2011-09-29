@@ -1,0 +1,135 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/restlet/datasources/components.sf"
+#include "/org/smartfrog/services/passwords/components.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+
+
+
+RemoteResource extends HttpCodes {
+  schema extends HttpPageSchema;
+  sfClass "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl";
+  NO_AUTH ""
+  HTTP_BASIC "HTTP_BASIC";
+  HTTP_AMAZON_AWS "HTTP_AWS"
+  HTTP_NTLM "HTTP_NTLM"
+  HTTP_DIGEST "HTTP_DIGEST";
+  authorization NO_AUTH;
+  authenticationRequired false;
+
+  username "";
+  //can be a property or a reference to a password provider
+  password "";
+
+  GET "get";
+  POST "post";
+  PUT "put";
+  DELETE "delete";
+  OPTIONS "options";
+  HEAD "head";
+
+  //the actions are a list of verbs and min/max response codes
+  startActions [];
+  terminateActions [];
+  livenessActions [];
+  headers [];
+
+  //these response codes are actually unused. 
+  minimumResponseCode START_2XX;
+  maximumResponseCode END_2XX;
+  
+  connectTimeout -1;
+  //read timeout in milliseconds
+  readTimeout 30000;
+
+  fetchErrorText true;
+  //turned off as PUT redirects aren't handled yet
+  followRedirects false;
+
+  mimeType [];
+  //work the port out from the protocol
+  port CHOOSE_PORT;
+  //default to http
+  protocol HTTP;
+  //not implemented in this component, just stubbed out
+  responseRegexp "";
+  //not yet implemented
+  resultXPath "";
+
+
+  useSystemProxySettings true;
+
+  //data source
+  //datasource ;
+
+/**
+ * These are error strings that can get raised.
+ */
+  ERROR_UNKNOWN_VERB CONSTANT "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl.UNKNOWN_VERB";
+  ERROR_UNSUPPORTED_MEDIA_TYPE CONSTANT "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl.UNSUPPORTED_MEDIA_TYPE";
+ 
+  //the normal get action
+
+  GET_ACTION  [GET, START_2XX,  END_2XX];
+  HEAD_ACTION [HEAD,START_2XX,  END_2XX];
+  POST_ACTION [POST,START_2XX,  END_2XX];
+  PUT_ACTION  [PUT, START_2XX,  END_2XX];
+  
+  //HTTP1.1 says that DELETE should also return 2XX responses.
+  DELETE_ACTION [DELETE,START_2XX,END_2XX];
+  //and a backwards compatible variant allows people to delete idempotently
+  DELETE_ACTION_4XX [DELETE,START_2XX,END_4XX];
+}
+
+GetRestResource extends RemoteResource {
+  followRedirects true;
+  startActions    [GET_ACTION];
+  livenessActions [HEAD_ACTION];
+}
+
+HeadLivenessRestResource extends RemoteResource {
+  followRedirects true;
+  livenessActions [HEAD_ACTION];
+}
+
+PostRestResource extends RemoteResource {
+  startActions    [POST_ACTION];
+}
+
+DeleteRestResource extends RemoteResource {
+  startActions    [DELETE_ACTION_4XX];
+}
+
+PutRestResource extends RemoteResource {
+  startActions    [PUT_ACTION];
+}
+
+/**
+ * A resource whose life is managed.
+ * liveness checks do HEAD too. 
+ */
+
+PutDeleteRestResource extends RemoteResource {
+  startActions     [PUT_ACTION];
+  livenessActions  [HEAD_ACTION];
+  terminateActions [DELETE_ACTION];
+}
+

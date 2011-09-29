@@ -1,0 +1,161 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/ant/components.sf"
+#include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
+
+
+
+/**
+ * A test that expects a build exception
+ */
+ExpectBuildFailure extends ExpectDeployFailure {
+
+    exitText CONSTANT "org.smartfrog.services.ant.AntBuildImpl.BUILD_FAILED";
+    exceptions [[AntBuildConstants:AntBuildException,""]];
+
+}
+
+
+
+ExpectBuildSuccess extends ExpectDeployFailure {
+    description "expect the build to exit with success";
+    exitText CONSTANT "org.smartfrog.services.ant.AntBuildImpl.BUILD_SUCCESSFUL";
+}
+
+
+/**
+ * assert that a a property is set
+ */
+AssertPropertySet extends Assert {
+  sfShouldTerminate true;
+  propertyTarget TBD;
+  name TBD;
+  reference propertyTarget;
+  attribute name;
+}
+
+/**
+ * Assert that a a property is equal
+ */
+AssertPropertyEquals extends AssertPropertySet {
+  value TBD;
+  attributeEquals value;
+}
+
+TestPropertiesSequence extends AntWorkflowRun {
+
+  echoTask extends echo {
+    message "hello world!";
+  }
+
+  echoMedTask extends echo {
+    message "--------------------------------";
+  }
+
+  setProperty extends property {
+    name "sfhome";
+    value "SFHOME is <${env.SFHOME}>";
+  }
+
+
+  echoSFHOMETask extends echo {
+    message "${sfhome}";
+   }
+
+  setCwdProperty extends property {
+    name "cwd";
+    location ".";
+  }
+
+  -- extends echo {
+    message "cwd=${cwd}";
+   }
+
+  testProperty extends property {
+    name "test.value";
+    value "47";
+  }
+
+  testProperty2 extends property {
+    name "test.value.2";
+    value "${test.value}";
+  }
+
+
+  setPath1 extends property {
+    name "env.PATH";
+    value "${env.Path}";
+  }
+
+  setPath2 extends property {
+    name "path";
+    value "${env.PATH}";
+  }
+
+  setPath3 extends property {
+    name "pathtext";
+    value "path=${path}";
+  }
+
+  echoPath extends echo {
+    message "${pathtext}";
+  }
+
+}
+
+TestPropertiesWorkflow extends ExpectTerminate {
+
+  action extends TestPropertiesSequence {
+    sfShouldTerminate true;
+    propertyTarget LAZY PARENT;
+  }
+
+
+  completed false;
+  
+  tests extends Sequence {
+
+    properties LAZY PARENT;
+
+    wait extends FailingWaitFor {
+      condition extends True {
+        value LAZY properties:completed;
+      }
+      interval 100;
+      timeout 5000;
+    }
+
+    assertPathTextSet extends ReferenceResolves {
+      reference LAZY properties:pathtext;
+    }
+    assertTestValueEquals extends StringEquals {
+      left LAZY antProperties:test.value;
+      right TestPropertiesSequence:testProperty:value;
+    }
+    assertTestValue2Equals extends StringEquals {
+      left LAZY tests:test.value.2;
+      right TestPropertiesSequence:testProperty:value;
+    }
+
+  }
+}
+

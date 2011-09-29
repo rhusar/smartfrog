@@ -1,0 +1,72 @@
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/dependencies/statemodel/components.sf"
+#include "/org/smartfrog/services/dependencies/threadpool/components.sf"
+
+
+UpDep extends Dependency {
+   relevant (! LAZY by:up );
+   enabled ( ( LAZY on:up ) && ( LAZY dup ));
+}
+
+DownDep extends Dependency {
+   relevant LAZY by:up;
+   enabled ( (! LAZY on:up ) && (! LAZY dup ));
+}
+
+
+testThreeUpDown extends Compound {
+  sfOrchEventLog extends OrchEventLog;
+
+  model extends Model, ThreadedCompositeBase {
+      dup true;
+
+      terminator extends CompositeTerminator {
+        terminateCond ( ( ! LAZY VM:up) && ( ! LAZY VM:first) ) ;
+      }
+  
+      VM extends SimpleStateComponent {
+         tstart extends Transition {
+              guard ( ( ! LAZY up ) && ( LAZY first ) );
+              effects extends PolicyEffects {
+                 -- extends DATA {
+                   key "up";
+                   update true;
+                 }
+                 -- extends DATA {
+                   key "first";
+                   update false;
+                 }
+              }
+           }
+           first true;
+      }
+      OS extends SimpleStateComponent;
+      App extends SimpleStateComponent;
+      App:tstart:effects:dup extends DATA {
+         path LAZY PARENT:ATTRIB model;
+         key "dup";
+         update false;
+      }
+
+      OSUpDep extends UpDep {
+          on LAZY VM;
+          by LAZY OS;
+       }
+
+       AppUpDep extends UpDep {
+          on LAZY OS;
+          by LAZY App;
+       }
+
+       OSDownDep extends DownDep {
+          on LAZY App;
+          by LAZY OS;
+       }
+
+       VMDownDep extends DownDep {
+          on LAZY OS;
+          by LAZY VM;
+       }
+
+  }
+}

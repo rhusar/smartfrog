@@ -1,0 +1,12 @@
+                            Using:          Ivy Repository:
+Antlr                       2.7.7           2.7.7
+Asm                         3.2             -               check if needed
+Commons codec               1.4             1.4
+Commons httpclient          4.1             4.1
+Commons httpclient-cache    4.1             -               check if needed
+Commons httpcore            4.1             4.1
+Commons httpmime            4.1             -               check if needed
+Jsch                        0.1.44          0.1.42          check if compatible
+JUnit                       4.8.2           -               not yet needed
+Groovy                      1.7.7           1.7.6
+Commons net                 2.2             2.2             check if needed

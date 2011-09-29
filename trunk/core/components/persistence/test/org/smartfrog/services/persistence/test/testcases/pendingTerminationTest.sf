@@ -1,0 +1,33 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+TestComponent extends RComponent {
+	sfClass "org.smartfrog.services.persistence.test.testcases.SimpleRComponent";
+}
+
+TestDriver extends Compound {
+    sfClass "org.smartfrog.services.persistence.test.testcases.PendingTermination";
+}
+
+sfConfig extends RComponent {
+   model extends RComponent {
+	   AParent extends TestComponent {
+	       A extends TestComponent;
+	   }
+	   B extends TestComponent;
+	   C extends TestComponent {
+	       D extends TestComponent;
+	   }
+	   E extends TestComponent;
+   }
+   
+   driver extends TestDriver {
+       A LAZY model:AParent:A;
+       AParent LAZY model:AParent;
+       B LAZY model:B;
+       C LAZY model:C;
+       D LAZY model:C:D;
+       E LAZY model:E;
+       F_cd extends DATA TestComponent;
+   }       
+}

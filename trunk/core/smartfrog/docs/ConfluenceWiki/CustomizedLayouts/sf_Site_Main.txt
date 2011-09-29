@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    #if ($sitemeshPage.getProperty("page.spacename"))
+        <title>$title - $webwork.htmlEncode($sitemeshPage.getProperty("page.spacename")) - #siteTitle()</title>
+    #else
+        <title>$title - #siteTitle()</title>
+    #end
+
+    #if ($webResourceManager)
+        <link rel="stylesheet" href="${webResourceManager.getSpaceCssPrefix($sitemeshPage.getProperty("page.spacekey"))}/includes/js/yui/fonts/fonts-min.css" type="text/css" />
+        <link rel="stylesheet" href="${webResourceManager.getSpaceCssPrefix($sitemeshPage.getProperty("page.spacekey"))}/includes/js/yui/menu/assets/menu.css" type="text/css" />
+    #end
+
+    #standardHeader()
+    $!settingsManager.globalSettings.customHtmlSettings.beforeHeadEnd
+</head>
+## HTML HEADER ENDS
+
+## HTML BODY BEGINS
+#onLoad()
+$!settingsManager.globalSettings.customHtmlSettings.afterBodyStart
+
+#set ($username = $sitemeshPage.getProperty("page.username"))
+#set ($spaceKey = $sitemeshPage.getProperty("page.spacekey"))
+
+#displayGlobalMessages($spaceKey $username)
+
+## CONTENT DIV BEGINS
+<div id="PageContent">
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+        ## LOCATION BAR: (BREADCRUMBS AND SEARCH BOX) BEGIN
+        <tr class="topBar">
+            <td align="left">
+                &nbsp;
+## (pet) Disable breadcrumb display
+## I would like to do this selectively for visitors only
+#if(false)
+                <span class="topBarDiv fontSizeSmaller"> #breadcrumbs() </span>
+#end
+            </td>
+
+            <td align="right" valign="middle" style="white-space:nowrap">
+                #quickSearch()
+            </td>
+        </tr>
+        ## LOCATION BAR: (BREADCRUMBS AND SEARCH BOX) END
+
+        ## INFO BAR: (LOGO, LOCATION, AND USER/GROUP OPTIONs) BEGIN
+        <tr>
+            <td style="padding: 5px" colspan="2">
+            <table style="padding: 0px; margin: 5px; width: 100%;" cellspacing="0" cellpadding="1" border="0">
+                <tr>
+					#if ($sitemeshPage.getProperty("page.username"))
+						#set ($tildeUsername = "~$username")
+					<td valign="top" width="1%">#logoBlock($tildeUsername)</td>
+					#else
+					<td valign="top" width="1%">#logoBlock($spaceKey)</td>
+					#end
+					<td height="22" align="left"  style="padding-left: 10px; ">
+                        <span class="pagetitle" style="padding: 0px; margin: 0px; text-decoration: none">
+                            #pageTitleLink()
+                        </span>
+                    </td>
+                    <td height="22" align="right" valign="top">
+                        ## history, profile, admin, logout links
+                        #usernavbar()
+						
+						#printableicon()
+                        #if (!$sitemeshPage.getProperty("page.suppressPdfLink"))
+                            #pdficon()
+                        #end
+                        #feedicon()
+                    </td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+        ## INFO BAR: (LOGO, LOCATION, AND USER/GROUP OPTIONs) END
+    </table>
+
+    ## PAGE DEPENDENT INLINE DECORATOR RENDERING SHOULD BEGIN HERE
+    $body
+
+    ## PAGE DEPENDENT INLINE DECORATOR RENDERING SHOULD END HERE
+</div>
+## CONTENT DIV ENDS
+
+#parse ("/decorators/includes/footer.vmd")

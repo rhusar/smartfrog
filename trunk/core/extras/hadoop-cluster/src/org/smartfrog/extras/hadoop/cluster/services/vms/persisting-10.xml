@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!-- Read/write image -->
+<cell xmlns="http://www.hp.com/xmlns/sup/cfc/fcspec">
+<!--  <network def="net4">
+    <info>net4</info>
+    <subnet>4</subnet>
+  </network>-->
+  <network def="net15">
+    <info>net15</info>
+    <subnet>15</subnet>
+  </network>
+  <vm def="Hadoop">
+    <info>Hadoop VM</info>
+    <vbd def="vbd0">
+      <busNumber>0</busNumber>
+      <busSlot>0</busSlot>
+      <busType>scsi</busType>
+      <readOnly>false</readOnly>
+      <volUrl>urn:sup:vol-0-1-23</volUrl>
+    </vbd>
+    <vif def="vif0">
+      <host>2</host>
+      <netUrl>sup:/net15</netUrl>
+      <external>true</external>
+    </vif>
+  </vm>
+
+
+</cell>

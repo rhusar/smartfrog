@@ -1,0 +1,6 @@
+#include "org/smartfrog/components.sf"
+
+
+sfConfig extends Prim {
+	sfClass "org.smartfrog.services.persistence.test.performancetest.refTestImpl";
+}

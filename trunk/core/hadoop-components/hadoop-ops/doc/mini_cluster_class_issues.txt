@@ -1,0 +1,34 @@
+
+
+-classes should be marked as final as they start threads in their ctor, and subclasses will break
+
+-hard coded locations for data, files
+
+-leakage. Having a way to verify they are stopped would prevent this.
+
+MiniDFSCluster
+==============
+Field {{nameNode}} should be marked as volatile as the shutdown operation can be in a different thread than startup. Best of all,
+add synchronized methods to set and get the field, as well as shutdown.
+
+The data dir is set from from System Properties.
+{code}
+    base_dir = new File(System.getProperty("test.build.data", "build/test/data"), "dfs/");
+    data_dir = new File(base_dir, "data");
+{code}
+This is done in {{formatDataNodeDirs()}} {{corruptBlockOnDataNode()}} and the constructor.
+
+Improvement: have a test property in the conf file, and only read the system property if this is unset. This will enable
+ multiple MiniDFSClusters to come up in the same JVM, and handle shutdown/startup race conditions better, and avoid the
+ "java.io.IOException: Cannot lock storage build/test/data/dfs/name1. The directory is already locked." messages
+
+Messages should log to the commons logging and not {{System.err}} and {{System.out}}. This enables containers to catch and stream better,
+and include more diagnostics such as timestamp and thread Id
+
+Class could benefit from a method to return the FS URI, rather than just the FS. This currently has to be worked around with some tricks involving a cached configuration
+
+{{waitActive()}} could get confused if "localhost" maps to an IPv6 address. Better to ask for 127.0.0.1 as the hostname; Junit
+test runs may need to be set up to force in IPv4 too.
+
+{{injectBlocks}} has a spelling error in the IOException, "SumulatedFSDataset" is the correct spelling
+

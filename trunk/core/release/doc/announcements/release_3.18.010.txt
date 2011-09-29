@@ -1,0 +1,381 @@
+SmartFrog 3.18.010
+==================
+
+This is a new release of SmartFrog, the Java-based, LPGL-licensed
+distributed deployment framework developed by HP Laboratories.
+
+SmartFrog enables applications to be deployed across multiple machines,
+configuring different aspects of the system so that they are all
+consistently configured, and managing the life-cycle of the application
+as a whole.
+
+
+The project's home page is
+  http://smartfrog.org/
+The release artifacts are available at
+
+https://sourceforge.net/projects/smartfrog/files/development/smartfrog-3.18.010/
+
+This release is 3.18.010; built from revision 8503
+of the SVN repository.
+
+It was compiled with the Java version set to Java 6 -it will not work
+on Java1.5 JVMs.
+
+This release includes the following items:
+
+* The core SmartFrog daemon, including services to manage files,
+  start and stop Java and native programs.
+* Example components and applications.
+* Ant support: ant tasks to deploy and terminate applications.
+* Ant components: the ability to execute ant tasks in a deployment.
+* Anubis: a partition aware tuple-space that can be used to implement
+  fault tolerant systems.
+* Database: components to issue database commands, and deploy HSLDB
+  and MySQL databases.
+* JMX: the ability to configure and manage JMX components, and to
+  manage SmartFrog components over JMX.
+* Logging: integration with Apache commons-logging and Log4J, and the 
+  SLF4J framework.
+* Networking: email, FTP, SSH, DNS support.
+* Quartz: scheduled operations using Quartz libraries.
+* RpmTools: components for working with or deploying with RPMs
+* Scripting: support for BSF-hosted scripting languages
+* Testing: Distributed JUnit and component testing with SFUnit.
+* Velocity: generation/transformation of text files during deployment
+* WWW: deployment of WAR and EAR files to application servers.
+* Jetty: The Jetty components can configure and deploy individual
+  servlets, eliminating much of the need for WAR files and
+  application servers.
+* XML: XML support with XOM.
+* XMPP: Presence and messaging over Jabber.
+
+Packaging
+=========
+
+This release is available as:
+
+* RPM files inside a .tar.gz file.
+* A JAR installer.
+* The original core smartfrog distribution as .zip and .tar.gz
+  (deprecated).
+* A .tar.gz file containing everything needed to create a private set
+  of RPM files containing JAR files signed by a private Certification
+  Authority.
+
+
+The RPM installation is for RPM-based Linux systems. The archive
+contains the following RPM files:
+
+smartfrog:        The core SmartFrog distribution.
+smartfrog-daemon: The shell scripts to add the SmartFrog distribution
+                  to the path, and to run the daemon on start-up.
+smartfrog-demo:   Example code and documentation.
+smartfrog-javadocs: Javadocs for the project
+smartfrog-ant:    Ant task and build file execution
+smartfrog-anubis: Distributed partition-aware tuple space
+smartfrog-csvfiles: Support for reading/writing CSV Files.
+smartfrog-database: Database access
+smartfrog-jetty:   Jetty support
+smartfrog-jmx:    JMX integration though MX4J
+smartfrog-junit:  Junit 3.8.2 test execution
+smartfrog-logging: Logging through Log4J and commons-logging
+smartfrog-networking: SSH, SCP, FTP and email
+smartfrog-quartz:  Scheduled operations
+smartfrog-rpmtools: RPM support tools  
+smartfrog-scripting: Scripted components
+smartfrog-velocity: Velocity template processing
+smartfrog-www:      Web support: Deployment and liveness pages
+smartfrog-xml:      XML Support
+smartfrog-xmpp:     XMPP/Jabber communications
+smartfrog-xunit:    Distributed testing and reporting
+
+All the JAR files are also published to a repository that is
+compatible with Apache Maven and Ivy. Add
+   http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or 
+Maven- based build.
+
+There are also SmartFrog components to retrieve artifacts from such a
+repository which can be used for dynamic download of SmartFrog and
+other artifacts, in /org/smartfrog/services/os/java/library.sf
+
+
+Security warning
+================
+
+Unless SmartFrog is configured with security, a running daemon will
+listen on its configured port for incoming deployment requests, and
+deploy the applications with the rights of the user running the daemon.
+When the smartfrog-daemon RPM is installed, that means that a process
+running as root will be listening on an open port for incoming
+deployment requests. Do not deploy SmartFrog this way on any untrusted
+network, not without turning security on.
+
+There is a special distribution .tar.gz file that can be used to
+generate a private set of secure RPM files.
+
+Building SmartFrog
+==================
+
+SmartFrog requires Java 1.6+ and Ant 1.8+ to build. The izpack and
+source .zip and .tar.gz distributions include a source tree sufficient
+to build the entire system. To build a later release, please follow
+the instructions at
+  http://sourceforge.net/svn/?group_id=87384
+to check out smartfrog/trunk/core from our repository.
+
+This release was built with revision 8503 of the repository, which
+is available under the SVN branch:
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.18.010
+
+We strongly encourage anyone interested in building or extending
+SmartFrog to get involved in the SmartFrog developer mailing list,
+which can be found from the sourceforge project page
+http://sourceforge.net/projects/smartfrog/
+
+Reporting Bugs
+==============
+
+Please file all bug reports at http://jira.smartfrog.org/
+
+Thank you!
+
+The SmartFrog Team        http://smartfrog.org/
+
+Changes since last release
+==========================
+
+** Bug
+    * [SFOS-201] - functional Test descriptors often have hard coded hostnames
+    * [SFOS-512] - rpmlint gives warnings and errors
+    * [SFOS-543] - under jetty6, filesystem webapps are not deploying -test testTcp27testFilesystemWar
+    * [SFOS-628] - JettySecurityRealmImpl does not work -Jetty Security broken
+    * [SFOS-685] - Jetty fails to instantiate servlet that is on the classpath
+    * [SFOS-1169] - connectivity test is failing, routing oddness on OSX
+    * [SFOS-1274] - TT doesnt fail early when it comes up with mapred.job.tracker set to 0:0:0:0
+    * [SFOS-1278] - Add new Hadoop JARs and dependencies to the RPM
+    * [SFOS-1282] - Ant DeployingTaskBase task doesn't log the expanded application it is deploying
+    * [SFOS-1283] - Spelling error in GUI -replace instrospect with introspect
+    * [SFOS-1289] - sf-hadoop failing to build on hudson
+    * [SFOS-1293] - Jetty isnt working
+    * [SFOS-1295] - release build of rpms failing on a machine with hadoop built locally -kfs is creeping in
+    * [SFOS-1299] - The error text on a bad password has changed with typica/EC2 updates, a test is now breaking
+    * [SFOS-1320] - jetty servlet context doesn't support sessions
+    * [SFOS-1321] - Struts needs a WEB-INF/web.xml file
+    * [SFOS-1323] - JSP under Jetty hard to bind to jsp pages only
+    * [SFOS-1326] - classpath wrong in ant target sfDaemon
+    * [SFOS-1329] - struts needs /WEB-INF/struts-config.xml even if you deploy a webapp under a package
+    * [SFOS-1331] - Proxy settings are not passed down to child processes
+    * [SFOS-1333] - Struts is not working in cloudfarmer
+    * [SFOS-1365] - move log level listing to a separate component for ease of reference
+    * [SFOS-1370] - NPE in test runs/ActionDeploy
+    * [SFOS-1375] - SSH deployment failing on OS/X
+    * [SFOS-1378] - ConditionCompound should not try and propagate null failure text or cause
+    * [SFOS-1379] - Farm Customer can fail if a ping() happens while a creation operation is underway
+    * [SFOS-1381] - SFComponentDescriptionImpl.getDescriptionURL(url, params) should fail with a meaningful message if the URL doesnt resolve to a resource
+    * [SFOS-1389] - ssh components don't do password auth
+    * [SFOS-1393] - All JVM properties should be passed down
+    * [SFOS-1399] - SmartFrog Timer should use volatile fields when communicating between threads
+    * [SFOS-1405] - ManualFarmer tests failing: clusterLimit of -1 breaks HashMap constructor
+    * [SFOS-1406] - DeploymentFactory instances aren't remoting properly
+    * [SFOS-1413] - rpm not building
+    * [SFOS-1415] - init.d smartfrogd script status check doesn't check status, it starts smartfrog
+    * [SFOS-1416] - smartfrog-hadoop RPM not installing as smartfrog-jasper not found
+    * [SFOS-1420] - init.d smartfrogd script should fail early for no java on path
+    * [SFOS-1433] - json-lib doesnt come in from ivy
+    * [SFOS-1435] - csh/tcsh scripts build the path up wrong
+    * [SFOS-1436] - race condition in deploy-over-SSH; need to wait for sfDaemon up
+    * [SFOS-1438] - json-lib depends on other things that the RPM doesn't expect
+    * [SFOS-1439] - Hadoop build isn't working with latest versions of apache hadoop build process
+    * [SFOS-1440] - Hadoop SVN_HEAD isn't starting up under SF
+    * [SFOS-1450] - PortUtils.checkPort should not bail out on a connectionRefused until the connect timeout is reached
+    * [SFOS-1461] - Cloudfarmer Web UI needs to make the reference back to the cloudfarmer a singleton
+    * [SFOS-1467] - cloudfarmer isn't accepting jobs from the hadoop-site xml file
+    * [SFOS-1468] - JobTracker only listening on the localhost port
+    * [SFOS-1487] - jetty bulkio tests fail on jetty as port 8080 is in use
+    * [SFOS-1488] - Hudson is failing .IvyLibraryTest.testLocalSmartFrog
+    * [SFOS-1498] - restlet testwar test failing
+    * [SFOS-1499] - EC2 cloudfarmer test failing w/ resolution problem
+    * [SFOS-1501] - Hudson OOM on smartfrog-core-tests
+    * [SFOS-1504] - commons-logging bridge to SmartFrog isn't working
+    * [SFOS-1510] - JavascriptTest failing - Race Condition in TestCompoundImpl
+    * [SFOS-1511] - sf network failure tests timing out, causing followon test problems
+    * [SFOS-1512] - mysql tests failing on hudson
+    * [SFOS-1526] - Race condition still in TestCompoundImpl
+    * [SFOS-1527] - subprocess tests failed in hudson. Transient or real problem?
+    * [SFOS-1543] - rpmbuild failing, serializer.jar
+    * [SFOS-1559] - telnet not logging in to windows
+    * [SFOS-1529] - ComponentDescriptionImpl's writeOn method is broken, bad handling of non alphabet chars
+    * [SFOS-1564] - ContextImpl needs unicode numbered versions of the funny chars
+
+** Improvement
+    * [SFOS-420] - add security options to the servlet context
+    * [SFOS-425] - Metabug: Adopt Java5 Language features
+    * [SFOS-454] - Make RPM code in avalanche self contained component, and production ready
+    * [SFOS-908] - PrimDeployer could provide a more meaningful message when deploying a component with sfClass ""
+    * [SFOS-1048] - add smartfrog-ec2 RPM
+    * [SFOS-1118] - Move up to the latest Xalan release when Ivy can handle its SHA1
+    * [SFOS-1201] - add TestBlock lifecycle events and attributes to xunit test runner
+    * [SFOS-1260] - move the ivy JAR in the SVN repository to the appropriate place in the repository/ tree
+    * [SFOS-1267] - extend SFParse to parse strings and input streams
+    * [SFOS-1286] - Move up to typica 1.5
+    * [SFOS-1288] - Provide a way to list roles on a ClusterFarmer
+    * [SFOS-1292] - Move EC2 image ID test up to sfStart()
+    * [SFOS-1294] - Move some of the jetty test .sf files into the sf-jetty JAR.
+    * [SFOS-1296] - Move javax.scripting code from components/groovy into sfServices
+    * [SFOS-1313] - servlet context to take options from a nested CD, rather than a list of string tuples
+    * [SFOS-1314] - Jetty component to eliminate need for JettyHome
+    * [SFOS-1317] - servlet context to use a resource path as a source of files
+    * [SFOS-1319] - tests should run if a testcase is set
+    * [SFOS-1330] - Include proxy settings in diagnostics report
+    * [SFOS-1332] - make terminated gracefully!! message more subtle
+    * [SFOS-1338] - Strip unneeded struts 1.3 dependencies from the ivy files and hence the RPMs
+    * [SFOS-1342] - Move up to slf4J 1.5.2
+    * [SFOS-1343] - move up to restlet 1.1.6
+    * [SFOS-1346] - Jetty to have a transient context class to wrap its non-serializable contexts
+    * [SFOS-1347] - Servlet contexts (especialy Jetty) to have an attributes CD
+    * [SFOS-1348] - Cloudfarmer webapp to pick up controller URL from servlet context
+    * [SFOS-1350] - review subclasses of SmartFrogThread.run() and move to execute() where appropriate
+    * [SFOS-1355] - ant sfManagementConsole -started console to have the full test classpath
+    * [SFOS-1357] - clusterfarmer interface to add {join, leave} cluster methods
+    * [SFOS-1360] - Move scp operations from a component into utility class that can be called from different components
+    * [SFOS-1361] - Move up to 0.1.42 of jsch
+    * [SFOS-1368] - export ExpandFully's code to save a CD to a file as a static method
+    * [SFOS-1376] - Clean up CDPrinter
+    * [SFOS-1382] - ExpandFullyTask to print filename when reporting a file not found
+    * [SFOS-1384] - Have deploy-over-ssh deployer take a directory for he SmartFrog binaries
+    * [SFOS-1391] - Move HadoopUtils to core/smartfrog as PortUtils
+    * [SFOS-1395] - Make it possible for workflow thread subclasses to override termination record creation
+    * [SFOS-1400] - subprocess liveness failure should log at info and not debug
+    * [SFOS-1408] - Move EC2 cloudfarmer implementation to ec2 component
+    * [SFOS-1419] - add an optional lists of ports for every role
+    * [SFOS-1428] - Cloudfarmer UI improvements
+    * [SFOS-1429] - Mark /etc/sysconfig/smartfrog as a configuration file
+    * [SFOS-1434] - sfContext could identify which value is null, when complaining of a null value
+    * [SFOS-1437] - Cloudfarmer SSH deployer to spin waiting for a hostname to resolve
+    * [SFOS-1443] - exceptions other than SFDeploymentExceptions should include fault toString() value when being wrapped
+    * [SFOS-1452] - Add a Spinner class which sleeps for a period up to a timeout
+    * [SFOS-1453] - cloudfarmer node link parser should handle strings that parse to integers
+    * [SFOS-1456] - Move cloudfarmer web front end to styles, improve appearance
+    * [SFOS-1457] - Enhancements to Spinner class
+    * [SFOS-1474] - make CloudFarmer SSH deployer retry count and sleep times configurable
+    * [SFOS-1477] - Move WorkerThreadPrimImpl into core
+    * [SFOS-1478] - add **/*.html,**/xhtml,**/*.ico to the list of useful files
+    * [SFOS-1479] - move commons-fileupload from sf-restlet to httpclient dependencies of sf-www
+    * [SFOS-1481] - Provide static operation to create a commons-log instance from an SF log
+    * [SFOS-1484] - extended SF daemon ant task to pass down log4j, commons-logging and jetty logging configuration properties
+    * [SFOS-1493] - move up to htmlunit 2.7
+    * [SFOS-1495] - Jetty component to include binding details (host, port) when binding fails
+    * [SFOS-1505] - Move LocalSmartFrogDescriptor to core
+    * [SFOS-1509] - reformat SFProcessExecution code, place all kill logic into a single synchronized method
+    * [SFOS-1514] - move up to Ivy 2.2.0-rc1
+    * [SFOS-1516] - Move sf-www up to commons-codec 1.4
+    * [SFOS-1517] - fix ivy conflicts so that the strict conflict manager can be used
+    * [SFOS-1520] - copy JSP health checks from Hadoop to jetty
+    * [SFOS-1521] - Move TestContextInjector into the sfServices JAR
+    * [SFOS-1522] - PortCheckingTestBase to include (Address, port) on connection refused problems
+    * [SFOS-1523] - Move up to SLF4J 1.6.1
+    * [SFOS-1524] - Add httpcommons 4.x to sf-www component
+    * [SFOS-1525] - move up to jetty.version=6.1.25
+    * [SFOS-1528] - Move sf-json up to commons-beanutils 1.8.3
+    * [SFOS-1530] - Move waitforPortOpen into PortCheckingTestBase
+    * [SFOS-1532] - add the Connection header to HttpHeaders
+    * [SFOS-1533] - Make sure the sf-tasks JAR is in all SF distributions
+    * [SFOS-1534] - Improve error message on a <functionaltest> timeout
+    * [SFOS-1535] - create extras/bulkiotests module for bulk IO operations, tune its build for v. long test runs
+    * [SFOS-1536] - Move up to Ivy 2.2.0
+    * [SFOS-1538] - Have PrimHostDeployer be slightly more helpful on failures
+    * [SFOS-1539] - switch utf-8 encoding in SFParser to its proper name UTF-8, and place in a constant
+    * [SFOS-1547] - move sf-net to commons-net 2.2
+    * [SFOS-1549] - bind all jetty servlet contexts to their owner
+    * [SFOS-1553] - Move WrappedInstance from Jetty to smartfrog core
+    * [SFOS-1557] - WrappedInstance to take a string description in the setInstance method and the constructor
+    * [SFOS-1558] - query that a process is reachable before trying to deploy
+
+** New Feature
+    * [SFOS-392] - Add Atom component
+    * [SFOS-440] - Add SuSE support from the RPMs
+    * [SFOS-557] - add ant junit report format for xunit test runs
+    * [SFOS-1129] - add sf-groovy RPM
+    * [SFOS-1206] - Add a component to read/write the current headless setting
+    * [SFOS-1212] - hadoop-cluster to have the ability to do a deployment over SCP
+    * [SFOS-1242] - add a citerank project to stress test and benchmark hadoop clusters
+    * [SFOS-1279] - Create "Farmer" interface for talking (remotely) to a cluster farmer -and Mock implementation
+    * [SFOS-1285] - EC2/AWS components to use the PasswordProvider interface to get a password
+    * [SFOS-1297] - Add component FarmHasDeployedInstances which can assert that a ClusterFarmer has a specified number of deployed instances in a specific role
+    * [SFOS-1298] - Add a way to create string lists from an attribute of a CD
+    * [SFOS-1316] - create some sample mime type components
+    * [SFOS-1318] - MimeTypes component to take a CD full of mime type mappings and set them up
+    * [SFOS-1327] - Add tests for Mombasa webapps
+    * [SFOS-1345] - Cloud Farmers to have an available() method
+    * [SFOS-1359] - add a remote smartfrog daemon service to cloudfarmer
+    * [SFOS-1372] - Add a string length condition
+    * [SFOS-1377] - add ReleaseAllFarmResources component that deletes all resources belonging to a specific user.
+    * [SFOS-1385] - Add FarmCheckRoles component to check both the role listing methods, and to verify the exact set of roles provided
+    * [SFOS-1403] - add diagnostics text to every deployment factory
+    * [SFOS-1411] - Cloudfarmer webapp needs to implement node deletion
+    * [SFOS-1418] - Automate rollout of RPMs to mountable Volume
+    * [SFOS-1422] - add sfList shell script to list deployed components
+    * [SFOS-1430] - automount setup script to allow /etc/sysconfig/smartfrog to be overwritten
+    * [SFOS-1448] - implement a FileSystem.close(Closeable) and redirect the other close operations to it
+    * [SFOS-1458] - Cloudfarmer web ui to serve up the Hadoop XML file
+    * [SFOS-1471] - Restrict number of lines that management console display text area will use to prevent out of memory problem
+    * [SFOS-1476] - add tests for big data upload/download and long-lived connections
+    * [SFOS-1486] - Add support for filters in the servlet context and jetty
+    * [SFOS-1494] - add grizzly ivy dependencies for the jersey component
+    * [SFOS-1496] - add grizzly component, jars, rpm etc
+    * [SFOS-1537] - bind servlets to their owning SF component
+    * [SFOS-1552] - add a RemoteToString interface in core for prim and other components to eventually implement
+    * [SFOS-1555] - add a way for the sf-daemon task to set the server hostname that RMI exports things on
+    * [SFOS-1560] - add a way to install certificates from ant into the current JVM
+    * [SFOS-1563] - Add some @Annotations to SmartFrog
+
+** Task
+    * [SFOS-103] - Finish ActiFrog - ProActive deployer for SmartFrog
+    * [SFOS-107] - Improvements for Eclipse Plugin
+    * [SFOS-119] - Prepare installer for Avalanche.
+    * [SFOS-424] - Implement TestContext
+    * [SFOS-1259] - Release  3.17.014
+    * [SFOS-1269] - Catch up my patches with Hadoop core
+    * [SFOS-1270] - Move ping() logic out of Hadoop code and into the SF extension classes
+    * [SFOS-1309] - Move unmaintained code into the repository parallel to "core", makes for faster checkups
+    * [SFOS-1363] - add a test for SSHexec using a public key file, fix any breakages that show up
+    * [SFOS-1410] - Write up cloudfarmer for ACM cloud conference
+    * [SFOS-1513] - Create a beta SF release,
+    * [SFOS-1562] - comment out Hadoop JARs and RPM from SF release
+
+** Sub-task
+    * [SFOS-108] - Update help documentation to 3.2 -  Creating SmartFrog run configurations
+    * [SFOS-109] - Add functionality of NetBeans plugin to this plugin
+    * [SFOS-110] - Check if it is possible to create an IZpack installer for the plugin
+    * [SFOS-111] - Integrate plugin Help docs into Forrest build.
+    * [SFOS-644] - rpmlint complains about files in /etc/profile.d
+    * [SFOS-905] - Move from direct inherited configuration to a "Cluster" CD that defines the cluster
+    * [SFOS-973] - make the environment construction less brittle
+    * [SFOS-1239] - choreograph tasktracker deployment so they only come up after the Job Tracker is live and has published its live URL
+    * [SFOS-1301] - add jira category
+    * [SFOS-1302] - Move the services.farmer code from sf-services to cloudfarmer
+    * [SFOS-1303] - Patch the release RPM process to include sf-cloudfarmer
+    * [SFOS-1304] - Move the servlet prototype from Mombasa into cloudfarmer
+    * [SFOS-1305] - Write ant tasks to work with the cloudfarmer
+    * [SFOS-1306] - add Manual farmer which keeps a list of machines available for a role
+    * [SFOS-1307] - Move the EC2 cluster farmer to the cloudfarmer component
+    * [SFOS-1310] - Add more role operations
+    * [SFOS-1328] - Struts servlet hangs on deployment - DTD download?
+    * [SFOS-1334] - Move dependencies to Struts 1.3.10 in ivy xml and hence RPMs
+    * [SFOS-1335] - remove dependencies on portlet-api
+    * [SFOS-1336] - add struts happy pages and test for struts working, independent of JSP support
+    * [SFOS-1337] - JSP2.1 error dispatch code NPEs on struts 1.3
+    * [SFOS-1340] - Fix URL support in binding to take a path to the cluster farmer
+    * [SFOS-1349] - add host operation must be async to deal with infrastructure and install process
+    * [SFOS-1353] - Add cluster diagnostics method, implementations and client page
+    * [SFOS-1369] - Drive ToolRunnerComponent with inline configuration
+    * [SFOS-1424] - Have cloudfarmer bring up a functional Hadoop cluster
+    * [SFOS-1444] - generate Hadoop XML config files from deployments
+    * [SFOS-1544] - add sf-testharness to the redistributables
+    * [SFOS-1545] - clean up some ivy files
+    * [SFOS-1546] - make the FilesCompound a workflow component
+    * [SFOS-1548] - test DeleteFilesCompound
+
+

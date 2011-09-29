@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<project name="m32" default="default" >
+
+  <!--
+  /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Build file for Alpine. Needs Ant1.7
+  </description>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <!-- <property file="libraries.properties"/> -->
+  <property name="is.component" value="false"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="root.dir" location="../../../../core"/>
+  <property name="src.dir" location="src/java"/>
+  <property name="build.classes.dir" location="build/classes"/>
+
+  <property name="test.src.dir" location="test/java"/>
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init"
+      depends="common.init,use-smartfrog-tasks,use-smartfrog-testharness">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
+
+
+
+
+
+  <!-- inline creation of a minimal pom
+     This sets it up with all the dependencies. We strip out some unwanted baggage from
+     dependencies, like junit, dom4j and jdom. Dirty pom files stop here :)
+  -->
+  <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
+    <echo message="Creating Pom ${target.pom}" level="verbose"/>
+    <echoxml file="${target.pom}">
+      <project>
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>${m2.groupID}</groupId>
+        <artifactId>${artifact.name}</artifactId>
+        <packaging>jar</packaging>
+        <version>${Version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>${commons-httpclient.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>${commons-logging.version}</version>
+          </dependency>
+          <!--          <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>${xalan.version}</version>
+          </dependency>-->
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+            <version>${xerces.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>${commons-logging.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>servletapi</groupId>
+            <artifactId>servletapi</artifactId>
+            <version>${servletapi.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+            <version>${xom.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>xalan</groupId>
+                <artifactId>xalan</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>jaxme</groupId>
+                <artifactId>jaxme</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
+      </project>
+    </echoxml>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- create a distro. 
+       we want both sf-junit and the test har -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="package,package-tests"
+      description="create a distribution">
+
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="alpine"/>
+    <property name="deploy.sf"
+        value="org/smartfrog/test/system/projects/alpine/alpine_on_jetty.sf"/>
+    <property name="default.ini" location="test/files/default.ini"/>
+    <property name="default.sf" location="test/files/default.sf"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- setup codebase -->
+  <!-- ========================================================== -->
+  <target name="init-codebase" depends="init-deploy-properties,dist"
+      description="set up the codebase property">
+    <sf-tourl property="codebase">
+      <path refid="tests.run.classpath"/>
+    </sf-tourl>
+    <echo>
+      deploying to ${deploy.host}
+      codebase=${codebase}</echo>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="init-codebase,init-deploy-properties"
+      description="deploy">
+
+    <sf-deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
+      <codebase url="${codebase}"/>
+
+      <application name="${application.name}">
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+        #include "/${deploy.sf}"
+      </application>
+    </sf-deploy>
+  </target>
+
+  <target name="undeploy" depends="init-deploy-properties"
+      description="deploy">
+
+    <sf-undeploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        application="${application.name}"/>
+  </target>
+
+
+
+  <!-- =================================================================== -->
+  <!-- system tests -->
+  <!-- =================================================================== -->
+
+  <target name="system-tests" depends="ready-to-test"
+      if="system.tests.enabled" description="run system tests">
+    <sf-system-test>
+      <test>
+        <sf-system-test-junit>
+          <sysproperty key="test.files.dir"
+              value="${test.src.dir}/files"/>
+          <sysproperty key="endpoint"
+              value="http://127.0.0.1:6060/alpine"/>
+          <batchtest todir="${test.data.dir}">
+            <fileset dir="${test.classes.dir}">
+              <include name="**/unit/*Test.class"/>
+              <include name="**/system/**/*Test.class"/>
+            </fileset>
+          </batchtest>
+        </sf-system-test-junit>
+        <fail if="system.test.failed">System Tests failed - see
+          ${test.reports.dir}
+        </fail>
+      </test>
+    </sf-system-test>
+  </target>
+
+  <target name="all" depends="dist,unit-tests,installed"/>
+</project>

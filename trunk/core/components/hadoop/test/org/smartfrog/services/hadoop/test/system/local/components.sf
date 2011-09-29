@@ -1,0 +1,206 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+#include "/org/smartfrog/services/hadoop/test/system/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/testjob.sf"
+
+
+LocalDataNodeCompound extends TransientNameDataNodeCompound;
+
+
+OrphanDatanodeCompound  extends LocalHadoopCompound  {
+
+  hostname LOCALHOST;
+
+  description "A cluster with a task tracker but not job tracker";
+
+  localDataDir extends TempDir {
+
+  }
+
+  datanode extends  LightweightDataNode {
+    hostname PARENT:hostname;
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+    dfs.datanode.address datanodeURL  ;
+  }
+}
+
+
+
+TwoDataNodeCluster extends LocalDataNodeCompound {
+  localDataDir2 extends TempDir {
+
+  }
+
+  datanode2 extends datanode {
+    dataDirectories [LAZY localDataDir2];
+    dfs.datanode.http.address  (hostaddress ++ ":" ++ DataNodeHttpPort2);
+    dfs.datanode.https.address (hostaddress ++ ":" ++ DataNodeHttpsPort2);
+    dfs.datanode.address (hostaddress ++ ":" ++ DataNodeIpcPort2)
+  }
+}
+
+/**
+ * A complete filesystem
+ */
+LocalFileSystemCompound extends FilesystemWithActions {
+
+
+}
+
+
+LocalJobTrackerCompound2 extends LocalFileSystemCompound {
+  description "A cluster with a job tracker";
+
+  jobtracker extends LightweightJobTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    dataDir LAZY PARENT:ATTRIB dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:ATTRIB nameDir;
+    nameDirectories [nameDir];
+    logDir LAZY PARENT:ATTRIB logDir;
+  }
+}
+
+OrphanTaskTrackerCompound extends LocalHadoopCompound  {
+
+  description "A cluster with a task tracker but not job tracker";
+
+  mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
+
+  tasktracker extends LightweightTaskTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
+    //yes, this is milliseconds. But there is a sleep involved too
+    mapred.task.tracker.connect.timeout ORPHAN_CONNECT_TIMEOUT;
+
+    //"ipc.client.connect.max.retries"
+    ipc.client.connect.max.retries ORPHAN_CONNECT_MAX_RETRIES;
+    
+  }
+}
+
+
+
+
+/**
+Test sequence that checks that when a namenode is shut down, it goes away
+*/
+NamenodeShutdownSequence extends Sequence {
+  namenode TBD;
+
+  waitForNameNode extends WaitForServiceLive {
+    serviceName "namenode";
+    service LAZY PARENT:namenode;
+  }
+
+
+  //detach and terminate
+  terminateNameNode extends Terminator {
+    kill LAZY PARENT:namenode;
+    detachFirst true;
+  }
+
+  //now assert that it is dead
+  assertIPCClosed extends AssertNameNodeIPCClosed;
+  assertHttpClosed extends AssertNameNodeHttpClosed;
+}
+
+
+
+TestJob extends Job {
+  name TBD;
+  cluster TBD;
+  jobtracker TBD;
+  fs.default.name cluster:fs.default.name;
+  testURL (fs.default.name ++ testDir);
+  mapred.job.tracker LAZY jobtracker:live.mapred.job.tracker;
+  hadoop.tmp.dir "/tmp";
+  hadoop.tmp.URL (fs.default.name ++ hadoop.tmp.dir);
+  jobTimeout JOB_EXECUTE_TIMEOUT;
+
+  //mapred.system.dir "/tmp/hadoop/mapred/system";
+
+  //mapred.child.java.opts "-Xmx512m -d64 -server";
+  mapred.tasktracker.map.tasks.maximum 5;
+  mapred.tasktracker.reduce.tasks.maximum 1;
+  mapred.working.dir (hadoop.tmp.URL ++ "/" ++ name ++ "/working");
+  mapred.local.dir (hadoop.tmp.URL ++ "/" ++ name ++ "local");
+  io.sort.record.percent 0.1F;
+  mapred.input.dir (fs.default.name ++ testDirIn);
+  mapred.output.dir (fs.default.name ++ testDirOut);
+  mapred.working.dir (fs.default.name ++ testDirWorking);
+
+  //hadoop.job.ugi ;
+}
+
+TestJobNoFile extends TestJob {
+
+}
+
+
+/**
+ * this is a condition which is true only
+ * if a lazy property test.fork.tests.enabled is set
+ */
+IsForkTestsSet extends IsPropertyTrue {
+    property "test.fork.tests.enabled";
+}
+
+LocalClusterStatus extends ClusterStatus {
+  jobtracker TBD;
+
+  fs.default.name jobtracker:fs.default.name;
+  mapred.job.tracker jobtracker;
+  hadoop.job.ugi jobtracker:hadoop.job.ugi;
+  sfShouldTerminate true;
+  supportedFileSystem true;
+}
+
+
+
+CountingFile extends SmallCountingFile {
+    filename inputFileLocal;
+  }
+
+
+
+CopyFileInAndOut extends CopyFileInAndOutSequence {
+  LocalDataDir PROPERTY test.work.dir;
+}
+
+
+
+/**
+ * this is a complete MR workflow
+ */
+JobTrackerSequence extends  JobTrackerSourceFileSetupSequence {
+  LocalDataDir PROPERTY test.work.dir;
+}
+
+MapReduceTestSequence extends MapReduceSequence  {
+  LocalDataDir PROPERTY test.work.dir;
+}
+
+
+

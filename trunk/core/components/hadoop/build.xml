@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hadoop" default="default">
+
+  <!--
+  /** (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    hadoop component
+    For testing on the HPLB server farm, set
+     test.hplb.enabled=true
+    Make sure they are running a compatible version and we are up to date with
+    their settings!
+
+    To get the hadoop jars from a local ivy cache to the place in SVN where they
+    are available to other developers, use the copy-hadoop target
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+    <!-- tests are on-->
+  <!--<property name="system.tests" value="true"/>-->
+  <property name="junit.timeout" value="12000000"/>
+  <!--time for a single test to execute-->
+  <property name="test.timeout.execute"  value="120000"/>
+  
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property file="libraries.properties"/>
+  
+  <!--this lets us pick up hadoop version markers from hadoop,
+    overriding anything in components/libraries.properties-->
+
+  <property name="hadoop.dir" location="" />
+  <property file="${hadoop.dir}/build.properties" />
+  <property file="${hadoop.dir}/ivy/libraries.properties" />
+
+  <!--<property  name="system.tests" value="false" />-->
+
+
+  <echo
+      message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+  <target name="ready-to-test" depends="common.ready-to-test">
+    <echo level="verbose">
+      test.ec2.enabled=${test.ec2.enabled}
+      test.awsid=${test.awsid}
+      test.awskey=${test.awskey}
+      system.tests=${system.tests}
+      system.tests.enabled=${system.tests.enabled}
+    </echo>
+    <macrodef name="loadclass">
+      <attribute name="class" />
+    <sequential >
+      <fail >
+        <condition >
+          <not>
+            <available classname="@{class}" ignoresystemclasses="true"
+                classpathref="tests.run.classpath"/>
+          </not>
+        </condition>
+        Unable to load @{class} from
+        ${toString:tests.run.classpath}
+      </fail>
+    </sequential>
+    </macrodef>
+    <loadclass class="org.apache.jasper.servlet.JspServlet" />
+
+
+
+  </target>
+
+  <target name="ready-to-copy-hadoop"  depends="ivy-retrieve,ivy-report">
+    <echo>
+      hadoop.dir=${hadoop.dir}
+      hadoop.version=${hadoop.version}
+    </echo>
+  </target>
+
+  <target name="copy-hadoop" depends="ready-to-copy-hadoop"
+      description="copy the hadoop JAR where it needs to go to be kept under SCM">
+    <fail>
+      <condition><equals arg1="${hadoop.version}" arg2="latest.integration"/> </condition>
+      You need a proper hadoop.version number and not ${hadoop.version}
+    </fail>
+    <property name="hadoop.repo.dir"
+              location="${core.dir}/antbuild/repository/org.apache.hadoop/" />
+    <property name="hadoop-core.target.dir"
+      location="${hadoop.repo.dir}/hadoop-core/${hadoop.version}" />
+    <mkdir dir="${hadoop-core.target.dir}" />
+    <property name="hadoop-core.artifact.name"
+      value="hadoop-core-${hadoop.version}.jar" />
+    <property name="hadoop-core.artifact"
+      location="build/ivy/lib/hadoop-jars/${hadoop-core.artifact.name}" />
+    <fail>
+      <condition><not><available file="${hadoop-core.artifact}" /></not></condition>
+      Missing File: "${hadoop-core.artifact}"
+      This could be due to the hadoop version expected "${hadoop.version}" not
+      matching what is being built locally
+    </fail>
+    <copy todir="${hadoop-core.target.dir}" file="${hadoop-core.artifact}"/>
+    <echo>Copied ${hadoop-core.artifact}</echo>
+    <property name="hadoop-hdfs.target.dir"
+              location="${hadoop.repo.dir}/hadoop-hdfs/${hadoop.version}" />
+    <mkdir dir="${hadoop-hdfs.target.dir}" />
+    <property name="hadoop-hdfs.artifact.name"
+              value="hadoop-hdfs-${hadoop.version}.jar" />
+    <property name="hadoop-hdfs.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-hdfs.artifact.name}" />
+    <copy todir="${hadoop-hdfs.target.dir}" file="${hadoop-hdfs.artifact}"/>
+
+    <property name="hadoop-mapred.target.dir"
+              location="${hadoop.repo.dir}/hadoop-mapred/${hadoop.version}" />
+    <mkdir dir="${hadoop-mapred.target.dir}" />
+    <property name="hadoop-mapred.artifact.name"
+              value="hadoop-mapred-${hadoop.version}.jar" />
+    <property name="hadoop-mapred.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-mapred.artifact.name}" />
+    <copy todir="${hadoop-mapred.target.dir}" file="${hadoop-mapred.artifact}"/>
+
+    <property name="hadoop-mapred-examples.target.dir"
+              location="${hadoop.repo.dir}/hadoop-mapred-examples/${hadoop.version}" />
+    <mkdir dir="${hadoop-mapred-examples.target.dir}" />
+    <property name="hadoop-mapred-examples.artifact.name"
+              value="hadoop-mapred-examples-${hadoop.version}.jar" />
+    <property name="hadoop-mapred-examples.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-mapred-examples.artifact.name}" />
+    <copy todir="${hadoop-mapred-examples.target.dir}" file="${hadoop-mapred-examples.artifact}"/>
+
+    <property name="hadoop-mapred-tools.target.dir"
+              location="${hadoop.repo.dir}/hadoop-mapred-tools/${hadoop.version}" />
+    <mkdir dir="${hadoop-mapred-tools.target.dir}" />
+    <property name="hadoop-mapred-tools.artifact.name"
+              value="hadoop-mapred-tools-${hadoop.version}.jar" />
+    <property name="hadoop-mapred-tools.artifact"
+              location="build/ivy/lib/hadoop-jars/${hadoop-mapred-tools.artifact.name}" />
+    <copy todir="${hadoop-mapred-tools.target.dir}" file="${hadoop-mapred-tools.artifact}"/>
+    
+  </target>
+
+  <target name="loadclass" depends="ready-to-test">
+    <loadclass class="org.apache.hadoop.hdfs.server.namenode.JspHelper" />
+  </target>
+
+  <!--create the JAR manifest-->
+  <target name="manifest" depends="pre-compile">
+    <property name="manifest.mf" location="${build.dir}/MANIFEST.MF" />
+    <manifest file="${manifest.mf}">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Premain-Class"
+         value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+    </manifest>
+  </target>
+
+
+  <target name="sizeof" depends="sizeof32, sizeof64" />
+
+  <target name="sizeof32" depends="ready-to-test" >
+   <property name="sizeof" value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+   <sf-java
+     classpathref="tests.run.classpath"
+     classname="${sizeof}">
+     <jvmarg value="-javaagent:${target.jar}"/>
+   </sf-java>
+  </target>
+
+  <target name="sizeof64" depends="ready-to-test" >
+    <property name="sizeof" value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+    <sf-java failonerror="false"
+      classpathref="tests.run.classpath"
+      classname="${sizeof}">
+      <jvmarg value="-XX:+UseCompressedOops"/>
+      <jvmarg value="-javaagent:${target.jar}"/>
+    </sf-java>
+  </target>
+
+</project>

@@ -1,0 +1,19 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/components.sf" 
+
+
+
+sfConfig extends Deployer {
+
+
+    newComponentDescription "description";
+    newComponentName  "name";
+    newComponentParent  LAZY HOST localhost:sfDefault;
+	// codebase for parsing the description in newComponentDescription
+    newComponentCodebase  "codebase";
+	// attributes like sfCodeBase etc. for replacement in description in newComponentDescription
+    newComponentExtraAtributes [[],[]];
+    asynchCreateChild true; 
+};
+
+

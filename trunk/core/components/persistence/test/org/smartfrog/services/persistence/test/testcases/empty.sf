@@ -1,0 +1,16 @@
+#include "org/smartfrog/services/persistence/rcomponent/components.sf"
+
+
+TestComponent extends RComponent {
+  sfUpdatable            true;
+  [sfVolatile]           volatile 10;
+  [sfCached]             cached 20;
+  [sfVolatile, sfCached] both 30;
+	general 100;
+}
+
+
+
+sfConfig extends TestComponent {
+   child extends TestComponent;
+}

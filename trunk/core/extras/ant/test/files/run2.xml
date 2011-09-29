@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<project name="run2" default="teardown">
+
+<description>
+ More tests for the sf-run command. 
+ 
+ command line invocation
+
+ant -lib ../../dist/lib/*.jar -lib ../../../../smartfrog/dist/lib/smartfrog*.jar -lib ../../../../smartfrog/dist/lib/sfServices*.jar -f run2.xml testSleep
+
+</description>
+
+  <import file="test-common.xml" />
+  
+  <property name="touchfile" location="touchfile.txt" />
+  <delete file="${touchfile}" />
+  <presetdef name="assertFileCreated">
+    <fail>
+      <condition>
+        <not>
+          <available file="${touchfile}"/>
+        </not>
+      </condition>
+      Not found: "${touchfile}"
+    </fail>
+  </presetdef>
+
+
+  <target name="testSleep">
+    <sf-run logStackTraces="true" diagnostics="true">
+      <application name="sleep" 
+          file="subdir/with spaces/sleep.sf" 
+          />
+    </sf-run>
+  </target>
+
+  <target name="testTouch">
+    <sf-run logStackTraces="true" diagnostics="true">
+      <application name="touch"
+          file="subdir/with spaces/touch.sf"
+          />
+    </sf-run>
+    <assertFileCreated />
+  </target>
+
+  <target name="testSleepTouch">
+    <sf-run logStackTraces="true" diagnostics="true">
+      <application name="sleep"
+          file="subdir/with spaces/sleeptouch.sf"
+          />
+    </sf-run>
+    <assertFileCreated/>
+  </target>
+
+
+  <target name="testTouchWithSpacesInInclude">
+    <sf-run logStackTraces="true" diagnostics="true">
+      <application name="touchincludes"
+        file="subdir/with spaces/touchincludes.sf"
+        />
+    </sf-run>
+    <assertFileCreated/>
+  </target>
+  
+</project>

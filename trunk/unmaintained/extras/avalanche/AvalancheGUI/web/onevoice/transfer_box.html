@@ -1,0 +1,218 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> Transfer Box </title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<script language="JavaScript" type="text/javascript" src="js/buttonManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/transferBoxManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+
+
+
+</head>
+
+<body style="margin:20px;">
+
+<h3>Transfer Box</h3>
+
+
+<h4>Standard Transfer Box</h4>
+
+<form method="POST" class="transferBox" id="someUniqueTransferBoxFormId1" autocomplete="off" action="#" onsubmit="return false; //normally return ourTransferBoxManager.postChosenItemsList(this);">
+
+		Show tools in category<br>
+		<select size="1" name="itemCategory">
+			<option value=0 disabled>Application Launch Tool</option>
+			<option value=1 disabled>Cluster Management</option>
+			<option value=2 disabled>Configuration Tool</option>
+			<option value=3 disabled>General Tools</option>
+			<option value=4 selected>Monitoring Tool</option>
+			<option value=5 disabled>Notification Tool</option>
+			<option value=6 disabled>Partition Management</option>
+			<option value=7 disabled>ProLiant Essentials License Manager</option>
+			<option value=8 disabled>Resource Management</option>
+			<option value=9 disabled>Software Management</option>
+			<option value=10 disabled>System Administration</option>
+			<option value=11 disabled>View</option>
+		</select>
+		<br>
+		<br>
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td width="40%">
+					Available Items Label
+					<br><span class="sp7">&nbsp;</span><br>
+					
+				</td>
+				<td></td>
+				<td width="40%">
+					Chosen Items Label
+					<br><span class="sp7">&nbsp;</span><br>
+				</td>
+			</tr>
+      <tr valign="middle">
+        <td width="50%">
+					<select size="8" name="available_items" style="width:100%" multiple></select>
+				</td>
+				<td>
+					<div class="verticalButtonSet">
+						<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall" name="addButton" value="&gt;&gt;"></div></div></div>
+						
+
+						<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall" name="removeButton" value="&lt;&lt;" ></div></div></div>
+
+					</div>
+        </td>
+        <td width="50%">
+					<select size="8" name="chosen_items" style="width:100%" multiple></select>
+				</td>
+      </tr>
+				
+    </table>
+		<div class="bWrapperUp" style="margin-top:10px;"><div><div><input type="submit" class="hpButton" name="submitButton" value="Submit"></div></div></div>
+  <br>
+<input type="hidden" name="chosenItemsAddList">
+<input type="hidden" name="pathToGetNewItems" value="transfer_box_1_get_items_sample.html">
+</form>
+
+<iframe id="someUniqueTransferBoxFormId1DataSource" src="blank.html" style="position:absolute; visibility:hidden" height="1" width="1"></iframe>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<h4>Transfer Box With Sorting</h4>
+
+<form method="POST" class="transferBox" id="someUniqueTransferBoxFormId2" autocomplete="off" action="#" onsubmit="return false; //normally return ourTransferBoxManager.postChosenItemsList(this);">
+
+		Show tools in category<br>
+		<select size="1" name="itemCategory">
+			<option value=0 disabled>Application Launch Tool</option>
+			<option value=1 disabled>Cluster Management</option>
+			<option value=2 disabled>Configuration Tool</option>
+			<option value=3 disabled>General Tools</option>
+			<option value=4 selected>Monitoring Tool</option>
+			<option value=5 disabled>Notification Tool</option>
+			<option value=6 disabled>Partition Management</option>
+			<option value=7 disabled>ProLiant Essentials License Manager</option>
+			<option value=8 disabled>Resource Management</option>
+			<option value=9 disabled>Software Management</option>
+			<option value=10 disabled>System Administration</option>
+			<option value=11 disabled>View</option>
+		</select>
+		<br>
+		<br>
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td width="40%">
+					Available Items Label
+					<br><span class="sp7">&nbsp;</span><br>
+				</td>
+				<td></td>
+				<td width="40%">
+					Chosen Items Label
+					<br><span class="sp7">&nbsp;</span><br>
+				</td>
+			</tr>
+      <tr valign="middle">
+        <td width="50%">
+					<select size="8" name="available_items" style="width:100%" multiple></select>
+				</td>
+				<td>
+					<div class="verticalButtonSet">
+						<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall noMinimumWidth" name="addButton" value="&gt;&gt;"></div></div></div>
+						
+
+						<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall noMinimumWidth" name="removeButton" value="&lt;&lt;" ></div></div></div>
+
+					</div>
+        </td>
+        <td width="50%">
+					<select size="8" name="chosen_items" style="width:100%" multiple></select>
+				</td>
+      </tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+
+				<td>
+					<div class="buttonSet" style="padding-top:10px;">
+						<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall" name="sortUpButton" value="/\" disableminimumwidth="yes"></div></div></div>
+
+						<div class="bWrapperUp"><div><div><input type="button" class="hpButtonSmall" name="sortDownButton" value="\/" disableminimumwidth="yes"></div></div></div>
+					</div>
+				</td>
+			</tr>
+				
+    </table>
+		<div class="bWrapperUp" style="margin-top:10px;"><div><div><input type="submit" class="hpButton" name="submitButton" value="Submit"></div></div></div>
+  <br>
+<input type="hidden" name="chosenItemsAddList">
+<input type="hidden" name="pathToGetNewItems" value="transfer_box_2_get_items_sample.html">
+</form>
+
+<iframe id="someUniqueTransferBoxFormId2DataSource" src="blank.html" style="position:absolute; visibility:hidden" height="1" width="1"></iframe>
+
+<h4>HTML/CSS</h4>
+<ul>
+	<li>Transfer Box Components are made up of the following elements:
+		<ol>
+			<li>A form tag at the outside of the component, of class "transferBox", which has been given a unique id attribute.  (It will also require method and action attributes as necessary to fit into your application.) 
+			<li>A select element of class "itemCategory".  This is to allow the users to filter the available items list by category.  
+			<li>a hidden iframe element that is used to refresh the control's data. 
+
+		</ol>
+
+</ul>
+<h4>Javascript</h4>
+<ul>
+	<li>TransferBoxManager.js contains a number of methods to both initialize the components when loaded and to manage their state at runtime. 
+	<li>Most notably, a large init function whose execution is managed by the reconcileEventHandlers function within global.js, attaches all of the various event handlers	required to power the component. 
+	<li>Developers can refer to comments within the TransferBoxManager code itself for further comments. 
+	<li>the document that loads within the hidden iframe should call the method "transferBox_resetAvailableItems" from its parent window.   Two arguments are passed to this function, the first being the unique id of the form element, and the second being a concatenated list of all available items. 
+	<li>Within this concatenated list, item names and item categories are seperated by "*", which pairs are then seperated from their ids by "|", and then the triplets of of items, categories and id's are then seperated from eachother by ":". 
+</ul>
+
+
+<br>
+<h4>Sample iframe code</h4>
+<h4>
+<script language="JavaScript" type="text/javascript">
+parent.transferBox_resetAvailableItems("someUniqueTransferBoxFormId1","Data Collection|00000000864162de0000000500000002:Monitoring Tool*Hardware Status Polling|00000000864162de0000000500000001:Monitoring Tool*Identify Systems|00000000864162de0000000500000003:Monitoring Tool*Ping|00000000864162de000000050000000e:Monitoring Tool");
+</script>
+</h4>
+
+
+
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+
+</body>
+</html>

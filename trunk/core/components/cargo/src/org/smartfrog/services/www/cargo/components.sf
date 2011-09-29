@@ -1,0 +1,180 @@
+/** (C) Copyright 20062008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "/org/smartfrog/services/utils/concat/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+//liveness and webserver
+#include "/org/smartfrog/services/www/components.sf"
+
+
+/**
+ * schema for the base jetty server extends
+ * base webserver schema
+ */
+CargoServerSchema extends Schema {
+    //name of the implementation
+    configurationClass extends String;
+    //this is the classname of a container. You can paste it in for extra dynamicness, or
+    //extend one of the derivative templates in which it is already defined 
+    containerClass extends String;
+    logging extends String;
+
+
+    //the classpath is a list of JAR files.
+    //it is evaluated on startup
+    extraClasspath extends OptionalVector;
+
+    //list of [name,value] string elements.
+    properties extends Vector;
+}
+
+/**
+ * this is not yet complete enough to be instantiable
+ */
+CargoServer extends ApplicationServer {
+    sfClass "org.smartfrog.services.www.cargo.CargoServerImpl";
+    cargoServerSchema extends CargoServerSchema;
+    serverHost "localhost";
+    port 8080;
+    logging "medium";
+    properties [];
+    supportsServletContext false;
+    supportsWAR true;
+    supportsEAR false;
+
+}
+
+/**
+ * this is a set of nothing but constants for the various options
+ * the advantage of using it is simply to prevent mis-spellings; if
+ * a reference is not spelled correctly, it will be caught at parse-time
+ */
+CargoOptions extends {
+  //"localhost"
+  cargo.hostname "cargo.hostname";
+  cargo.jvmargs "cargo.jvmargs";
+  // "medium"
+  cargo.logging "cargo.logging";
+  //http
+  cargo.protocol "cargo.protocol";
+  cargo.remote.password "cargo.remote.password";
+  cargo.remote.username "cargo.remote.username";
+  cargo.rmi.port "cargo.rmi.port";
+  //8080
+  cargo.servlet.port "cargo.servlet.port";
+  cargo.servlet.users "cargo.servlet.users";
+
+  //geronimo
+  cargo.geronimo.log.console "cargo.geronimo.log.console";
+  cargo.geronimo.log.file "cargo.geronimo.log.file";
+  cargo.geronimo.servlet.containerId "cargo.geronimo.servlet.containerId";
+  cargo.geronimo.users "cargo.geronimo.users";
+
+  //tomcate
+
+  cargo.tomcat.manager.url "cargo.tomcat.manager.url";
+
+  //weblogic options
+
+  //"weblogic"
+  cargo.weblogic.administrator.password "cargo.weblogic.administrator.password";
+  //"weblogic"
+  cargo.weblogic.administrator.user "cargo.weblogic.administrator.user";
+  // "domain"
+  cargo.weblogic.domain "cargo.weblogic.domain";
+  cargo.weblogic.server "cargo.weblogic.server";
+}
+
+
+/**
+ * an installed cargo server
+ */
+InstalledCargoServer extends CargoServer {
+    installedSchema extends Schema {
+        home extends FilenameType;
+    }
+}
+
+/**
+ * an embedded server
+ */
+EmbeddedCargoServer extends CargoServer {
+}
+
+
+
+AbstractTomcatCargoServer extends InstalledCargoServer {
+
+}
+
+/**
+ A tomcat server implemented using Cargo
+ */
+Tomcat5CargoServer extends AbstractTomcatCargoServer {
+  configurationClass "org.codehaus.cargo.container.tomcat.Tomcat5xStandaloneLocalConfiguration";
+  containerClass "org.codehaus.cargo.container.tomcat.Tomcat5xInstalledLocalContainer";
+}
+
+
+/**
+ * JBoss Server
+ */
+AbstractJBossCargoServer extends InstalledCargoServer {
+  configurationClass "org.codehaus.cargo.container.jboss.JBossStandaloneLocalConfiguration";
+  supportsEAR true;
+  supportsSAR false;
+}
+
+
+/**
+ * Jboss 4.x
+ */
+JBoss4CargoServer extends AbstractJBossCargoServer {
+  containerClass "org.codehaus.cargo.container.jboss.JBoss4xInstalledLocalContainer";
+}
+
+/**
+ * Jboss 3.x
+ */
+JBoss3CargoServer extends AbstractJBossCargoServer {
+  containerClass "org.codehaus.cargo.container.jboss.JBoss3xInstalledLocalContainer";
+}
+
+/**
+ * base class for jetty things
+ */
+AbstractJettyCargoServer extends EmbeddedCargoServer {
+  //supportsServletContext true;
+}
+
+Jetty4CargoServer extends AbstractJettyCargoServer {
+  configurationClass "org.codehaus.cargo.container.jetty.Jetty4xEmbeddedStandaloneLocalConfiguration";
+  containerClass "org.codehaus.cargo.container.jetty.Jetty4xEmbeddedLocalContainer";
+}
+
+Jetty5CargoServer extends AbstractJettyCargoServer {
+  configurationClass "org.codehaus.cargo.container.jetty.Jetty5xEmbeddedStandaloneLocalConfiguration";
+  containerClass "org.codehaus.cargo.container.jetty.Jetty5xEmbeddedLocalContainer";
+}
+
+Jetty6CargoServer extends AbstractJettyCargoServer {
+  configurationClass "org.codehaus.cargo.container.jetty.Jetty6xEmbeddedStandaloneLocalConfiguration";
+  containerClass "org.codehaus.cargo.container.jetty.Jetty6xEmbeddedLocalContainer";
+}

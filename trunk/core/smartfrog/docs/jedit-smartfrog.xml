@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+<!-- this is the smartfrog mode  -->
+<!-- to use it, 
+  1. copy it to your jedit modes/ directory, 
+  2. edit the file  modes/catalog to add a new entry
+  <MODE NAME="smartfrog" FILE="jedit-smartfrog.xml"
+                         FILE_NAME_GLOB="*.sf" />
+-->
+<MODE>
+  <PROPS>
+    <PROPERTY NAME="commentStart" VALUE="/*" />
+    <PROPERTY NAME="commentEnd" VALUE="*/" />
+    <PROPERTY NAME="lineComment" VALUE="//" />
+
+    <!-- Auto indent -->
+    <PROPERTY NAME="indentOpenBrackets" VALUE="{" />
+    <PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+    <!-- set this to 'true' if you want to use GNU coding style -->
+    <PROPERTY NAME="doubleBracketIndent" VALUE="false" />
+    <PROPERTY NAME="lineUpClosingBracket" VALUE="true" />
+  </PROPS>
+  <RULES ESCAPE="\"
+    IGNORE_CASE="FALSE"
+    HIGHLIGHT_DIGITS="TRUE"
+    DIGIT_RE="(0x[[:xdigit:]]+[lL]?|[[:digit:]]+(e[[:digit:]]*)?[lLdDfF]?)">
+
+    <SPAN TYPE="COMMENT1">
+      <BEGIN>/*</BEGIN>
+      <END>*/</END>
+    </SPAN>
+
+
+    <EOL_SPAN TYPE="COMMENT2">//</EOL_SPAN>
+
+    <!-- this isnt in the langauge, but is implicitly there, the javadoc comment-->
+    <SPAN TYPE="COMMENT3">
+      <BEGIN>/**</BEGIN>
+      <END>*/</END>
+    </SPAN>
+    <!-- verbatim strings -->
+
+    <SPAN TYPE="LITERAL1" NO_LINE_BREAK="TRUE">
+      <BEGIN>"</BEGIN>
+      <END>"</END>
+    </SPAN>
+
+    <!-- multiline string -->
+    <SPAN TYPE="LITERAL1" NO_LINE_BREAK="FALSE">
+      <BEGIN>##</BEGIN>
+      <END>#</END>
+    </SPAN>
+    
+    <!-- everything to the end of the line -->
+    <EOL_SPAN TYPE="KEYWORD2">#include</EOL_SPAN>
+
+    <SEQ TYPE="OPERATOR">!</SEQ>
+    <SEQ TYPE="OPERATOR">:</SEQ>
+    <SEQ TYPE="OPERATOR">;</SEQ>
+    <SEQ TYPE="OPERATOR">{</SEQ>
+    <SEQ TYPE="OPERATOR">}</SEQ>
+    <SEQ TYPE="OPERATOR">,</SEQ>
+    <SEQ TYPE="OPERATOR">.</SEQ>
+    <SEQ TYPE="OPERATOR">[</SEQ>
+    <SEQ TYPE="OPERATOR">]</SEQ>
+    <SEQ TYPE="OPERATOR">[|</SEQ>
+    <SEQ TYPE="OPERATOR">|]</SEQ>
+    <SEQ TYPE="OPERATOR">+</SEQ>
+    <SEQ TYPE="OPERATOR">-</SEQ>
+    <SEQ TYPE="OPERATOR">/</SEQ>
+    <SEQ TYPE="OPERATOR">*</SEQ>
+    <SEQ TYPE="OPERATOR">==</SEQ>
+    <SEQ TYPE="OPERATOR">!=</SEQ>
+    <SEQ TYPE="OPERATOR">&gt;=</SEQ>
+    <SEQ TYPE="OPERATOR">&lt;=</SEQ>
+    <SEQ TYPE="OPERATOR">&lt;</SEQ>
+    <SEQ TYPE="OPERATOR">&gt;</SEQ>
+    <SEQ TYPE="OPERATOR">++</SEQ>
+    <SEQ TYPE="OPERATOR">&lt;&gt;</SEQ>
+    <SEQ TYPE="OPERATOR">&amp;&amp;</SEQ>
+    <SEQ TYPE="OPERATOR">||</SEQ>
+
+    <MARK_PREVIOUS TYPE="FUNCTION" EXCLUDE_MATCH="TRUE">(</MARK_PREVIOUS>
+
+    <KEYWORDS>
+      <KEYWORD1>ATTRIB</KEYWORD1>
+      <KEYWORD1>DATA</KEYWORD1>
+      <KEYWORD1>TBD</KEYWORD1>
+      <KEYWORD1>CONSTANT</KEYWORD1>
+      <KEYWORD1>ICONSTANT</KEYWORD1>
+      <KEYWORD1>PARENT</KEYWORD1>
+      <KEYWORD1>ROOT</KEYWORD1>
+      <KEYWORD1>THIS</KEYWORD1>
+      <KEYWORD1>extends</KEYWORD1>
+      <KEYWORD1>LAZY</KEYWORD1>
+      <KEYWORD1>PROCESS</KEYWORD1>
+      <KEYWORD1>HOST</KEYWORD1>
+      <KEYWORD1>PROPERTY</KEYWORD1>
+      <KEYWORD1>IPROPERTY</KEYWORD1>
+      <KEYWORD1>IF</KEYWORD1>
+      <KEYWORD1>THEN</KEYWORD1>
+      <KEYWORD1>ELSE</KEYWORD1>
+      <KEYWORD1>FI</KEYWORD1>
+      <KEYWORD1>OPTIONAL</KEYWORD1>
+      <KEYWORD2>NULL</KEYWORD2>
+      <LITERAL1>sfConfig</LITERAL1>      
+      <LITERAL1>sfClass</LITERAL1>
+      <LITERAL1>sfCodeBase</LITERAL1>
+      <LITERAL1>sfDeployerClass</LITERAL1>
+      <LITERAL1>sfExport</LITERAL1>
+      <LITERAL1>sfSchemaDescription</LITERAL1>
+      <LITERAL1>sfSyncTerminate</LITERAL1>
+      <LITERAL1>sfProcessComponentName</LITERAL1>
+      <LITERAL1>sfProcessHost</LITERAL1>
+      <LITERAL1>sfProcessName</LITERAL1>
+      <LITERAL1>sfLivenessDelay</LITERAL1>
+      <LITERAL1>sfLivenessFactor</LITERAL1>
+      <LITERAL1>sfProcessAllow</LITERAL1>
+      <LITERAL1>sfProcessTimeout</LITERAL1>
+      <LITERAL1>sfRootLocatorPort</LITERAL1>
+      <LITERAL1>sfSubprocessGCTimeout</LITERAL1>
+      <LITERAL1>sfHost</LITERAL1>
+      <LITERAL1>sfProcess</LITERAL1>
+      
+      <LITERAL2>--</LITERAL2>
+      <LITERAL2>Prim</LITERAL2>
+      <LITERAL2>Compound</LITERAL2>
+      <LITERAL2>NULL</LITERAL2>
+      <LITERAL2>true</LITERAL2>
+      <LITERAL2>false</LITERAL2>
+    </KEYWORDS>
+  </RULES>
+
+</MODE>

@@ -1,0 +1,142 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title> Navigation Control</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<script language="JavaScript" type="text/javascript" src="js/navigationControlManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+
+
+
+</head>
+
+<body style="margin:20px;">
+<h3>Navigation Control </h3>
+
+
+<h4>Standard Navigation Control </h4>
+<div style="width:180px;border:7px solid #ccc;">
+	<div style="padding:2px;">
+		<div class="navigationControlOn"><a href="blank.html" target="sampleTargetFrame">Overview</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Configuration</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Supplies Status</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Event Log</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Device Information</a></div>
+	</div>
+</div>
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+<h4>Navigation Control, With Icons</h4>
+<div style="width:180px;border:7px solid #ccc;">
+	<div style="padding:2px;">
+		<div class="navigationControlIcon"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="">&nbsp;</div>
+		<div class="navigationControlOn"><a href="blank.html" target="sampleTargetFrame">Overview</a></div>
+
+		<div class="navigationControlIcon"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="">&nbsp;</div><div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Configuration</a></div>
+		<div class="navigationControlIcon"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="">&nbsp;</div><div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Supplies Status</a></div>
+		<div class="navigationControlIcon"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="">&nbsp;</div><div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Event Log</a></div>
+		<div class="navigationControlIcon"><img src="images/placeholder_identifier_icon.gif" width="15" height="15" border="0" alt="">&nbsp;</div><div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Device Information</a></div>
+	</div>
+</div>
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+
+<h4>Navigation Control with Headers</h4>
+<div style="width:180px;border:7px solid #ccc;">
+	<div style="padding:2px;">
+		<div class="navigationControlHeader"><b>Configuration</b></div>
+		<div class="navigationControlOn"><a href="blank.html" target="sampleTargetFrame">Network Settings</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Other Settings</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Privacy Settings</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Select Language</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Device Information</a></div>
+		<div class="navigationControlSpacer"></div>
+		<div class="navigationControlHeader"><b>Security</b></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Settings</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Authorization</a></div>
+		<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Management Protocols</a></div>
+	</div>
+</div>
+<br>
+<br>
+<br>
+<br>
+
+
+<h4>State-Managing Navigation Control (State managed on client)</h4>
+<div style="width:180px;border:7px solid #ccc;">
+	<div style="padding:2px;">
+		<div class="navigationControlSet">
+			<div class="navigationControlOn"><a href="blank.html" target="sampleTargetFrame">Overview</a></div>
+			<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Configuration</a></div>
+			<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Supplies Status</a></div>
+			<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Event Log</a></div>
+			<div class="navigationControlOff"><a href="blank.html" target="sampleTargetFrame">Device Information</a></div>
+		</div>
+	</div>
+</div>
+<br>
+<br>
+<br>
+<br>
+<p>
+	
+</p>
+<h4>HTML/CSS</h4>
+<ul>
+	<li>The basic element of a Navigation Control item is a link, which exists within a div whose class is either "navigationControlOn" or "navigationControlOff". 
+	<li>To avoid CSS width bugs, the immediate parent of a set of navigationControl divs must be a table, and generally this table is then within a tray table or tab component.  Here for example it is shown within a div implementing a simple grey-bordered tray .
+	<li>If your application requires that the navigation control manage its own state on the client (ie without being loaded again from the server), wrap the the set of NavigationControl divs within a div of class "NavigationControlSet".  When the component is initialized, event handlers will be attached as necessary to maintain state. 
+	<li>Note however that this state-managing implementation is currently very basic and does not actually maintain any accessible variables holding that state. 
+</ul>
+<h4>Javascript</h4>
+<ul>
+	<li>NavigationControlManager.js contains a method to initialize the components when loaded and a method to manage the highlight state for the State-Managing Navigation Control variation
+	<li>Regarding the state-managing variation, note that this implementation is deliberately a very basic one and does not actually maintain any accessible variables holding that state.
+</ul>
+
+
+
+
+<br><br><br>
+<iframe name="sampleTargetFrame" style="height:1px;border:0px;visibility:hidden;" src="blank.html"></iframe>
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+</body>
+</html>

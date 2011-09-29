@@ -1,0 +1,66 @@
+<cruisecontrol>
+<!--
+  This is the cruise control configuration file
+  It is only of interest if you are running cruise control, and even
+  then it needs great care when configuring, as it is complex and minimally
+  documented
+
+  This version is designed to build against sourceforge
+ -->
+
+ <project name="SmartFrog" buildafterfailed="false">
+    <!-- Plugin imports -->
+    <bootstrappers>
+        <currentbuildstatusbootstrapper file="../artifacts/currentbuildstatus.txt"/>
+<!-- 	    <cvsbootstrapper file="SmartFrog/build.xml"/> -->
+    </bootstrappers>
+
+    <modificationset  quietperiod="120">
+    <cvs  cvsroot=":ext:smartfrog@smartfrog.cvs.sourceforge.net:/cvsroot/smartfrog"
+      localworkingcopy="."
+      property="cvs.modified"
+      propertyondelete="cvs.deleted"/>
+    </modificationset>
+
+    <!-- the interval is seconds -->
+    <schedule interval="2400">
+      <ant target="cc-full" antscript="ant" useLogger="true" />
+      <!--
+      <maven mavenscript="/home/cruise/maven/bin/maven"
+            goal="site:generate"
+            projectfile="/home/cruise/cruisecontrol/project.xml"/>
+
+       -->
+    </schedule>
+
+    <log dir="../artifacts">
+       <merge dir="testharness/build/test/data" />
+       <merge dir="extras/ant/build/test/data" />
+    <!--	    <merge dir="smartfrog/dist/tests/logs" /> -->
+    </log>
+    <publishers>
+      <currentbuildstatuspublisher file="../artifacts/currentbuildstatus.txt"/>
+
+      <artifactspublisher
+        dir="./smartfrog/dist/lib"
+        dest="../artifacts" />
+
+        <!-- email assumes that localhost is an SMTP server -->
+
+      <email
+        buildresultsurl="http://serrano.hpl.hp.com:8080/cc/main.jsp"
+        mailhost="localhost"
+        returnname="CruiseControl Automated Mailer"
+        returnaddress="smartfrog@users.sf.net"
+        defaultsuffix="@users.sf.net"
+        reportsuccess="false"
+        spamwhilebroken="true"
+        skipusers="false"
+        subjectprefix="[Cruise:SmartFrog]"
+        >
+
+        </email>
+    </publishers>
+  </project>
+</cruisecontrol>
+
