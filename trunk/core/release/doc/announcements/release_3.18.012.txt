@@ -172,7 +172,7 @@ Release Notes - SmartFrog - Version 3.18.012
     * [SFOS-1661] - Restlet tests won't compile (and then are timing out)
     * [SFOS-1662] - Jetty testWar test failing; startup too long
     * [SFOS-1663] - grinstall test failing as the remote file being downloaded is gone
-
+    * [SFOS-1666] - nested apps in <sf-daemon> task not deploying
 
 ** Improvement
     * [SFOS-1423] - Move Hadoop branch to github, merge in important bugs and then bring components/hadoop up to speed with it
