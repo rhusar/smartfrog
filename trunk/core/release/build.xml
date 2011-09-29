@@ -1167,17 +1167,33 @@
       Pass = "${sftp.password}"
       Upload source dir = ${upload.dir}
     </echo>
+     <presetdef name="sftp">
+       <scp
+         sftp="true"
+         password="${sftp.password}"
+         trust="${ssh.trust}"
+         verbose="${sftp.verbose}">
+       </scp>
+     </presetdef>
   </target>
 
   <target name="sftp-upload" depends="sftp-ready-to-upload" if="sftp.enabled"
       description="Upload the artifacts to a secure sftp server">
-    <scp remoteToDir="${sftp.path}"
-        sftp="true"
-        password="${sftp.password}"
-        trust="${ssh.trust}"
-        verbose="${sftp.verbose}">
+    <sftp remoteToDir="${sftp.path}">
       <fileset refid="upload.fileset"/>
-    </scp>
+    </sftp>
+  </target>
+
+  <target name="upload-release-notes" depends="sftp-ready-to-upload, release-notes-setup" if="sftp.enabled"
+     description="Upload the release notes to a secure sftp server">
+    <property name="README.TXT" location="${dist.dir}/readme.txt" />
+    <copy file="${target.announcement}" tofile="${README.TXT}" />
+    <property name="README.HTML" location="${dist.dir}/readme.html"/>
+    <copy file="${target.announcement.html}" tofile="${README.HTML}"/>
+    <sftp remoteToDir="${sftp.path}"
+      file="${README.TXT}" />
+    <sftp remoteToDir="${sftp.path}"
+      file="${README.HTML}"/>
   </target>
 
   <target name="can-upload"
@@ -1620,7 +1636,15 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
   <!--
   Create the release notes for this release
   -->
-  <target name="create-release-notes" depends="svn-revision-check"
+  <target name="release-notes-setup" depends="init">
+    <property name="announcements.dir" location="doc/announcements"/>
+    <property name="target.announcement"
+      location="${announcements.dir}/release_${smartfrog.version}.txt"/>
+    <property name="target.announcement.html"
+      location="${announcements.dir}/release_${smartfrog.version}.html"/>
+  </target>
+
+  <target name="create-release-notes" depends="svn-revision-check, release-notes-setup"
       description="
       Create the release notes for this release.
       Requires:
@@ -1628,12 +1652,6 @@ rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
       * smartfrog.version set for the release version
       "
       >
-    <property name="announcements.dir" location="doc/announcements"/>
-    <property name="target.announcement"
-        location="${announcements.dir}/release_${smartfrog.version}.txt"/>
-    <property name="target.announcement.html"
-        location="${announcements.dir}/release_${smartfrog.version}.html"/>
-
     <expandingcopy tofile="${target.announcement}">
       <fileset file="${announcements.dir}/release-template.txt"/>
     </expandingcopy>

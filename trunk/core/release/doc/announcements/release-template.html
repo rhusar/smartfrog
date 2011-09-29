@@ -16,11 +16,14 @@
 
 <p>
   The release artifacts are available at
-  <a
-          href="https://sourceforge.net/projects/smartfrog/files/">
-    https://sourceforge.net/projects/smartfrog/files/</a>
+  <a  href="https://sourceforge.net/projects/smartfrog/files/development/smartfrog-${smartfrog.version}/">
+    https://sourceforge.net/projects/smartfrog/files/development/smartfrog-${smartfrog.version}</a>
 </p>
 
+<p>
+  Artifacts for use by Ivy and Maven are available under
+  <a href="http://smartfrog.sourceforge.net/repository/">http://smartfrog.sourceforge.net/repository/</a>
+</p>
 <p>
   This release is ${smartfrog.version}; built from revision ${svn.revision}
   of the SVN repository.
@@ -30,8 +33,8 @@
 </p><p>
   This release includes the following items:
 </p>
-<ul>
 
+<ul>
   <li> Core smartfrog daemon, including services to manage files, start and stop
     Java and native programs.
   </li>
@@ -46,6 +49,9 @@
   </li>
   <li> Database: components to issue database commands, and deploy HSLDB and MySQL
    databases.
+  </li>
+  <li>Groovy: the ability to write SmartFrog components using the
+    Groovy language.
   </li>
   <li> JMX: the ability to configure and manage JMX components, and to manage
     SmartFrog components over JMX.
@@ -83,6 +89,7 @@
 <p>
   This release is available as:
 </p>
+
 <ol>
   <li>
     RPM files inside a .tar.gz file.
@@ -95,7 +102,7 @@
     containing JAR files signed by a private Certification Authority.
   </li>
   <li>
-    The original smartfrog distribution as .zip and .tar.gz (deprecated)
+    The original smartfrog distribution as .zip and .tar.gz
   </li>
 </ol>
 
@@ -133,6 +140,10 @@
   <tr>
     <td><code>smartfrog-database</code></td>
     <td>Database access</td>
+  </tr>
+  <tr>
+    <td><code>smartfrog-groovy</code></td>
+    <td>Groovy support</td>
   </tr>
   <tr>
     <td><code>smartfrog-jetty</code></td>
