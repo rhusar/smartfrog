@@ -201,7 +201,6 @@ public class JettyImpl extends WorkerThreadPrimImpl implements JettyIntf {
 
         NCSARequestLog requestlog = new NCSARequestLog();
         requestlog.setFilename(logDir + File.separatorChar + logPattern);
-        //commented out as this is deprecated/ignored.
         requestlog.setRetainDays(sfResolve(ATTR_LOG_KEEP_DAYS, 0, true));
         requestlog.setAppend(sfResolve(ATTR_LOG_APPEND, false, true));
         requestlog.setExtended(sfResolve(ATTR_LOG_APPEND, false, true));
