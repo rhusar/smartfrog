@@ -157,7 +157,6 @@ public class SFClassLoader {
     public static InputStream getResourceAsStream(String resource,
         String codebase, boolean useDefaultCodebase) {
         URL resourceURL;
-        resource = resource.replaceAll(" ", "%20");
 
         try {
             // Try first to directly generate a URL from resource
