@@ -62,16 +62,16 @@ public class DelayedTerminator implements Runnable {
      * @param normalTermination should the termination be normal.
      */
     public DelayedTerminator(Prim prim, long time, LogSF log, String description, boolean normalTermination) {
-        if(time<0) {
-            time=Long.MAX_VALUE;
+        if (time < 0) {
+            time = Long.MAX_VALUE;
         }
         this.time = time;
         primref = new WeakReference<Prim>(prim);
         this.log = log;
         if (description == null) {
             this.description = TERMINATION_BY_DELAYED_TERMINATOR
-                    + new ComponentHelper(prim).completeNameSafe().toString()
-                    + " after " + time + " milliseconds";
+                               + new ComponentHelper(prim).completeNameSafe().toString()
+                               + " after " + time + " milliseconds";
         } else {
             this.description = description;
         }
@@ -120,9 +120,9 @@ public class DelayedTerminator implements Runnable {
      * Start the new thread
      */
     public synchronized void start() {
-        if(self==null) {
+        if (self == null) {
             self = new Thread(this);
-            if(name!=null) {
+            if (name != null) {
                 self.setName(name);
             }
             self.start();
@@ -183,9 +183,10 @@ public class DelayedTerminator implements Runnable {
     private TerminationRecord createTerminationRecord(Prim target) {
         Reference ref = new ComponentHelper(target).completeNameSafe();
         TerminationRecord record = new TerminationRecord(
-                normalTermination ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                description,
-                ref);
+                                                                normalTermination ? TerminationRecord.NORMAL
+                                                                                  : TerminationRecord.ABNORMAL,
+                                                                description,
+                                                                ref);
         return record;
     }
 

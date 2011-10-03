@@ -71,7 +71,8 @@ public class TestCompoundImpl extends ConditionCompound
     private String exitType;
     private String exitText;
     private String description;
-
+    /** flag set once the test child has terminated */
+    protected volatile boolean testChildTerminated;
     private volatile boolean finished = false;
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
@@ -91,7 +92,7 @@ public class TestCompoundImpl extends ConditionCompound
      * The message of a forced shutdown. This is important, as we look for it when the component is terminated, and can
      * use its presence to infer that the helper thread did the work.
      */
-    public static final String FORCED_TERMINATION = "Timed shutdown of test components";
+    public static final String FORCED_TERMINATION = "Timed shutdown of ";
     /**
      * {@value}
      */
@@ -237,6 +238,10 @@ public class TestCompoundImpl extends ConditionCompound
             testsRun = true;
         }
 
+        //mark the tests as not completed yet. Any termination of the action from a timeout will be viewed
+        //as a problem
+        testChildTerminated = false;
+
         //evaluate the condition.
         //then decide whether to run or not.
 
@@ -353,7 +358,7 @@ public class TestCompoundImpl extends ConditionCompound
             //the action is deployed
             //start the terminator
             actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
-                    FORCED_TERMINATION + " after " + undeployAfter + " milliseconds",
+                    FORCED_TERMINATION + "action after " + undeployAfter + " milliseconds",
                     !expectTerminate);
             if (isDebug) sfLog().debug(self + " \"action\" is deployed, starting: " + actionTerminator.toString());
 
@@ -452,12 +457,14 @@ public class TestCompoundImpl extends ConditionCompound
 
             //the test terminator reports a termination as a failure
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
-                    FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
+                    FORCED_TERMINATION + "tests after " + testTimeout + " milliseconds",
                     false);
             if (isDebug) sfLog().debug(self + " child \"tests\" deployed, starting " + testsTerminator);
             testsTerminator.start();
         } else {
-            //no test child started, explain why 
+            //say that the tests have finished
+            testChildTerminated = true;
+            //no test child started, explain why
             sfLog().info(self + " no \"tests\" child to start");
 
             //what happens now? Well, the action had better finish on its own, otherwise timeouts will kick in.
@@ -593,12 +600,22 @@ public class TestCompoundImpl extends ConditionCompound
             //child termination
             if (actionTerminatorChild != null
                     && actionTerminatorChild.isForcedShutdown()
-                    && !expectTerminate) {
+                    && !expectTerminate
+                    && testChildTerminated) {
                 //this is a forced shutdown, all is well
-                sfLog().info("Forced shutdown of \"action\" component (expected)");
-                testSucceeded = true;
+                if (testChildTerminated) {
+                    sfLog().info("Forced shutdown of \"action\" component (expected)");
+                    testSucceeded = true;
+                } else {
+                    final String message = "Forced shutdown of \"action\" component before tests completed";
+                    sfLog().info(message);
+                    testSucceeded = false;
+                    //copy the termination record, but mark it as abnormal
+                    exitRecord = TerminationRecord.abnormal(message, childStatus.id, childStatus.cause);
+                    exitRecord.errorType = TerminationRecord.ABNORMAL;
+                }
             } else {
-                if (isDebug) sfLog().debug(self + " \"action\" termination is not forced");
+                if (isDebug) sfLog().debug(self + " \"action\" termination is not forced, or happened before the tests had finished");
                 //not a forced shutdown, so why did it die?
                 boolean expected;
                 String exitTextMessage = null;
@@ -709,6 +726,7 @@ public class TestCompoundImpl extends ConditionCompound
             }
         } else {
             if (terminatingChild == testsChild) {
+                testChildTerminated = true;
                 sfLog().debug(self + " \"tests\" component has terminated");
                 //tests are terminating.
                 testsTerminationRecord = childStatus;
