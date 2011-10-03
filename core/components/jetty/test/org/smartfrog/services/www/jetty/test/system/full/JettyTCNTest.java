@@ -31,6 +31,7 @@ import org.smartfrog.services.jetty.JettyIntf;
  * All these tests are negative: deployment is expected to fail for some reason 
  *
  */
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class JettyTCNTest
         extends JettyTestBase {
 

@@ -36,4 +36,11 @@
     className "org.smartfrog.services.jetty.examples.servlets.ResolveServlet";
   }
 
- 
+  TroublesomeServlet  extends Servlet {
+    name "TroublesomeServlet";
+    pathSpec "/trouble";
+    className "org.smartfrog.services.jetty.examples.servlets.TroublesomeServlet"
+    failOnStartup false;
+    startupTime 0;
+  }
+

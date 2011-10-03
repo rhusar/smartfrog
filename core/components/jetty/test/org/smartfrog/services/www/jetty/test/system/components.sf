@@ -116,9 +116,7 @@ TempDirServer extends Compound {
 This is  the test compound for jetty; it pulls in test timeout from the properties in ports.sf
 */
 JettyTestCompound extends TestCompound {
-
-    testTimeout test.timeout;
-
+  testTimeout test.timeout;
 }
 
 

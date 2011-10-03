@@ -4,11 +4,13 @@
 #include "/org/smartfrog/services/logging/jcl/components.sf"
 
 
-BindingServletExample extends LocalJettyServer {
+BindingServletServer extends LocalJettyServer {
 
   host CoreJettyServer:ANY_HOST;
   
+     //integrate logging with smartfrog
   commonsLoggingBridge extends BindCommonsLogging;
+  jettyLogging extends IntegrateJettyLogging;
   
   context extends ServletContext {
     contextPath "/";
@@ -16,14 +18,22 @@ BindingServletExample extends LocalJettyServer {
 
     server LAZY PARENT:server;
   }
-  
-  
+
   bindingServlet extends BindingServlet {
     context LAZY PARENT:context;
   }
   
   resolveServlet extends ResolveServlet {
     context LAZY PARENT:context;
+  }
+
+  failOnStartup false;
+  startupTime 0;
+
+  troubleServlet  extends TroublesomeServlet  {
+    context LAZY PARENT:context;
+    failOnStartup PARENT:failOnStartup;
+    startupTime PARENT:startupTime;
   }
     /**
    * default HTML pages &c. For dev, everything HTML is served up
@@ -37,4 +47,4 @@ BindingServletExample extends LocalJettyServer {
   
 }
 
-sfConfig extends BindingServletExample;
+sfConfig extends BindingServletServer ;

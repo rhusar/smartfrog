@@ -22,20 +22,21 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
 #include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
+#include "/org/smartfrog/services/jetty/examples/ports.sf"
 
 
 tcp19Test extends JettyTestCompound {
 
 
-	action extends LocalJettyServer;
+  action extends LocalJettyServer;
 
 
-    //we dont care which number comes back, only that we get a number
-    tests extends Sequence {
-        wait extends waitForAnyHttpResponse  {
-            port PARENT:PARENT:action:port;
-        }
-    }
+  //we dont care which number comes back, only that we get a number
+  tests extends Sequence {
+      wait extends waitForAnyHttpResponse  {
+          port PARENT:PARENT:action:port;
+      }
+  }
 
 }
 
@@ -70,7 +71,7 @@ tcp20test extends JettyTestCompound {
 
 TestLivenessURL extends JettyTestCompound {
 
-	action extends LocalJettyServer;
+    action extends LocalJettyServer;
 
 
     //we dont care which number comes back, only that we get a number
@@ -84,15 +85,13 @@ TestLivenessURL extends JettyTestCompound {
 
 TestSecurity extends JettyTestCompound {
 
-	action extends TempDirServer {
-	
-	
-	  port test.jetty.port.1;
+    action extends TempDirServer {
+      port test.jetty.port.1;
 
-	  security extends AdminSecurityRealm {
-	    server LAZY PARENT:server;
-    }
-  }
+      security extends AdminSecurityRealm {
+        server LAZY PARENT:server;
+      }
+   }
 
 
   //we dont care which number comes back, only that we get a number
@@ -124,7 +123,7 @@ testSecurityUnauth extends TestSecurity {
 
 TestNioConnector extends JettyTestCompound {
 
-	action extends JettyOnNIO;
+    action extends JettyOnNIO;
 
   //we dont care which number comes back, only that we get a number
    tests extends Sequence {
@@ -138,16 +137,16 @@ TestNioConnector extends JettyTestCompound {
 
 TestRealm extends JettyTestCompound {
   description "SFOS-628 JettySecurityRealmImpl does not use the realm";
-  
+
   links [["http://jira.smartfrog.org/jira/browse/SFOS-628"]];
 
-	action extends LocalJettyServer {
+    action extends LocalJettyServer {
 
     testRealm extends AdminSecurityRealm {
-    	name "testRealm";
-    	server LAZY PARENT:server;
+        name "testRealm";
+        server LAZY PARENT:server;
     }
-    
+
   }
 
 
@@ -163,24 +162,24 @@ TestRealm extends JettyTestCompound {
 
 ServerOnJetty extends Compound {
   port TBD;
-	home TBD;
+    home TBD;
 
-	jettyServer extends CoreJettyServer {
-        jettyhome LAZY PARENT:home;
-        port PARENT:port;
-    }
+    jettyServer extends CoreJettyServer {
+    jettyhome LAZY PARENT:home;
+    port PARENT:port;
+  }
 
 
 
-    webApp extends WebApplication	{
-    	contextPath "webApp";
-    	filename "../test-project/target/test-project.war";
-    	server LAZY jettyServer;
+    webApp extends WebApplication {
+        contextPath "webApp";
+        filename "../test-project/target/test-project.war";
+        server LAZY jettyServer;
     }
 
     listener extends JettyListener {
-    	serverHost "localhost";
-    	listenerPort PARENT:port;
+        serverHost "localhost";
+        listenerPort PARENT:port;
         server LAZY jettyServer;
     }
 }
