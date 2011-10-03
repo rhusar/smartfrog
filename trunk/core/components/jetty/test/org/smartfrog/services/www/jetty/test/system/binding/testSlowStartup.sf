@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2011 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -29,25 +29,6 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
+#include "/org/smartfrog/services/www/jetty/test/system/binding/components.sf"
 
-package org.smartfrog.services.www.jetty.test.system.functional;
-
-import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
-import org.smartfrog.sfcore.prim.Prim;
-
-import java.io.File;
-
-public class JettySecurityTest extends JettyTestBase {
-
-    public JettySecurityTest(String name) {
-        super(name);
-    }
-
-    public void testSecurity() throws Throwable {
-        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurity");
-    }
-    
-    public void testSecurityUnauth() throws Throwable {
-        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurityUnauth");
-    }
-}
+sfConfig extends TestSlowStartup;

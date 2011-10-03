@@ -166,6 +166,7 @@ public class JettyImpl extends WorkerThreadPrimImpl implements JettyIntf {
             RemoteException {
         super.sfStart();
         setWorker(new WorkflowThread(this, new StartServerBridge(), false));
+        getWorker().start();
 /*
         serverBridge.start();
         try {

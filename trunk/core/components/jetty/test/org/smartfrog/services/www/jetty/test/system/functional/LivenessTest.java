@@ -27,7 +27,6 @@ import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
  */
 public class LivenessTest extends JettyTestBase {
 
-
     public LivenessTest(String name) {
         super(name);
     }
@@ -37,7 +36,7 @@ public class LivenessTest extends JettyTestBase {
     }
 
     public void testLivenessURL() throws Throwable {
-        expectSuccessfulTestRun(FUNCTIONAL_FILES,"testLivenessURL");
+        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testLivenessURL");
     }
 
 }
