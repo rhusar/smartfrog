@@ -110,12 +110,12 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
         log = helper.getLogger();
         String description = getDescription() + toString();
         log.info(description);
-        if(checkOnStartup) {
+        if (checkOnStartup) {
             checkPage();
         }
         //and do a termination if asked for
-        if(terminateAfterStartup()) {
-            helper.sfSelfDetachAndOrTerminate(null,description,null,null);
+        if (terminateAfterStartup()) {
+            helper.sfSelfDetachAndOrTerminate(null, description, null, null);
         }
     }
 
@@ -154,7 +154,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(checkOnLiveness) {
+        if (checkOnLiveness) {
             livenessPing();
         }
     }
@@ -166,7 +166,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
      * @throws SmartFrogLivenessException  on a failure of the check
      */
     protected void livenessPing() throws RemoteException,
-        SmartFrogLivenessException {
+                                         SmartFrogLivenessException {
         try {
             updateEnabledState();
         } catch (SmartFrogResolutionException e) {
@@ -206,7 +206,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
             livenessPage.onPing();
             return true;
         } catch (SmartFrogLivenessException ignored) {
-            sfLog().ignore("Ignoring liveness page error ",ignored);
+            sfLog().ignore("Ignoring liveness page error ", ignored);
             return false;
         }
     }
