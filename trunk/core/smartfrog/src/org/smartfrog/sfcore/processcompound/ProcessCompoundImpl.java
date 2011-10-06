@@ -46,21 +46,19 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Collections;
-import java.io.IOException;
 
 
 /**
@@ -1143,7 +1141,7 @@ public class ProcessCompoundImpl extends CompoundImpl
 
         addProcessDefines(runCmd, name);
 
-        addProcessClassPath(runCmd, name, cd);
+        // addProcessClassPath(runCmd, name, cd); -> use environment variable classpath instead
         addProcessSFCodeBase(runCmd, name, cd);
 
         addProcessEnvVars(runCmd, cd);
@@ -1155,8 +1153,14 @@ public class ProcessCompoundImpl extends CompoundImpl
         if (sfLog().isTraceEnabled()) {
             sfLog().trace("startProcess[" + name.toString() + "].runCmd: " + runCmd.toString());
         }
-        
-        return Runtime.getRuntime().exec(runCmdArray);
+
+        // build classpath
+        String classPath = getProcessClassPath(cd);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(runCmdArray);
+        processBuilder.environment().put("CLASSPATH", classPath);
+
+        return processBuilder.start();
     }
 
     /**
@@ -1257,6 +1261,23 @@ public class ProcessCompoundImpl extends CompoundImpl
                                        Object name,
                                        ComponentDescription cd)
             throws SmartFrogException {
+        String res = getProcessClassPath(cd);
+
+        if (res != null) {
+            cmd.addElement("-classpath");
+            cmd.addElement(res);
+        }
+    }
+
+    /**
+     * Returns the classpath to use.
+     *
+     * @param cd the component description
+     * @return null or classpath
+     * @throws SmartFrogException failed to construct classpath
+     */
+    protected String getProcessClassPath(ComponentDescription cd)
+            throws SmartFrogException {
         String res = null;
         String replaceBoolKey = SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_CLASSPATH;
@@ -1270,10 +1291,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                 sysPropertyKey,
                 pathSeparator);
 
-        if (res != null) {
-            cmd.addElement("-classpath");
-            cmd.addElement(res);
-        }
+        return res;
     }
 
     /**
