@@ -2,7 +2,8 @@ package org.smartfrog.services.hadoop.instances
 
 import java.rmi.RemoteException
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.hdfs.MiniDFSCluster
+
+
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
 import org.smartfrog.services.hadoop.operations.dfs.HdfsStartupOptionFactory
 import org.smartfrog.sfcore.common.SmartFrogException
@@ -23,8 +24,8 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
     public static final String ATTR_MANAGE_DATA_DFS_DIRS = "manageDataDfsDirs"
     public static final String ATTR_STARTUP_OPTION = "startupOption"
     public static final String ATTR_SIMULATED_CAPACITIES = "simulatedCapacities"
-    MiniDFSCluster cluster
-    String filesystemPath
+    LocalDFSCluster cluster
+    String filesystemUri
 
 
     @Override
@@ -51,7 +52,7 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
         String[] hosts = resolveListToArray(ATTR_HOSTS)
         long[] simulatedCapacities = resolveLongVector(ATTR_SIMULATED_CAPACITIES);
 
-        cluster = new MiniDFSCluster(
+        cluster = LocalDFSCluster.createInstance(
                 nameNodePort,
                 conf,
                 numDataNodes,
@@ -63,18 +64,18 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
                 hosts,
                 simulatedCapacities)
 
-        filesystemPath = "hdfs://localhost:${cluster.getNameNodePort()}/"
-        sfLog().info("MiniDFSCluster is up at $filesystemPath")
-        sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemPath);
-        sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, filesystemPath);
+        filesystemUri = cluster.getURI()
+        sfLog().info("MiniDFSCluster is up at $filesystemUri")
+        sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemUri)
+        sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, filesystemUri)
 
     }
 
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status)
         cluster?.shutdown()
         cluster = null
+        super.sfTerminateWith(status)
     }
 
     public URI getFilesystemURI() {

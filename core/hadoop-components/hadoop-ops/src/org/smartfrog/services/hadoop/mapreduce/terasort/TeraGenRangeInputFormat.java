@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.hadoop.mapreduce.terasort;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.WritableUtils;
@@ -38,115 +40,128 @@ import java.io.IOException;
  */
 @SuppressWarnings({"deprecation"})
 
-public class TeraGenRangeInputFormat 
-     implements InputFormat<LongWritable, NullWritable> {
-  
-  /**
-   * An input split consisting of a range on numbers.
-   */
-  static class RangeInputSplit implements InputSplit {
-    long firstRow;
-    long rowCount;
+public class TeraGenRangeInputFormat
+        implements InputFormat<LongWritable, NullWritable> {
+    private static final Log LOG = LogFactory.getLog(TeraGenRangeInputFormat.class);
 
-    public RangeInputSplit() { }
+    /**
+     * An input split consisting of a range on numbers.
+     */
+    public static class RangeInputSplit implements InputSplit {
+        public long firstRow;
+        public long rowCount;
 
-    public RangeInputSplit(long offset, long length) {
-      firstRow = offset;
-      rowCount = length;
+        public RangeInputSplit() {
+        }
+
+        public RangeInputSplit(long offset, long length) {
+            firstRow = offset;
+            rowCount = length;
+        }
+
+        @Override
+        public long getLength() throws IOException {
+            return 0;
+        }
+
+        @Override
+        public String[] getLocations() throws IOException {
+            return new String[]{};
+        }
+
+        @Override
+        public void readFields(DataInput in) throws IOException {
+            firstRow = WritableUtils.readVLong(in);
+            rowCount = WritableUtils.readVLong(in);
+        }
+
+        @Override
+        public void write(DataOutput out) throws IOException {
+            WritableUtils.writeVLong(out, firstRow);
+            WritableUtils.writeVLong(out, rowCount);
+        }
     }
 
-    public long getLength() throws IOException {
-      return 0;
+    /**
+     * A record reader that will generate a range of numbers.
+     */
+    public static class RangeRecordReader
+            implements RecordReader<LongWritable, NullWritable> {
+        public long startRow;
+        public long finishedRows;
+        public long totalRows;
+
+        public RangeRecordReader(RangeInputSplit split) {
+            startRow = split.firstRow;
+            finishedRows = 0;
+            totalRows = split.rowCount;
+        }
+
+        @Override
+        public void close() throws IOException {
+            // NOTHING
+        }
+
+        @Override
+        public LongWritable createKey() {
+            return new LongWritable();
+        }
+
+        @Override
+        public NullWritable createValue() {
+            return NullWritable.get();
+        }
+
+        @Override
+        public long getPos() throws IOException {
+            return finishedRows;
+        }
+
+        @Override
+        public float getProgress() throws IOException {
+            return finishedRows / (float) totalRows;
+        }
+
+        @Override
+        public boolean next(LongWritable key,
+                            NullWritable value) {
+            if (finishedRows < totalRows) {
+                key.set(startRow + finishedRows);
+                finishedRows += 1;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
     }
 
-    public String[] getLocations() throws IOException {
-      return new String[]{};
-    }
-
-    public void readFields(DataInput in) throws IOException {
-      firstRow = WritableUtils.readVLong(in);
-      rowCount = WritableUtils.readVLong(in);
-    }
-
-    public void write(DataOutput out) throws IOException {
-      WritableUtils.writeVLong(out, firstRow);
-      WritableUtils.writeVLong(out, rowCount);
-    }
-  }
-  
-  /**
-   * A record reader that will generate a range of numbers.
-   */
-  static class RangeRecordReader 
-        implements RecordReader<LongWritable, NullWritable> {
-    long startRow;
-    long finishedRows;
-    long totalRows;
-
-    public RangeRecordReader(RangeInputSplit split) {
-      startRow = split.firstRow;
-      finishedRows = 0;
-      totalRows = split.rowCount;
-    }
-
-    public void close() throws IOException {
-      // NOTHING
-    }
-
-    public LongWritable createKey() {
-      return new LongWritable();
-    }
-
-    public NullWritable createValue() {
-      return NullWritable.get();
-    }
-
-    public long getPos() throws IOException {
-      return finishedRows;
-    }
-
-    public float getProgress() throws IOException {
-      return finishedRows / (float) totalRows;
-    }
-
-    public boolean next(LongWritable key, 
-                        NullWritable value) {
-      if (finishedRows < totalRows) {
-        key.set(startRow + finishedRows);
-        finishedRows += 1;
-        return true;
-      } else {
-        return false;
-      }
-    }
-    
-  }
-
-  public RecordReader<LongWritable, NullWritable> 
+    @Override
+    public RecordReader<LongWritable, NullWritable>
     getRecordReader(InputSplit split, JobConf job,
                     Reporter reporter) throws IOException {
-    return new RangeRecordReader((RangeInputSplit) split);
-  }
-
-  /**
-   * Create the desired number of splits, dividing the number of rows
-   * between the mappers.
-   */
-  public InputSplit[] getSplits(JobConf job, 
-                                int numSplits) {
-    long totalRows = TeraGenJob.getNumberOfRows(job);
-    long rowsPerSplit = totalRows / numSplits;
-    System.out.println("Generating " + totalRows + " using " + numSplits + 
-                       " maps with step of " + rowsPerSplit);
-    InputSplit[] splits = new InputSplit[numSplits];
-    long currentRow = 0;
-    for(int split=0; split < numSplits-1; ++split) {
-      splits[split] = new RangeInputSplit(currentRow, rowsPerSplit);
-      currentRow += rowsPerSplit;
+        return new RangeRecordReader((RangeInputSplit) split);
     }
-    splits[numSplits-1] = new RangeInputSplit(currentRow, 
-                                              totalRows - currentRow);
-    return splits;
-  }
+
+    /**
+     * Create the desired number of splits, dividing the number of rows between the mappers.
+     */
+    @Override
+    public InputSplit[] getSplits(JobConf job,
+                                  int numSplits) {
+        long totalRows = TeraGenJob.getNumberOfRows(job);
+        long rowsPerSplit = totalRows / numSplits;
+        LOG.info("Generating " + totalRows + " using " + numSplits +
+                " maps with step of " + rowsPerSplit);
+        InputSplit[] splits = new InputSplit[numSplits];
+        long currentRow = 0;
+        for (int split = 0; split < numSplits - 1; ++split) {
+            splits[split] = new RangeInputSplit(currentRow, rowsPerSplit);
+            currentRow += rowsPerSplit;
+        }
+        splits[numSplits - 1] = new RangeInputSplit(currentRow,
+                totalRows - currentRow);
+        return splits;
+    }
 
 }
