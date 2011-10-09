@@ -28,20 +28,12 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.smartfrog.services.hadoop.mapreduce.submitter.JobRunningTool;
 
 /**
- * Generate the official terasort input data set.
- * The user specifies the number of rows and the output directory and this
- * class runs a map/reduce program to generate the data.
- * The format of the data is:
- * <ul>
- * <li>(10 bytes key) (10 bytes rowid) (78 bytes filler) \r \n
- * <li>The keys are random characters from the set ' ' .. '~'.
- * <li>The rowid is the right justified row id as a int.
- * <li>The filler consists of 7 runs of 10 characters from 'A' to 'Z'.
- * </ul>
- *
- * <p>
- * To run the program: 
- * <b>bin/hadoop jar hadoop-examples-*.jar teragen 10000000000 in-dir</b>
+ * Generate the official terasort input data set. The user specifies the number of rows and the output directory and
+ * this class runs a map/reduce program to generate the data. The format of the data is: <ul> <li>(10 bytes key) (10
+ * bytes rowid) (78 bytes filler) \r \n <li>The keys are random characters from the set ' ' .. '~'. <li>The rowid is the
+ * right justified row id as a int. <li>The filler consists of 7 runs of 10 characters from 'A' to 'Z'. </ul>
+ * <p/>
+ * <p> To run the program: <b>bin/hadoop jar hadoop-examples-*.jar teragen 10000000000 in-dir</b>
  */
 @SuppressWarnings({"deprecation"})
 

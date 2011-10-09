@@ -124,7 +124,8 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
             path.append(directory.getAbsolutePath());
         }
         if (failureCount == dirs.size()) {
-            throw new FileNotFoundException("Failed to create any of " + path.toString());
+            throw new FileNotFoundException("Failed to create any of " + path.toString() 
+                    + "\n" + failureText);
         }
         return path.toString();
     }
@@ -141,7 +142,8 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @throws RemoteException    In case of network/rmi error
      * @throws FileNotFoundException if none of the directories can be created
      */
-    public static Vector<String> createDirectoryListAttribute(Prim prim, Reference sourceRef,
+    public static Vector<String> createDirectoryListAttribute(Prim prim, 
+                                                              Reference sourceRef,
                                                               String replaceAttribute)
             throws RemoteException, SmartFrogException, FileNotFoundException {
         Vector<String> dirs;

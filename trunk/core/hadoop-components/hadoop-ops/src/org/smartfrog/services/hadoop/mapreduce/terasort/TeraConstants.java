@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.hadoop.mapreduce.terasort;
 
-public class TeraConstants {
-    static final String TERASORT_NUM_ROWS = "terasort.num-rows";
-    static final String SAMPLE_SIZE = "terasort.partitions.sample";
-    static final String FINAL_SYNC_ATTRIBUTE = "terasort.final.sync";
-    static final String PARTITION_FILENAME = "_partition.lst";
+public interface TeraConstants {
+    String TERASORT_NUM_ROWS = "terasort.num-rows";
+    String SAMPLE_SIZE = "terasort.partitions.sample";
+    String FINAL_SYNC_ATTRIBUTE = "terasort.final.sync";
+    String PARTITION_FILENAME = "_partition.lst";
 }

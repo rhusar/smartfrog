@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/mapreduce/submitter/components.sf"
 
 /**
- * Generate a TB or more of data
+ * Generate data
  */
  
 TeraGen extends ToolRunner {
@@ -29,18 +29,29 @@ TeraGen extends ToolRunner {
   rows 1;
   //outputPath
   destPath TBD;
-  toolClass "org.apache.hadoop.examples.terasort.TeraGen";
+  toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraGenJob";
   arguments [rows, destPath];
 }
 
 /**
- * Submit a terasort Job, forces the examples jar up as the code JAR
+ * Submit a terasort Job
  */
  
 TeraSort extends ToolRunner {
   sourcePath TBD;
   destPath TBD;
-  toolClass "org.apache.hadoop.examples.terasort.TeraSort";
+  toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraSortJob";
   arguments [sourcePath, destPath];
+  failOnNonZeroReturnCode true;
+} 
+
+/**
+ * Validate the output
+ */
+TeraValidate extends ToolRunner {
+  dataPath TBD;
+  reportPath TBD;
+  toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraValidateJob";
+  arguments [dataPath, reportPath];
   failOnNonZeroReturnCode true;
 } 
