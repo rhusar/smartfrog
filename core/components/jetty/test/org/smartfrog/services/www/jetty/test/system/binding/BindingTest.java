@@ -41,6 +41,9 @@ public class BindingTest extends JettyTestBase {
         expectSuccessfulTestRun(PACKAGE, "testResolve");
     }
 
+    public void testTroubleDeployed() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testTroubleDeployed");
+    }
     public void testStartupFailure() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testStartupFailure");
     }
