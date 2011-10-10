@@ -43,6 +43,7 @@ waitForPage extends WaitForPage {
     checkOnLiveness true;
     checkFrequency waitForInterval;
     timeout waitForTimeout;
+    checkOnLiveness false;
 }
 
 waitForPageOK extends waitForPage {

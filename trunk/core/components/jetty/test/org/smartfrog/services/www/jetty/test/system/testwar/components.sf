@@ -187,7 +187,7 @@ testRealmUnauth extends TestRealm {
 
 tcp27testFilesystemWar extends JettyTestCompound {
 
-        action extends tcp27;
+  action extends tcp27;
 
   tests extends Sequence {
     wait extends waitForPage {

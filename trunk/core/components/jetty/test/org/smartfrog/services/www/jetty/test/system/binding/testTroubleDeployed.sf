@@ -29,55 +29,6 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/jetty/examples/servlets/example.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/components.sf"
-#include "/org/smartfrog/services/jetty/examples/ports.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/binding/components.sf"
 
-
-/*
- These components test the binding and failure modes of the Jetty Servlets
- */
-
-JettyInstance extends BindingServletServer {
-
-}
-
-TestBindingCompound extends JettyTestCompound {
-
-  path "/";
-  page "binding";
-
-  action extends JettyInstance {
-
-  }
-
-  tests extends Sequence {
-    wait extends waitForPageOK  {
-      port PARENT:PARENT:action:port;
-      path PARENT:PARENT:path;
-      page PARENT:PARENT:page;
-    }
-  }
-
-}
-
-TestResolve extends TestBindingCompound {
-  action:failOnStartup true;
-  page "resolve";
-}
-
-
-TestTroubleDeployed extends TestBindingCompound {
-  action:failOnStartup false;
-  page "trouble";
-}
-
-
-TestStartupFailure extends TestTroubleDeployed {
-  action:failOnStartup true;
-}
-
-TestSlowStartup extends TestStartupFailure {
-  action:startupTime 5000;
-}
+sfConfig extends TestTroubleDeployed;
