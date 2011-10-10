@@ -288,7 +288,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Export a test listener
-     * @param listener
+     * @param listener the test listener to export
      * @return a remoted listener
      * @throws RemoteException RMI problems
      * @throws SmartFrogSecurityException if there were any security problems
