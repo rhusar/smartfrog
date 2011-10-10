@@ -167,7 +167,9 @@ public class DelayedTerminator implements Runnable {
             log.debug(description + " -- shutting down without terminating its target");
         } else {
             try {
-                if (target.sfIsStarted()) {
+              boolean started = target.sfIsStarted();
+              boolean terminated = target.sfIsTerminated() || target.sfIsTerminating();
+              if (started && !terminated) {
                     TerminationRecord record;
                     setForcedShutdown(true);
                     record = createTerminationRecord(target);
@@ -183,10 +185,10 @@ public class DelayedTerminator implements Runnable {
     private TerminationRecord createTerminationRecord(Prim target) {
         Reference ref = new ComponentHelper(target).completeNameSafe();
         TerminationRecord record = new TerminationRecord(
-                                                                normalTermination ? TerminationRecord.NORMAL
-                                                                                  : TerminationRecord.ABNORMAL,
-                                                                description,
-                                                                ref);
+            normalTermination ? TerminationRecord.NORMAL
+                : TerminationRecord.ABNORMAL,
+            description,
+            ref);
         return record;
     }
 
