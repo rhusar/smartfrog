@@ -235,6 +235,11 @@ public class ConsoleListenerImpl extends PrimImpl
             println(event.toString());
         }
 
+        @Override
+        public String sfRemoteToString() throws RemoteException {
+            return ConsoleListenerImpl.this.sfRemoteToString();
+        }
+
         /**
          * Print a line
          * @param line line to print

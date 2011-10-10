@@ -156,4 +156,9 @@ public class ChainListener implements TestListener, Iterable<TestListener> {
         }
     }
 
+    @Override
+    public String sfRemoteToString() throws RemoteException {
+        return "Chain Listener " + this;
+    }
+
 }

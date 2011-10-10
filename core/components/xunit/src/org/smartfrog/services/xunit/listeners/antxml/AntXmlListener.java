@@ -118,6 +118,10 @@ public class AntXmlListener implements FileListener, XMLConstants {
         stats = new Statistics(log);
     }
 
+    @Override
+    public String sfRemoteToString() throws RemoteException {
+        return "Ant XML listener listening to " + destFile;
+    }
 
     /**
      * {@inheritDoc}

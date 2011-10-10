@@ -321,5 +321,10 @@ public class BufferingListenerImpl extends AbstractListenerImpl
         public void log(LogEntry event) throws RemoteException {
             messages.add(event);
         }
+
+        @Override
+        public String sfRemoteToString() throws RemoteException {
+            return BufferingListenerImpl.this.sfRemoteToString();
+        }
     }
 }

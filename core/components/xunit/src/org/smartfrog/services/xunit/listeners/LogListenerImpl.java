@@ -219,5 +219,10 @@ public class LogListenerImpl extends PrimImpl
         public void info(String line) {
             LogListenerImpl.this.log(line);
         }
+
+        @Override
+        public String sfRemoteToString() throws RemoteException {
+            return LogListenerImpl.this.sfRemoteToString();
+        }
     }
 }

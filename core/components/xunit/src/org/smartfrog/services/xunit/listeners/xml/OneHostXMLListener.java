@@ -107,7 +107,9 @@ public class OneHostXMLListener implements FileListener {
      * @throws IOException if there is trouble opening the file.
      */
     public OneHostXMLListener(String hostname,
-                              String processname, String suitename, File destFile,
+                              String processname,
+                              String suitename,
+                              File destFile,
                               Date startTime,
                               String preamble) throws IOException {
         //create our new directory
@@ -120,6 +122,13 @@ public class OneHostXMLListener implements FileListener {
 
         tests = new HashMap<String, TestInfo>();
     }
+
+
+    @Override
+    public String sfRemoteToString() throws RemoteException {
+        return "XML listener listening to " + destFile;
+    }
+
 
     /**
      * all the cleanup routine does is assert that we were not still open. it does not close the file itself, because

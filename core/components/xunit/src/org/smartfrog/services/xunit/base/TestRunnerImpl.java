@@ -83,9 +83,10 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
     private int threadPriority = Thread.NORM_PRIORITY;
 
     /**
-     * Should we terminate after running our tests? {@link ShouldDetachOrTerminate#ATTR_SHOULD_TERMINATE}
+     * Should we terminate after running our tests? {@link ShouldDetachOrTerminate#ATTR_SHOULD_TERMINATE}.
+     * This attribute is ignored if the test run is externally invoked.
      */
-    private boolean shouldTerminate = true;
+    private boolean shouldTerminate;
 
     /**
      * if terminating, should we detach? Should we terminate after running our tests? {@link
@@ -242,9 +243,6 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
         threadPriority = sfResolve(ATTR_THREAD_PRIORITY,
                 threadPriority,
                 false);
-        shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,
-                shouldTerminate,
-                false);
         listenerPrim = sfResolve(ATTR_LISTENER,
                 (Prim) null,
                 true);
@@ -308,6 +306,10 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
             sendEvent(new TestStartedEvent(this));
             if (runTests) {
                 log.info("TestRunner is set to run tests on startup");
+                //here we set up the tests to terminate afterwards if sfShouldTerminate is true
+                shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,
+                        shouldTerminate,
+                        false);
                 runTests();
             } else {
                 log.info("TestRunner tests will only start when directly invoked");
@@ -452,7 +454,8 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
 
 
         if (shouldTerminate) {
-            log.debug("Test runner will now terminate; outcome =" + outcome);
+            log.debug("Test runner will now terminate; outcome = " + outcome);
+            helper.targetForWorkflowTermination(createTerminationRecord());
         } else {
             log.debug("Test runner is not terminating; outcome = " + outcome);
         }

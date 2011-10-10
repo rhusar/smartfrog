@@ -25,6 +25,8 @@ import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestEventSink;
 import org.smartfrog.services.xunit.base.AbstractTestSuite;
 import org.smartfrog.services.xunit.base.RunnerConfiguration;
+import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -234,8 +236,12 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             throw new SmartFrogException(
                     ERROR_NOT_CONFIGURED);
         }
+
+        TestListener listener = listen(suitename);
+
         if (maybeSkipTestSuite()) {
-            sfLog().debug("Skipping test suite");
+            sfLog().info("Skipping test suite " + suitename);
+            listener.endTest(TestInfo.skipped(suitename));
             skipped = true;
             return true;
         }

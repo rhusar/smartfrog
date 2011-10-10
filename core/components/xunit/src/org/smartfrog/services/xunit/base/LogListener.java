@@ -20,6 +20,7 @@
 package org.smartfrog.services.xunit.base;
 
 import org.smartfrog.services.xunit.serial.LogEntry;
+import org.smartfrog.sfcore.prim.RemoteToString;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -30,7 +31,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface LogListener extends Remote {
+public interface LogListener extends RemoteToString {
     /**
      * Log an event
      * @param event what happened

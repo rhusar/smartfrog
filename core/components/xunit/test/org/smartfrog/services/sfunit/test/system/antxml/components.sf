@@ -19,7 +19,9 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/services/sfunit/test/system/components.sf"
+#include "/org/smartfrog/services/utils/echo/components.sf"
 
+EchoStayLive extends Echo {  sfShouldTerminate false; }
 
 antxml extends AntXmlTestListener {
   outputDirectory test.data.dir; 
@@ -44,8 +46,9 @@ antreport extends AntWorkflowRun {
 
 testRunnerAntXml extends TestRunner {
   description "push out as Ant XML";
-  sfShouldTerminate true;
-
+  standalone true;
+  sfShouldTerminate standalone ;
+  runTests standalone ;
   listener extends antxml {
   }
 
@@ -54,26 +57,39 @@ testRunnerAntXml extends TestRunner {
   }
 }
 
+
 testSFUnitAntXml extends testRunnerAntXml {
+  description "run SF unit test directly from junit bridge";
+  standalone false;
 }
 
 testSFUnitAntXmlNested extends ExpectTerminate {
+  description "Run the ant xml test inside a TestCompound";
  /** disabled see SFOS-1655 */
-  condition extends False;
+ //condition extends False;
   action extends testRunnerAntXml {
-    sfShouldTerminate true;
-    runTests true;
   }
 }
 
 
 testAntXmlThroughJunit extends ExpectDeploy {
+
+  description "Run the ant xml test in a sequence and make assertions about its content";
+
+ /** disabled see SFOS-1671 */
+ condition extends False;
+
   action extends Compound {
+      -- extends EchoStayLive  { message "compound deployed"; }
   }
 
   tests extends Sequence {
 
+    -- extends Echo { message "in sequence, starting test runner"; }
+
     testrun testRunnerAntXml;
+
+    -- extends Echo { message "in sequence, test runner completed"; }
 
     /**
      * assert the ant XML data got created
@@ -83,12 +99,16 @@ testAntXmlThroughJunit extends ExpectDeploy {
       filename "tests1.xml"
     }
 
+    -- extends Echo { message "in sequence, data generated"; }
+
     reports antreport;
 
     assertReportIndexGenerated extends AssertFileExists {
       dir test.reports.dir;
       filename "index.html"
     }
+    -- extends Echo { message "end of in sequence"; }
+
   }
 
 }
