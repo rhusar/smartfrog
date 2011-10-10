@@ -19,23 +19,23 @@
  */
 package org.smartfrog.sfcore.utils;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
-import java.rmi.RemoteException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.rmi.RemoteException;
 
 /**
  * Contains methods for helping components; a factoring out of common functionality.
@@ -64,11 +64,10 @@ public class ComponentHelper {
     }
 
 
-
     /**
      * get the relevant logger for this component.
      * When logging against a remote class, this is probably the classname of the proxy.
-     * @return  Log Logger for this component
+     * @return Log Logger for this component
      */
     public Log getLogger() {
         return LogFactory.getOwnerLog(owner);
@@ -79,8 +78,8 @@ public class ComponentHelper {
      * @param thrown exception to be logged
      */
     public void logIgnoredException(Throwable thrown) {
-        Log log=getLogger();
-        log.debug("ignoring ",thrown);
+        Log log = getLogger();
+        log.debug("ignoring ", thrown);
     }
 
     /**
@@ -117,12 +116,12 @@ public class ComponentHelper {
 
     /**
      * Checks is prim is a remote reference
-      * @param prim reference to a component
+     * @param prim reference to a component
      *  @return true is prim is an instance of RemoteStub
      */
-   public static boolean isRemote (Prim prim){
-       return (prim instanceof java.rmi.server.RemoteStub);
-   }
+    public static boolean isRemote(Prim prim) {
+        return (prim instanceof java.rmi.server.RemoteStub);
+    }
 
     /**
      * Returns the complete name for any component from the root of the
@@ -170,7 +169,7 @@ public class ComponentHelper {
      * @param defval default value
      * @return the attribute value, or, failing that, the default value
      */
-    private boolean resolveQuietly(String attribute,boolean defval) {
+    private boolean resolveQuietly(String attribute, boolean defval) {
         try {
             return owner.sfResolve(
                     attribute,
@@ -197,9 +196,9 @@ public class ComponentHelper {
      * @return true if termination has been scheduled.
      */
     public boolean sfSelfDetachAndOrTerminate(String terminationType,
-                                           String terminationMessage,
-                                           Reference refId,
-                                           Throwable thrown) {
+                                              String terminationMessage,
+                                              Reference refId,
+                                              Throwable thrown) {
 
         //create a termination record if we are exitiing
         TerminationRecord record;
@@ -216,7 +215,7 @@ public class ComponentHelper {
      * @return true if termination has been scheduled.
      */
 
-     public boolean sfSelfDetachAndOrTerminate(TerminationRecord record) {
+    public boolean sfSelfDetachAndOrTerminate(TerminationRecord record) {
         boolean shouldTerminate = resolveQuietly(
                 ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,
                 false);
@@ -303,7 +302,7 @@ public class ComponentHelper {
 
 
         try {
-            if(isComponentTerminating()) {
+            if (isComponentTerminating()) {
                 return;
             }
         } catch (RemoteException ignored) {
@@ -334,7 +333,7 @@ public class ComponentHelper {
      * @param quietly terminate quietly?
      */
     public void targetForTermination(TerminationRecord record, boolean detach, boolean quietly) {
-        targetForTermination(record,false,detach,quietly);
+        targetForTermination(record, false, detach, quietly);
     }
 
     /**
@@ -346,9 +345,9 @@ public class ComponentHelper {
      */
     public void targetForTermination() {
 
-        Reference name= completeNameOrNull();
+        Reference name = completeNameOrNull();
         TerminationRecord record = TerminationRecord.normal(name);
-        targetForTermination(record,false, false,false);
+        targetForTermination(record, false, false, false);
     }
 
     /**
@@ -380,7 +379,7 @@ public class ComponentHelper {
 
         InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
         if (in == null) {
-            throw new SmartFrogException("Not found: " + resourcename+" in "+targetCodeBase);
+            throw new SmartFrogException("Not found: " + resourcename + " in " + targetCodeBase);
         }
         return in;
     }
@@ -395,11 +394,11 @@ public class ComponentHelper {
      */
     public String loadResourceToString(String resourcename, Charset encoding)
             throws SmartFrogException, RemoteException {
-        InputStream in= loadResource(resourcename);
+        InputStream in = loadResource(resourcename);
         try {
             return FileSystem.readInputStream(in, encoding).toString();
         } catch (IOException ioe) {
-            throw SmartFrogException.forward("when reading "+resourcename,ioe);
+            throw SmartFrogException.forward("when reading " + resourcename, ioe);
         }
     }
 
@@ -423,7 +422,7 @@ public class ComponentHelper {
      * @throws RemoteException for network problems
      */
     public Class loadClass(String classname) throws SmartFrogResolutionException, RemoteException {
-        return loadClass(classname,"");
+        return loadClass(classname, "");
     }
 
     /**
@@ -460,11 +459,11 @@ public class ComponentHelper {
             return null;
         }
         Prim parent = node.sfParent();
-        if(parent==null) {
+        if (parent == null) {
             //we run out here
             return null;
         }
-        if ( implementsInterface(parent.getClass(),interfaceName)) {
+        if (implementsInterface(parent.getClass(), interfaceName)) {
             return parent;
         }
         return findAncestorImplementing(parent, interfaceName, depth - 1);
@@ -488,8 +487,8 @@ public class ComponentHelper {
      * @param interfaceName full name of interface to look for
      * @return boolean true is the interface is found in the recursive search
      */
-    public static boolean implementsInterface(Class clazz,String interfaceName ) {
-        if(clazz==null) {
+    public static boolean implementsInterface(Class clazz, String interfaceName) {
+        if (clazz == null) {
             return false;
         }
         Class[] interfaces = clazz.getInterfaces();
@@ -498,7 +497,7 @@ public class ComponentHelper {
                 return true;
             }
         }
-        return implementsInterface(clazz.getSuperclass(),interfaceName);
+        return implementsInterface(clazz.getSuperclass(), interfaceName);
     }
 
 
