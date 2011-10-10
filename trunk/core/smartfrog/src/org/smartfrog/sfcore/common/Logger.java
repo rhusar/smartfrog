@@ -142,12 +142,12 @@ public class Logger implements MessageKeys {
     }
 
     public static void logStatus() {
-        if (logStackTrace && (SFSystem.sfLog().isWarnEnabled())) {
-            SFSystem.sfLog().warn(MessageUtil.formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
+        if (logStackTrace && (SFSystem.sfLog().isDebugEnabled())) {
+            SFSystem.sfLog().debug(MessageUtil.formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
         }
 
-        if (logLiveness && (SFSystem.sfLog().isWarnEnabled())) {
-            SFSystem.sfLog().warn(MessageUtil.formatMessage(MSG_WARNING_LIVENESS_ENABLED));
+        if (logLiveness && (SFSystem.sfLog().isDebugEnabled())) {
+            SFSystem.sfLog().debug(MessageUtil.formatMessage(MSG_WARNING_LIVENESS_ENABLED));
         }
         reportRepeatedJars();
 
