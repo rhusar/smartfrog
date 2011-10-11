@@ -102,7 +102,7 @@ public class RunTest extends TaskTestBase {
     public void testStackTrace() {
         expectBuildExceptionContaining("testStackTrace", "deploy failure",
                 "Could not run");
-        assertInLog("Warning: stack trace logging enabled");
+        assertInLog("Hewlett-Packard Development Company");
         assertInLog(
                 "SmartFrogTypeResolutionException:: , data: [something_that_isntdefined in: HERE sfConfig cause: Reference not found");
     }
