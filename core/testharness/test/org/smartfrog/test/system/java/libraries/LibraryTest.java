@@ -35,6 +35,7 @@ import java.net.ConnectException;
  * created 04-Apr-2005 15:35:58
  */
 
+@SuppressWarnings({"ALL"})
 public class LibraryTest extends DeployingTestBase {
     public static final String FILES = "org/smartfrog/test/system/java/libraries/";
     private static final String CONNECTION_REFUSED = "refused";
@@ -127,10 +128,10 @@ public class LibraryTest extends DeployingTestBase {
             //no network,
             getLog().info("No connection to the remote server; ignoring result",
                     cause);
-        } catch(Throwable cause) {
+        } catch (Throwable cause) {
             //connection refused exceptions are a sign of being offline
-            assertFaultCauseAndTextContains(cause,null,CONNECTION_REFUSED,null);
-            getLog().info("No connection to the remote server; ignoring result",cause);
+            assertFaultCauseAndTextContains(cause, null, CONNECTION_REFUSED, null);
+            getLog().info("No connection to the remote server; ignoring result", cause);
         }
     }
 
@@ -157,7 +158,7 @@ public class LibraryTest extends DeployingTestBase {
                     EXCEPTION_SMARTFROG,
                     LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE);
         } catch (AssertionFailedError thrown) {
-            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED,CONNECTION_REFUSED, null);
+            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED, CONNECTION_REFUSED, null);
         }
     }
 }
