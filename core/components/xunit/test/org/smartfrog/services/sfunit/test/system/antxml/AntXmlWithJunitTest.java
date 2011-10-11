@@ -35,7 +35,7 @@ public class AntXmlWithJunitTest extends DeployingTestBase {
     }
 
     public void testAntXmlThroughJunit() throws Throwable {
-        expectSuccessfulTestRun(PACKAGE, "testAntXmlThroughJunit");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testAntXmlThroughJunit");
     }
 
 }
