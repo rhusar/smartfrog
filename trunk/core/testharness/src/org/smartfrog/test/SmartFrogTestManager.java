@@ -455,7 +455,11 @@ public class SmartFrogTestManager extends Assert implements TestProperties {
             } else {
                 log.error(message);
             }
-            fail(message);
+            AssertionFailedError error = new AssertionFailedError(message);
+            if (exception != null) {
+                error.initCause(exception);
+            }
+            throw error;
         }
     }
 
@@ -534,7 +538,7 @@ public class SmartFrogTestManager extends Assert implements TestProperties {
             assertContains(cause.toString(),
                     faultText,
                     details,
-                    extractDiagnosticsInfo(cause));
+                    cause);
         }
     }
 
