@@ -37,7 +37,7 @@ import org.apache.tools.ant.BuildException;
  */
 
 public class ConditionalSequence extends Sequential {
-	private String ifAttr="",unlessAttr="";
+    private String ifAttr="",unlessAttr="";
 
     public void setIf(String arg) {
         ifAttr = arg;
