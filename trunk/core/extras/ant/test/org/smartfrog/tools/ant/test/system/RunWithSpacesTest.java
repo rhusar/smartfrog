@@ -19,7 +19,6 @@
  */
 package org.smartfrog.tools.ant.test.system;
 
-import org.smartfrog.tools.ant.PropertyFile;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
