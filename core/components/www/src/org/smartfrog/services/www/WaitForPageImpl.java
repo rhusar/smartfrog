@@ -25,7 +25,10 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.Spinner;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.rmi.RemoteException;
 
 /**
@@ -60,6 +63,7 @@ public class WaitForPageImpl extends LivenessPageComponent
      *
      * @return true if the workflow attributes should be checked during startup
      */
+    @Override
     protected boolean terminateAfterStartup() {
         return false;
     }
@@ -73,6 +77,7 @@ public class WaitForPageImpl extends LivenessPageComponent
      *                                  failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -88,6 +93,7 @@ public class WaitForPageImpl extends LivenessPageComponent
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         SmartFrogThread thread = getWorker();
@@ -119,39 +125,41 @@ public class WaitForPageImpl extends LivenessPageComponent
      *
      * @see Thread#run()
      */
+    @Override
     public void run() {
-        long now = System.currentTimeMillis();
-        long endTime = now + timeout;
         long sleepTime = getCheckFrequency();
-        boolean timedOut;
         boolean success = false;
-        boolean interrupted = false;
         SmartFrogLivenessException lastException = null;
-        getLog().info("Starting to wait for " + timeout + "ms on " + getLivenessPage().toString());
-        do {
-            if (poll() == null) {
-                success = true;
-                break;
+        String destpage = getLivenessPage().toString();
+        getLog().info("Starting to wait for " + timeout + "ms on " + destpage);
+        getLog().debug("Check frequency = "+ sleepTime);
+        Spinner spinner = new Spinner("Requesting " + destpage, sleepTime, timeout );
+        try {
+            while(true) {
+                SmartFrogLivenessException livenessException = poll();
+                if (livenessException == null) {
+                    getLog().debug("poll suceeded");
+                    success = true;
+                    break;
+                } else {
+                    getLog().debug("Poll failed: "+ livenessException);
+                    spinner.setLastThrown(livenessException);
+                }
+                spinner.sleep();
             }
-            try {
-                Thread.sleep(sleepTime);
-            } catch (InterruptedException e) {
-                //ooh, interrupted
-                interrupted = true;
-            }
-            now = System.currentTimeMillis();
-            timedOut = now > endTime;
-        } while (!timedOut && !interrupted);
-
-        //exit the loop, post process our current state
-        if (interrupted) {
+        } catch (InterruptedIOException e) {
             //interrupted? Bail out immediately as
             //we were probably terminated
             return;
+        } catch (IOException e) {
+            //timeout out
+            getLog().debug("Spin failed: " + e, e);
         }
 
+
         //now look at the result
-        if (!success) {
+        if (!success && livenessPage.getFetchErrorText()) {
+            getLog().debug("fetching the error text: " );
             //on a failure, grab the full text
             getLivenessPage().setFetchErrorText(true);
             //poll the site

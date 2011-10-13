@@ -21,7 +21,9 @@ package org.smartfrog.sfcore.utils;
 
 /**
  * Simple wrapper class to track timeout intervals; this code gets used often enough
- * that a single place for it eliminates duplication
+ * that a single place for it eliminates duplication.
+ *
+ * See also the {@link Spinner} class, which is designed to cache and raise exceptions on timeouts and interrupts
  */
 
 public class TimeoutInterval {

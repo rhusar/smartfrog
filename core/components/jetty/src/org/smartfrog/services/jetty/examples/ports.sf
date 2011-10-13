@@ -44,7 +44,7 @@ test.tempdir LAZY PROPERTY java.io.tmpdir;
 
 test.timeout OPTIONAL(30000) IPROPERTY test.timeout.execute;
 
-test.waitForTimeout 15000;
+test.waitForTimeout 10000;
 
 waitForTimeout test.waitForTimeout;
 //interval in ms between checks

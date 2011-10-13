@@ -405,6 +405,7 @@ public class LivenessPageChecker implements LivenessPage {
                 }
             }
             if (connectTimeout >= 0) {
+                log.debug("Connection timeout=" + connectTimeout);
                 connection.setConnectTimeout(connectTimeout);
             }
 

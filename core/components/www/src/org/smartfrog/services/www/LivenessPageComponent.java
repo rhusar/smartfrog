@@ -96,6 +96,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -151,6 +152,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
      * @throws RemoteException  for network problems
      * @throws SmartFrogLivenessException on a failure of the check
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -189,6 +191,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
      *
      * @throws SmartFrogLivenessException on a failure of the check
      */
+    @Override
     public void checkPage() throws SmartFrogLivenessException {
         livenessPage.checkPage();
     }
@@ -201,6 +204,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
      * @throws RemoteException for network problems
      * @throws SmartFrogException   for any other problem
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         try {
             livenessPage.onPing();

@@ -134,7 +134,10 @@ For more information: www.smartfrog.org
  /*
   The liveness page defines a component whose sole aim in life is to probe
   a web page for health, whenever it gets an sfPing call to see if it is healthy.
-  The
+
+
+  Warning: slow responses on liveness can trigger deadlocks if the server you are testing is in the same
+  process.
  */
 
  LivenessPage extends WorkflowPrim {

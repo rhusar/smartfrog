@@ -54,6 +54,7 @@ tcp20 extends Compound {
 }
 
 tcp20test extends JettyTestCompound {
+    description "bring up two servers and wait for them on the different ports"
 
     action extends tcp20;
 
