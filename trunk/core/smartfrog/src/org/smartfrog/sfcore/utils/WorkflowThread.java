@@ -133,8 +133,8 @@ public class WorkflowThread extends SmartFrogThread {
         TerminationRecord tr = createTerminationRecord();
         boolean isNormal = tr.isNormal();
         aboutToTerminate(tr);
-        ComponentHelper helper = new ComponentHelper(owner);
-        if (workflowTermination && isNormal) {
+        ComponentHelper helper = new ComponentHelper(getOwner());
+        if (isWorkflowTermination() && isNormal) {
             //put up for workflow termination
             helper.sfSelfDetachAndOrTerminate(tr);
         } else {
