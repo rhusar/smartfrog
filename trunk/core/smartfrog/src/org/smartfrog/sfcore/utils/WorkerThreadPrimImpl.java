@@ -44,9 +44,9 @@ public class WorkerThreadPrimImpl extends PrimImpl {
      */
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
         //shut down any non-null worker
         terminateWorker();
+        super.sfTerminateWith(status);
     }
 
     /**
