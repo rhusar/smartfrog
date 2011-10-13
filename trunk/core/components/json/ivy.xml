@@ -80,5 +80,16 @@
         name="ezmorph"
         rev="${ezmorph.version}"
         conf="redist->master"/>
+
+    <dependency org="org.codehaus.jackson"
+        name="jackson-core-asl"
+        rev="${jackson.version}"
+        conf="redist->master"/>
+
+    <dependency org="org.codehaus.jackson"
+        name="jackson-mapper-asl"
+        rev="${jackson.version}"
+        conf="redist->master"/>
+
   </dependencies>
 </ivy-module>

@@ -351,6 +351,10 @@ Redistributables:
 commons-beanutils-${commons-beanutils.version}.jar
 commons-collections-${commons-collections.version}.jar
 commons-lang-${commons-lang.version}.jar
+ezmorph-${ezmorph.version}.jar
+json-lib--${json-lib.version}.jar
+jackson-core-asl-${jackson.version}
+jackson-mapper-asl-${jackson.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -978,7 +982,10 @@ fi
 %{linkdir}/commons-lang.jar
 %{libdir}/ezmorph-${ezmorph.version}.jar
 %{linkdir}/ezmorph.jar
-
+%{libdir}/jackson-core-asl-${jackson.version}.jar
+%{linkdir}/jackson-core-asl.jar
+%{libdir}/jackson-mapper-asl-${jackson.version}.jar
+%{linkdir}/jackson-mapper-asl.jar
 # -----------------------------------------------------------------------------
 %files logging
 
