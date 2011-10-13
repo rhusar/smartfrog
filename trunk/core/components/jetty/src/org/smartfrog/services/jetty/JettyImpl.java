@@ -36,9 +36,8 @@ import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.Executable;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.WorkerThreadPrimImpl;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
@@ -165,27 +164,40 @@ public class JettyImpl extends WorkerThreadPrimImpl implements JettyIntf {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        setWorker(new WorkflowThread(this, new StartServerBridge(), false));
+        setWorker(new ServerBridgeThread());
         getWorker().start();
-/*
-        serverBridge.start();
-        try {
-            serverBridge.getLifecycle().join();
-        } catch (InterruptedException e) {
-            throw SmartFrogException.forward("Failed to start "+serverBridge,e);
-        }
-*/
     }
 
     /**
-     * A class that starts the server bridge asynchronously.
+     * A class that starts the server bridge asynchronously, then terminates
+     * the parent if that startup failed.
      */
-    public class StartServerBridge implements Executable {
+
+    public class ServerBridgeThread extends WorkflowThread {
+        public ServerBridgeThread() {
+            super(JettyImpl.this, false);
+        }
+
         @Override
         public void execute() throws Throwable {
             serverBridge.start();
             serverBridge.getLifecycle().join();
+            //now say we no longer exist
+            setWorker(null);
         }
+
+/*
+        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+        @Override
+        protected void processRunResults() {
+            if (getThrown() != null) {
+                ComponentHelper helper = new ComponentHelper(getOwner());
+                TerminationRecord tr = createTerminationRecord();
+                //put up for termination
+                helper.targetForTermination(tr, false, false, false);
+            }
+        }
+*/
     }
 
 

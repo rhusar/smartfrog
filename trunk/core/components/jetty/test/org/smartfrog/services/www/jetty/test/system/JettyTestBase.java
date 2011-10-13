@@ -33,12 +33,10 @@
 package org.smartfrog.services.www.jetty.test.system;
 
 import org.smartfrog.services.jetty.examples.JettyTestPorts;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.PortCheckingTestBase;
 import org.smartfrog.test.TestHelper;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-
-import java.util.Properties;
 
 public abstract class JettyTestBase extends PortCheckingTestBase implements JettyTestPorts {
     public static final String FULL_FILES = "/org/smartfrog/services/www/jetty/test/system/full/";
@@ -60,6 +58,7 @@ public abstract class JettyTestBase extends PortCheckingTestBase implements Jett
 
     public JettyTestBase(String name) {
         super(name);
+        setCheckPorts(true);
     }
 
     /**
@@ -132,7 +131,7 @@ public abstract class JettyTestBase extends PortCheckingTestBase implements Jett
     public void deployWebApp(String resource, String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));
-        Prim liveness = getApplication().sfResolve("ping",(Prim)null,true);
+        Prim liveness = getApplication().sfResolve("ping", (Prim) null, true);
         for (int i = 0; i < 100; i++) {
             liveness.sfPing(null);
         }

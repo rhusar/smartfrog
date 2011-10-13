@@ -31,7 +31,6 @@ public abstract class PortCheckingTestBase extends DeployingTestBase {
     protected boolean checkPorts = false;
     protected boolean failOnCheckFailure = false;
 
-
     public PortCheckingTestBase(String name) {
         super(name);
     }
@@ -168,13 +167,12 @@ public abstract class PortCheckingTestBase extends DeployingTestBase {
      * @param totalTimeoutMillis total time to spin
      * @param connectTimeoutMillis connect time
      * @param sleepMillis sleep time
-     * @throws InterruptedException if the sleep was interrupted
      * @throws IOException connection failures
      */
     public static void waitForPortOpen(InetSocketAddress address,
                                    int totalTimeoutMillis,
                                    int connectTimeoutMillis,
-                                   int sleepMillis) throws InterruptedException, IOException {
+                                   int sleepMillis) throws IOException {
         PortChecker.waitForPortOpen(address, totalTimeoutMillis, connectTimeoutMillis, sleepMillis);
     }
 }

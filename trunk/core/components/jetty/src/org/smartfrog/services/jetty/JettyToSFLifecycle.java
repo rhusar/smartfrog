@@ -22,6 +22,8 @@ package org.smartfrog.services.jetty;
 import org.mortbay.component.LifeCycle;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Liveness;
 
 import java.rmi.RemoteException;
@@ -30,11 +32,13 @@ import java.rmi.RemoteException;
  * Something to bridge ping, start and stop operations to jetty.
  */
 
-public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
+public class JettyToSFLifecycle<LIFECYCLE extends LifeCycle> implements Liveness, LifeCycle.Listener {
 
     private String name;
-    private T lifecycle;
+    private LIFECYCLE lifecycle;
     private volatile boolean started = false;
+    private final String fullName;
+    private static final Log LOG = LogFactory.getLog(JettyToSFLifecycle.class);
 
     /**
      * Error string raised in liveness checks. {@value}
@@ -43,9 +47,10 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
     public static final String LIVENESS_ERROR_NOT_RUNNING = " is not running";
     public static final String LIVENESS_ERROR_FAILED = " has failed";
 
-    public JettyToSFLifecycle(String name, T lifecycle) {
+    public JettyToSFLifecycle(String name, LIFECYCLE lifecycle) {
         this.name = name;
         this.lifecycle = lifecycle;
+        fullName = name + ":" + lifecycle;
     }
 
 
@@ -53,9 +58,12 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
         return name;
     }
 
-    public T getLifecycle() {
+    public LIFECYCLE getLifecycle() {
         return lifecycle;
     }
+    
+    
+    
 
     /**
      * liveness test verifies the server is started
@@ -132,6 +140,42 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
      * @return the name and the string value of the embedded lifecycle
      */
     public String toString() {
-        return name + ":" + lifecycle.toString();
+        return fullName;
+    }
+
+    @Override
+    public void lifeCycleStarting(final LifeCycle event) {
+        if(LOG.isDebugEnabled()) {
+            LOG.debug(fullName + " starting");
+        }
+    }
+
+    @Override
+    public void lifeCycleStarted(final LifeCycle event) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(fullName + " started");
+        }
+    }
+
+    @Override
+    public void lifeCycleFailure(final LifeCycle event, final Throwable cause) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(fullName + " failed");
+        }
+
+    }
+
+    @Override
+    public void lifeCycleStopping(final LifeCycle event) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(fullName + " stopping");
+        }
+    }
+
+    @Override
+    public void lifeCycleStopped(final LifeCycle event) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(fullName + " stopped");
+        }
     }
 }

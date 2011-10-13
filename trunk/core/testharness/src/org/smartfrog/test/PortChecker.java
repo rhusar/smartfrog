@@ -4,6 +4,7 @@
 
 package org.smartfrog.test;
 
+import org.smartfrog.sfcore.utils.Spinner;
 import org.smartfrog.sfcore.utils.TimeoutInterval;
 
 import java.io.IOException;
@@ -152,27 +153,22 @@ public class PortChecker {
      * @param totalTimeoutMillis total time to spin
      * @param connectTimeoutMillis connect time
      * @param sleepMillis sleep time
-     * @throws InterruptedException if the sleep was interrupted
      * @throws IOException connection failures
      */
     public static void waitForPortOpen(InetSocketAddress address,
                                        int totalTimeoutMillis,
                                        int connectTimeoutMillis,
-                                       int sleepMillis) throws InterruptedException, IOException {
-        long endtime = System.currentTimeMillis() + totalTimeoutMillis;
-        IOException caught = null;
+                                       int sleepMillis) throws IOException {
+        Spinner spinner = new Spinner("Waiting for the ports to close", sleepMillis, totalTimeoutMillis);
         boolean connected = false;
-        while (!connected && endtime > System.currentTimeMillis()) {
+        while (!connected) {
             try {
                 checkPort(address, connectTimeoutMillis);
                 connected = true;
             } catch (IOException e) {
-                caught = e;
-                Thread.sleep(sleepMillis);
+                spinner.setLastThrown(e);
+                spinner.sleep();
             }
-        }
-        if (!connected) {
-            throw caught;
         }
     }
 
@@ -196,7 +192,7 @@ public class PortChecker {
 
         /**
          * check for being open
-         *
+         * @param connectTimeout connection timeout
          * @return true if a connection can be made
          */
         public boolean isOpen(int connectTimeout) {

@@ -37,36 +37,16 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 
-public class JettyFunctionalTest extends JettyTestBase {
+public class TwoJettyServersTest extends JettyTestBase {
 
-    public JettyFunctionalTest(String name) {
+    public TwoJettyServersTest(String name) {
         super(name);
     }
 
-
-    public void NotestCaseTCP21() throws Throwable {
-        application = deployExpectingSuccess(FUNCTIONAL_FILES + "tcp21.sf", "tcp21");
-        assertNotNull(application);
-        Prim server = (Prim) application.sfResolve("server");
-        String jettyhome = server.sfResolve("jettyhome", (String) null, true);
-        String filename = jettyhome.concat(
-                                                  File.separator + "demo"
-                                                  + File.separator + "webapps"
-                                                  + File.separator + "root"
-                                                  + File.separator + "index.html");
-        File file = new File(filename);
-        File jettyfile = new File(jettyhome);
-
-        assertTrue("Not found" + file, file.exists());
-        assertTrue("Not found" + jettyfile, jettyfile.exists());
-        assertFalse("Should not be a directory " + file, file.isDirectory());
-        assertTrue("Should be a directory " + jettyfile,
-                   jettyfile.isDirectory());
-    }
-
-    public void testTcp19() throws Throwable {
+    public void testTcp20() throws Throwable {
         addPortCheck("Jetty 1", TEST_JETTY_PORT_1);
-        expectSuccessfulTestRun(FUNCTIONAL_FILES, "tcp19test");
+        addPortCheck("Jetty 2", TEST_JETTY_PORT_2);
+        expectSuccessfulTestRun(FUNCTIONAL_FILES, "tcp20test");
     }
 
 }

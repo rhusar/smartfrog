@@ -36,7 +36,7 @@ public class Spinner {
     private final long waitInterval;
     private final long endtime;
     private Throwable lastThrown;
-    public static final String TIMED_OUT = " timed out";
+    public static final String TIMED_OUT = " timed out ";
     private static final String WAS_INTERRUPTED = " was interrupted";
 
     /**
@@ -53,14 +53,20 @@ public class Spinner {
     }
 
     /**
-     * Sleep for a defined period of time
-     * @throws TimedOutIOException if we have already timed out. This check occurs before any sleep
+     * Sleep for a defined period of time. Before sleeping, a check is made for the operation
+     * having timed out already.
      * @throws InterruptedIOException if the operation was interrupted
-     * @throws IOException as the signature
+     * @throws IOException if the last thrown exception was of type IOException
+     * @throws TimedOutIOException if we have already timed out and the last thrown exception is of a different type
      */
     public void sleep() throws IOException {
         if (isTimedOut()) {
-            throw new TimedOutIOException(operation + TIMED_OUT, lastThrown);
+            if (lastThrown != null && lastThrown instanceof IOException) {
+                throw (IOException) lastThrown;
+            }
+            throw new TimedOutIOException(operation + TIMED_OUT
+                    + (lastThrown != null ? lastThrown : ""),
+                    lastThrown);
         }
         try {
             Thread.sleep(waitInterval);
