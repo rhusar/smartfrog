@@ -669,7 +669,7 @@ SmartFrog to deploy complex systems.
 
     <pack name="JSON" required="no" preselected="no">
       <description>
-        This package provides JSON support by way of json-lib and its dependencies.
+        This package provides JSON support by way of json-lib and Jackson.
 
         Prerequisite packages: Logging.
       </description>
@@ -689,7 +689,19 @@ SmartFrog to deploy complex systems.
           />
       <file src="ivy/lib/package-json/commons-lang-${commons-lang.version}.jar"
           targetdir="$INSTALL_PATH/lib"
-          />      
+          />
+      <file src="ivy/lib/package-json/json-lib-$json-lib.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-json/ezmorph-${ezmorph.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-json/jackson-core-asl-${jackson.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-json/jackson-mapper-asl-${jackson.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
       <depends packname="Logging"/>
     </pack>
 
