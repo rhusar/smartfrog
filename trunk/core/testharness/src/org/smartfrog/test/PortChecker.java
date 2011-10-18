@@ -159,7 +159,7 @@ public class PortChecker {
                                        int totalTimeoutMillis,
                                        int connectTimeoutMillis,
                                        int sleepMillis) throws IOException {
-        Spinner spinner = new Spinner("Waiting for the ports to close", sleepMillis, totalTimeoutMillis);
+        Spinner spinner = new Spinner("Waiting for the ports to open", sleepMillis, totalTimeoutMillis);
         boolean connected = false;
         while (!connected) {
             try {
