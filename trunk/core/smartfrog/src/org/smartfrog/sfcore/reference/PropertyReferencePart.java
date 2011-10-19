@@ -95,11 +95,12 @@ public class PropertyReferencePart extends ReferencePart {
         throws SmartFrogResolutionException {
         try {
             String v = SFSystem.getProperty((String) value, null);
-            if (v==null)
-                throw SmartFrogResolutionException.notFound (r,null);
+            if (v == null) {
+                throw SmartFrogResolutionException.notFound(r, null);
+            }
             return v;
         } catch (Throwable ex) {
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }
 
