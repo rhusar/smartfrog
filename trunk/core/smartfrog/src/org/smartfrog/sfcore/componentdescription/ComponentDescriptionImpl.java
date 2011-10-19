@@ -596,7 +596,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
 
         Reference rn = r;
-        if (r.getData()!=false) {
+        if (r.getData()) {
            //clone should be enough at this point.
            rn = (Reference) r.clone();
            rn.setData(false);
