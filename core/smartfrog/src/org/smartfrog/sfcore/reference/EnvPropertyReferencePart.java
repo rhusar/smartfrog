@@ -92,13 +92,13 @@ public class EnvPropertyReferencePart extends ReferencePart {
      * @throws SmartFrogResolutionException if failed to resolve reference
      */
     public Object resolve(ReferenceResolver rr, Reference r, int index)
-        throws SmartFrogResolutionException {
+            throws SmartFrogResolutionException {
         try {
             String v = SFSystem.getEnv((String) value, null);
-            if (v==null)  throw SmartFrogResolutionException.notFound (r,null);
+            if (v == null) throw SmartFrogResolutionException.notFound(r, null);
             return v;
         } catch (Throwable ex) {
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }
 
@@ -115,13 +115,13 @@ public class EnvPropertyReferencePart extends ReferencePart {
      * @throws SmartFrogResolutionException if failed to resolve reference
      */
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
-        throws SmartFrogResolutionException {
+            throws SmartFrogResolutionException {
         try {
-          String v = SFSystem.getEnv((String) value, null);
-            if (v==null) throw SmartFrogResolutionException.notFound (r,null);
-          return v;
+            String v = SFSystem.getEnv((String) value, null);
+            if (v == null) throw SmartFrogResolutionException.notFound(r, null);
+            return v;
         } catch (Throwable ex) {
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }
 }

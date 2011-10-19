@@ -89,15 +89,15 @@ public class Reference implements Copying, Cloneable, Serializable {
 
     /**
      * Constructs a reference with a single reference part from a String
-     * or from a string in cannonical form using the parser.
+     * or from a string in canonical form using the parser.
      *
      * @param refString to be put/used in reference
      * @param parse boolean to ask for string reference to be parsed or not
      * @throws SmartFrogResolutionException if reference is not valid
      */
-    public Reference(String refString, boolean parse) throws SmartFrogResolutionException{
+    public Reference(String refString, boolean parse) throws SmartFrogResolutionException {
         if (!parse) {
-           ref.addElement(ReferencePart.here(refString));
+            ref.addElement(ReferencePart.here(refString));
         } else {
             ref = fromString(refString).ref;
         }
@@ -271,8 +271,8 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @return old default value flag
      */
     public Object setDefaultValue (Object value) {
-        Object tmp = this.defaultValue;
-        this.defaultValue = value;
+        Object tmp = defaultValue;
+        defaultValue = value;
         return tmp;
     }
 

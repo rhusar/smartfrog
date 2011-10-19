@@ -19,9 +19,9 @@ public interface Function {
      * @param container the ReferenceResolver (CompoenentDescription) within which the fucntion resides
      * @throws SmartFrogException Failure to evaluate the function
      */
-    public Object doit(Context c, Reference name, ReferenceResolver container) throws SmartFrogException;
-	
-	/**
+    Object doit(Context c, Reference name, ReferenceResolver container) throws SmartFrogException;
+
+    /**
      * Evaluate the function
      *
      * @param c A context that contains all the parameters
@@ -29,7 +29,7 @@ public interface Function {
      * @param container the ReferenceResolver (CompoenentDescription) within which the fucntion resides
      * @throws SmartFrogException Failure to evaluate the function
      */
-    public Object doit(Context c, Reference name, ReferenceResolver container, Reference ar, Object key) throws SmartFrogException;
+    Object doit(Context c, Reference name, ReferenceResolver container, Reference ar, Object key) throws SmartFrogException;
     
     /**
      * Evaluate the function
@@ -39,18 +39,18 @@ public interface Function {
      * @param container the RemoteReferenceResolver (Prim) within which the fucntion resides
      * @throws SmartFrogException Failure to evaluate the function
      */
-    public Object doit(Context c, Reference name, RemoteReferenceResolver container) throws SmartFrogException;
+    Object doit(Context c, Reference name, RemoteReferenceResolver container) throws SmartFrogException;
     
-    public Object doit(Context ctx, Reference unused, RemoteReferenceResolver resolver, Reference ar, Object key) throws SmartFrogException; 
+    Object doit(Context ctx, Reference unused, RemoteReferenceResolver resolver, Reference ar, Object key) throws SmartFrogException;
 
-    public Object getReferenceObject();
-    public Object getReferenceKey();
+    Object getReferenceObject();
+    Object getReferenceKey();
 
-    public void setReferenceContext(Context context);
-    public Context getReferenceContext();
+    void setReferenceContext(Context context);
+    Context getReferenceContext();
 
-    public ComponentDescription getReferenceCD();
-    public void setReferenceCD(ComponentDescription comp);
+    ComponentDescription getReferenceCD();
+    void setReferenceCD(ComponentDescription comp);
 
 
 }

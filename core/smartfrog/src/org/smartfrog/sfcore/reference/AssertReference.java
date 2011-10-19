@@ -24,6 +24,7 @@ import java.util.Iterator;
  * If
  */
 public class AssertReference extends Reference implements Copying, Cloneable, Serializable {
+    private static final String SF_FUNCTION_CLASS = "sfFunctionClass";
     protected ComponentDescription comp;
 
     public AssertReference(ComponentDescription comp) {
@@ -70,11 +71,8 @@ public class AssertReference extends Reference implements Copying, Cloneable, Se
             return false;
         }
 
-        if (((AssertReference) reference).comp != comp) {
-            return false;
-        }
+        return ((AssertReference) reference).comp == comp;
 
-        return true;
     }
 
     /**
@@ -124,7 +122,7 @@ public class AssertReference extends Reference implements Copying, Cloneable, Se
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass")) {
+            if (!nameS.equals(SF_FUNCTION_CLASS)) {
                 Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 try {
                     forFunction.sfAddAttribute(name, value);
@@ -190,7 +188,7 @@ public class AssertReference extends Reference implements Copying, Cloneable, Se
             comp.setPrimParent((Prim) rr);
 
         try {
-            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+            functionClass = (String) comp.sfResolveHere(SF_FUNCTION_CLASS);
         } catch (ClassCastException e) {
             throw new SmartFrogAssertionResolutionException("function class is not a string", e);
         }
@@ -198,7 +196,7 @@ public class AssertReference extends Reference implements Copying, Cloneable, Se
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass")) {
+            if (!nameS.equals(SF_FUNCTION_CLASS)) {
                 Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
                 try {
                     forFunction.sfAddAttribute(name, value);
