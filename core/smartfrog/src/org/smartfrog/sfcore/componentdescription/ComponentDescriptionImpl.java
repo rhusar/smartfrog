@@ -402,7 +402,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public ComponentDescription setParent(ComponentDescription newparent) {
         ComponentDescription op = parent;
-	    primParent = null; // cannot have both!
+        primParent = null; // cannot have both!
         parent = newparent;
 
         return op;
@@ -618,7 +618,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 sfLog().trace("sfResolved: "+r.toString()+" to "+obj.toString());
             }
         } catch (Exception ex) {ex.printStackTrace();}//ignore}
-        
+
         return obj;
     }
 
@@ -1253,7 +1253,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             }
         }
         // Get componentDescription and Entry
-        
+
         ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
                                                                    urlDescription.toLowerCase()
                                                                  , phases
