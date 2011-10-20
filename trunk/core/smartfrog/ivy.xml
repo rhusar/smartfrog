@@ -12,7 +12,7 @@
   <!-- define our configurations -->
   <configurations defaultconfmapping="default">
     <conf name="default" extends="master,runtime"/>
-    <conf name="compile" visibility="private"
+    <conf name="compile"
         description="artifacts needed to compile the application"/>
     <conf name="unittest" extends="compile"
         description="the classpath needed to run unittests"/>

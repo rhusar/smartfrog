@@ -15,7 +15,7 @@
     <conf name="default" extends="master,runtime"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private"
+    <conf name="compile"
         description="artifacts needed to compile the application"/>
     <conf name="unittest" extends="compile"
         description="the classpath needed to run unittests"/>

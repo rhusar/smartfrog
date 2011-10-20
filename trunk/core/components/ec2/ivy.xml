@@ -20,7 +20,7 @@
         description="all documentation artifacts"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private"
+    <conf name="compile"
         extends="redist,cloudfarmer"
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
