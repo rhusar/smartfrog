@@ -29,8 +29,8 @@ public final class TimeoutTracker {
     private long delay;
 
     /**
-     * Start tracking the time for a timeout
-     * A delay of -1 or less means 'forever'
+     * Start tracking the time for a timeout A delay of -1 or less means 'forever'
+     *
      * @param delay delay in milliseconds
      */
     public TimeoutTracker(long delay) {
@@ -49,6 +49,6 @@ public final class TimeoutTracker {
 
     @Override
     public String toString() {
-        return "Timeout Tracker waiting for " +delay + " milliseconds";
+        return "Timeout Tracker waiting for " + delay + " milliseconds";
     }
 }
