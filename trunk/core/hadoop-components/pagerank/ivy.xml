@@ -56,7 +56,7 @@
                 rev="latest.integration"
                 conf="test->default"/>
     <dependency org="org.smartfrog"
-                name="sf-hadoop-operations"
+                name="sf-hadoop-ops"
                 changing="true"
                 rev="latest.integration"
                 conf="runtime->runtime;server->server;compile->default"/>
