@@ -24,14 +24,14 @@ sfConfig extends Compound {
     //integrate logging with smartfrog
   logging extends IntegrateJettyLogging;
 
-   server extends CoreJettyServer {
-      jettyhome test.jetty.home ; 
-   }
+  server extends CoreJettyServer {
+    jettyhome test.jetty.home ;
+  }
 
 
-    negativePort extends JettySocketConnector {
-        server LAZY PARENT:server;
-        port -43;
-    }
+  negativePort extends JettySocketConnector {
+    server LAZY PARENT:server;
+    port -43;
+  }
 }
 
