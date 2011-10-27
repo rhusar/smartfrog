@@ -17,6 +17,8 @@ BindingServletServer extends LocalJettyServer {
     resourcePackage "/org/smartfrog/services/jetty/examples/servlets/web";
 
     server LAZY PARENT:server;
+    failOnStartup PARENT:failOnStartup;
+    startupTime PARENT:startupTime;
   }
 
   bindingServlet extends BindingServlet {

@@ -80,12 +80,12 @@ TempDirServer extends Compound {
     }
 
 
-    tempDirServletContext extends TempDirServletContext {
+    servletContext extends TempDirServletContext {
         resourceBase LAZY tempDir:absolutePath;
         server LAZY PARENT:server;
     }
     
-    servlets LAZY tempDirServletContext;
+    servlets LAZY servletContext;
     
   
     mimemap extends CoreMimeTypes {
@@ -124,3 +124,9 @@ RunFailingTests extends IsPropertySet {
   property "run.failing.tests";
 }
 
+STARTUP_SLEEP_TIME 5000;
+WAIT_FOR_PAGE_FREQUENCY 5000;
+
+StartupSleep extends Delay {
+  time STARTUP_SLEEP_TIME;
+}

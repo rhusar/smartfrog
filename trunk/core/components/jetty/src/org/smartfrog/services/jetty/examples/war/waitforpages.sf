@@ -39,16 +39,17 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 
 waitForPage extends WaitForPage {
+    waitForInterval 5000;
     fetchErrorText true;
-    checkOnLiveness true;
     checkFrequency waitForInterval;
     timeout waitForTimeout;
     checkOnLiveness false;
 }
 
 waitForPageOK extends waitForPage {
-    maximumResponseCode HttpCodes:OK;
-    minimumResponseCode HttpCodes:OK;
+    responseCode HttpCodes:OK
+    maximumResponseCode responseCode;
+    minimumResponseCode responseCode;
 }
 
 waitForAnyHttpResponse extends waitForPage {

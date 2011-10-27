@@ -44,7 +44,7 @@ JettyInstance extends BindingServletServer {
 }
 
 TestBindingCompound extends JettyTestCompound {
-
+  expectTerminate true;
   path "/";
   page "binding";
 
@@ -53,6 +53,7 @@ TestBindingCompound extends JettyTestCompound {
   }
 
   tests extends Sequence {
+    sleep extends StartupSleep;
     wait extends waitForPageOK  {
       port PARENT:PARENT:action:port;
       path PARENT:PARENT:path;
@@ -63,12 +64,13 @@ TestBindingCompound extends JettyTestCompound {
 }
 
 TestResolve extends TestBindingCompound {
-  action:failOnStartup true;
+  action:failOnStartup false;
   page "resolve";
 }
 
 
 TestTroubleDeployed extends TestBindingCompound {
+  description "deploy the trouble component"
   action:failOnStartup false;
   page "trouble";
 }
@@ -76,8 +78,11 @@ TestTroubleDeployed extends TestBindingCompound {
 
 TestStartupFailure extends TestTroubleDeployed {
   action:failOnStartup true;
+  //expect a servlet error, eventually
+  tests:wait:responseCode 503;
 }
 
-TestSlowStartup extends TestStartupFailure {
-  action:startupTime 5000;
+TestSlowStartup extends TestTroubleDeployed {
+  action:startupTime 2000;
+  action:failOnStartup false;
 }
