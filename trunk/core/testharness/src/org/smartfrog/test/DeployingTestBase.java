@@ -59,7 +59,6 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         super(name);
     }
 
-
     @Override
     protected void tearDown() throws Exception {
         if (!stopListening()) {
@@ -353,9 +352,15 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      *                   tests were not successful
      */
     protected TestCompletedEvent runTestsToCompletion(String packageName, String filename) throws Throwable {
+        int executeTimeout = getTestTimeout();
+        int startupTimeout = getTestStartupTimeout();
+        if (getLog().isDebugEnabled()) {
+            getLog().debug(TEST_TIMEOUT_STARTUP + "=" + startupTimeout);
+            getLog().debug(TEST_TIMEOUT_EXECUTE + "=" + executeTimeout);
+        }
         return completeTestDeployment(packageName, filename,
-                getTestStartupTimeout(),
-                getTestTimeout());
+                startupTimeout,
+                executeTimeout);
     }
 
     /**
