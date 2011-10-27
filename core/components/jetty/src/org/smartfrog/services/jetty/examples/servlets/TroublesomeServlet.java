@@ -3,6 +3,7 @@ package org.smartfrog.services.jetty.examples.servlets;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateHelper;
 import org.smartfrog.services.jetty.utils.ServletUtils;
 import org.smartfrog.services.www.HttpHeaders;
+import org.smartfrog.services.www.ServletContextComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
 public class TroublesomeServlet extends HttpServlet {
 
     private static final Reference STARTUP_TIME = new Reference("startupTime");
-    Log log = LogFactory.getLog(this.getClass());
+    private Log log = LogFactory.getLog(this.getClass());
     protected boolean failOnStartup;
 
     protected volatile boolean initialised;
@@ -43,12 +44,13 @@ public class TroublesomeServlet extends HttpServlet {
             ServletContext ctx = getServletContext();
             Prim owner = DelegateHelper.retrieveOwner(ctx);
             log.info("owner :" + ((RemoteToString) owner).sfRemoteToString());
+            Prim container = owner.sfResolve(ServletContextComponent.ATTR_SERVLET_CONTEXT, (Prim) null, true);
             int startupTime;
-            startupTime = (Integer) owner.sfResolve(STARTUP_TIME, true);
+            startupTime = (Integer) container.sfResolve(STARTUP_TIME, true);
             if (startupTime > 0) {
                 Thread.sleep(startupTime);
             }
-            failOnStartup = (Boolean) owner.sfResolve(new Reference("failOnStartup"), true);
+            failOnStartup = (Boolean) container.sfResolve(new Reference("failOnStartup"), true);
             initialised = true;
             if (failOnStartup) {
                 log.info("Failing");

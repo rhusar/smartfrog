@@ -25,15 +25,18 @@ import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
  * Created 14-Nov-2008 17:36:32
  */
 
-public class BindingTest extends JettyTestBase {
+public class TroubleServletDeployedTest extends JettyTestBase {
 
     public static final String PACKAGE = "/org/smartfrog/services/www/jetty/test/system/binding/";
 
-    public BindingTest(String name) {
+    public TroubleServletDeployedTest(String name) {
         super(name);
     }
 
-    public void testBindingCompound() throws Throwable {
-        expectSuccessfulTestRun(PACKAGE, "testBindingCompound");
+
+    public void testTroubleServletDeployed() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testTroubleDeployed");
     }
+
+
 }

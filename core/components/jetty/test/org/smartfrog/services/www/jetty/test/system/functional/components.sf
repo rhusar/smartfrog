@@ -33,9 +33,10 @@ tcp19Test extends JettyTestCompound {
 
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
-      wait extends waitForAnyHttpResponse  {
-          port PARENT:PARENT:action:port;
-      }
+    sleep extends StartupSleep;
+    wait extends waitForAnyHttpResponse  {
+      port PARENT:PARENT:action:port;
+    }
   }
 
 }
@@ -54,18 +55,19 @@ tcp20 extends Compound {
 }
 
 tcp20test extends JettyTestCompound {
-    description "bring up two servers and wait for them on the different ports"
+  description "bring up two servers and wait for them on the different ports"
 
-    action extends tcp20;
+  action extends tcp20;
 
-    tests extends Sequence {
-        wait extends waitForPage {
-            port tcp20:server1:port;
-        }
-        wait2 extends waitForPage {
-            port tcp20:server2:port;
-        }
+  tests extends Sequence {
+    sleep extends StartupSleep;
+    wait extends waitForPage {
+      port tcp20:server1:port;
     }
+    wait2 extends waitForPage {
+      port tcp20:server2:port;
+    }
+  }
 
 }
 
@@ -77,9 +79,10 @@ TestLivenessURL extends JettyTestCompound {
 
     //we dont care which number comes back, only that we get a number
     tests extends Sequence {
-        wait extends waitForAnyHttpResponse  {
-            url ( "http://localhost:" ++ test.jetty.port.1 ++ "/");
-        }
+      sleep extends StartupSleep;
+      wait extends waitForAnyHttpResponse  {
+          url ( "http://localhost:" ++ test.jetty.port.1 ++ "/");
+      }
     }
 
 }
@@ -97,6 +100,7 @@ TestSecurity extends JettyTestCompound {
 
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
+    sleep extends StartupSleep;
     wait extends waitForAnyHttpResponse  {
       host "localhost";
       port action:port;
@@ -128,6 +132,7 @@ TestNioConnector extends JettyTestCompound {
 
   //we dont care which number comes back, only that we get a number
    tests extends Sequence {
+     sleep extends StartupSleep;
       wait extends waitForAnyHttpResponse  {
           port action:port;
       }
@@ -153,6 +158,7 @@ TestRealm extends JettyTestCompound {
 
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
+    sleep extends StartupSleep;
     wait extends waitForAnyHttpResponse  {
       url ( "http://admin:password@localhost:" ++ test.jetty.port.1 ++ "/");
       port action:port;
@@ -163,26 +169,24 @@ TestRealm extends JettyTestCompound {
 
 ServerOnJetty extends Compound {
   port TBD;
-    home TBD;
+  home TBD;
 
-    jettyServer extends CoreJettyServer {
+  jettyServer extends CoreJettyServer {
     jettyhome LAZY PARENT:home;
     port PARENT:port;
   }
 
+  webApp extends WebApplication {
+      contextPath "webApp";
+      filename "../test-project/target/test-project.war";
+      server LAZY jettyServer;
+  }
 
-
-    webApp extends WebApplication {
-        contextPath "webApp";
-        filename "../test-project/target/test-project.war";
-        server LAZY jettyServer;
-    }
-
-    listener extends JettyListener {
-        serverHost "localhost";
-        listenerPort PARENT:port;
-        server LAZY jettyServer;
-    }
+  listener extends JettyListener {
+      serverHost "localhost";
+      listenerPort PARENT:port;
+      server LAZY jettyServer;
+  }
 }
 
 sfConfig extends ServerOnJetty {

@@ -10,7 +10,11 @@ import org.smartfrog.sfcore.prim.Prim;
 
 import javax.servlet.ServletContext;
 
-public class DelegateHelper {
+public final class DelegateHelper {
+
+    private DelegateHelper() {
+    }
+
     /**
      * Name of the servlet context attribute that identifies the owning SF component: {@value}
      */

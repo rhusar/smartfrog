@@ -250,7 +250,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
             try {
                 if (log.isDebugEnabled()) {
                     Throwable t = new Throwable("stack trace");
-                    log.info("Terminating Jetty servlet context", t);
+                    log.debug("Terminating Jetty servlet context", t);
                 }
                 handlerLifecycle.wrappedStop();
                 ContextHandlerCollection handlers = getServerContextHandler();

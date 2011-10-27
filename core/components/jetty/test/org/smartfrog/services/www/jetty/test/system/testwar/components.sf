@@ -69,20 +69,21 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
   TestWarDeployed extends WarTest  {
 
-      contextPath TestWarServer:contextPath;
+    contextPath TestWarServer:contextPath;
 
-      action extends TestWarServer {
-          contextPath PARENT:contextPath;
-      }
+    action extends TestWarServer {
+        contextPath PARENT:contextPath;
+    }
 
-      tests extends Sequence {
-          wait extends waitForPage {
-              port PARENT:PARENT:action:port;
-              path PARENT:PARENT:action:contextPath;
-              maximumResponseCode HttpCodes:OK;
-              minimumResponseCode HttpCodes:OK;
-          }
+    tests extends Sequence {
+      sleep extends StartupSleep;
+      wait extends waitForPage {
+          port PARENT:PARENT:action:port;
+          path PARENT:PARENT:action:contextPath;
+          maximumResponseCode HttpCodes:OK;
+          minimumResponseCode HttpCodes:OK;
       }
+    }
   }
 
 TestSecurity extends TestWarDeployed {
@@ -99,6 +100,7 @@ TestSecurity extends TestWarDeployed {
 
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
+    sleep extends StartupSleep;
     wait extends waitForPage  {
       //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
       host "localhost";
@@ -150,9 +152,7 @@ TestRealm extends TestWarDeployed {
 
   tests extends Sequence {
 
-    sleep extends Delay {
-      time 2000;
-    }
+    sleep extends StartupSleep;
 
     wait extends waitForPage  {
       host "localhost";
@@ -190,6 +190,7 @@ tcp27testFilesystemWar extends JettyTestCompound {
   action extends tcp27;
 
   tests extends Sequence {
+    sleep extends StartupSleep;
     wait extends waitForPage {
       port action:server:port;
       page action:context:contextPath;
@@ -205,11 +206,12 @@ testErrorPage extends TestWarDeployed  {
   contextPath tests:wait:contextPath;
 
   tests extends Sequence {
+    sleep extends StartupSleep;
     wait extends waitForPage {
       port PARENT:PARENT:action:port;
       contextPath "/errors";
       page (  contextPath ++ "/error");
-      checkFrequency 1;
+      checkFrequency WAIT_FOR_PAGE_FREQUENCY;
       errorCode 419;
       queries [["status",errorCode]];
       maximumResponseCode errorCode;
