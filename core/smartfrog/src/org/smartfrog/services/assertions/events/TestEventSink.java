@@ -46,8 +46,15 @@ import java.rmi.server.RemoteStub;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Handler for test lifecycle events.
@@ -69,7 +76,7 @@ public final class TestEventSink implements EventSink, RemoteToString {
     /**
      * Queue of incoming events
      */
-    private Queue<LifecycleEvent> incoming = new ConcurrentLinkedQueue<LifecycleEvent>();
+    private BlockingQueue<LifecycleEvent> incoming = new LinkedBlockingQueue<LifecycleEvent>();
 
     /**
      * History of events
@@ -108,6 +115,10 @@ public final class TestEventSink implements EventSink, RemoteToString {
             = "Cannot cast a component to an EventRegistration instance, as it is of the wrong type: ";
 
     private Log log = LogFactory.getLog(getClass());
+
+    /** This is the lock used for synchronised operations */
+    private final Lock lock = new ReentrantLock();
+
 
     /**
      * Simple constructor
@@ -220,16 +231,18 @@ public final class TestEventSink implements EventSink, RemoteToString {
      * @param target what to subscribe to
      * @throws RemoteException for network problems
      */
-    private synchronized void subscribe(EventRegistration target) throws RemoteException, SmartFrogSecurityException {
-        if (source != null) {
-            throw new IllegalStateException("Cannot subscribe more than once");
+    private void subscribe(EventRegistration target) throws RemoteException, SmartFrogSecurityException {
+        synchronized (this) {
+            if (source != null) {
+                throw new IllegalStateException("Cannot subscribe more than once");
+            }
+            try {
+                remoteStub = (RemoteStub) SecureRemoteObject.exportObject(this, 0);
+            } catch (SFGeneralSecurityException e) {
+                throw new SmartFrogSecurityException(e);
+            }
+            setSource(target);
         }
-        try {
-            remoteStub = (RemoteStub) SecureRemoteObject.exportObject(this, 0);
-        } catch (SFGeneralSecurityException e) {
-            throw new SmartFrogSecurityException(e);
-        }
-        setSource(target);
         if (target != null) {
             target.register(this);
         }
@@ -279,18 +292,16 @@ public final class TestEventSink implements EventSink, RemoteToString {
 
     /**
      * return the object at the head of the event queue, or null. The event is removed from the queue and added to the
-     * history
+     * history. This operation blocks for the specified timeout
      *
      * @return the polled object.
      */
-    public synchronized LifecycleEvent poll() {
-        if (incoming.size() == 0) {
-            return null;
-        } else {
-            LifecycleEvent event = incoming.remove();
+    private LifecycleEvent poll(long timeout) throws InterruptedException {
+        LifecycleEvent event = incoming.poll(timeout, TimeUnit.MILLISECONDS);
+        if (event != null) {
             history.add(event);
-            return event;
         }
+        return event;
     }
 
 
@@ -311,18 +322,13 @@ public final class TestEventSink implements EventSink, RemoteToString {
      * @throws InterruptedException if the thread waiting was interrupted
      */
 
-    public synchronized LifecycleEvent waitForEvent(long timeout) throws InterruptedException {
-        LifecycleEvent event;
-        event = poll();
-        if (event == null) {
-            wait(timeout);
-            event = poll();
-            if (event == null) {
-                return null;
-            }
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(toString() + " received event: "+ event);
+    public LifecycleEvent waitForEvent(long timeout) throws InterruptedException {
+        if (log.isDebugEnabled()) {
+            log.debug(toString() + " waiting for an event for " + timeout + " ms");
+        }        LifecycleEvent event;
+        event = poll(timeout);
+        if (log.isDebugEnabled()) {
+            log.debug(toString() + " received event: " + event);
         }
         return event;
     }
@@ -335,7 +341,7 @@ public final class TestEventSink implements EventSink, RemoteToString {
      * @return the event or null for a timeout 
      * @throws InterruptedException if the thread waiting was interrupted, or a TestInterruptedEvent was encountered
      */
-    public synchronized LifecycleEvent waitForEvent(Class clazz, long timeout) throws InterruptedException {
+    public LifecycleEvent waitForEvent(Class clazz, long timeout) throws InterruptedException {
         LifecycleEvent event;
         boolean isNotInstance;
         TimeoutTracker timedout = new TimeoutTracker(timeout);
@@ -365,10 +371,7 @@ public final class TestEventSink implements EventSink, RemoteToString {
         if (!(event instanceof LifecycleEvent)) {
             throw new RemoteException("Only instances of LifecycleEvent are supported");
         }
-        synchronized (this) {
-            incoming.add((LifecycleEvent) event);
-            notifyAll();
-        }
+        incoming.add((LifecycleEvent) event);
     }
 
     /**
