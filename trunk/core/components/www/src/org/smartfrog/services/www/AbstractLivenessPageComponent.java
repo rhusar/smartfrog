@@ -34,18 +34,17 @@ import java.util.Vector;
 
 
 /**
- * This is a factoring out of the liveness checking; a class that
- * reads in the URL details from its attributes, and configures a liveness
- * page checker from these values.
+ * This is a factoring out of the liveness checking; a class that reads in the URL details from its attributes, and
+ * configures a liveness page checker from these values.
  */
 public abstract class AbstractLivenessPageComponent extends PrimImpl implements HttpAttributes {
 
     /**
-     * the class that contains all the checking code. This is on the side for
-     * reuse in other components.
+     * the class that contains all the checking code. This is on the side for reuse in other components.
      */
     protected LivenessPageChecker livenessPage;
-    public static final String EMPTY_USERNAME = "Empty "+ATTR_USERNAME+" attribute on a component which requires a username";
+    public static final String EMPTY_USERNAME =
+            "Empty " + ATTR_USERNAME + " attribute on a component which requires a username";
 
 
     protected AbstractLivenessPageComponent() throws RemoteException {
@@ -58,6 +57,7 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
 
     /**
      * Create and configure the LivenessChecker from the attributes of the component
+     *
      * @throws RemoteException network problems
      * @throws SmartFrogException smartfrog problems
      */
@@ -68,7 +68,7 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
 
         String url = sfResolve(ATTR_URL, (String) null, false);
 
-        if (url != null && url.length()>0) {
+        if (url != null && url.length() > 0) {
             livenessPage.bindToURL(url);
         } else {
             livenessPage.setHost(sfResolve(ATTR_HOST,
@@ -90,10 +90,10 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
             buildLivenessPageQueryString();
         }
 
-        Vector<String> mimeTypes = ListUtils.resolveStringList(this, new Reference(ATTR_MIME_TYPES),true);
+        Vector<String> mimeTypes = ListUtils.resolveStringList(this, new Reference(ATTR_MIME_TYPES), true);
         livenessPage.setMimeTypes(mimeTypes);
         livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
-                0,true));
+                0, true));
         livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
                 0, true));
         livenessPage.setFollowRedirects(sfResolve(ATTR_FOLLOW_REDIRECTS,
@@ -101,16 +101,15 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
         livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
                 livenessPage.getFetchErrorText(), true));
         //regular expression: this may raise an exception
-        livenessPage.setResponseRegexp(sfResolve(ATTR_RESPONSE_REGEXP,"", true));
+        livenessPage.setResponseRegexp(sfResolve(ATTR_RESPONSE_REGEXP, "", true));
         livenessPage.setLogResponse(sfResolve(ATTR_LOGRESPONSE, false, false));
 
         //header vector
         Vector<Vector<String>> headers;
-        headers= ListUtils.resolveStringTupleList(this,new Reference(ATTR_HEADERS),true);
+        headers = ListUtils.resolveStringTupleList(this, new Reference(ATTR_HEADERS), true);
         livenessPage.setHeaders(headers);
 
-        livenessPage.setConnectTimeout(sfResolve(ATTR_CONNECT_TIMEOUT,0,true));
-
+        livenessPage.setConnectTimeout(sfResolve(ATTR_CONNECT_TIMEOUT, 0, true));
 
 
         //now tell the liveness page it is deployed
@@ -125,7 +124,7 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
         //and of any component references by UrlTargetComponent
         Prim urlTargetComponent = sfResolve(LivenessPage.URL_TARGET_COMPONENT, (Prim) null, false);
         if (urlTargetComponent != null) {
-            sfLog().info("Setting " + urlTargetComponent.sfCompleteName() +":"+ ATTR_URL+" to "+ targetUrlString);
+            sfLog().info("Setting " + urlTargetComponent.sfCompleteName() + ":" + ATTR_URL + " to " + targetUrlString);
             urlTargetComponent.sfReplaceAttribute(ATTR_URL, targetUrlString);
         }
     }
@@ -137,17 +136,17 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
     }
 
     /**
-     * Configure the liveness page authentication: username and password
-     * if the username is supplied
+     * Configure the liveness page authentication: username and password if the username is supplied
+     *
      * @throws SmartFrogException for trouble, including a missing password
      * @throws RemoteException network trouble
      */
     protected void buildLivenessPageAuthentication()
             throws SmartFrogException, RemoteException {
-        boolean required=sfResolve(ATTR_AUTH_REQUIRED,false,true);
+        boolean required = sfResolve(ATTR_AUTH_REQUIRED, false, true);
         String username = resolveUsername(required);
 
-        if (username != null && username.length()>0) {
+        if (username != null && username.length() > 0) {
             String password = resolvePassword();
             livenessPage.setUsername(username);
             livenessPage.setPassword(password);
@@ -156,17 +155,19 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
 
     /**
      * Resolve the password
+     *
      * @return the password
      * @throws SmartFrogException for trouble, including a missing password
      * @throws RemoteException network trouble
      */
     protected String resolvePassword()
             throws SmartFrogException, RemoteException {
-        return PasswordHelper.resolvePassword(this,ATTR_PASSWORD,true);
+        return PasswordHelper.resolvePassword(this, ATTR_PASSWORD, true);
     }
 
     /**
      * Resolve the username
+     *
      * @param required flag to set to true if the username is required
      * @return the username or null
      * @throws SmartFrogResolutionException for failure to resolve
