@@ -29,6 +29,7 @@ For more information: www.smartfrog.org
 
 
   <!-- override point -->
+  <!--suppress AntResolveInspection -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
@@ -42,6 +43,8 @@ For more information: www.smartfrog.org
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
+  
+  <target name="init" depends="common.init,commons-logging-via-sf" />
 
 
 </project>
