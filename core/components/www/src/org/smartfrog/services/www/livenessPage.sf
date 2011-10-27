@@ -148,7 +148,7 @@ For more information: www.smartfrog.org
      checkFrequency 1000;
      checkOnStartup false;
      checkOnLiveness true;
-     connectTimeout -1;
+     connectTimeout 5000;
      enabled true;
      fetchErrorText true;
      followRedirects true;

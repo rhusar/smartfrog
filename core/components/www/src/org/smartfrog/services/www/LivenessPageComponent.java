@@ -104,6 +104,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
         buildLivenessChecker();
 
         checkFrequency = sfResolve(ATTR_CHECK_FREQUENCY, checkFrequency, false);
+        nextCheck = checkFrequency;
         boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
         updateEnabledState();
@@ -157,6 +158,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (checkOnLiveness) {
+            sfLog().debug("sfPing(): Checking page");
             livenessPing();
         }
     }

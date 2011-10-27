@@ -98,6 +98,7 @@ public class WaitForPageImpl extends LivenessPageComponent
         super.sfTerminateWith(status);
         SmartFrogThread thread = getWorker();
         if (thread != null && thread.isAlive()) {
+            sfLog().debug("Interrupting worker thread");
             thread.interrupt();
         }
     }
