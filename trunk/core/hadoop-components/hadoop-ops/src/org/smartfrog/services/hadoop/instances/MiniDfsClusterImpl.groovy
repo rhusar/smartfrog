@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord
 
 import org.smartfrog.services.scripting.groovy.GRef
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration
+import org.apache.hadoop.conf.Configuration
 
 /**
  * This is a groovy class that can bring up a MiniDFS cluster
@@ -27,7 +28,11 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
     LocalDFSCluster cluster
     String filesystemUri
 
-
+    /**
+     * Create the mini dfs cluster
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     @Override
     synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart()
@@ -81,5 +86,6 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
     public URI getFilesystemURI() {
         return org.apache.hadoop.fs.FileSystem.getDefaultUri(getClusterConfig())
     }
+
 
 }

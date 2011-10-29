@@ -36,8 +36,7 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * A base class for hadoop components. It does not export any remote interface and is not very interesting on its own.
- * Created 19-May-2008 14:29:07
+ * A base class for hadoop components. It is bound to a cluster
  */
 
 public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implements ClusterBound {
@@ -91,7 +90,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      */
     protected ManagedConfiguration createClusterAttrConfiguration()
             throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, true, false, false);
+        return ManagedConfiguration.createConfiguration(this, true, true, false);
     }
 
     /**

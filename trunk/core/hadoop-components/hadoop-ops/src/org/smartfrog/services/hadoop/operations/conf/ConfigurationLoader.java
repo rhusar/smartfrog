@@ -42,11 +42,12 @@ public final class ConfigurationLoader {
         Configuration.addDefaultResource("mapred-site.xml");
     }
 
+    /** error string : {@value} */
     public static final String ERROR_NO_CLUSTER_AND_XML =
             "Cannot extend an existing cluster and import XML resources or files";
 
     /**
-     * Load in a configuration from any
+     * Load in a configuration from any Prim instance.
      * @param source the configuration source
      * @return the configuration
      * @throws RemoteException network problems
@@ -55,11 +56,11 @@ public final class ConfigurationLoader {
     public static ManagedConfiguration loadConfiguration(final PrimImpl source)
             throws RemoteException, SmartFrogException {
         boolean debug = source.sfLog().isDebugEnabled();
+        //should default values be loaded
         boolean loadDefaults = source.sfResolve(HadoopConfiguration.ATTR_LOAD_DEFAULTS, true, false);
         if (debug) {
             source.sfLog().debug("Load default resources=" + loadDefaults);
         }
-        boolean propagateReloads = source.sfResolve(HadoopConfiguration.ATTR_PROPAGATE_RELOADS, false, false);
         List<String> resources = ListUtils
                 .resolveStringList(source, new Reference(HadoopConfiguration.ATTR_RESOURCES), false);
         if (resources == null) {
@@ -79,7 +80,7 @@ public final class ConfigurationLoader {
             if (!resources.isEmpty() || !files.isEmpty()) {
                 throw new SmartFrogResolutionException(ERROR_NO_CLUSTER_AND_XML);
             }
-            conf = ManagedConfiguration.createConfiguration(source, true, false, loadDefaults, propagateReloads);
+            conf = ManagedConfiguration.createConfiguration(source, true, false, loadDefaults);
             conf.copyPropertiesToPrim(source);
 
         } else {

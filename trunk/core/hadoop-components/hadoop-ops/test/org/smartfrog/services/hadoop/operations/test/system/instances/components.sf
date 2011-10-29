@@ -4,15 +4,16 @@
 
 testMicroDfsCluster extends ExpectDeploy {
   action extends MicroDFSCluster {
-
+    clusterName "testMicroDfsCluster";
+    test.build.data ((PROPERTY test.build.data)  ++ "/" ++ clusterName );
   }
   tests extends Sequence {
   }
 }
 
 testMiniCluster extends ExpectDeploy {
-  action extends MiniHadoopCluster {
-
+  action extends BondedHadoopCluster {
+    clusterName "testMiniCluster";
   }
   tests extends Sequence {
   }

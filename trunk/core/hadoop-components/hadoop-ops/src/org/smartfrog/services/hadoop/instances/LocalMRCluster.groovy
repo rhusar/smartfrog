@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory
  *     <li>The conf must have the property LOG_DIR = "hadoop.log.dir"</li>
  * </ol>
  */
-class LocalMRCluster extends MiniMRCluster implements LocalCluster {
+class LocalMRCluster extends MiniMRCluster implements ClusterURI {
 
     public static final String LOG_DIR = "hadoop.log.dir"
     
@@ -53,6 +53,7 @@ class LocalMRCluster extends MiniMRCluster implements LocalCluster {
         shutdown();
     }
 
+    @Override
     String getURI() {
         return "http://localhost:" + getJobTrackerPort() +"/";
     }

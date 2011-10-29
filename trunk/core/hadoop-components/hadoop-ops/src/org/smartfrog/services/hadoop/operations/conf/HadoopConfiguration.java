@@ -35,5 +35,4 @@ public interface HadoopConfiguration extends Remote, ConfigurationAttributes {
     String ATTR_READ_EARLY = "conf.read.early";
     String ATTR_DUMP = "conf.dump";
     String ATTR_REQUIRED = "conf.required";
-    String ATTR_PROPAGATE_RELOADS = "conf.propagate.reloads";
 }

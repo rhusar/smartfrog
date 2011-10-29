@@ -12,9 +12,13 @@ import org.apache.hadoop.fs.FileSystem;
  * This class is the Groovy base class for the MiniDFSCluster and MiniMRCluster
  */
 class MiniClusterImpl extends HadoopComponentImpl {
+    /** {@value } */
     public static final String ATTR_NODE_COUNT = "nodeCount"
+    /** {@value } */
     public static final String ATTR_HOSTS = "hosts"
+    /** {@value } */
     public static final String ATTR_RACKS = "racks"
+    /** {@value } */
     public static final String ATTR_FILESYSTEM_URI = "filesystemURI";
 
     ManagedConfiguration clusterConfig
@@ -22,11 +26,19 @@ class MiniClusterImpl extends HadoopComponentImpl {
     MiniClusterImpl() {
     }
 
+    /**
+     * Create a configuration and cache it
+     * @return
+     */
     protected ManagedConfiguration createAndCacheConfig() {
         clusterConfig = createConfiguration()
         return clusterConfig;
     }
 
+    /**
+     * Get the cached configuration
+     * @return
+     */
     protected ManagedConfiguration getClusterConfig() {
         return clusterConfig;
     }
@@ -48,7 +60,11 @@ class MiniClusterImpl extends HadoopComponentImpl {
         return longArray
     }
 
-
+    /**
+     * Resolve a vector of long values
+     * @param attr
+     * @return
+     */
     protected long[] resolveLongVector(String attr) {
         Vector<?> vector = sfResolve(new GRef(attr), new Vector<Long>(), true);
         long[] longs = longify(vector)

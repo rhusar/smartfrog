@@ -5,6 +5,7 @@ TeraGenPath "/tmp/examples/teradata/" ;
 TeraGenRows 279L;
 
 testTerasort extends ExpectSuccessfulOperations {
+  clusterName "testTerasort";
 
   tests extends Sequence {
 

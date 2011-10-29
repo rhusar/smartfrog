@@ -8,6 +8,7 @@
 
 testDfsLive extends ExpectSuccessfulOperations {
   sfProcessName "PS-testDfsLive";
+  clusterName "testDfsLive";
 
   tests extends Sequence {
     cluster LAZY dfsCluster;
@@ -23,6 +24,7 @@ testDfsLive extends ExpectSuccessfulOperations {
 testDirectoryCreateAndDelete extends ExpectSuccessfulOperations {
 
   sfProcessName "PS-testDirectoryCreateAndDelete";
+  clusterName "testDirectoryCreateAndDelete";
 
   tests extends Sequence {
     cluster LAZY dfsCluster;

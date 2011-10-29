@@ -3,20 +3,30 @@
 #include "/org/smartfrog/services/hadoop/mapreduce/terasort/components.sf"
 
 
+BondedHadoopCluster extends MicroHadoopCluster {
+  clusterName TBD;
+  filesystemDir ((PROPERTY test.build.data)  ++ "/" ++ clusterName );
+}
+
+
+
 ExpectSuccessfulOperations extends ExpectDeploy {
 
   dfsCluster LAZY action:dfsCluster;
   mrCluster LAZY action:mrCluster;
   fsURI LAZY dfsCluster:filesystemURI;
-  
-  action extends MicroHadoopCluster {
+  clusterName TBD;
 
+
+  action extends BondedHadoopCluster {
+    clusterName PARENT:clusterName;
 
   }
+
   tests extends Sequence {
   }
 }
 
-sfConfig extends MicroHadoopCluster {
-
+sfConfig extends BondedHadoopCluster {
+  clusterName "t1";
 }
