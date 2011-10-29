@@ -60,10 +60,13 @@ MiniCluster extends ClusterBound {
   */
   hosts [];
 
+
 }
 
 
-
+/**
+ Deploy a mini DFS cluster
+ */
 
 MiniDFSCluster extends MiniCluster {
   sfClass "org.smartfrog.services.hadoop.instances.MiniDfsClusterImpl";
@@ -104,6 +107,8 @@ MiniDFSCluster extends MiniCluster {
   */
 
   simulatedCapacities [];
+
+  conf.required ["test.build.data"];
 }
 
 /**
@@ -156,16 +161,19 @@ MiniHadoopCluster extends Compound {
   namenodePort HadoopTestBinding:namenodePort;
   jobTrackerPort HadoopTestBinding:jobTrackerPort;
   filesystemURI ("hdfs://localhost:" ++ namenodePort);
+  filesystemDir TBD;
 
   dfsCluster extends MiniDFSCluster {
     namenodePort PARENT:namenodePort;
     nodeCount PARENT:nodeCount;
+    test.build.data PARENT:filesystemDir;
   }
 
   mrCluster extends MiniMRCluster {
     nodeCount PARENT:ATTRIB nodeCount;
     filesystemURI PARENT:ATTRIB filesystemURI;
-    hadoop.job.history.location "file:///tmp/jt";
+    hadoop.job.history.location   ( "file://" ++ PARENT:filesystemDir ++ "jt");
+
   }
 
 }

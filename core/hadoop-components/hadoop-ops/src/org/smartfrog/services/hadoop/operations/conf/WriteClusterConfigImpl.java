@@ -25,7 +25,7 @@ public class WriteClusterConfigImpl extends HadoopComponentImpl implements Clust
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        ManagedConfiguration configuration = ManagedConfiguration.createConfiguration(this, true, true, false, false);
+        ManagedConfiguration configuration = ManagedConfiguration.createConfiguration(this, true, true, false);
         File destFile = FileSystem.lookupAbsoluteFile(this, FileUsingComponent.ATTR_FILENAME, null, null, true, null);
         FileOutputStream fos = null;
         try {

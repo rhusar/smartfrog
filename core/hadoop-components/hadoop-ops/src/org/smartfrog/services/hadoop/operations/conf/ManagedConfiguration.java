@@ -63,9 +63,9 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes, Cloneable {
 
     private static final Log LOG = LogFactory.getLog(ManagedConfiguration.class);
+    public static final String ERROR_NULL_SOURCE_COMPONENT = "Cannot bind to a null source component";
     private Prim source;
     private String description;
-    boolean propagateReloads;
 
     /*
      * Force load the extra configurations
@@ -101,25 +101,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         }
     }*/
 
-
-
-    /**
-     * A new map/reduce configuration where the behavior of reading from the default resources can be turned off. <p/>
-     * If the parameter {@code loadDefaults} is false, the new instance will not load resources from the default files.
-     *
-     * @param loadDefaults specifies whether to load from the default files
-     * @param source       source of config information
-     * @param propagateReloads should reloads be passed up
-     * @throws RemoteException              for network problems
-     * @throws SmartFrogResolutionException for resolution problems
-     */
-    public ManagedConfiguration(boolean loadDefaults, Prim source, boolean propagateReloads) throws SmartFrogException,
-            RemoteException {
-        super(loadDefaults);
-        this.propagateReloads = propagateReloads;
-        bind(source);
-    }
-
     /**
      * A new map/reduce configuration where the behavior of reading from the default resources can be turned off. <p/>
      * If the parameter {@code loadDefaults} is false, the new instance will not load resources from the default files.
@@ -131,7 +112,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public ManagedConfiguration(boolean loadDefaults, Prim source) throws SmartFrogException,
                                                                           RemoteException {
-        this(loadDefaults, source, false);
+        super(loadDefaults);
+        bind(source);
     }
 
 
@@ -158,7 +140,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     private void bind(Prim src) throws SmartFrogException, RemoteException {
         if (src == null) {
-            throw new SFHadoopException("Cannot bind to a null source component");
+            throw new SFHadoopException(ERROR_NULL_SOURCE_COMPONENT);
         }
         source = src;
         ComponentHelper helper = new ComponentHelper(src);
@@ -689,7 +671,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     public static ManagedConfiguration createConfiguration(Prim source,
                                                            boolean useClusterReference,
                                                            boolean clusterRequired,
-                                                           boolean loadDefaults, final boolean propagateReloads)
+                                                           boolean loadDefaults)
             throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = new ManagedConfiguration(loadDefaults, source);
         if (useClusterReference) {
@@ -703,22 +685,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         }
         return conf;
 
-    }
-
-    /**
-     * push out changes
-     */
-    @Override
-    public void reloadConfiguration() {
-        LOG.info("Reloading configuration under " + description);
-        super.reloadConfiguration();
-        if (propagateReloads) try {
-            copyComponentState(source, null);
-        } catch (RemoteException e) {
-            LOG.warn("When propagating configuration " + e, e);
-        } catch (SmartFrogResolutionException e) {
-            LOG.warn("When propagating configuration " + e, e);
-        }
     }
 
     public static void addNewDefaultResource(String resourceName) throws SmartFrogException {

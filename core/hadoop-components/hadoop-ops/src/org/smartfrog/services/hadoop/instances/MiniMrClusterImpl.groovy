@@ -19,13 +19,18 @@ import org.smartfrog.services.scripting.groovy.GRef
  */
 class MiniMrClusterImpl extends MiniClusterImpl {
 
+    /** {@value } */
 
     public static final String ATTR_JOB_TRACKER_PORT = "jobTrackerPort"
+    /** {@value } */
     public static final String ATTR_TASK_TRACKER_PORT = "taskTrackerPort"
+    /** {@value } */
     public static final String ATTR_DIRECTORY_COUNT = "directoryCount"
 
+    /** {@value } */
     public static final String ATTR_NUM_TRACKER_TO_EXCLUDE = "numTrackerToExclude"
-    LocalMRCluster cluster;
+
+    protected LocalMRCluster cluster;
 
     @Override
     synchronized void sfStart() throws SmartFrogException, RemoteException {

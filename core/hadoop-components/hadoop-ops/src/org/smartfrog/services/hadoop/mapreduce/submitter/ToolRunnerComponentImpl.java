@@ -91,7 +91,7 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
                                                   + " cannot be instantiated: " + e, e);
         }
         //sort out the configuration
-        toolConf = ManagedConfiguration.createConfiguration(this, true, false, true, false);
+        toolConf = ManagedConfiguration.createConfiguration(this, true, false, true);
         //start the tool in a new thread
         worker = new WorkflowThread(this, this, true);
         worker.start();
