@@ -551,7 +551,7 @@ For more information: www.smartfrog.org
           <exclude name="testng/build.xml"/>
         </fileset>
         <!--hadoop stuff-->
-        <fileset dir="hadoop-components" includes="*/build.xml"/>
+        <fileset dir="hadoop-components" includes="*/build.xml" if="hadoop.enabled"/>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
       </ivy:buildlist>
