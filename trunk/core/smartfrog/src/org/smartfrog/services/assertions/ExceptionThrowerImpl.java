@@ -86,7 +86,7 @@ public class ExceptionThrowerImpl extends PrimImpl implements ExceptionThrower {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (throwOnPing) {
+        if (sfIsStarted && throwOnPing) {
             try {
                 raiseException(classname, message);
             } catch (SmartFrogException e) {

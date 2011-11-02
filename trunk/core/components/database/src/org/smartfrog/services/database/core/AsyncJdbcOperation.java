@@ -38,7 +38,7 @@ import java.sql.SQLException;
 public abstract class AsyncJdbcOperation extends AbstractJdbcOperation {
 
 
-    private Throwable queuedFault;
+    private volatile Throwable queuedFault;
     private WorkflowThread workerThread;
 
     /**
@@ -56,7 +56,8 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation {
 
 
     protected synchronized Throwable queueFault(Throwable e) {
-        return queuedFault = e;
+        queuedFault = e;
+        return queuedFault;
     }
 
     protected synchronized Throwable queueFault(String action, SQLException e) {
@@ -82,10 +83,12 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation {
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        Throwable fault = getQueuedFault();
-        if (fault != null) {
-            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(
-                    fault);
+        if (sfIsStarted) {
+            Throwable fault = getQueuedFault();
+            if (fault != null) {
+                throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(
+                        fault);
+            }
         }
     }
 

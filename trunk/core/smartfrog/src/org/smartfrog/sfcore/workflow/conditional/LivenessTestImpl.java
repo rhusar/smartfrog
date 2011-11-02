@@ -34,7 +34,7 @@ public class LivenessTestImpl extends EvaluateConditionImpl implements EvaluateC
     public LivenessTestImpl() throws RemoteException {
     }
 
-
+    @Override
     protected void startupTest() throws SmartFrogException, RemoteException {
         //do nothing, because we do not start testing until liveness begins.
     }
@@ -51,8 +51,12 @@ public class LivenessTestImpl extends EvaluateConditionImpl implements EvaluateC
      * @param source source of ping
      * @throws SmartFrogLivenessException liveness failed
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
         try {
             testCondition();
         } catch (SmartFrogException e) {

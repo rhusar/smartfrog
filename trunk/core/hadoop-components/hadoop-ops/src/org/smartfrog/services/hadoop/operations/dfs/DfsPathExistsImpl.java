@@ -170,7 +170,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
     public void sfPing(Object source) throws SmartFrogLivenessException,
                                              RemoteException {
         super.sfPing(source);
-        if (checkOnLiveness) {
+        if (sfIsStarted && checkOnLiveness) {
             checkPathExists();
         }
     }

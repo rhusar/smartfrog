@@ -263,7 +263,9 @@ public class JettyImpl extends WorkerThreadPrimImpl implements JettyIntf {
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        serverBridge.sfPing(source);
+        if(sfIsStarted) {
+            serverBridge.sfPing(source);
+        }
     }
 
     /**

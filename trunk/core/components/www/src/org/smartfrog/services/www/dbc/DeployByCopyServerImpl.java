@@ -90,6 +90,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * @throws SmartFrogException for deployment problems
      * @throws RemoteException RMI problems
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         childminder = new ParentHelper(this);
@@ -138,12 +139,13 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * @throws SmartFrogLivenessException ping failure
      * @throws RemoteException network failure
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
 
         //ping the child
-        if (startupPrim != null) {
+        if (sfIsStarted && startupPrim != null) {
             startupPrim.sfPing(this);
         }
     }
@@ -156,12 +158,10 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * had better do its work in the start component)
      * @param status exit record.
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         //close down the thread
         queueFileToCopy(EndOfQueue.END_OF_QUEUE);
-        super.sfTerminateWith(status);
-
-
         //kill the startup component
         if (startupPrim != null) {
             try {
@@ -185,7 +185,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
             }
             shutdownPrim = null;
         }
-
+        super.sfTerminateWith(status);
     }
 
 

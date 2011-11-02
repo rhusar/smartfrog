@@ -80,6 +80,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
@@ -156,6 +157,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
      * @param status termination status of sender
      * @param comp   sender of termination
      */
+    @Override
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         super.sfTerminatedWith(status, comp);
         terminateWorker();
@@ -209,6 +211,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             //todo: add a delay until the cluster is live
 
@@ -275,6 +278,7 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
          *
          * @return Job information
          */
+        @Override
         protected String getTerminationMessage() {
             if (jobID != null) {
                 return "Submitted job " + jobID + " and URL " + jobURL;
@@ -290,8 +294,12 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
      * @param source source of ping
      * @throws SmartFrogLivenessException the job failed or timed out
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
         if (runningJob != null) {
             try {
                 //look for events

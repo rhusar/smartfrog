@@ -318,30 +318,6 @@ public class TestRunnerImpl extends ConditionCompound implements TestRunner, Exe
     }
 
     /**
-     * Liveness tests first delegates to the parent, then considers itself live unless all of the following conditions
-     * are met <ol> <li>We are finished <li>There was an exception <li>failOnError is set </ol> In which case the cached
-     * exception gets thrown.
-     *
-     * @param source source of ping
-     * @throws SmartFrogLivenessException liveness failed
-     */
-    @Override
-    public void sfPing(Object source) throws SmartFrogLivenessException,
-            RemoteException {
-        //check the substuff
-        super.sfPing(source);
-        //then look to see if we had a failure with our tests
-/*
-        synchronized (this) {
-            if (failOnError && isFinished() && getCachedException() != null) {
-                SmartFrogLivenessException.forward(getCachedException());
-            }
-        }
-*/
-    }
-
-
-    /**
      * send out a notification and kill the worker
      *
      * @param status termination status

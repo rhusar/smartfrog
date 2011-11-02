@@ -157,7 +157,7 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (checkOnLiveness) {
+        if (sfIsStarted && checkOnLiveness) {
             sfLog().debug("sfPing(): Checking page");
             livenessPing();
         }

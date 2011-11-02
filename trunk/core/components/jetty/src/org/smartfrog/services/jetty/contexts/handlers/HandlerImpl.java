@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 /**
  * Base handler class Date: 21-Jun-2004 Time: 22:40:14
  */
+@SuppressWarnings({"AbstractClassExtendsConcreteClass"})
 public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
 
     /**
@@ -156,8 +157,12 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
      * @throws SmartFrogLivenessException component is not up
      * @throws RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
         if (handler == null) {
             throw new SmartFrogLivenessException(ERROR_HANDER_UNDEFINED);
         }

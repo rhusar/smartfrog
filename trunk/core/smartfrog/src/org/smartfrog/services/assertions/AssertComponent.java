@@ -426,11 +426,13 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         super.sfPing(source);
 
         try {
-            boolean checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS,
-                    true,
-                    false);
-            if (checkOnLiveness) {
-                checkAssertions();
+            if (sfIsStarted) {
+                boolean checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS,
+                        true,
+                        false);
+                if (checkOnLiveness) {
+                    checkAssertions();
+                }
             }
         } catch (RemoteException e) {
             throw new SmartFrogLivenessException(e);

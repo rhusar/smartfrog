@@ -271,6 +271,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (caughtException != null) {
