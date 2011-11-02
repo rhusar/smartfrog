@@ -55,7 +55,7 @@ public class SmartFrogThread extends Thread implements Executable {
     private Runnable runnable;
     private Object notifyObject;
     private volatile boolean finished;
-    private volatile boolean terminationRequested = false;
+    private volatile boolean terminationRequested;
     private final Object terminationRequestNotifier = new Object();
     private Executable executable;
 
