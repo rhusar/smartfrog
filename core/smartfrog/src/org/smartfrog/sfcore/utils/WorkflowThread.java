@@ -131,8 +131,8 @@ public class WorkflowThread extends SmartFrogThread {
     protected void processRunResults() {
         //now analyse the result, create a term record and maybe terminate the owner
         TerminationRecord tr = createTerminationRecord();
-        boolean isNormal = tr.isNormal();
         aboutToTerminate(tr);
+        boolean isNormal = tr.isNormal();
         ComponentHelper helper = new ComponentHelper(getOwner());
         if (isWorkflowTermination() && isNormal) {
             //put up for workflow termination
