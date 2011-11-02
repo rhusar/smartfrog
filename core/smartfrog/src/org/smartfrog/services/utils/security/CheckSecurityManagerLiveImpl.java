@@ -137,7 +137,7 @@ public class CheckSecurityManagerLiveImpl extends PrimImpl {
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (assertPolicyCanAddPermissions) {
+        if (sfIsStarted && assertPolicyCanAddPermissions) {
             try {
                 checkPolicyPermissionAdd();
             } catch (SmartFrogDeploymentException e) {

@@ -84,6 +84,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * @throws SmartFrogException in case of error while connecting to remote host or executing scp command
      * @throws RemoteException in case of network/emi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
 
@@ -125,8 +126,13 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException for consistency with the {@link Liveness} interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
+
         SmartFrogThread.ping(worker);
     }
 
@@ -135,6 +141,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      *
      * @param tr Termination record
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         SmartFrogThread.requestThreadTermination(worker);
         worker = null;

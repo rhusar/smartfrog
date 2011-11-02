@@ -99,6 +99,9 @@ public class JavaxScriptingImpl extends PrimImpl implements JavaxScript {
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
         try {
             engine.resolveAndEvaluate(ATTR_SF_PING_RESOURCE, ATTR_SF_PING_CODE);
         } catch (Exception e) {

@@ -57,6 +57,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -68,7 +69,7 @@ import java.util.Vector;
  */
 public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
 
-    private Vector<String> commandsList;
+    private List<String> commandsList;
     private File logFile = null;
     private int exitCodeMax, exitCodeMin;
     private CommandExecutor executorThread;
@@ -88,6 +89,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * @throws SmartFrogException in case of error while connecting to remote host or executing commands
      * @throws RemoteException    in case of network/emi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
 
@@ -105,9 +107,14 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
+
         SmartFrogThread.ping(executorThread);
     }
 
@@ -116,6 +123,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      *
      * @param tr Termination record
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         shutdownExecutor();
         //this will close the session, so we hope that the thread has finished.

@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 /**
  * a non-instantiable abstract server component
  */
+@SuppressWarnings({"AbstractClassExtendsConcreteClass"})
 public abstract class ApplicationServerContextImpl extends PrimImpl
         implements ApplicationServerContext {
     /**
@@ -93,6 +94,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -119,6 +121,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
     * @throws SmartFrogException error while deploying
     * @throws RemoteException    In case of network/rmi error
     */
+    @Override
     public void deploy() throws SmartFrogException, RemoteException {
         if (delegate != null) {
             delegate.deploy();
@@ -132,6 +135,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -144,6 +148,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public void start() throws SmartFrogException, RemoteException {
         validateDuringStartup();
         if (delegate != null) {
@@ -170,6 +175,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * @throws SmartFrogException failure while terminating
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void terminate() throws SmartFrogException, RemoteException {
         try {
             if (delegate != null) {
@@ -208,10 +214,13 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * @throws SmartFrogLivenessException liveness failure
      * @throws RemoteException    network trouble
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        ping();
+        if (sfIsStarted) {
+            ping();
+        }
     }
 
     /**
@@ -220,6 +229,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         try {
@@ -238,6 +248,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * @throws SmartFrogLivenessException failure of the ping
      * @throws RemoteException network trouble
      */
+    @Override
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (delegate == null) {
             throw new SmartFrogLivenessException("No active delegate");

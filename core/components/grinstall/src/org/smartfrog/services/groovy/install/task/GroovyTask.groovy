@@ -220,7 +220,9 @@ class GroovyTask extends PrimImpl implements ITask {
     @Override
     void sfPing(Object source) {
         super.sfPing(source)
-        runPing();
+        if (sfIsStarted) {
+          runPing();
+        }
     }
 
 

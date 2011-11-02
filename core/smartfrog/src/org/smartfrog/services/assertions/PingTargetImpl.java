@@ -64,6 +64,10 @@ public class PingTargetImpl extends PrimImpl implements PingTarget {
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
+
         if (target != null) {
             target.sfPing(source);
         }

@@ -259,7 +259,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         super.sfPing(source);
-        if (testOnLiveness) {
+        if (sfIsStarted && testOnLiveness) {
             testFileState();
         }
 

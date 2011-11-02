@@ -60,6 +60,7 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      *
      * @throws UnknownHostException if it does not resolve
      */
+    @Override
     public InetAddress resolve(String hostname)
             throws UnknownHostException {
         return InetAddress.getByName(hostname);
@@ -77,6 +78,7 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      * @return true iff the host exists as far as this process is concerned.
      *
      */
+    @Override
     public boolean hostExists(String hostname) {
         try {
             resolve(hostname);
@@ -94,19 +96,20 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException for RMI/Networking problems
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        host=sfResolve(ATTR_HOSTNAME,(String)null,false);
+        host = sfResolve(ATTR_HOSTNAME, (String) null, false);
         checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
-        if(checkOnStartup && host!=null && !hostExists(host)) {
-            throw new SmartFrogDeploymentException("Unknown host "+host);
+        if (checkOnStartup && host != null && !hostExists(host)) {
+            throw new SmartFrogDeploymentException("Unknown host " + host);
         }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(
                 TerminationRecord.NORMAL,
                 "HostExists", this.sfCompleteNameSafe(), null
-                );
+        );
     }
 
 
@@ -119,10 +122,11 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      *                                  org.smartfrog.sfcore.prim.Liveness}
      *                                  interface
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (checkOnLiveness && host != null && !hostExists(host)) {
+        if (sfIsStarted && checkOnLiveness && host != null && !hostExists(host)) {
             throw new SmartFrogLivenessException("Unknown host " + host);
         }
     }
@@ -135,6 +139,7 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      * @throws SmartFrogException for deployment problems
      * @throws RemoteException for RMI/Networking problems
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         return hostExists(host);
     }

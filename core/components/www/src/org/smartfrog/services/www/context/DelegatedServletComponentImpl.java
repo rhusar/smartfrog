@@ -33,6 +33,7 @@ public abstract class DelegatedServletComponentImpl extends ServletContextCompon
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -66,12 +67,11 @@ public abstract class DelegatedServletComponentImpl extends ServletContextCompon
      * @throws RemoteException            for consistency with the {@link
      *                                    org.smartfrog.sfcore.prim.Liveness} interface
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (delegate == null) {
-            throw new SmartFrogLivenessException("Not live", this);
-        } else {
+        if(sfIsStarted && delegate != null) {
             delegate.ping();
         }
     }
@@ -82,11 +82,12 @@ public abstract class DelegatedServletComponentImpl extends ServletContextCompon
      *
      * @param status termination status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
         if (delegate != null) {
             try {
                 delegate.terminate();
+                delegate = null;
             } catch (RemoteException ignored) {
                 //swallowed
 
@@ -94,5 +95,6 @@ public abstract class DelegatedServletComponentImpl extends ServletContextCompon
                 //swallowed
             }
         }
+        super.sfTerminateWith(status);
     }
 }

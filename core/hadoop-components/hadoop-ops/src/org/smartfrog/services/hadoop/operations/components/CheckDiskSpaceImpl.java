@@ -49,12 +49,16 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
     private static long MB = 1024 << 10;
     public static final String ERROR_NO_DIRECTORY = "Directory does not exist:";
     public static final String ERROR_NOT_ENOUGH_SPACE = "Not enough space in ";
-    private Method getUsableSpace;
     private static final String ERROR_INVOKE_GETUSABLESPACE = "Could not call File.getUsableDiskSpace: ";
 
     public CheckDiskSpaceImpl() throws RemoteException {
     }
 
+
+    @Override
+    public void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+    }
 
     /**
      * Startup.
@@ -67,17 +71,10 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
         super.sfStart();
         directories = convertToFiles(resolveFileList(this, ATTR_DIRECTORIES, null, true, null));
         skipAbsentDirectories = sfResolve(ATTR_SKIP_ABSENT_DIRECTORIES, false, true);
-        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         int minAvailableGB = sfResolve(ATTR_MIN_AVAILABLE_GB, 0, true);
         int minAvailableMB = sfResolve(ATTR_MIN_AVAILABLE_MB, 0, true);
         requiredSpace = ((minAvailableGB << 10) + minAvailableMB) * MB;
-
-        try {
-            getUsableSpace = File.class.getMethod("getUsableSpace");
-        } catch (NoSuchMethodException e) {
-            throw new SmartFrogLifecycleException("This component on works on Java Version 6 or greater", this);
-        }
 
         if (checkOnStartup) {
             String error = checkDiskSpace();
@@ -85,6 +82,7 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
                 throw new SmartFrogDeploymentException(error, this);
             }
         }
+        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, sfCompleteName(), null);
     }
 
@@ -95,9 +93,10 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (checkOnLiveness) {
+        if (sfIsStarted && checkOnLiveness) {
             String error = checkDiskSpace();
             if (error != null) {
                 throw new SmartFrogLivenessException(error, this);
@@ -116,17 +115,10 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
                     return ERROR_NO_DIRECTORY + dir;
                 }
             } else {
-
-                try {
-                    long space = (Long) getUsableSpace.invoke(dir);
-                    if (space < requiredSpace) {
-                        long spaceMB = space / MB;
-                        return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
-                    }
-                } catch (IllegalAccessException e) {
-                    return noteFailure(e);
-                } catch (InvocationTargetException e) {
-                    return noteFailure(e);
+                long space = dir.getUsableSpace();
+                if (space < requiredSpace) {
+                    long spaceMB = space / MB;
+                    return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
                 }
             }
         }
@@ -150,6 +142,7 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         String message = checkDiskSpace();
         return evalOrFail(message == null, message);

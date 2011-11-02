@@ -140,6 +140,10 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if (!sfIsStarted) {
+            return;
+        }
+
         try {
             execute(livenessActions);
         } catch (SmartFrogException e) {

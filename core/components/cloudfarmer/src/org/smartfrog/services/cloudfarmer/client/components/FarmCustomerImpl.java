@@ -116,6 +116,9 @@ public class FarmCustomerImpl extends PrimImpl implements FarmCustomer {
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if(!sfIsStarted) {
+            return;
+        }
         if (!pingChecksNodes || inAllocationOperation()) {
             return;
         }

@@ -136,7 +136,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (checkOnLiveness) {
+        if (sfIsStarted && checkOnLiveness) {
             boolean raiseErrors;
             if (livenessTimeout == 0) {
                 raiseErrors = true;
@@ -166,8 +166,8 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         try {
             checkThePort();
             return true;
-        } catch (IOException ignored) {
-            failureCause = ignored;
+        } catch (IOException ioe) {
+            failureCause = ioe;
             return false;
         } catch (SmartFrogResolutionException sfe) {
             //failure to resolve the entry
