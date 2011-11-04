@@ -979,6 +979,20 @@
 	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
+
+    <!--create the source jars, but only for the maven distro-->
+    <echo> Creating source jars for the maven repository </echo>
+    <jar jarfile="${m2.subdir}/${smartfrog.stub}-sources.jar" basedir="${src.dir}"
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
+    <jar jarfile="${m2.sf-services}/${sf-services.stub}-sources.jar" basedir="${src.dir}"
+      includes="**/services/**" manifest="${manifestName}"/>
+    <jar jarfile="${m2.sf-examples}/${sf-examples.stub}-sources.jar" basedir="${src.dir}"
+      includes="**/examples/**" manifest="${manifestName}"/>
+
+    <!--checksum the artifacts-->
+    <checksum file="${m2.subdir}/${smartfrog.stub}-sources.jar" algorithm="md5"/>
+    <checksum file="${m2.sf-services}/${sf-services.stub}-sources.jar" algorithm="md5"/>
+    <checksum file="${m2.sf-examples}/${sf-examples.stub}-sources.jar" algorithm="md5"/>
   </target>
 
 

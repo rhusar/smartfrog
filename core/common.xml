@@ -1524,11 +1524,19 @@ smartfrog.tasks.classpath=
   <target name="generate-versioned-jar" if="is.component.enabled" depends="ready-to-jar">
     <property name="jar.name"
               value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
+    <property name="jar.src.name"
+              value="${artifact.name}${jarfile.suffix}-${smartfrog.version}-sources.${jarfile.extension}"/>
     <property name="target.jar"
         location="${dist.lib.dir}/${jar.name}"/>
+    <property name="target.src.jar"
+        location="${dist.lib.dir}/${jar.src.name}"/>
     <sf-jar destfile="${target.jar}"
         manifest="${manifest.mf}"
         basedir="${build.classes.dir}"
+        includes="**/*"/>
+    <sf-jar destfile="${target.src.jar}"
+        manifest="${manifest.mf}"
+        basedir="${src.dir}"
         includes="**/*"/>
     <echo level="verbose">created package ${target.jar}</echo>
 
@@ -2084,6 +2092,8 @@ Exist.
     description="checksum our target jar" depends="sign-target-jar">
     <checksum file="${target.jar}" algorithm="md5"/>
     <checksum file="${target.jar}" algorithm="sha1"/>
+    <checksum file="${target.src.jar}" algorithm="md5"/>
+    <checksum file="${target.src.jar}" algorithm="sha1"/>
   </target>
 
   <!-- ========================================================== -->
@@ -2127,6 +2137,8 @@ Exist.
         location="${target.pom}.md5"/>
     <property name="target.jar.md5"
         location="${target.jar}.md5"/>
+    <property name="target.src.md5"
+        location="${target.src.jar}.md5"/>
     <property name="project.pom" location="project-template.pom"/>
     <available property="project.haspom" file="${project.pom}"/>
     <property name="m2.tasks.uri"
@@ -2216,6 +2228,11 @@ Exist.
     <!--copy the checksums-->
     <copy file="${target.pom.md5}" todir="${m2.subdir}" failonerror="false"/>
     <copy file="${target.jar.md5}" todir="${m2.subdir}" failonerror="false"/>
+
+    <!--copy the sources-->
+    <copy file="${target.src.jar}" todir="${m2.subdir}" failonerror="false"/>
+    <!--copy the checksum for the sources-->
+    <copy file="${target.src.md5}" todir="${m2.subdir}" failonerror="false"/>
 
   </target>
 
