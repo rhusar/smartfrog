@@ -19,16 +19,15 @@
 
 package org.smartfrog.sfcore.workflow.combinators;
 
-import java.rmi.RemoteException;
-
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+
+import java.rmi.RemoteException;
 
 /**
  * Delay is a modified compound which differs in that it delays for
@@ -77,10 +76,10 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
      *         deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException,
-        RemoteException {
+            RemoteException {
         super.sfDeploy();
         //checkActionDefined();
-        time = ((Integer)sfResolve(timeRef)).intValue();
+        time = ((Integer) sfResolve(timeRef)).intValue();
     }
 
     /**
@@ -91,7 +90,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
-        RemoteException {
+            RemoteException {
         super.sfStart();
         timer = new SmartFrogThread(this);
         timer.start();
@@ -123,12 +122,12 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
         //copy so that even if the timer nulls itself during termination, the cached reference is
         //still held.
         t = timer;
-        if (t!=null) {
+        if (t != null) {
             terminated = true;
             t.interrupt();
         }
     }
-    
+
 
     /**
      * This routine runs in the background thread; it sleeps until its time is up
@@ -144,7 +143,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
             }
             synchronized (this) {
                 if (!terminated && !isWorkflowTerminating()) {
-                    if(action!=null) {
+                    if (action != null) {
                         try {
                             sfCreateNewChild("running", action, null);
                         } catch (Exception e) {
