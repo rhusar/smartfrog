@@ -74,7 +74,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
     /**
      * This is an override point. The original set of event components
-     * suppored the 'old' notation, in which actions were listed in the {@link #ATTR_ACTIONS element}
+     * supported the 'old' notation, in which actions were listed in the {@link #ATTR_ACTIONS element}
      * New subclasses do not need to remain backwards compatible and should declare this fact by
      * returning false from this method
      * @return true
