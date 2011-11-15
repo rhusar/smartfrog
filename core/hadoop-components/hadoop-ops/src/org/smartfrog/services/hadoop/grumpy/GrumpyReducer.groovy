@@ -1,11 +1,11 @@
-package org.smartfrog.services.hadoop.mapreduce.grumpy
+package org.smartfrog.services.hadoop.grumpy
 
 import org.apache.hadoop.mapreduce.Reducer
 
 /**
  * A generic Groovy reducer. All Java generic information is stripped
  */
-class GroovyReducer extends Reducer {
+class GrumpyReducer extends Reducer {
 
     @Override
     void reduce(key,
