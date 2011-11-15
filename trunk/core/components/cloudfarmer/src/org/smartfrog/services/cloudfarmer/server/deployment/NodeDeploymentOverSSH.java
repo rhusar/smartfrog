@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * SSH based deployment, assumes deploy-by-copy to a specified destdir, uses a given login .
@@ -129,8 +130,8 @@ public final class NodeDeploymentOverSSH extends AbstractNodeDeployment implemen
         File localtempfile = File.createTempFile(factory.getTempfilePrefix(), SF_SUFFIX);
         String desttempfile = factory.getDestDir() + factory.getTempfilePrefix() + getNextNumber() + SF_SUFFIX;
         SFExpandFully.saveCDtoFile(cd, localtempfile);
-        ArrayList<File> sourceFiles = new ArrayList<File>();
-        ArrayList<String> destFiles = new ArrayList<String>();
+        List<File> sourceFiles = new ArrayList<File>();
+        List<String> destFiles = new ArrayList<String>();
         sourceFiles.add(localtempfile);
         destFiles.add(desttempfile);
         String connectionDetails = getConnectionDetails();
