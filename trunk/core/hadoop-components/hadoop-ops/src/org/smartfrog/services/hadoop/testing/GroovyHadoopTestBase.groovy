@@ -3,23 +3,38 @@ package org.smartfrog.services.hadoop.testing
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.Path
+
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
 import org.apache.hadoop.io.IntWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapred.JobConf
-import org.apache.hadoop.mapreduce.Job
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+
 import org.smartfrog.services.hadoop.instances.LocalDFSCluster
 import org.smartfrog.services.hadoop.instances.LocalMRCluster
 import org.smartfrog.services.hadoop.operations.conf.ConfUtils
+import org.smartfrog.services.hadoop.instances.ClusterConstants
+import org.smartfrog.services.hadoop.grumpy.GrumpyJob
+import org.smartfrog.services.hadoop.grumpy.GrumpyTools
 
 /**
  * This is a groovy test base for Hadoop MR jobs
  */
-abstract class GroovyHadoopTestBase extends GroovyTestCase implements Closeable {
+abstract class GroovyHadoopTestBase extends GroovyTestCase
+    implements Closeable, ClusterConstants {
 
+    /**
+     * Test property used to define the input directory of data:
+     * {@value}
+     */
+    
+    public static final String TEST_INPUT_DATA_DIR = "test.input.data.dir"
+
+    /**
+     * Test property used to define the output directory of data:
+     * {@value}
+     */
+
+    public static final String TEST_OUTPUT_DATA_DIR = "test.output.data.dir"
     LocalMRCluster mrCluster
     LocalDFSCluster dfsCluster
     Log log = LogFactory.getLog(this.getClass())
@@ -63,38 +78,44 @@ abstract class GroovyHadoopTestBase extends GroovyTestCase implements Closeable 
 
     }
 
-    Job createTextKeyIntValueJob(String name,
+    GrumpyJob createTextKeyIntValueJob(String name,
                                  Configuration conf,
                                  Class mapClass,
                                  Class reduceClass) {
-        Job job = new Job(conf, name)
-        job.setJarByClass(mapClass)
-        job.setMapperClass(mapClass)
-        job.setReducerClass(reduceClass)
+        GrumpyJob job = createBasicJob(name,
+                                       conf,
+                                       mapClass,
+                                       reduceClass)
         job.setMapOutputKeyClass(Text.class)
         job.setMapOutputValueClass(IntWritable.class)
         return job
     }
 
-    void setupOutput(Job job, String outputURL) {
-        log.info("Output directory is ${outputURL}")
-        FileOutputFormat.setOutputPath(job, new Path(outputURL));
+    GrumpyJob createBasicJob(String name,
+                                       Configuration conf,
+                                       Class mapClass,
+                                       Class reduceClass) {
+        GrumpyJob job = new GrumpyJob(conf, name)
+        job.setJarByClass(mapClass)
+        job.setMapperClass(mapClass)
+        job.setReducerClass(reduceClass)
+        return job
     }
 
-    void setupInput(Job job, String inputURL) {
-        log.info("Input Path is ${inputURL}")
-        FileInputFormat.addInputPath(job, new Path(inputURL));
+    void setupOutput(GrumpyJob job, String outputURL) {
+        job.setupOutput(outputURL)
     }
 
-
-    void setupOutput(Job job, File output) {
-        String outputURL = convertToUrl(output)
-        setupOutput(job, outputURL)
+    void setupInput(GrumpyJob job, String inputURL) {
+        job.setupInput(inputURL)
     }
 
-    void setupInput(Job job, File input) {
-        String inputURL = convertToUrl(input)
-        setupInput(job, inputURL)
+    void setupOutput(GrumpyJob job, File output) {
+        job.setupOutput(output)
+    }
+
+    void setupInput(GrumpyJob job, File input) {
+        job.setupInput(input)
     }
 
     File getTestDataDir() {
@@ -108,7 +129,13 @@ abstract class GroovyHadoopTestBase extends GroovyTestCase implements Closeable 
         return dataDirectory;
     }
 
-    protected File getSyspropFile(String propertyName) {
+    /**
+     * Get the filename from a specific property file
+     * @param propertyName mandatory property name
+     * @return the file referred to (may be relative)
+     * @throws IOException if the property is unset
+     */
+    protected File getSyspropFile(String propertyName) throws IOException {
         String dataDir = System.getProperty(propertyName)
         if (!dataDir) {
             throw new IOException("Unset property: ${propertyName} ");
@@ -117,26 +144,19 @@ abstract class GroovyHadoopTestBase extends GroovyTestCase implements Closeable 
         return dataDirectory
     }
 
-    File prepareTestOutputDir(String subdir) {
+    /**
+     * Set up the output dir for tests
+     * @param testDir the test directory under the directory set by
+     * the property {@link  #TEST_OUTPUT_DATA_DIR}
+     * @return the output directory for the job
+     * @throws IOException if the property is unset
+     */
+    File prepareTestOutputDir(GrumpyJob job, String testDir) 
+            throws IOException {
         File outDir = getSyspropFile(TEST_OUTPUT_DATA_DIR)
         log.info("${TEST_OUTPUT_DATA_DIR} = ${outDir}")
-        File jobOutDir = new File(outDir, subdir);
-        if (jobOutDir.exists()) {
-            if (jobOutDir.isDirectory()) {
-                log.info("Cleaning up " + jobOutDir)
-                //delete the children
-                jobOutDir.eachFile { file ->
-                    log.info("deleting " + file)
-                    file.delete()
-                }
-                jobOutDir.delete()
-            } else {
-                throw new IOException("Not a directory: ${jobOutDir}")
-            }
-        } else {
-            //not found, do nothing
-            log.debug("No output dir yet")
-        }
+        File jobOutDir = new File(outDir, testDir);
+        GrumpyTools.deleteDirectoryTree(jobOutDir)
         return jobOutDir
     }
 
@@ -153,37 +173,19 @@ abstract class GroovyHadoopTestBase extends GroovyTestCase implements Closeable 
         return testData
     }
 
-
-    File addTestOutputDir(Job job, String subdir) {
-        File dir = prepareTestOutputDir(subdir)
+    File addTestOutputDir(GrumpyJob job, String subdir) {
+        File dir = prepareTestOutputDir(job, subdir)
         setupOutput(job, dir)
         return dir
     }
 
 
-    void runJob(Job job) {
+    void runJob(GrumpyJob job) {
         boolean success = job.waitForCompletion(true)
         assertTrue("Job failed", success)
     }
 
     int dumpDir(Log dumpLog, File dir) {
-        if(!dir.exists()) {
-            log.warn("Not found: ${dir}");
-            return -1;
-        }
-        if(!dir.isDirectory()) {
-            log.warn("Not a directory: ${dir}");
-            return -1;
-        }
-        int count = 0;
-        dir.eachFile { file ->
-            count ++
-            dumpFile(dumpLog, file)
-        }
-        return count;
-    }
-
-    void dumpFile(Log log, File file) {
-        log.info("File : ${file} of size ${file.length()}")
+        return GrumpyTools.dumpDir(dumpLog, dir)
     }
 }

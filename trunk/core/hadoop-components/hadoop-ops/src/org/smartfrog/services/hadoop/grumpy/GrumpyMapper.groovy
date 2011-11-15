@@ -1,10 +1,10 @@
-package org.smartfrog.services.hadoop.mapreduce.grumpy
+package org.smartfrog.services.hadoop.grumpy
 
 import org.apache.hadoop.mapreduce.Mapper
 /**
  *
  */
-class GroovyMapper extends Mapper {
+class GrumpyMapper extends Mapper {
 
     @Override
     void map(key,
