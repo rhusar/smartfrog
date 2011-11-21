@@ -51,7 +51,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws RemoteException In case of Remote/nework error
      * @throws SmartFrogRuntimeException when name or value are null
      */
-    public Object sfAddAttribute(Object name, Object value)
+    Object sfAddAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException;
 
     /**
@@ -65,7 +65,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws RemoteException In case of Remote/nework error
      * @throws SmartFrogRuntimeException when name is null
      */
-    public Object sfRemoveAttribute(Object name)
+    Object sfRemoveAttribute(Object name)
         throws SmartFrogRuntimeException, RemoteException;
 
 
@@ -78,7 +78,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Object sfAttributeKeyFor(Object value) throws RemoteException;
+    Object sfAttributeKeyFor(Object value) throws RemoteException;
 
     /**
      * Returns true if the context contains value.
@@ -89,7 +89,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfContainsValue(Object value) throws RemoteException;
+    boolean sfContainsValue(Object value) throws RemoteException;
 
 
     /**
@@ -100,7 +100,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfContainsAttribute(Object attribute) throws RemoteException;
+    boolean sfContainsAttribute(Object attribute) throws RemoteException;
 
 
 
@@ -116,7 +116,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws RemoteException In case of Remote/nework error
      * @throws SmartFrogRuntimeException when name or value are null
      */
-    public Object sfReplaceAttribute(Object name, Object value)
+    Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException;
 
 
@@ -129,7 +129,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public  Iterator<Object> sfAttributes() throws RemoteException;
+     Iterator<Object> sfAttributes() throws RemoteException;
 
     /**
      * Returns an ordered iterator over the values in the context.
@@ -140,7 +140,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public  Iterator<Object> sfValues() throws RemoteException;
+     Iterator<Object> sfValues() throws RemoteException;
 
 
     /**
@@ -150,7 +150,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Context sfContext() throws RemoteException;
+    Context sfContext() throws RemoteException;
 
 
     /**
@@ -162,7 +162,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Reference sfCompleteName() throws RemoteException;
+    Reference sfCompleteName() throws RemoteException;
 
     /**
      * Gets the parent of the component.
@@ -171,7 +171,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Prim sfParent() throws RemoteException;
+    Prim sfParent() throws RemoteException;
 
     /**
      * Private method to set up a freshly deployed component. New primitives
@@ -183,7 +183,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws SmartFrogException failed to deploy primitive
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfDeployWith(Prim parent, Context cxt)
+    void sfDeployWith(Prim parent, Context cxt)
         throws SmartFrogException, RemoteException;
 
     /**
@@ -193,7 +193,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfDeploy() throws SmartFrogException, RemoteException;
+    void sfDeploy() throws SmartFrogException, RemoteException;
 
     /**
      * Start the component's main processing thread. Implementations should
@@ -202,7 +202,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws SmartFrogException sfStart failure
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfStart() throws SmartFrogException, RemoteException;
+    void sfStart() throws SmartFrogException, RemoteException;
 
     /**
      * Request component to "dump it's state" to a target object which
@@ -212,7 +212,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfDumpState(Dump target) throws RemoteException;
+    void sfDumpState(Dump target) throws RemoteException;
 
     /**
      * Request component to terminate with a given termination status. This
@@ -224,7 +224,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfTerminate(TerminationRecord status) throws RemoteException;
+    void sfTerminate(TerminationRecord status) throws RemoteException;
 
     /**
      * Request component to detach itself from its parent, and becoming a root
@@ -233,7 +233,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      * @throws SmartFrogException failed to detach
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfDetach() throws SmartFrogException, RemoteException;
+    void sfDetach() throws SmartFrogException, RemoteException;
 
     /**
      * Request component to detach itself from its container and terminate with
@@ -244,7 +244,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfDetachAndTerminate(TerminationRecord status)
+    void sfDetachAndTerminate(TerminationRecord status)
         throws RemoteException;
 
     /**
@@ -256,7 +256,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp)
+    void sfTerminatedWith(TerminationRecord status, Prim comp)
         throws RemoteException;
 
     /**
@@ -266,7 +266,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfTerminateQuietlyWith(TerminationRecord status)
+    void sfTerminateQuietlyWith(TerminationRecord status)
         throws RemoteException;
 
     /**
@@ -276,7 +276,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public InetAddress sfDeployedHost() throws RemoteException;
+    InetAddress sfDeployedHost() throws RemoteException;
 
     /**
      * Request the process in which this component is deployed, the name being
@@ -287,44 +287,44 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public String sfDeployedProcessName() throws RemoteException;
+    String sfDeployedProcessName() throws RemoteException;
 
 
     /**
      * Parentage changed in component hierachy.
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfParentageChanged() throws RemoteException;
+    void sfParentageChanged() throws RemoteException;
 
     /**
      * Returns value of flag indicating if this component has been terminated.
      * @return true if the component is terminating
      * @throws RemoteException In case of Remote/network error
      */
-    public boolean sfIsTerminated() throws RemoteException;
+    boolean sfIsTerminated() throws RemoteException;
 
     /** Returns value of flag indicating if this component is terminating.
      * @return true if the component is terminating
      * @throws RemoteException In case of Remote/network error
      */
-    public boolean sfIsTerminating() throws RemoteException;
+    boolean sfIsTerminating() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been deployed.
      * @return true if the component is deployed
      * @throws RemoteException In case of Remote/network error
      */
-    public boolean sfIsDeployed() throws RemoteException;
+    boolean sfIsDeployed() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been started.
      * @return true if the component is started
      * @throws RemoteException In case of Remote/network error
      */
-    public boolean sfIsStarted() throws RemoteException;
+    boolean sfIsStarted() throws RemoteException;
 
     /**
      * Validate all ASSERTs in the context of the Prim, returning true if OK, false if not.
      * @return true if the assertions are valid
      * @throws RemoteException In case of Remote/network error
      */
-     public boolean sfValid() throws RemoteException;
+     boolean sfValid() throws RemoteException;
 }

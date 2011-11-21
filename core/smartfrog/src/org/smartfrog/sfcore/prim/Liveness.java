@@ -43,5 +43,5 @@ public interface Liveness extends Remote {
      * @throws SmartFrogLivenessException liveness failure
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException;
+    void sfPing(Object source) throws SmartFrogLivenessException, RemoteException;
 }

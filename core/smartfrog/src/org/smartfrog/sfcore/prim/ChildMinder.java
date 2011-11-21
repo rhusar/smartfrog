@@ -40,7 +40,7 @@ public interface ChildMinder extends Remote {
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void sfAddChild(Liveness child) throws RemoteException;
+    void sfAddChild(Liveness child) throws RemoteException;
 
     /**
      * Remove a child.
@@ -51,7 +51,7 @@ public interface ChildMinder extends Remote {
      * @throws SmartFrogRuntimeException if failed to remove the child
      * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfRemoveChild(Liveness child) throws SmartFrogRuntimeException, RemoteException;
+    boolean sfRemoveChild(Liveness child) throws SmartFrogRuntimeException, RemoteException;
 
     /**
      * Request whether implementor contains a given child.
@@ -62,7 +62,7 @@ public interface ChildMinder extends Remote {
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfContainsChild(Liveness child) throws RemoteException;
+    boolean sfContainsChild(Liveness child) throws RemoteException;
 
     /**
      * Gets an enumeration over the children of the implementor.
@@ -71,5 +71,5 @@ public interface ChildMinder extends Remote {
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Enumeration<Liveness> sfChildren() throws RemoteException;
+    Enumeration<Liveness> sfChildren() throws RemoteException;
 }
