@@ -39,5 +39,5 @@ public interface Dump extends Remote {
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public void dumpState(Object state, Prim from) throws RemoteException;
+    void dumpState(Object state, Prim from) throws RemoteException;
 }

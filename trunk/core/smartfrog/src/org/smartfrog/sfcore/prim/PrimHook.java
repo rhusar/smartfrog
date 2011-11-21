@@ -42,6 +42,6 @@ public interface PrimHook {
      *      
      * @throws SmartFrogException failed to execute the hook       
      */
-    public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
+    void sfHookAction(Prim prim, TerminationRecord terminationRecord)
         throws SmartFrogException;
 }

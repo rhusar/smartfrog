@@ -40,5 +40,5 @@ public interface Diagnostics extends Remote {
      * @throws SmartFrogException failure
      * @throws RemoteException In case of Remote/nework error
      */
-    public ComponentDescription sfDiagnosticsReport() throws SmartFrogException, RemoteException;
+    ComponentDescription sfDiagnosticsReport() throws SmartFrogException, RemoteException;
 }
