@@ -58,7 +58,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * SmartFrog component to executes a command on a remote machine via ssh. It is a wrapper around jsch <p/> Super class
@@ -70,7 +69,7 @@ import java.util.Vector;
 public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
 
     private List<String> commandsList;
-    private File logFile = null;
+    private File logFile;
     private int exitCodeMax, exitCodeMin;
     private CommandExecutor executorThread;
     private static final int THREAD_SHUTDOWN_TIME = 1000;
@@ -182,7 +181,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             }
         }
 
-        @SuppressWarnings({"ProhibitedExceptionDeclared"})
+        @SuppressWarnings({"ProhibitedExceptionDeclared", "IOResourceOpenedButNotSafelyClosed"})
         @Override
         public void execute() throws Throwable {
             OutputStream outputStream;
