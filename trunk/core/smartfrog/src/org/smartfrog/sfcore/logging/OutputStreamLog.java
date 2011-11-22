@@ -68,6 +68,7 @@ public class OutputStreamLog extends OutputStream {
     /**
      * Flushes this output stream and forces any buffered output bytes to be written out.
      */
+    @Override
     public void flush() {
         printBuffer();
     }
@@ -78,6 +79,7 @@ public class OutputStreamLog extends OutputStream {
      * cannot be reopened. <p> The <code>close</code> method of <code>OutputStream</code> does nothing.
      *
      */
+    @Override
     public void close() {
         printBuffer();
     }
@@ -86,6 +88,7 @@ public class OutputStreamLog extends OutputStream {
      * Writes the specified byte to this output stream.
      * @param b the <code>byte</code>.
      */
+    @Override
     public void write(int b) {
         buffer.write(b);
         if (b == '\n') {
