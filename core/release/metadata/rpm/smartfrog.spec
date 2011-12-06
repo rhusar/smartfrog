@@ -261,7 +261,7 @@ Components for working with S3 files and EC2 instances.
 %package groovy
 Group:         ${rpm.framework}
 Summary:        Groovy Integration
-Requires:       %{name} = %{version}-%{release}, %{name}-networking
+Requires:       %{name} = %{version}-%{release}
 
 %description groovy
 This includes Groovy and the components needed to embed Groovy scripts inside .sf files
