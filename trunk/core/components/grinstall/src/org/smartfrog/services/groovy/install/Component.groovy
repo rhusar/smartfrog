@@ -117,7 +117,7 @@ class Component extends CompoundImpl implements IComponent {
      * Initialise the component by entering the removed state
      */
     private void init() {
-        if (sfLog().isDebugEnabled()) sfLog().debug("Initialising ${sfCompleteName()}")
+        if (sfLog().debugEnabled) sfLog().debug("Initialising ${sfCompleteName()}")
         enterState(ComponentState.REMOVED)
     }
 
@@ -200,11 +200,11 @@ class Component extends CompoundImpl implements IComponent {
     @Override
     public Object sfResolve(String reference) throws SmartFrogResolutionException, RemoteException {
         if (reference.contains(":")) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("Resolving reference $reference with parser")
+            if (sfLog().debugEnabled) sfLog().debug("Resolving reference $reference with parser")
             def parts = reference.split(":")
             def root = sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)
             def ref = root.sfResolveWithParser("ATTRIB ${parts[0]}")
-            for (int i = 1; i < parts.size(); i++) {
+            [1..parts.size()].each { i->
                 ref = ref.sfResolve(parts[i])
             }
             return ref
@@ -219,9 +219,7 @@ class Component extends CompoundImpl implements IComponent {
         SmartFrogThread.requestAndWaitForThreadTermination(executor, terminationTimeout)
         //now try to execute the terminator. Note that it is pre-constructed, and just needs executing
         ITask terminator = (ITask) sfResolve(ATTR_TERMINATOR, (Prim) null, false);
-        if (terminator != null) {
-            terminator.run();
-        }
+        terminator?.run()
     }
 
 

@@ -279,26 +279,27 @@ class GroovyComponentHelper {
      * @param source source URL or path
      * @param destination dest URL or path
      */
-    public String copy(String source, String destination) {
+    public void copy(String source, String destination) {
         sfLog.debug("Copying $source to $destination")
         FileObject src = resolveSrc(source);
         verifySourceIsValid("copy", src)
         FileObject dest = resolve(destination);
         try {
             FileType sourceType = src.type
+            boolean debugEnabled = sfLog.debugEnabled
             if (sourceType == FileType.FILE) {
                 boolean destExists = dest.exists()
                 if (destExists) {
                     if (dest.type == FileType.FILE) {
-                        if (sfLog.debugEnabled) sfLog.debug("Destination file $dest will be overwritten")
+                        if (debugEnabled) sfLog.debug("Destination file $dest will be overwritten")
                         dest.copyFrom(src, org.apache.commons.vfs2.Selectors.SELECT_SELF)
                     } else if (dest.type == FileType.FOLDER) {
-                        if (sfLog.debugEnabled) sfLog.debug("Copying file $source into directory $destination")
+                        if (debugEnabled) sfLog.debug("Copying file $source into directory $destination")
                         dest = resolve("$destination/${src.name.baseName}")
                         dest.copyFrom(src, org.apache.commons.vfs2.Selectors.SELECT_SELF)
                     }
                 } else {
-                    if (sfLog.debugEnabled) sfLog.debug("Copying file $source to $destination")
+                    if (debugEnabled) sfLog.debug("Copying file $source to $destination")
                     dest.copyFrom(src, org.apache.commons.vfs2.Selectors.SELECT_SELF)
                 }
             } else if (sourceType == FileType.FOLDER) {
@@ -306,11 +307,11 @@ class GroovyComponentHelper {
                     if (dest.type == FileType.FILE) {
                         throw new SmartFrogDeploymentException("Cannot copy directory $source into file $destination")
                     } else {
-                        if (sfLog.debugEnabled) sfLog.debug("Copying directory contents of $source into directory $destination")
+                        if (debugEnabled) sfLog.debug("Copying directory contents of $source into directory $destination")
                         dest.copyFrom(src, org.apache.commons.vfs2.Selectors.EXCLUDE_SELF)
                     }
                 } else {
-                    if (sfLog.debugEnabled) sfLog.debug("Directory $destination does not exist and will be created")
+                    if (debugEnabled) sfLog.debug("Directory $destination does not exist and will be created")
                     dest.copyFrom(src, org.apache.commons.vfs2.Selectors.EXCLUDE_SELF)
                 }
             }
