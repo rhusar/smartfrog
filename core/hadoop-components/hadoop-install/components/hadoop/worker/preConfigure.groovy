@@ -9,13 +9,11 @@ def user = sfResolve("user")
 log("Basedir is $destDir, userVolumes = $userVolumes, mountDrive = $mountDrive user=$user")
 
 
-def files = ["hadoop-env.sh", "mapred-site.xml", "core-site.xml", "hdfs-site.xml"]
-files.each {
+["hadoop-env.sh", "mapred-site.xml", "core-site.xml", "hdfs-site.xml"].each {
     copy("$it", "$destDir/conf/$it")
 }
 
-files = ["mapred-site.xml", "core-site.xml", "hdfs-site.xml"]
-files.each {
+["mapred-site.xml", "core-site.xml", "hdfs-site.xml"].each {
     parse("$destDir/conf/$it")
 }
 
