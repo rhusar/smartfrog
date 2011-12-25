@@ -90,12 +90,12 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
         }
         //Workflow integration
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                                                             "PathExists",
-                                                             null,
-                                                             null);
+                "PathExists",
+                null,
+                null);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS,
-                                    true,
-                                    false);
+                true,
+                false);
     }
 
     /**
@@ -168,7 +168,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      */
     @Override
     public void sfPing(Object source) throws SmartFrogLivenessException,
-                                             RemoteException {
+            RemoteException {
         super.sfPing(source);
         if (sfIsStarted && checkOnLiveness) {
             checkPathExists();
@@ -189,7 +189,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
             FileStatus status = dfs.getFileStatus(getPath());
             if (verbose) {
                 sfLog().info("Path " + getPath() + " size " + status.getLen()
-                             + " last modified:" + status.getModificationTime());
+                        + " last modified:" + status.getModificationTime());
             }
             if (status.isDir()) {
                 //it is a directory. Run the directory checks
@@ -213,32 +213,32 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
 
                 if (!canBeDir) {
                     throw new SmartFrogLivenessException("Expected a file, got a directory: " + filename
-                                                         + " containing " + fileCount + " file(s):\n"
-                                                         + filenames);
+                            + " containing " + fileCount + " file(s):\n"
+                            + filenames);
                 }
                 if (fileCount < minFileCount) {
                     throw new SmartFrogLivenessException("Not enough files under " + filename
-                                                         + " required " + minFileCount + " found " + fileCount
-                                                         + " :\n"
-                                                         + filenames);
+                            + " required " + minFileCount + " found " + fileCount
+                            + " :\n"
+                            + filenames);
                 }
                 if (maxFileCount >= 0 && fileCount > maxFileCount) {
                     throw new SmartFrogLivenessException("Too many files under " + filename
-                                                         + " maximum " + maxFileCount + " found " + fileCount
-                                                         + " :\n"
-                                                         + filenames);
+                            + " maximum " + maxFileCount + " found " + fileCount
+                            + " :\n"
+                            + filenames);
                 }
                 if (totalFileSize < minTotalFileSize) {
                     throw new SmartFrogLivenessException("not enough file content " + filename
-                                                         + " required " + minTotalFileSize + " found " + totalFileSize
-                                                         + " :\n"
-                                                         + filenames);
+                            + " required " + minTotalFileSize + " found " + totalFileSize
+                            + " :\n"
+                            + filenames);
                 }
                 if (maxTotalFileSize >= 0 && totalFileSize > maxTotalFileSize) {
                     throw new SmartFrogLivenessException("too much enough file content " + filename
-                                                         + " maximum " + minTotalFileSize + " found " + totalFileSize
-                                                         + " :\n"
-                                                         + filenames);
+                            + " maximum " + minTotalFileSize + " found " + totalFileSize
+                            + " :\n"
+                            + filenames);
                 }
             } else {
                 if (!canBeFile) {
@@ -247,22 +247,22 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
                 long size = status.getLen();
                 if (size < minFileSize) {
                     throw new SmartFrogLivenessException("File " + filename + " is too small at " + size
-                                                         + " bytes for the minimum size " + minFileSize);
+                            + " bytes for the minimum size " + minFileSize);
                 }
                 if (maxFileSize >= 0 && size > maxFileSize) {
                     throw new SmartFrogLivenessException("File " + filename + " is too big at " + size
-                                                         + " bytes for the maximum size " + maxFileSize);
+                            + " bytes for the maximum size " + maxFileSize);
                 }
                 short replication = status.getReplication();
                 if (replication < minReplication) {
                     throw new SmartFrogLivenessException("File  " + filename + " has a replication factor of"
-                                                         + replication
-                                                         + " which is less than the minimum value of " + minReplication);
+                            + replication
+                            + " which is less than the minimum value of " + minReplication);
                 }
                 if (maxReplication >= 0 && replication > maxReplication) {
                     throw new SmartFrogLivenessException("File  " + filename + " has a replication factor of"
-                                                         + replication
-                                                         + " which is less than the maximum value of " + maxReplication);
+                            + replication
+                            + " which is less than the maximum value of " + maxReplication);
                 }
             }
         } catch (IOException e) {

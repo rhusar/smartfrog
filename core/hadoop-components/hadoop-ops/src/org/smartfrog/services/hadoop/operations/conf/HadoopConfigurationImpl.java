@@ -42,6 +42,7 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
 
     /**
      * In the deploy phase, ths component loads in a configuration
+     *
      * @throws SmartFrogException error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
@@ -81,9 +82,10 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
 
     /**
      * Clone our configuration
+     *
      * @return a copy of the configuration, one that is bound to the same parent component
      * @throws SFHadoopRuntimeException if the cloning fails. This will only happen if a parent class of the (final) class
-     * {@link ManagedConfiguration} intercepts and rejects the cloning operation.
+     *                                  {@link ManagedConfiguration} intercepts and rejects the cloning operation.
      */
     ManagedConfiguration cloneConfiguration() {
         try {

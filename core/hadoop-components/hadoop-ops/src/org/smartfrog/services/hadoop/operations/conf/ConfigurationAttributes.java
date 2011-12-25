@@ -32,19 +32,31 @@ import java.rmi.Remote;
 public interface ConfigurationAttributes extends Remote {
 
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_DATA_DIR = "dfs.data.dir";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_NAME_DIR = "dfs.name.dir";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_NAMENODE_NAME_DIR = DFSConfigKeys.DFS_NAMENODE_NAME_DIR_KEY;
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_NAMENODE_EDITS_DIR = DFSConfigKeys.DFS_NAMENODE_EDITS_DIR_KEY;
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_NAMENODE_STARTUP = "dfs.namenode.startup";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_HTTP_ADDRESS = "dfs.http.address";
 
     /**
@@ -60,33 +72,53 @@ public interface ConfigurationAttributes extends Remote {
      */
     String DFS_DATANODE_INFO_BIND_PORT = "dfs.datanode.info.port";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_DATANODE_HTTPS_ADDRESS = "dfs.datanode.https.address";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_DATANODE_BIND_ADDRESS = "dfs.datanode.bindAddress";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_DATANODE_PORT = "dfs.datanode.port";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String DFS_DATANODE_ADDRESS = "dfs.datanode.address";
     /**
      * {@value}
      */
     String DFS_DATANODE_IPC_ADDRESS = "dfs.datanode.ipc.address";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String FS_DEFAULT_NAME = "fs.default.name";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String FS_LOCAL_BLOCK_SIZE = "fs.local.block.size";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String HADOOP_LOG_DIR = "hadoop.log.dir";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String IO_FILE_BUFFER_SIZE = "io.file.buffer.size";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String IO_SEQFILE_COMPRESS_BLOCKSIZE = "io.seqfile.compress.blocksize";
 
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String IO_SERIALIZATIONS = "io.serializations";
 
 
@@ -94,10 +126,14 @@ public interface ConfigurationAttributes extends Remote {
      * URL to GET when the job is finished The uri can contain 2 special parameters: $jobId and $jobStatus. Those, if
      * present, are replaced by the job's identifier and completion-status respectively.</p>
      */
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String JOB_END_NOTIFICATION_URL = "job.end.notification.url";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String KEEP_FAILED_TASK_FILES = "keep.failed.task.files";
 
     /**
@@ -114,7 +150,6 @@ public interface ConfigurationAttributes extends Remote {
 
     /**
      * The of the input directory for the map-reduce job. {@value}
-     *
      */
     String MAPRED_INPUT_DIR = "mapred.input.dir";
 
@@ -139,48 +174,86 @@ public interface ConfigurationAttributes extends Remote {
      * the current working directory for the default file system.
      */
     String MAPRED_WORKING_DIR = "mapred.working.dir";
-    /** {@value} */
+    /**
+     * {@value}
+     */
 
     String MAPRED_COMPRESS_MAP_OUTPUT = "mapred.compress.map.output";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_INPUT_FORMAT_CLASS = "mapred.input.format.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_INPUT_KEY_CLASS = "mapred.input.key.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_INPUT_VALUE_CLASS = "mapred.input.value.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_JOB_SPLIT_FILE = "mapred.job.split.file";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_MAPPER_CLASS = "mapred.mapper.class";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_MAP_OUTPUT_COMPRESSION_TYPE = "mapred.map.output.compression.type";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_MAP_OUTPUT_COMPRESSION_CODEC = "mapred.map.output.compression.codec";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_MAP_OUTPUT_KEY_CLASS = "mapred.mapoutput.key.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_MAP_OUTPUT_VALUE_CLASS = "mapred.mapoutput.value.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_MAP_RUNNER_CLASS = "mapred.map.runner.class";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_OUTPUT_FORMAT_CLASS = "mapred.output.format.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_OUTPUT_KEY_CLASS = "mapred.output.key.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_OUTPUT_KEY_COMPARATOR_CLASS = "mapred.output.key.comparator.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_OUTPUT_VALUE_CLASS = "mapred.output.value.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_OUTPUT_VALUE_GROUPFN_CLASS = "mapred.output.value.groupfn.class";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_PARTITIONER_CLASS = "mapred.partitioner.class";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_COMBINER_CLASS = "mapred.combiner.class";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_SPECULATIVE_EXECUTION = "mapred.speculative.execution";
     /**
      * Should speculative execution be used for this job for map tasks? {@value}
@@ -259,7 +332,9 @@ public interface ConfigurationAttributes extends Remote {
      */
     String MAPRED_TASK_PROFILE = "mapred.task.profile";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String MAPRED_TASK_TRACKER_HTTP_ADDRESS = "mapred.task.tracker.http.address";
 
     /**
@@ -274,17 +349,19 @@ public interface ConfigurationAttributes extends Remote {
 
     /**
      * Get the user-specified session identifier. The default is the empty string.
-     *
+     * <p/>
      * The session identifier is used to tag metric data that is reported to some performance metrics system via the
      * org.apache.hadoop.metrics API.  The session identifier is intended, in particular, for use by Hadoop-On-Demand
      * (HOD) which allocates a virtual Hadoop cluster dynamically and transiently. HOD will set the session identifier
      * by modifying the hadoop-site.xml file before starting the cluster.
-     *
+     * <p/>
      * When not running under HOD, this identifer is expected to remain set to the empty string.  {@value}
      */
     String SESSION_ID = "session.id";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String USER_NAME = "user.name";
     String MAPRED_TASK_TRACKER_REPORT_ADDRESS = "mapred.task.tracker.report.address";
 }

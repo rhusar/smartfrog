@@ -63,11 +63,11 @@ public class DfsCopyFileInImpl extends DfsOperationImpl implements DfsCopyOperat
             throws Exception {
         Path dest = resolveDfsPath(ATTR_DEST);
         File source = FileSystem.lookupAbsoluteFile(this,
-                                                    ATTR_SOURCE,
-                                                    null,
-                                                    null,
-                                                    true,
-                                                    null);
+                ATTR_SOURCE,
+                null,
+                null,
+                true,
+                null);
         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
         DfsUtils.copyLocalFileIn(fileSystem, source, dest, overwrite);
     }

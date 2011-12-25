@@ -21,15 +21,12 @@ package org.smartfrog.services.hadoop.operations.components;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.conditions.AbstractConditionPrim;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -106,7 +103,8 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
 
     /**
      * Check the disk space
-     * @return a string containing an error message, or null for no problem 
+     *
+     * @return a string containing an error message, or null for no problem
      */
     String checkDiskSpace() {
         for (File dir : directories) {
@@ -127,6 +125,7 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
 
     /**
      * Log, set as the cause and then stringify an exception
+     *
      * @param throwable what was caught
      * @return the exception as a string
      */
@@ -139,6 +138,7 @@ public class CheckDiskSpaceImpl extends AbstractConditionPrim implements CheckDi
 
     /**
      * {@inheritDoc}
+     *
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */

@@ -84,18 +84,18 @@ public class ConfCheckerImpl extends DfsClusterBoundImpl implements ConfChecker,
 
         //Workflow integration
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                                                             "ConfChecker",
-                                                             null,
-                                                             null);
+                "ConfChecker",
+                null,
+                null);
 
     }
 
     private void throwUnexpected(ManagedConfiguration managedConf, String attribute, String expected, String actual)
             throws SFHadoopException {
         throw new SFHadoopException("Expected the attribute \"" + attribute + "\" to be "
-                                    + "\"" + expected + " but it is \"" + actual + "\"",
-                                    this,
-                                    managedConf);
+                + "\"" + expected + " but it is \"" + actual + "\"",
+                this,
+                managedConf);
     }
 
 

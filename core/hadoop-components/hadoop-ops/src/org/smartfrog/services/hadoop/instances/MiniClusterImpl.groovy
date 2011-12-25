@@ -1,24 +1,21 @@
 package org.smartfrog.services.hadoop.instances
 
-import org.smartfrog.services.hadoop.operations.core.HadoopComponentImpl
-import java.rmi.RemoteException
-import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration
+import org.smartfrog.services.hadoop.operations.core.HadoopComponentImpl
 import org.smartfrog.services.scripting.groovy.GRef
 import org.smartfrog.sfcore.utils.ListUtils
-import org.apache.hadoop.fs.FileSystem;
 
 /**
  * This class is the Groovy base class for the MiniDFSCluster and MiniMRCluster
  */
 class MiniClusterImpl extends HadoopComponentImpl {
-    /** {@value } */
+    /** {@value} */
     public static final String ATTR_NODE_COUNT = "nodeCount"
-    /** {@value } */
+    /** {@value} */
     public static final String ATTR_HOSTS = "hosts"
-    /** {@value } */
+    /** {@value} */
     public static final String ATTR_RACKS = "racks"
-    /** {@value } */
+    /** {@value} */
     public static final String ATTR_FILESYSTEM_URI = "filesystemURI";
 
     ManagedConfiguration clusterConfig
@@ -78,7 +75,7 @@ class MiniClusterImpl extends HadoopComponentImpl {
      */
     protected String[] resolveListToArray(String attr) {
         List<String> list = ListUtils.resolveStringList(this, new GRef(attr), true);
-        return list? list.stringify() : null;
+        return list ? list.stringify() : null;
     }
 
 

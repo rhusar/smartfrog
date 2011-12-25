@@ -20,9 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.operations.dfs;
 
 /**
- *
  * Created 17-Jun-2008 15:18:28
- *
  */
 
 public interface DfsCopyOperation extends DfsOperation {

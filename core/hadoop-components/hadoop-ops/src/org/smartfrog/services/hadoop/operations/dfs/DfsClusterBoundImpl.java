@@ -42,6 +42,7 @@ public class DfsClusterBoundImpl extends WorkerThreadPrimImpl {
 
     /**
      * Override point: is the cluster attribute required
+     *
      * @return true by default
      */
     protected boolean isClusterRequired() {
@@ -77,10 +78,10 @@ public class DfsClusterBoundImpl extends WorkerThreadPrimImpl {
             return new Path(pathName);
         } catch (IllegalArgumentException e) {
             throw new SmartFrogLifecycleException("Failed to create the path defined by attribute " + attribute
-                                                  + " with value \"" + pathName
-                                                  + "\" : " + e,
-                                                  e,
-                                                  this);
+                    + " with value \"" + pathName
+                    + "\" : " + e,
+                    e,
+                    this);
         }
     }
 

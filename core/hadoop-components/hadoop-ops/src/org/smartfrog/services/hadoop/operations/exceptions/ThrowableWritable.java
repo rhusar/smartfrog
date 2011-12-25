@@ -31,7 +31,7 @@ import java.io.IOException;
  * This provides for a wire form of a chain of {@link Throwable} instances,
  * retaining class name, stack trace, message and any chained exceptions,
  * each of which is also turned into a ThrowableWritable instance.
- *
+ * <p/>
  * No attempt is made to turn these back into Throwable instances afterwards,
  * because history (RMI, SOAP Stacks) has shown this does not work reliably.
  * It requires everyone to have the same version of every possible exception
@@ -43,13 +43,19 @@ import java.io.IOException;
  */
 public final class ThrowableWritable implements Writable {
 
-    /** throwable classname */
+    /**
+     * throwable classname
+     */
     private String classname;
 
-    /** throwable message */
+    /**
+     * throwable message
+     */
     private String message;
 
-    /** cause: may be null */
+    /**
+     * cause: may be null
+     */
     private ThrowableWritable cause;
 
     /**
@@ -178,7 +184,6 @@ public final class ThrowableWritable implements Writable {
      * {@inheritDoc}
      *
      * @param out <code>DataOutput</code> to serialize this object into.
-     *
      * @throws IOException IO trouble
      */
     public void write(DataOutput out) throws IOException {
@@ -205,7 +210,6 @@ public final class ThrowableWritable implements Writable {
      * {@inheritDoc}
      *
      * @param in <code>DataInput</code> to deseriablize this object from.
-     *
      * @throws IOException IO trouble
      */
     public void readFields(DataInput in) throws IOException {
@@ -243,7 +247,7 @@ public final class ThrowableWritable implements Writable {
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * The classname and message are used for equality
      */
     @Override
@@ -269,7 +273,7 @@ public final class ThrowableWritable implements Writable {
 
     /**
      * {@inheritDoc}
-     *
+     * <p/>
      * The classname and message are used in the hash
      */
     @Override

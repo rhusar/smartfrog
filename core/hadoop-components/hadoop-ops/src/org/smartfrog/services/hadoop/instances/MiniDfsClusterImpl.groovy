@@ -1,18 +1,15 @@
 package org.smartfrog.services.hadoop.instances
 
 import java.rmi.RemoteException
-import org.apache.hadoop.fs.FileSystem;
-
-
+import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
+import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration
 import org.smartfrog.services.hadoop.operations.dfs.HdfsStartupOptionFactory
+import org.smartfrog.services.scripting.groovy.GRef
 import org.smartfrog.sfcore.common.SmartFrogException
 import org.smartfrog.sfcore.common.SmartFrogResolutionException
 import org.smartfrog.sfcore.prim.TerminationRecord
-
-import org.smartfrog.services.scripting.groovy.GRef
-import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration
-import org.apache.hadoop.conf.Configuration
+import org.smartfrog.services.hadoop.grumpy.LocalDFSCluster
 
 /**
  * This is a groovy class that can bring up a MiniDFS cluster

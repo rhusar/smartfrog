@@ -47,12 +47,7 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
@@ -73,6 +68,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     static {
         ConfigurationLoader.loadExtendedConfigurations();
     }
+
     /**
      * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
      * discovered.
@@ -111,7 +107,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SmartFrogResolutionException for resolution problems
      */
     public ManagedConfiguration(boolean loadDefaults, Prim source) throws SmartFrogException,
-                                                                          RemoteException {
+            RemoteException {
         super(loadDefaults);
         bind(source);
     }
@@ -134,7 +130,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * Bind to our owner
      *
      * @param src source component
-     *
      * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException for resolution problems
      */
@@ -482,6 +477,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
 
     /**
      * Build a clone containing all string values of the properties. It's weak in that it drops other data, but well, who cares.
+     *
      * @return
      */
     Properties cloneProps() {
@@ -512,7 +508,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * Bind to a network address; something like  "0.0.0.0:50030" is expected.
      *
-     * @param addressName     the property for the address
+     * @param addressName the property for the address
      * @return the host/port binding
      * @throws IllegalArgumentException     if the arguments are bad
      * @throws SmartFrogResolutionException if the addressName is not in the configuration
@@ -532,7 +528,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * already. The configuration is marked for reloading
      *
      * @param target the prim to propagate any updates to
-     * @param conf configuration
+     * @param conf   configuration
      * @throws SmartFrogRuntimeException failure to read or write an attribute
      * @throws RemoteException           network problems
      */
@@ -563,9 +559,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
 
     /**
      * Copy all new properties to the target prim as attributes
+     *
      * @param target target
      * @throws SmartFrogRuntimeException failure to read/write attributes
-     * @throws RemoteException network trouble
+     * @throws RemoteException           network trouble
      */
     public void copyPropertiesToPrim(Prim target) throws SmartFrogRuntimeException, RemoteException {
         for (Map.Entry<String, String> entry : this) {
@@ -578,11 +575,12 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
 
     /**
      * Add a SmartFrog attribute if it is needed
+     *
      * @param target target component
-     * @param key key to set
-     * @param value value to set
+     * @param key    key to set
+     * @param value  value to set
      * @throws SmartFrogRuntimeException failure to set the attribute
-     * @throws RemoteException network problems
+     * @throws RemoteException           network problems
      */
     private void addSFAttributeIfNeeded(Prim target, String key, String value)
             throws RemoteException, SmartFrogRuntimeException {
@@ -657,16 +655,15 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * This creates a configuration from a source prim
      *
-     *
-     * @param source                   source prim
+     * @param source              source prim
      * @param useClusterReference if set, resolve {@link ClusterBound#ATTR_CLUSTER} from the source and use that
-     *                                 first.
-     * @param clusterRequired          if set, the cluster attribute must resolve.
-     * @param loadDefaults             flag to say "load the default values"
-     * @param propagateReloads  flag to say "propagate any reloads back to the owner"
+     *                            first.
+     * @param clusterRequired     if set, the cluster attribute must resolve.
+     * @param loadDefaults        flag to say "load the default values"
+     * @param propagateReloads    flag to say "propagate any reloads back to the owner"
      * @return the new element
      * @throws SmartFrogException for any failure to resolve all the attributes
-     * @throws RemoteException              network problems. These are always passed up
+     * @throws RemoteException    network problems. These are always passed up
      */
     public static ManagedConfiguration createConfiguration(Prim source,
                                                            boolean useClusterReference,

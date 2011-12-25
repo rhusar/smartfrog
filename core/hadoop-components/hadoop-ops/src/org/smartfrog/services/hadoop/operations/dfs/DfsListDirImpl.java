@@ -94,25 +94,25 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
             if (count < minFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is below the minFileCount value of " + minFileCount
-                        + "\n" + listing,
+                                + "\n" + listing,
                         this);
             }
             if (maxFileCount > -1 && count > maxFileCount) {
                 throw new SmartFrogLivenessException(
                         "File count " + count + " is above the maxFileCount value of " + minFileCount
-                        + "\n" + listing,
+                                + "\n" + listing,
                         this);
             }
             if (size < minTotalFileSize) {
                 throw new SmartFrogLivenessException(
                         "File size " + size + " is below the minTotalFileSize value of " + minTotalFileSize
-                        + "\n" + listing,
+                                + "\n" + listing,
                         this);
             }
             if (maxFileCount > -1 && size > maxFileCount) {
                 throw new SmartFrogLivenessException(
                         "File size " + size + " is above the maxTotalFileSize value of " + maxTotalFileSize
-                        + "\n" + listing,
+                                + "\n" + listing,
                         this);
             }
 

@@ -61,10 +61,11 @@ public class DfsFsckImpl extends DfsOperationImpl {
 
     /**
      * add an attribute if it resolves to a boolean
-     * @param args argument list to add to
+     *
+     * @param args      argument list to add to
      * @param attribute the attribute
      * @throws SmartFrogResolutionException no resolution
-     * @throws RemoteException network trouble
+     * @throws RemoteException              network trouble
      */
     private void addIfSet(List<String> args, String attribute)
             throws SmartFrogResolutionException, RemoteException {
@@ -73,11 +74,12 @@ public class DfsFsckImpl extends DfsOperationImpl {
 
     /**
      * Add an argument if set
-     * @param args argument list to add to
+     *
+     * @param args      argument list to add to
      * @param attribute the attribute
-     * @param argument the argument to append
+     * @param argument  the argument to append
      * @throws SmartFrogResolutionException no resolution
-     * @throws RemoteException network trouble
+     * @throws RemoteException              network trouble
      */
     private void addIfSet(List<String> args, String attribute, String argument)
             throws SmartFrogResolutionException, RemoteException {
