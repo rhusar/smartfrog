@@ -46,6 +46,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
 
     /**
      * Create and dump the configuration on startup
+     *
      * @throws SmartFrogResolutionException resolution failure
      * @throws RemoteException              network problems
      */
@@ -60,8 +61,8 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
 
     /**
      * Dump the configuration
-     * @param configuration to dump
      *
+     * @param configuration to dump
      */
     protected void debugDumpConfiguration(ManagedConfiguration configuration) {
         if (sfLog().isDebugEnabled()) {
@@ -123,7 +124,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
             path.append(directory.getAbsolutePath());
         }
         if (failureCount == dirs.size()) {
-            throw new FileNotFoundException("Failed to create any of " + path.toString() 
+            throw new FileNotFoundException("Failed to create any of " + path.toString()
                     + "\n" + failureText);
         }
         return path.toString();
@@ -137,11 +138,11 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @param sourceRef        source reference
      * @param replaceAttribute attribute to replace
      * @return the directories
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws SmartFrogException    failure while starting
+     * @throws RemoteException       In case of network/rmi error
      * @throws FileNotFoundException if none of the directories can be created
      */
-    public static Vector<String> createDirectoryListAttribute(Prim prim, 
+    public static Vector<String> createDirectoryListAttribute(Prim prim,
                                                               Reference sourceRef,
                                                               String replaceAttribute)
             throws RemoteException, SmartFrogException, FileNotFoundException {
@@ -158,8 +159,8 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @param sourceRef        source reference
      * @param replaceAttribute attribute to replace
      * @return the directories
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws SmartFrogException    failure while starting
+     * @throws RemoteException       In case of network/rmi error
      * @throws FileNotFoundException if none of the directories can be created
      */
     protected Vector<String> createDirectoryListAttribute(Reference sourceRef,
@@ -170,11 +171,12 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
 
     /**
      * Resolve an attribute that names the address attribute to use
+     *
      * @param configuration configuration to work with
-     * @param addressAttr name of an attribute that identifies the underlying configuration attribute to work with
+     * @param addressAttr   name of an attribute that identifies the underlying configuration attribute to work with
      * @return a socket address
      * @throws SmartFrogResolutionException for resolution problems
-     * @throws RemoteException network problems
+     * @throws RemoteException              network problems
      */
     protected InetSocketAddress resolveAddressIndirectly(ManagedConfiguration configuration, String addressAttr)
             throws SmartFrogResolutionException, RemoteException {
@@ -188,11 +190,12 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
 
     /**
      * Given an a conf and an attribute, resolve it and build the address
-     * @param configuration configuration
+     *
+     * @param configuration    configuration
      * @param addressAttribute attribute to look up
      * @return a bound address
      * @throws SmartFrogResolutionException for resolution problems
-     * @throws RemoteException network problems
+     * @throws RemoteException              network problems
      */
     protected InetSocketAddress resolveAddress(ManagedConfiguration configuration, String addressAttribute)
             throws SmartFrogResolutionException, RemoteException {
@@ -202,6 +205,6 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
     protected PortEntry resolvePortEntry(ManagedConfiguration configuration, String addressAttribute)
             throws SmartFrogResolutionException, RemoteException {
         return new PortEntry(addressAttribute,
-                             resolveAddress(configuration, addressAttribute));
+                resolveAddress(configuration, addressAttribute));
     }
 }

@@ -11,11 +11,10 @@ class AddDefaultConfiguration extends HadoopComponentImpl {
     /**
      * inject a new default configuration into the list. optionally terminate
      */
-
-    @Override 
+    @Override
     synchronized void sfStart() {
         super.sfStart()
-        String resourceName = sfResolve("resource","", true)
+        String resourceName = sfResolve("resource", "", true)
         ManagedConfiguration.addNewDefaultResource(resourceName)
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, sfCompleteName(), null)
     }

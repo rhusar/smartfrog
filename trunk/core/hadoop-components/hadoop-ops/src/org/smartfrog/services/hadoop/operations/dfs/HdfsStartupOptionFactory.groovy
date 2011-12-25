@@ -3,8 +3,7 @@ package org.smartfrog.services.hadoop.operations.dfs
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
 
 /**
- *   static public enum StartupOption{
- *   FORMAT  ("-format"),
+ *   static public enum StartupOption{*   FORMAT  ("-format"),
  REGULAR ("-regular"),
  UPGRADE ("-upgrade"),
  ROLLBACK("-rollback"),
@@ -12,8 +11,7 @@ import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
  IMPORT  ("-importCheckpoint");
 
  private String name = null;
- private StartupOption(String arg) {this.name = arg;}public String getName() {return name;}}
- */
+ private StartupOption(String arg) {this.name = arg;}public String getName() {return name;}}*/
 class HdfsStartupOptionFactory {
 
     /**
@@ -21,9 +19,8 @@ class HdfsStartupOptionFactory {
      * @param option the option as a command-line string
      * @return the action, or null for no match
      */
-
     public static StartupOption createStartupOption(String option) {
-        switch(option) {
+        switch (option) {
             case "-regular":
                 return StartupOption.REGULAR;
             case "-format":

@@ -61,15 +61,15 @@ public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPath
      * Format the name node
      *
      * @param fileSystem the filesystem; this is closed afterwards
-     * @param conf the configuration driving this operation
+     * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
     @Override
     protected void performDfsOperation(org.apache.hadoop.fs.FileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Vector<String> files = HadoopComponentImpl
                 .createDirectoryListAttribute(this,
-                                              NAME_DIRECTORIES,
-                                              ConfigurationAttributes.DFS_NAME_DIR);
+                        NAME_DIRECTORIES,
+                        ConfigurationAttributes.DFS_NAME_DIR);
         Vector<File> nameDirs = FileSystem.convertToFiles(files);
         ExtDfsUtils.formatNameNode(nameDirs, conf);
     }

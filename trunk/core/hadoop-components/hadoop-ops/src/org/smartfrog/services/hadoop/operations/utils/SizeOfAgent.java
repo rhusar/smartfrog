@@ -7,13 +7,15 @@ import java.lang.instrument.Instrumentation;
 
 /**
  * Uses the Instrumentation API to determine the size of an entity.
- *
- *
+ * <p/>
+ * <p/>
  * Needs to be built with a manifest that says Agent-Class or Premain-Class of org.smartfrog.services.hadoop.common.SizeOfAgent
  */
 public class SizeOfAgent {
 
-    /** This is the interface we only get if started as an agent */
+    /**
+     * This is the interface we only get if started as an agent
+     */
     private static Instrumentation instrumentation;
     private static final Log LOG = LogFactory.getLog(SizeOfAgent.class);
 
@@ -60,7 +62,6 @@ public class SizeOfAgent {
      * Determine the size of an instance. Only works if we are running with instrumentation
      *
      * @param instance object instance to look at
-     *
      * @return the size, or -1 if we don't know
      */
     public static long sizeOf(Object instance) {

@@ -70,7 +70,7 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
             throws SmartFrogException, RemoteException {
         super.sfStart();
         TupleDataSource source = (TupleDataSource) sfResolve(ATTR_SOURCE, (Prim) null,
-                                                             true);
+                true);
         fileSystem = createFileSystem();
         dest = resolveDfsPath(ATTR_DEST);
         lineBegin = sfResolve(ATTR_LINEBEGIN, "", true);
@@ -108,6 +108,7 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
 
     /**
      * Close the filesystem if non-null
+     *
      * @throws SFHadoopException if it would not close
      */
     protected synchronized void closeFileSystem() throws SFHadoopException {
@@ -118,7 +119,7 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
             }
         } catch (IOException e) {
             throw SFHadoopException.forward("failed to close filesystem", e,
-                                            this, null);
+                    this, null);
         }
     }
 
@@ -156,7 +157,7 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
                 output = new PrintWriter(new OutputStreamWriter(dataOut, encoding));
             } catch (IOException e) {
                 throw SFHadoopException.forward("failed to open " + dest, e,
-                                                TuplesToHadoopImpl.this, null);
+                        TuplesToHadoopImpl.this, null);
             }
         }
 

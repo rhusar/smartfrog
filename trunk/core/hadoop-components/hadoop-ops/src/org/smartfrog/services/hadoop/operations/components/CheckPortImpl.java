@@ -207,7 +207,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         address = resolveTargetAddress();
         try {
             sfLog().info("Checking host:port " + address
-                         + (checkPortOpen ? " is open" : " is closed"));
+                    + (checkPortOpen ? " is open" : " is closed"));
             PortUtils.checkPort(address, connectTimeout);
         } catch (IOException e) {
             if (checkPortOpen) {

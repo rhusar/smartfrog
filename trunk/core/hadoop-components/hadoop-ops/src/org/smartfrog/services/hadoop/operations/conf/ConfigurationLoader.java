@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * Class to perform configuration load operations 
+ * Class to perform configuration load operations
  */
 public final class ConfigurationLoader {
 
@@ -33,7 +33,6 @@ public final class ConfigurationLoader {
      * Add the default and site configurations; this is used to push out
      * all HDFS and MapReduce options in by default.
      * It is not an error to attempt to re-add already loaded configurations, as this is ignored.
-     * 
      */
     public static void loadExtendedConfigurations() {
         Configuration.addDefaultResource("hdfs-default.xml");
@@ -42,15 +41,18 @@ public final class ConfigurationLoader {
         Configuration.addDefaultResource("mapred-site.xml");
     }
 
-    /** error string : {@value} */
+    /**
+     * error string : {@value}
+     */
     public static final String ERROR_NO_CLUSTER_AND_XML =
             "Cannot extend an existing cluster and import XML resources or files";
 
     /**
      * Load in a configuration from any Prim instance.
+     *
      * @param source the configuration source
      * @return the configuration
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      * @throws SmartFrogException any parsing problems
      */
     public static ManagedConfiguration loadConfiguration(final PrimImpl source)
@@ -130,7 +132,7 @@ public final class ConfigurationLoader {
      * @param baseConf base configuration
      * @param resource resource name
      * @throws SmartFrogException on any resource load failure
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public static void loadXmlResource(final PrimImpl target,
                                        Configuration baseConf,
@@ -144,11 +146,12 @@ public final class ConfigurationLoader {
 
     /**
      * Load an XML file
+     *
      * @param target
      * @param baseConf base configuration
-     * @param file file to load
+     * @param file     file to load
      * @throws SmartFrogException on any resource load failure
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public static void loadXmlFile(final PrimImpl target, Configuration baseConf, String file)
             throws SmartFrogException, RemoteException {

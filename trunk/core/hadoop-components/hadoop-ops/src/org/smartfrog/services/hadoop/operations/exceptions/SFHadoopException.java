@@ -88,7 +88,7 @@ public class SFHadoopException extends SmartFrogException {
      *
      * @param message  exception message
      * @param sfObject The Component that has encountered the exception
-     * @param conf the configuration at the time
+     * @param conf     the configuration at the time
      */
     public SFHadoopException(String message, Prim sfObject, ManagedConfiguration conf) {
         super(message, sfObject);
@@ -125,7 +125,7 @@ public class SFHadoopException extends SmartFrogException {
      * @param message  message
      * @param cause    exception causing this exception
      * @param sfObject The Component that has encountered the exception
-     * @param conf the configuration at the time
+     * @param conf     the configuration at the time
      */
     public SFHadoopException(String message, Throwable cause, Prim sfObject, ManagedConfiguration conf) {
         super(message, cause, sfObject);
@@ -149,7 +149,7 @@ public class SFHadoopException extends SmartFrogException {
      * @param message     header message
      * @param multiExcept nested exceptions
      * @param sfObject    source
-     * @param conf optional configuration
+     * @param conf        optional configuration
      * @return a new exception
      */
     @SuppressWarnings("unchecked")
@@ -167,24 +167,25 @@ public class SFHadoopException extends SmartFrogException {
             //special case: one child.
             Throwable e = multiExcept.getThrowable(0);
             return new SFHadoopException(message + "\n" + e,
-                                         e,
-                                         sfObject);
+                    e,
+                    sfObject);
         }
 
         String trace = dumpToString(exceptions);
         SFHadoopException hadoopException = new SFHadoopException(message
-                                                                  + maybeDumpConfiguration(conf)
-                                                                  + "\nmultiple (" + exCount + ") nested exceptions: \n"
-                                                                  + multiExcept + "\n"
-                                                                  + trace,
-                                                                  multiExcept,
-                                                                  sfObject);
+                + maybeDumpConfiguration(conf)
+                + "\nmultiple (" + exCount + ") nested exceptions: \n"
+                + multiExcept + "\n"
+                + trace,
+                multiExcept,
+                sfObject);
         hadoopException.addConfiguration(conf);
         return hadoopException;
     }
 
     /**
      * Dump the exception list to a string. If it is empty, return the empty string
+     *
      * @param throwables a list of thrown exceptions
      * @return a dumped set of stack traces, or an empty string.
      */
@@ -209,18 +210,19 @@ public class SFHadoopException extends SmartFrogException {
     /**
      * Forward the exception. Jetty exceptions have special handling. If the configuration is enabled
      * for dumping, the exception text includes a dump of the configuration
-     * @param message custom messsage
+     *
+     * @param message   custom messsage
      * @param throwable throwable
-     * @param sfObject prim source
-     * @param conf optional configuration
+     * @param sfObject  prim source
+     * @param conf      optional configuration
      * @return a new exception to throw
      */
     public static SFHadoopException forward(String message, Throwable throwable, Prim sfObject,
                                             ManagedConfiguration conf) {
         if (throwable == null) {
             SFHadoopException hadoopException = new SFHadoopException(message
-                                                                      + maybeDumpConfiguration(conf),
-                                                                      throwable, sfObject);
+                    + maybeDumpConfiguration(conf),
+                    throwable, sfObject);
             hadoopException.addConfiguration(conf);
             return hadoopException;
         }
@@ -228,9 +230,9 @@ public class SFHadoopException extends SmartFrogException {
             return forward(message, (MultiException) throwable, sfObject, conf);
         } else {
             SFHadoopException hadoopException = new SFHadoopException(message + ": "
-                                                                      + throwable
-                                                                      + maybeDumpConfiguration(conf),
-                                                                      throwable, sfObject);
+                    + throwable
+                    + maybeDumpConfiguration(conf),
+                    throwable, sfObject);
             hadoopException.addConfiguration(conf);
             return hadoopException;
         }
@@ -240,6 +242,7 @@ public class SFHadoopException extends SmartFrogException {
     /**
      * Dump the configuration into the string if {@link #SMARTFROG_DUMP_CONF} is true
      * in the configuration.
+     *
      * @param conf configuration to work with
      * @return an empty string or a dumped configuration
      */
