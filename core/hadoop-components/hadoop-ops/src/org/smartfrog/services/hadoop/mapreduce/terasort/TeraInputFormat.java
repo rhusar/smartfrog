@@ -27,13 +27,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileInputFormat;
-import org.apache.hadoop.mapred.FileSplit;
-import org.apache.hadoop.mapred.InputSplit;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.LineRecordReader;
-import org.apache.hadoop.mapred.RecordReader;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.IndexedSortable;
 import org.apache.hadoop.util.QuickSort;
 
@@ -104,7 +98,7 @@ public class TeraInputFormat extends FileInputFormat<Text, Text> {
      * Use the input splits to take samples of the input and generate sample keys. By default reads 100,000 keys from 10
      * locations in the input, sorts them and picks N-1 keys to generate N equally sized partitions.
      *
-     * @param conf the job to sample
+     * @param conf     the job to sample
      * @param partFile where to write the output file to
      * @throws IOException if something goes wrong
      */

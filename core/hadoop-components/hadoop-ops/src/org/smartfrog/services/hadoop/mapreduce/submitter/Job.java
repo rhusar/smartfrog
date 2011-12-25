@@ -31,7 +31,7 @@ import org.smartfrog.services.hadoop.operations.conf.HadoopConfiguration;
 public interface Job extends HadoopConfiguration, FileUsingComponent {
 
     /**
-     *  Is the file required
+     * Is the file required
      */
     String ATTR_FILE_REQUIRED = "fileRequired";
     String ATTR_INPUT_DIR = "input.dir";

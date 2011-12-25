@@ -23,15 +23,16 @@ package org.smartfrog.services.hadoop.mapreduce.submitter;
 import org.apache.hadoop.mapred.RunningJob;
 
 /**
- * Interface for classes that can submit/run jobs 
+ * Interface for classes that can submit/run jobs
  */
 public interface RunJob {
 
     /**
      * Run a job
+     *
      * @param args argument string
      * @return a reference to the submitted job
-     * @throws Exception if the job submission failed. 
+     * @throws Exception if the job submission failed.
      */
     RunningJob runJob(String args[]) throws Exception;
 }

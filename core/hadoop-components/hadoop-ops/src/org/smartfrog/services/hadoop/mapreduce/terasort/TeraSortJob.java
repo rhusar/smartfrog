@@ -151,8 +151,8 @@ public class TeraSortJob extends Configured implements Tool {
         /**
          * Read the cut points from the given sequence file.
          *
-         * @param fs the file system
-         * @param p the path to read
+         * @param fs  the file system
+         * @param p   the path to read
          * @param job the job config
          * @return the strings to split the partitions on
          * @throws IOException
@@ -174,10 +174,10 @@ public class TeraSortJob extends Configured implements Tool {
         /**
          * Given a sorted set of cut points, build a trie that will find the correct partition quickly.
          *
-         * @param splits the list of cut points
-         * @param lower the lower bound of partitions 0..numPartitions-1
-         * @param upper the upper bound of partitions 0..numPartitions-1
-         * @param prefix the prefix that we have already checked against
+         * @param splits   the list of cut points
+         * @param lower    the lower bound of partitions 0..numPartitions-1
+         * @param upper    the upper bound of partitions 0..numPartitions-1
+         * @param prefix   the prefix that we have already checked against
          * @param maxDepth the maximum depth we will build a trie for
          * @return the trie node that will divide the splits correctly
          */

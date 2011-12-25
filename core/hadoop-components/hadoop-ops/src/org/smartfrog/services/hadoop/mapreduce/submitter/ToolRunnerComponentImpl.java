@@ -61,13 +61,13 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
         String toolClassname = sfResolve(ATTR_TOOLCLASS, "", true).trim();
         if (toolClassname.isEmpty()) {
             throw new SmartFrogException("No tool declared in the "
-                                         + ATTR_TOOLCLASS + " attribute");
+                    + ATTR_TOOLCLASS + " attribute");
         }
         ComponentHelper ch = new ComponentHelper(this);
 
         Vector<String> vector = ListUtils.resolveStringList(this,
-                                                            new Reference(ATTR_ARGUMENTS),
-                                                            true);
+                new Reference(ATTR_ARGUMENTS),
+                true);
         arguments = new String[vector.size()];
         vector.copyInto(arguments);
         argumentsAsString = ListUtils.stringify(vector, "(", ", ", ")");
@@ -78,17 +78,17 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
         Class toolClass = ch.loadClass(toolClassname);
         if (!Tool.class.isAssignableFrom(toolClass)) {
             throw new SmartFrogLifecycleException("Class " + toolClassname
-                                                  + " does not implement the org.apache.hadoop.util.Tool interface");
+                    + " does not implement the org.apache.hadoop.util.Tool interface");
         }
         try {
             Object instance = toolClass.newInstance();
             tool = (Tool) instance;
         } catch (InstantiationException e) {
             throw new SmartFrogLifecycleException("Class " + toolClassname
-                                                  + " cannot be instantiated: " + e, e);
+                    + " cannot be instantiated: " + e, e);
         } catch (IllegalAccessException e) {
             throw new SmartFrogLifecycleException("Class " + toolClassname
-                                                  + " cannot be instantiated: " + e, e);
+                    + " cannot be instantiated: " + e, e);
         }
         //sort out the configuration
         toolConf = ManagedConfiguration.createConfiguration(this, true, false, true);
@@ -125,8 +125,8 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
         boolean failOnNonZeroReturnCode = sfResolve(ATTR_FAIL_ON_NON_ZERO_RETURN_CODE, true, true);
         if (returnCode != 0 && failOnNonZeroReturnCode) {
             throw new SmartFrogException("Return value of executing the tool " + tool
-                                         + " with arguments " + argumentsAsString
-                                         + " was " + returnCode);
+                    + " with arguments " + argumentsAsString
+                    + " was " + returnCode);
         }
     }
 }

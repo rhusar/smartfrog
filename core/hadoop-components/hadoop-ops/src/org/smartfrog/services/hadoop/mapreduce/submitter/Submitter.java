@@ -49,12 +49,12 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster, Job {
     String ATTR_JOBURL = "jobURL";
 
     /**
-     ping the job on liveness by checking its status
+     * ping the job on liveness by checking its status
      */
     String ATTR_PINGJOB = "pingJob";
 
     /**
-     only relevant when pingJob==true ; should we terminate when the job has finished?
+     * only relevant when pingJob==true ; should we terminate when the job has finished?
      */
     String ATTR_TERMINATE_WHEN_JOB_FINISHES = "terminateWhenJobFinishes";
 
