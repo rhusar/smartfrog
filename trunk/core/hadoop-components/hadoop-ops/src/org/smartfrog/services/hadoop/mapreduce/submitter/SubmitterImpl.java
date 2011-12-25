@@ -31,11 +31,7 @@ import org.smartfrog.services.hadoop.operations.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.operations.exceptions.SFHadoopException;
 import org.smartfrog.services.hadoop.operations.utils.DfsUtils;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -223,8 +219,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                 String mapred_output_dir = jobConf.get(MAPRED_OUTPUT_DIR);
                 Path mr_output_path = new Path(mapred_output_dir);
                 sfLog().info("Submitting to " + jobtracker
-                             + "\n input directory " + mapred_input_dir
-                             + "\n output directory " + mapred_output_dir);
+                        + "\n input directory " + mapred_input_dir
+                        + "\n output directory " + mapred_output_dir);
 
 
                 JobClient jc = new JobClient(jobConf);
@@ -237,11 +233,11 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                     inStat = dfs.getFileStatus(mr_input_path);
                     if (!inStat.isDir()) {
                         throw new SFHadoopException("the input directory is not a directory " + mr_input_path,
-                                                    SubmitterImpl.this, jobConf);
+                                SubmitterImpl.this, jobConf);
                     }
                 } catch (FileNotFoundException e) {
                     throw new SFHadoopException("the input directory does not exist" + mr_input_path,
-                                                e, SubmitterImpl.this, jobConf);
+                            e, SubmitterImpl.this, jobConf);
 
                 }
 
@@ -266,10 +262,10 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
                 }
             } catch (IOException e) {
                 throw new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobtracker
-                                            + ": " + e,
-                                            e,
-                                            SubmitterImpl.this,
-                                            jobConf);
+                        + ": " + e,
+                        e,
+                        SubmitterImpl.this,
+                        jobConf);
             }
         }
 
@@ -354,8 +350,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         if (timeout != null && timeout.hasTimedOut()) {
             double elapsedTime = timeout.getTimeSinceStarted() / 1000.0;
             String message = "Timeout before job completed after "
-                             + elapsedTime + " seconds"
-                             + " requested Timeout = " + timeout.getDelayInSeconds();
+                    + elapsedTime + " seconds"
+                    + " requested Timeout = " + timeout.getDelayInSeconds();
             sfLog().warn(message);
             terminateJob();
             throw new SmartFrogLivenessException(message);
@@ -373,8 +369,8 @@ public class SubmitterImpl extends FileUsingComponentImpl implements Submitter {
         int taskCount = 0;
         int failures = 0;
         String message = "Job " + runningJob.getJobName()
-                         + " ID=" + runningJob.getID().toString()
-                         + " has " + (succeeded ? " succeeded" : "failed");
+                + " ID=" + runningJob.getID().toString()
+                + " has " + (succeeded ? " succeeded" : "failed");
         StringBuilder builder = new StringBuilder();
 
         TaskCompletionEvent[] history = runningJob.getTaskCompletionEvents(0);

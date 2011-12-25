@@ -35,6 +35,7 @@ public abstract class JobRunningTool extends ConfiguredTool implements RunJob {
 
     /**
      * Submit a Job and return immediately
+     *
      * @param job job to run
      * @return the submitted job
      * @throws IOException if submission failed

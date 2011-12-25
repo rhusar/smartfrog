@@ -29,9 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
  * Something to log task completion events
- *
  */
 
 public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> {
@@ -48,6 +46,7 @@ public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> 
 
     /**
      * poll for new events
+     *
      * @return the new events
      * @throws IOException for IO problems
      */
@@ -72,6 +71,7 @@ public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> 
 
     /**
      * Get the named event
+     *
      * @param index the event
      * @return the event
      */

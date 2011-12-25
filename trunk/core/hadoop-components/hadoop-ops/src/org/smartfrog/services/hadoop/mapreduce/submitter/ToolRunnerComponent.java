@@ -25,14 +25,22 @@ import org.smartfrog.services.hadoop.operations.core.ClusterBound;
 
 public interface ToolRunnerComponent extends ClusterBound {
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_TOOLCLASS = "toolClass";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_ARGUMENTS = "arguments";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_RETURNCODE = "returnCode";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_FAIL_ON_NON_ZERO_RETURN_CODE = "failOnNonZeroReturnCode";
 
 
