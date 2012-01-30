@@ -133,11 +133,11 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
     /**
      * Reads server response from channel's input stream.
      *
-     * @param in stream to read from
+     * @param channelIn stream to read from
      * @throws IOException if response is an error
      */
-    protected void checkAck(InputStream in) throws IOException {
-        int svrRsp = in.read();
+    protected void checkAck(InputStream channelIn) throws IOException {
+        int svrRsp = channelIn.read();
 
         /*
          * svrRsp may be 0 for success,
@@ -150,10 +150,10 @@ public abstract class AbstractSshOperation implements ScpProgressCallback {
             throw new IOException("No response from server");
         } else if (svrRsp != 0) {
             StringBuilder sb = new StringBuilder();
-            int ch = in.read();
+            int ch = channelIn.read();
             while (ch > 0 && ch != '\n') {
                 sb.append((char) ch);
-                ch = in.read();
+                ch = channelIn.read();
             }
             if (svrRsp == 1) {
                 throw new IOException(
