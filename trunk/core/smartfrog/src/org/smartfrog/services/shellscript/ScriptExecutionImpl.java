@@ -170,17 +170,24 @@ public class ScriptExecutionImpl implements ScriptExecution, FilterListener {
                 if (resultReady) {
                     return;
                 }
-
+                
                 if (timeout != 0) {
-                    if (timeout == -1) {
-                        //Wait forever
-                        timeout = 0;
+                    if (timeout < 0) {
+                        // Wait forever
+                        while(!resultReady) {
+                            wait();
+                        }
+                    } else {
+                        long endTime = System.currentTimeMillis() + timeout;
+                        long waitTime = timeout;
+                        while (!resultReady && (waitTime > 0)) {
+                            wait(waitTime);
+                            waitTime = endTime - System.currentTimeMillis();
+                        }
                     }
 
-                    wait(timeout);
-
                     if (exception != null)
-                    // Will throw , InterruptedException, InvocationTargetException
+                        // Will throw , InterruptedException, InvocationTargetException
                     {
                         throw exception;
                     }
@@ -190,7 +197,7 @@ public class ScriptExecutionImpl implements ScriptExecution, FilterListener {
                 throw SmartFrogException.forward(exception);
             }
             if (!resultReady) {
-                throw new SmartFrogException("Time out reached before results ready.");
+                throw new SmartFrogException("Time out reached before results ready. (timeout = "+timeout+" msecs)");
             }
         }
 
