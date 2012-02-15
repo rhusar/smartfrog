@@ -39,4 +39,19 @@ public interface IncludeHandler {
      * @exception Exception error while locating or parsing include
      */
     public Vector parseInclude(String include, String codebase) throws Exception;
+
+    /**
+     * Parses given include. This implementation constructs a new DefaultParser
+     * on the result of openInclude and uses the AttributeList methods to
+     * construct the vector of attributes
+     *
+     * @param include include file to parse
+     * @param codebase an optional codebase where the include may be found. If null, use the default code base
+     * @param optional a boolean that states whether it is an error for the include file not to exist (false = not optional)
+     *
+     * @return vector of attribute name X value pairs
+     *
+     * @exception Exception error while locating or parsing include
+     */
+    public Vector parseInclude(String include, String codebase, boolean optional) throws Exception;
 }
