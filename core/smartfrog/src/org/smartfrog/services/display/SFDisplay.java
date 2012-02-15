@@ -33,6 +33,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -213,6 +215,15 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
             }
             if (WindowUtilities.areGraphicsAvailable()) {
                 display = new Display(nameDisplay, this, null);
+                // disable display grabbing window manager focus when first deployed
+                display.setFocusableWindowState(false);
+                // re-enable focus once mouse enters display
+        		display.addMouseListener(new MouseAdapter() {
+        			@Override 
+        			public void mouseEntered(MouseEvent e) {
+        				display.setFocusableWindowState(true);				
+        			}
+        		});
                 display.setVisible(false);
                 display.setSize(width, height);
                 display.setFontSize(fontSize);
