@@ -68,4 +68,19 @@ public class NullIncludeHandler implements IncludeHandler {
         return new Vector();
     }
 
+    /**
+     * Doesn't parse the given include.
+     *
+     * @param include include file to not parse
+     * @param codebase an optional codebase where the include may be found. If null, use the default codebase
+     * @param optional a boolean that states whether it is an error for the include file not to exist (false = not optional)
+     *
+     * @return empty vector
+     *
+     * @exception Exception should never occur!
+     */
+    public Vector parseInclude(String include, String codebase, boolean optional) throws Exception {
+        return new Vector();
+    }
+
 }

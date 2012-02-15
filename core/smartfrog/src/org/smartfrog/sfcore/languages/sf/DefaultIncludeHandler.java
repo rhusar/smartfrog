@@ -74,6 +74,7 @@ public class DefaultIncludeHandler implements IncludeHandler {
         logIncludes = Boolean.getBoolean(SYSPROP_LOG_INCLUDES);
     }
 
+
     /**
      * Parses given include. This implementation constructs a new DefaultParser
      * on the result of openInclude and uses the AttributeList methods to
@@ -87,15 +88,39 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * @exception Exception error while locating or parsing include
      */
     public Vector parseInclude(String include, String codebase) throws Exception {
+        return parseInclude(include, codebase, false);
+    }
+
+    /**
+     * Parses given include. This implementation constructs a new DefaultParser
+     * on the result of openInclude and uses the AttributeList methods to
+     * construct the vector of attributes
+     *
+     * @param include include file to parse
+     * @param codebase an optional codebase where the include may be found. If null, use the default codebase
+     * @param optional a boolean that states whether it is an error for the include file not to exist (false = not optional)
+     *
+     * @return vector of attribute name X value pairs
+     *
+     * @exception Exception error while locating or parsing include
+     */
+    public Vector parseInclude(String include, String codebase, boolean optional) throws Exception {
         if (logIncludes) System.out.println("Opening include file \"" + include + "\"");
-        return (new DefaultParser(openInclude(include, codebase),
-                new DefaultIncludeHandler(actualCodebase(codebase)))).AttributeList();
+        Vector result = new Vector();
+        try {
+            result = (new DefaultParser(openInclude(include, codebase),
+                        new DefaultIncludeHandler(actualCodebase(codebase)))).AttributeList();
+        } catch (Exception e) {
+            if (!optional) throw e;
+            if (!e.getMessage().startsWith("Include")) throw e;
+        }
+        return result;
     }
 
     /**
      * Locate the include and returns an input stream on it. This uses
      * SFSystem.stringToURL to check whether include is a URL or a file. On
-     * failure it tries to use standard getResourceAsStream to get the inlude
+     * failure it tries to use standard getResourceAsStream to get the include
      * of the classpath. Subclasses can override to provide additional means
      * of locating includes.
      *

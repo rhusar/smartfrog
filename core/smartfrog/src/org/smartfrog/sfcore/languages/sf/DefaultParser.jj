@@ -139,9 +139,9 @@ public class DefaultParser {
   }
 
 
-  protected Vector parseInclude(String fName, String codebase) throws ParseException {
+  protected Vector parseInclude(String fName, String codebase, boolean optional) throws ParseException {
     try {
-      return includeHandler.parseInclude(fName, codebase);
+      return includeHandler.parseInclude(fName, codebase, optional);
     } catch (TokenMgrError tex) {
       throw new TokenMgrError("In include file " + fName
                               +(codebase != null? ("in code base "+ codebase):"")
@@ -222,6 +222,7 @@ TOKEN : /* reserved words */
  | <HERE: "HERE">
  | <HOST: "HOST">
  | <INCLUDE: "#include">
+ | <INCLUDEOPTIONALLY: "#include?">
  | <PROPERTY: "PROPERTY">
  | <IPROPERTY: "IPROPERTY">
  | <ENVPROPERTY: "ENVPROPERTY">
@@ -486,10 +487,11 @@ void Includes(Vector res) :
 {
      String codebase = null;
      String fName;
+     boolean optional = false;
 }
 {
-( [<CODEBASE> codebase = String() ] <INCLUDE> fName = String()
-         { Vector tmp = parseInclude(fName, codebase);
+( [<CODEBASE> codebase = String() ] (<INCLUDE> | (<INCLUDEOPTIONALLY> {optional = true;}))  fName = String()
+         { Vector tmp = parseInclude(fName, codebase, optional);
            for(Enumeration e = tmp.elements(); e.hasMoreElements(); )
              res.addElement(e.nextElement());
        } )
