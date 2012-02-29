@@ -1,7 +1,7 @@
 package org.smartfrog.services.hadoop.grumpy
 
+import groovy.util.logging.Commons
 import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
 import org.apache.hadoop.io.IntWritable
@@ -11,8 +11,9 @@ import org.apache.hadoop.mapred.JobConf
 /**
  * This is a groovy test base for Hadoop MR jobs
  */
+@Commons
 abstract class GrumpyHadoopTestBase extends GroovyTestCase
-implements Closeable {
+        implements Closeable {
 
     final static String TEST_DATA_DIR = "test.build.data"
     final static String HADOOP_LOG_DIR = "hadoop.log.dir"
@@ -30,9 +31,8 @@ implements Closeable {
      */
 
     public static final String TEST_OUTPUT_DATA_DIR = "test.output.data.dir"
-    LocalMRCluster mrCluster
-    LocalDFSCluster dfsCluster
-    Log log = LogFactory.getLog(this.getClass())
+    protected LocalMRCluster mrCluster
+    protected LocalDFSCluster dfsCluster
 
     void createMrCluster(int nodes, String fsURI, JobConf conf) {
         mrCluster = LocalMRCluster.createInstance(nodes, fsURI, 1, null, conf)
