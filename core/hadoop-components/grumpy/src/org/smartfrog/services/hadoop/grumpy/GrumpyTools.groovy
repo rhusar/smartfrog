@@ -1,12 +1,10 @@
 package org.smartfrog.services.hadoop.grumpy
 
+import groovy.util.logging.Commons
 import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
+@Commons
 class GrumpyTools {
-
-    static final Log LOG = LogFactory.getLog(GrumpyTools.class)
-
 
     static int dumpDir(Log dumpLog, File dir) {
         if (!dir.exists()) {
@@ -41,7 +39,7 @@ class GrumpyTools {
     static def deleteDirectoryTree(File dir) {
         if (dir.exists()) {
             if (dir.isDirectory()) {
-                LOG.info("Cleaning up " + dir)
+                log.info("Cleaning up " + dir)
                 //delete the children
                 dir.eachFile { file ->
                     log.info("deleting " + file)
@@ -53,7 +51,7 @@ class GrumpyTools {
             }
         } else {
             //not found, do nothing
-            LOG.debug("No output dir yet")
+            log.debug("No output dir yet")
         }
     }
 }

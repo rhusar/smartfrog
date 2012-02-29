@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.hadoop.grumpy
 
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Commons
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.mapreduce.Job
@@ -30,9 +30,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 /**
  * This class 
  */
+@Commons
 class GrumpyJob extends Job {
 
-    static final LOG = LogFactory.getLog(GrumpyJob.class)
 
     GrumpyJob(String jobName) {
         super(null, jobName)
@@ -48,12 +48,12 @@ class GrumpyJob extends Job {
 
 
     void setupOutput(String outputURL) {
-        LOG.info("Output directory is ${outputURL}")
+        log.info("Output directory is ${outputURL}")
         FileOutputFormat.setOutputPath(this, new Path(outputURL));
     }
 
     void setupInput(String inputURL) {
-        LOG.info("Input Path is ${inputURL}")
+        log.info("Input Path is ${inputURL}")
         FileInputFormat.addInputPath(this, new Path(inputURL));
     }
 
