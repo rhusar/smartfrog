@@ -22,8 +22,8 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
     public static final String ATTR_MANAGE_DATA_DFS_DIRS = "manageDataDfsDirs"
     public static final String ATTR_STARTUP_OPTION = "startupOption"
     public static final String ATTR_SIMULATED_CAPACITIES = "simulatedCapacities"
-    LocalDFSCluster cluster
-    String filesystemUri
+    private LocalDFSCluster cluster
+    private String filesystemUri
 
     /**
      * Create the mini dfs cluster

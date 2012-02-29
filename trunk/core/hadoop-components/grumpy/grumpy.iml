@@ -10,11 +10,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="groovy-1.8.3" level="application" />
-    <orderEntry type="library" exported="" name="hadoop-0.20.203" level="project" />
     <orderEntry type="library" exported="" name="commons-logging" level="application" />
-    <orderEntry type="library" name="JUnit4" level="application" />
-    <orderEntry type="library" scope="TEST" name="Log4J" level="application" />
+    <orderEntry type="library" exported="" scope="TEST" name="Log4J" level="application" />
+    <orderEntry type="module" module-name="Branch-1" exported="" />
+    <orderEntry type="module" module-name="groovy" exported="" />
   </component>
 </module>
 

@@ -24,11 +24,13 @@ HadoopOptions extends {
   dfs.replication 1;
 
   //JVM options
-  hadoop.opts "-server -XX:+UseCompressedOops -Dcom.sun.management.jmxremote"
+  hadoop.server.opts "-server -XX:+UseCompressedOops -Dcom.sun.management.jmxremote";
+  hadoop.client.opts "-Dcom.sun.management.jmxremote";
+  hadoop.opts hadoop.client.opts;
 }
 
 HadoopComponent extends Component {
-  hadoopVersion "0.20.203.0";
+  hadoopVersion "1.0.0";
   module TBD
   componentsDir TBD;
   hadoopCompPath (componentsDir ++ "/hadoop/");
@@ -52,7 +54,7 @@ HadoopComponent extends Component {
   tarFile ("hadoop-" ++ hadoopVersion ++ ".tar.gz")
   resolvedTarFile  (hadoopCompPath ++ "artifacts/" ++ tarFile);
   //flag to turn tar expanding on or off
-  expandTar true;
+  expandTar false;
 }
 
 HadoopArtifacts extends HadoopComponent {

@@ -44,7 +44,15 @@ class LocalMRCluster extends MiniMRCluster implements ClusterURI {
                            String[] hosts,
                            JobConf conf,
                            int numTrackerToExclude) {
-        super(jobTrackerPort, taskTrackerPort, numTaskTrackers, namenode, numDir, racks, hosts, conf,
+        super(jobTrackerPort, 
+                taskTrackerPort, 
+                numTaskTrackers, 
+                namenode, 
+                numDir, 
+                racks, 
+                hosts, 
+                null,
+                conf,
                 numTrackerToExclude)
     }
 

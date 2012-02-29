@@ -65,7 +65,7 @@ description="the test WAR File" visibility="private"/>-->
                 name="sf-grumpy"
                 rev="latest.integration"
                 changing="true"
-                conf="build,runtime->default;redist->redist"/>
+                conf="build,compile,runtime->default;redist->redist"/>
 
     <dependency org="org.smartfrog"
                 name="sf-grinstall"
@@ -113,6 +113,7 @@ description="the test WAR File" visibility="private"/>-->
                 changing="true"
                 rev="latest.integration"
                 conf="server->default,jsp"/>
+    
     <dependency org="org.smartfrog"
                 name="sf-json"
                 changing="true"
@@ -129,7 +130,7 @@ description="the test WAR File" visibility="private"/>-->
     We declare dependencies only on the hadoop masters
     -->
 
-    <!-- for 0.20.x only hadoop-core is depended upon-->
+    <!-- for 1.x only hadoop-core is depended upon-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-core"
                 rev="${hadoop.version}"
@@ -144,6 +145,7 @@ description="the test WAR File" visibility="private"/>-->
       <exclude org="net.sf.kosmosfs"/>
       <exclude org="org.mortbay.jetty"/>
       <exclude org="org.slf4j"/>
+      <exclude org="org.codehaus.jackson"/>
     </dependency>
 
     <dependency org="org.apache.hadoop"

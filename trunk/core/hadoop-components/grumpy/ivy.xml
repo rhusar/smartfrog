@@ -81,6 +81,10 @@
       <exclude org="net.sf.kosmosfs"/>
       <exclude org="org.mortbay.jetty"/>
       <exclude org="org.slf4j"/>
+      <exclude org="org.codehaus.jackson"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.apache.ftpserver"/>
+      <exclude org="org.apache.mina"/>
     </dependency>
 
     <dependency org="org.apache.hadoop"
@@ -88,7 +92,6 @@
                 rev="${hadoop.version}"
                 changing="true"
                 conf="redist->default">
-
       <exclude org="com.thoughtworks.paranamer"/>
       <exclude org="commons-httpclient"/>
       <exclude org="commons-digester"/>
@@ -96,10 +99,12 @@
       <exclude org="hsqldb"/>
       <exclude org="net.java.dev.jets3t"/>
       <exclude org="net.sf.kosmosfs"/>
-      <exclude org="org.apache.ftpserver"/>
-      <exclude org="org.apache.mina"/>
       <exclude org="org.mortbay.jetty"/>
       <exclude org="org.slf4j"/>
+      <exclude org="org.codehaus.jackson"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.apache.ftpserver"/>
+      <exclude org="org.apache.mina"/>
     </dependency>
 
   </dependencies>

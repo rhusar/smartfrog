@@ -2,15 +2,7 @@
 <project name="hadoop-install" default="default">
 
     <description>
-        This build file exists to build and test the SmartFrog installer
-
-        It generates
-        * installer-${installer.version}.jar, containing the binaries of installer and the default
-        * SF description files.
-
-        These artifacts can be published locally, or written to the
-        ${antbuild.dir}/repository/internal repository, where
-        ${antbuild.dir} defaults to ../antbuild
+        This build file exists to deploy a local Hadoop cluster in pseudo-distributed mode.
     </description>
 
   <!-- override point -->
@@ -65,7 +57,8 @@
     
   </target>
   
-  <target name="worker" depends="ready-to-hadoop">
+  <target name="worker" depends="ready-to-hadoop"
+      description="Start a worker node">
     <hdeploy>
       <application name="worker" >
         #include "${hadoop.sf}"
@@ -76,11 +69,12 @@
     </hdeploy>  
   </target>
 
-  <target name="stop-worker" depends="ready-to-hadoop">
+  <target name="stop-worker" depends="ready-to-hadoop" description="Stop a worker node">
     <hstop application="worker"/>
   </target>
 
-  <target name="master" depends="ready-to-hadoop">
+  <target name="master" depends="ready-to-hadoop"
+          description="Start a master node">
     <hdeploy>
       <application name="master">
         #include "${hadoop.sf}"
@@ -95,7 +89,8 @@
     </hdeploy>
   </target>
 
-  <target name="stop-master" depends="ready-to-hadoop">
+  <target name="stop-master" depends="ready-to-hadoop"
+          description="Stop a master node">
     <hstop application="master"/>
   </target>
 

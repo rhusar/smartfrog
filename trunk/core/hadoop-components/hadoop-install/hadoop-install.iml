@@ -7,14 +7,12 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/components/hadoop/artifacts" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Groovy" level="application" />
     <orderEntry type="module" module-name="grinstall" exported="" />
     <orderEntry type="module" module-name="testharness" />
-    <orderEntry type="library" exported="" name="hadoop-0.20.203" level="application" />
     <orderEntry type="module" module-name="hadoop-operations" exported="" />
   </component>
 </module>
