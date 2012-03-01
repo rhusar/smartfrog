@@ -59,7 +59,7 @@
    <dependency org="commons-vfs" name="commons-vfs"
      rev="${commons-vfs.version}" force="true"
      conf="redist->default">
-    <exclude org="jsch"/>
+    <exclude org="com.jcraft"/>
     <exclude org="httpclient"/>
     <exclude org="org.apache.httpcomponents"/>
     <exclude org="antlr"/>
