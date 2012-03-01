@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="bluemine" default="default">
+
+  <description>
+    Bluetooth Mining application
+  </description>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="groovy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+
+  <!--  <property name="unit.tests" value="true"/>-->
+  <property name="is.component" value="true"/>
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+
+  <target name="prepare-hadoop-dirs" depends="init">
+    <property name="test.input.data.dir" location="data"/>
+    <property name="test.output.data.dir" location="${test.work.dir}"/>
+  </target>
+
+  <target name="ready-to-test" depends="common.ready-to-test, prepare-hadoop-dirs"/>
+
+  <target name="unit-tests" depends="ready-to-test"
+    if="unit.tests.enabled"
+    description="run the unit tests">
+  </target>
+
+
+  <target name="ready-to-hadoop"
+    depends="declare-extended-smartfrog-tasks, init-deploy-properties">
+    <presetdef name="hdeploy">
+      <sf-deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="${deploy.timeout}"
+        >
+        <!--<codebase url="${codebase}"/>-->
+        <jvmarg line="${daemon.jvmargs}"/>
+        <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <syspropertyset refid="daemon-properties"/>
+      </sf-deploy>
+    </presetdef>
+
+    <presetdef name="hstop">
+      <sf-undeploy classpathref="run.classpath"
+        host="${deploy.host}"
+        >
+        <jvmarg line="${daemon.jvmargs}"/>
+        <propertyfile file="${runtime.properties}" optional="true"/>
+        <syspropertyset refid="proxy.settings"/>
+        <syspropertyset refid="daemon-properties"/>
+      </sf-undeploy>
+    </presetdef>
+
+    <property name="repository.dir" location="."/>
+    <property name="components.dir" location="components"/>
+    <property name="hadoop.sf" value="components/hadoop/hadoop.sf"/>
+
+    <property name="hadoop.namenodeHost" value="localhost"/>
+    <property name="hadoop.java.home" value="${java.home}"/>
+
+  </target>
+
+  <target name="worker" depends="ready-to-hadoop">
+    <hdeploy>
+      <application name="worker">
+        #include "${hadoop.sf}"
+        sfConfig extends HadoopWorker {
+        componentsDir "${components.dir}";
+        }
+      </application>
+    </hdeploy>
+  </target>
+
+  <target name="stop-worker" depends="ready-to-hadoop">
+    <hstop application="worker"/>
+  </target>
+
+  <target name="master" depends="ready-to-hadoop">
+    <hdeploy>
+      <application name="master">
+        #include "${hadoop.sf}"
+
+        //HadoopOptions:namenodeHost "localhost";
+        HadoopOptions:java.home PROPERTY java.home;
+
+        sfConfig extends HadoopMaster {
+        componentsDir "${components.dir}";
+        }
+      </application>
+    </hdeploy>
+  </target>
+
+  <target name="stop-master" depends="ready-to-hadoop">
+    <hstop application="master"/>
+  </target>
+
+</project>

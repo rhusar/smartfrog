@@ -1,0 +1,57 @@
+
+This project exists to play with Hadoop performing some basic datamining
+activites with Hadoop. Hive. Pig and R could probably do them more easily,
+but this is very much a learning exercise and regression testing, as well
+as a driver for hadoop-ops features.
+
+Entries look like the following
+
+gate1,b46cca4d3f5f313176e50a0e38e7fde3,,2006-10-30,16:06:17,Fleurball
+gate1,f1191b79236083ce59981e049d863604,,2006-10-30,16:06:20,vklaptop
+gate1,b45c7795f5be038dda8615ab44676872,,2006-10-30,16:06:21,Franky Panky
+gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-10-30,16:06:23,
+gate1,eef1836efddf8dbfe5e2a3cd5c13745f,,2006-10-30,16:06:24,Vas
+
+Fields:
+
+sensor ID,
+hashed MAC
+?
+date,
+time,
+name (which can be non-ASCII)
+
+A lot of names have the chars
+Jonathan Skinner*€™s Computer
+
+which is probably an apostrophe
+
+other names are blank or (unknown):
+gate1,03ce5858a9258e012821eac276a4ee0b,,2006-11-07,12:55:52,(unknown)
+
+There is a need to debounce a lot of the entries and convert from events into a (time+duration) event
+
+gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:09:03,Henry
+gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:09:06,vklaptop
+gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:09:08,SGH-E370
+gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-11-08,17:09:09,
+gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:09:17,SGH-E370
+gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:09:21,Henry
+gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:09:25,vklaptop
+gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-11-08,17:09:25,
+gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:09:36,vklaptop
+gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:09:39,Henry
+gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:09:39,SGH-E370
+gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-11-08,17:09:40,
+gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:09:51,Henry
+gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-11-08,17:09:52,
+gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:09:54,SGH-E370
+gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:09:57,vklaptop
+gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:10:08,Henry
+gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-11-08,17:10:08,
+gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:10:11,vklaptop
+gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:10:12,SGH-E370
+gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:10:24,Henry
+gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:10:30,SGH-E370
+gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:10:34,vklaptop
+
