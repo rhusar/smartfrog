@@ -2,6 +2,7 @@ package org.smartfrog.services.hadoop.grumpy
 
 import groovy.util.logging.Commons
 import org.apache.commons.logging.Log
+import groovy.util.logging.Commons
 
 @Commons
 class GrumpyTools {

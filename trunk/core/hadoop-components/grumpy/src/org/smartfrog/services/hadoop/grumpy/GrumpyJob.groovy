@@ -26,13 +26,13 @@ import org.apache.hadoop.fs.Path
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+import groovy.util.logging.Commons
 
 /**
  * This class 
  */
 @Commons
 class GrumpyJob extends Job {
-
 
     GrumpyJob(String jobName) {
         super(null, jobName)

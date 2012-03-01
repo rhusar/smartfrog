@@ -1,7 +1,7 @@
 package org.smartfrog.services.hadoop.grumpy
 
-import groovy.util.logging.Commons
 import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
 import org.apache.hadoop.io.IntWritable
@@ -11,10 +11,9 @@ import org.apache.hadoop.mapred.JobConf
 /**
  * This is a groovy test base for Hadoop MR jobs
  */
-@Commons
 abstract class GrumpyHadoopTestBase extends GroovyTestCase
         implements Closeable {
-
+    protected static Log LOG = LogFactory.getLog(this);
     final static String TEST_DATA_DIR = "test.build.data"
     final static String HADOOP_LOG_DIR = "hadoop.log.dir"
 
@@ -81,8 +80,8 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
                 conf,
                 mapClass,
                 reduceClass)
-        job.setMapOutputKeyClass(Text.class)
-        job.setMapOutputValueClass(IntWritable.class)
+        job.mapOutputKeyClass = Text.class
+        job.mapOutputValueClass = IntWritable.class
         return job
     }
 
@@ -91,9 +90,9 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
                              Class mapClass,
                              Class reduceClass) {
         GrumpyJob job = new GrumpyJob(conf, name)
-        job.setJarByClass(mapClass)
-        job.setMapperClass(mapClass)
-        job.setReducerClass(reduceClass)
+        job.jarByClass = mapClass
+        job.mapperClass = mapClass
+        job.reducerClass = reduceClass
         return job
     }
 
@@ -118,7 +117,7 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
         if (!dataDirectory.exists()) {
             throw new IOException("Property ${TEST_INPUT_DATA_DIR} is set to a nonexistent directory ${dataDirectory}")
         }
-        if (!dataDirectory.isDirectory()) {
+        if (!dataDirectory.directory) {
             throw new IOException("Property ${TEST_INPUT_DATA_DIR} is not a directory: ${dataDirectory}")
         }
         return dataDirectory;
@@ -160,7 +159,7 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
     }
 
     File getDataFile(String filename) {
-        File dataDir = getTestDataDir()
+        File dataDir = testDataDir
         File testData = new File(dataDir, filename)
         if (!testData.exists()) {
             throw new IOException("Missing file ${testData}")
