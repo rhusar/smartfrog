@@ -18,8 +18,6 @@ class BlueEvent implements Writable {
      */
     static final Epoch = new Date(0)
 
-
-
     BlueEvent() {
         reset()
     }
@@ -50,7 +48,7 @@ class BlueEvent implements Writable {
         out.writeUTF(device)
         out.writeUTF(gate)
         out.writeUTF(name)
-        out.writeLong(datestamp.getTime())
+        out.writeLong(datestamp.time)
         out.writeLong(duration)
     }
 
@@ -63,4 +61,7 @@ class BlueEvent implements Writable {
         duration = src.readLong()
     }
 
+    long getEndtime() {
+        duration + datestamp.time
+    }
 }

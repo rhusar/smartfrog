@@ -9,9 +9,9 @@ import org.smartfrog.services.hadoop.bluemine.events.EventParser
 abstract class AbstractBlueMapper extends Mapper<LongWritable, Text, Text, BlueEvent>
             implements BluemineOptions {
 
-    EventParser parser = new EventParser()
-    Text outputKey = new Text()
-    BlueEvent event = new BlueEvent()
+    protected EventParser parser = new EventParser()
+    protected Text outputKey = new Text()
+    protected BlueEvent event = new BlueEvent()
 
     /**
      * Parse and emit events
