@@ -1,11 +1,12 @@
 package org.smartfrog.services.hadoop.bluemine.events
 
 import org.apache.hadoop.io.Writable
+import org.apache.hadoop.io.WritableComparable
 
 /**
  * Events are parseable and writeable
  */
-class BlueEvent implements Writable {
+class BlueEvent implements Writable, WritableComparable {
 
     String device
     String gate
@@ -46,12 +47,14 @@ class BlueEvent implements Writable {
     @Override
     void write(DataOutput out) {
         out.writeUTF(device)
-        out.writeUTF(gate)
-        out.writeUTF(name)
-        out.writeLong(datestamp.time)
+        out.writeUTF(denullify(gate))
+        out.writeUTF(denullify(name))
+        out.writeLong(datestamp? datestamp.time : 0)
         out.writeLong(duration)
     }
 
+    String denullify(String s) { s!=null?s:"" }
+    
     @Override
     void readFields(DataInput src) throws IOException {
         device = src.readUTF()
@@ -64,4 +67,13 @@ class BlueEvent implements Writable {
     long getEndtime() {
         duration + datestamp.time
     }
+
+    @Override
+    int compareTo(Object o) {
+        BlueEvent that = (BlueEvent) o;
+        if (!device) return  -1
+        return device.compareTo(that.device)
+    }
+
+
 }

@@ -12,7 +12,6 @@ class MapToFellowTraveller extends AbstractBlueMapper {
 
     @Override
     void process(final LongWritable key, final Mapper.Context context) {
-        super.process(key, context)
         //event is the curret event.
         Date started = event.datestamp
         long startedMs = started.time;
@@ -34,6 +33,8 @@ class MapToFellowTraveller extends AbstractBlueMapper {
         if (!isAlreadyActive) {
             //not already active, so issue a new event for each of the overlapped devices that we hadn't encountered before.
             activeEvents.each() { it ->
+                String outkey = event.device
+                outputKey.set(outkey, context)
                 context.write(outputKey, it)
             }
 

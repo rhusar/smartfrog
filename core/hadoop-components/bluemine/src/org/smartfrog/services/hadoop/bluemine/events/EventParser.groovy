@@ -22,6 +22,8 @@ class EventParser {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'Z'HH:mm:ss",
                                                        Locale.ENGLISH)
 
+    boolean parseDatestamp = true;
+    
     /**
      * Parse a text line
      * @param line
@@ -33,7 +35,7 @@ class EventParser {
 
     BlueEvent parse(String line) {
         BlueEvent event = new BlueEvent();
-        parse(event, line)
+        parse(event, line, "")
         return event;
     }
 
@@ -42,21 +44,25 @@ class EventParser {
      * @param event
      * @param line
      */
-    public void parse(BlueEvent event, String line) {
+    public void parse(BlueEvent event, String line, String context) {
         String[] fields = line.split(",")
         if (fields.length < 5) {
-            throw new IOException("Only ${fields.length} fields in \"${line}\"")
+            throw new IOException("Only ${fields.length} fields in \"${line}\" $context")
         }
-        event.device = trim(fields[FIELD_DEV]);
-        event.gate = trim(fields[FIELD_GATE]);
-        event.datestamp = buildDate(fields[FIELD_DATE], fields[FIELD_TIME])
-        String durationField = trim(fields[FIELD_DURATION]);
-        event.duration = durationField != null ? Integer.parseInt(durationField) : 0
-        event.name = fields.length > FIELD_NAME ? trim(fields[FIELD_NAME]) : ""
+        try {
+            event.device = trim(fields[FIELD_DEV]);
+            event.gate = trim(fields[FIELD_GATE]);
+            event.datestamp = buildDate(fields[FIELD_DATE], fields[FIELD_TIME])
+            String durationField = trim(fields[FIELD_DURATION]);
+            event.duration = durationField != null ? Integer.parseInt(durationField) : 0
+            event.name = fields.length > FIELD_NAME ? trim(fields[FIELD_NAME]) : ""
+        } catch (Exception e) {
+            throw new IOException("When parsing \"${line}\": $e $context", e) 
+        }
     }
 
-    void parse(BlueEvent event, Text line) {
-        parse(event, line.toString())
+    void parse(BlueEvent event, Text line, String context) {
+        parse(event, line.toString(), context)
     }
 
 
@@ -67,7 +73,7 @@ class EventParser {
 
 
     Date buildDate(String day, String time) {
-        return dateFormat.parse(trim(day) + "Z" + trim(time))
+        return parseDatestamp ? dateFormat.parse(trim(day) + "Z" + trim(time)) : null
     }
 
 

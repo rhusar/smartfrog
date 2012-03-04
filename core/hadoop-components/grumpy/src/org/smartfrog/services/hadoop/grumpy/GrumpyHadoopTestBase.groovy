@@ -69,7 +69,6 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
     Configuration createJobConfiguration() {
         Configuration conf = new Configuration();
         return conf
-
     }
 
     GrumpyJob createTextKeyIntValueJob(String name,
@@ -100,16 +99,16 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
         job.setupOutput(outputURL)
     }
 
-    void setupInput(GrumpyJob job, String inputURL) {
-        job.setupInput(inputURL)
+    void addInput(GrumpyJob job, String inputURL) {
+        job.addInput(inputURL)
     }
 
     void setupOutput(GrumpyJob job, File output) {
         job.setupOutput(output)
     }
 
-    void setupInput(GrumpyJob job, File input) {
-        job.setupInput(input)
+    void addInput(GrumpyJob job, File input) {
+        job.addInput(input)
     }
 
     File getTestDataDir() {

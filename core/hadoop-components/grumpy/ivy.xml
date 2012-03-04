@@ -58,6 +58,14 @@
                 rev="${log4j.version}"
                 conf="test->master"
         />
+
+
+    <dependency org="org.smartfrog"
+                name="sf-loggingservices"
+                changing="true"
+                rev="latest.integration"
+                conf="test->default"/>
+    
     <!--it is essential that only the master JAR of commons logging
     is pulled in, as its dependencies are usually a mess, including things
     like out of date servlet APIs, bits of Avalon, etc.

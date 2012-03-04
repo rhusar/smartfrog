@@ -28,7 +28,7 @@ import org.apache.hadoop.mapred.RunningJob;
 import java.io.IOException;
 
 /**
- * This adds a new method to run a hob
+ * This adds a new method to run a job
  */
 @SuppressWarnings({"deprecation"})
 public abstract class JobRunningTool extends ConfiguredTool implements RunJob {

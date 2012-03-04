@@ -54,12 +54,6 @@
       </fail>
     </sequential>
     </macrodef>
-    <loadclass class="org.apache.jasper.servlet.JspServlet" />
-  </target>
-
-
-  <target name="loadclass" depends="ready-to-test">
-    <loadclass class="org.apache.hadoop.hdfs.server.namenode.JspHelper" />
   </target>
 
   <!--create the JAR manifest with a specific entry point that is a "pre-main class" that holds extra powers-->
