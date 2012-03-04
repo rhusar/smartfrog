@@ -54,7 +54,8 @@ HadoopComponent extends Component {
   tarFile ("hadoop-" ++ hadoopVersion ++ ".tar.gz")
   resolvedTarFile  (hadoopCompPath ++ "artifacts/" ++ tarFile);
   //flag to turn tar expanding on or off
-  expandTar false;
+//  expandTar false;
+  expandTar true;
 }
 
 HadoopArtifacts extends HadoopComponent {

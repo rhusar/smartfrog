@@ -13,4 +13,11 @@ class MapToDevice extends AbstractBlueMapper {
         return event.device
     }
 
+    @Override
+    protected void setup(Mapper.Context context) {
+        super.setup(context)
+        parser.parseDatestamp=false
+    }
+
+
 }

@@ -55,3 +55,48 @@ gate1,d8011ec8a06d414af3e71e53a7beacb9,,2006-11-08,17:10:24,Henry
 gate1,f2353740396823453b863f5b132578ac,,2006-11-08,17:10:30,SGH-E370
 gate1,f1191b79236083ce59981e049d863604,,2006-11-08,17:10:34,vklaptop
 
+
+\subsection{errors}
+
+When parsing "2007-08-10,18:55:37,0015A03D2AC6,23,e07f94f6ee347cfc892b14f493f60693,,2007-08-10,18:55:37,": java.text.ParseException: Unparseable date: "23Ze07f94f6ee347cfc892b14f493f60693" at line 314817344
+
+
+\subsection{debouncer}
+
+The debouncer exists to deal with the situation that a device may not be visible during some sightings, but only 
+because it missed the scan; it appears in the previous and later ones. 
+
+How it works
+
+-it retains a set of all devices seen in the debounce window
+-when devices were last seen out this window, they are emitted to the debounced files
+-when a device is seen for the first time (i.e. it is not in the set), it is added, duration set to the default
+ scan period (30s)
+-when a device is 
+
+\subsection{fellow traveller}
+
+The fellow traveller locator tries to identify situations where devices overlap others in a gate sighting.
+
+The current algorithm, in order to parellise, is weak in that it doesn't guarantee discovery over boundary crossings.
+
+-uses the notion of an active set, evicts things too old. 
+
+-when a (device1, device2) event occurs where dev2 is not in the active set, a new colo event is raised of 
+ dev1-dev2 ordered by which mac addr sorts less than the other alphanumerically.
+ 
+-The reducer goes through all these events and discards all lists where the #of hits is less than a defined threshold,
+ leaving only the frequently seen devices.
+ 
+ 
+ Dev notes
+ -get that error handling in from day 1, log and increment error counter. Annoying in a half hour run
+ -design your serializer to be robust against incomplete/null entries.
+ 
+Runs
+
+-uncompressed scan 1 - Total time: 25 minutes 50 seconds
+
+Compressed: 
+
+Total time: 22 minutes 21 seconds

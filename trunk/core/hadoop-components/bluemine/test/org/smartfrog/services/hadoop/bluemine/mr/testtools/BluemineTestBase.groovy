@@ -24,7 +24,7 @@ class BluemineTestBase extends GrumpyHadoopTestBase {
     void addTestDataset(GrumpyJob job) {
         String sourceFile = System.getProperty(TEST_INPUT_DATA_FILE, GATE1_50K);
         File file = getDataFile(sourceFile)
-        setupInput(job, file)
+        addInput(job, file)
     }
 
     /**

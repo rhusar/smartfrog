@@ -26,7 +26,6 @@ import org.apache.hadoop.fs.Path
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import groovy.util.logging.Commons
 
 /**
  * This class 
@@ -52,7 +51,7 @@ class GrumpyJob extends Job {
         FileOutputFormat.setOutputPath(this, new Path(outputURL));
     }
 
-    void setupInput(String inputURL) {
+    void addInput(String inputURL) {
         log.info("Input Path is ${inputURL}")
         FileInputFormat.addInputPath(this, new Path(inputURL));
     }
@@ -63,10 +62,42 @@ class GrumpyJob extends Job {
         setupOutput(outputURL)
     }
 
-    void setupInput(File input) {
+    void addInput(File input) {
         String inputURL = GrumpyTools.convertToUrl(input)
-        setupInput(inputURL)
+        addInput(inputURL)
     }
 
+    void addJarList(List jarlist) {
+        String listAsString = GrumpyTools.joinList(jarlist,",")
+        configuration.set(ClusterConstants.JOB_KEY_JARS, listAsString)
+    }
 
+    /**
+     * Add the groovy jar. if this is groovy-all, you get everything.
+     */
+    String addGroovyJar() {
+        return addJar(GString.class)
+    }
+
+    String addJar(Class jarClass) {
+        String file = GrumpyTools.findContainingJar(jarClass)
+        if (!file) {
+            throw new FileNotFoundException("No JAR containing class \"${jarClass}\"")
+        }
+        log.info("Jar containing class ${jarClass} is ${file}")
+        addJar(file)
+        file
+    }
+    
+    void addJar(String jarFile) {
+        String jarlist = configuration.get(ClusterConstants.JOB_KEY_JARS, null)
+        if (jarlist != null) {
+            jarlist = jarlist + "," + jarFile;
+        } else {
+            jarlist = jarFile;
+        }
+        configuration.set(ClusterConstants.JOB_KEY_JARS, jarlist)
+    }
+    
+    
 }

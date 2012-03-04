@@ -106,4 +106,23 @@
     <hstop application="master"/>
   </target>
 
+  <target name="devcount" depends="ready-to-test">
+    <property name="src.data.dir" location="data" />
+    <property name="dest.data.dir" location="build/test/output" />
+    <delete dir="${dest.data.dir}" />
+    <java failonerror="true"
+          fork="true"
+          classpathref="tests.run.classpath"
+          classname="org.smartfrog.services.hadoop.bluemine.jobs.DevCount" >
+      <jvmarg value="-Djava.security.krb5.realm=" />
+      <jvmarg value="-Djava.security.krb5.kdc=" />
+      <arg value="-v" />
+      <arg value="-s" />
+      <arg file="${src.data.dir}" />
+      <arg value="-o" />
+      <arg file="${dest.data.dir}" />
+      <arg value="-p" />
+      <arg file="bluemine.properties" />
+   </java> 
+  </target>  
 </project>
