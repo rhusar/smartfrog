@@ -11,6 +11,8 @@ HadoopOptions extends {
   // override this when not running tests
   hadoop.dir PROPERTY test.work.dir;
 
+  hadoop.tmp.dir PROPERTY 
+
   //get the Java home value from the OS
   java.home "/usr/java/jdk";
 
@@ -27,6 +29,8 @@ HadoopOptions extends {
   hadoop.server.opts "-server -XX:+UseCompressedOops -Dcom.sun.management.jmxremote";
   hadoop.client.opts "-Dcom.sun.management.jmxremote";
   hadoop.opts hadoop.client.opts;
+
+  expandTar OPTIONAL(true)  PROPERTY test.expand.hadoop.tar;
 }
 
 HadoopComponent extends Component {
@@ -53,9 +57,9 @@ HadoopComponent extends Component {
 
   tarFile ("hadoop-" ++ hadoopVersion ++ ".tar.gz")
   resolvedTarFile  (hadoopCompPath ++ "artifacts/" ++ tarFile);
+
   //flag to turn tar expanding on or off
-//  expandTar false;
-  expandTar true;
+  expandTar HadoopOptions:expandTar;
 }
 
 HadoopArtifacts extends HadoopComponent {
