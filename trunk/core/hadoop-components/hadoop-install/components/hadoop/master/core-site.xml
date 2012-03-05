@@ -6,7 +6,7 @@
 <configuration>
 <property>
   <name>hadoop.tmp.dir</name>
-  <value>/tmp/hadoop-${comp.sfResolve("user")}</value>
+  <value>${comp.sfResolve("hadoop.tmp.dir")}</value>
 </property>
 
 <property>
