@@ -1,11 +1,11 @@
 package org.smartfrog.services.hadoop.bluemine.mr
 
+import groovy.util.logging.Commons
 import org.apache.hadoop.io.LongWritable
 import org.apache.hadoop.io.Text
-import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 import org.apache.hadoop.mapreduce.Mapper
+import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 import org.smartfrog.services.hadoop.bluemine.events.EventParser
-import groovy.util.logging.Commons
 
 /**
  * Be aware that Groovy's semantics of inner classes is very different from Java's (esp. when it comes
@@ -14,7 +14,7 @@ import groovy.util.logging.Commons
  */
 @Commons
 abstract class AbstractBlueMapper extends Mapper<LongWritable, Text, Text, BlueEvent>
-            implements BluemineOptions {
+implements BluemineOptions {
 
     protected EventParser parser = new EventParser()
     protected Text outputKey = new Text()
@@ -29,7 +29,7 @@ abstract class AbstractBlueMapper extends Mapper<LongWritable, Text, Text, BlueE
     @Override
     protected void map(LongWritable key, Text value, Mapper.Context context) {
         try {
-            parser.parse(event, value, "at offset "+key)
+            parser.parse(event, value, "at offset " + key)
         } catch (IOException ioe) {
             log.warn(ioe);
             context.getCounter("bluemine", "errors").increment(1)
@@ -55,7 +55,7 @@ abstract class AbstractBlueMapper extends Mapper<LongWritable, Text, Text, BlueE
      * @param context
      * @return
      */
-    abstract String selectOutputKey(BlueEvent event, Mapper.Context context) ;
+    abstract String selectOutputKey(BlueEvent event, Mapper.Context context);
 
     @Override
     protected void setup(Mapper.Context context) {
