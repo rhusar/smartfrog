@@ -12,7 +12,7 @@ import org.apache.hadoop.mapred.JobConf
  * This is a groovy test base for Hadoop MR jobs
  */
 abstract class GrumpyHadoopTestBase extends GroovyTestCase
-        implements Closeable {
+implements Closeable {
     protected static Log LOG = LogFactory.getLog(this);
     final static String TEST_DATA_DIR = "test.build.data"
     final static String HADOOP_LOG_DIR = "hadoop.log.dir"
@@ -41,7 +41,7 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
         JobConf conf = createClusterJobConf()
         ConfUtils.copyProperties(conf, properties);
         dfsCluster = LocalDFSCluster.createInstance(0, conf,
-                nodes, false, true, true, StartupOption.FORMAT, null, null, null);
+                                                    nodes, false, true, true, StartupOption.FORMAT, null, null, null);
 
     }
 
@@ -76,9 +76,9 @@ abstract class GrumpyHadoopTestBase extends GroovyTestCase
                                        Class mapClass,
                                        Class reduceClass) {
         GrumpyJob job = createBasicJob(name,
-                conf,
-                mapClass,
-                reduceClass)
+                                       conf,
+                                       mapClass,
+                                       reduceClass)
         job.mapOutputKeyClass = Text.class
         job.mapOutputValueClass = IntWritable.class
         return job

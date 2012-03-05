@@ -36,6 +36,7 @@ import java.util.Vector;
 /**
  * Format a file system
  */
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPathOperation {
 
 

@@ -68,7 +68,7 @@ class GrumpyJob extends Job {
     }
 
     void addJarList(List jarlist) {
-        String listAsString = GrumpyTools.joinList(jarlist,",")
+        String listAsString = GrumpyTools.joinList(jarlist, ",")
         configuration.set(ClusterConstants.JOB_KEY_JARS, listAsString)
     }
 
@@ -88,7 +88,7 @@ class GrumpyJob extends Job {
         addJar(file)
         file
     }
-    
+
     void addJar(String jarFile) {
         String jarlist = configuration.get(ClusterConstants.JOB_KEY_JARS, null)
         if (jarlist != null) {
@@ -98,6 +98,6 @@ class GrumpyJob extends Job {
         }
         configuration.set(ClusterConstants.JOB_KEY_JARS, jarlist)
     }
-    
-    
+
+
 }

@@ -71,9 +71,7 @@ class BluemineJob extends GrumpyJob {
         log.info(" map class is $mapClass reduce class is $reduceClass");
         String jar = GrumpyTools.findContainingJar(mapClass)
         log.info(" map class is at $jar");
-        job.setJarByClass(mapClass)
-        job.mapOutputKeyClass = Text
-        job.mapOutputValueClass = BlueEvent
+        job.jarByClass = mapClass
         job.mapperClass = mapClass
         job.reducerClass = reduceClass
         job

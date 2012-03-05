@@ -44,16 +44,16 @@ class LocalMRCluster extends MiniMRCluster implements ClusterURI {
                            String[] hosts,
                            JobConf conf,
                            int numTrackerToExclude) {
-        super(jobTrackerPort, 
-                taskTrackerPort, 
-                numTaskTrackers, 
-                namenode, 
-                numDir, 
-                racks, 
-                hosts, 
-                null,
-                conf,
-                numTrackerToExclude)
+        super(jobTrackerPort,
+              taskTrackerPort,
+              numTaskTrackers,
+              namenode,
+              numDir,
+              racks,
+              hosts,
+              null,
+              conf,
+              numTrackerToExclude)
     }
 
     @Override
@@ -89,13 +89,13 @@ class LocalMRCluster extends MiniMRCluster implements ClusterURI {
                                          int numTrackerToExclude) {
         patchLogDir(conf)
         return new LocalMRCluster(jobTrackerPort, taskTrackerPort,
-                numTaskTrackers,
-                namenode,
-                numDir,
-                racks,
-                hosts,
-                conf,
-                numTrackerToExclude);
+                                  numTaskTrackers,
+                                  namenode,
+                                  numDir,
+                                  racks,
+                                  hosts,
+                                  conf,
+                                  numTrackerToExclude);
     }
 
     /**
@@ -106,8 +106,8 @@ class LocalMRCluster extends MiniMRCluster implements ClusterURI {
      */
     private static void patchLogDir(JobConf conf) {
         System.setProperty(ClusterConstants.HADOOP_LOG_DIR,
-                conf.get(ClusterConstants.HADOOP_LOG_DIR,
-                        System.getProperty("java.io.tmpdir")))
+                           conf.get(ClusterConstants.HADOOP_LOG_DIR,
+                                    System.getProperty("java.io.tmpdir")))
     }
 
 }

@@ -23,7 +23,7 @@ class EventParser {
                                                        Locale.ENGLISH)
 
     boolean parseDatestamp = true;
-    
+
     /**
      * Parse a text line
      * @param line
@@ -57,7 +57,7 @@ class EventParser {
             event.duration = durationField != null ? Integer.parseInt(durationField) : 0
             event.name = fields.length > FIELD_NAME ? trim(fields[FIELD_NAME]) : ""
         } catch (Exception e) {
-            throw new IOException("When parsing \"${line}\": $e $context", e) 
+            throw new IOException("When parsing \"${line}\": $e $context", e)
         }
     }
 

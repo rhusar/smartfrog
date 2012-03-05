@@ -9,7 +9,7 @@ import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
  * at, say 3cd for 3 am; all events before that are deemed to belong to the previous day.
  *
  */
-class MapToDayOfWeek extends MapToDevice {
+class MapToDayOfWeek extends MapToHour {
 
     int startHour;
 

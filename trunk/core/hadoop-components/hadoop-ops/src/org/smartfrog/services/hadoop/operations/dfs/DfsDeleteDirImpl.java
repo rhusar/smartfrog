@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 /**
  * delete a directory
  */
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public class DfsDeleteDirImpl extends DfsPathOperationImpl {
 
     public static final String ERROR_CANNOT_DELETE_DIRECTORY = "Cannot delete directory";

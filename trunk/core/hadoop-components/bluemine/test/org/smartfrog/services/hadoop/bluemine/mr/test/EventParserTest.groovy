@@ -1,8 +1,8 @@
 package org.smartfrog.services.hadoop.bluemine.mr.test
 
+import org.junit.Test
 import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 import org.smartfrog.services.hadoop.bluemine.events.EventParser
-import org.junit.Test
 import org.smartfrog.services.hadoop.bluemine.mr.testtools.BluemineTestBase
 
 /**
@@ -16,6 +16,7 @@ class EventParserTest extends BluemineTestBase {
             "gate3,f1191b79236083ce59981e049d863604,,2006-1-1,23:06:57,vklaptop"
     ]
 
+    @Test
     public void testParser() throws Throwable {
         EventParser parser = new EventParser()
 
@@ -33,4 +34,18 @@ class EventParserTest extends BluemineTestBase {
         assertEquals("", parser.trim("  "));
         assertEquals(null, parser.trim(null));
     }
+
+    @Test
+    public void testDateOff() throws Throwable {
+        EventParser parser = new EventParser()
+        parser.parseDatestamp = false
+        lines.each { line ->
+            LOG.info("Parsing : $line")
+            BlueEvent event = parser.parse(line)
+            assertNull("Expected no date in " + event.toString(), event.datestamp);
+            LOG.info("Parsed: $event")
+        }
+
+    }
+
 }

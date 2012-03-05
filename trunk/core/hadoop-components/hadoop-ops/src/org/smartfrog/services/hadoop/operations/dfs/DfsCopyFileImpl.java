@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
 /**
  * Component to copy a file within DFS Created 17-Jun-2008 15:06:23
  */
-
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
 
     public static final String ATTR_BLOCKSIZE = "blocksize";
