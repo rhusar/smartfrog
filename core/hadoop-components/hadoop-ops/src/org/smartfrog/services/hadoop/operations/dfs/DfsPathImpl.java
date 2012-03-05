@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
 /**
  * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
  */
-
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public class DfsPathImpl extends DfsPathOperationImpl implements DfsPathOperation {
 
     public DfsPathImpl() throws RemoteException {

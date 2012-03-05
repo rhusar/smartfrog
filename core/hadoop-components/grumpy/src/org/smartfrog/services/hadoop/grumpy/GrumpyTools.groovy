@@ -63,24 +63,23 @@ class GrumpyTools {
      */
     static String joinList(List elements, String separator) {
         int size = elements.size();
-        if (size==0) return "";
+        if (size == 0) return "";
         StringBuilder builder = new StringBuilder()
         elements.eachWithIndex {  elt, index ->
             builder.append(elt.toString());
-            if (index<(size-1)) {
+            if (index < (size - 1)) {
                 builder.append(separator)
             }
         }
         return builder.toString()
     }
 
-
     /**
      * Find a jar that contains a class of the same name, if any.
      * It will return a jar file, even if that is not the first thing
      * on the class path that has a class with the same name.
-     * 
-     * 
+     *
+     *
      * This is from Hadoop 0.24 and contains the fix for incomplete uuencode plus some 
      * extra error handling
      * @param my_class the class to find.
@@ -88,35 +87,35 @@ class GrumpyTools {
      * @throws IOException
      */
     public static String findContainingJar(Class my_class) throws IOException {
-        ClassLoader loader = my_class.getClassLoader();
+        ClassLoader loader = my_class.classLoader;
         if (loader == null) {
             throw new IOException("Class $my_class does not have a classloader!")
         }
-        assert loader!=null
-        assert my_class!=null
-        String class_file = my_class.getName().replaceAll("\\.", "/") + ".class";
+        assert loader != null
+        assert my_class != null
+        String class_file = my_class.name.replaceAll("\\.", "/") + ".class";
         Enumeration<URL> urlEnumeration = loader.getResources(class_file)
         assert urlEnumeration != null
-        
-            for(Enumeration itr = urlEnumeration;
-            itr.hasMoreElements();) {
-                URL url = (URL) itr.nextElement();
-                if ("jar".equals(url.getProtocol())) {
-                    String toReturn = url.getPath();
-                    if (toReturn.startsWith("file:")) {
-                        toReturn = toReturn.substring("file:".length());
-                    }
-                    // URLDecoder is a misnamed class, since it actually decodes
-                    // x-www-form-urlencoded MIME type rather than actual
-                    // URL encoding (which the file path has). Therefore it would
-                    // decode +s to ' 's which is incorrect (spaces are actually
-                    // either unencoded or encoded as "%20"). Replace +s first, so
-                    // that they are kept sacred during the decoding process.
-                    toReturn = toReturn.replaceAll("\\+", "%2B");
-                    toReturn = URLDecoder.decode(toReturn, "UTF-8");
-                    return toReturn.replaceAll("!.*\$", "");
+
+        for (Enumeration itr = urlEnumeration;
+        itr.hasMoreElements();) {
+            URL url = (URL) itr.nextElement();
+            if ("jar".equals(url.protocol)) {
+                String toReturn = url.path;
+                if (toReturn.startsWith("file:")) {
+                    toReturn = toReturn.substring("file:".length());
                 }
+                // URLDecoder is a misnamed class, since it actually decodes
+                // x-www-form-urlencoded MIME type rather than actual
+                // URL encoding (which the file path has). Therefore it would
+                // decode +s to ' 's which is incorrect (spaces are actually
+                // either unencoded or encoded as "%20"). Replace +s first, so
+                // that they are kept sacred during the decoding process.
+                toReturn = toReturn.replaceAll("\\+", "%2B");
+                toReturn = URLDecoder.decode(toReturn, "UTF-8");
+                return toReturn.replaceAll("!.*\$", "");
             }
+        }
         return null;
     }
 

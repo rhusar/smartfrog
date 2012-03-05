@@ -29,6 +29,7 @@ import java.rmi.RemoteException;
 /**
  * abstract component for path operations
  */
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public abstract class DfsPathOperationImpl extends DfsOperationImpl
         implements DfsPathOperation {
 

@@ -32,11 +32,17 @@ implements BluemineOptions {
             parser.parse(event, value, "at offset " + key)
         } catch (IOException ioe) {
             log.warn(ioe);
-            context.getCounter("bluemine", "errors").increment(1)
+            context.getCounter("bluemine", "input errors").increment(1)
             return;
         }
-        outputKey.set(selectOutputKey(event, context))
-        process(key, context)
+        String outkey = selectOutputKey(event, context)
+        if (outkey == null) {
+            log.warn("Null output key parsing \"" + value + "\"");
+            context.getCounter("bluemine", "key errors").increment(1)
+        } else {
+            outputKey.set(outkey)
+            process(key, context)
+        }
     }
 
     /**
@@ -45,7 +51,6 @@ implements BluemineOptions {
      * @param context
      */
     void process(LongWritable key, Mapper.Context context) {
-        //context.write(new Text(), new BlueEvent())
         context.write(outputKey, event)
     }
 

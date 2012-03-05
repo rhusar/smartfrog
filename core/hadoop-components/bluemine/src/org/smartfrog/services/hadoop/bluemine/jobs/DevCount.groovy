@@ -1,12 +1,16 @@
 package org.smartfrog.services.hadoop.bluemine.jobs
 
 import groovy.util.logging.Commons
+import org.apache.hadoop.fs.FileUtil
 import org.apache.hadoop.mapred.JobConf
 import org.smartfrog.services.hadoop.bluemine.mr.BluemineOptions
 import org.smartfrog.services.hadoop.bluemine.mr.EventCountReducer
 import org.smartfrog.services.hadoop.bluemine.mr.MapToDevice
-import org.smartfrog.services.hadoop.grumpy.ClusterConstants
-import org.apache.hadoop.fs.FileUtil
+import org.smartfrog.services.hadoop.bluemine.mr.DeviceCountMap
+import org.smartfrog.services.hadoop.bluemine.mr.CountReducer
+import org.apache.hadoop.io.Text
+import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
+import org.apache.hadoop.io.IntWritable
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,6 +33,21 @@ import org.apache.hadoop.fs.FileUtil
 class DevCount {
 
     static void main(String[] args) {
+        DevCount devcount = new DevCount()
+        try {
+            boolean success = devcount.execute(args)
+            System.exit((success ? 0 : -1))
+        } catch (MainArgException e) {
+            log.error(e.toString())
+            System.exit(e.exitCode)
+        } catch (Exception e) {
+            log.error(e.toString(), e)
+            System.exit(-2)
+        }
+    }
+
+
+    private boolean execute(String[] args) {
         JobConf conf = new JobConf()
 
 
@@ -38,34 +57,35 @@ class DevCount {
         cli.with {
             h longOpt: 'help', 'Show usage information'
             j longOpt: 'job-tracker', args: 1, argName: 'tracker', 'URL of Job Tracker'
-            d longOpt: 'hdfs-url', args: 1, argName: 'hdfs', 'URL of Job tracker'
+            f longOpt: 'filesystem', args: 1, argName: 'hdfs', 'URL of Job tracker'
             p longOpt: 'properties', args: 1, argName: 'properties', 'Property file'
             s longOpt: 'sourcedir', args: 1, argName: 'src', 'directory of source files'
             o longOpt: 'outdir', args: 1, argName: 'out', 'directory for destination files'
+            'do' longOpt: 'deloutdir', args: 1, argName: 'do', 'output directory -delete first'
             v longOpt: 'verbose', 'verbose job output'
         }
 
-        def options = cli.parse(args)
+        OptionAccessor options = cli.parse(args)
         if (!options) {
-            return
+            return false;
         }
 
         // Show usage text when -h or --help option is used.
         if (options.h) {
             cli.usage()
-            return
+            return false;
         }
         String jtURL = BluemineOptions.DEFAULT_JOB_TRACKER;
 
-        if (options.jt) {
-            jtURL = options.jt
+        if (options.j) {
+            jtURL = options.j
         }
         conf.set("mapred.job.tracker", jtURL);
 
 
         String hdfsURL = BluemineOptions.DEFAULT_FS;
-        if (options.hdfs) {
-            hdfsURL = options.hdfs
+        if (options.f) {
+            hdfsURL = options.f
             conf.set("fs.default.name", hdfsURL);
         }
         if (options.p) {
@@ -76,32 +96,37 @@ class DevCount {
                 conf.set(name.toString(), value.toString())
             }
         }
+
         File srcDir = null, outDir = null
         if (options.s) {
             srcDir = requiredFile(options.s)
         } else {
-            log.error("No source");
-            System.exit(-1);
+            throw new MainArgException("No source")
         }
         if (options.o) {
-            outDir = outputDir(options.o)
-        } else {
-            log.error("No output directory");
-            System.exit(-1);
+            outDir = outputDir(options.o, false)
+        } else
+        if (options."do") {
+            outDir = outputDir(options."do", true)
+        } else  {
+            throw new MainArgException("No output directory")
         }
 
         boolean verbose = options.v
         BluemineJob job = BluemineJob.createBasicJob("devcount",
-                conf,
-                MapToDevice,
-                EventCountReducer)
+                                                     conf,
+                                                     DeviceCountMap,
+                                                     CountReducer)
+        job.combinerClass = CountReducer
+        job.mapOutputKeyClass = Text
+        job.mapOutputValueClass = IntWritable
+
         job.addInput(srcDir)
         job.setupOutput(outDir)
         job.configuration.setInt("mapred.submit.replication", 1);
         log.info(job.toString())
         job.submit()
-        boolean success = job.waitForCompletion(verbose)
-        System.exit((success ? 0 : -2))
+        return job.waitForCompletion(verbose)
     }
 
     protected static File requiredFile(String name) {
@@ -115,7 +140,7 @@ class DevCount {
     protected static File requiredDir(String name) {
         File dir = requiredFile(name)
         if (!dir.directory) {
-            throw new IOException("Not a directory: " + dir.canonicalPath)
+            throw new MainArgException("Not a directory: " + dir.canonicalPath)
         }
         dir
     }
@@ -125,22 +150,24 @@ class DevCount {
         if (!dir.exists()) {
             //this is what we want
             if (!dir.mkdirs()) {
-                throw new IOException("Failed to create directory "+ dir.canonicalPath)
+                throw new MainArgException("Failed to create directory " + dir.canonicalPath)
             }
         } else {
             if (!dir.directory) {
-                throw new IOException("Not a directory: " + dir.canonicalPath)
+                throw new MainArgException("Not a directory: " + dir.canonicalPath)
             }
         }
         dir
     }
 
-    protected static File outputDir(String name) {
+    protected static File outputDir(String name, boolean delete) {
         File dir = new File(name)
         if (dir.exists()) {
-            //trouble.
-            FileUtil.fullyDelete(dir)
-            
+            if (delete) {
+                FileUtil.fullyDelete(dir)
+            } else {
+                throw new MainArgException("Output directory exists and deletion not enabled")
+            }
         }
         dir
     }

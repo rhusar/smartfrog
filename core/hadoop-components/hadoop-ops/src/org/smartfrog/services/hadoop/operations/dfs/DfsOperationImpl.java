@@ -47,7 +47,7 @@ import java.rmi.RemoteException;
  * Thread termination is automatic with the terminate operation of the WorkerThreadPrimImpl class that is the parent of
  * this class.
  */
-@SuppressWarnings({"AbstractClassExtendsConcreteClass"})
+@SuppressWarnings({"AbstractClassExtendsConcreteClass", "ProhibitedExceptionDeclared"})
 public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
     protected boolean closeFilesystem;
 

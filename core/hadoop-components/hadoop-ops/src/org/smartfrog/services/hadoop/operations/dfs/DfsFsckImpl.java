@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Deploy a filesystem check
  */
-
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public class DfsFsckImpl extends DfsOperationImpl {
 
     public DfsFsckImpl() throws RemoteException {

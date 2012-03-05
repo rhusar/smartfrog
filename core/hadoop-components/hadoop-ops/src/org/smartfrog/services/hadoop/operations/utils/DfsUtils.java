@@ -428,10 +428,10 @@ public class DfsUtils {
     /**
      * This loads but does not initialise a filesystem.
      *
-     * @param conf
-     * @param uri
-     * @return
-     * @throws IOException
+     * @param conf configuration
+     * @param uri URI of the filesystem
+     * @return an instance of that filesystem
+     * @throws IOException if there is no filesystem of that type
      */
     public static FileSystem loadFS(final Configuration conf, final URI uri) throws IOException {
         String scheme = uri.getScheme();
@@ -449,12 +449,20 @@ public class DfsUtils {
             }
         }
 
-        Class<?> clazz = conf.getClass("fs." + uri.getScheme() + ".impl", null);
-        FileSystem.LOG.debug("Creating filesystem for " + uri);
+        String filesystemProp = "fs." + uri.getScheme() + ".impl";
+        String implclass = conf.get(filesystemProp);
+        Class<?> clazz = conf.getClass(filesystemProp, null);
+        FileSystem.LOG.debug("Creating filesystem for " + uri+ " implementation is implclass");
         if (clazz == null) {
-            throw new IOException("No FileSystem for scheme: " + uri.getScheme());
+            throw new IOException("No FileSystem for scheme: " + uri.getScheme() + " and configuration option " + filesystemProp);
         }
-        FileSystem fs = (FileSystem) ReflectionUtils.newInstance(clazz, conf);
-        return fs;
+        try {
+            FileSystem fs = (FileSystem) ReflectionUtils.newInstance(clazz, conf);
+            return fs;
+        } catch (RuntimeException e) {
+            throw new IOException("Failed to create an instance of "+ implclass
+                    + " to process " +uri.getScheme()
+                    +" : " +e,  e);
+        }
     }
 }

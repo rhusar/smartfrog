@@ -11,10 +11,10 @@ import org.apache.hadoop.hdfs.server.common.HdfsConstants.StartupOption
  */
 class LocalDFSCluster extends MiniDFSCluster implements ClusterURI {
 
-    private LocalDFSCluster(int nameNodePort, 
-                            Configuration conf, 
+    private LocalDFSCluster(int nameNodePort,
+                            Configuration conf,
                             int numDataNodes,
-                            boolean format, 
+                            boolean format,
                             boolean manageNameDfsDirs,
                             boolean manageDataDfsDirs,
                             StartupOption operation,
@@ -22,7 +22,7 @@ class LocalDFSCluster extends MiniDFSCluster implements ClusterURI {
                             String[] hosts,
                             long[] simulatedCapacities) {
         super(nameNodePort, conf, numDataNodes, format, manageNameDfsDirs, manageDataDfsDirs, operation, racks, hosts,
-                simulatedCapacities)
+              simulatedCapacities)
     }
 
     @Override
@@ -48,7 +48,7 @@ class LocalDFSCluster extends MiniDFSCluster implements ClusterURI {
 
         patchTestDataDir(conf)
         return new LocalDFSCluster(nameNodePort, conf, numDataNodes, format, manageNameDfsDirs, manageDataDfsDirs, operation, racks, hosts,
-                simulatedCapacities)
+                                   simulatedCapacities)
     }
 
     /**

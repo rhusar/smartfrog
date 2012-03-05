@@ -49,12 +49,12 @@ class BlueEvent implements Writable, WritableComparable {
         out.writeUTF(device)
         out.writeUTF(denullify(gate))
         out.writeUTF(denullify(name))
-        out.writeLong(datestamp? datestamp.time : 0)
+        out.writeLong(datestamp ? datestamp.time : 0)
         out.writeLong(duration)
     }
 
     String denullify(String s) { s ?: "" }
-    
+
     @Override
     void readFields(DataInput src) throws IOException {
         device = src.readUTF()
@@ -71,7 +71,7 @@ class BlueEvent implements Writable, WritableComparable {
     @Override
     int compareTo(Object o) {
         BlueEvent that = (BlueEvent) o;
-        if (!device) return  -1
+        if (!device) return -1
         return device.compareTo(that.device)
     }
 

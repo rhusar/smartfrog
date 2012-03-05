@@ -24,92 +24,17 @@
 
 
   <target name="prepare-hadoop-dirs" depends="init">
-    <property name="test.input.data.dir" location="data"/>
-    <property name="test.output.data.dir" location="${test.work.dir}"/>
+    <property name="test.input.data.dir" location="data/small"/>
+    <property name="test.output.data.dir" location="${test.work.dir}/output"/>
+
+    <delete dir="${test.output.data.dir}" />
+    <echo>Source directory = ${test.input.data.dir}</echo>
   </target>
 
   <target name="ready-to-test" depends="common.ready-to-test, prepare-hadoop-dirs"/>
 
-  <target name="unit-tests" depends="ready-to-test"
-    if="unit.tests.enabled"
-    description="run the unit tests">
-  </target>
-
-
-  <target name="ready-to-hadoop"
-    depends="declare-extended-smartfrog-tasks, init-deploy-properties">
-    <presetdef name="hdeploy">
-      <sf-deploy classpathref="run.classpath"
-        logStackTraces="true"
-        host="${deploy.host}"
-        timeout="${deploy.timeout}"
-        >
-        <!--<codebase url="${codebase}"/>-->
-        <jvmarg line="${daemon.jvmargs}"/>
-        <propertyfile file="${runtime.properties}" optional="true"/>
-        <syspropertyset refid="proxy.settings"/>
-        <syspropertyset refid="daemon-properties"/>
-      </sf-deploy>
-    </presetdef>
-
-    <presetdef name="hstop">
-      <sf-undeploy classpathref="run.classpath"
-        host="${deploy.host}"
-        >
-        <jvmarg line="${daemon.jvmargs}"/>
-        <propertyfile file="${runtime.properties}" optional="true"/>
-        <syspropertyset refid="proxy.settings"/>
-        <syspropertyset refid="daemon-properties"/>
-      </sf-undeploy>
-    </presetdef>
-
-    <property name="repository.dir" location="."/>
-    <property name="components.dir" location="components"/>
-    <property name="hadoop.sf" value="components/hadoop/hadoop.sf"/>
-
-    <property name="hadoop.namenodeHost" value="localhost"/>
-    <property name="hadoop.java.home" value="${java.home}"/>
-
-  </target>
-
-  <target name="worker" depends="ready-to-hadoop">
-    <hdeploy>
-      <application name="worker">
-        #include "${hadoop.sf}"
-        sfConfig extends HadoopWorker {
-        componentsDir "${components.dir}";
-        }
-      </application>
-    </hdeploy>
-  </target>
-
-  <target name="stop-worker" depends="ready-to-hadoop">
-    <hstop application="worker"/>
-  </target>
-
-  <target name="master" depends="ready-to-hadoop">
-    <hdeploy>
-      <application name="master">
-        #include "${hadoop.sf}"
-
-        //HadoopOptions:namenodeHost "localhost";
-        HadoopOptions:java.home PROPERTY java.home;
-
-        sfConfig extends HadoopMaster {
-        componentsDir "${components.dir}";
-        }
-      </application>
-    </hdeploy>
-  </target>
-
-  <target name="stop-master" depends="ready-to-hadoop">
-    <hstop application="master"/>
-  </target>
 
   <target name="devcount" depends="ready-to-test">
-    <property name="src.data.dir" location="data" />
-    <property name="dest.data.dir" location="build/test/output" />
-    <delete dir="${dest.data.dir}" />
     <java failonerror="true"
           fork="true"
           classpathref="tests.run.classpath"
@@ -118,9 +43,9 @@
       <jvmarg value="-Djava.security.krb5.kdc=" />
       <arg value="-v" />
       <arg value="-s" />
-      <arg file="${src.data.dir}" />
-      <arg value="-o" />
-      <arg file="${dest.data.dir}" />
+      <arg file="${test.input.data.dir}" />
+      <arg value="-do" />
+      <arg file="${test.output.data.dir}" />
       <arg value="-p" />
       <arg file="bluemine.properties" />
    </java> 

@@ -33,7 +33,7 @@ import java.util.Date;
 /**
  * Created 27-May-2008 14:29:51
  */
-
+@SuppressWarnings("ProhibitedExceptionDeclared")
 public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOperation {
 
     public DfsListDirImpl() throws RemoteException {
