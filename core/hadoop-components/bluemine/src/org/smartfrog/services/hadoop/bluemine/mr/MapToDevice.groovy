@@ -1,10 +1,7 @@
 package org.smartfrog.services.hadoop.bluemine.mr
 
-import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
-import org.smartfrog.services.hadoop.bluemine.events.EventParser
-import org.apache.hadoop.io.LongWritable
-import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.Mapper
+import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 
 class MapToDevice extends AbstractBlueMapper {
 
@@ -16,7 +13,7 @@ class MapToDevice extends AbstractBlueMapper {
     @Override
     protected void setup(Mapper.Context context) {
         super.setup(context)
-        parser.parseDatestamp=false
+        parser.parseDatestamp = false
     }
 
 

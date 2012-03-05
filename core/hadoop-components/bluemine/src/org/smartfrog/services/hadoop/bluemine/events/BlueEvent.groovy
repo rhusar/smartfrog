@@ -53,7 +53,7 @@ class BlueEvent implements Writable, WritableComparable {
         out.writeLong(duration)
     }
 
-    String denullify(String s) { s!=null?s:"" }
+    String denullify(String s) { s ?: "" }
     
     @Override
     void readFields(DataInput src) throws IOException {
