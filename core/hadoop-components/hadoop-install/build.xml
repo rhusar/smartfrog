@@ -54,7 +54,22 @@
     
     <property name="hadoop.namenodeHost" value="localhost"/>
     <property name="hadoop.java.home" value="${java.home}"/>
-    
+
+    <!-- only expand the hadoop tar if it is not there-->
+    <condition property="test.expand.hadoop.tar">
+      <not>
+        <available property="test.hadoop.expand.tar"
+          file="${test.work.dir}/bin/hadoop" />
+      </not>
+    </condition>
+    <condition property="test.hadoop.namenode.format">
+      <not>
+        <available property="test.hadoop.expand.tar"
+          file="${test.work.dir}/data/dfs" />
+      </not>
+    </condition>
+
+
   </target>
   
   <target name="worker" depends="ready-to-hadoop"

@@ -11,7 +11,7 @@ HadoopOptions extends {
   // override this when not running tests
   hadoop.dir PROPERTY test.work.dir;
 
-  hadoop.tmp.dir PROPERTY 
+  hadoop.tmp.dir (hadoop.dir ++ "/data");
 
   //get the Java home value from the OS
   java.home "/usr/java/jdk";
@@ -19,6 +19,7 @@ HadoopOptions extends {
   namenodeHost "localhost";
   //namenodeHost LAZY ATTRIB sfProcessHost;
   namenodePort "54310";
+  namenode.format OPTIONAL(true)  PROPERTY test.hadoop.namenode.format;
   jobtrackerHost namenodeHost;
   jobtrackerPort "54311";
   filesystem.uri ("hdfs://" ++ namenodeHost ++ ":" ++ namenodePort);
@@ -30,7 +31,7 @@ HadoopOptions extends {
   hadoop.client.opts "-Dcom.sun.management.jmxremote";
   hadoop.opts hadoop.client.opts;
 
-  expandTar OPTIONAL(true)  PROPERTY test.expand.hadoop.tar;
+  expandTar OPTIONAL(true)  PROPERTY test.hadoop.expand.tar;
 }
 
 HadoopComponent extends Component {
@@ -39,7 +40,8 @@ HadoopComponent extends Component {
   componentsDir TBD;
   hadoopCompPath (componentsDir ++ "/hadoop/");
   scriptDir (hadoopCompPath ++ module);
-  destDir HadoopOptions:hadoop.dir;
+  destDir (HadoopOptions:hadoop.dir ++ "/hadoop");
+  hadoop.tmp.dir HadoopOptions:hadoop.tmp.dir;
   ibrix false;
 
   java.home HadoopOptions:java.home;
