@@ -20,7 +20,7 @@ class EventParser {
     static final int FIELD_TIME = 4
     static final int FIELD_NAME = 5
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'Z'HH:mm:ss",
-                                                       Locale.ENGLISH)
+            Locale.ENGLISH)
 
     boolean parseDatestamp = true;
 

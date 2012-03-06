@@ -1,3 +1,4 @@
+package hadoop.worker;
 log("Installing  Hadoop Worker in $destDir")
 
 def hadoopVersion = sfResolve("hadoopVersion")

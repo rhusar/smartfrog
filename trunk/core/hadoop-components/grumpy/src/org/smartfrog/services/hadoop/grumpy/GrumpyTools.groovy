@@ -2,6 +2,7 @@ package org.smartfrog.services.hadoop.grumpy
 
 import groovy.util.logging.Commons
 import org.apache.commons.logging.Log
+import org.apache.hadoop.net.NetUtils
 
 @Commons
 class GrumpyTools {
@@ -118,5 +119,45 @@ class GrumpyTools {
         }
         return null;
     }
-
+    
+    /**
+     * Probe a port for being open
+     *
+     * @param hostname hostname to check
+     * @param port port to probe
+     * @param connectTimeout timeout in milliseconds
+     * @throws IOException failure to connect, including timeout
+     */
+    public static void checkPort(String hostname, int port, int connectTimeout) {
+        InetSocketAddress addr = new InetSocketAddress(hostname, port);
+    }
+    
+    /**
+     * Probe a port for being open
+     *
+     * @param address        address to check
+     * @param connectTimeout timeout in milliseconds
+     * @throws IOException failure to connect, including timeout
+     */
+    public static void checkPort(InetSocketAddress address, int connectTimeout) {
+        Socket socket = null;
+        try {
+            socket = new Socket();
+            socket.connect(address, connectTimeout);
+        } catch (Exception e) {
+            throw new IOException("Failed to connect to " + address
+                    + " after " + connectTimeout + " millisconds"
+                    + ": " + e).initCause(e);
+        } finally {
+            try {
+                socket?.close()
+            } catch (IOException ignored) {
+            }
+        }
+    }
+    
+    public static void checkURL(String url, int timeout) {
+        InetSocketAddress address = NetUtils.createSocketAddr(url)
+        GrumpyTools.checkPort(address, timeout)
+    }
 }

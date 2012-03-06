@@ -33,21 +33,37 @@
 
   <target name="ready-to-test" depends="common.ready-to-test, prepare-hadoop-dirs"/>
 
+  <target name="ready-to-hadoop" depends="ready-to-test">
+    <presetdef name="hjob">
+      <java failonerror="true"
+            fork="true"
+            classpathref="tests.run.classpath"
+          >
+        <jvmarg value="-Djava.security.krb5.realm=" />
+        <jvmarg value="-Djava.security.krb5.kdc=" />
+        <arg value="-v" />
+        <arg value="-s" />
+        <arg file="${test.input.data.dir}" />
+        <arg value="-p" />
+        <arg file="bluemine.properties" />
+      </java>
+    </presetdef>
+  </target>
 
-  <target name="devcount" depends="ready-to-test">
-    <java failonerror="true"
-          fork="true"
-          classpathref="tests.run.classpath"
-          classname="org.smartfrog.services.hadoop.bluemine.jobs.DevCount" >
-      <jvmarg value="-Djava.security.krb5.realm=" />
-      <jvmarg value="-Djava.security.krb5.kdc=" />
-      <arg value="-v" />
-      <arg value="-s" />
-      <arg file="${test.input.data.dir}" />
+  <target name="devcount" depends="ready-to-hadoop">
+    <hjob
+      classname="org.smartfrog.services.hadoop.bluemine.jobs.DevCount" >
       <arg value="-do" />
-      <arg file="${test.output.data.dir}" />
-      <arg value="-p" />
-      <arg file="bluemine.properties" />
-   </java> 
-  </target>  
+      <arg file="${test.output.data.dir}/devcount" />
+    </hjob>
+  </target>
+  
+  <target name="yearcount" depends="ready-to-hadoop">
+    <hjob
+        classname="org.smartfrog.services.hadoop.bluemine.jobs.DayOfYearCount" >
+    <arg value="-do" />
+    <arg file="${test.output.data.dir}/yearcount" />
+  </hjob>
+  </target>
+
 </project>
