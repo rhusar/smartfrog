@@ -5,7 +5,7 @@ import org.apache.hadoop.io.IntWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapred.JobConf
 import org.smartfrog.services.hadoop.bluemine.mr.CountReducer
-import org.smartfrog.services.hadoop.bluemine.mr.DeviceCountMap
+import org.smartfrog.services.hadoop.bluemine.mr.MapToDayOfYear
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,10 +25,10 @@ import org.smartfrog.services.hadoop.bluemine.mr.DeviceCountMap
  * limitations under the License.
  */
 @Commons
-class DevCount extends BlueMain {
+class DayOfYearCount extends BlueMain {
 
     static void main(String[] args) {
-        BlueMain main = new DevCount()
+        BlueMain main = new DayOfYearCount()
         executeAndExit(main, args)
     }
 
@@ -40,20 +40,21 @@ class DevCount extends BlueMain {
     protected boolean execute(String[] args) {
         OptionAccessor options = parseCommandLine(args)
         if (options == null) {
-            return false
+            return false;
         }
         JobConf conf = new JobConf()
-        setTrackerURL(conf, options)
-        setFilesystemURL(conf, options)
+        setTrackerURL(conf, options);
+        setFilesystemURL(conf, options);
         loadPropertyFile(conf, options.p)
         BluemineJob job = BluemineJob.createBasicJob("devcount",
                 conf,
-                DeviceCountMap,
+                MapToDayOfYear,
                 CountReducer)
         job.combinerClass = CountReducer
         job.mapOutputKeyClass = Text
         job.mapOutputValueClass = IntWritable
         return bindAndExecute(options, job)
     }
+
 
 }

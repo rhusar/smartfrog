@@ -9,32 +9,22 @@ import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
  * at, say 3cd for 3 am; all events before that are deemed to belong to the previous day.
  *
  */
-class MapToDayOfWeek extends MapToHour {
+class MapToDayOfYear extends MapToHour {
 
-    int startHour;
+    final GregorianCalendar cal = new GregorianCalendar()
 
     @Override
     protected void setup(Mapper.Context context) {
         super.setup(context)
-        startHour = context.configuration.getInt(OPT_HOUR_DAY_STARTS, 0)
     }
 
     @Override
     String selectOutputKey(BlueEvent event, Mapper.Context context) {
         Date date = event.datestamp
-        int hour = date.hours
-        int day = date.day
-        if (hour < startHour) day = previousDayOfWeek(day)
-        return day.toString()
+        cal.time = date
+        int dayOfYear = cal.get(GregorianCalendar.DAY_OF_YEAR)
+        return dayOfYear
     }
 
-    /**
-     * convert to the previous day of the week. 6->5, 0 -> 7, etc.
-     * @param weekday
-     * @return the new value
-     */
-    int previousDayOfWeek(int weekday) {
-        (weekday + 6) % 7
-    }
 
 }
