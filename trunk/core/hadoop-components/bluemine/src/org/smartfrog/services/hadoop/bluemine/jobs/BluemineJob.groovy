@@ -74,8 +74,8 @@ class BluemineJob extends GrumpyJob {
         job.jarByClass = mapClass
         job.mapperClass = mapClass
         job.reducerClass = reduceClass
-        conf.set(ExtensionOptions.KEY_SEPARATOR, ",");
-        conf.set(ExtensionOptions.KEY_EXTENSION, ".csv");
+        job.configuration.set(ExtensionOptions.KEY_SEPARATOR, ",");
+        job.configuration.set(ExtensionOptions.KEY_EXTENSION, ".csv");
         job.outputFormatClass = ExtTextOutputFormat
         job
     }
