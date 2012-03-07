@@ -24,11 +24,14 @@
 
 
   <target name="prepare-hadoop-dirs" depends="init">
-    <property name="test.input.data.dir" location="data/small"/>
+    <!-- set this to a directory or a file-->
+    <property name="test.input.data.dir" location="data/small/"/>
     <property name="test.output.data.dir" location="${test.work.dir}/output"/>
+    <property name="input.data" location="data/small/gzip/gate1-50k.csv.gz"/>
+    <property name="output.data" location="build/results"/>
 
     <delete dir="${test.output.data.dir}" />
-    <echo>Source directory = ${test.input.data.dir}</echo>
+    <echo>Source = ${input.data}</echo>
   </target>
 
   <target name="ready-to-test" depends="common.ready-to-test, prepare-hadoop-dirs"/>
@@ -43,7 +46,7 @@
         <jvmarg value="-Djava.security.krb5.kdc=" />
         <arg value="-v" />
         <arg value="-s" />
-        <arg file="${test.input.data.dir}" />
+        <arg file="${input.data}" />
         <arg value="-p" />
         <arg file="bluemine.properties" />
       </java>
@@ -54,7 +57,7 @@
     <hjob
       classname="org.smartfrog.services.hadoop.bluemine.jobs.DevCount" >
       <arg value="-do" />
-      <arg file="${test.output.data.dir}/devcount" />
+      <arg file="${output.data}/devcount" />
     </hjob>
   </target>
   
@@ -62,8 +65,17 @@
     <hjob
         classname="org.smartfrog.services.hadoop.bluemine.jobs.DayOfYearCount" >
     <arg value="-do" />
-    <arg file="${test.output.data.dir}/yearcount" />
+    <arg file="${output.data}/yearcount" />
   </hjob>
+  </target>
+
+
+  <target name="devname" depends="ready-to-hadoop">
+    <hjob
+        classname="org.smartfrog.services.hadoop.bluemine.jobs.DevNames" >
+      <arg value="-do" />
+      <arg file="${output.data}/devnames" />
+    </hjob>
   </target>
 
 </project>

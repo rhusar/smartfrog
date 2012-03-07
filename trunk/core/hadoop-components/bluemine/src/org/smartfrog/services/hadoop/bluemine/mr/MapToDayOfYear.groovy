@@ -5,7 +5,7 @@ import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 
 /**
  * Map to a day of the week. This mapper supports an offset day, defined by
- * {@link BluemineOptions#OPT_HOUR_DAY_STARTS}; this allows the day to begin 
+ * {@link BluemineOptions#OPT_HOUR_DAY_STARTS}; this allows the day to begin
  * at, say 3cd for 3 am; all events before that are deemed to belong to the previous day.
  *
  */
