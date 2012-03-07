@@ -1,0 +1,12 @@
+Notes on supporting Deb releases
+
+manual
+http://www.debian.org/doc/manuals/maint-guide/start.en.html
+slides  http://www.debian.org/doc/packaging-manuals/packaging-tutorial/packaging-tutorial.pdf
+
+lintian lint for packages
+dh-make 
+debhelper 
+build-essential
+
+apt-get install build-essential devscripts pbuilder
