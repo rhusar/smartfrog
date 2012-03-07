@@ -1,11 +1,10 @@
 package org.smartfrog.services.hadoop.bluemine.mr.testtools
 
-import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
-import org.smartfrog.services.hadoop.bluemine.mr.EventCountReducer
 import org.apache.hadoop.conf.Configuration
-import org.smartfrog.services.hadoop.grumpy.GrumpyJob
-
+import org.apache.hadoop.io.IntWritable
+import org.smartfrog.services.hadoop.bluemine.reducers.CountReducer
 import org.smartfrog.services.hadoop.grumpy.GrumpyHadoopTestBase
+import org.smartfrog.services.hadoop.grumpy.GrumpyJob
 
 /**
  *
@@ -32,7 +31,7 @@ class BluemineTestBase extends GrumpyHadoopTestBase {
      * @param testname name of the test (which defines the output directoyr too
      * @param mapClass class to use in map
      * @param reduceClass class to use in reduction
-     * @return (job: GrumpyJob, output directory: file)
+     * @return ( job : GrumpyJob , output directory : file )
      */
     List createMRJob(String testname, Class mapClass, Class reduceClass) {
         Configuration conf = createJobConfiguration()
@@ -46,20 +45,20 @@ class BluemineTestBase extends GrumpyHadoopTestBase {
     }
 
     /**
-     * Run an event job against the specified mapper, using BlueEvent events
-     * as the output value of the map, and the EventCount reducer as the reducer
+     * Run an event job against the specified mapper, using int
+     * as the output value of the map, and the Count reducer as the reducer
      * @param name job name
      * @param mapper mapper class
      * @return the output directory
-     * 
+     *
      */
-    File runEventCountJob(String name, Class mapper) {
+    File runCountJob(String name, Class mapper) {
         GrumpyJob job
         File outDir
         (job, outDir) = createMRJob(name,
                                     mapper,
-                                    EventCountReducer.class)
-        job.mapOutputValueClass = BlueEvent.class
+                                    CountReducer.class)
+        job.mapOutputValueClass = IntWritable.class
         runJob(job)
         dumpDir(LOG, outDir)
         outDir

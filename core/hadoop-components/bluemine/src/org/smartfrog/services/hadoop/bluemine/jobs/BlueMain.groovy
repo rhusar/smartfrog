@@ -3,8 +3,9 @@ package org.smartfrog.services.hadoop.bluemine.jobs
 import groovy.util.logging.Commons
 import org.apache.hadoop.fs.FileUtil
 import org.apache.hadoop.mapred.JobConf
-import org.smartfrog.services.hadoop.bluemine.mr.BluemineOptions
+import org.smartfrog.services.hadoop.bluemine.BluemineOptions
 import org.smartfrog.services.hadoop.grumpy.GrumpyTools
+import org.smartfrog.services.hadoop.grumpy.JobKiller
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -44,17 +45,18 @@ abstract class BlueMain {
     }
 
     protected OptionAccessor parseCommandLine(String[] args) {
-        CliBuilder cli = new CliBuilder(usage: "${name} [-jt jobtracker] [-d hdfs] [-v] [-p  properties] -s sourcedir -o outdir  ")
+        CliBuilder cli = new CliBuilder(usage: "${name} [-jt jobtracker] [-d hdfs] [-t] [-v] [-p  properties] -s sourcedir -o outdir  ")
         // Create the list of options.
 
         cli.with {
+            'do' longOpt: 'deloutdir', args: 1, argName: 'do', 'output directory -delete first'
+            f longOpt: 'filesystem', args: 1, argName: 'hdfs', 'URL of Job tracker'
             h longOpt: 'help', 'Show usage information'
             j longOpt: 'job-tracker', args: 1, argName: 'tracker', 'URL of Job Tracker'
-            f longOpt: 'filesystem', args: 1, argName: 'hdfs', 'URL of Job tracker'
+            o longOpt: 'outdir', args: 1, argName: 'out', 'directory for destination files'
             p longOpt: 'properties', args: 1, argName: 'properties', 'Property file'
             s longOpt: 'sourcedir', args: 1, argName: 'src', 'directory of source files'
-            o longOpt: 'outdir', args: 1, argName: 'out', 'directory for destination files'
-            'do' longOpt: 'deloutdir', args: 1, argName: 'do', 'output directory -delete first'
+            s longOpt: 'terminate', args: 1, argName: 'terminate', 'terminate job if client program is interrupted '
             v longOpt: 'verbose', 'verbose job output'
         }
 
@@ -128,7 +130,15 @@ abstract class BlueMain {
         job.configuration.setInt("mapred.submit.replication", 1)
         log.info(job.toString())
         job.submit()
-        return job.waitForCompletion(verbose)
+        //get the job ID
+        String jobId = job.jobID;
+        JobKiller terminator = JobKiller.targetForTermination(job)
+        try {
+            boolean success = job.waitForCompletion(verbose)
+            return success
+        } finally {
+            terminator.unregister()
+        }
     }
 
     /**

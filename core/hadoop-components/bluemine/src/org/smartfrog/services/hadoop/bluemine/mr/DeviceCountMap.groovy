@@ -15,4 +15,12 @@ class DeviceCountMap extends MapToDevice {
     void process(LongWritable key, Mapper.Context context) {
         context.write(outputKey, iw)
     }
+
+    @Override
+    protected void setup(final Mapper.Context context) {
+        super.setup(context)
+        parser.parseDatestamp = false
+    }
+
+
 }

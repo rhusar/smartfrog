@@ -1,4 +1,4 @@
-package org.smartfrog.services.hadoop.bluemine.mr
+package org.smartfrog.services.hadoop.bluemine
 
 public interface BluemineOptions {
 

@@ -1,11 +1,15 @@
 package org.smartfrog.services.hadoop.bluemine.jobs
 
 import groovy.util.logging.Commons
-import org.apache.hadoop.io.IntWritable
+
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapred.JobConf
-import org.smartfrog.services.hadoop.bluemine.reducers.CountReducer
-import org.smartfrog.services.hadoop.bluemine.mr.DeviceCountMap
+
+import org.smartfrog.services.hadoop.bluemine.mr.MapToDevice
+
+import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
+import org.smartfrog.services.hadoop.bluemine.reducers.FirstTextValueReducer
+import org.smartfrog.services.hadoop.bluemine.mr.DeviceNameMap
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,10 +29,10 @@ import org.smartfrog.services.hadoop.bluemine.mr.DeviceCountMap
  * limitations under the License.
  */
 @Commons
-class DevCount extends BlueMain {
+class DevNames extends BlueMain {
 
     static void main(String[] args) {
-        BlueMain main = new DevCount()
+        BlueMain main = new DevNames()
         executeAndExit(main, args)
     }
 
@@ -46,13 +50,13 @@ class DevCount extends BlueMain {
         setTrackerURL(conf, options)
         setFilesystemURL(conf, options)
         loadPropertyFile(conf, options.p)
-        BluemineJob job = BluemineJob.createBasicJob("devcount",
+        BluemineJob job = BluemineJob.createBasicJob("devnames",
                 conf,
-                DeviceCountMap,
-                CountReducer)
-        job.combinerClass = CountReducer
+                DeviceNameMap,
+                FirstTextValueReducer)
+        job.combinerClass = FirstTextValueReducer
         job.mapOutputKeyClass = Text
-        job.mapOutputValueClass = IntWritable
+        job.mapOutputValueClass = Text
         return bindAndExecute(options, job)
     }
 

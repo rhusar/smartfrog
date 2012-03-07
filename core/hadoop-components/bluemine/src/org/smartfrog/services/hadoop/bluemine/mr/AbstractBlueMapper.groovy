@@ -4,6 +4,7 @@ import groovy.util.logging.Commons
 import org.apache.hadoop.io.LongWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.Mapper
+import org.smartfrog.services.hadoop.bluemine.BluemineOptions
 import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 import org.smartfrog.services.hadoop.bluemine.events.EventParser
 
@@ -20,6 +21,8 @@ implements BluemineOptions {
     protected Text outputKey = new Text()
     protected BlueEvent event = new BlueEvent()
 
+    protected Text inputLine
+
     /**
      * Parse and emit events
      * @param key line #
@@ -28,6 +31,7 @@ implements BluemineOptions {
      */
     @Override
     protected void map(LongWritable key, Text value, Mapper.Context context) {
+        inputLine = value
         try {
             parser.parse(event, value, "at offset " + key)
         } catch (IOException ioe) {
@@ -61,16 +65,5 @@ implements BluemineOptions {
      * @return
      */
     abstract String selectOutputKey(BlueEvent event, Mapper.Context context);
-
-    @Override
-    protected void setup(Mapper.Context context) {
-        super.setup(context)
-    }
-
-    @Override
-    protected void cleanup(Mapper.Context context) {
-        super.cleanup(context)
-    }
-
 
 }

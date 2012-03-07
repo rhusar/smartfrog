@@ -99,5 +99,17 @@ class GrumpyJob extends Job {
         configuration.set(ClusterConstants.JOB_KEY_JARS, jarlist)
     }
 
-
+    /**
+     * Try to kill a job
+     * @return true iff the operation was successful
+     */
+    boolean kill() {
+        try {
+            killJob()
+            return true;
+        } catch (Exception e) {
+            log.debug("Failed to kill job: " +e, e)
+            return false
+        }
+    }
 }

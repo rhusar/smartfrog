@@ -44,10 +44,10 @@ class BluemineJob extends GrumpyJob {
     @Override
     String toString() {
         StringBuilder builder = new StringBuilder(200)
-        builder.append("mapred.input.dir ").append(configuration.get("mapred.input.dir"))
-        builder.append("mapred.output.dir ").append(configuration.get("mapred.output.dir"))
-        builder.append("Lib jars ").append(configuration.get(ClusterConstants.JOB_KEY_JARS))
-        builder.append("mapred.mapoutput.key.class").append(configuration.get(ClusterConstants.MAP_KEY_CLASS))
+        builder.append("mapred.input.dir ").append(configuration.get("mapred.input.dir")).append('\n')
+        builder.append("mapred.output.dir ").append(configuration.get("mapred.output.dir")).append('\n')
+        builder.append("Lib jars ").append(configuration.get(ClusterConstants.JOB_KEY_JARS)).append('\n')
+        builder.append("mapred.mapoutput.key.class ").append(configuration.get(ClusterConstants.MAP_KEY_CLASS)).append('\n')
         builder.toString()
     }
 

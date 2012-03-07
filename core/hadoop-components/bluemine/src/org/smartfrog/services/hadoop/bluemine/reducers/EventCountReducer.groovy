@@ -1,4 +1,4 @@
-package org.smartfrog.services.hadoop.bluemine.mr
+package org.smartfrog.services.hadoop.bluemine.reducers
 
 import org.apache.hadoop.io.IntWritable
 import org.apache.hadoop.io.Text

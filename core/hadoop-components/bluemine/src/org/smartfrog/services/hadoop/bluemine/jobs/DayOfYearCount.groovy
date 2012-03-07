@@ -4,7 +4,7 @@ import groovy.util.logging.Commons
 import org.apache.hadoop.io.IntWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapred.JobConf
-import org.smartfrog.services.hadoop.bluemine.mr.CountReducer
+import org.smartfrog.services.hadoop.bluemine.reducers.CountReducer
 import org.smartfrog.services.hadoop.bluemine.mr.MapToDayOfYear
 
 /**

@@ -45,8 +45,8 @@ class EventParser {
      * @param line
      */
     public void parse(BlueEvent event, String line, String context) {
-        String[] fields = line.split(",")
-        if (fields.length < 5) {
+        String[] fields = line.split(",", FIELD_NAME + 1)
+        if (fields.length < FIELD_NAME) {
             throw new IOException("Only ${fields.length} fields in \"${line}\" $context")
         }
         try {
@@ -55,7 +55,11 @@ class EventParser {
             event.datestamp = buildDate(fields[FIELD_DATE], fields[FIELD_TIME])
             String durationField = trim(fields[FIELD_DURATION]);
             event.duration = durationField != null ? Integer.parseInt(durationField) : 0
-            event.name = fields.length > FIELD_NAME ? trim(fields[FIELD_NAME]) : ""
+            if (fields.length > FIELD_NAME ) {
+                //everything from the comma 5 to the end of the line is part of the name, so instead of using
+                //splits parsing, find comma 5 and work from there
+                event.name = fields.length > FIELD_NAME ? trim(fields[FIELD_NAME]) : ""
+            }
         } catch (Exception e) {
             throw new IOException("When parsing \"${line}\": $e $context", e)
         }
