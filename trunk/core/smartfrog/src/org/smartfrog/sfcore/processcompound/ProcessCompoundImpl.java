@@ -56,6 +56,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -85,8 +86,7 @@ import java.util.Vector;
  * component deployed. </p>
  */
 public class ProcessCompoundImpl extends CompoundImpl
-        implements ProcessCompound,
-        MessageKeys {
+        implements ProcessCompound, MessageKeys {
 
     /**
      * A number used to generate a unique ID for registration
@@ -724,15 +724,15 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         if (gcTimeout > 0) {
-            if (sfLog().isTraceEnabled()) sfLog().trace ("SPGC lease being checked for " + this.sfCompleteNameSafe() + " - " + countdown);
+            if (sfLog().isTraceEnabled()) sfLog().trace ("SPGC lease being checked for " + sfCompleteNameSafe() + " - " + countdown);
             if ((countdown-- >= 0) && (sfChildList().size() == 0) && (sfParent != null)) {
                 //Finished countdown
                 if (countdown <= 0) {
                     if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC being activated");
-                    sfTerminate(TerminationRecord.normal ("SubProcessGC self activated for "+ this.sfCompleteNameSafe(), this.sfCompleteNameSafe() , null));
+                    sfTerminate(TerminationRecord.normal ("SubProcessGC self activated for "+ sfCompleteNameSafe(), sfCompleteNameSafe() , null));
                 }
             } else {
-                if (sfLog().isTraceEnabled()) sfLog().trace ("SubProcessGC lease being reset " + this.sfCompleteNameSafe() + " source "+ source );
+                if (sfLog().isTraceEnabled()) sfLog().trace ("SubProcessGC lease being reset " + sfCompleteNameSafe() + " source "+ source );
                 countdown = gcTimeout;
             }
         } else {
@@ -898,6 +898,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws Exception attribute not found after timeout
      * @throws RemoteException if there is any network or remote error
      */
+    @SuppressWarnings("ProhibitedExceptionDeclared")
     @Override
     public Object sfResolveHereOrWait(Object name, long timeout) throws Exception {
         long endTime = (new Date()).getTime() + timeout;
@@ -955,6 +956,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      *
      * @throws Exception failed to deploy process
      */
+    @SuppressWarnings("ProhibitedExceptionDeclared")
     @Override
     public ProcessCompound sfResolveProcess(Object name,
                                             ComponentDescription cd)
@@ -1016,6 +1018,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      *
      * @throws Exception failed to deploy new naming compound
      */
+    @SuppressWarnings({"ProhibitedExceptionDeclared", "ProhibitedExceptionThrown"})
     protected ProcessCompound addNewProcessCompound(Object name,
                                                     ComponentDescription cd)
             throws Exception {
@@ -1054,6 +1057,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         try {
             timeout = 1000 * ((Number) timeoutObj).intValue();
         } catch (ClassCastException ccex) {
+            sfLog().debug("Failed to get process timeout as an int  " + timeoutObj + ": "+ ccex, ccex);
             throw SmartFrogResolutionException.illegalClassType(
                     Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT),
                     sfCompleteNameSafe(),
@@ -1168,7 +1172,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * attribute. sfProcessJava could be a String or objects with the right .toString() method.
      *
      * @param cd  component description with extra process configuration (ex. sfProcessConfig)
-     *
+     * @return the command to run java as resolved or "" if not
      * @throws SmartFrogException failed to construct java command
      */
     protected String addProcessJavaPath(ComponentDescription cd) throws SmartFrogException {
@@ -1181,7 +1185,9 @@ public class ProcessCompoundImpl extends CompoundImpl
                 //ignore
             }
         }
-        if (processCmd == null ) return "";
+        if (processCmd == null ) {
+            return "";
+        }
         if (processCmd instanceof String) {
             return ((String) processCmd);
         } else {
@@ -1207,9 +1213,14 @@ public class ProcessCompoundImpl extends CompoundImpl
             processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         }
         if (processCmd instanceof String) {
-            cmd.addElement(processPath + (String) processCmd );
-        } else if (processCmd instanceof Collection) {            
-            cmd.addAll((Collection<String>) processCmd);
+            cmd.addElement(processPath + processCmd);
+        } else if (processCmd instanceof Collection) {
+            Collection<String> commandList = (Collection<String>) processCmd;
+            for(String element: commandList) {
+                if(!element.isEmpty()) {
+                    cmd.add(element);
+                }
+            }
             cmd.set(0, processPath + cmd.get(0));
         } else {
             cmd.addElement(processPath + processCmd.toString());
@@ -1485,7 +1496,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             throws SmartFrogException {
         Properties props = System.getProperties();
         //Sys properties get ordered
-        Vector<String> keysVector = new Vector<String>(props.size());
+        List<String> keysVector = new Vector<String>(props.size());
         for(String key : props.stringPropertyNames()) {
             keysVector.add(key);
         }
@@ -1502,8 +1513,8 @@ public class ProcessCompoundImpl extends CompoundImpl
 
                         //Add special parameters to named subprocesses
                         //@todo add Junit test for this feature
-                        //@todo test what happens with special caracters
-                        // prefixed by 'org.smartfrog.sfcore.processcompound.jvm'+NAME+.property=value
+                        //@todo test what happens with special characters
+                        // prefixed by 'org.smartfrog.sfcore.processcompound.jvm'+NAME+value
                         String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + '.';
 
                         if (key.startsWith(specialParameters)) {
@@ -1516,15 +1527,11 @@ public class ProcessCompoundImpl extends CompoundImpl
                         } else {
                             //Properties to overwrite processcompound.sf attributes
                             Object value = props.get(key);
-                            //cmd.addElement("-D" + key + '=' + value.toString());
                             newprops.put(key, value);
                         }
                     } else {
                         //Special - Add property to name ProcessCompound
-                        newprops.put(SmartFrogCoreProperty.propBaseSFProcess+ SmartFrogCoreKeys.SF_PROCESS_NAME, name);
-/*                        cmd.addElement("-D" + (SmartFrogCoreProperty.propBaseSFProcess
-                                + SmartFrogCoreKeys.SF_PROCESS_NAME + '=') +
-                                name.toString());*/
+                        newprops.put(SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_NAME, name);
                     }
                 }
             } catch (Exception ex) {
@@ -1764,10 +1771,7 @@ public class ProcessCompoundImpl extends CompoundImpl
     @Override
     public boolean sfContainsTag(String tag)
             throws RemoteException, SmartFrogRuntimeException {
-        if (sfParent != null) {
-            return super.sfContainsTag(tag);
-        }
-        return false;
+        return sfParent != null && super.sfContainsTag(tag);
     }
 
 }
