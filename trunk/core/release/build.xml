@@ -567,6 +567,8 @@
     <ln artifact="ezmorph" version="${ezmorph.version}"/>
     <ln artifact="jackson-core-asl" version="${jackson.version}"/>
     <ln artifact="jackson-mapper-asl" version="${jackson.version}"/>
+    <ln artifact="jackson-jaxrs" version="${jackson.version}"/>
+
 
     <!--logging-->
     <rpmpackage package="logging"/>

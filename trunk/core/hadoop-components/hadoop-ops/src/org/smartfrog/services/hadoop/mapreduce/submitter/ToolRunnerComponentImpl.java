@@ -24,6 +24,7 @@ import org.apache.hadoop.util.Tool;
 import org.smartfrog.services.hadoop.operations.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -32,6 +33,7 @@ import org.smartfrog.sfcore.utils.Executable;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -44,6 +46,7 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
     private String[] arguments;
     private String argumentsAsString;
     private ManagedConfiguration toolConf;
+    String name;
 
     public ToolRunnerComponentImpl() throws RemoteException {
     }
@@ -58,9 +61,14 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
     @Override
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        name = sfResolve(ATTR_NAME, "", true);
+
         String toolClassname = sfResolve(ATTR_TOOLCLASS, "", true).trim();
         if (toolClassname.isEmpty()) {
-            throw new SmartFrogException("No tool declared in the "
+            throw new SmartFrogResolutionException(
+                    new Reference(ATTR_TOOLCLASS),
+                    sfCompleteNameSafe(),
+                    "No tool declared in the "
                     + ATTR_TOOLCLASS + " attribute");
         }
         ComponentHelper ch = new ComponentHelper(this);
@@ -118,15 +126,21 @@ public class ToolRunnerComponentImpl extends PrimImpl implements ToolRunnerCompo
     @SuppressWarnings({"ProhibitedExceptionDeclared"})
     @Override
     public void execute() throws Throwable {
-        tool.setConf(toolConf);
-        int returnCode = tool.run(arguments);
-        sfReplaceAttribute(ATTR_RETURNCODE, returnCode);
-        sfLog().info("Tool completed: " + returnCode);
-        boolean failOnNonZeroReturnCode = sfResolve(ATTR_FAIL_ON_NON_ZERO_RETURN_CODE, true, true);
-        if (returnCode != 0 && failOnNonZeroReturnCode) {
-            throw new SmartFrogException("Return value of executing the tool " + tool
-                    + " with arguments " + argumentsAsString
-                    + " was " + returnCode);
+        try {
+            tool.setConf(toolConf);
+            int returnCode = tool.run(arguments);
+            sfReplaceAttribute(ATTR_RETURNCODE, returnCode);
+            sfLog().info(name + " completed: " + returnCode);
+            boolean failOnNonZeroReturnCode = sfResolve(ATTR_FAIL_ON_NON_ZERO_RETURN_CODE, true, true);
+            if (returnCode != 0 && failOnNonZeroReturnCode) {
+                throw new SmartFrogException("Return value of executing the tool " + tool
+                        + " with arguments " + argumentsAsString
+                        + " was " + returnCode);
+            }
+        } catch (IOException e) {
+            //this can be raised if the job has failed
+            sfLog().error(name + "failed " + e.toString(), e);
+            throw e;
         }
     }
 }

@@ -18,6 +18,8 @@ class MiniClusterImpl extends HadoopComponentImpl {
     /** {@value} */
     public static final String ATTR_FILESYSTEM_URI = "filesystemURI";
 
+    public static final String ATTR_LIVE_URI = "liveURI";
+
     ManagedConfiguration clusterConfig
 
     MiniClusterImpl() {

@@ -62,6 +62,8 @@
   <import file="../../common.xml"/>
 
   <target name="ready-to-test" depends="common.ready-to-test, commons-logging-via-sf">
+    <property name="test.build.data" location="${test.data.dir}"/>
+
     <echo level="verbose">
       system.tests=${system.tests}
       system.tests.enabled=${system.tests.enabled}

@@ -23,7 +23,7 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
     public static final String ATTR_STARTUP_OPTION = "startupOption"
     public static final String ATTR_SIMULATED_CAPACITIES = "simulatedCapacities"
     private LocalDFSCluster cluster
-    private String filesystemUri
+    private String uri
 
     /**
      * Create the mini dfs cluster
@@ -66,10 +66,11 @@ class MiniDfsClusterImpl extends MiniClusterImpl {
                 hosts,
                 simulatedCapacities)
 
-        filesystemUri = cluster.getURI()
-        sfLog().info("MiniDFSCluster is up at $filesystemUri")
-        sfReplaceAttribute(ATTR_FILESYSTEM_URI, filesystemUri)
-        sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, filesystemUri)
+        uri = cluster.URI
+        sfLog().info("MiniDFSCluster is up at $uri")
+        sfReplaceAttribute(ATTR_FILESYSTEM_URI, uri)
+        sfReplaceAttribute(ATTR_LIVE_URI, uri);
+        sfReplaceAttribute(FileSystem.FS_DEFAULT_NAME_KEY, uri)
 
     }
 

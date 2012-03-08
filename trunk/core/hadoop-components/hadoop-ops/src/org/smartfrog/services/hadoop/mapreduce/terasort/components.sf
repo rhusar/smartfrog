@@ -20,24 +20,35 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/hadoop/mapreduce/submitter/components.sf"
 
+
+
+TeraRun extends ToolRunner {
+  jobTrackerHost HadoopTestBinding:jobTrackerHost;
+  jobTrackerPort HadoopTestBinding:jobTrackerPort;
+  "mapred.job.tracker" (jobTrackerHost ++ ":" ++ jobTrackerPort);
+}
+
 /**
  * Generate data
  */
- 
-TeraGen extends ToolRunner {
+
+TeraGen extends TeraRun {
+  name "teragen";
   //number of rows
   rows 1;
   //outputPath
   destPath TBD;
   toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraGenJob";
   arguments [rows, destPath];
+  failOnNonZeroReturnCode true;
 }
 
 /**
  * Submit a terasort Job
  */
  
-TeraSort extends ToolRunner {
+TeraSort extends TeraRun {
+  name "terasort";
   sourcePath TBD;
   destPath TBD;
   toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraSortJob";
@@ -48,7 +59,8 @@ TeraSort extends ToolRunner {
 /**
  * Validate the output
  */
-TeraValidate extends ToolRunner {
+TeraValidate extends TeraRun {
+  name "teravalidate";
   dataPath TBD;
   reportPath TBD;
   toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraValidateJob";

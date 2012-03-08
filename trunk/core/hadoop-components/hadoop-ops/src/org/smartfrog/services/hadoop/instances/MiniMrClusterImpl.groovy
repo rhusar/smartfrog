@@ -56,6 +56,8 @@ class MiniMrClusterImpl extends MiniClusterImpl {
                 hosts,
                 conf,
                 numTrackerToExclude)
+        String uri = cluster.URI
+        sfReplaceAttribute(ATTR_LIVE_URI, uri);
     }
 
     @Override

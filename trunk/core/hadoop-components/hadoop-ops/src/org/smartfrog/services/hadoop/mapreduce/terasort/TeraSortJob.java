@@ -31,7 +31,9 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Partitioner;
+import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.util.Tool;
+import org.smartfrog.services.hadoop.grumpy.ClusterConstants;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -237,6 +239,7 @@ public class TeraSortJob extends Configured implements Tool {
 
     }
 
+    @SuppressWarnings("ProhibitedExceptionDeclared")
     @Override
     public int run(String[] args) throws Exception {
         LOG.info("starting");
@@ -255,12 +258,15 @@ public class TeraSortJob extends Configured implements Tool {
         job.setInputFormat(TeraInputFormat.class);
         job.setOutputFormat(TeraOutputFormat.class);
         job.setPartitionerClass(TotalOrderPartitioner.class);
+        job.setBoolean(ClusterConstants.MAPRED_DISABLE_TOOL_WARNING, true);
+
         TeraInputFormat.writePartitionFile(job, partitionFile);
         DistributedCache.addCacheFile(partitionUri, job);
         DistributedCache.createSymlink(job);
         job.setInt("dfs.replication", 1);
+        job.setInt("mapred.submit.replication", 1);
         TeraOutputFormat.setFinalSync(job, true);
-        JobClient.runJob(job);
+        RunningJob runningJob = JobClient.runJob(job);
         LOG.info("done");
         return 0;
     }

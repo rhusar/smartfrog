@@ -18,4 +18,8 @@ public interface ClusterConstants {
     String JOB_KEY_ARCHIVES = "tmparchives";
 
     String MAP_KEY_CLASS = "mapred.mapoutput.key.class"
+
+    String MAPRED_INPUT_DIR = "mapred.input.dir"
+    String MAPRED_OUTPUT_DIR = "mapred.output.dir"
+    String MAPRED_DISABLE_TOOL_WARNING = "mapred.used.genericoptionsparser";
 }

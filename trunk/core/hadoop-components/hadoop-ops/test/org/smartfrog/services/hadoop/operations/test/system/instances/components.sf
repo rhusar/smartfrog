@@ -5,7 +5,8 @@
 testMicroDfsCluster extends ExpectDeploy {
   action extends MicroDFSCluster {
     clusterName "testMicroDfsCluster";
-    test.build.data ((PROPERTY test.build.data)  ++ "/" ++ clusterName );
+    datadir PROPERTY test.build.data;
+    filesystemDir (datadir  ++ "/" ++ clusterName );
   }
   tests extends Sequence {
   }

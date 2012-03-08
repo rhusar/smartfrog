@@ -91,5 +91,9 @@
         rev="${jackson.version}"
         conf="redist->master"/>
 
+    <dependency org="org.codehaus.jackson"
+        name="jackson-jaxrs"
+        rev="${jackson.version}"
+        conf="redist->master"/>
   </dependencies>
 </ivy-module>

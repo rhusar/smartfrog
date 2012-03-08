@@ -25,6 +25,7 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RunningJob;
+import org.smartfrog.services.hadoop.grumpy.ClusterConstants;
 import org.smartfrog.services.hadoop.mapreduce.submitter.JobRunningTool;
 
 /**
@@ -61,6 +62,7 @@ public class TeraGenJob extends JobRunningTool {
         job.setOutputValueClass(Text.class);
         job.setInputFormat(TeraGenRangeInputFormat.class);
         job.setOutputFormat(TeraOutputFormat.class);
+        job.setBoolean(ClusterConstants.MAPRED_DISABLE_TOOL_WARNING, true);
         return JobClient.runJob(job);
     }
 
