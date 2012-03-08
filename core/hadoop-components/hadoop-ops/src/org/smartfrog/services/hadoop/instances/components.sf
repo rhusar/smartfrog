@@ -108,6 +108,9 @@ MiniDFSCluster extends MiniCluster {
 
   simulatedCapacities [];
 
+  filesystemDir TBD;
+
+  test.build.data filesystemDir;
   conf.required ["test.build.data"];
 }
 
@@ -132,6 +135,8 @@ MiniMRCluster extends MiniCluster {
   taskTrackerPort 0;
   directoryCount 1;
   numTrackerToExclude 0;
+  hadoop.log.dir TBD;
+  conf.required ["hadoop.log.dir"];
 }
 
 
@@ -144,9 +149,9 @@ HadoopTestBinding extends DATA {
   jobTrackerPort 50032;
   
   hostname "localhost";
-
+  jobTrackerHost hostname;
   dfsURI ( "hdfs://" ++ hostname  ++ ":" ++ namenodePort );
-  jtURI  ( "http://" ++ hostname  ++ ":" ++ jobTrackerPort );
+  jtURI  ( "http://" ++ jobTrackerHost  ++ ":" ++ jobTrackerPort );
 
 }
 
@@ -166,18 +171,25 @@ MiniHadoopCluster extends Compound {
   dfsCluster extends MiniDFSCluster {
     namenodePort PARENT:namenodePort;
     nodeCount PARENT:nodeCount;
-    test.build.data PARENT:filesystemDir;
+    filesystemDir PARENT:filesystemDir;
   }
 
   mrCluster extends MiniMRCluster {
     nodeCount PARENT:ATTRIB nodeCount;
     filesystemURI PARENT:ATTRIB filesystemURI;
-    hadoop.job.history.location   ( "file://" ++ PARENT:filesystemDir ++ "jt");
+    filesystemDir PARENT:filesystemDir;
+    jobTrackerPort PARENT:jobTrackerPort;
+    hadoop.job.history.location   ( "file://" ++ filesystemDir ++ "jt");
+    hadoop.log.dir ( filesystemDir  ++ "/mrlogs");
 
   }
 
 }
 
+/**
+ * one node cluster with replication cut back to match
+ */
 MicroHadoopCluster extends MiniHadoopCluster {
   nodeCount 1;
+  block.replication.factor 1;
 }

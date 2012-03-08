@@ -702,6 +702,9 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-json/jackson-mapper-asl-${jackson.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-json/jackson-jaxrs-${jackson.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
       <depends packname="Logging"/>
     </pack>
 

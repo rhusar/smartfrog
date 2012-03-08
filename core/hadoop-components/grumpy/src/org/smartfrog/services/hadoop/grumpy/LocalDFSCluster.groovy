@@ -32,12 +32,12 @@ class LocalDFSCluster extends MiniDFSCluster implements ClusterURI {
 
     @Override
     String getURI() {
-        return "hdfs://localhost:${getNameNode() ? getNameNodePort() : 0}/"
+        return "hdfs://localhost:${nameNode ? nameNodePort : 0}/"
     }
 
     @Override
     String toString() {
-        return getURI();
+        return URI;
     }
 
 

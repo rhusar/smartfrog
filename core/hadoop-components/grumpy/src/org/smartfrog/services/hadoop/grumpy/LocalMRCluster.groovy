@@ -63,12 +63,12 @@ class LocalMRCluster extends MiniMRCluster implements ClusterURI {
 
     @Override
     String getURI() {
-        return "http://localhost:" + getJobTrackerPort() + "/";
+        return "http://localhost:" + jobTrackerPort + "/";
     }
 
     @Override
     String toString() {
-        return getURI();
+        return URI;
     }
 
     static LocalMRCluster createInstance(int numTaskTrackers,

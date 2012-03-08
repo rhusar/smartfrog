@@ -1,0 +1,3 @@
+#include "/org/smartfrog/services/hadoop/operations/test/system/terasort/components.sf"
+
+sfConfig extends testTerasort;

@@ -986,6 +986,8 @@ fi
 %{linkdir}/jackson-core-asl.jar
 %{libdir}/jackson-mapper-asl-${jackson.version}.jar
 %{linkdir}/jackson-mapper-asl.jar
+%{libdir}/jackson-jaxrs-${jackson.version}.jar
+%{linkdir}/jackson-jaxrs.jar
 # -----------------------------------------------------------------------------
 %files logging
 

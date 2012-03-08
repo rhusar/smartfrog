@@ -74,6 +74,8 @@
                 name="commons-logging"
                 rev="${commons-logging.version}"
                 conf="redist->master"/>
+
+
     <!-- for 0.20.x only hadoop-core is depended upon-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-core"

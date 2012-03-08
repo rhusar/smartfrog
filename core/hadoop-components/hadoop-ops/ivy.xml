@@ -130,6 +130,11 @@ description="the test WAR File" visibility="private"/>-->
     We declare dependencies only on the hadoop masters
     -->
 
+    <!---->
+    <dependency org="javax.ws.rs" name="jsr311-api"
+        rev="${javax.ws.rs.jsr311-api.version}"
+        conf="hadoop-core->default"/>
+
     <!-- for 1.x only hadoop-core is depended upon-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-core"
@@ -170,6 +175,7 @@ description="the test WAR File" visibility="private"/>-->
       <exclude org="org.slf4j"/>
     </dependency>
 
+    <!--javax/ws/rs/core/StreamingOutput-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-examples"
                 rev="${hadoop.version}"

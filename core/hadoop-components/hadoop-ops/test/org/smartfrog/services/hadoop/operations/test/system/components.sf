@@ -5,7 +5,8 @@
 
 BondedHadoopCluster extends MicroHadoopCluster {
   clusterName TBD;
-  filesystemDir ((PROPERTY test.build.data)  ++ "/" ++ clusterName );
+  testBuildData PROPERTY test.data.dir;
+  filesystemDir (testBuildData ++ "/" ++ clusterName );
 }
 
 

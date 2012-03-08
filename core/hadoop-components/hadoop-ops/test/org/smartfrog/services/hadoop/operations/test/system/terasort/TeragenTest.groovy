@@ -1,4 +1,8 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+package org.smartfrog.services.hadoop.operations.test.system.terasort
+
+import org.smartfrog.services.hadoop.operations.test.system.HadoopTestBase
+
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,34 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+class TeragenTest extends HadoopTestBase {
 
-package org.smartfrog.services.hadoop.mapreduce.submitter;
+    protected String PACKAGE = "/org/smartfrog/services/hadoop/operations/test/system/terasort/"
 
-import org.smartfrog.services.hadoop.operations.core.ClusterBound;
+    public void testTeragen() {
+        expectSuccessfulTestRun(PACKAGE, "testTeragen")
+    }
 
-
-public interface ToolRunnerComponent extends ClusterBound {
-
-    /**
-     * {@value}
-     */
-    String ATTR_TOOLCLASS = "toolClass";
-
-    /**
-     * {@value}
-     */
-    String ATTR_ARGUMENTS = "arguments";
-    /**
-     * {@value}
-     */
-    String ATTR_RETURNCODE = "returnCode";
-    /**
-     * {@value}
-     */
-    String ATTR_FAIL_ON_NON_ZERO_RETURN_CODE = "failOnNonZeroReturnCode";
-
-    /**
-     * {@value}
-     */
-    String ATTR_NAME = "name";
 }

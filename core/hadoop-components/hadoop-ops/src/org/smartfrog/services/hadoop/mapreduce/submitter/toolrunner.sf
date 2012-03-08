@@ -30,6 +30,7 @@ For more information: www.smartfrog.org
 ToolRunner extends HadoopJobRunner  {
   sfClass "org.smartfrog.services.hadoop.mapreduce.submitter.ToolRunnerComponentImpl";
 
+  name "toolrunner";
 
   //the cluster reference is optional
   //cluster TBD;
@@ -46,5 +47,9 @@ ToolRunner extends HadoopJobRunner  {
 
   //should a return code !=  0 be a failure?
   failOnNonZeroReturnCode false;
+
+  //finish after running the job
+  sfShouldTerminate true;
 }
+
 
