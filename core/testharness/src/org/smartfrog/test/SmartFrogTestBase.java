@@ -30,6 +30,7 @@ import org.smartfrog.services.testcontext.TestContextInjector;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -65,7 +66,7 @@ public abstract class SmartFrogTestBase extends TestCase implements TestContextI
      */
     protected File classesDir;
     protected String hostname;
-    protected Map<String, Object> testContext = new HashMap<String, Object>();
+    protected Map<String, Object> testContext = new HashMap<String, Object>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
     protected boolean contextSet;
     protected Properties properties = new Properties();
 

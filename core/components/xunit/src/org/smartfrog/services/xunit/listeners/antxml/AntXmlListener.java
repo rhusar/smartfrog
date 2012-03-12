@@ -32,6 +32,7 @@ import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -101,7 +102,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
     /**
      * log failed tests so we don't log them more than once
      */
-    private HashMap<String, TestInfo> failedTests = new HashMap<String, TestInfo>();
+    private HashMap<String, TestInfo> failedTests = new HashMap<String, TestInfo>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
 
     public AntXmlListener(String hostname,

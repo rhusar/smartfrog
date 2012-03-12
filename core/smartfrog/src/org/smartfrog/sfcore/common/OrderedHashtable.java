@@ -47,7 +47,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      * Common.OrderedHashtable.initCap (offset by SFSystem.propBase). Defaults
      * to 10 if not there.
      */
-    public static int initCap = Integer.getInteger(SmartFrogCoreProperty.initCapOrderedHashTable, 10)
+    public static final int initCap = Integer.getInteger(SmartFrogCoreProperty.initCapOrderedHashTable, 10)
                                        .intValue();
 
     /**
@@ -55,7 +55,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      * Common.OrderedHashtable.loadFac (offset by SFSystem.propBase). Defaults
      * to 95(%) if not there.
      */
-    public static float loadFac = Integer.getInteger(SmartFrogCoreProperty.loadFacOrderedHashTable, 95)
+    public static final float loadFac = Integer.getInteger(SmartFrogCoreProperty.loadFacOrderedHashTable, 95)
                                          .floatValue() / 100;
 
     /**
@@ -63,7 +63,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      * Common.OrderedHashtable.keysInc (offset by SFSystem.propBase). Defaults
      * to 5 if not there.
      */
-    public static int keysInc = Integer.getInteger(SmartFrogCoreProperty.keysIncOrderedHashTable, 5)
+    public static final int keysInc = Integer.getInteger(SmartFrogCoreProperty.keysIncOrderedHashTable, 5)
                                        .intValue();
 
     /** Vector for ordered keys. */

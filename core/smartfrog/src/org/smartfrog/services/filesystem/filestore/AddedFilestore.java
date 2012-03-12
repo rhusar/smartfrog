@@ -20,6 +20,8 @@
 
 package org.smartfrog.services.filesystem.filestore;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +34,7 @@ public class AddedFilestore {
 
     private File directory;
 
-    private HashMap<URI, FileEntry> files = new HashMap<URI, FileEntry>();
+    private HashMap<URI, FileEntry> files = new HashMap<URI, FileEntry>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     /**
      * Constructor.

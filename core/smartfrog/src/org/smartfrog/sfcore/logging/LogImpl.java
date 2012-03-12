@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.logging;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
@@ -499,7 +500,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     /**
      *  Registered inputs, distribution list
      */
-    protected Hashtable registeredLogs = new Hashtable();
+    protected Hashtable registeredLogs = new Hashtable(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     //LogImpl configuration
 

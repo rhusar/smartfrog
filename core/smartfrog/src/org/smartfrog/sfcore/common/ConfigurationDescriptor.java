@@ -204,7 +204,7 @@ public class ConfigurationDescriptor implements MessageKeys {
     /**
      * Extra parameters for action
      */
-    private Hashtable options = new Hashtable();
+    private Hashtable options = new Hashtable(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     /**
      *   Special Options for SF1 Language

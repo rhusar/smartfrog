@@ -21,6 +21,7 @@
 package org.smartfrog.services.trace;
 
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -96,7 +97,7 @@ public final class BrowserEntry implements Entry {
                 // The node referenced is a children of this node
                 try {
                     if (children == null) {
-                        this.children = new HashMap();
+                        this.children = new HashMap(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
                         //Create new Child (as children were null)
                         BrowserEntry newChild = new BrowserEntry(this.
@@ -162,7 +163,7 @@ public final class BrowserEntry implements Entry {
                     //nameChild);
                     try {
                         if (children == null) {
-                            this.children = new HashMap();
+                            this.children = new HashMap(OrderedHashtable.initCap, OrderedHashtable.loadFac);
                         }
 
                         if (children.containsKey(nameChild)) {

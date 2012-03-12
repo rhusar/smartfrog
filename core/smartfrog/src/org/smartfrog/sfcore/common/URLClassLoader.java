@@ -35,7 +35,7 @@ import java.util.Hashtable;
  */
 public class URLClassLoader extends BaseClassLoader {
     /** Table to maintain loaders for URLs. */
-    protected static Hashtable<URL, ClassLoader> loaders = new Hashtable<URL, ClassLoader>();
+    protected static Hashtable<URL, ClassLoader> loaders = new Hashtable<URL, ClassLoader>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     /** Base for class download. */
     protected URL classBase;

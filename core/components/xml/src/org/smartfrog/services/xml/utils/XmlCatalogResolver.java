@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.xml.utils;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -73,7 +74,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
      * reset the resolution table
      */
     public void resetMap() {
-        setMappings(new HashMap<String, String>());
+        setMappings(new HashMap<String, String>(OrderedHashtable.initCap, OrderedHashtable.loadFac));
     }
 
     /**

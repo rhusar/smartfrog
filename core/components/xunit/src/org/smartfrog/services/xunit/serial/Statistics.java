@@ -20,6 +20,7 @@
 package org.smartfrog.services.xunit.serial;
 
 import org.smartfrog.services.xunit.base.TestResultAttributes;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -48,7 +49,7 @@ public final class Statistics implements Serializable, Cloneable {
     /**
      * Hash table by outcome
      */
-    private HashMap<String, Integer> outcomes = new HashMap<String, Integer>();
+    private HashMap<String, Integer> outcomes = new HashMap<String, Integer>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
 
     public Statistics() {

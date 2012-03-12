@@ -23,6 +23,7 @@ package org.smartfrog.services.xunit.listeners.xml;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestSuite;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -53,7 +54,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     /**
      * mapping of suite to file
      */
-    private HashMap<String, String> testFiles = new HashMap<String, String>();
+    private HashMap<String, String> testFiles = new HashMap<String, String>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
     protected String suffix = ".xml";
     protected String prefix = "";
     private boolean useProcessname;

@@ -26,6 +26,7 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 import java.util.Hashtable;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
 import org.smartfrog.sfcore.workflow.eventbus.EventSink;
@@ -41,7 +42,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
     private Vector messages = new Vector();
     private int messageIndex = 0;
 
-    private Hashtable<EventSink, Integer> registrationMessages = new Hashtable<EventSink, Integer>();
+    private Hashtable<EventSink, Integer> registrationMessages = new Hashtable<EventSink, Integer>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
 
     private SenderThread sender = null;
