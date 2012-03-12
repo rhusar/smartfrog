@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ import java.util.Vector;
 public class ContextImpl extends OrderedHashtable implements Context, Serializable, PrettyPrinting, Copying {
 
 
-    private static final HashSet<Character> specialChars = new HashSet<Character>();
+    private static final Collection<Character> specialChars = new HashSet<Character>();
 
     static {
         specialChars.add('.');
@@ -65,7 +66,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         specialChars.add('&');
     }
 
-    private static final HashSet<Character> otherChars = new HashSet<Character>();
+    private static final Collection<Character> otherChars = new HashSet<Character>(25);
 
     static {
         otherChars.add(' ');
@@ -91,7 +92,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     }
 
 
-    private static final HashSet<String> reservedWords = new HashSet<String>();
+    private static final Collection<String> reservedWords = new HashSet<String>(30);
 
     static {
         reservedWords.add("APPLY");
@@ -124,8 +125,9 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         reservedWords.add("VAR");
     }
 
-    protected Map attributeTags = new HashMap();
-    protected Map attributeTagsWrappers = new HashMap();
+    private static final Set NULL_TAG_SET = ReadOnlySetWrapper.wrap(null);
+    protected Map<Object, Set> attributeTags = new HashMap<Object, Set>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
+    protected Map<Object, Set> attributeTagsWrappers = new HashMap<Object, Set>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     /**
      * Creates an empty context with default capacity.
@@ -198,6 +200,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      * @return true if context contains value, false otherwise
      *  @throws NullPointerException  if the value is <code>null</code>.
      */
+    @SuppressWarnings("ProhibitedExceptionThrown")
     @Override
     public boolean sfContainsRefValue(Object value) {
         if (value == null) {
@@ -262,7 +265,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     @Override
     public Object sfResolveAttribute(Object name) throws SmartFrogContextException {
-        Object result = this.get(name);
+        Object result = get(name);
         if (result == null) {
             throw new SmartFrogContextException(
                     MessageUtil.formatMessage(MessageKeys.MSG_NOT_FOUND_ATTRIBUTE, name));
@@ -300,13 +303,13 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
             return null;
         }
 
-        if (this.containsKey(name)) {
+        if (containsKey(name)) {
             throw new SmartFrogContextException(
                     MessageUtil.formatMessage(MessageKeys.MSG_REPEATED_ATTRIBUTE, name));
 
         }
 
-        return this.put(name, value);
+        return put(name, value);
     }
 
     /**
@@ -326,7 +329,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
                     MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
                             "sfRemoveAttribute"));
         }
-        return this.remove(name);
+        return remove(name);
     }
 
     /**
@@ -359,7 +362,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
             return null;
         }
 
-        return this.put(name, value);
+        return put(name, value);
     }
 
 
@@ -387,16 +390,84 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         return null;
     }
 
+    private boolean hasAttributeTags() {
+        return attributeTags != null;
+    }
+
+    /**
+     * Get the tag for an attribute -or null if it is not declared
+     * @param name the attribute name to look for
+     * @return the value or null if there is no such entry
+     */
+    private Set getAttributeTag(final Object name) {
+        return hasAttributeTags() ? attributeTags.get(name) : null;
+    }
+
+    /**
+     * Remove a tag if there is a local tag map and the key is not null
+     * @param key the key to look for
+     */
+    private void removeTag(final Object key) {
+        if (hasAttributeTags() && key != null) {
+            attributeTags.remove(key);
+            attributeTagsWrappers.remove(key);
+        }
+    }
+
+    /**
+     * Create the tag fields if they are currently null.
+     * Unsynchronized.
+     */
+    private void demandCreateTagFields() {
+        if (!hasAttributeTags()) {
+            attributeTags = new HashMap<Object, Set>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
+            attributeTagsWrappers = new HashMap<Object, Set>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
+        }
+    }
+
+    /**
+     * Clear the tag fields.
+     * Unsynchronized.
+     */
+    private void clearTagFields() {
+        attributeTags = null;
+        attributeTagsWrappers = null;
+    }
+
+
+    /**
+     * Clear the tag fields if they are currently empty
+     * Unsynchronized.
+     */
+    private void demandClearTagFields() {
+        if (hasAttributeTags() && attributeTags.isEmpty()) {
+            clearTagFields();
+        }
+    }
+
+    /**
+     * Create a tag set; create the tag fields if needed.
+     * @param name set name -it is assumed this entry is not already in the hash set
+     * @return the new tag set.
+     */
     private Set createTagSet(Object name) {
-        Set s = Collections.synchronizedSet(new HashSet());
+        Set s = Collections.synchronizedSet(new HashSet(OrderedHashtable.initCap, OrderedHashtable.loadFac));
+        demandCreateTagFields();
         attributeTags.put(name, s);
         attributeTagsWrappers.put(name, ReadOnlySetWrapper.wrap(s));
         return s;
     }
 
+    /**
+     * Delete the tag set. Will reset the tag fields if they are now empty.
+     * @param name tag set name.
+     */
     private void deleteTagSet(Object name) {
-        attributeTags.remove(name);
-        attributeTagsWrappers.remove(name);
+        if (hasAttributeTags()) {
+            attributeTags.remove(name);
+            attributeTagsWrappers.remove(name);
+            demandClearTagFields();
+        }
     }
 
     /**
@@ -413,7 +484,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         if (name == null || !containsKey(name)) {
             throw new SmartFrogContextException("Attribute " + name + " does not exists for setting tags");
         }
-        Set s = (Set) attributeTags.get(name);
+        Set s = getAttributeTag(name);
         if (s == null) {
             if (!tags.isEmpty()) {
                 s = createTagSet(name);
@@ -442,9 +513,12 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         if (name == null || !containsKey(name)) {
             throw new SmartFrogContextException("Attribute " + name + " does not exists for getting tags");
         }
-        Set s = (ReadOnlySetWrapper) attributeTagsWrappers.get(name);
+        Set s = null;
+        if (hasAttributeTags()) {
+            s = attributeTagsWrappers.get(name);
+        }
         if (s == null) {
-            s = ReadOnlySetWrapper.wrap(null);
+            s = NULL_TAG_SET;
         }
         return s;
     }
@@ -463,7 +537,8 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
             throw new SmartFrogContextException("Attribute " + name + " does not exists for adding tags");
         }
         if (tag != null) {
-            Set s = (Set) attributeTags.get(name);
+            demandCreateTagFields();
+            Set s = getAttributeTag(name);
             if (s == null) { // add it
                 s = createTagSet(name);
             }
@@ -484,7 +559,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         if (!containsKey(name)) {
             throw new SmartFrogContextException("Attribute " + name + " does not exist for removing tags");
         }
-        Set s = (Set) attributeTags.get(name);
+        Set s = getAttributeTag(name);
         if (s == null) {
             // do nothing - its not there
         } else {
@@ -509,7 +584,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
             throw new SmartFrogContextException("Attribute " + name + " does not exist for adding tags");
         }
         if (tags != null && !tags.isEmpty()) {
-            Set s = (Set) attributeTags.get(name);
+            Set s = getAttributeTag(name);
             if (s == null) {
                 s = createTagSet(name);
             }
@@ -530,10 +605,8 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         if (!containsKey(name)) {
             throw new SmartFrogContextException("Attribute " + name + " does not exists for removing tags");
         }
-        Set s = (Set) attributeTags.get(name);
-        if (s == null) {
-            // do nothing - its not there
-        } else {
+        Set s = getAttributeTag(name);
+        if (s != null) {
             s.removeAll(tags);
             if (s.isEmpty()) {
                 deleteTagSet(name);
@@ -568,7 +641,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
             throw new SmartFrogContextException(
                     "Attribute " + name + " does not exists for validating tag's existance");
         }
-        Set s = (Set) attributeTags.get(name);
+        Set s = getAttributeTag(name);
         return (s != null) && s.contains(tag);
     }
 
@@ -580,6 +653,8 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     public synchronized boolean equalsTags(Object o) {
         if (o == attributeTags) {
+            //catches the special case of both entries being null (the set of context tags are implicitly equal)
+            //as well as the situation in which the references are identical
             return true;
         }
 
@@ -587,8 +662,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
             return false;
         }
 
-        return attributeTags.equals(o);
-
+        return hasAttributeTags() && attributeTags.equals(o);
     }
 
     /**
@@ -675,18 +749,17 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      * @throws IOException failure while writing
      */
     protected void writeTagsOn(Writer ps, int indent, Object key) throws IOException {
-        if (attributeTags.containsKey(key)) {
-            try {
-                if (sfGetTags(key).size() > 0) {
-                    ps.write("[ ");
-                    for (Iterator i = sfTags(key); i.hasNext();) {
-                        ps.write(i.next().toString() + " ");
-                    }
-                    ps.write("] ");
+        try {
+            Set tagSet = sfGetTags(key);
+            if (!tagSet.isEmpty()) {
+                ps.write("[ ");
+                for (Object tag : tagSet) {
+                    ps.write(tag.toString() + " ");
                 }
-            } catch (SmartFrogContextException e) {
-                // shouldn't happen...
+                ps.write("] ");
             }
+        } catch (SmartFrogContextException e) {
+            // shouldn't happen...
         }
     }
 
@@ -926,14 +999,12 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     @Override
     public Object remove(Object key) {
         Object r = super.remove(key);
-        attributeTags.remove(key);
-        attributeTagsWrappers.remove(key);
+        removeTag(key);
         if (r != null) {
             CoreSolver.getInstance().addUndoPut(this, key, r);
         }
         return r;
     }
-
 
     /**
      *   Removes the element at the specified position.
@@ -948,10 +1019,13 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     public Object remove(int index) {
         Object key = orderedKeys.remove(index);
-        Object value = super.remove(index);
-        attributeTags.remove(key);
-        attributeTagsWrappers.remove(key);
-        return value;
+        remove(key);
+        removeTag(key);
+        Object r = super.remove(index);
+        if (r != null) {
+            CoreSolver.getInstance().addUndoPut(this, key, r);
+        }
+        return r;
     }
 
 
@@ -974,7 +1048,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         super.rename(key1, key2);
 
         // safe because key1 != key2
-        if (attributeTags.containsKey(key1)) {
+        if (hasAttributeTags() && attributeTags.containsKey(key1)) {
             attributeTags.put(key2, attributeTags.get(key1));
             attributeTags.remove(key1);
             attributeTagsWrappers.put(key2, attributeTagsWrappers.get(key1));
@@ -994,17 +1068,19 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     @Override
     public Object clone() {
         Object ret = super.clone();
-        Map m = new HashMap();
-        Map w = new HashMap();
-        for (Object key : attributeTags.keySet()) {
-            Set s = (Set) attributeTags.get(key);
-            Set sc = Collections.synchronizedSet(new HashSet());
-            sc.addAll(s);
-            m.put(key, sc);
-            w.put(key, ReadOnlySetWrapper.wrap(sc));
+        if (hasAttributeTags()) {
+            Map m = new HashMap(attributeTags.size(), OrderedHashtable.loadFac);
+            Map w = new HashMap(attributeTags.size(), OrderedHashtable.loadFac);
+            for (Object key : attributeTags.keySet()) {
+                Set s = getAttributeTag(key);
+                Set sc = Collections.synchronizedSet(new HashSet(s.size(), OrderedHashtable.loadFac));
+                sc.addAll(s);
+                m.put(key, sc);
+                w.put(key, ReadOnlySetWrapper.wrap(sc));
+            }
+            ((ContextImpl) ret).attributeTags = m;
+            ((ContextImpl) ret).attributeTagsWrappers = w;
         }
-        ((ContextImpl) ret).attributeTags = m;
-        ((ContextImpl) ret).attributeTagsWrappers = w;
         return ret;
     }
 
@@ -1024,7 +1100,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 
     public Object copy() {
         // note that since the super method uses clone,
-        // this is already copying attributeTags
+        // this is already copying attributeTags if they are present
         return super.copy();
     }
 
@@ -1066,7 +1142,9 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     public synchronized int hashCode() {
         // Simple hashcode using Joshua Bloch's recommendation
         int result = 17;
-        result = 37 * result + attributeTags.hashCode();
+        if (hasAttributeTags()) {
+            result = 37 * result + attributeTags.hashCode();
+        }
         result = 37 * result + super.hashCode();
         return result;
     }
