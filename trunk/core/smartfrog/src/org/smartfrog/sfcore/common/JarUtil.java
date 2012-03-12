@@ -42,8 +42,8 @@ public class JarUtil {
     */
    private String[] filters = {".sf",".sf2",".sfxml",".sfcd"};
    private Vector<String> listJars = new Vector<String>();
-   private Hashtable<String, String> sfFiles = new Hashtable<String, String>();
-   private Hashtable<String, Long> htSizes = new Hashtable<String, Long>();
+   private Hashtable<String, String> sfFiles = new Hashtable<String, String>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
+   private Hashtable<String, Long> htSizes = new Hashtable<String, Long>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
 
    /**

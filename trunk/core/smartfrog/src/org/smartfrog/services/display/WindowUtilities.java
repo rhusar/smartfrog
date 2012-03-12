@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.display;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -452,7 +453,7 @@ public class WindowUtilities {
      */
     public static Color getColorAssociated(String name) {
         if (colorNames == null) {
-            colorNames = new Hashtable<String, Color>();
+            colorNames = new Hashtable<String, Color>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
             usedColorListIndexes = 0;
         }
 

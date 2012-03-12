@@ -21,6 +21,8 @@ package org.smartfrog.services.anubis.locator.util;
 
 
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,7 +50,7 @@ public class SetMap {
     /**
      * Default constructor creates a HashMap implementation
      */
-    public SetMap() { map = new HashMap(); }
+    public SetMap() { map = new HashMap(OrderedHashtable.initCap, OrderedHashtable.loadFac); }
 
     /**
      * Constructor - allows the user to define the implementation

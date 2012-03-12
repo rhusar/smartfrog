@@ -40,6 +40,7 @@ import org.smartfrog.services.anubis.partition.protocols.partitionmanager.Connec
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
 import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogImplAsyncWrapper;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -101,7 +102,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
         }
         this.setName("Anubis: Nio Message Server (node " + me.id + ")");
         this.setPriority(MAX_PRIORITY);
-        pendingNewChannels = new Hashtable();
+        pendingNewChannels = new Hashtable(OrderedHashtable.initCap, OrderedHashtable.loadFac);
         deadKeys = new Vector();
         writePendingKeys = new Vector();
         open = true;

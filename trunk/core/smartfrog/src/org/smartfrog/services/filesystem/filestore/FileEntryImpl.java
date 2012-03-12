@@ -22,6 +22,7 @@ package org.smartfrog.services.filesystem.filestore;
 
 
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -75,7 +76,7 @@ public class FileEntryImpl implements FileEntry {
      */
     private Hashtable<String, Object> data() {
         if (data == null) {
-            data = new Hashtable<String, Object>();
+            data = new Hashtable<String, Object>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
         }
         return data;
     }

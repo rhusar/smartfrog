@@ -19,6 +19,7 @@
  */
 package org.smartfrog.sfcore.workflow.events;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -44,7 +45,7 @@ public abstract class LifecycleEvent implements Serializable {
 
     private TerminationRecord status;
 
-    private HashMap<String, Object> data = new HashMap<String, Object>();
+    private HashMap<String, Object> data = new HashMap<String, Object>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     private static final String UNKNOWN_COMPONENT = "(unknown)";
 

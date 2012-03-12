@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -40,7 +41,7 @@ import java.util.Vector;
  */
 class ServerSelector {
     private static int roundRobinServerIndex = 0; // Index to use for selecting server
-    private Hashtable<String,Server> serversMap = new Hashtable<String, Server>(); // Mapping from server hostname to corresponding Server instance
+    private Hashtable<String,Server> serversMap = new Hashtable<String, Server>(OrderedHashtable.initCap, OrderedHashtable.loadFac); // Mapping from server hostname to corresponding Server instance
     private Vector<Server> servers = new Vector<Server>(); // Set of servers to choose from
     private static String name="ServerSelector";
 

@@ -1,5 +1,6 @@
 package org.smartfrog.sfcore.logging;
 
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
@@ -21,7 +22,7 @@ public class LogFactory {
     /**
      * hashtable of loggers
      */
-    protected static Hashtable<String, LogSF> loggers = new Hashtable<String, LogSF>();
+    protected static Hashtable<String, LogSF> loggers = new Hashtable<String, LogSF>(OrderedHashtable.initCap, OrderedHashtable.loadFac);
 
     /**
      * Protected constructor that is not available for public use.

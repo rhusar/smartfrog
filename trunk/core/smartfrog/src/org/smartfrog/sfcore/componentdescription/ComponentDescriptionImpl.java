@@ -86,8 +86,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Log: it cannot be initialized before LogImpl is ready
      * LogImpl uses ComponentDescription.sfResolve to read its initial
      * configuration */
-    private static  LogSF sfLog= null;
-
+    private static LogSF sfLog = null;
 
 
     /**
@@ -98,10 +97,12 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @param eager eager flag
      */
     public ComponentDescriptionImpl(ComponentDescription parent, Context cxt, boolean eager) {
-        if (cxt == null)  //@todo remove all the new ContextImpl() throughout the code, replace by null!
-           this.sfContext = new ContextImpl();
-        else
-           this.sfContext = cxt;
+        //@todo remove all the new ContextImpl() throughout the code, replace by null!
+        if (cxt == null) {
+            this.sfContext = new ContextImpl();
+        } else {
+            this.sfContext = cxt;
+        }
         this.parent = parent;
         this.eager = eager;
     }
@@ -1438,7 +1439,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /**
      * Get the TAGS for this component. TAGS are simply uninterpreted strings
      * associated with each attribute.
-     * 
+     *
      * @return the set of tags
      * @throws SmartFrogContextException the attribute does not exist;
      */
@@ -1491,7 +1492,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     /**
      * remove a tag from the tag set of this component if it exists
-     * 
+     *
      * @param tag
      *            a tag to remove from the set
      * @throws SmartFrogContextException
@@ -1516,7 +1517,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     /**
      * add a tag to the tag set of this component
-     * 
+     *
      * @param tags
      *            a set of tags to add to the set
      * @throws SmartFrogContextException
@@ -1541,7 +1542,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     /**
      * remove a tag from the tag set of this component if it exists
-     * 
+     *
      * @param tags
      *            a set of tags to remove from the set
      * @throws SmartFrogContextException
@@ -1566,7 +1567,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     /**
      * Return whether or not a tag is in the list of tags for this component
-     * 
+     *
      * @param tag
      *            the tag to chack
      * @return whether or not the attribute has that tag
