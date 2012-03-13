@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>${comp.sfResolve("hadoop.tmp.dir")}</value>
+  </property>
+
+<property>
+  <name>fs.default.name</name>
+  <value>${comp.sfResolve("filesystem.uri")}</value>
+</property>
+
+<% if (comp.sfResolve("ibrix")) { %>
+<property>
+  <name>fs.ibrix.impl</name>
+  <value>com.hp.hpl.filesystem.IBrixFileSystem</value>
+  <description>IBrix FileSystem Integration</description>
+</property>
+<property>
+  <name>fs.ibrix.getsegscript</name>
+  <value>${comp.master.fusionManager.ibrixBinDir}/fmap</value>
+  <description>IBrix Location of file mapper script which prints the segment for a file</description>
+</property>
+<property>
+  <name>fs.ibrix.gethostscript</name>
+  <value>${destDir}/getsegmentsperhost.py</value>
+  <description>IBrix FileSystem script which returns the segment host association</description>
+</property>
+<property>
+  <name>fs.ibrix.cluster</name>
+  <value>${comp.master.fusionManager.ibrixclusterName}</value>
+  <description>IBrix FileSystem cluster</description>
+</property>
+<property>
+  <name>fs.ibrix.filesystem</name>
+  <value>${comp.master.fusionManager.filesystem}</value>
+  <description>IBrix FileSystem name</description>
+</property>
+<% }%>
+
+</configuration>

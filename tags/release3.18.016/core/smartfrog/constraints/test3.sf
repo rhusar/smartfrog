@@ -1,0 +1,15 @@
+#include "/org/smartfrog/functions.sf"
+
+
+sfConfig extends {
+  foo1 extends Constraint {
+     x foo2:x;
+     y VAR "[1..5]";
+     z (x + 1);
+     [sfConstraint] -- "y is x*z";
+  }
+  foo2 extends Constraint {
+     x VAR;
+     [sfConstraint] -- "(x=2; x=1)";
+  }
+}

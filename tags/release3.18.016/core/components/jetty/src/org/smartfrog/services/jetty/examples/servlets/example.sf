@@ -1,0 +1,52 @@
+#include "/org/smartfrog/services/jetty/examples/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/jetty/examples/servlets/components.sf"
+#include "/org/smartfrog/services/www/filters/components.sf"
+#include "/org/smartfrog/services/logging/jcl/components.sf"
+
+
+BindingServletServer extends LocalJettyServer {
+
+  host CoreJettyServer:ANY_HOST;
+  
+     //integrate logging with smartfrog
+  commonsLoggingBridge extends BindCommonsLogging;
+  jettyLogging extends IntegrateJettyLogging;
+  
+  context extends ServletContext {
+    contextPath "/";
+    resourcePackage "/org/smartfrog/services/jetty/examples/servlets/web";
+
+    server LAZY PARENT:server;
+    failOnStartup PARENT:failOnStartup;
+    startupTime PARENT:startupTime;
+  }
+
+  bindingServlet extends BindingServlet {
+    context LAZY PARENT:context;
+  }
+  
+  resolveServlet extends ResolveServlet {
+    context LAZY PARENT:context;
+  }
+
+  failOnStartup false;
+  startupTime 0;
+
+  troubleServlet  extends TroublesomeServlet  {
+    context LAZY PARENT:context;
+    failOnStartup PARENT:failOnStartup;
+    startupTime PARENT:startupTime;
+  }
+    /**
+   * default HTML pages &c. For dev, everything HTML is served up
+   */
+  defaultContent extends DefaultContentServlet {
+    context LAZY PARENT:context;
+    pathSpec "/";
+    initOptions:org.mortbay.jetty.servlet.Default.dirAllowed true;
+    initOptions:dirAllowed true;
+  }
+  
+}
+
+sfConfig extends BindingServletServer ;

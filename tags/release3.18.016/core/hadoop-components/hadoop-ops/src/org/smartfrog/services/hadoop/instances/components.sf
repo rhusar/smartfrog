@@ -1,0 +1,195 @@
+
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
+
+
+
+
+/*
+ These components bring up the mini single-VM clusters from the Hadoop test JARs, that are useful for testing, as they can
+ simulate small clusters.
+
+ -obviously, they are not for production use
+ -always deploy them into their own process (via sfProcessName attribute because they have a tendency to leak threads
+ -they tend to create subdirectories relative to the directory in which SF started running, this is a feature of the code that
+ assumes there is a build/test directory
+ */
+
+
+
+/**
+ * Component which sets up the data directory
+ */
+SetDataDir extends SystemProperties {
+  dataDir TBD;
+/**
+ * The system property to define the test data directory. The data goes in under dfs/
+ */
+  TEST_DATA_DIR "test.build.data";
+
+  properties [TEST_DATA_DIR, dataDir];
+}
+
+/**
+ * A compound that can create the data directory tree
+ */
+CreateAndSetDataDir extends Compound {
+  filename TBD;
+  createDir extends Mkdir {
+    dir PARENT:filename;
+  }
+  setDirProperty extends SetDataDir {
+    dataDir PARENT:filename;
+  }
+}
+
+
+/**
+ * a DFS cluster
+ */
+MiniCluster extends ClusterBound {
+  nodeCount 0;
+  /*
+  * @param racks array of strings indicating the rack that each node is on.
+  * If an empty list, it is unused.
+  */
+  racks [];
+  /*
+  * @param hosts array of strings indicating the hostnames of each node
+  * If an empty list, it is unused.
+  */
+  hosts [];
+
+
+}
+
+
+/**
+ Deploy a mini DFS cluster
+ */
+
+MiniDFSCluster extends MiniCluster {
+  sfClass "org.smartfrog.services.hadoop.instances.MiniDfsClusterImpl";
+
+  /*
+  * @param nameNodePort suggestion for which rpc port to use.  caller should
+  *          use getNameNodePort() to get the actual port used.
+  */
+
+  namenodePort 0;
+
+
+  /*
+  * @param format if true, format the NameNode and DataNodes before starting up
+  */
+
+  format true;
+
+  /*
+  * @param manageNameDfsDirs if true, the data directories for servers will be
+  *          created and dfs.name.dir and dfs.data.dir will be set in the conf
+  */
+  manageNameDfsDirs true;
+  /*
+  * @param manageDataDfsDirs if true, the data directories for datanodes will
+  *          be created and dfs.data.dir set to same in the conf
+  */
+  manageDataDfsDirs true;
+  /*
+  * @param operation the operation with which to start the servers.  If null
+  *          or StartupOption.FORMAT, then StartupOption.REGULAR will be used.
+  */
+  startupOption HdfsStartupOption:FORMAT;
+
+  /*
+  * @param simulatedCapacities array of capacities of the simulated data nodes
+  * If an empty list, it is unused.
+  */
+
+  simulatedCapacities [];
+
+  filesystemDir TBD;
+
+  test.build.data filesystemDir;
+  conf.required ["test.build.data"];
+}
+
+/**
+ * The smallest DFS cluster you can bring up
+ */
+MicroDFSCluster extends MiniDFSCluster {
+  nodeCount 1;
+}
+
+/**
+ A mini MR Cluster has all the attributes of a MiniDFS cluster, and adds a JobTracker and set of Task Trackers on top
+ */
+MiniMRCluster extends MiniDFSCluster {
+  nodeCount 1;
+}
+
+MiniMRCluster extends MiniCluster {
+  sfClass "org.smartfrog.services.hadoop.instances.MiniMrClusterImpl";
+  filesystemURI TBD
+  jobTrackerPort 0;
+  taskTrackerPort 0;
+  directoryCount 1;
+  numTrackerToExclude 0;
+  hadoop.log.dir TBD;
+  conf.required ["hadoop.log.dir"];
+}
+
+
+/**
+ Settings for test runs
+ */
+HadoopTestBinding extends DATA {
+
+  namenodePort 50031;
+  jobTrackerPort 50032;
+  
+  hostname "localhost";
+  jobTrackerHost hostname;
+  dfsURI ( "hdfs://" ++ hostname  ++ ":" ++ namenodePort );
+  jtURI  ( "http://" ++ jobTrackerHost  ++ ":" ++ jobTrackerPort );
+
+}
+
+
+/**
+ * A combined test cluster
+ */
+MiniHadoopCluster extends Compound {
+
+  nodeCount 3;
+
+  namenodePort HadoopTestBinding:namenodePort;
+  jobTrackerPort HadoopTestBinding:jobTrackerPort;
+  filesystemURI ("hdfs://localhost:" ++ namenodePort);
+  filesystemDir TBD;
+
+  dfsCluster extends MiniDFSCluster {
+    namenodePort PARENT:namenodePort;
+    nodeCount PARENT:nodeCount;
+    filesystemDir PARENT:filesystemDir;
+  }
+
+  mrCluster extends MiniMRCluster {
+    nodeCount PARENT:ATTRIB nodeCount;
+    filesystemURI PARENT:ATTRIB filesystemURI;
+    filesystemDir PARENT:filesystemDir;
+    jobTrackerPort PARENT:jobTrackerPort;
+    hadoop.job.history.location   ( "file://" ++ filesystemDir ++ "jt");
+    hadoop.log.dir ( filesystemDir  ++ "/mrlogs");
+
+  }
+
+}
+
+/**
+ * one node cluster with replication cut back to match
+ */
+MicroHadoopCluster extends MiniHadoopCluster {
+  nodeCount 1;
+  block.replication.factor 1;
+}

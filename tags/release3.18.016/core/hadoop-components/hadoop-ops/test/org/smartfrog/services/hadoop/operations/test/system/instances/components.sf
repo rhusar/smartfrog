@@ -1,0 +1,21 @@
+
+#include "/org/smartfrog/services/hadoop/operations/test/system/components.sf"
+
+
+testMicroDfsCluster extends ExpectDeploy {
+  action extends MicroDFSCluster {
+    clusterName "testMicroDfsCluster";
+    datadir PROPERTY test.build.data;
+    filesystemDir (datadir  ++ "/" ++ clusterName );
+  }
+  tests extends Sequence {
+  }
+}
+
+testMiniCluster extends ExpectDeploy {
+  action extends BondedHadoopCluster {
+    clusterName "testMiniCluster";
+  }
+  tests extends Sequence {
+  }
+}

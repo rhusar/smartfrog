@@ -1,0 +1,624 @@
+<?xml version="1.0"?>
+<project name="deployapi" default="default"
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:sf="antlib:org.smartfrog.tools.ant"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:core="http://smartfrog.org/build/core"
+    >
+
+  <!--
+  /** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Build file for deployment API
+  </description>
+
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="is.component" value="false"/>
+
+  <property name="root.dir" location="../.."/>
+  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
+  <property name="xml.dir" location="${antbuild.dir}/xml"/>
+
+
+  <!-- Import common stuff -->
+  <import file="${xml.dir}/systemtest.xml"/>
+  <import file="${xml.dir}/gui.xml"/>
+  <import file="${xml.dir}/ivy-mixin.xml"/>
+  <import file="${xml.dir}/state.xml"/>
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init"
+      depends="core.init,sftasks.smartfrog-tasks,core.core-tasks,core.artifact-names">
+    <property name="war.dir" location="war"/>
+    <property name="webinf.dir" location="${war.dir}/WEB-INF"/>
+    <property name="services.dir" location="${webinf.dir}/services"/>
+    <property name="target.war.name"
+        value="${artifact.name}-war-${artifact.version}.war"/>
+    <property name="target.war"
+        location="${dist.dir}/${target.war.name}"/>
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
+
+  <target name="default" depends="published"/>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- dependencies and setup logic needed to run tests-->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-test" depends="unittest.ready-to-test,init,dist,tests-packaged">
+    <property name="test.endpoint" value="http://localhost:8080/alpine/portal/"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="${project.name}"/>
+    <property name="deploy.sf" value="files/deployserver.sf"/>
+    <property name="deployapi.war.dir" value="${war.dir}"/>
+    <property name="parse.quiet" value="true"/>
+    <property name="test.endpoint" value="http://localhost:8080/alpine/portal/" />
+  </target>
+
+
+  <!-- we copy the files so as to
+    -eliminate duplicates and the complications that causes on a secure system
+    -put everything in one place for when we need to sign it
+    -see at a glance what is in there
+    -->
+  <target name="prepare-codebase" depends="declare-classpaths">
+    <property name="build.codebase.dir" location="${ivy.lib.dir}/test"/>
+  </target>
+  <!-- ========================================================== -->
+  <!-- set-->
+  <!-- ========================================================== -->
+
+  <target name="init-codebase" depends="init-deploy-properties,prepare-codebase"
+      description="deploy">
+    <sf:tourl property="codebase">
+      <fileset file="${target.jar}"/>
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </sf:tourl>
+    <echo level="verbose">
+      deploying to ${deploy.host}
+      codebase=${codebase}</echo>
+    <!--here to stop the IDE complaining that codebase is unset-->
+    <property name="codebase" value=""/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+
+
+  <target name="ready-to-parse" depends="tests-packaged,packaged,init-codebase" />
+
+  <target name="parse" depends="ready-to-parse"
+      description="parse the deployment descriptor">
+    <property name="warfile.timestamp"
+        location="${build.dir}/warfile.timestamp"/>
+    <ac:if>
+      <or>
+        <isset property="parse.needed"/>
+        <not>
+          <uptodate
+              srcfile="${target.war}"
+              targetfile="${warfile.timestamp}"/>
+        </not>
+      </or>
+      <ac:then>
+        <sf:parse quiet="${parse.quiet}">
+          <classpath path="${target.jar}:${test.jar}"/>
+          <sysproperty key="deployapi.war.dir"
+              value="${deployapi.war.dir}"/>
+          <sysproperty key="org.smartfrog.codebase"
+              value="${codebase}"/>
+          <!-- source files -->
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/pelvoux.sf"/>
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/chamonix.sf"/>
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/pelvoux_internal.sf"/>
+          <source file="src/org/smartfrog/services/deployapi/examples/interop/pelvoux_forked.sf"/>
+          <!--test files-->
+          <source file="test/files/deployclient.sf"/>
+          <source file="test/org/smartfrog/services/deployapi/test/system/alpine/deployapi/server_and_tests.sf"/>
+          <source file="test/org/smartfrog/services/deployapi/test/system/alpine/deployapi/all.sf"/>
+          <source file="test/org/smartfrog/services/deployapi/test/system/alpine/deployapi/localhost.sf"/>
+          <source file="${test.src.dir}/${deploy.sf}"/>
+        </sf:parse>
+        <!-- on success, we touch a property file to note we got it out -->
+        <touch file="${warfile.timestamp}"/>
+      </ac:then>
+    </ac:if>
+  </target>
+
+  <target name="parse-server" depends="ready-to-parse"
+      description="parse the deployment descriptor for a server">
+    <fail unless="server">Set the "server" property!</fail>
+    <property name="server.dir" location="hosts/${server}"/>
+    <property name="parse.timestamp"
+        location="${build.dir}/parse-${server}.timestamp"/>
+    <property name="default.sf"
+        location="${server.dir}/default.sf"/>
+    <ac:if>
+      <not>
+        <uptodate
+            srcfile="${default.sf}"
+            targetfile="${parse.timestamp}"/>
+      </not>
+      <ac:then>
+        <sf:parse quiet="${parse.quiet}">
+          <classpath path="${target.jar}:${test.jar}"/>
+          <sysproperty key="deployapi.war.dir"
+              value="${deployapi.war.dir}"/>
+          <sysproperty key="org.smartfrog.codebase"
+              value="${codebase}"/>
+          <!-- source files -->
+          <source file="${default.sf}"/>
+        </sf:parse>
+        <!-- on success, we touch a property file to note we got it out -->
+        <touch file="${parse.timestamp}"/>
+      </ac:then>
+    </ac:if>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
+      description="deploy">
+
+    <sf:deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
+      <codebase url="${codebase}"/>
+      <sysproperty key="deployapi.war.dir"
+          value="${deployapi.war.dir}"/>
+      <application name="${application.name}">
+        #include "/${deploy.sf}"
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+        sfConfig extends Application {
+        //sfProcessName "deployapi-subprocess";
+        }
+      </application>
+    </sf:deploy>
+  </target>
+
+
+
+
+  <target name="init-deploy-test"
+    depends="init-deploy-properties,init-codebase">
+    <property name="tests.package"
+      value="org/smartfrog/services/deployapi/test/system/alpine/deployapi/"/>
+    <property name="tests.sf" 
+      value="org/smartfrog/services/deployapi/test/system/alpine/deployapi/localhost.sf"/>
+    <property name="tests.name" 
+      value="${ant.project.name}-tests"/>
+    <property name="test.target" value="localhost"/>
+    <macrodef name="deploytest">
+      <attribute name="test" />
+      <sequential>
+        <sf:deploy classpathref="tests.run.classpath"
+          logStackTraces="true"
+          host="${deploy.host}"
+          timeout="30000"
+          >
+          <codebase url="${codebase}"/>
+          <sysproperty key="deployapi.war.dir"
+            value="${deployapi.war.dir}"/>
+          <application name="test-@{test}">
+            #include "${tests.package}@{test}.sf"
+            sfCodeBase PROPERTY org.smartfrog.codebase;
+          </application>
+        </sf:deploy>
+      </sequential>
+    </macrodef>
+  </target>
+
+
+  <target name="undeploy" depends="init-deploy-properties"
+    description="undeploy">
+    <sf:undeploy classpathref="run.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      timeout="30000"
+      application="${application.name}"/>
+  </target>
+
+  <target name="test-deploy" depends="init-deploy-test,tests-packaged"
+    description="deploy tests">
+    <deploytest test="${test.target}"/>
+  </target>
+
+  <target name="test-undeploy" depends="init-deploy-test"
+    description="undeploy tests"
+    >
+    <sf:undeploy classpathref="tests.run.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      timeout="30000"
+      failonerror="false"
+      application="test-${test.target}"/>
+  </target>
+
+
+  <target name="test-redeploy" depends="test-undeploy,test-deploy"/>  
+
+  <target name="deploy-and-test" depends="deploy,test-deploy" />
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- system tests : anything that is tested on a live daemon
+       not to be run on public machines for
+       security reasons, unless security is active-->
+
+
+  <target name="system-tests" depends="ready-to-test"
+      if="system.tests.enabled"
+      description="run the unit tests if unit.tests.enabled is set">
+    <sf-functionaltest testTimeout="600" shutdownTime="10">
+      <application>
+        <sf-startdaemon-debug failonerror="false" spawn="false"/>
+      </application>
+      <probe>
+        <socket port="${smartfrog.daemon.port}" server="localhost"/>
+      </probe>
+      <test>
+        <core:junit
+            errorProperty="test.failed"
+            failureProperty="test.failed"
+            includeAntRuntime="true"
+            >
+          <sysproperty key="test.classes.dir"
+              value="${test.classes.dir}"/>
+          <!--all properties beginning with test-->
+          <syspropertyset>
+            <propertyref prefix="test."/>
+          </syspropertyset>
+          <classpath>
+            <path refid="tests.run.classpath"/>
+          </classpath>
+          <batchtest todir="${test.data.dir}">
+            <!-- bulk test case -->
+            <fileset dir="${test.classes.dir}">
+              <include name="org/smartfrog/**/system/**/*Test.class"/>
+            </fileset>
+          </batchtest>
+        </core:junit>
+        <fail if="failure">Junit failed</fail>
+      </test>
+      <teardown>
+        <sf-stopdaemon failonerror="false"/>
+        <sf-junitreport data="${test.data.dir}"
+            reports="${test.reports.dir}"
+            />
+      </teardown>
+    </sf-functionaltest>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- installation includes the test jars as well as all the dependencies-->
+  <!-- ========================================================== -->
+  <target name="install" depends="ready-to-install,init-codebase,dist,tests-packaged">
+    <property name="install.dir" location="${smartfrog.dist.lib.dir}"/>
+    <mkdir dir="${install.dir}"/>
+    <copy todir="${install.dir}">
+      <fileset file="${target.jar}"/>
+      <!--test jar is included for extra logging-->
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </copy>
+  </target>
+
+  <!-- SCP logic from JDwA, core-chapter-08.xml -->
+
+
+  <!--
+    init file should look like
+    ssh.server=192.168.2.84
+    ssh.user=${user.name}
+    ssh.dir=SmartFrog/dist/
+    ssh.keyfile=${user.home}/.ssh/id_rsa
+    ssh.passphrase=secret
+    ssh.port=22
+    ssh.verbose=true
+
+    the secure/ dir should not be readable by group; in windows lock it down
+      -->
+  <target name="ssh-init" depends="init">
+    <fail unless="server">Set the "server" property!</fail>
+    <property name="ssh.propfile"
+        location="hosts/secure/${server}.ssh.properties"/>
+    <loadproperties srcFile="${ssh.propfile}"/>
+    <property name="tmp.dir" location="${build.dir}/tmp"/>
+    <mkdir dir="${tmp.dir}"/>
+    <presetdef name="ssh-cmd">
+      <sshexec host="${ssh.server}"
+          username="${ssh.user}"
+          port="${ssh.port}"
+          trust="true"
+          passphrase="${ssh.passphrase}"
+          keyfile="${ssh.keyfile}"/>
+    </presetdef>
+    <presetdef name="ssh-cp">
+      <scp
+          passphrase="${ssh.passphrase}"
+          keyfile="${ssh.keyfile}"
+          port="${ssh.port}"
+          trust="true"
+          verbose="${ssh.verbose}">
+      </scp>
+    </presetdef>
+  </target>
+
+  <target name="ssh-ready-to-upload"
+      depends="ssh-init,ready-to-install,init-codebase,dist,tests-packaged"/>
+
+  <target name="ssh-mkdirs" depends="ssh-init">
+    <ssh-cmd command="mkdir -p ${ssh.dir}/bin"/>
+    <ssh-cmd command="mkdir -p ${ssh.dir}/lib"/>
+  </target>
+
+  <target name="ssh-prepare-files" depends="ssh-ready-to-upload">
+    <property name="ssh.upload.dir" location="${build.dir}/ssh"/>
+    <mkdir dir="${ssh.upload.dir}" />
+    <copy todir="${ssh.upload.dir}">
+      <fileset file="${target.jar}"/>
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar"/>
+    </copy>
+    <fileset id="ssh.fileset" dir="${ssh.upload.dir}" includes="*.jar"/>
+  </target>
+
+  <!-- insert trust="true" to turn on trust -->
+  <target name="scp-upload" depends="ssh-init,ssh-mkdirs,ssh-stop,ssh-prepare-files">
+    <echo>SCP target is ${ssh.server}</echo>
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.server}:${ssh.dir}"/>
+    <!--copy the binaries-->
+    <ssh-cp remoteToDir="${ssh.path}/lib">
+      <fileset refid="ssh.fileset"/>
+    </ssh-cp>
+    <property name="server.local.bin.dir" location="hosts/${server}" />
+    <ssh-cp remoteToDir="${ssh.path}/bin">
+      <fileset dir="${server.local.bin.dir}" includes="default.*"/>
+    </ssh-cp>
+
+  </target>
+
+  <target name="ssh-stop" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}/bin; nohup ./sfStopDaemon localhost &amp;"
+    failonerror="false"/>
+  </target>
+
+  <target name="ssh-start" depends="ssh-init">
+    <ssh-cmd command="cd ${ssh.dir}/bin; nohup ./sfStartDaemon &amp;"/>
+  </target>
+
+  <target name="upload" depends="scp-upload"
+      description="upload the files to the remote server"/>
+
+
+  <!-- ==================================    -->
+  <!-- code to test against a specific target -->
+  <!-- ==================================    -->
+
+  <target name="init-interop-tests" depends="init">
+    <!-- for every endpoint there is a happy url and the actual epr-->
+    <tstamp>
+      <format property="time_t" unit="millisecond" pattern="yyyyMMddHHmmssSSS" />
+    </tstamp>
+    <property name="query" value="value=${time_t}" />
+    <property name="epr.nec" value="http://cddlm.nec-labs.com:9090/cddlm/services/portal"/>
+    <property name="happy.nec" value="http://cddlm.nec-labs.com:9090/cddlm/happyaxis.jsp?${query}"/>
+    <property name="epr.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/services/Portal"/>
+    <property name="happy.ourgrid" value="http://cddlm.lsd.ufcg.edu.br:8080/muse/happyaxis.jsp?${query}"/>
+    <property name="hp.server" value="deployapi.iseran.com" />
+    <property name="hp.port" value="8080" />
+    <property name="epr.hp" value="http://${hp.server}:${hp.port}/alpine/portal/"/>
+    <property name="happy.hp" value="http://${hp.server}:${hp.port}/alpine/portal/?${query}"/>
+    <property name="localhost.server" value="localhost"/>
+    <property name="epr.localhost" value="http://${localhost.server}:1080/alpine/portal/"/>
+    <property name="happy.localhost" value="http://${localhost.server}:1080/alpine/portal/?${query}"/>
+
+
+    <property name="test.interop.dir" location="${build.dir}/test/interop/"/>
+    <property name="test.interop.data.dir" location="${build.dir}/test/interop/data"/>
+    <property name="test.interop.reports.dir" location="${build.dir}/test/interop/reports"/>
+  </target>
+
+  
+  <target name="interop-status" depends="init-interop-tests" >
+    <macrodef name="interop-status">
+      <attribute name="endpoint"/>
+      <sequential>
+        <!-- spin for the happy page-->
+        <waitfor maxwait="3" maxwaitunit="second"
+          timeoutproperty="@{endpoint}.timeout">
+          <http url="${epr.@{endpoint}}"/>
+        </waitfor>
+        <ac:if>
+          <not>
+            <isset property="@{endpoint}.timeout"/>
+          </not>
+          <ac:then>
+            <echo>happy @{endpoint}</echo>
+
+          </ac:then>
+          <ac:else>
+            <echo>Timeout: skipping endpoint @{endpoint} at
+              ${epr.@{endpoint}}</echo>
+          </ac:else>
+        </ac:if>
+      </sequential>
+    </macrodef>
+    <interop-status endpoint="ourgrid"/>
+    <interop-status endpoint="nec"/>
+    <interop-status endpoint="hp"/>
+  </target>
+
+  <target name="prepare-interop-tests" depends="init-interop-tests,dist,tests-packaged">
+    <macrodef name="interop-test">
+      <attribute name="endpoint"/>
+      <sequential>
+        <!--create test dir-->
+        <mkdir dir="${test.interop.data.dir}/@{endpoint}"/>
+        <!-- spin for the happy page-->
+        <waitfor maxwait="10" maxwaitunit="second"
+            timeoutproperty="@{endpoint}.timeout">
+          <http url="${happy.@{endpoint}}"/>
+        </waitfor>
+
+        <!--run the tests iff the happy url worked-->
+        <ac:if>
+          <not>
+            <isset property="@{endpoint}.timeout"/>
+          </not>
+          <ac:then>
+            <core:junit
+                errorProperty="@{endpoint}.failed"
+                failureProperty="@{endpoint}.failed"
+                includeAntRuntime="true"
+                printsummary="withOutAndErr"
+                tempdir="${build.dir}"
+                >
+              <sysproperty key="test.classes.dir"
+                  value="${test.classes.dir}"/>
+              <sysproperty key="endpoint" value="${epr.@{endpoint}}"/>
+              <!--use special interop testing logging, with more tracing-->
+              <sysproperty key="log4j.configuration"
+                  value="log4j-interop.properties"/>
+              <!--proxy settings propagate from this vm-->
+              <syspropertyset>
+                <propertyref prefix="http."/>
+              </syspropertyset>
+              <syspropertyset>
+                <propertyref prefix="test."/>
+              </syspropertyset>
+              <classpath>
+                <path refid="tests.run.classpath"/>
+              </classpath>
+              <batchtest todir="${test.interop.data.dir}/@{endpoint}">
+                <!-- bulk test case -->
+                <fileset dir="${test.classes.dir}">
+                  <include name="org/smartfrog/**/system/alpine/deployapi/api/**/*Test.class"/>
+                </fileset>
+              </batchtest>
+            </core:junit>
+            <echo>Report is in ${test.interop.reports.dir}/@{endpoint}</echo>
+            <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+                reports="${test.interop.reports.dir}/@{endpoint}"/>
+          </ac:then>
+          <ac:else>
+            <echo>Timeout: skipping endpoint @{endpoint} at ${epr.@{endpoint}}</echo>
+          </ac:else>
+        </ac:if>
+
+      </sequential>
+    </macrodef>
+    <macrodef name="interop-report">
+      <attribute name="endpoint"/>
+      <sequential>
+          <core:test-report data="${test.interop.data.dir}/@{endpoint}"
+              reports="${test.interop.reports.dir}/@{endpoint}"/>
+  
+      </sequential>
+    </macrodef>    
+  </target>
+
+
+  <target name="interop-localhost" depends="prepare-interop-tests"
+      description="test against localhost">
+    <interop-test endpoint="localhost"/>
+  </target>
+
+  <target name="interop-hp" depends="prepare-interop-tests"
+      description="test against hp">
+    <interop-test endpoint="hp"/>
+  </target>
+
+  <target name="interop-nec" depends="prepare-interop-tests"
+      description="test against nec">
+    <interop-test endpoint="nec"  />
+  </target>
+
+  <target name="interop-ourgrid" depends="prepare-interop-tests"
+      description="test against ourgrid">
+    <interop-test endpoint="ourgrid"/>
+  </target>
+
+  <target name="interop-report-ourgrid" depends="prepare-interop-tests"
+      description="test against ourgrid">
+    <interop-report endpoint="ourgrid"/>
+  </target>
+  
+  <target name="interop" depends="interop-hp,interop-nec,interop-ourgrid"
+      description="test all endpoints"/>
+
+  <target name="publish-results" depends="init-interop-tests"
+      description="scp up the interop test results">
+    <fail unless="publish.server">No publish.server defined</fail>
+    <fail unless="publish.user">No publish.userdefined</fail>
+    <fail unless="publish.path">No publish.path defined, e.g. /home/slo/public_html</fail>
+    <property name="publish.verbose" value="true"/>
+    <presetdef name="publish-cmd">
+      <sshexec host="${publish.server}"
+          username="${publish.user}"
+          trust="true"
+          keyfile="${publish.keyfile}"/>
+    </presetdef>
+    <presetdef name="publish-cp">
+      <scp
+          passphrase=""
+          keyfile="${publish.keyfile}"
+          trust="true"
+          verbose="${publish.verbose}">
+      </scp>
+    </presetdef>
+    <publish-cmd command="mkdir -p ${publish.path}"/>
+    <publish-cmd command="rm -rf ${publish.path}/hp"/>
+    <publish-cmd command="rm -rf ${publish.path}/nec"/>
+    <publish-cmd command="rm -rf ${publish.path}/ourgrid"/>
+    <property name="publish.scp.path"
+        value="${publish.user}@${publish.server}:${publish.path}"/>
+    <publish-cp remoteToDir="${publish.scp.path}">
+      <fileset dir="${test.interop.reports.dir}" includes="**/*"/>
+    </publish-cp>
+
+  </target>
+
+  <target name="interop-all" depends="interop,publish-results"
+      description="run the interop tests and publish the results remotely"/>
+</project>

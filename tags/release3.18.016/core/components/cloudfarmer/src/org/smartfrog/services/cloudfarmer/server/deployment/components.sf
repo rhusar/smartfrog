@@ -1,0 +1,108 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/ssh/scp.sf"
+#include "/org/smartfrog/sfcore/logging/loglevels.sf"
+
+/**
+ * This defines the various factories for node deployment
+ */
+
+NodeDeploymentFactory extends Prim {
+
+}
+
+/**
+ * This component offers deployment over SmartFrog -LAN only; requires mutual trust
+ */
+ 
+NodeDeploymentOverRMIFactory extends NodeDeploymentFactory {
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverRMIFactory";
+  description "NodeDeploymentOverRMIFactory";
+}
+
+
+/**
+ * This component offers deployment over SSH
+ * The destdir must be set up with the DeployingDirectoryWatcher watching the target directory for new applications;
+ * There is currently no way to ping or terminate these applications
+ */
+NodeDeploymentOverSSHFactory extends SSHComponent {
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentOverSSHFactory";
+  sfShouldTerminate false;
+  description "NodeDeploymentOverSSHFactory";
+  //destination directory in the path format of scp
+  //this directory is assumed to exist
+  destDir "/tmp";
+  //there for the schema
+  host "";
+  
+  tempfilePrefix "sf_over_ssh_";
+  //log level for communications
+  logLevel LogLevel:LOG_LEVEL_INFO;
+  //if you use a password, you need a password provider
+  //passwordProvider TBD;
+  user LAZY PROPERTY user.name;
+
+  //this is something you can turn on for debugging; it stops the files being deleted
+  //at either end
+  keepFiles false;
+
+  //the home dir at the far end for SmartFrog. If non null, this is prefixed in front of every command
+  // (so include a / in it);
+  sf.home.dir "";
+  
+  SECOND 1000;
+  MINUTE (60 * SECOND );
+  //time in milliseconds to wait for the SSH port opening
+  portConnectTimeout (1 * MINUTE);
+  connectTimeout portConnectTimeout;
+  timeout (2 * MINUTE)
+  
+  
+  startupSleepTime (5 * SECOND);
+  startupPingSleepTime (5 * SECOND)
+  sleepTime (30 * SECOND);
+  startupLocateAttempts 20;
+  startupPingAttempts 20;
+  
+}
+
+NodeDeploymentOverSSHtoRPMInstallationFactory  extends NodeDeploymentOverSSHFactory {
+  sf.home.dir "/opt/smartfrog"
+}
+
+/**
+ * This raises an exception when a node service is requested
+ */
+
+NodeDeploymentUnsupportedFactory extends NodeDeploymentFactory {
+  sfClass "org.smartfrog.services.cloudfarmer.server.deployment.NodeDeploymentUnsupportedFactory";
+  description "NodeDeploymentUnsupportedFactory";
+}
+
+
+/**
+ * This logs every action and pretends that it works
+ */
+MockNodeDeploymentFactory extends NodeDeploymentFactory {
+  sfClass "org.smartfrog.services.cloudfarmer.server.mock.MockNodeDeploymentFactory";
+  description "MockNodeDeploymentFactory";
+}

@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<project name="forrestdocgeneration" default="default" basedir=".">
+
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+
+  <description>
+  This build file runs forrest, from http://forrest.apache.org
+
+  Forrest is built on cocoon and Ant, and must be installed on the machine
+	 
+  </description>
+
+  <!-- =================================================================== -->
+  <!--  Generate Forrest Documentation									   -->
+  <!-- =================================================================== -->
+
+
+  <property environment="env"/>
+  <property name="is.component" value="true"/>
+
+
+
+	<property name="root.dir" location=".."/>
+
+  <!-- Import common stuff -->
+
+  <property file="${root.dir}/build.properties"/>
+
+
+  <fail unless="env.FORREST_HOME">
+  forrest.home is not defined.
+  To create the documentation, you need Forrest 1.5.x on your system, and
+  the environment variable FORREST_HOME set up to point to it, or
+  the property forrest.home set in ${root.dir}/build.properties
+  </fail>
+  
+  <import file="${root.dir}/common.xml"/>
+	<import file="${env.FORREST_HOME}/main/forrest.build.xml"/>
+	<import file="${env.FORREST_HOME}/main/forrest.antproxy.xml"/>
+
+
+  <!-- this is here to fix a loop when you pull in forrest into a common.xml project-->
+  <target name="init-proxy" />
+
+  <target name="init" depends="init-common,forrest.init,init-proxy">
+		<echo level="verbose">Created forrest project template</echo>
+    <property name="comp.home" location="${smartfrog.components.dir}"/>
+    <property name="xdocs.skin.dir" location="${comp.home}/src/documentation/content/xdocs"/>
+    <property name="xdocs.dir" location="${xdocs.skin.dir}/smartfrogdoc"/>
+    <property name="skin.dir" location="forrest_skin"/>
+    <!--override this to set up the options for FORREST -->
+    <property name="ant.opts.forrest" value="" />
+
+    <macrodef name="forrest-component">
+        <attribute name="component" description="component to copy"/>
+        <attribute name="includes" default="**/*"
+                   description="inclusion pattern; defaults to **/*"/>
+        <sequential>
+          <!--dest dir -->
+          <mkdir dir="${xdocs.dir}/@{component}"/>
+          <!-- copy the docs -->
+          <copy todir="${xdocs.dir}/@{component}">
+            <fileset dir="@{component}/doc">
+             <include name="@{includes}"/>
+            </fileset>
+            <!-- skin -->
+            <fileset dir="${skin.dir}">
+              <include name="@{component}.xml"/>
+            </fileset>
+          </copy>
+        </sequential>
+      </macrodef>
+	
+  </target>
+
+    <target name="copy-properties" depends="init">
+        <copy todir="${comp.home}" overwrite="true" file="${skin.dir}/forrest.properties"/>
+    </target>
+  
+
+  	<target name="seedforrest" depends="seed" description="Creates forrest project template">
+		<echo>Created forrest project template</echo>
+			</target>
+			
+    <target name="prepare-docs" depends="seedforrest,copy-properties">
+		<mkdir dir="${xdocs.dir}"/>
+
+		<copy todir="${xdocs.dir}">
+        <fileset dir="${skin.dir}">
+				 <include name="SFComponents.xml"/>
+				 <include name="overview_html_39c627ce.gif"/>
+			 </fileset>
+			 
+		</copy>	
+
+		<copy todir="${xdocs.skin.dir}" overwrite="true">
+      <fileset dir="${skin.dir}">
+        <include name="index.xml"/>
+        <include name="site.xml"/>
+        <include name="tabs.xml"/>
+      </fileset>
+		</copy>
+
+    <forrest-component component="ant"/>
+    <forrest-component component="anubis"/>
+      <!--forrest-component component="anubisdeployer" /-->
+    <forrest-component component="database" />
+    <forrest-component component="dns" />
+    <forrest-component component="emailer"/>
+    <forrest-component component="jetty"/>
+    <forrest-component component="jmx"/>
+    <forrest-component component="net"/>
+    <forrest-component component="loggingservices"/>
+    <forrest-component component="quartz" />
+    <forrest-component component="sfinstaller"/>
+    <forrest-component component="ssh"/>
+    <forrest-component component="scripting"/>
+    <forrest-component component="slp"/>
+    <forrest-component component="www"/>
+    <forrest-component component="vmware"/>
+    <forrest-component component="xml" />
+    <!--<forrest-component component="xmpp" />-->
+
+
+      <copy todir="${comp.home}/src/documentation" overwrite="true"
+            file="${skin.dir}/skinconf.xml">
+	</copy>
+    
+    <copy todir="${xdocs.skin.dir}/images">
+			<fileset dir="${skin.dir}">
+				 <include name="sf.*"/>
+				  <include name="frog.*"/>
+				  <include name="sourceforge.*"/>
+				</fileset>
+		</copy>	
+	
+		<echo level="verbose">${comp.home}</echo>
+ 	</target>
+
+    <target name="forrest-presets" depends="init">
+      <presetdef name="run-forrest">
+        <exec dir="${comp.home}" failonerror="true">
+          <env key="FORREST_HOME" value="${env.FORREST_HOME}" />
+          <env key="ANT_OPTS" value="${ant.opts.forrest}" />
+        </exec>
+      </presetdef>
+      <presetdef name="run-forrest-on-windows">
+        <run-forrest  executable="${env.FORREST_HOME}/bin/forrest.bat"
+                      osfamily="windows">
+        <arg value="-Dforrest.jvmargs\=true"/>
+        <arg value="-Djava.awt.headless\=true"/>
+        </run-forrest>
+      </presetdef>
+      <presetdef name="run-forrest-on-unix">
+        <run-forrest  executable="${env.FORREST_HOME}/bin/forrest"
+                      osfamily="unix">
+        <!--<arg value="-Dforrest.jvmargs=true"/>-->
+        <arg value="-Djava.awt.headless=true"/>
+        </run-forrest>
+      </presetdef>
+  </target>
+
+    <target name="generate-site" depends="forrest-presets,prepare-docs">
+
+      <!--antcall target="site"/-->
+      <run-forrest-on-windows>
+    	  <arg value="site"/>
+      </run-forrest-on-windows>
+      <run-forrest-on-unix>
+    	  <arg value="site"/>
+      </run-forrest-on-unix>
+	</target>
+    
+    
+    <target name="copy-forrest-docs" depends="generate-site">
+        <copy todir="${dist.doc.dir}">
+            <fileset dir="${comp.home}/build/site">
+                <include name="**/*.*"/>
+                <exclude name="samples/*.*"/>
+                <exclude name="test1.html"/>
+                <exclude name="test2.html"/>
+                <exclude name="hello.pdf"/>
+                <exclude name="linkmap.*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${dist.doc.dir}/smartfrogdoc/">
+            <fileset dir="${skin.dir}">
+               <include name="overview_html_39c627ce.gif"/>
+            </fileset>
+        </copy>
+    </target>
+
+	<target name="docs" depends="copy-forrest-docs" description="Document Generation">
+	</target>
+  
+    <target name="default" depends="docs" description="Document Generation">
+    </target>
+    
+</project>

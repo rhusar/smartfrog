@@ -1,0 +1,235 @@
+SmartFrog 3.18.012
+==================
+
+This is a new release of SmartFrog, the Java-based, LPGL-licensed
+distributed deployment framework developed by HP Laboratories.
+
+SmartFrog enables applications to be deployed across multiple machines,
+configuring different aspects of the system so that they are all
+consistently configured, and managing the life-cycle of the application
+as a whole.
+
+
+The project's home page is
+  http://smartfrog.org/
+The release artifacts are available at
+  https://sourceforge.net/projects/smartfrog/files/development/smartfrog-3.18.012/
+
+Artifacts for use by Ivy and Maven are available under
+http://smartfrog.sourceforge.net/repository/
+
+This release is 3.18.012; built from revision 8753
+of the SVN repository.
+
+It was compiled with the Java version set to Java 6 -it will not work
+on Java1.5 JVMs.
+
+This release includes the following items:
+
+* The core SmartFrog daemon, including services to manage files,
+  start and stop Java and native programs.
+* Example components and applications.
+* Ant support: ant tasks to deploy and terminate applications.
+* Ant components: the ability to execute ant tasks in a deployment.
+* Anubis: a partition aware tuple-space that can be used to implement
+  fault tolerant systems.
+* Database: components to issue database commands, and deploy HSLDB
+  and MySQL databases.
+* Groovy: the ability to write SmartFrog components using the
+  Groovy language.
+* JMX: the ability to configure and manage JMX components, and to
+  manage SmartFrog components over JMX.
+* Logging: integration with Apache commons-logging and Log4J, and the
+  SLF4J framework.
+* Networking: email, FTP, SSH, DNS support.
+* Quartz: scheduled operations using Quartz libraries.
+* RpmTools: components for working with or deploying with RPMs
+* Scripting: support for BSF-hosted scripting languages
+* Testing: Distributed JUnit and component testing with SFUnit.
+* Velocity: generation/transformation of text files during deployment
+* WWW: deployment of WAR and EAR files to application servers.
+* Jetty: The Jetty components can configure and deploy individual
+  servlets, eliminating much of the need for WAR files and
+  application servers.
+* XML: XML support with XOM.
+* XMPP: Presence and messaging over Jabber.
+
+Packaging
+=========
+
+This release is available as:
+
+* RPM files inside a .tar.gz file.
+* A JAR installer.
+* The original core smartfrog distribution as .zip and .tar.gz
+* A .tar.gz file containing everything needed to create a private set
+  of RPM files containing JAR files signed by a private Certification
+  Authority.
+
+
+The RPM installation is for RPM-based Linux systems. The archive
+contains the following RPM files:
+
+smartfrog:            The core SmartFrog distribution.
+smartfrog-daemon:     The shell scripts to add the SmartFrog distribution
+                      to the path, and to run the daemon on start-up.
+smartfrog-demo:       Example code and documentation.
+smartfrog-javadocs:   Javadocs for the project
+smartfrog-ant:        Ant task and build file execution
+smartfrog-anubis:     Distributed partition-aware tuple space
+smartfrog-csvfiles:   Support for reading/writing CSV Files.
+smartfrog-database:   Database access
+smartfrog-groovy:     Groovy Support
+smartfrog-jetty:      Jetty support
+smartfrog-jmx:        JMX integration though MX4J
+smartfrog-junit:      Junit 3.8.2 test execution
+smartfrog-logging:    Logging through Log4J and commons-logging
+smartfrog-networking: SSH, SCP, FTP and email
+smartfrog-quartz:     Scheduled operations
+smartfrog-rpmtools:   RPM support tools
+smartfrog-scripting:  Scripted components
+smartfrog-velocity:   Velocity template processing
+smartfrog-www:        Web support: Deployment and liveness pages
+smartfrog-xml:        XML Support
+smartfrog-xmpp:       XMPP/Jabber communications
+smartfrog-xunit:      Distributed testing and reporting
+
+All the JAR files are also published to a repository that is
+compatible with Apache Maven and Ivy. Add
+   http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or
+Maven- based build.
+
+There are also SmartFrog components to retrieve artifacts from such a
+repository which can be used for dynamic download of SmartFrog and
+other artifacts, in /org/smartfrog/services/os/java/library.sf
+
+
+Security warning
+================
+
+Unless SmartFrog is configured with security, a running daemon will
+listen on its configured port for incoming deployment requests, and
+deploy the applications with the rights of the user running the daemon.
+When the smartfrog-daemon RPM is installed, that means that a process
+running as root will be listening on an open port for incoming
+deployment requests. Do not deploy SmartFrog this way on any untrusted
+network, not without turning security on.
+
+There is a special distribution .tar.gz file that can be used to
+generate a private set of secure RPM files.
+
+Building SmartFrog
+==================
+
+SmartFrog requires Java 1.6+ and Ant 1.8+ to build. The izpack and
+source .zip and .tar.gz distributions include a source tree sufficient
+to build the entire system. To build a later release, please follow
+the instructions at
+  http://sourceforge.net/svn/?group_id=87384
+to check out smartfrog/trunk/core from our repository.
+
+This release was built with revision 8753 of the repository, which
+is available under the SVN branch
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.18.012
+
+We strongly encourage anyone interested in building or extending
+SmartFrog to get involved in the SmartFrog developer mailing list,
+which can be found from the sourceforge project page
+http://sourceforge.net/projects/smartfrog/
+
+Reporting Bugs
+==============
+
+Please file all bug reports at http://jira.smartfrog.org/
+
+Thank you!
+
+The SmartFrog Team        http://smartfrog.org/
+
+Changes since last release
+==========================
+
+
+Release Notes - SmartFrog - Version 3.18.012
+
+** Bug
+    * [SFOS-205] - Logging services tests are failing
+    * [SFOS-676] - Jetty component should not block in sfStart/sfDeploy
+    * [SFOS-1358] - binding to commons logging appears to not work in sub-processes
+    * [SFOS-1570] - NPE when parsing an SF file outside of an SF daemon
+    * [SFOS-1571] - testrun failing in release build. Dependencies?
+    * [SFOS-1576] - ec2 RPM has a dependency on cloudfarmer RPM that can't be satisfied
+    * [SFOS-1582] - -port option isn't being picked up
+    * [SFOS-1601] - RMI is trying to use IPv6 on Linux
+    * [SFOS-1604] - xunit/junit component tests failing: race conditions?
+    * [SFOS-1613] - <sfrun> not working as expected
+    * [SFOS-1635] - Bug: case insensitive string comparison broken in Assert component
+    * [SFOS-1651] - sfCompleteNameSafe can NPE if there is no process compound (yet?)
+    * [SFOS-1654] - org.smartfrog.services.ant.test.system.AntComplexPropertiesTest failing: no sfhome
+    * [SFOS-1655] - Two TestRunner container tests are failing -but only as part of a larger build-
+    * [SFOS-1660] - TestCompound conditions are evaluated too early
+    * [SFOS-1661] - Restlet tests won't compile (and then are timing out)
+    * [SFOS-1662] - Jetty testWar test failing; startup too long
+    * [SFOS-1663] - grinstall test failing as the remote file being downloaded is gone
+    * [SFOS-1666] - nested apps in <sf-daemon> task not deploying
+
+** Improvement
+    * [SFOS-1423] - Move Hadoop branch to github, merge in important bugs and then bring components/hadoop up to speed with it
+    * [SFOS-1503] - Move up to Ant 1.8.1
+    * [SFOS-1561] - Move up to Jetty 6.1.26
+    * [SFOS-1569] - Move up to JUnit 4.8.2
+    * [SFOS-1573] - Move SF orch dependencies logic to separate "dependencies" component
+    * [SFOS-1575] - fix formatting in SfComponentDescriptionImpl
+    * [SFOS-1578] - replace uses of *copy* with a constant
+    * [SFOS-1580] - review all code in org.smartfrog.services, clean it up
+    * [SFOS-1581] - Include port number when sfPing fails
+    * [SFOS-1583] - Re-organise Hadoop components
+    * [SFOS-1592] - clean up anubis build files
+    * [SFOS-1593] - Move up to Jetty 6.1.26
+    * [SFOS-1595] - Review Logging source and docs
+    * [SFOS-1596] - CompoundImpl.sfCreateNewChild can't assume that every Exception has a non-null message
+    * [SFOS-1599] - move up to httpclient 4.1.1
+    * [SFOS-1600] - include connect time when a test times out connecting to a port
+    * [SFOS-1602] - replace tabs with spaces in the shell scripts
+    * [SFOS-1603] - in logging docs, show how to set log levels on the command line
+    * [SFOS-1609] - make SFGeneralSecurityException part of the SmartFrogException tree
+    * [SFOS-1610] - review logging component code and docs
+    * [SFOS-1611] - clean up SmartFrogLifecycleException source
+    * [SFOS-1616] - Move JarUtil to Java 5 generics
+    * [SFOS-1617] - Review and clean up some of the display code
+    * [SFOS-1618] - Make it possible for Groovy test cases to deploy SmartFrog test runs and work with them
+    * [SFOS-1619] - Make it possible to log files that are #included, so as to detect loops
+    * [SFOS-1626] - stop sfDaemon complaing about duplicate entries in CP when they are the same file
+    * [SFOS-1629] - sf-jetty ivy.xml to drop commons-logging as a dependency of commons-el
+    * [SFOS-1634] - clean up SFSetPropertyImpl
+    * [SFOS-1636] - CompoundImpl to make childCap and childInc static variables final
+    * [SFOS-1637] - make the default sfLivenessFactor and sfLivenessDelay values constants
+    * [SFOS-1647] - review sf-xml source and reformat
+    * [SFOS-1648] - Move to Ant 1.8.2
+    * [SFOS-1649] - Move to Jackson 1.8.5
+    * [SFOS-1650] - stop looking for junit.jar when ivy.enabled is not set
+    * [SFOS-1652] - "Try" workflow component to ignore situations where there isn't a child of the specific action to deploy
+    * [SFOS-1653] - Add new deployment operation DEPLOY_WAIT for sfRun.sh to wait for changes
+
+** New Feature
+    * [SFOS-1542] - add rmdir component to delete a directory or files on deployment
+    * [SFOS-1598] - Create grinstall Groovy Installer component
+    * [SFOS-1642] - allow Spinner operation field to be set dynamically
+
+
+** Task
+    * [SFOS-1612] - move testharness/testcases to testharness/test
+
+** Sub-task
+    * [SFOS-1584] - hadoop refactor: move all the components under the hadoop-components tree
+    * [SFOS-1585] - move hadoop-lifecycle work into its own component, and stop it building
+    * [SFOS-1587] - change release build to include the new hadoop component
+    * [SFOS-1588] - move up to Hadoop 0.21
+    * [SFOS-1589] - Add Hadoop 0.21 artifacts to the repository
+    * [SFOS-1621] - move grinstall slow operations (download, lifecycle phases) to an async thread
+    * [SFOS-1622] - Groovy Component to add ping task
+    * [SFOS-1623] - Groovy Component to add terminate task
+    * [SFOS-1628] - move log4j-less hadoop-core JAR to a new version to avoid clashes with m2 repo version
+    * [SFOS-1632] - move the HDFS tasks from h-lifecycle to h-ops
+    * [SFOS-1633] - add sf component to bring up MiniDFS cluster

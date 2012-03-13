@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ec2" default="default">
+
+  <!--
+  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Amazon EC2/S3 support, including a CloudFarmer implementation
+
+    For testing, edit build.properties to add the secret login details for an AWS account
+    test.awsid = id
+    test.awskey = secret key
+    test.ec2.enabled to true for EC2 work
+
+    test.ec2.instances.enabled  tests that create instances
+    test.ec2.farmer.enabled=    tests that create a farmer and instances through it
+    test.s3.enabled             tests that go up against S3
+    
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="system.tests" value="true"/>
+  <!--very long test timeout to allow for startup delays-->
+  <property name="test.timeout.execute" value="120000" />
+  <property name="test.timeout.startup" value="${test.timeout.execute}" />
+  <!--<property name="application.name" value="ec2" />-->
+
+
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+
+
+  <target name="ready-to-test" depends="common.ready-to-test">
+    <echo level="verbose">
+      test.ec2.enabled=${test.ec2.enabled}
+      test.ec2.instances.enabled=${test.ec2.instances.enabled}
+      test.ec2.farmer.enabled=${test.ec2.farmer.enabled}
+      test.s3.enabled=${test.s3.enabled}
+      
+      test.awsid=${test.awsid}
+      test.awskey=${test.awskey}
+      system.tests=${system.tests}
+    </echo>
+  </target>
+
+
+  <target  name="ec2farmer" depends="ready-to-deploy"
+      description="Deploy an EC2 farmer" >
+    <deploy>
+      <application name="farmer"
+          descriptor="/org/smartfrog/services/cloudfarmer/server/examples/ec2_hadoop_farmer.sf"/>
+    </deploy>
+  </target>
+
+
+</project>

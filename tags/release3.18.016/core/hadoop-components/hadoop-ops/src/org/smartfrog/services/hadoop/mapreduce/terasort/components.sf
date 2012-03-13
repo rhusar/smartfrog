@@ -1,0 +1,69 @@
+/* (C) Copyright 2010 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/hadoop/mapreduce/submitter/components.sf"
+
+
+
+TeraRun extends ToolRunner {
+  jobTrackerHost HadoopTestBinding:jobTrackerHost;
+  jobTrackerPort HadoopTestBinding:jobTrackerPort;
+  "mapred.job.tracker" (jobTrackerHost ++ ":" ++ jobTrackerPort);
+}
+
+/**
+ * Generate data
+ */
+
+TeraGen extends TeraRun {
+  name "teragen";
+  //number of rows
+  rows 1;
+  //outputPath
+  destPath TBD;
+  toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraGenJob";
+  arguments [rows, destPath];
+  failOnNonZeroReturnCode true;
+}
+
+/**
+ * Submit a terasort Job
+ */
+ 
+TeraSort extends TeraRun {
+  name "terasort";
+  sourcePath TBD;
+  destPath TBD;
+  toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraSortJob";
+  arguments [sourcePath, destPath];
+  failOnNonZeroReturnCode true;
+} 
+
+/**
+ * Validate the output
+ */
+TeraValidate extends TeraRun {
+  name "teravalidate";
+  dataPath TBD;
+  reportPath TBD;
+  toolClass "org.smartfrog.services.hadoop.mapreduce.terasort.TeraValidateJob";
+  arguments [dataPath, reportPath];
+  failOnNonZeroReturnCode true;
+} 

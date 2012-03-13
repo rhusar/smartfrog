@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-grumpy">
+    <license name="Apache"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+      A library for working with Groovy MR Jobs. This library
+      is actually structured to be used by -but independent of-
+      the SmartFrog framework. This lets us decouple things and use
+      it in arbitrary MapReduce projects while keeping dependencies
+      to a minimum
+    </description>
+  </info>
+  <configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"
+          description="default configuration contains artifacts and runtime dependencies"/>
+    <conf name="build" visibility="private"
+          description="artifacts needed to build the application"/>
+    <conf name="compile" extends="runtime"
+          description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private" extends="test"
+          description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default,compile"
+          description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+          extends="redist"/>
+    <conf name="documentation"
+          description="all documentation artifacts"/>
+  </configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+                name="sf-tasks"
+                changing="true"
+                rev="latest.integration"
+                conf="build->default"/>
+    
+    <dependency org="org.codehaus.groovy" 
+                name="groovy-all" 
+                rev="${groovy.version}"
+                conf="build,redist->default"/>
+
+    <dependency org="junit"
+                name="junit"
+                rev="${junit.version}"
+                conf="redist->default"/>
+
+    <!--log4j is not forced into the redists, nor the compile-->
+    <dependency org="log4j"
+                name="log4j"
+                rev="${log4j.version}"
+                conf="test->master"
+        />
+
+
+    <dependency org="org.smartfrog"
+                name="sf-loggingservices"
+                changing="true"
+                rev="latest.integration"
+                conf="test->default"/>
+    
+    <!--it is essential that only the master JAR of commons logging
+    is pulled in, as its dependencies are usually a mess, including things
+    like out of date servlet APIs, bits of Avalon, etc.
+    -->
+    <dependency org="commons-logging"
+                name="commons-logging"
+                rev="${commons-logging.version}"
+                conf="redist->master"/>
+
+
+    <!-- for 0.20.x only hadoop-core is depended upon-->
+    <dependency org="org.apache.hadoop"
+                name="hadoop-core"
+                rev="${hadoop.version}"
+                changing="true"
+                conf="redist->default">
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="commons-digester"/>
+      <exclude org="commons-el"/>
+      <exclude org="commons-httpclient"/>
+      <exclude org="commons-net"/>
+      <exclude org="hsqldb"/>
+      <exclude org="net.java.dev.jets3t"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.mortbay.jetty"/>
+      <exclude org="org.slf4j"/>
+      <exclude org="org.codehaus.jackson"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.apache.ftpserver"/>
+      <exclude org="org.apache.mina"/>
+    </dependency>
+
+    <dependency org="org.apache.hadoop"
+                name="hadoop-test"
+                rev="${hadoop.version}"
+                changing="true"
+                conf="redist->default">
+      <exclude org="com.thoughtworks.paranamer"/>
+      <exclude org="commons-digester"/>
+      <exclude org="commons-el"/>
+      <exclude org="commons-httpclient"/>
+      <exclude org="commons-net"/>
+      <exclude org="hsqldb"/>
+      <exclude org="net.java.dev.jets3t"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.mortbay.jetty"/>
+      <exclude org="org.slf4j"/>
+      <exclude org="org.codehaus.jackson"/>
+      <exclude org="net.sf.kosmosfs"/>
+      <exclude org="org.apache.ftpserver"/>
+      <exclude org="org.apache.mina"/>
+    </dependency>
+
+  </dependencies>
+
+
+</ivy-module>

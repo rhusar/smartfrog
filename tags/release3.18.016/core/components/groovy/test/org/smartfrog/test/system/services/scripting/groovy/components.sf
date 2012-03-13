@@ -1,0 +1,134 @@
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/scripting/groovy/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/scripting/js/components.sf"
+
+
+scriptbase "/org/smartfrog/test/system/services/scripting/groovy/";
+hello "hello.groovy";
+
+
+LifecycleInlineWorkflow extends GroovyWorkflow {
+  sfScriptCodeBase scriptbase;
+  sfDeployCode ##
+   log.info "deploy"
+   #;
+
+  sfStartCode  ##
+   log.info "start"
+   #;
+
+  sfPingCode  ##
+   log.info 'ping'
+   #;
+
+  sfTerminateWithCode "log.info 'terminated'";
+}
+
+HelloOnStartup extends LifecycleInlineWorkflow {
+  sfStartResource hello;
+}
+
+
+FailOnStartup extends Groovy {
+
+  sfStartCode  ##
+   self.fail 'wake up, time to die'
+  #;
+}
+
+testInlineLifecycle extends ExpectDeploy {
+
+  action extends LifecycleInlineWorkflow {
+    sfShouldTerminate false;
+  }
+
+  tests extends Sequence {
+
+  }
+}
+
+testInlineLifecycleTerminating extends ExpectTerminate {
+
+  action extends LifecycleInlineWorkflow {
+  }
+}
+
+
+testResourceTerminating extends ExpectTerminate {
+
+  action extends HelloOnStartup {
+  }
+}
+
+/*
+testFailOnStartup extends ExpectTerminate {
+  //exitText "wake up, time to die";
+
+  action extends FailOnStartup {
+  }
+}
+*/
+
+
+
+testFailOnStartup extends ExpectDeployFailure {
+  exitText "wake up, time to die";
+
+  action extends FailOnStartup {
+  }
+}
+
+
+
+ConditionInline extends GroovyCondition {
+  value true;
+  sfConditionCode "self.condition = value";
+}
+
+testConditionTrue extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends ConditionInline {
+
+    }
+  }
+}
+
+testConditionScriptError extends ExpectDeployFailure {
+
+  action extends EvaluateCondition {
+    condition extends GroovyCondition {
+      sfConditionCode "this does not parse properly!";
+    }
+  }
+}
+
+testConditionFalse extends ExpectTerminate {
+
+  action extends EvaluateCondition {
+    condition extends Not {
+      condition extends ConditionInline {
+        value false;
+      }
+    }
+  }
+}

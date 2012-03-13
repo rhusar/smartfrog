@@ -1,0 +1,186 @@
+SmartFrog 3.11.007beta
+======================
+
+This is a new release of SmartFrog, the Java-based, LPGL-licensed
+distributed deployment framework developed by HP Laboratories. SmartFrog
+enables applications to be deployed across multiple machines,
+configuring different aspects of the system so that they are all
+consistently configured, and managing the life-cycle of the application
+as a whole. The project's home page is http://smartfrog.org/
+
+The release artifacts are available at
+
+https://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308&release_id=531293
+
+This release is 3.11.007beta; built from revision 4969
+of the SVN repository. This release has an extended language
+with the ability to tag attributes, and includes the following items:
+
+* Core smartfrog daemon, including services to manage files, start and stop
+  Java and native programs.
+* Example components and applications.  
+* Ant support: ant tasks to deploy and terminate applications from a build.
+* Ant components: the ability to execute ant tasks in a deployment.
+* Anubis: a partition aware tuple-space that can be used to implement fault 
+  tolerant systems.
+* JMX: the ability to configure and manage JMX components, and to manage
+  SmartFrog components over JMX.
+* Logging: integration with Apache commons-logging and Log4J
+* Networking: email, FTP, SSH, DNS support.
+* Quartz: scheduled operations using Quartz libraries.
+* Scripting: support for BSF-hosted scripting languages
+* WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+  is provided for all application servers that support, and a tomcat-specific
+  component can communicate with Apache Tomcat. The Jetty component can
+  configure and deploy individual servlets, eliminating much of the need for WAR
+  files themselves.
+  
+For Java 1.5 systems, there are some extra components:  
+* Database: components to issue database commands, and deploy HSLDB and MySQL.
+* Testing: Distributed JUnit and component testing with SFUnit.
+* XML: XML support with XOM.
+* XMPP: Presence and messaging over Jabber.
+
+This release is the last ever release that will support Java1.4. We have
+long built and tested on both Java 5 and Java 6; Java 5 has a better
+concurrency model while Java 6 has fixed some long-standing RMI
+problems. After this release, the team will make use of Java 5 language
+features and classes in the Java 1.5 runtime, which will prevent it from
+building or running on Java 1.4 systems.
+
+
+Packaging
+=========
+
+This release is available as:
+
+* RPM files inside a .tar.gz file.
+* a JAR installer.
+* the original core smartfrog distribution as .zip and .tar.gz (deprecated)
+
+
+The RPM installation is for RPM-based Linux systems. It comprises three RPM
+files, smartfrog, smartfrog-daemon and smartfrog-demo:
+
+smartfrog:        the core SmartFrog distribution.
+smartfrog-daemon: the shell scripts to add the smartfrog distribution to the
+                  path, and to run the daemon on start-up.
+smartfrog-demo:   example code and documentation.
+
+All the JAR files are also published to a repository that is compatible with
+Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
+to your repository list to pull SmartFrog artifacts into your Ivy- or 
+Maven- based build.
+
+There are also SmartFrog components to retrieve artifacts from such a repository
+(the Library components under /org/smartfrog/services/os/java/library.sf ),
+which can be used for dynamic download of SmartFrog and other artifacts.
+
+
+Security warning
+================
+
+Unless SmartFrog is configured with security, a running daemon will
+listen on its configured port for incoming deployment requests, and
+deploy the applications with the rights of the user running the daemon.
+When the smartfrog-daemon RPM is installed, that means that a process
+running as root will be listening on an open port for incoming
+deployment requests. Do not deploy SmartFrog this way on any untrusted
+network, not without turning security on and, ideally, recreating the
+RPMs with signed JAR files.
+
+Building SmartFrog
+==================
+
+SmartFrog requires Java 1.4 and Ant 1.7 to build. For a complete release,
+Java1.5 or later is required.
+
+
+The distribution does not include a source tree adequate to build the
+entire system. Please follow the instructions at
+  http://sourceforge.net/svn/?group_id=87384
+and check out smartfrog/trunk/core from our repository.
+
+This release was built with revision 4969 of the repository, which
+is available under the SVN branch
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.11.007beta
+
+We strongly encourage anyone interested in building or extending
+smartfrog to get involved in the smartfrog developer mailing list, which
+can be found from the sourceforge project page
+http://sourceforge.net/projects/smartfrog/
+
+Reporting Bugs
+==============
+
+Please file all bug reports at http://jira.smartfrog.org/
+
+Thank you!
+
+The SmartFrog Team        http://smartfrog.org/
+
+Changes since last release
+==========================
+
+Since the 3.11.005beta, there have been changes to some of the
+components. In particular, the www component now has a tomcat deployment
+descriptor that can deploy Apache Tomcat5.5,
+
+  /org/smartfrog/services/www/servers/tomcat5.sf
+  
+This is accompanied by one for JBoss 4.0:
+
+  /org/smartfrog/services/www/servers/jboss4.sf
+  
+These deployment descriptors are passing our tests of deploy-by-copy
+deployment of a test WAR.
+
+The language has been enhanced with the OPTIONAL keyword, which allows
+one to define a value to use if the remote reference does not resolve.
+To use an example from the jboss tests, here is a binding of jboss.port
+either to the property test.jboss.port (in the process parsing the .sf
+file, not the destination daemon), and falling back to the value 8080 if
+it does not resolve:
+
+  jboss.port OPTIONAL(8080) PROPERTY test.jboss.port;
+
+Consult the reference documentation for more details on this.
+
+** Bug
+    * [SFOS-146] - jetty tests failing (disabled)
+    * [SFOS-195] - tcn18 is failing (skipped)
+    * [SFOS-269] - email setting are not passed to the bootstrap templates
+    * [SFOS-282] - TestCompound doesnt report all failing children as an error
+    * [SFOS-339] - TestCompound doesnt handle failures in startup properly
+    * [SFOS-348] - avalanche clean fails in a bulk ivy-clean
+    * [SFOS-349] - NPE thown in SmartFrogException when using StringAll 
+                   and Cause is null.
+    * [SFOS-352] - TestCompound doesnt set the status or application status
+                   when something fails during startup
+    * [SFOS-363] - NPE in test Compound -maybe when tests are skipped?
+    * [SFOS-365] - Error on line 377 of release/build.xml on Windows
+    * [SFOS-366] - test runner interpets skipped as a junit failure
+    * [SFOS-369] - if RunShell/RunJava is set to start late (startEarly=false),
+                   then reading all other attributes should be delayed 
+                   until this time.
+    * [SFOS-380] - marshalling problem in mysql tests
+    * [SFOS-381] - Async test reporting needs to handle unexported components
+                   raising lifecycle events
+
+** Improvement
+    * [SFOS-345] - stop uploading individual RPM files to sourceforge
+    * [SFOS-362] - rename Value condition to BooleanValue
+    * [SFOS-367] - add description attribute to testblock/testcompound 
+                   and pass it back through test results
+    * [SFOS-379] - support empty [] lists when flattening runjava property lists
+
+** New Feature
+    * [SFOS-329] - add templates for JBoss and Tomcat
+
+** Sub-task
+    * [SFOS-229] - document OPTIONAL
+    * [SFOS-322] - migrate org.smartfrog.test.system.workflow.delay.DelayTest
+                   to async tests
+    * [SFOS-323] - migrate org.smartfrog.test.system.workflow.retry.RetryTest
+                   to async tests
+

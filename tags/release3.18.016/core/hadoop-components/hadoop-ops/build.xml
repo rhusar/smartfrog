@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hadoop-ops" default="default">
+
+  <!--
+  /** (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    hadoop component
+    For testing on the HPLB server farm, set
+     test.hplb.enabled=true
+    Make sure they are running a compatible version and we are up to date with
+    their settings!
+
+    To get the hadoop jars from a local ivy cache to the place in SVN where they
+    are available to other developers, use the copy-hadoop target
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="groovy.enabled" value="true"/>
+    <!-- tests are on-->
+  <property name="system.tests" value="true"/>
+  <property name="junit.timeout" value="12000000"/>
+  <!--time for a single test to execute-->
+  <property name="test.timeout.execute"  value="120000"/>
+
+  <property name="test.application" value="org/smartfrog/services/hadoop/operations/test/system/components.sf"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property file="libraries.properties"/>
+  
+  <!--this lets us pick up hadoop version markers from hadoop,
+    overriding anything in components/libraries.properties-->
+
+
+
+  <echo
+      message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+  <target name="ready-to-test" depends="common.ready-to-test, commons-logging-via-sf">
+    <property name="test.build.data" location="${test.data.dir}"/>
+
+    <echo level="verbose">
+      system.tests=${system.tests}
+      system.tests.enabled=${system.tests.enabled}
+    </echo>
+    <macrodef name="loadclass">
+      <attribute name="class" />
+    <sequential >
+      <fail >
+        <condition >
+          <not>
+            <available classname="@{class}" ignoresystemclasses="true"
+                classpathref="tests.run.classpath"/>
+          </not>
+        </condition>
+        Unable to load @{class} from
+        ${toString:tests.run.classpath}
+      </fail>
+    </sequential>
+    </macrodef>
+    <loadclass class="org.apache.jasper.servlet.JspServlet" />
+  </target>
+
+
+  <target name="loadclass" depends="ready-to-test">
+    <loadclass class="org.apache.hadoop.hdfs.server.namenode.JspHelper" />
+  </target>
+
+  <!--create the JAR manifest with a specific entry point that is a "pre-main class" that holds extra powers-->
+  <target name="manifest" depends="pre-compile">
+    <property name="manifest.mf" location="${build.dir}/MANIFEST.MF" />
+    <manifest file="${manifest.mf}">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Premain-Class"
+         value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+    </manifest>
+  </target>
+
+
+  <target name="sizeof" depends="sizeof32, sizeof64" />
+
+  <target name="sizeof32" depends="ready-to-test" >
+   <property name="sizeof" value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+   <sf-java
+     classpathref="tests.run.classpath"
+     classname="${sizeof}">
+     <jvmarg value="-javaagent:${target.jar}"/>
+   </sf-java>
+  </target>
+
+  <target name="sizeof64" depends="ready-to-test" >
+    <property name="sizeof" value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+    <sf-java failonerror="false"
+      classpathref="tests.run.classpath"
+      classname="${sizeof}">
+      <jvmarg value="-XX:+UseCompressedOops"/>
+      <jvmarg value="-javaagent:${target.jar}"/>
+    </sf-java>
+  </target>
+
+</project>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+<property>
+  <name>mapred.job.tracker</name>
+  <value>${comp.sfResolve("jobtrackerHost")}:${comp.sfResolve("jobtrackerPort")}</value>
+</property>
+
+  <property>
+    <name>mapred.local.dir.minspacestart</name>
+    <value>100000000</value>
+    <description>100MB limit to accept new jobs
+    </description>
+  </property>
+
+  <property>
+    <name>mapred.local.dir.minspacekill</name>
+    <value>100000000</value>
+    <description>Kill jobs if we have less space than this
+    </description>
+  </property>
+  <property>
+    <name>mapred.tasktracker.map.tasks.maximum</name>
+    <value>16</value>
+  </property>
+
+  <property>
+    <name>mapred.tasktracker.reduce.tasks.maximum</name>
+    <value>16</value>
+  </property>
+
+
+<% if (comp.sfResolve("ibrix")) { %>
+  <property>
+    <name>mapred.system.dir</name>
+    <value>${comp.master.location}/mapred/system</value>
+  </property>
+  <property>
+    <name>mapred.temp.dir</name>
+    <value>${comp.master.location}/mapred/temp</value>
+  </property>
+<% }%>
+</configuration>

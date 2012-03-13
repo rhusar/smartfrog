@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  <!DOCTYPE struts-config PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+    "http://struts.apache.org/dtds/struts-config_1_3.dtd">-->
+
+<!--  <!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+    "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">-->
+
+<struts-config>
+
+
+  <form-beans>
+
+    <!--Workflow Forms -->
+    <form-bean name="submitMRJobForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitMRJobActionForm"/>
+    <form-bean name="submitToolForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitToolActionForm"/>
+    <form-bean name="submitWorkflowForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.workflow.SubmitWorkflowActionForm"/>
+    <form-bean name="workflowAdminForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.workflow.WorkflowBindToRemoteServerActionForm"/>
+
+    <form-bean name="clusterAddNamedForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddNamedNodeForm"/>
+
+    <form-bean name="clusterAddDynamicForm"
+               type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterAddDynamicForm"/>
+
+    <form-bean name="clusterCreateRoleInstanceForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterCreateRoleInstanceForm"/>
+
+    <form-bean name="clusterChangeManagerForm"
+      type="org.smartfrog.services.cloudfarmer.client.web.forms.cluster.ClusterChangeManagerForm"/>
+
+  </form-beans>
+
+  <!--
+  There's little use of tiles here to redirect stuff because
+  * it was just another place where settings were getting out of sync
+  * there is indirection in the success/failure mappings anyway
+
+  The action flow for a form are set up as follows
+  * the nav page requests a specific action
+  * that action does any setup, and on success relays on success to the specific JSP page
+    containing the form
+  * every form is bound to a form-specific action, with a different form bean
+  * every such action relays, on success, to the same processor class. This plays
+    tricks with base classes and relays the form directly to the RemoteDaemon, for
+    execution. That is, the submit action doesn't care what type of form it is, as
+    long as it is a job submission action.
+  * On success, the same successful workflow job submitted page is shown
+
+  -->
+
+  <action-mappings>
+
+
+
+    <!-- Actions to list a workflow-->
+    <action path="/mombasa-portlet/workflowList"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.WorkflowListAction">
+      <forward name="success" path="/html/mombasa-portlet/workflow_list_success.jsp"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+
+    <action path="/mombasa-portlet/submitMRJob/view"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.SubmitMRJobFormViewAction"
+      >
+      <forward name="success" path="/html/mombasa-portlet/workflow_queue_mr_job.jsp"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+    <action path="/mombasa-portlet/submitMRJob/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.QueueAnyWorkflowProcessAction"
+      name="submitMRJobForm"
+      input="/html/mombasa-portlet/workflow_queue_mr_job.jsp"
+      scope="session"
+      validate="true">
+      <forward name="success" path="/html/mombasa-portlet/workflow_submit_job_success.jsp" redirect="true"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+    <action path="/mombasa-portlet/submitTool/view"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.SubmitToolFormViewAction"
+      >
+      <forward name="success" path="/html/mombasa-portlet/workflow_queue_tool_job.jsp"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+    <action path="/mombasa-portlet/submitTool/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.QueueAnyWorkflowProcessAction"
+      name="submitToolForm"
+      input="/html/mombasa-portlet/workflow_queue_tool_job.jsp"
+      scope="session"
+      validate="true">
+      <forward name="success" path="/html/mombasa-portlet/workflow_submit_job_success.jsp" redirect="true"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+    <action path="/mombasa-portlet/queueWorkflow/view"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.QueueWorkflowFormViewAction"
+      >
+      <forward name="success" path="/html/mombasa-portlet/workflow_queue_workflow.jsp"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+    <action path="/mombasa-portlet/queueWorkflow/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.QueueAnyWorkflowProcessAction"
+      name="submitWorkflowForm"
+      input="/html/mombasa-portlet/workflow_queue_workflow.jsp"
+      scope="session"
+      validate="true">
+      <forward name="success" path="/html/mombasa-portlet/workflow_submit_job_success.jsp" redirect="true"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+      <forward name="parseError" path="portlet.mombasa-portlet.submitMRJob.parseError"/>
+    </action>
+
+    <!-- Workflow Admin actions -->
+
+    <action path="/mombasa-portlet/workflowAdmin/view"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.WorkflowAdminAction"
+      >
+      <forward name="success" path="/html/mombasa-portlet/workflow_admin.jsp"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+    <!-- bind to a remote server-->
+    <action path="/mombasa-portlet/workflowAdmin/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.workflow.WorkflowBindToRemoteServerAction"
+      name="workflowAdminForm"
+      input="/html/mombasa-portlet/workflow_admin.jsp"
+      scope="session"
+      validate="true">
+      <forward name="success" path="/mombasa-portlet/workflowList" redirect="true"/>
+      <forward name="failure" path="/html/mombasa-portlet/error.jsp"/>
+    </action>
+
+
+    <action path="/mombasa-portlet/view" forward="portlet.mombasa-portlet.view"/>
+
+
+    <!--Cluster Manager Actions -->
+
+    <action path="/mombasa-portlet/cluster/view" forward="portlet.mombasa.cluster.default"/>
+
+    <action path="/mombasa-portlet/cluster/list"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterListAction">
+      <forward name="success" path="portlet.mombasa.cluster.list.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/listRoles"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterListRolesAction">
+      <forward name="success" path="portlet.mombasa.cluster.list.roles.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/listInRole"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterListHostsInRoleAction">
+      <forward name="success" path="portlet.mombasa.cluster.list.in.role.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+    
+    <action path="/mombasa-portlet/cluster/add"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterAddNodeAction">
+      <forward name="add.dynamic.node" path="portlet.mombasa.cluster.add_dynamic.success" redirect="true"/>
+      <forward name="add.named.node" path="portlet.mombasa.cluster.add_named.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+
+    <action path="/mombasa-portlet/cluster/add_named/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterAddNamedNodeProcessAction"
+      name="clusterAddNamedForm"
+      input="portlet.mombasa.cluster.add_named.success"
+      scope="session"
+      validate="true">
+      <forward name="success" path="portlet.mombasa.cluster.add_named.process.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/add_dynamic/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterAddDynamicNodeProcessAction"
+      name="clusterAddDynamicForm"
+      input="portlet.mombasa.cluster.add_dynamic.success"
+      scope="session"
+      validate="true">
+      <forward name="success" path="/mombasa-portlet/cluster/add_dynamic/status.do"  redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/add_dynamic/status"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterAddDynamicNodeStatusAction">
+      <forward name="success" path="portlet.mombasa.cluster.add_dynamic.status.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/create_role_instance"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.CreateRoleInstanceAction">
+      <forward name="success" path="portlet.mombasa.cluster.create_role_instance.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/create_role_instance/process"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.CreateRoleInstanceProcessAction"
+        name="clusterCreateRoleInstanceForm"
+        input="portlet.mombasa.cluster.create_role_instance.success"
+        scope="session"
+        validate="true">
+      <forward name="success" path="/mombasa-portlet/cluster/add_dynamic/status.do"  redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+    
+    <action path="/mombasa-portlet/cluster/delete"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterDeleteNodeProcessAction">
+      <forward name="success" path="portlet.mombasa.cluster.delete.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/delete_all_in_role"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterDeleteAllInRoleProcessAction">
+      <forward name="success" path="portlet.mombasa.cluster.delete.all.in.role.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+    
+    <action path="/mombasa-portlet/cluster/admin"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="portlet.mombasa.cluster.admin.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/terminate"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterTerminateAction">
+      <forward name="success" path="portlet.mombasa.cluster.terminate.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/change_manager"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="portlet.mombasa.cluster.change_manager.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/change_manager/process"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterChangeManagerProcessAction"
+      name="clusterChangeManagerForm"
+      input="portlet.mombasa.cluster.change_manager.success"
+      scope="session"
+      validate="true">
+      <forward name="success" path="portlet.mombasa.cluster.change_manager.process.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+
+    <action path="/mombasa-portlet/cluster/viewhost"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterViewHostAction">
+      <forward name="success" path="portlet.mombasa.cluster.viewhost.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/host_ping"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="portlet.mombasa.cluster.host_ping.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+    <action path="/mombasa-portlet/cluster/host_terminate"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="portlet.mombasa.cluster.host_terminate.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+    
+    <action path="/mombasa-portlet/cluster/diagnostics"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterDiagnosticsAction">
+      <forward name="success" path="portlet.mombasa.cluster.diagnostics.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+    
+    <action path="/mombasa-portlet/cluster/hadoop"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="portlet.mombasa.cluster.hadoop.success" redirect="true"/>
+      <forward name="failure" path="portlet.mombasa.cluster.error"/>
+      <forward name="bindFailure" path="portlet.mombasa.cluster.bindFailure"/>
+    </action>
+
+
+    <!-- Actions to list a workflow-->
+    <action path="/mombasa-portlet/happy"
+      type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="/happy/happy.html"/>
+      <forward name="failure" path="/happy/unhappy.html"/>
+    </action>
+
+
+    <action path="/mombasa-portlet/happytiles"
+        type="org.smartfrog.services.cloudfarmer.client.web.actions.cluster.ClusterSuccessAction">
+      <forward name="success" path="struts.happytiles.success" redirect="true"/>
+      <forward name="failure" path="/happy/unhappy.html"/>
+    </action>
+
+  </action-mappings>
+
+
+
+<!--
+  <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>
+-->
+
+  <!-- Custom Request Processor -->
+ <!-- <controller processorClass="org.apache.portals.bridges.struts.PortletTilesRequestProcessor"/>
+-->
+
+  <!-- Message Resources -->
+
+  <!--
+  Says where message resources live
+  see http://struts.apache.org/1.x/userGuide/building_view.html
+
+  -->
+  <message-resources parameter="org.smartfrog.services.cloudfarmer.client.web.forms.MessageResources"/>
+
+  <!-- Tiles Plugin -->
+
+<!--
+  <plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property value="/WEB-INF/tiles-defs.xml" property="definitions-config"/>
+  </plug-in>
+-->
+<!--
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml" property="pathnames"/>
+  </plug-in>
+-->
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property
+        property="pathnames"
+        value="/org/apache/struts/validator/validator-rules.xml,
+               /WEB-INF/validation.xml"/>
+  </plug-in>
+
+  <plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property value="/WEB-INF/tiles-defs.xml" property="definitions-config"/>
+  </plug-in>
+
+</struts-config>

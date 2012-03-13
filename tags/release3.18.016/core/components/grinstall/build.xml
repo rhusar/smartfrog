@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="grinstall" default="default">
+
+    <description>
+        This build file exists to build and test the SmartFrog installer
+
+        It generates
+        * installer-${installer.version}.jar, containing the binaries of installer and the default
+        * SF description files.
+
+        These artifacts can be published locally, or written to the
+        ${antbuild.dir}/repository/internal repository, where
+        ${antbuild.dir} defaults to ../antbuild
+    </description>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
+  <property name="groovy.enabled" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"/>
+<!--  <property name="org.apache.commons.logging.diagnostics.dest" value="STDERR"/>-->
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <target name="ready-to-test" depends="common.ready-to-test, commons-logging-via-sf" />
+</project>

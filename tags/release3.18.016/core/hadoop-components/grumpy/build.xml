@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="grumpy" default="default">
+
+  <description>
+    A library for working with Groovy MR Jobs. This library
+    is actually structured to be used by -but independent of-
+    the SmartFrog framework. This lets us decouple things and use
+    it in arbitrary MapReduce projects while keeping dependencies
+    to a minimum
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="groovy.enabled" value="true"/>
+    <!-- tests are on-->
+  <property name="system.tests" value="true"/>
+  <property name="junit.timeout" value="12000000"/>
+  <!--time for a single test to execute-->
+  <property name="test.timeout.execute"  value="120000"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property file="libraries.properties"/>
+  
+  <!--this lets us pick up hadoop version markers from hadoop,
+    overriding anything in components/libraries.properties-->
+
+
+
+  <echo
+      message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+  <target name="ready-to-test" depends="common.ready-to-test, commons-logging-via-sf">
+    <echo level="verbose">
+      system.tests=${system.tests}
+      system.tests.enabled=${system.tests.enabled}
+    </echo>
+    <macrodef name="loadclass">
+      <attribute name="class" />
+    <sequential >
+      <fail >
+        <condition >
+          <not>
+            <available classname="@{class}" ignoresystemclasses="true"
+                classpathref="tests.run.classpath"/>
+          </not>
+        </condition>
+        Unable to load @{class} from
+        ${toString:tests.run.classpath}
+      </fail>
+    </sequential>
+    </macrodef>
+  </target>
+
+  <!--create the JAR manifest with a specific entry point that is a "pre-main class" that holds extra powers-->
+  <target name="manifest" depends="pre-compile">
+    <property name="manifest.mf" location="${build.dir}/MANIFEST.MF" />
+    <manifest file="${manifest.mf}">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Premain-Class"
+         value="org.smartfrog.services.hadoop.operations.utils.SizeOfAgent"/>
+    </manifest>
+  </target>
+
+
+
+
+</project>

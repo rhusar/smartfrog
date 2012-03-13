@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<project name="cdl" default="default"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+  >
+
+  <!--
+  /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+     Build file for CDL language.
+
+  </description>
+
+  
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="root.dir" location="../.."/>
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="common.init,use-smartfrog-tasks">
+    <!--  leave this for 'legacy' reasons, even though we have embraced m2 work-->
+    <mkdir dir="lib"/>
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- copy all dependencies -->
+  <!-- ========================================================== -->
+  <target name="install-dependencies" depends="ivy-resolve"
+      if="smartfrog.dist.lib.dir">
+
+    <property name="build.lib.dir" location="${build.dir}/lib"/>
+    <mkdir dir="${build.lib.dir}"/>
+
+    <ivy:cachepath pathid="runtime.path" conf="runtime" />
+
+    <copy todir="${smartfrog.dist.lib.dir}" flatten="true">
+      <path refid="runtime.path"/>
+    </copy>
+
+  </target>
+
+
+  <target name="default" depends="dist,published"
+    description="make and publish the distribution"/>
+
+    
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- unit tests : anything which does not need deployment to run-->
+  <!-- ========================================================== -->
+  <target name="unit-tests" depends="compile-tests" if="unit.tests.enabled"
+    description="run the unit tests">
+    <sf-junit
+      errorProperty="test.failed"
+      failureProperty="test.failed"
+      includeAntRuntime="true"
+      >
+      <sysproperty key="test.classes.dir"
+        value="${test.classes.dir}"/>
+      <classpath>
+        <path refid="tests.run.classpath"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/test/unit/sfcore/languages/cdl/**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </sf-junit>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- start the windowed daemon in the foreground                         -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-window"
+    description="start a daemon with a window"
+    depends="declare-extended-smartfrog-tasks"
+    >
+      <sf-startdaemon-debug  spawn="false" timeout="-1">
+        <application name="console" >
+#include "org/smartfrog/services/display/components.sf"
+#include "org/smartfrog/services/trace/components.sf"
+#include "org/smartfrog/services/persistance/components.sf"
+#include "org/smartfrog/components.sf"
+
+// Default sfDaemon Display
+DefaultDisplay extends  Display {
+    nameDisplay "sfDaemon Display"; // Window Title
+    positionDisplay "NW";         // Window position: North-West 
+    redirectStd true;             // Redirect std output and error to this wind.
+    showIP true;                  // Show IP address in window title
+    showSfProcess true;           // Show sfProcess name in  window title
+    terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
+};
+
+DefaultCompound extends Compound {
+    sfProcessComponentName "sfDefault";
+    display extends DefaultDisplay;
+}
+        
+
+sfConfig extends DefaultCompound;
+        </application>
+        
+      </sf-startdaemon-debug>
+      
+  </target>
+  
+  <target name="console" 
+    depends="start-daemon-if-needed,start-console"/>
+  
+
+  <target name="all" depends="test,published" />
+
+</project>

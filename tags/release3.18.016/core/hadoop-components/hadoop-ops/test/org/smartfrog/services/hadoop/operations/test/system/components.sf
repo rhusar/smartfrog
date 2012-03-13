@@ -1,0 +1,33 @@
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/hadoop/components.sf"
+#include "/org/smartfrog/services/hadoop/mapreduce/terasort/components.sf"
+
+
+BondedHadoopCluster extends MicroHadoopCluster {
+  clusterName TBD;
+  testBuildData PROPERTY test.data.dir;
+  filesystemDir (testBuildData ++ "/" ++ clusterName );
+}
+
+
+
+ExpectSuccessfulOperations extends ExpectDeploy {
+
+  dfsCluster LAZY action:dfsCluster;
+  mrCluster LAZY action:mrCluster;
+  fsURI LAZY dfsCluster:filesystemURI;
+  clusterName TBD;
+
+
+  action extends BondedHadoopCluster {
+    clusterName PARENT:clusterName;
+
+  }
+
+  tests extends Sequence {
+  }
+}
+
+sfConfig extends BondedHadoopCluster {
+  clusterName "t1";
+}

@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-cdl">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+      CDL Language Support
+      Created 16-Nov-2006 by slo
+    </description>
+  </info>
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+  <configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"
+        description="default configuration contains artifacts and runtime dependencies"/>
+    <conf name="build" visibility="private"
+        description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private"
+        description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default,compile"
+        description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
+    <conf name="documentation"
+          description="all documentation artifacts"/>
+  </configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+    <artifact name="sf-cdl-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-cdl-documentation" conf="documentation" ext="zip"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->services;runtime->services;daemon->services"/>
+    <dependency org="org.smartfrog"
+        name="sf-tasks"
+        changing="true"
+        rev="latest.integration"
+        conf="build->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-fun"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>    
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->default;runtime->default;redist->redist"/>
+    <dependency org="org.ggf"
+        name="cddlm"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->default;redist->default"/>
+    <dependency org="commons-logging"
+        name="commons-logging"
+        rev="${commons-logging.version}"
+        conf="compile,redist->master"
+        />
+    <dependency org="junit"
+                name="junit"
+                rev="${junit.version}"
+                conf="test->default"/>    
+  </dependencies>
+</ivy-module>

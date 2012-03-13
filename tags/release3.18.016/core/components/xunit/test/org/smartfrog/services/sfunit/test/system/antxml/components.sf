@@ -1,0 +1,124 @@
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/sfunit/test/system/components.sf"
+#include "/org/smartfrog/services/utils/echo/components.sf"
+
+EchoStayLive extends Echo {  sfShouldTerminate false; }
+
+antxml extends AntXmlTestListener {
+  outputDirectory test.data.dir; 
+}
+
+
+antreport extends AntWorkflowRun {
+  sfShouldTerminate true;
+  
+  md extends mkdir {
+    dir test.reports.dir;
+  }
+
+  reports extends junitreport {
+    todir test.reports.dir;
+    myFileSet extends fileset {
+      dir PROPERTY test.data.dir;
+      includes "*.xml";
+    }
+  }
+}
+
+testRunnerAntXml extends TestRunner {
+  description "push out as Ant XML";
+  standalone true;
+  sfShouldTerminate standalone ;
+  runTests standalone ;
+  listener extends antxml {
+  }
+
+  tests1 extends singleSucceedingTestSuite {
+    runTests true;
+  }
+}
+
+
+testSFUnitAntXml extends testRunnerAntXml {
+  description "run SF unit test directly from junit bridge";
+  standalone false;
+}
+
+testSFUnitAntXmlNested extends ExpectTerminate {
+  description "Run the ant xml test inside a TestCompound";
+ /** disabled see SFOS-1655 */
+ //condition extends False;
+  action extends testRunnerAntXml {
+  }
+}
+
+
+testAntXmlThroughJunit extends ExpectDeploy {
+
+  description "Run the ant xml test in a sequence and make assertions about its content";
+
+ /** disabled see SFOS-1671 */
+ condition extends False;
+
+  action extends Compound {
+      -- extends EchoStayLive  { message "compound deployed"; }
+  }
+
+  tests extends Sequence {
+
+    -- extends Echo { message "in sequence, starting test runner"; }
+
+    testrun testRunnerAntXml;
+
+    -- extends Echo { message "in sequence, test runner completed"; }
+
+    /**
+     * assert the ant XML data got created
+     */
+    assertDataGenerated extends AssertFileExists {
+      dir test.data.dir;
+      filename "tests1.xml"
+    }
+
+    -- extends Echo { message "in sequence, data generated"; }
+
+    reports antreport;
+
+    assertReportIndexGenerated extends AssertFileExists {
+      dir test.reports.dir;
+      filename "index.html"
+    }
+    -- extends Echo { message "end of in sequence"; }
+
+  }
+
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,93 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/parallel.sf"
+
+Architecture extends Parallel {
+    asynchCreateChild true; // deploy all components in parallel
+    repository TBD; // define a repository which provides the component directory
+                    // (such as ftp://installer-vif0.cell-ko.vms.sup.hpl.hp.com)
+                    // we could also define a default repository here
+}
+
+// at the moment only Groovy tasks are supported
+Task extends Prim {
+    sfClass "org.smartfrog.services.groovy.install.task.GroovyTask";
+
+    /* name of the file that contains a script */
+    file TBD;
+    pingable false;
+}
+
+/**
+  * A ping task has its script executed on every liveness check, and
+  * nothing else
+  */
+PingTask extends Task {
+    pingable true;
+}
+
+// copy a file or directory
+Source extends Prim {
+    sfClass "org.smartfrog.services.groovy.install.download.Source";
+}
+
+/**
+ * A Groovy component takes a set of files that it moves through in sequence, all relative to the same script directory
+ */
+Component extends Compound {
+    sfClass "org.smartfrog.services.groovy.install.Component";
+    sfShouldTerminate false;
+
+    /*
+    Directory containing the scripts. If this is missing, the component will fail to deploy
+    */
+    scriptDir TBD;
+
+    /**
+     * the default destination for all the actions
+     */
+    destDir LAZY PROPERTY "java.io.tmpdir";
+
+    /**
+     * Flag to enable destdir creation. If not set and the destination directory does
+     * not exists, the component will fail
+     */
+    createDestDir true;
+
+    /**
+     * timeout for any executed commands that don't specify an explicit timeout
+     */
+    execTimeout 60000;
+
+    install extends Task {
+      description "Action to install a component"
+      file "install.groovy";
+    }
+
+    preConfigure extends Task {
+      description "Actions to take before starting a component"
+      file "preConfigure.groovy";
+    }
+
+    start extends Task {
+      description "How to start a component"
+      file "start.groovy";
+    }
+
+    postConfigure extends Task {
+      description "Actions to take after starting a component"
+      file "postConfigure.groovy";
+    }
+
+    terminate extends Task {
+      description "Actions to take when terminating the component"
+      file "terminate.groovy";
+    }
+
+    ping extends PingTask {
+      description "A liveness check"
+      file "ping.groovy";
+    }
+
+
+}
+

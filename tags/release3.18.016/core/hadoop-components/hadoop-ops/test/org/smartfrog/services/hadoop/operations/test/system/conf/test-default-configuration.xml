@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<configuration>
+
+  <property>
+    <name>test.value.one</name>
+    <value>1</value>
+    <description>
+      first test
+    </description>
+  </property>
+
+  <property>
+    <name>test.value.final</name>
+    <value>1</value>
+    <final>true</final>
+    <description>
+      a final value
+    </description>
+  </property>
+  
+</configuration>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="bluemine" default="default">
+
+  <description>
+    Bluetooth Mining application
+  </description>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="root.dir" location="../../"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="groovy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+
+  <!--  <property name="unit.tests" value="true"/>-->
+  <property name="is.component" value="true"/>
+
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+
+  <target name="prepare-hadoop-dirs" depends="init">
+    <!-- set this to a directory or a file-->
+    <property name="test.input.data.dir" location="data/small/"/>
+    <property name="test.output.data.dir" location="${test.work.dir}/output"/>
+    <property name="input.data" location="data/small/gzip/gate1-50k.csv.gz"/>
+    <property name="output.data" location="build/results"/>
+
+    <delete dir="${test.output.data.dir}" />
+    <echo>Source = ${input.data}</echo>
+  </target>
+
+  <target name="ready-to-test" depends="common.ready-to-test, prepare-hadoop-dirs"/>
+
+  <target name="ready-to-hadoop" depends="ready-to-test">
+    <presetdef name="hjob">
+      <java failonerror="true"
+            fork="true"
+            classpathref="tests.run.classpath"
+          >
+        <jvmarg value="-Djava.security.krb5.realm=" />
+        <jvmarg value="-Djava.security.krb5.kdc=" />
+        <arg value="-v" />
+        <arg value="-s" />
+        <arg file="${input.data}" />
+        <arg value="-p" />
+        <arg file="bluemine.properties" />
+      </java>
+    </presetdef>
+  </target>
+
+  <target name="devcount" depends="ready-to-hadoop">
+    <hjob
+      classname="org.smartfrog.services.hadoop.bluemine.jobs.DevCount" >
+      <arg value="-do" />
+      <arg file="${output.data}/devcount" />
+    </hjob>
+  </target>
+  
+  <target name="yearcount" depends="ready-to-hadoop">
+    <hjob
+        classname="org.smartfrog.services.hadoop.bluemine.jobs.DayOfYearCount" >
+    <arg value="-do" />
+    <arg file="${output.data}/yearcount" />
+  </hjob>
+  </target>
+
+
+  <target name="devname" depends="ready-to-hadoop">
+    <hjob
+        classname="org.smartfrog.services.hadoop.bluemine.jobs.DevNames" >
+      <arg value="-do" />
+      <arg file="${output.data}/devnames" />
+    </hjob>
+  </target>
+
+</project>
