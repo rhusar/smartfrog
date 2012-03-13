@@ -1155,7 +1155,7 @@
     <property name="sftp.server" value="frs.sourceforge.net"/>
     <property name="sftp.user" value="${ssh.user}"/>
     <property name="sftp.group" value="smartfrog"/>
-    <property name="sftp.project.dir" value="/home/frs/project/s/sm/smartfrog/"/>
+    <property name="sftp.project.dir" value="/home/frs/project/smartfrog/"/>
     <property name="sftp.branch.dir" value="development/"/>
     <property name="sftp.release.dir" value="smartfrog-${smartfrog.version}"/>
     <property name="sftp.dir" value="${sftp.project.dir}${sftp.branch.dir}${sftp.release.dir}"/>
@@ -1168,6 +1168,7 @@
       ${toString:upload.fileset}
       Trust = "${ssh.trust}"
       Verbose = "${sftp.verbose}
+      user = "${sftp.user}"
       Pass = "${sftp.password}"
       Upload source dir = ${upload.dir}
     </echo>
