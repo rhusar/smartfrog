@@ -4,26 +4,24 @@ import org.apache.hadoop.io.NullWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.Reducer
 import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
+import org.smartfrog.services.hadoop.bluemine.events.EventParser
 
 /**
- * This emits all events associated with a device in temporal order
+ * This emits an event as serialised events
  */
-class EventEmitReducer extends Reducer<Text, BlueEvent, NullWritable, BlueEvent> {
+class EventCSVEmitReducer extends Reducer<Text, BlueEvent, NullWritable, Text> {
 
     private static final NullWritable NULL = NullWritable.get()
+    private EventParser parser = new EventParser()
+    Text out = new Text()
 
     void reduce(Text key,
                 Iterable<BlueEvent> values,
                 Reducer.Context context) {
-
-        //first sort all the values (the CPU killer
-        TreeMap<Long, BlueEvent> tree = new TreeMap<Long, BlueEvent>()
         values.each { event ->
-            tree.put(event.starttime, event)
-        }
-        tree.navigableKeySet().each { timestamp ->
-            BlueEvent event = tree.get(timestamp)
-            context.write(NULL, event)
+            String csv = parser.convertToCSV(event, ',')
+            out.set(csv)
+            context.write(NULL, out)
         }
     }
 }
