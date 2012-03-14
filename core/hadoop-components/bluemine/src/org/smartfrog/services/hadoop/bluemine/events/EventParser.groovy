@@ -6,7 +6,7 @@ import org.apache.hadoop.io.Text
 /**
  * Parse strings like
  * <pre>
- *   Gate, dev, ?, day, time, id
+ *   Gate, dev,, day, time, id
  *   gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-10-30,16:06:43,
  *   gate1,2afaf990ce75f0a7208f7f012c8d12ad,,2006-10-30,16:06:54,Smiley
  *   gate1,f1191b79236083ce59981e049d863604,,2006-10-30,16:06:57,vklaptop
@@ -21,8 +21,14 @@ class EventParser {
     static final int FIELD_NAME = 5
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'Z'HH:mm:ss",
             Locale.ENGLISH)
+    SimpleDateFormat ymdFormat = new SimpleDateFormat("yyyy-MM-dd",
+                                                       Locale.ENGLISH)
+    SimpleDateFormat hmsFormat = new SimpleDateFormat("HH:mm:ss",
+                                                      Locale.ENGLISH)
 
     boolean parseDatestamp = true;
+
+    int defaultDuration = 30
 
     /**
      * Parse a text line
@@ -54,7 +60,7 @@ class EventParser {
             event.gate = trim(fields[FIELD_GATE]);
             event.datestamp = buildDate(fields[FIELD_DATE], fields[FIELD_TIME])
             String durationField = trim(fields[FIELD_DURATION]);
-            event.duration = durationField != null ? Integer.parseInt(durationField) : 0
+            event.duration = durationField != null ? Integer.parseInt(durationField) : defaultDuration
             if (fields.length > FIELD_NAME ) {
                 //everything from the comma 5 to the end of the line is part of the name, so instead of using
                 //splits parsing, find comma 5 and work from there
@@ -80,5 +86,27 @@ class EventParser {
         return parseDatestamp ? dateFormat.parse(trim(day) + "Z" + trim(time)) : null
     }
 
+    /**
+     * Generate a CSV of format Gate, dev,duration, day, time, id
+     * Duration is not in the original format, but once you get into debounced
+     * "gate1,2afaf990ce75f0a7208f7f012c8d12ad,,2006-10-30,16:06:54,Smiley"
+     * @param event
+     * @return the CSV format
+     */
+    String convertToCSV(BlueEvent event, String separator) {
+        StringBuilder line = new StringBuilder(100)
+        line.append(event.gate).append(separator)
+        line.append(event.device).append(separator)
+        line.append(event.duration).append(separator)
+        line.append(ymdFormat.format(event.datestamp)).append(separator)
+        line.append(hmsFormat.format(event.datestamp)).append(separator)
+        if(event.name) {
+            line.append(event.name)
+        }
+        line.toString()
+    }
 
+    String convertToCSV(BlueEvent event) {
+        convertToCSV(event, ',')
+    }
 }

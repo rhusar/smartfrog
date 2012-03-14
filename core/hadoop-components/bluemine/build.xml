@@ -69,12 +69,19 @@
   </hjob>
   </target>
 
-
   <target name="devname" depends="ready-to-hadoop">
     <hjob
         classname="org.smartfrog.services.hadoop.bluemine.jobs.DevNames" >
       <arg value="-do" />
       <arg file="${output.data}/devnames" />
+    </hjob>
+  </target>
+
+  <target name="bydevice" depends="ready-to-hadoop">
+    <hjob
+        classname="org.smartfrog.services.hadoop.bluemine.jobs.ByDevice" >
+      <arg value="-do" />
+      <arg file="${output.data}/bydevice" />
     </hjob>
   </target>
 

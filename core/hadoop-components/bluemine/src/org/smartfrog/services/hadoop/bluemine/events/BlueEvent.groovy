@@ -6,12 +6,13 @@ import org.apache.hadoop.io.WritableComparable
 /**
  * Events are parseable and writeable
  */
-class BlueEvent implements Writable, WritableComparable {
+class BlueEvent implements Writable, WritableComparable, Cloneable {
 
     String device
     String gate
     String name
     Date datestamp
+
     long duration
 
     /**
@@ -41,7 +42,7 @@ class BlueEvent implements Writable, WritableComparable {
      */
     @Override
     String toString() {
-        return "${gate}, ${device},$duration,${datestamp},${name},"
+        return "${gate},${device},$duration,${datestamp},${name}"
     }
 
     @Override
@@ -64,8 +65,21 @@ class BlueEvent implements Writable, WritableComparable {
         duration = src.readLong()
     }
 
+    long getStarttime() {
+        datestamp.time
+    }
+
     long getEndtime() {
         duration + datestamp.time
+    }
+
+    /**
+     * Merge two events to build up a combined duration
+     * @param laterEvent the event that must have come later
+     * @return the duration
+     */
+    long merge(BlueEvent laterEvent) {
+        duration = laterEvent.endtime - starttime
     }
 
     @Override
@@ -74,6 +88,12 @@ class BlueEvent implements Writable, WritableComparable {
         if (!device) return -1
         return device.compareTo(that.device)
     }
+
+    @Override
+    protected BlueEvent clone() {
+        return (BlueEvent) super.clone()
+    }
+
 
 
 }

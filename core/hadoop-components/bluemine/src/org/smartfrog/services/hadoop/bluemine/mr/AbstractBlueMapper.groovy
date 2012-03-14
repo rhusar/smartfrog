@@ -15,7 +15,7 @@ import org.smartfrog.services.hadoop.bluemine.events.EventParser
  */
 @Commons
 abstract class AbstractBlueMapper extends Mapper<LongWritable, Text, Text, BlueEvent>
-implements BluemineOptions {
+        implements BluemineOptions {
 
     protected EventParser parser = new EventParser()
     protected Text outputKey = new Text()
@@ -39,13 +39,24 @@ implements BluemineOptions {
             context.getCounter("bluemine", "input errors").increment(1)
             return;
         }
+        process(context, key, value, event)
+    }
+
+    /**
+     * Base process operation
+     * @param context context
+     * @param lineNo line number
+     * @param line ext itself
+     * @param event the already parsed event
+     */
+    void process(Mapper.Context context, LongWritable lineNo, Text line, BlueEvent event) {
         String outkey = selectOutputKey(event, context)
         if (outkey == null) {
-            log.warn("Null output key parsing \"" + value + "\"");
+            log.warn("Null output key parsing \"" + line + "\"");
             context.getCounter("bluemine", "key errors").increment(1)
         } else {
             outputKey.set(outkey)
-            process(key, context)
+            process(lineNo, context)
         }
     }
 
@@ -64,6 +75,8 @@ implements BluemineOptions {
      * @param context
      * @return
      */
-    abstract String selectOutputKey(BlueEvent event, Mapper.Context context);
+    String selectOutputKey(BlueEvent event, Mapper.Context context) {
+        return event.device
+    }
 
 }
