@@ -50,7 +50,7 @@ class EventParser {
      * @param event
      * @param line
      */
-    public void parse(BlueEvent event, String line, String context) {
+    public BlueEvent parse(BlueEvent event, String line, String context) {
         String[] fields = line.split(",", FIELD_NAME + 1)
         if (fields.length < FIELD_NAME) {
             throw new IOException("Only ${fields.length} fields in \"${line}\" $context")
@@ -69,9 +69,10 @@ class EventParser {
         } catch (Exception e) {
             throw new IOException("When parsing \"${line}\": $e $context", e)
         }
+        event
     }
 
-    void parse(BlueEvent event, Text line, String context) {
+  BlueEvent parse(BlueEvent event, Text line, String context) {
         parse(event, line.toString(), context)
     }
 

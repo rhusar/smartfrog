@@ -5,6 +5,7 @@ import org.apache.hadoop.io.IntWritable
 import org.smartfrog.services.hadoop.bluemine.reducers.CountReducer
 import org.smartfrog.services.hadoop.grumpy.GrumpyHadoopTestBase
 import org.smartfrog.services.hadoop.grumpy.GrumpyJob
+import org.smartfrog.services.hadoop.bluemine.output.ExtTextOutputFormat
 
 /**
  *
@@ -57,8 +58,9 @@ class BluemineTestBase extends GrumpyHadoopTestBase {
         File outDir
         (job, outDir) = createMRJob(name,
                                     mapper,
-                                    CountReducer.class)
-        job.mapOutputValueClass = IntWritable.class
+                                    CountReducer)
+        job.mapOutputValueClass = IntWritable
+        job.outputFormatClass = ExtTextOutputFormat
         runJob(job)
         dumpDir(LOG, outDir)
         outDir
