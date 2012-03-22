@@ -13,7 +13,7 @@ class JobKiller implements Runnable {
     }
 
     static JobKiller targetForTermination(GrumpyJob job) {
-        JobKiller killer = new JobKiller(target:job)
+        JobKiller killer = new JobKiller(target: job)
         killer;
     }
 

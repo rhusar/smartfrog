@@ -10,25 +10,6 @@ import org.smartfrog.services.hadoop.bluemine.mr.testtools.BluemineTestBase
  */
 class EventParserTest extends BluemineTestBase {
 
-    public static final String NO_NAME = "gate1,02e73779c77fcd4e9f90a193c4f3e7ff,,2006-10-30,0:06:43,"
-    private static final String SMILEY = "gate1,2afaf990ce75f0a7208f7f012c8d12ad,,2006-10-30,16:06:54,Smiley"
-    private static final String COMMA1 = "0017F2A49B6F,5c598739138321f92971dc6f6ec41344,,2007-09-06,21:34:11,,) Where am i?"
-    private static final String COMMA2 = "0017F2A49B6F,5c598739138321f92971dc6f6ec41344,,2007-09-06,21:34:11,)\"\', Where am i?"
-    private static final String VKLAPTOP = "gate3,f1191b79236083ce59981e049d863604,,2006-1-1,23:06:57,vklaptop"
-    private static final String[] LINES = [
-            NO_NAME,
-            SMILEY,
-            VKLAPTOP,
-            COMMA1
-    ]
-
-    /**
-     * These are erroneous records that show up in the real dataset
-     */
-    private final String[] badlines = [
-            ",45c015c602e28f3f790e2937ff7a8a0b,,2009-01-21,09:14,",
-            ",,"
-    ]
 
 
     @Test

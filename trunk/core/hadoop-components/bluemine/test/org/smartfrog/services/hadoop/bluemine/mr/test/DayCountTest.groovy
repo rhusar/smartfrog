@@ -6,7 +6,7 @@ import org.smartfrog.services.hadoop.bluemine.mr.testtools.BluemineTestBase
 class DayCountTest extends BluemineTestBase {
 
     void testHourCount() {
-        runCountJob("daycount", MapToDayOfWeek.class)
+        runCountJob("daycount", MapToDayOfWeek)
     }
 
 }

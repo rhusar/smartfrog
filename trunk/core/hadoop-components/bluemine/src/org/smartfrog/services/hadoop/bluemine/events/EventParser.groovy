@@ -1,7 +1,9 @@
 package org.smartfrog.services.hadoop.bluemine.events
 
-import java.text.SimpleDateFormat
 import org.apache.hadoop.io.Text
+import org.smartfrog.services.hadoop.bluemine.BluemineOptions
+
+import java.text.SimpleDateFormat
 
 /**
  * Parse strings like
@@ -12,7 +14,7 @@ import org.apache.hadoop.io.Text
  *   gate1,f1191b79236083ce59981e049d863604,,2006-10-30,16:06:57,vklaptop
  * </pre>
  */
-class EventParser {
+class EventParser implements BluemineOptions {
     static final int FIELD_GATE = 0
     static final int FIELD_DEV = 1
     static final int FIELD_DURATION = 2
@@ -22,13 +24,13 @@ class EventParser {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'Z'HH:mm:ss",
             Locale.ENGLISH)
     SimpleDateFormat ymdFormat = new SimpleDateFormat("yyyy-MM-dd",
-                                                       Locale.ENGLISH)
+            Locale.ENGLISH)
     SimpleDateFormat hmsFormat = new SimpleDateFormat("HH:mm:ss",
-                                                      Locale.ENGLISH)
+            Locale.ENGLISH)
 
     boolean parseDatestamp = true;
 
-    int defaultDuration = 30
+    int defaultDuration = INITIAL_DURATION
 
     /**
      * Parse a text line
@@ -61,7 +63,7 @@ class EventParser {
             event.datestamp = buildDate(fields[FIELD_DATE], fields[FIELD_TIME])
             String durationField = trim(fields[FIELD_DURATION]);
             event.duration = durationField != null ? Integer.parseInt(durationField) : defaultDuration
-            if (fields.length > FIELD_NAME ) {
+            if (fields.length > FIELD_NAME) {
                 //everything from the comma 5 to the end of the line is part of the name, so instead of using
                 //splits parsing, find comma 5 and work from there
                 event.name = fields.length > FIELD_NAME ? trim(fields[FIELD_NAME]) : ""
@@ -72,7 +74,7 @@ class EventParser {
         event
     }
 
-  BlueEvent parse(BlueEvent event, Text line, String context) {
+    BlueEvent parse(BlueEvent event, Text line, String context) {
         parse(event, line.toString(), context)
     }
 
@@ -101,7 +103,7 @@ class EventParser {
         line.append(event.duration).append(separator)
         line.append(ymdFormat.format(event.datestamp)).append(separator)
         line.append(hmsFormat.format(event.datestamp)).append(separator)
-        if(event.name) {
+        if (event.name) {
             line.append(event.name)
         }
         line.toString()

@@ -13,7 +13,7 @@ class EventCSVEmitReducer extends Reducer<Text, BlueEvent, NullWritable, Text> {
 
     private static final NullWritable NULL = NullWritable.get()
     private EventParser parser = new EventParser()
-    Text out = new Text()
+    private Text out = new Text()
 
     void reduce(Text key,
                 Iterable<BlueEvent> values,
