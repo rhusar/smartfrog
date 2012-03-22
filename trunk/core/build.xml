@@ -36,8 +36,7 @@ For more information: www.smartfrog.org
   <target name="help" description="help information">
     <echo>
     This is a primary build file for SmartFrog, which delegates down to
-    specific components to do the work. It also contains support for
-    cruise control
+    specific components to do the work. 
     </echo>
   </target>
 
