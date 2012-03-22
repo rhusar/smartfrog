@@ -7,7 +7,7 @@ class DevCountTest extends BluemineTestBase {
 
 
     void testDevCount() {
-        runCountJob("devcount", DeviceCountMap.class)
+        runCountJob("devcount", DeviceCountMap)
     }
 
 }

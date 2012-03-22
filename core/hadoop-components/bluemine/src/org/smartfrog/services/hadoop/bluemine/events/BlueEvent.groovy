@@ -36,6 +36,10 @@ class BlueEvent implements Writable, WritableComparable, Cloneable {
         duration = 0
     }
 
+    boolean getValid() {
+        !device.isEmpty()
+    }
+
     /**
      * This generates an extended value
      * @return
@@ -95,5 +99,12 @@ class BlueEvent implements Writable, WritableComparable, Cloneable {
     }
 
 
+    public boolean overlaps(BlueEvent other) {
+        long s1 = starttime
+        long e1 = endtime
+        long s2 = other.starttime
+        long e2 = other.endtime
+        !((e1 < s2) || (e2 < s1))
+    }
 
 }

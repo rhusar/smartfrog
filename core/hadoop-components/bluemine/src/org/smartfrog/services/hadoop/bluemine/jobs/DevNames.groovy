@@ -1,15 +1,10 @@
 package org.smartfrog.services.hadoop.bluemine.jobs
 
 import groovy.util.logging.Commons
-
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapred.JobConf
-
-import org.smartfrog.services.hadoop.bluemine.mr.MapToDevice
-
-import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
-import org.smartfrog.services.hadoop.bluemine.reducers.FirstTextValueReducer
 import org.smartfrog.services.hadoop.bluemine.mr.DeviceNameMap
+import org.smartfrog.services.hadoop.bluemine.reducers.FirstTextValueReducer
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one

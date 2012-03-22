@@ -1,16 +1,11 @@
 package org.smartfrog.services.hadoop.bluemine.jobs
 
 import groovy.util.logging.Commons
-import org.apache.hadoop.io.IntWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapred.JobConf
-import org.smartfrog.services.hadoop.bluemine.mr.MapToDayOfYear
-import org.smartfrog.services.hadoop.bluemine.reducers.CountReducer
-import org.smartfrog.services.hadoop.bluemine.mr.DebounceMap
-import org.smartfrog.services.hadoop.bluemine.reducers.EventEmitReducer
 import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
+import org.smartfrog.services.hadoop.bluemine.mr.DebounceMap
 import org.smartfrog.services.hadoop.bluemine.output.ExtTextOutputFormat
-import org.apache.hadoop.io.NullWritable
 import org.smartfrog.services.hadoop.bluemine.reducers.EventCSVEmitReducer
 
 /**

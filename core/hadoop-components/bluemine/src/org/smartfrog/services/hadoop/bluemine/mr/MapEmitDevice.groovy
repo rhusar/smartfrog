@@ -1,9 +1,9 @@
 package org.smartfrog.services.hadoop.bluemine.mr
 
-import org.apache.hadoop.mapreduce.Mapper
-import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 import org.apache.hadoop.io.LongWritable
 import org.apache.hadoop.io.Text
+import org.apache.hadoop.mapreduce.Mapper
+import org.smartfrog.services.hadoop.bluemine.events.BlueEvent
 
 class MapEmitDevice extends MapToDevice {
 
@@ -14,6 +14,7 @@ class MapEmitDevice extends MapToDevice {
     }
 
     static Class keyClass() { Text }
+
     static Class valueClass() { BlueEvent }
 
 }

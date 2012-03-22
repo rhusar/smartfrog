@@ -9,4 +9,8 @@ public interface BluemineOptions {
     String DEFAULT_JOB_TRACKER = "localhost:54311"
 
     String DEFAULT_FS = "hdfs://localhost:54310"
+
+    int DEBOUNCE_WINDOW = 60000
+
+    int INITIAL_DURATION = 30000
 }

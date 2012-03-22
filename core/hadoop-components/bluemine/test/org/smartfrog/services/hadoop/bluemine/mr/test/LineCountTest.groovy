@@ -15,8 +15,8 @@ class LineCountTest extends BluemineTestBase {
         GrumpyJob job
         File outDir
         (job, outDir) = createMRJob("linecount",
-                                    GroovyLineCountMapper.class,
-                                    GroovyValueCountReducer.class)
+                                    GroovyLineCountMapper,
+                                    GroovyValueCountReducer)
         runJob(job)
         dumpDir(LOG, outDir)
     }

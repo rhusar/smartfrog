@@ -11,7 +11,6 @@
   <property name="ivy.enabled" value="true"/>
   <property name="groovy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
-
   <!--  <property name="unit.tests" value="true"/>-->
   <property name="is.component" value="true"/>
 
@@ -36,6 +35,22 @@
 
   <target name="ready-to-test" depends="common.ready-to-test, prepare-hadoop-dirs"/>
 
+  <target name="system-tests" depends="ready-to-test"
+          description="run the unit tests">
+    <sf-system-test-junit>
+      <batchtest todir="${test.data.dir}" if="testcase">
+        <fileset dir="${test.classes.dir}" includes="**/${testcase}.class"/>
+      </batchtest>
+      <batchtest todir="${test.data.dir}" unless="testcase">
+        <fileset dir="${test.classes.dir}">
+          <include name="${sf-system-test-class-pattern}"/>
+        </fileset>
+      </batchtest>
+    </sf-system-test-junit>
+    <sf-system-test-validate/>
+  </target>
+
+  
   <target name="ready-to-hadoop" depends="ready-to-test">
     <presetdef name="hjob">
       <java failonerror="true"

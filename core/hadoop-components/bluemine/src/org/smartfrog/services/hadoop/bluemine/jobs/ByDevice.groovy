@@ -1,13 +1,10 @@
 package org.smartfrog.services.hadoop.bluemine.jobs
 
 import groovy.util.logging.Commons
-
 import org.apache.hadoop.mapred.JobConf
-
+import org.smartfrog.services.hadoop.bluemine.mr.MapEmitDevice
 import org.smartfrog.services.hadoop.bluemine.output.ExtTextOutputFormat
 import org.smartfrog.services.hadoop.bluemine.reducers.EventCSVEmitReducer
-
-import org.smartfrog.services.hadoop.bluemine.mr.MapEmitDevice
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
