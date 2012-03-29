@@ -139,7 +139,6 @@ description="the test WAR File" visibility="private"/>-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-core"
                 rev="${hadoop.version}"
-                changing="true"
                 conf="hadoop-core->default">
       
       <exclude org="com.thoughtworks.paranamer"/>
@@ -158,7 +157,6 @@ description="the test WAR File" visibility="private"/>-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-test"
                 rev="${hadoop.version}"
-                changing="true"
                 conf="hadoop-core->default">
 
       <exclude org="com.thoughtworks.paranamer"/>
@@ -179,7 +177,6 @@ description="the test WAR File" visibility="private"/>-->
     <dependency org="org.apache.hadoop"
                 name="hadoop-examples"
                 rev="${hadoop.version}"
-                changing="true"
                 conf="hadoop-core->default">
 
       <exclude org="org.apache.hadoop" module="hadoop-core"/>
