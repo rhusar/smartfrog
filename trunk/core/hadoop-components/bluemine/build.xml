@@ -68,7 +68,7 @@
     </presetdef>
   </target>
 
-  <target name="devcount" depends="ready-to-hadoop">
+  <target name="devcount" depends="ready-to-hadoop"  description="unbounced device sighting count">
     <hjob
       classname="org.smartfrog.services.hadoop.bluemine.jobs.DevCount" >
       <arg value="-do" />
@@ -76,7 +76,7 @@
     </hjob>
   </target>
   
-  <target name="yearcount" depends="ready-to-hadoop">
+  <target name="yearcount" depends="ready-to-hadoop"  description="list sightings by day of year">
     <hjob
         classname="org.smartfrog.services.hadoop.bluemine.jobs.DayOfYearCount" >
     <arg value="-do" />
@@ -84,7 +84,7 @@
   </hjob>
   </target>
 
-  <target name="devname" depends="ready-to-hadoop">
+  <target name="devname" depends="ready-to-hadoop" description="list sightings by dev name">
     <hjob
         classname="org.smartfrog.services.hadoop.bluemine.jobs.DevNames" >
       <arg value="-do" />
@@ -92,12 +92,18 @@
     </hjob>
   </target>
 
-  <target name="bydevice" depends="ready-to-hadoop">
+  <target name="bydevice" depends="ready-to-hadoop" description="list sightings by device">
     <hjob
         classname="org.smartfrog.services.hadoop.bluemine.jobs.ByDevice" >
       <arg value="-do" />
       <arg file="${output.data}/bydevice" />
     </hjob>
   </target>
+
+  <target name="jt-queue" depends="ready-to-hadoop">
+
+  </target>
+
+
 
 </project>
