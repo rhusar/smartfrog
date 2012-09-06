@@ -141,6 +141,7 @@ public interface RComponent extends Compound {
     public static final String[] SF_VOLATILE_ATTRS = {
         SmartFrogCoreKeys.SF_HOST,
         SmartFrogCoreKeys.SF_PROCESS,
+        "sfPort",							// do not save - port is derived from sfExportPort and local process compound at runtime
         SmartFrogCoreKeys.SF_APP_LOG_NAME,
         SmartFrogCoreKeys.SF_BOOT_DATE,
         SmartFrogCoreKeys.SF_TIME_PARSE,
