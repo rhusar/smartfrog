@@ -53,6 +53,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Static Filesystem operations
@@ -584,28 +586,45 @@ public final class FileSystem {
     }
 
     /**
-     * Recursive directory scanner for files with particular extensions. Search criteria expressed with a regular
-     * expression.
+     * Recursive directory scanner for files whose canonical path matches a regular expression given as a string representing a
+     * java.util.regex regular expression.
      *
      * @param dir             File directory to start scanning
      * @param filePaths       List
-     * @param extensionsRegex String Regular expresion that matches the end of the filename searched
+     * @param regex           String Regular expression that matches the end of the filename searched
      * @param recursive       boolean Should it scan subdirectories
      * @return the scanned list (the filePaths parameter)
      * @throws IOException Thrown when dir is not a directory.
      */
 
-    public static List<String> scanDir(File dir, List<String> filePaths, String extensionsRegex,
+    public static List<String> scanDir(File dir, List<String> filePaths, String regex,
+                                       boolean recursive) throws IOException {
+        Pattern regexPattern = Pattern.compile(regex);
+        return scanDir(dir, filePaths, regexPattern, recursive);
+    }
+
+    /**
+     * Recursive directory scanner for files whose canonical path matches a regular expression.
+     *
+     * @param dir             File directory to start scanning
+     * @param filePaths       List
+     * @param regex           Pattern Regular expression that matches the end of the filename searched
+     * @param recursive       boolean Should it scan subdirectories
+     * @return the scanned list (the filePaths parameter)
+     * @throws IOException Thrown when dir is not a directory.
+     */
+
+    public static List<String> scanDir(File dir, List<String> filePaths, Pattern regex,
                                        boolean recursive) throws IOException {
         if (!dir.isDirectory()) throw new IOException(dir + " is not a directory.");
         File[] files = dir.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
                 if (recursive) {
-                    scanDir(file, filePaths, extensionsRegex, recursive);
+                    scanDir(file, filePaths, regex, recursive);
                 } else {
                     String path = file.getCanonicalPath();
-                    if (path.matches(extensionsRegex)) {
+                    if (regex.matcher(path).matches()) {
                         filePaths.add(path);
                     }
                 }
