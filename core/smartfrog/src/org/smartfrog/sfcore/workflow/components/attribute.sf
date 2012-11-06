@@ -34,7 +34,7 @@ AttributeSchema extends Schema {
 }
 
 Attribute extends EventPrim {
-    sfClass "org.smartFrog.sfcore.workflow.components.Attribute";
+    sfClass "org.smartfrog.sfcore.workflow.components.Attribute";
 /*
     component RefToComponent;
     name "a string";
