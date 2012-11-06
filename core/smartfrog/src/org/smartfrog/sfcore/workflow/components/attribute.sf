@@ -27,8 +27,8 @@ For more information: www.smartfrog.org
  */
 
 AttributeSchema extends Schema {
-    component extends CD;
-    name extends String;
+    ofComponent extends CD;
+    attribueName extends String;
     // not present implies remove...
     value extends Optional;
 }
@@ -36,8 +36,8 @@ AttributeSchema extends Schema {
 Attribute extends EventPrim {
     sfClass "org.smartfrog.sfcore.workflow.components.Attribute";
 /*
-    component RefToComponent;
-    name "a string";
+    ofComponent RefToComponent;
+    attributeName "a string";
     value newValue // not present implies remove...
 */
 
