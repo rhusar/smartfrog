@@ -130,6 +130,21 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 		String functionClassStatus = (String) comp.sfContext().get("sfFunctionClassStatus");
         if (functionClassStatus!=null && functionClassStatus.equals("done")) return comp; //done already
 
+
+
+        Boolean eager=false;
+        try {
+            eager = (Boolean) comp.sfResolveHere("sfIsComponent");
+            comp.sfRemoveAttribute("sfIsComponent");
+        } catch (ClassCastException e) {
+            throw new SmartFrogFunctionResolutionException("sfisComponent setting is not a boolean", e);
+        } catch (SmartFrogResolutionException e) {
+            eager = false;
+	} catch (SmartFrogRuntimeException e) {
+            //shouldn't happen
+	}
+        comp.setEager(eager);
+
         String functionClass = null;
         
         try {
